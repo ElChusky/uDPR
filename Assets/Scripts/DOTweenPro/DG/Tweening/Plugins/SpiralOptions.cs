@@ -10,6 +10,11 @@ namespace DG.Tweening.Plugins
 		public bool snapping;
 		internal float unit;
 		internal global::UnityEngine.Quaternion axisQ;
-		public void Reset() { /*@B DOTweenPro:0x600001C*/ throw null; }
+		public void Reset() 
+		{
+			depth = frequency = speed = 0f;
+			mode = global::DG.Tweening.SpiralMode.Expand;
+			snapping = false;
+		}
 	}
 }

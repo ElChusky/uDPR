@@ -4,23 +4,95 @@ public class AfterImage : global::UnityEngine.MonoBehaviour, global::SmartPoint.
 {
 	private global::UnityEngine.Camera _camera;
 	private global::UnityEngine.RenderTexture _renderTexture;
-	private static readonly int BlendWeightID;
-	private static readonly int AngleID;
-	private static readonly int ReciprocalScaleID;
+	private static readonly int BlendWeightID = global::UnityEngine.Shader.PropertyToID("_BlendWeight");
+	private static readonly int AngleID = global::UnityEngine.Shader.PropertyToID("_Angle");
+	private static readonly int ReciprocalScaleID = global::UnityEngine.Shader.PropertyToID("_ReciprocalScale");
 	private global::UnityEngine.Material materialInstance;
 	[global::UnityEngine.SerializeField]
 	private float angle;
 	[global::UnityEngine.SerializeField]
-	private float scale;
+	private float scale = 1f;
 	private bool copyOnce;
-	public float Angle { get { return this.angle; } set { /*@B 0x6000E4D*/ throw null; } }
-	public float Scale { get { return this.scale; } set { /*@B 0x6000E4F*/ throw null; } }
+	public float Angle { get { return this.angle; } set { this.angle = value; } }
+	public float Scale { get { return this.scale; } set { this.scale = value; } }
 	public global::UnityEngine.RenderTexture renderTexture { get { return this._renderTexture; } }
-	public void OnViewportChange(int width, int height) { /*@B 0x6000E52*/ throw null; }
-	private void Cleanup() { /*@B 0x6000E53*/ throw null; }
-	private void OnEnable() { /*@B 0x6000E54*/ throw null; }
-	private void OnRenderImage(global::UnityEngine.RenderTexture input, global::UnityEngine.RenderTexture output) { /*@B 0x6000E55*/ throw null; }
-	private void OnDisable() { /*@B 0x6000E56*/ throw null; }
-	public AfterImage() { /*@B 0x6000E57*/ throw null; }
-	static AfterImage() { /*@B 0x6000E58*/ throw null; }
+	public void OnViewportChange(int width, int height)
+	{
+		Cleanup();
+	}
+	private void Cleanup()
+	{
+		OnDisable();
+		if (_camera == null)
+		{
+			_camera = GetComponent<global::UnityEngine.Camera>();
+		}
+		if (_camera == null)
+		{
+			return;
+		}
+		int width;
+		int height;
+		if (_camera.targetTexture != null)
+		{
+			width = _camera.targetTexture.width;
+			height = _camera.targetTexture.height;
+		}
+		else
+		{
+			width = global::SmartPoint.AssetAssistant.Sequencer.screenWidth;
+			height = global::SmartPoint.AssetAssistant.Sequencer.screenHeight;
+		}
+		if (materialInstance == null)
+		{
+			materialInstance = new global::UnityEngine.Material(global::SmartPoint.AssetAssistant.AssetManager.FindShader("Custom/AfterImage"));
+		}
+		if (_renderTexture == null)
+		{
+			_renderTexture = new global::UnityEngine.RenderTexture(width, height, 24, global::UnityEngine.RenderTextureFormat.ARGB32);
+			_renderTexture.autoGenerateMips = false;
+		}
+		copyOnce = true;
+		materialInstance.SetTexture("_PrevFrameTex", _renderTexture);
+	}
+	private void OnEnable()
+	{
+		Cleanup();
+	}
+	private void OnRenderImage(global::UnityEngine.RenderTexture input, global::UnityEngine.RenderTexture output)
+	{
+		if (materialInstance == null)
+		{
+			return;
+		}
+		materialInstance.SetFloat(AngleID, angle * global::UnityEngine.Mathf.Deg2Rad);
+		materialInstance.SetFloat(ReciprocalScaleID, 1f / global::UnityEngine.Mathf.Max(scale, 0.01f));
+		if (copyOnce)
+		{
+			materialInstance.SetFloat(BlendWeightID, 1f);
+			copyOnce = false;
+		}
+		else
+		{
+			materialInstance.SetFloat(BlendWeightID, 0.2f);
+		}
+		global::UnityEngine.Graphics.Blit(input, output, materialInstance);
+		global::UnityEngine.Graphics.Blit(output, _renderTexture);
+	}
+	private void OnDisable()
+	{
+		if (_renderTexture != null)
+		{
+			global::UnityEngine.Object.DestroyImmediate(_renderTexture);
+		}
+		if (materialInstance != null)
+		{
+			global::UnityEngine.Object.DestroyImmediate(materialInstance);
+		}
+		materialInstance = null;
+		_renderTexture = null;
+		_camera = null;
+	}
+	public AfterImage() { }
+	static AfterImage() { }
 }

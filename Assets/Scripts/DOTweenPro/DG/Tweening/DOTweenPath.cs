@@ -5,64 +5,366 @@ namespace DG.Tweening
 	public class DOTweenPath : global::DG.Tweening.Core.ABSAnimationComponent
 	{
 		public float delay;
-		public float duration;
-		public global::DG.Tweening.Ease easeType;
-		public global::UnityEngine.AnimationCurve easeCurve;
-		public int loops;
-		public string id;
+		public float duration = 1f;
+		public global::DG.Tweening.Ease easeType = global::DG.Tweening.Ease.OutQuad;
+		public global::UnityEngine.AnimationCurve easeCurve = new global::UnityEngine.AnimationCurve(new global::UnityEngine.Keyframe(0f, 0f), new global::UnityEngine.Keyframe(1f, 1f));
+		public int loops = 1;
+		public string id = "";
 		public global::DG.Tweening.LoopType loopType;
 		public global::DG.Tweening.Plugins.Options.OrientType orientType;
 		public global::UnityEngine.Transform lookAtTransform;
 		public global::UnityEngine.Vector3 lookAtPosition;
-		public float lookAhead;
-		public bool autoPlay;
-		public bool autoKill;
+		public float lookAhead = 0.01f;
+		public bool autoPlay = true;
+		public bool autoKill = true;
 		public bool relative;
 		public bool isLocal;
 		public bool isClosedPath;
-		public int pathResolution;
-		public global::DG.Tweening.PathMode pathMode;
+		public int pathResolution = 10;
+		public global::DG.Tweening.PathMode pathMode = global::DG.Tweening.PathMode.Full3D;
 		public global::DG.Tweening.AxisConstraint lockRotation;
 		public bool assignForwardAndUp;
-		public global::UnityEngine.Vector3 forwardDirection;
-		public global::UnityEngine.Vector3 upDirection;
+		public global::UnityEngine.Vector3 forwardDirection = global::UnityEngine.Vector3.forward;
+		public global::UnityEngine.Vector3 upDirection = global::UnityEngine.Vector3.up;
 		public bool tweenRigidbody;
-		public global::System.Collections.Generic.List<global::UnityEngine.Vector3> wps;
-		public global::System.Collections.Generic.List<global::UnityEngine.Vector3> fullWps;
+		public global::System.Collections.Generic.List<global::UnityEngine.Vector3> wps = new global::System.Collections.Generic.List<global::UnityEngine.Vector3>();
+		public global::System.Collections.Generic.List<global::UnityEngine.Vector3> fullWps = new global::System.Collections.Generic.List<global::UnityEngine.Vector3>();
 		public global::DG.Tweening.Plugins.Core.PathCore.Path path;
 		public global::DG.Tweening.DOTweenInspectorMode inspectorMode;
 		public global::DG.Tweening.PathType pathType;
 		public global::DG.Tweening.HandlesType handlesType;
-		public bool livePreview;
+		public bool livePreview = true;
 		public global::DG.Tweening.HandlesDrawMode handlesDrawMode;
-		public float perspectiveHandleSize;
-		public bool showIndexes;
+		public float perspectiveHandleSize = 0.5f;
+		public bool showIndexes = true;
 		public bool showWpLength;
-		public global::UnityEngine.Color pathColor;
+		public global::UnityEngine.Color pathColor = new global::UnityEngine.Color(1f, 1f, 1f, 0.5f);
 		public global::UnityEngine.Vector3 lastSrcPosition;
 		public global::UnityEngine.Quaternion lastSrcRotation;
 		public bool wpsDropdown;
 		public float dropToFloorOffset;
 		private static global::System.Reflection.MethodInfo _miCreateTween;
 		public static event global::System.Action<global::DG.Tweening.DOTweenPath> OnReset;
-		private static void Dispatch_OnReset(global::DG.Tweening.DOTweenPath path) { /*@B DOTweenPro:0x6000008*/ throw null; }
-		private void Awake() { /*@B DOTweenPro:0x6000009*/ throw null; }
-		private void Reset() { /*@B DOTweenPro:0x600000A*/ throw null; }
-		private void OnDestroy() { /*@B DOTweenPro:0x600000B*/ throw null; }
-		public override void DOPlay() { /*@B DOTweenPro:0x600000C*/ throw null; }
-		public override void DOPlayBackwards() { /*@B DOTweenPro:0x600000D*/ throw null; }
-		public override void DOPlayForward() { /*@B DOTweenPro:0x600000E*/ throw null; }
-		public override void DOPause() { /*@B DOTweenPro:0x600000F*/ throw null; }
-		public override void DOTogglePause() { /*@B DOTweenPro:0x6000010*/ throw null; }
-		public override void DORewind() { /*@B DOTweenPro:0x6000011*/ throw null; }
-		public override void DORestart() { /*@B DOTweenPro:0x6000012*/ throw null; }
-		public override void DORestart(bool fromHere) { /*@B DOTweenPro:0x6000013*/ throw null; }
-		public override void DOComplete() { /*@B DOTweenPro:0x6000014*/ throw null; }
-		public override void DOKill() { /*@B DOTweenPro:0x6000015*/ throw null; }
-		public global::DG.Tweening.Tween GetTween() { /*@B DOTweenPro:0x6000016*/ throw null; }
-		public global::UnityEngine.Vector3[] GetDrawPoints() { /*@B DOTweenPro:0x6000017*/ throw null; }
-		internal global::UnityEngine.Vector3[] GetFullWps() { /*@B DOTweenPro:0x6000018*/ throw null; }
-		private void ReEvaluateRelativeTween() { /*@B DOTweenPro:0x6000019*/ throw null; }
-		public DOTweenPath() { /*@B DOTweenPro:0x600001A*/ throw null; }
+		private static void Dispatch_OnReset(global::DG.Tweening.DOTweenPath path)
+		{
+			if (OnReset != null)
+			{
+				OnReset(path);
+			}
+		}
+		private void Awake()
+		{
+			if (path == null || wps.Count < 1 || inspectorMode == DOTweenInspectorMode.OnlyPath)
+			{
+				return;
+			}
+			// TO CHECK: the shipped DOTweenPro assembly sees DOTween.dll internals (Utils, TweenManager, DOTween.GizmosDelegates,
+			// Path.type/wps/controlPoints/gizmoColor/AssignDecoder/Draw); this tree compiles into Assembly-CSharp, so they are reached by reflection.
+			const global::System.Reflection.BindingFlags IF = global::System.Reflection.BindingFlags.Instance | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic;
+			const global::System.Reflection.BindingFlags SF = global::System.Reflection.BindingFlags.Static | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic;
+			global::System.Type pathT = typeof(global::DG.Tweening.Plugins.Core.PathCore.Path);
+			global::System.Reflection.Assembly dotweenAsm = typeof(global::DG.Tweening.DOTween).Assembly;
+			if (_miCreateTween == null)
+			{
+				global::System.Type looseType = (global::System.Type)dotweenAsm.GetType("DG.Tweening.Core.Utils").GetMethod("GetLooseScriptType", SF).Invoke(null, new object[] { "DG.Tweening.DOTweenModuleUtils+Physics" });
+				_miCreateTween = looseType.GetMethod("CreateDOTweenPathTween", global::System.Reflection.BindingFlags.Static | global::System.Reflection.BindingFlags.Public);
+			}
+			pathT.GetMethod("AssignDecoder", IF).Invoke(path, new object[] { pathT.GetField("type", IF).GetValue(path) });
+			if ((bool)dotweenAsm.GetType("DG.Tweening.Core.TweenManager").GetField("isUnityEditor", SF).GetValue(null))
+			{
+				global::System.Collections.Generic.List<TweenCallback> gizmosDelegates = (global::System.Collections.Generic.List<TweenCallback>)typeof(global::DG.Tweening.DOTween).GetField("GizmosDelegates", SF).GetValue(null);
+				gizmosDelegates.Add((TweenCallback)global::System.Delegate.CreateDelegate(typeof(TweenCallback), path, pathT.GetMethod("Draw", IF, null, global::System.Type.EmptyTypes, null)));
+				pathT.GetField("gizmoColor", IF).SetValue(path, pathColor);
+			}
+			if (isLocal)
+			{
+				global::UnityEngine.Transform trans = transform;
+				if (trans.parent != null)
+				{
+					global::UnityEngine.Vector3 parentPos = trans.parent.position;
+					global::UnityEngine.Vector3[] pathWps = (global::UnityEngine.Vector3[])pathT.GetField("wps", IF).GetValue(path);
+					int len = pathWps.Length;
+					for (int i = 0; i < len; i++)
+					{
+						pathWps[i] = pathWps[i] - parentPos;
+					}
+					global::DG.Tweening.Plugins.Core.PathCore.ControlPoint[] pathCps = (global::DG.Tweening.Plugins.Core.PathCore.ControlPoint[])pathT.GetField("controlPoints", IF).GetValue(path);
+					len = pathCps.Length;
+					for (int i = 0; i < len; i++)
+					{
+						global::DG.Tweening.Plugins.Core.PathCore.ControlPoint cp = pathCps[i];
+						cp.a -= parentPos;
+						cp.b -= parentPos;
+						pathCps[i] = cp;
+					}
+				}
+			}
+			if (relative)
+			{
+				ReEvaluateRelativeTween();
+			}
+			if (pathMode == PathMode.Full3D && GetComponent<global::UnityEngine.SpriteRenderer>() != null)
+			{
+				pathMode = PathMode.TopDown2D;
+			}
+			global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::DG.Tweening.Plugins.Core.PathCore.Path, global::DG.Tweening.Plugins.Options.PathOptions> t = (global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::DG.Tweening.Plugins.Core.PathCore.Path, global::DG.Tweening.Plugins.Options.PathOptions>)_miCreateTween.Invoke(null, new object[] { this, tweenRigidbody, isLocal, path, duration, pathMode });
+			t.SetOptions(isClosedPath, AxisConstraint.None, lockRotation);
+			switch (orientType)
+			{
+				case global::DG.Tweening.Plugins.Options.OrientType.ToPath:
+					if (assignForwardAndUp)
+					{
+						t.SetLookAt(lookAhead, new global::UnityEngine.Vector3?(forwardDirection), new global::UnityEngine.Vector3?(upDirection));
+					}
+					else
+					{
+						t.SetLookAt(lookAhead, null, null);
+					}
+					break;
+				case global::DG.Tweening.Plugins.Options.OrientType.LookAtTransform:
+					if (lookAtTransform != null)
+					{
+						if (assignForwardAndUp)
+						{
+							t.SetLookAt(lookAtTransform, new global::UnityEngine.Vector3?(forwardDirection), new global::UnityEngine.Vector3?(upDirection));
+						}
+						else
+						{
+							t.SetLookAt(lookAtTransform, null, null);
+						}
+					}
+					break;
+				case global::DG.Tweening.Plugins.Options.OrientType.LookAtPosition:
+					if (assignForwardAndUp)
+					{
+						t.SetLookAt(lookAtPosition, new global::UnityEngine.Vector3?(forwardDirection), new global::UnityEngine.Vector3?(upDirection));
+					}
+					else
+					{
+						t.SetLookAt(lookAtPosition, null, null);
+					}
+					break;
+			}
+			t.SetDelay(delay).SetLoops(loops, loopType).SetAutoKill(autoKill).SetUpdate(updateType).OnKill(() => tween = null);
+			if (isSpeedBased)
+			{
+				t.SetSpeedBased();
+			}
+			if (easeType == Ease.INTERNAL_Custom)
+			{
+				t.SetEase(easeCurve);
+			}
+			else
+			{
+				t.SetEase(easeType);
+			}
+			if (!string.IsNullOrEmpty(id))
+			{
+				t.SetId(id);
+			}
+			if (hasOnStart)
+			{
+				if (onStart != null)
+				{
+					t.OnStart(onStart.Invoke);
+				}
+			}
+			else
+			{
+				onStart = null;
+			}
+			if (hasOnPlay)
+			{
+				if (onPlay != null)
+				{
+					t.OnPlay(onPlay.Invoke);
+				}
+			}
+			else
+			{
+				onPlay = null;
+			}
+			if (hasOnUpdate)
+			{
+				if (onUpdate != null)
+				{
+					t.OnUpdate(onUpdate.Invoke);
+				}
+			}
+			else
+			{
+				onUpdate = null;
+			}
+			if (hasOnStepComplete)
+			{
+				if (onStepComplete != null)
+				{
+					t.OnStepComplete(onStepComplete.Invoke);
+				}
+			}
+			else
+			{
+				onStepComplete = null;
+			}
+			if (hasOnComplete)
+			{
+				if (onComplete != null)
+				{
+					t.OnComplete(onComplete.Invoke);
+				}
+			}
+			else
+			{
+				onComplete = null;
+			}
+			if (hasOnRewind)
+			{
+				if (onRewind != null)
+				{
+					t.OnRewind(onRewind.Invoke);
+				}
+			}
+			else
+			{
+				onRewind = null;
+			}
+			if (autoPlay)
+			{
+				t.Play();
+			}
+			else
+			{
+				t.Pause();
+			}
+			tween = t;
+			if (hasOnTweenCreated && onTweenCreated != null)
+			{
+				onTweenCreated.Invoke();
+			}
+		}
+		private void Reset()
+		{
+			path = new global::DG.Tweening.Plugins.Core.PathCore.Path(pathType, wps.ToArray(), 10, new global::UnityEngine.Color?(pathColor));
+			Dispatch_OnReset(this);
+		}
+		private void OnDestroy()
+		{
+			if (tween != null && tween.active)
+			{
+				tween.Kill(false);
+			}
+			tween = null;
+		}
+		public override void DOPlay() { tween.Play(); }
+		public override void DOPlayBackwards() { tween.PlayBackwards(); }
+		public override void DOPlayForward() { tween.PlayForward(); }
+		public override void DOPause() { tween.Pause(); }
+		public override void DOTogglePause() { tween.TogglePause(); }
+		public override void DORewind() { tween.Rewind(true); }
+		public override void DORestart() { DORestart(false); }
+		public override void DORestart(bool fromHere)
+		{
+			if (tween == null)
+			{
+				if (global::DG.Tweening.Core.Debugger.logPriority > 1)
+				{
+					global::DG.Tweening.Core.Debugger.LogNullTween(tween);
+				}
+				return;
+			}
+			if (fromHere && relative && !isLocal)
+			{
+				ReEvaluateRelativeTween();
+			}
+			tween.Restart(true, -1f);
+		}
+		public override void DOComplete() { tween.Complete(); }
+		public override void DOKill() { tween.Kill(false); }
+		public global::DG.Tweening.Tween GetTween()
+		{
+			if (tween == null || !tween.active)
+			{
+				if (global::DG.Tweening.Core.Debugger.logPriority > 1)
+				{
+					if (tween == null)
+					{
+						global::DG.Tweening.Core.Debugger.LogNullTween(tween);
+					}
+					else
+					{
+						global::DG.Tweening.Core.Debugger.LogInvalidTween(tween);
+					}
+				}
+				return null;
+			}
+			return tween;
+		}
+		public global::UnityEngine.Vector3[] GetDrawPoints()
+		{
+			// TO CHECK: Path.wps / Path.nonLinearDrawWps are DOTween internals, reached by reflection (see Awake)
+			const global::System.Reflection.BindingFlags IF = global::System.Reflection.BindingFlags.Instance | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic;
+			global::System.Type pathT = typeof(global::DG.Tweening.Plugins.Core.PathCore.Path);
+			global::UnityEngine.Vector3[] pathWps = (global::UnityEngine.Vector3[])pathT.GetField("wps", IF).GetValue(path);
+			global::UnityEngine.Vector3[] drawWps = pathWps == null ? null : (global::UnityEngine.Vector3[])pathT.GetField("nonLinearDrawWps", IF).GetValue(path);
+			if (pathWps == null || drawWps == null)
+			{
+				global::DG.Tweening.Core.Debugger.LogWarning("Draw points not ready yet. Returning NULL", null);
+				return null;
+			}
+			if (pathType == PathType.Linear)
+			{
+				return pathWps;
+			}
+			return drawWps;
+		}
+		internal global::UnityEngine.Vector3[] GetFullWps()
+		{
+			int count = wps.Count;
+			int len = count + 1;
+			if (isClosedPath)
+			{
+				len++;
+			}
+			global::UnityEngine.Vector3[] result = new global::UnityEngine.Vector3[len];
+			result[0] = transform.position;
+			for (int i = 0; i < count; i++)
+			{
+				result[i + 1] = wps[i];
+			}
+			if (isClosedPath)
+			{
+				result[len - 1] = result[0];
+			}
+			return result;
+		}
+		private void ReEvaluateRelativeTween()
+		{
+			global::UnityEngine.Vector3 pos = transform.position;
+			if (pos == lastSrcPosition)
+			{
+				return;
+			}
+			global::UnityEngine.Vector3 diff = pos - lastSrcPosition;
+			// TO CHECK: Path.wps / Path.controlPoints are DOTween internals, reached by reflection (see Awake)
+			const global::System.Reflection.BindingFlags IF = global::System.Reflection.BindingFlags.Instance | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic;
+			global::System.Type pathT = typeof(global::DG.Tweening.Plugins.Core.PathCore.Path);
+			global::UnityEngine.Vector3[] pathWps = (global::UnityEngine.Vector3[])pathT.GetField("wps", IF).GetValue(path);
+			int len = pathWps.Length;
+			for (int i = 0; i < len; i++)
+			{
+				pathWps[i] = pathWps[i] + diff;
+			}
+			global::DG.Tweening.Plugins.Core.PathCore.ControlPoint[] pathCps = (global::DG.Tweening.Plugins.Core.PathCore.ControlPoint[])pathT.GetField("controlPoints", IF).GetValue(path);
+			len = pathCps.Length;
+			for (int i = 0; i < len; i++)
+			{
+				global::DG.Tweening.Plugins.Core.PathCore.ControlPoint cp = pathCps[i];
+				cp.a += diff;
+				cp.b += diff;
+				pathCps[i] = cp;
+			}
+			lastSrcPosition = pos;
+		}
+		public DOTweenPath() { }
 	}
 }

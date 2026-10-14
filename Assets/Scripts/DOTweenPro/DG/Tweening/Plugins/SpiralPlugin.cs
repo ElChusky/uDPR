@@ -3,17 +3,73 @@ namespace DG.Tweening.Plugins
 {
 	public class SpiralPlugin : global::DG.Tweening.Plugins.Core.ABSTweenPlugin<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions>
 	{
-		public static readonly global::UnityEngine.Vector3 DefaultDirection;
+		public static readonly global::UnityEngine.Vector3 DefaultDirection = global::UnityEngine.Vector3.forward;
 		public override void Reset(global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> t) { }
 		public override void SetFrom(global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> t, bool isRelative) { }
 		public override void SetFrom(global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> t, global::UnityEngine.Vector3 fromValue, bool setImmediately) { }
-		public static global::DG.Tweening.Plugins.Core.ABSTweenPlugin<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> Get() { /*@B DOTweenPro:0x6000020*/ throw null; }
-		public override global::UnityEngine.Vector3 ConvertToStartValue(global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> t, global::UnityEngine.Vector3 value) { /*@B DOTweenPro:0x6000021*/ throw null; }
+		public static global::DG.Tweening.Plugins.Core.ABSTweenPlugin<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> Get()
+		{
+			// TO CHECK: PluginsManager is a DOTween internal class; the shipped code calls
+			// PluginsManager.GetCustomPlugin<SpiralPlugin, Vector3, Vector3, SpiralOptions>() directly - reached by reflection here.
+			global::System.Type pluginsManager = typeof(global::DG.Tweening.DOTween).Assembly.GetType("DG.Tweening.Plugins.Core.PluginsManager");
+			global::System.Reflection.MethodInfo getCustomPlugin = pluginsManager.GetMethod("GetCustomPlugin", global::System.Reflection.BindingFlags.Static | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic).MakeGenericMethod(typeof(global::DG.Tweening.Plugins.SpiralPlugin), typeof(global::UnityEngine.Vector3), typeof(global::UnityEngine.Vector3), typeof(global::DG.Tweening.Plugins.SpiralOptions));
+			return (global::DG.Tweening.Plugins.Core.ABSTweenPlugin<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions>)getCustomPlugin.Invoke(null, null);
+		}
+		public override global::UnityEngine.Vector3 ConvertToStartValue(global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> t, global::UnityEngine.Vector3 value)
+		{
+			return value;
+		}
 		public override void SetRelativeEndValue(global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> t) { }
-		public override void SetChangeValue(global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> t) { /*@B DOTweenPro:0x6000023*/ throw null; }
-		public override float GetSpeedBasedDuration(global::DG.Tweening.Plugins.SpiralOptions options, float unitsXSecond, global::UnityEngine.Vector3 changeValue) { /*@B DOTweenPro:0x6000024*/ throw null; }
-		public override void EvaluateAndApply(global::DG.Tweening.Plugins.SpiralOptions options, global::DG.Tweening.Tween t, bool isRelative, global::DG.Tweening.Core.DOGetter<global::UnityEngine.Vector3> getter, global::DG.Tweening.Core.DOSetter<global::UnityEngine.Vector3> setter, float elapsed, global::UnityEngine.Vector3 startValue, global::UnityEngine.Vector3 changeValue, float duration, bool usingInversePosition, global::DG.Tweening.Core.Enums.UpdateNotice updateNotice) { /*@B DOTweenPro:0x6000025*/ throw null; }
-		public SpiralPlugin() { /*@B DOTweenPro:0x6000026*/ throw null; }
-		static SpiralPlugin() { /*@B DOTweenPro:0x6000027*/ throw null; }
+		public override void SetChangeValue(global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> t)
+		{
+			t.plugOptions.speed *= 10f / t.plugOptions.frequency;
+			t.plugOptions.axisQ = global::UnityEngine.Quaternion.LookRotation(t.endValue, global::UnityEngine.Vector3.up);
+		}
+		public override float GetSpeedBasedDuration(global::DG.Tweening.Plugins.SpiralOptions options, float unitsXSecond, global::UnityEngine.Vector3 changeValue)
+		{
+			return unitsXSecond;
+		}
+		public override void EvaluateAndApply(global::DG.Tweening.Plugins.SpiralOptions options, global::DG.Tweening.Tween t, bool isRelative, global::DG.Tweening.Core.DOGetter<global::UnityEngine.Vector3> getter, global::DG.Tweening.Core.DOSetter<global::UnityEngine.Vector3> setter, float elapsed, global::UnityEngine.Vector3 startValue, global::UnityEngine.Vector3 changeValue, float duration, bool usingInversePosition, global::DG.Tweening.Core.Enums.UpdateNotice updateNotice)
+		{
+			float posPerc = global::DG.Tweening.Core.Easing.EaseManager.Evaluate(t, elapsed, duration, t.easeOvershootOrAmplitude, t.easePeriod);
+			float easePerc = (options.mode == global::DG.Tweening.SpiralMode.ExpandThenContract && posPerc > 0.5f) ? 0.5f - (posPerc - 0.5f) : posPerc;
+			// TO CHECK: Tween.loopType / isComplete / completedLoops are DOTween internals; the shipped DOTweenPro assembly reads
+			// them directly, this tree (Assembly-CSharp) reaches them by reflection.
+			const global::System.Reflection.BindingFlags IF = global::System.Reflection.BindingFlags.Instance | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic;
+			global::System.Type tweenT = typeof(global::DG.Tweening.Tween);
+			if ((global::DG.Tweening.LoopType)tweenT.GetField("loopType", IF).GetValue(t) == global::DG.Tweening.LoopType.Incremental)
+			{
+				int completedLoops = (int)tweenT.GetField("completedLoops", IF).GetValue(t);
+				bool isComplete = (bool)tweenT.GetField("isComplete", IF).GetValue(t);
+				int loops = isComplete ? completedLoops - 1 : completedLoops;
+				if (options.mode == global::DG.Tweening.SpiralMode.ExpandThenContract)
+				{
+					int loopsFactor = isComplete ? completedLoops - 1 : completedLoops + 1;
+					float prevFrequency = options.frequency;
+					options.frequency /= loopsFactor;
+					options.depth *= loopsFactor;
+					options.speed = (10f / options.frequency) * (options.speed / (10f / prevFrequency));
+				}
+				else
+				{
+					posPerc += loops;
+					easePerc = posPerc;
+				}
+			}
+			float unitsXDuration = options.speed * duration;
+			options.unit = easePerc * unitsXDuration;
+			float angle = posPerc * unitsXDuration * options.frequency;
+			global::UnityEngine.Vector3 spiral = new global::UnityEngine.Vector3(options.unit * global::UnityEngine.Mathf.Cos(angle), options.unit * global::UnityEngine.Mathf.Sin(angle), posPerc * options.depth);
+			global::UnityEngine.Vector3 newPos = options.axisQ * spiral + startValue;
+			if (options.snapping)
+			{
+				newPos.x = (float)global::System.Math.Round(newPos.x);
+				newPos.y = (float)global::System.Math.Round(newPos.y);
+				newPos.z = (float)global::System.Math.Round(newPos.z);
+			}
+			setter(newPos);
+		}
+		public SpiralPlugin() { }
+		static SpiralPlugin() { }
 	}
 }
