@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public bool isDisp;
 		public global::Dpr.SequenceEditor.SEQ_DEF_BACKGROUND_TRG trg;
-		public DispEffectDispBackGroundAll(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AFC*/ throw null; }
+		public DispEffectDispBackGroundAll(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isDisp = Macro.ParseBool(macro.GetValue("isDisp"));
+			trg = (SEQ_DEF_BACKGROUND_TRG)Macro.ParseInt(macro.GetValue("trg"));
+		}
 	}
 }

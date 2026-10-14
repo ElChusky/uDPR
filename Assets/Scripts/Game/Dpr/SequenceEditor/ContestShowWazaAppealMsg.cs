@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(1020822298), "orange", "one_frame", "")]
 	public class ContestShowWazaAppealMsg : global::Dpr.SequenceEditor.Macro
 	{
-		public ContestShowWazaAppealMsg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B2B*/ throw null; }
+		public ContestShowWazaAppealMsg(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

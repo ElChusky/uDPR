@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ContestEmitBalloutFx : global::Dpr.SequenceEditor.Macro
 	{
 		public int index;
-		public ContestEmitBalloutFx(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B24*/ throw null; }
+		public ContestEmitBalloutFx(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			index = Macro.ParseInt(macro.GetValue("index"), 0);
+		}
 	}
 }

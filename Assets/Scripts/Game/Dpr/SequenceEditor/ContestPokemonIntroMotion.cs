@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public float height;
 		public global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT place;
-		public ContestPokemonIntroMotion(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B10*/ throw null; }
+		public ContestPokemonIntroMotion(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			height = Macro.ParseFloat(macro.GetValue("height"), 100f);
+			place = Macro.Parse_SEQ_DEF_DEFAULT_PLACEMENT(macro.GetValue("place"));
+		}
 	}
 }

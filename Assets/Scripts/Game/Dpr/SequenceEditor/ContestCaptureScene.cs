@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ContestCaptureScene : global::Dpr.SequenceEditor.Macro
 	{
 		public int capturePersent;
-		public ContestCaptureScene(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B31*/ throw null; }
+		public ContestCaptureScene(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			capturePersent = Macro.ParseInt(macro.GetValue("capturePersent"), 0);
+		}
 	}
 }

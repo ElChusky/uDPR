@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public float pokeLightIntensity;
 		public global::UnityEngine.Vector3 pokeReflectorColor;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public DispEffectSpEnvironmentPokemonColorSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AFF*/ throw null; }
+		public DispEffectSpEnvironmentPokemonColorSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isReset = Macro.ParseBool(macro.GetValue("isReset"), 0);
+			pokeLightColor = Macro.ParseVector3(macro.GetValue("pokeLightColor"), 1f, 1f, 1f);
+			pokeLightIntensity = Macro.ParseFloat(macro.GetValue("pokeLightIntensity"), 1.2f);
+			pokeReflectorColor = Macro.ParseVector3(macro.GetValue("pokeReflectorColor"), 1f, 1f, 1f);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

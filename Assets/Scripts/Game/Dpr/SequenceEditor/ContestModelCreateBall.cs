@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.BALL_ANIME animeType;
 		public global::Dpr.SequenceEditor.SEQ_DEF_DRAWTYPE drawType;
 		public bool subCamera;
-		public ContestModelCreateBall(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B1E*/ throw null; }
+		public ContestModelCreateBall(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			index = Macro.ParseInt(macro.GetValue("index"));
+			trgChara = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trgChara"));
+			animeType = Macro.Parse_BALL_ANIME(macro.GetValue("animeType"));
+			drawType = Macro.Parse_SEQ_DEF_DRAWTYPE(macro.GetValue("drawType"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

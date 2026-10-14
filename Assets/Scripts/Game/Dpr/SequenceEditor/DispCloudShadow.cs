@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class DispCloudShadow : global::Dpr.SequenceEditor.Macro
 	{
 		public bool isDisp;
-		public DispCloudShadow(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B00*/ throw null; }
+		public DispCloudShadow(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isDisp = Macro.ParseBool(macro.GetValue("isDisp"), 0);
+		}
 	}
 }

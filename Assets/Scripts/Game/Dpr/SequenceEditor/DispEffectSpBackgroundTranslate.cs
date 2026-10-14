@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 rotation;
 		public global::UnityEngine.Vector3 scale;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public DispEffectSpBackgroundTranslate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AFA*/ throw null; }
+		public DispEffectSpBackgroundTranslate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isReset = Macro.ParseBool(macro.GetValue("isReset"), 0);
+			position = Macro.ParseVector3(macro.GetValue("position"), 0f, 0f, 0f);
+			rotation = Macro.ParseVector3(macro.GetValue("rotation"), 0f, 0f, 0f);
+			scale = Macro.ParseVector3(macro.GetValue("scale"), 1f, 1f, 1f);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public bool isDisp;
-		public DispUIBallBar(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AF8*/ throw null; }
+		public DispUIBallBar(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			isDisp = Macro.ParseBool(macro.GetValue("isDisp"), 0);
+		}
 	}
 }

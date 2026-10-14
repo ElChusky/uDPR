@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-115307470), "orange", "", "")]
 	public class ContestHideDanceUI : global::Dpr.SequenceEditor.Macro
 	{
-		public ContestHideDanceUI(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B32*/ throw null; }
+		public ContestHideDanceUI(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

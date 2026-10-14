@@ -5,8 +5,16 @@ namespace Dpr.SequenceEditor
 	public class CustomEasingPresets : global::UnityEngine.ScriptableObject
 	{
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.AnimationCurve[] _presets;
-		public bool TryGetValue(int index, float ft, out float value) { /*@B 0x6004BB0*/ throw null; }
-		public CustomEasingPresets() { /*@B 0x6004BB1*/ throw null; }
+		private global::UnityEngine.AnimationCurve[] _presets = new global::UnityEngine.AnimationCurve[1];
+		public bool TryGetValue(int index, float ft, out float value) {
+			value = 0f;
+			if (_presets.IsBounds(index))
+			{
+				value = _presets[index].Evaluate(ft);
+				return true;
+			}
+			return false;
+		}
+		public CustomEasingPresets() { }
 	}
 }

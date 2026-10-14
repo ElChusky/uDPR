@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public float pitch;
 		public float yaw;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public DispEffectSpEnvironmentLightDir(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AFD*/ throw null; }
+		public DispEffectSpEnvironmentLightDir(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isReset = Macro.ParseBool(macro.GetValue("isReset"), 0);
+			pitch = Macro.ParseFloat(macro.GetValue("pitch"));
+			yaw = Macro.ParseFloat(macro.GetValue("yaw"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

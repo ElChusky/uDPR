@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ContestModelChangeAnimationState : global::Dpr.SequenceEditor.Macro
 	{
 		public string state;
-		public ContestModelChangeAnimationState(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B20*/ throw null; }
+		public ContestModelChangeAnimationState(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			state = Macro.ParseString(macro.GetValue("state"));
+		}
 	}
 }

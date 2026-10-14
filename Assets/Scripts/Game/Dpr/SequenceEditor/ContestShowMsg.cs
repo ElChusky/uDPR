@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ContestShowMsg : global::Dpr.SequenceEditor.Macro
 	{
 		public string label;
-		public ContestShowMsg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B27*/ throw null; }
+		public ContestShowMsg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			label = Macro.ParseString(macro.GetValue("label"));
+		}
 	}
 }

@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ContestPlaySE : global::Dpr.SequenceEditor.Macro
 	{
 		public int seID;
-		public ContestPlaySE(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B35*/ throw null; }
+		public ContestPlaySE(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			seID = Macro.ParseInt(macro.GetValue("seID"), 0);
+		}
 	}
 }
