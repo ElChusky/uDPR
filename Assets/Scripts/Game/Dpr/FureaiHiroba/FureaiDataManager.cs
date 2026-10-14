@@ -7,15 +7,37 @@ namespace Dpr.FureaiHiroba
 {
 	public class FureaiDataManager : global::UnityEngine.MonoBehaviour
 	{
-		public static global::Dpr.FureaiHiroba.FureaiDataManager Instance;
+		public static global::Dpr.FureaiHiroba.FureaiDataManager Instance = null;
 		private const string Path_MasterData = "fureai/masterdata";
 		private const string Path_Prefabs = "fureai/prefabs";
 		public const string ASSET_BUNDLE_PATH_FX = "effect/prefab/battle";
 		private global::UnityEngine.GameObject FureaiManager;
-		public global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Object> PokeAssets;
-		private global::System.Collections.Generic.Dictionary<global::System.Type, global::UnityEngine.Object> MasterData;
-		public global::System.Collections.Generic.List<int> EnterblePokeList;
-		public static readonly global::UnityEngine.Vector2Int[] DontEnterPoints;
+		public global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Object> PokeAssets = new global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Object>();
+		private global::System.Collections.Generic.Dictionary<global::System.Type, global::UnityEngine.Object> MasterData = new global::System.Collections.Generic.Dictionary<global::System.Type, global::UnityEngine.Object>();
+		public global::System.Collections.Generic.List<int> EnterblePokeList = new global::System.Collections.Generic.List<int>();
+		public static readonly global::UnityEngine.Vector2Int[] DontEnterPoints = new global::UnityEngine.Vector2Int[]
+		{
+			new global::UnityEngine.Vector2Int(42, 11),
+			new global::UnityEngine.Vector2Int(41, 10),
+			new global::UnityEngine.Vector2Int(42, 10),
+			new global::UnityEngine.Vector2Int(43, 10),
+			new global::UnityEngine.Vector2Int(41, 9),
+			new global::UnityEngine.Vector2Int(42, 9),
+			new global::UnityEngine.Vector2Int(43, 9),
+			new global::UnityEngine.Vector2Int(50, 11),
+			new global::UnityEngine.Vector2Int(49, 10),
+			new global::UnityEngine.Vector2Int(50, 10),
+			new global::UnityEngine.Vector2Int(51, 10),
+			new global::UnityEngine.Vector2Int(49, 9),
+			new global::UnityEngine.Vector2Int(50, 9),
+			new global::UnityEngine.Vector2Int(51, 9),
+			new global::UnityEngine.Vector2Int(12, 49),
+			new global::UnityEngine.Vector2Int(11, 48),
+			new global::UnityEngine.Vector2Int(11, 49),
+			new global::UnityEngine.Vector2Int(51, 49),
+			new global::UnityEngine.Vector2Int(52, 49),
+			new global::UnityEngine.Vector2Int(52, 48),
+		};
 		public global::System.Collections.Generic.List<global::XLSXContent.FureaiPokeScaleTable.SheetTable> scaleTable { get; private set; }
 		public global::System.Collections.Generic.List<global::XLSXContent.FreeSanpoGridPosition.SheetSheet1> gridPositions { get; private set; }
 		public global::System.Collections.Generic.List<global::XLSXContent.PokeWalkingActionNakayoshi.SheetSheet1> nakayoshiHoseiData { get; private set; }
@@ -175,8 +197,8 @@ namespace Dpr.FureaiHiroba
             int index = data.Path.FindIndex(x => x.Contains("HeadCenter"));
             return data.Position[index];
         }
-		public FureaiDataManager() { /*@B 0x6003426*/ throw null; }
-		static FureaiDataManager() { /*@B 0x6003427*/ throw null; }
+		public FureaiDataManager() { }
+		static FureaiDataManager() { }
 		public enum EffectName
 		{
 			Sleep = 0,

@@ -6,16 +6,108 @@ namespace Dpr.Field.Walking
 		protected global::Dpr.Field.Walking.WalkData walkData;
 		public bool isIgnoreCollision;
 		public bool isCollidedAdd;
-		protected float bodySize { get { /*@B 0x6008AFB*/ throw null; } set { /*@B 0x6008AFC*/ throw null; } }
-		protected global::FieldObjectEntity entity { get { /*@B 0x6008AFD*/ throw null; } }
-		protected int CollidedCount { get { /*@B 0x6008AFE*/ throw null; } set { /*@B 0x6008AFF*/ throw null; } }
-		protected global::UnityEngine.Transform transform { get { /*@B 0x6008B00*/ throw null; } }
-		protected WalkingCollisionModelBase(global::Dpr.Field.Walking.WalkData walkData) { /*@B 0x6008AFA*/ throw null; }
-		public virtual void CollisionUpdate(float deltaTime) { /*@B 0x6008B01*/ throw null; }
+		protected float bodySize { get { return walkData.bodySize; } set { walkData.bodySize = value; } }
+		protected global::FieldObjectEntity entity { get { return walkData.entity; } }
+		protected int CollidedCount { get { return walkData.CollidedCount; } set { walkData.CollidedCount = value; } }
+		protected global::UnityEngine.Transform transform { get { return walkData.transform; } }
+		protected WalkingCollisionModelBase(global::Dpr.Field.Walking.WalkData walkData) {
+			this.walkData = walkData;
+			entity.IsIgnorePlayerCollision = true;
+		}
+		public virtual void CollisionUpdate(float deltaTime) {
+			if (isIgnoreCollision)
+				return;
+			global::FieldPlayerEntity player = global::EntityManager.activeFieldPlayer;
+			CheckCollision(player, bodySize + 0.5f, 1f, isCheckHeight: true);
+			foreach (global::FieldCharacterEntity character in global::EntityManager.fieldCharacters)
+			{
+				if (character == player)
+					continue;
+				CheckCollision(character, bodySize + 0.5f, 1f);
+			}
+			foreach (global::FieldPokemonEntity pokemon in global::EntityManager.fieldPokemons)
+			{
+				CheckCollision(pokemon, bodySize + 0.5f, 1f);
+			}
+			foreach (global::FieldObjectEntity obj in global::EntityManager.fieldObjects)
+			{
+				if (obj.GetType() == typeof(global::FieldObjectEntity))
+					CheckCollision(obj, bodySize + 0.5f, 1f);
+			}
+		}
 		public virtual void ExCollisionUpdate(float deltaTime, global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> characters) { }
-		public virtual bool ObjectCollisionUpdate(float deltaTime, bool isIgnoreJump = false) { /*@B 0x6008B03*/ throw null; }
-		public void UpdateCollisionCount() { /*@B 0x6008B04*/ throw null; }
-		public bool CheckCollision(global::FieldObjectEntity target, float radius, float speed, bool CheckWeight = false, bool isCheckOnly = false, int targetPriority = 999, bool isCheckHeight = false) { /*@B 0x6008B05*/ throw null; }
+		public virtual bool ObjectCollisionUpdate(float deltaTime, bool isIgnoreJump = false) {
+			bool jump = false;
+			bool isCollided = false;
+			float dotAngle = 0f;
+			float distance = global::SmartPoint.Mathematics.Vector3Ext.FastNormalize(ref entity.moveVector);
+			int mask;
+			if (isIgnoreJump)
+				mask = global::Layer.Obstacle;
+			else
+				mask = global::Layer.Obstacle | global::Layer.Jump;
+			entity.moveVector = global::CollisionUtility.CollideObstacle(transform.position, 0.4f, entity.moveVector, distance, out jump, out isCollided, out dotAngle, mask, 0.99f);
+			isCollidedAdd |= isCollided;
+			return isCollided;
+		}
+		public void UpdateCollisionCount() {
+			CollidedCount = isCollidedAdd ? CollidedCount + 1 : 0;
+		}
+		public bool CheckCollision(global::FieldObjectEntity target, float radius, float speed, bool CheckWeight = false, bool isCheckOnly = false, int targetPriority = 999, bool isCheckHeight = false) {
+			bool jump = false;
+			bool isCollided = false;
+			float dotAngle = 0f;
+			if (target == entity)
+				return false;
+			if (target == null)
+				return false;
+			if (!target.gameObject.activeInHierarchy)
+				return false;
+			global::FieldPlayerEntity player = global::EntityManager.activeFieldPlayer;
+			bool isPlayer = target == player;
+			if (isCheckHeight)
+			{
+				if (global::UnityEngine.Mathf.Abs(target.worldPosition.y - transform.position.y) > 1.99f)
+					return false;
+			}
+			global::UnityEngine.Vector3 dir = transform.position - target.worldPosition;
+			dir.y = 0f;
+			float length = global::SmartPoint.Mathematics.Vector3Ext.FastNormalize(ref dir);
+			if (!(length <= radius + 0.01f))
+				return false;
+			global::UnityEngine.Vector3 move = walkData.moveVec + dir * global::UnityEngine.Mathf.Clamp(radius - length, 0.02f, 100f);
+			float moveLength = global::SmartPoint.Mathematics.Vector3Ext.FastNormalize(ref move);
+			global::UnityEngine.Vector3 result = global::CollisionUtility.CollideObstacle(transform.position, 0.4f, move, moveLength * speed, out jump, out isCollided, out dotAngle, global::Layer.Obstacle | global::Layer.Jump, 0.99f);
+			if (!isCheckOnly)
+				walkData.moveVec = result;
+			if (result != global::UnityEngine.Vector3.zero)
+				isCollided = true;
+			global::UnityEngine.Vector2 myPos = new global::UnityEngine.Vector2(transform.position.x, transform.position.z);
+			global::UnityEngine.Vector2 targetPos = new global::UnityEngine.Vector2(target.transform.position.x, target.transform.position.z);
+			global::UnityEngine.Vector2 targetMove = new global::UnityEngine.Vector2(target.moveVector.x, target.moveVector.z);
+			float nowDistance = global::UnityEngine.Vector2.Distance(myPos, targetPos);
+			float nextDistance = global::UnityEngine.Vector2.Distance(myPos + targetMove, targetPos);
+			float pushDistance = nowDistance + target.moveVector.magnitude * 0.8f;
+			bool isPushed = pushDistance < nextDistance;
+			if (isPlayer)
+			{
+				walkData.priority += 10;
+				if (pushDistance < nextDistance)
+				{
+					if (walkData.moveVec.magnitude < 0.01f)
+						player.moveVector = global::UnityEngine.Vector3.zero;
+					else
+						player.moveVector = player.moveVector * global::Dpr.Field.Walking.WalkData.HeavyPushSpeed[walkData.WeightRank];
+				}
+				if (nowDistance < nextDistance && walkData.moveVec.magnitude < 0.01f)
+					isCollidedAdd = true;
+			}
+			else if (isCollided)
+			{
+				isCollidedAdd = true;
+			}
+			return isPushed;
+		}
 		public virtual void LateUpdate(float deltaTime) { }
 	}
 }

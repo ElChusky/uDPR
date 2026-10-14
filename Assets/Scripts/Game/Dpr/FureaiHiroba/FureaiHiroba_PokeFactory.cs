@@ -11,7 +11,12 @@ namespace Dpr.FureaiHiroba
 	{
 		private global::Dpr.FureaiHiroba.FureaiDataManager dataMng;
 		public global::System.Collections.Generic.List<int> NumberList;
-		public global::System.Collections.Generic.List<global::System.Collections.Generic.KeyValuePair<int, int>> PairPosition;
+		public global::System.Collections.Generic.List<global::System.Collections.Generic.KeyValuePair<int, int>> PairPosition = new global::System.Collections.Generic.List<global::System.Collections.Generic.KeyValuePair<int, int>>
+		{
+			new global::System.Collections.Generic.KeyValuePair<int, int>(10, 11),
+			new global::System.Collections.Generic.KeyValuePair<int, int>(12, 13),
+			new global::System.Collections.Generic.KeyValuePair<int, int>(14, 15),
+		};
 		[global::Dpr.SubContents.ButtonAttribute("CreatePositionNoList", "再配置", new object[] { 6 })]
 		public int Button01;
 		public global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> PokeList { get; private set; }
@@ -206,6 +211,6 @@ namespace Dpr.FureaiHiroba
 		private void OnDestroy() {
             EvDataManager.Instanse.OnTalkStartCallBack -= OnTalk;
         }
-		public FureaiHiroba_PokeFactory() { /*@B 0x60033B3*/ throw null; }
+		public FureaiHiroba_PokeFactory() { }
 	}
 }

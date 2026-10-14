@@ -4,8 +4,14 @@ namespace Dpr.FureaiHiroba
 	public class FureaiDebugView : global::UnityEngine.MonoBehaviour
 	{
 		private global::UnityEngine.UI.Text Text;
-		private void Awake() { /*@B 0x60033F9*/ throw null; }
-		public void Init(global::UnityEngine.Font font) { /*@B 0x60033FA*/ throw null; }
+		private void Awake() {
+			Text = gameObject.AddComponent<global::UnityEngine.UI.Text>();
+		}
+		public void Init(global::UnityEngine.Font font) {
+			Text.font = font;
+			Text.rectTransform.sizeDelta = new global::UnityEngine.Vector2(600f, 100f);
+			Text.fontSize = 18;
+		}
 		public void MyUpdate(global::Dpr.FureaiHiroba.FureaiPokeModel model) {
             Pml.ItemNo itemNo;
             SealID sealID;

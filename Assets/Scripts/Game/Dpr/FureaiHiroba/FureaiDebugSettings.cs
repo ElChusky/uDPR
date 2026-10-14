@@ -43,8 +43,20 @@ namespace Dpr.FureaiHiroba
 		public static string _TalkText;
 		[global::UnityEngine.SerializeField]
 		private string TalkText;
-		private void OnValidate() { /*@B 0x60033F6*/ throw null; }
+		private void OnValidate() {
+			_Time_ActionInterval = Time_ActionInterval;
+			_KyoroOnly = KyoroOnly;
+			_StopOnly = StopOnly;
+			_Nakayoshi = Nakayoshi;
+			_Seikaku = Seikaku;
+			_Enable = Enable;
+			_TalkText = TalkText;
+			_WaitKyoroOnly = WaitKyoroOnly;
+			_UroUroOnly = UroUroOnly;
+			_RunOnly = RunOnly;
+			_SleepOnly = SleepOnly;
+		}
 		private void AAA() { }
-		public FureaiDebugSettings() { /*@B 0x60033F8*/ throw null; }
+		public FureaiDebugSettings() { }
 	}
 }
