@@ -5,9 +5,28 @@ namespace Dpr.Message
 	public class DigitWordParam : global::Dpr.Message.AWordParamBase
 	{
 		private global::Dpr.Message.MessageEnumData.ForceGrmID forceGrmId;
-		public DigitWordParam(int count) { /*@B 0x6003DE8*/ throw null; }
-		public DigitWordParam(string countStr) { /*@B 0x6003DE9*/ throw null; }
-		public DigitWordParam(int count, global::Dpr.Message.MessageEnumData.ForceGrmID forceGrmId) { /*@B 0x6003DEA*/ throw null; }
-		public override void SetWordParam(global::Dpr.Message.MessageTagDataModel tagDataModel) { /*@B 0x6003DEB*/ throw null; }
+		public DigitWordParam(int count) {
+			this.count = count;
+			languageId = MessageManager.Instance.UserLanguageID;
+		}
+		public DigitWordParam(string countStr) {
+			strValue = countStr;
+			languageId = MessageManager.Instance.UserLanguageID;
+			if (int.TryParse(countStr, out int result))
+			{
+				count = result;
+				return;
+			}
+			MessageHelper.EmitLog(countStr + " is can't parse to int", global::UnityEngine.LogType.Error);
+		}
+		public DigitWordParam(int count, global::Dpr.Message.MessageEnumData.ForceGrmID forceGrmId) {
+			this.count = count;
+			this.forceGrmId = forceGrmId;
+			languageId = MessageManager.Instance.UserLanguageID;
+		}
+		public override void SetWordParam(global::Dpr.Message.MessageTagDataModel tagDataModel) {
+			tagDataModel.languageId = languageId;
+			tagDataModel.SetWordParam(strValue, count, gender, initialSound, articlePresence, countablity, strWidth, forceGrmId);
+		}
 	}
 }

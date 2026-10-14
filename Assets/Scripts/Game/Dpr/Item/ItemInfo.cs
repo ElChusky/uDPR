@@ -15,11 +15,11 @@ namespace Dpr.Item
 		public const int ShortcutDirectionDown = 1;
 		public const int ShortcutDirectionLeft = 2;
 		public const int ShortcutDirectionRight = 3;
-		private static readonly global::Pml.Item.ItemData.PrmID[] CheckAllowUsePrmIDs;
-		private static readonly int[] SeikakuMintItemNos;
-		private static readonly global::Pml.PokePara.Seikaku[] SeikakuMintSeikakuTypes;
-		private static readonly global::Pml.PokePara.Seikaku[] DisabledMajimeMintSeikakuTypes;
-		private static readonly global::Pml.ItemNo[] KanpouyakuItemNos;
+		private static readonly global::Pml.Item.ItemData.PrmID[] CheckAllowUsePrmIDs = new global::Pml.Item.ItemData.PrmID[] { PrmID.ABILITY_GUARD, PrmID.CRITICAL_UP, PrmID.ATTACK_UP, PrmID.DEFENCE_UP, PrmID.AGILITY_UP, PrmID.HIT_UP, PrmID.SP_ATTACK_UP, PrmID.SP_DEFENCE_UP, PrmID.LV_UP, PrmID.PP_RCV_POINT, PrmID.PP_UP, PrmID.EXP_LIMIT_FLAG, PrmID.HP_EXP, PrmID.POWER_EXP, PrmID.DEFENCE_EXP, PrmID.AGILITY_EXP, PrmID.SP_ATTACK_EXP, PrmID.SP_DEFENCE_EXP, PrmID.FRIEND1, PrmID.FRIEND2, PrmID.FRIEND3, PrmID.WORK, PrmID.POISON_RCV, PrmID.BURN_RCV, PrmID.ICE_RCV, PrmID.PARALYZE_RCV, PrmID.PANIC_RCV, PrmID.MEROMERO_RCV, PrmID.HP_RCV, PrmID.DEATH_RCV, PrmID.EVOLUTION };
+		private static readonly int[] SeikakuMintItemNos = new int[] { (int)ItemNo.SAMISIGARIMINTO, (int)ItemNo.IZIPPARIMINTO, (int)ItemNo.YANTYAMINTO, (int)ItemNo.YUKANMINTO, (int)ItemNo.ZUBUTOIMINTO, (int)ItemNo.WANPAKUMINTO, (int)ItemNo.NOUTENKIMINTO, (int)ItemNo.NONKIMINTO, (int)ItemNo.HIKAEMEMINTO, (int)ItemNo.OTTORIMINTO, (int)ItemNo.UKKARIMINTO, (int)ItemNo.REISEIMINTO, (int)ItemNo.ODAYAKAMINTO, (int)ItemNo.OTONASIIMINTO, (int)ItemNo.SINTYOUMINTO, (int)ItemNo.NAMAIKIMINTO, (int)ItemNo.OKUBYOUMINTO, (int)ItemNo.SEKKTIMINTO, (int)ItemNo.YOUKIMINTO, (int)ItemNo.MUJYAKIMINTO, (int)ItemNo.MAZIMEMINTO };
+		private static readonly global::Pml.PokePara.Seikaku[] SeikakuMintSeikakuTypes = new global::Pml.PokePara.Seikaku[] { global::Pml.PokePara.Seikaku.SAMISHIGARI, global::Pml.PokePara.Seikaku.IJIPPARI, global::Pml.PokePara.Seikaku.YANTYA, global::Pml.PokePara.Seikaku.YUUKAN, global::Pml.PokePara.Seikaku.ZUBUTOI, global::Pml.PokePara.Seikaku.WANPAKU, global::Pml.PokePara.Seikaku.NOUTENKI, global::Pml.PokePara.Seikaku.NONKI, global::Pml.PokePara.Seikaku.HIKAEME, global::Pml.PokePara.Seikaku.OTTORI, global::Pml.PokePara.Seikaku.UKKARIYA, global::Pml.PokePara.Seikaku.REISEI, global::Pml.PokePara.Seikaku.ODAYAKA, global::Pml.PokePara.Seikaku.OTONASHII, global::Pml.PokePara.Seikaku.SINTYOU, global::Pml.PokePara.Seikaku.NAMAIKI, global::Pml.PokePara.Seikaku.OKUBYOU, global::Pml.PokePara.Seikaku.SEKKATI, global::Pml.PokePara.Seikaku.YOUKI, global::Pml.PokePara.Seikaku.MUJYAKI, global::Pml.PokePara.Seikaku.MAJIME };
+		private static readonly global::Pml.PokePara.Seikaku[] DisabledMajimeMintSeikakuTypes = new global::Pml.PokePara.Seikaku[] { global::Pml.PokePara.Seikaku.GANBARIYA, global::Pml.PokePara.Seikaku.SUNAO, global::Pml.PokePara.Seikaku.TEREYA, global::Pml.PokePara.Seikaku.KIMAGURE, global::Pml.PokePara.Seikaku.MAJIME };
+		private static readonly global::Pml.ItemNo[] KanpouyakuItemNos = new global::Pml.ItemNo[] { ItemNo.TIKARANOKONA, ItemNo.TIKARANONEKKO, ItemNo.BANNOUGONA, ItemNo.HUKKATUSOU };
 		private ushort _workNo;
 		private bool _isDummy;
 		private int _dummyCount;
@@ -27,18 +27,142 @@ namespace Dpr.Item
 		private bool _dummyIsFavorite;
 		private ushort _dummySaveSortNumber;
 		private bool _dummyIsShowWazaName;
-		private int _id;
-		private int _type;
-		private global::Dpr.Item.ItemInfo.CategoryType _categoryType;
-		private int _price;
-		private int _groupId;
-		private int _sortId;
-		public int count { get { /*@B 0x6003E0A*/ throw null; } set { /*@B 0x6003E09*/ throw null; } }
-		public bool bIsNew { get { /*@B 0x6003E0C*/ throw null; } set { /*@B 0x6003E0B*/ throw null; } }
-		public bool bIsFavorite { get { /*@B 0x6003E0E*/ throw null; } set { /*@B 0x6003E0D*/ throw null; } }
-		public ushort SaveSortNumber { get { /*@B 0x6003E10*/ throw null; } set { /*@B 0x6003E0F*/ throw null; } }
-		public bool IsShowWazaName { get { /*@B 0x6003E12*/ throw null; } set { /*@B 0x6003E11*/ throw null; } }
-		public int Id { get { /*@B 0x6003E13*/ throw null; } }
+		private int _id = -1;
+		private int _type = -1;
+		private global::Dpr.Item.ItemInfo.CategoryType _categoryType = global::Dpr.Item.ItemInfo.CategoryType.Length;
+		private int _price = -1;
+		private int _groupId = -1;
+		private int _sortId = -1;
+		public int count {
+			get
+			{
+				if (_isDummy)
+				{
+					return _dummyCount;
+				}
+				return PlayerWork.GetItem(_workNo).Count;
+			}
+			set
+			{
+				if (_isDummy)
+				{
+					_dummyCount = value;
+					if (_dummySaveSortNumber != 0)
+					{
+						return;
+					}
+				}
+				else
+				{
+					SaveItem item = PlayerWork.GetItem(_workNo);
+					// shipped: the clamped value is discarded (@01ca5aa0, w20 = raw value is stored)
+					Mathf.Clamp(value, 0, ItemMaxCount);
+					item.Count = value;
+					PlayerWork.SetItem(_workNo, item);
+					if (item.SortNumber != 0)
+					{
+						return;
+					}
+				}
+				SaveSortNumber = (ushort)ItemWork.GetValidSaveSortNumberCount(Category);
+				ItemWork.UpdateListSort(this);
+			}
+		}
+		public bool bIsNew {
+			get
+			{
+				if (_isDummy)
+				{
+					return !_dummyIsVanishNew;
+				}
+				return !PlayerWork.GetItem(_workNo).VanishNew;
+			}
+			set
+			{
+				if (_isDummy)
+				{
+					_dummyIsVanishNew = !value;
+					return;
+				}
+				SaveItem item = PlayerWork.GetItem(_workNo);
+				item.VanishNew = !value;
+				PlayerWork.SetItem(_workNo, item);
+			}
+		}
+		public bool bIsFavorite {
+			get
+			{
+				if (_isDummy)
+				{
+					return _dummyIsFavorite;
+				}
+				return PlayerWork.GetItem(_workNo).FavoriteFlag;
+			}
+			set
+			{
+				if (_isDummy)
+				{
+					_dummyIsFavorite = value;
+					return;
+				}
+				SaveItem item = PlayerWork.GetItem(_workNo);
+				item.FavoriteFlag = value;
+				PlayerWork.SetItem(_workNo, item);
+			}
+		}
+		public ushort SaveSortNumber {
+			get
+			{
+				if (_isDummy)
+				{
+					return (ushort)(_dummySaveSortNumber - 1);
+				}
+				SaveItem item = PlayerWork.GetItem(_workNo);
+				if (item.SortNumber == 0)
+				{
+					return ushort.MaxValue;
+				}
+				return (ushort)(item.SortNumber - 1);
+			}
+			set
+			{
+				if (_isDummy)
+				{
+					_dummySaveSortNumber = (ushort)(value + 1);
+					return;
+				}
+				SaveItem item = PlayerWork.GetItem(_workNo);
+				item.SortNumber = (ushort)(value + 1);
+				PlayerWork.SetItem(_workNo, item);
+			}
+		}
+		public bool IsShowWazaName {
+			get
+			{
+				if (_isDummy)
+				{
+					return _dummyIsShowWazaName;
+				}
+				return PlayerWork.GetItem(_workNo).ShowWazaNameFlag;
+			}
+			set
+			{
+				if (_isDummy)
+				{
+					_dummyIsShowWazaName = value;
+					return;
+				}
+				SaveItem item = PlayerWork.GetItem(_workNo);
+				item.ShowWazaNameFlag = value;
+				PlayerWork.SetItem(_workNo, item);
+			}
+		}
+		public int Id { get {
+                if (_id == -1)
+                    _id = GetParam(PrmID.ITEMNUMBER);
+
+                return _id;
+            } }
 		public string Name { get => Dpr.Message.MessageManager.Instance.GetSimpleMessage("ss_itemname", Id); }
 		public string DescriptionText { get => Dpr.Message.MessageManager.Instance.GetSimpleMessage("ss_iteminfo", Id); }
 		public int Type { get {
@@ -47,7 +171,12 @@ namespace Dpr.Item
 
                 return _type;
             } }
-		public global::Dpr.Item.ItemInfo.CategoryType Category { get { /*@B 0x6003E17*/ throw null; } }
+		public global::Dpr.Item.ItemInfo.CategoryType Category { get {
+                if (_categoryType == CategoryType.Length)
+                    _categoryType = (CategoryType)GetParam(PrmID.F_POCKET);
+
+                return _categoryType;
+            } }
 		public int Price { get {
                 if (_price == -1)
                     _price = GetParam(PrmID.PRICE);
@@ -76,7 +205,7 @@ namespace Dpr.Item
 		public bool IsNoSpend { get => GetParam(PrmID.IMP) == 1 || GetParam(PrmID.USE_SPEND) == 1; }
 		public int ShortcutId { get => PlayerWork.GetItemShortcutId((ushort)Id); }
 		public bool IsRegisterShorcut { get => PlayerWork.GetItemShortcutId((ushort)Id) != -1; }
-		public global::Pml.BallId BallID { get { /*@B 0x6003E25*/ throw null; } }
+		public global::Pml.BallId BallID { get => ItemData.GetBallID(_workNo); }
 		public bool IsJewel { get => Pml.Item.ItemData.IsJewel(_workNo); }
 		public bool IsBattleSelect { get => GetParam(PrmID.B_SELECTABLE) == 1; }
 		public bool IsRecoveryHp { get => GetParam(PrmID.HP_RCV) == 1; }
@@ -96,24 +225,32 @@ namespace Dpr.Item
 		public bool IsRecoveryParalyze { get => GetParam(PrmID.PARALYZE_RCV) == 1; }
 		public bool IsRecoverySleep { get => GetParam(PrmID.SLEEP_RCV) == 1; }
 		public bool IsHpExp { get => GetParam(PrmID.HP_EXP) == 1; }
-		public int HpExpValue { get { /*@B 0x6003E39*/ throw null; } }
+		public int HpExpValue { get => GetParam(PrmID.HP_EXP_POINT); }
 		public bool IsAttackExp { get => GetParam(PrmID.POWER_EXP) == 1; }
-		public int AttackExpValue { get { /*@B 0x6003E3B*/ throw null; } }
+		public int AttackExpValue { get => GetParam(PrmID.POWER_EXP_POINT); }
 		public bool IsDeffenceExp { get => GetParam(PrmID.DEFENCE_EXP) == 1; }
-		public int DeffenceExpValue { get { /*@B 0x6003E3D*/ throw null; } }
+		public int DeffenceExpValue { get => GetParam(PrmID.DEFENCE_EXP_POINT); }
 		public bool IsSpAttackExp { get => GetParam(PrmID.SP_ATTACK_EXP) == 1; }
-		public int SpAttackExpValue { get { /*@B 0x6003E3F*/ throw null; } }
+		public int SpAttackExpValue { get => GetParam(PrmID.SP_ATTACK_EXP_POINT); }
 		public bool IsSpDeffenceExp { get => GetParam(PrmID.SP_DEFENCE_EXP) == 1; }
-		public int SpDeffenceExpValue { get { /*@B 0x6003E41*/ throw null; } }
+		public int SpDeffenceExpValue { get => GetParam(PrmID.SP_DEFENCE_EXP_POINT); }
 		public bool IsAgilityExp { get => GetParam(PrmID.AGILITY_EXP) == 1; }
-		public int AgilityExpValue { get { /*@B 0x6003E43*/ throw null; } }
+		public int AgilityExpValue { get => GetParam(PrmID.AGILITY_EXP_POINT); }
 		public int NameSortOrder { get; set; }
-		public ItemInfo(ushort item_no) { /*@B 0x6003E46*/ throw null; }
-		public ItemInfo(ushort item_no, bool is_dummy) { /*@B 0x6003E47*/ throw null; }
+		public ItemInfo(ushort item_no) {
+			_workNo = item_no;
+		}
+		public ItemInfo(ushort item_no, bool is_dummy) {
+			_workNo = item_no;
+			_isDummy = is_dummy;
+		}
 		public int GetParam(global::Pml.Item.ItemData.PrmID pid) {
             return ItemManager.Instance.GetParam(_workNo, pid, true);
         }
-		public int AddItem(int num = 1) { /*@B 0x6003E49*/ throw null; }
+		public int AddItem(int num = 1) {
+			count = Mathf.Clamp(count + num, 0, ItemMaxCount);
+			return count;
+		}
 		public int SubItem(int num = 1) {
             count = Mathf.Clamp(count - num, 0, ItemMaxCount);
             return count;
@@ -133,7 +270,19 @@ namespace Dpr.Item
 		public global::Pml.Item.ItemData.FieldFunctionType GetFieldFunctionType() {
             return (FieldFunctionType)GetParam(PrmID.F_FUNC);
         }
-		public static void LoadItemIcon(int itemId, global::System.Action<global::UnityEngine.Sprite> onLoadedCallback, bool isUnload = false, bool isLarge = false) { /*@B 0x6003E50*/ throw null; }
+		public static void LoadItemIcon(int itemId, global::System.Action<global::UnityEngine.Sprite> onLoadedCallback, bool isUnload = false, bool isLarge = false) {
+			string name = "item_" + Mathf.Max(0, ItemData.GetParam((ushort)itemId, PrmID.ICONID)).ToString("0000");
+			if ((ushort)itemId == (ushort)ItemNo.ZITENSYA)
+			{
+				name = name + "_" + PlayerWork.bicycleColor.ToString();
+			}
+			if (isLarge)
+			{
+				name = name + "_L";
+			}
+			Sprite sprite = Dpr.UI.UIManager.Instance.GetAtlasSprite(SpriteAtlasID.TEXTUREMASS, name);
+			onLoadedCallback?.Invoke(sprite);
+		}
 		public bool CheckAllowUse(bool isBattle) {
             if (!isBattle && GetParam(PrmID.F_FUNC) == 0)
                 return false;
@@ -149,15 +298,51 @@ namespace Dpr.Item
 
             return false;
         }
-		public bool GetSeikaku(out global::Pml.PokePara.Seikaku seikaku) { /*@B 0x6003E52*/ throw null; }
+		public bool GetSeikaku(out global::Pml.PokePara.Seikaku seikaku) {
+			int index = Array.IndexOf(SeikakuMintItemNos, Id);
+			if (index == -1)
+			{
+				seikaku = global::Pml.PokePara.Seikaku.NUM;
+				return false;
+			}
+			seikaku = SeikakuMintSeikakuTypes[index];
+			return true;
+		}
 		public bool IsUsableMajimeMint(global::Pml.PokePara.Seikaku seikaku) {
             return Array.IndexOf(DisabledMajimeMintSeikakuTypes, seikaku) == -1;
         }
-		public bool GetFriendshipValue(uint currentValue, out int addValue, out int maxUsableCount) { /*@B 0x6003E54*/ throw null; }
+		public bool GetFriendshipValue(uint currentValue, out int addValue, out int maxUsableCount) {
+			addValue = 0;
+			maxUsableCount = 0;
+			uint remain;
+			if (currentValue < 100)
+			{
+				if (GetParam(PrmID.FRIEND1) != 1)
+					return false;
+				addValue = GetParam(PrmID.FRIEND1_POINT);
+				remain = addValue >= 0 ? 100 - currentValue : currentValue;
+			}
+			else if (currentValue < 200)
+			{
+				if (GetParam(PrmID.FRIEND2) != 1)
+					return false;
+				addValue = GetParam(PrmID.FRIEND2_POINT);
+				remain = addValue >= 0 ? 200 - currentValue : currentValue - 100;
+			}
+			else
+			{
+				if (GetParam(PrmID.FRIEND3) != 1)
+					return false;
+				addValue = GetParam(PrmID.FRIEND3_POINT);
+				remain = addValue >= 0 ? 255 - currentValue : currentValue - 200;
+			}
+			maxUsableCount = Mathf.CeilToInt((float)remain / (float)Mathf.Abs(addValue));
+			return true;
+		}
 		public bool IsKanpouyaku() {
             return Array.IndexOf(KanpouyakuItemNos, (ItemNo)Id) != -1;
         }
-		static ItemInfo() { /*@B 0x6003E56*/ throw null; }
+		static ItemInfo() { }
 		public enum SortType
 		{
 			Type = 0,

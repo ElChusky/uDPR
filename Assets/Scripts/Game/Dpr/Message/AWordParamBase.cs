@@ -3,16 +3,19 @@ namespace Dpr.Message
 {
 	public abstract class AWordParamBase
 	{
-		protected string strValue;
+		protected string strValue = string.Empty;
 		protected global::Dpr.Message.MessageEnumData.MsgLangId languageId;
-		protected int count;
-		protected int gender;
-		protected int initialSound;
-		protected int countablity;
-		protected int articlePresence;
-		protected float strWidth;
+		protected int count = 1;
+		protected int gender = -1;
+		protected int initialSound = -1;
+		protected int countablity = -1;
+		protected int articlePresence = -1;
+		protected float strWidth = -1f;
 		protected bool bIsPokemonNickname;
-		public virtual void SetWordParam(global::Dpr.Message.MessageTagDataModel tagDataModel) { /*@B 0x6003DFA*/ throw null; }
-		protected AWordParamBase() { /*@B 0x6003DFB*/ throw null; }
+		public virtual void SetWordParam(global::Dpr.Message.MessageTagDataModel tagDataModel) {
+			tagDataModel.languageId = languageId;
+			tagDataModel.SetWordParam(strValue, count, gender, initialSound, articlePresence, countablity, strWidth, bIsPokemonNickname);
+		}
+		protected AWordParamBase() { }
 	}
 }

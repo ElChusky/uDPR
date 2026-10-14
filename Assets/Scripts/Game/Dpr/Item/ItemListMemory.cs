@@ -6,11 +6,30 @@ namespace Dpr.Item
 		public int CategoryIndex { get; private set; }
 		public int[] Indexes { get; private set; }
 		public float[] ScrollPositions { get; private set; }
-		public int CurrentIndex { get { /*@B 0x6003E5D*/ throw null; } }
-		public float CurrentScrollPosition { get { /*@B 0x6003E5E*/ throw null; } }
-		public ItemListMemory() { /*@B 0x6003E5F*/ throw null; }
-		public void SetCategory(int index) { /*@B 0x6003E60*/ throw null; }
-		public void SetIndexAndScrollPosition(int index, float pos) { /*@B 0x6003E61*/ throw null; }
-		public void Reset() { /*@B 0x6003E62*/ throw null; }
+		public int CurrentIndex { get { return Indexes[CategoryIndex]; } }
+		public float CurrentScrollPosition { get { return ScrollPositions[CategoryIndex]; } }
+		public ItemListMemory() {
+			CategoryIndex = 0;
+			Indexes = new int[9];
+			ScrollPositions = new float[Indexes.Length];
+		}
+		public void SetCategory(int index) {
+			CategoryIndex = index;
+		}
+		public void SetIndexAndScrollPosition(int index, float pos) {
+			Indexes[CategoryIndex] = index;
+			ScrollPositions[CategoryIndex] = pos;
+		}
+		public void Reset() {
+			CategoryIndex = 0;
+			for (int i = 0; i < Indexes.Length; i++)
+			{
+				Indexes[i] = 0;
+			}
+			for (int i = 0; i < ScrollPositions.Length; i++)
+			{
+				ScrollPositions[i] = 0f;
+			}
+		}
 	}
 }
