@@ -5,6 +5,6 @@ namespace Dpr.NetworkUtils
 	{
 		public override byte GetDataID { get { return 1; } }
 		public static byte DataID { get { return 1; } }
-		public NetJoinData() { /*@B 0x600394E*/ throw null; }
+		public NetJoinData() { }
 	}
 }

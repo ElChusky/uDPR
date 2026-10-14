@@ -9,14 +9,26 @@ namespace Dpr.NetworkUtils
 		public global::INL1.IlcaNetSessionCallbackLastEventLeave lastEventLeave;
 		public ushort gameMode;
 		public ushort playerNumMax;
-		public string password;
+		public string password = string.Empty;
 		public bool ngsLogin;
-		public bool bAutoSessionOpen;
-		public bool bAutoSessionClose;
+		public bool bAutoSessionOpen = true;
+		public bool bAutoSessionClose = true;
 		public uint[] attributeValueArray;
 		public uint[] attributeMinValueArray;
 		public uint[] attributeMaxValueArray;
-		public void Reset() { /*@B 0x6003894*/ throw null; }
-		public NetworkParam() { /*@B 0x6003895*/ throw null; }
+		public void Reset() {
+			lastEventLeave = global::INL1.IlcaNetSessionCallbackLastEventLeave.LastCall;
+			gameMode = 0;
+			networkType = global::INL1.IlcaNetSessionNetworkType.Lan;
+			matchingMode = global::INL1.IlcaNetSessionInitMode.Random;
+			password = string.Empty;
+			bAutoSessionOpen = true;
+			bAutoSessionClose = true;
+			attributeValueArray = null;
+			attributeMinValueArray = null;
+			attributeMaxValueArray = null;
+			ngsLogin = false;
+		}
+		public NetworkParam() { }
 	}
 }

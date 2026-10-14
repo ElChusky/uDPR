@@ -6,6 +6,10 @@ namespace Dpr.NetworkUtils
 		public global::System.Collections.Generic.List<bool> illegalList;
 		public global::Dpr.NetworkUtils.ValidateResultID validateResult;
 		public bool bIsSuccess;
-		public void Reset() { /*@B 0x6003898*/ throw null; }
+		public void Reset() {
+			bIsSuccess = false;
+			validateResult = global::Dpr.NetworkUtils.ValidateResultID.ProcessError;
+			illegalList.Clear();
+		}
 	}
 }

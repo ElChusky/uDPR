@@ -6,6 +6,6 @@ namespace Dpr.NetworkUtils
 		public override byte GetDataID { get { return 84; } }
 		public static byte DataID { get { return 84; } }
 		public static byte NoticeID { get { return 255; } }
-		public NetSecretBaseUpdate() { /*@B 0x60039E5*/ throw null; }
+		public NetSecretBaseUpdate() { }
 	}
 }

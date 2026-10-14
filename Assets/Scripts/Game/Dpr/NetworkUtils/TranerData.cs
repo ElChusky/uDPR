@@ -9,6 +9,6 @@ namespace Dpr.NetworkUtils
 		public byte langId;
 		public byte tranerRank;
 		public global::Dpr.NetworkUtils.TranerCardData cardData;
-		public bool IsNull { get { /*@B 0x6003966*/ throw null; } }
+		public bool IsNull { get { return cardData.tranerId == 0; } }
 	}
 }
