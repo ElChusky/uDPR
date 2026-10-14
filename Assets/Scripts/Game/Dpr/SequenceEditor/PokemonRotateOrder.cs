@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trgPoke;
 		public global::Dpr.SequenceEditor.SEQ_DEF_ROTATE_ORDER rotOrder;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public PokemonRotateOrder(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600494D*/ throw null; }
+		public PokemonRotateOrder(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trgPoke = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trgPoke"));
+			rotOrder = Macro.Parse_SEQ_DEF_ROTATE_ORDER(macro.GetValue("rotOrder"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

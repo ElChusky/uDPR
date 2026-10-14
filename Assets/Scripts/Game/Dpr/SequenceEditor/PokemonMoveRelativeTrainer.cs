@@ -11,6 +11,14 @@ namespace Dpr.SequenceEditor
 		public bool isRot;
 		public bool forceUpdate;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public PokemonMoveRelativeTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004945*/ throw null; }
+		public PokemonMoveRelativeTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			moveTrg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("moveTrg"));
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 0);
+			forceUpdate = Macro.ParseBool(macro.GetValue("forceUpdate"), 0);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

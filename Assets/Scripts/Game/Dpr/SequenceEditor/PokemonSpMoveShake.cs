@@ -11,6 +11,14 @@ namespace Dpr.SequenceEditor
 		public float edec;
 		public global::Dpr.SequenceEditor.SEQ_DEF_AXIS axis;
 		public bool isFlip;
-		public PokemonSpMoveShake(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004961*/ throw null; }
+		public PokemonSpMoveShake(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			srate = Macro.ParseFloat(macro.GetValue("srate"));
+			erate = Macro.ParseFloat(macro.GetValue("erate"));
+			sdec = Macro.ParseFloat(macro.GetValue("sdec"));
+			edec = Macro.ParseFloat(macro.GetValue("edec"));
+			axis = Macro.Parse_SEQ_DEF_AXIS(macro.GetValue("axis"));
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), 0);
+		}
 	}
 }

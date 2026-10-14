@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public float start_pow;
 		public global::UnityEngine.Vector3 end_col;
 		public float end_pow;
-		public PokemonShaderCol(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600495D*/ throw null; }
+		public PokemonShaderCol(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			start_col = Macro.ParseVector3(macro.GetValue("start_col"), 1f, 1f, 1f);
+			start_pow = Macro.ParseFloat(macro.GetValue("start_pow"));
+			end_col = Macro.ParseVector3(macro.GetValue("end_col"), 1f, 1f, 1f);
+			end_pow = Macro.ParseFloat(macro.GetValue("end_pow"));
+		}
 	}
 }

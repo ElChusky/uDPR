@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class PokemonRareEffect : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
-		public PokemonRareEffect(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004964*/ throw null; }
+		public PokemonRareEffect(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+		}
 	}
 }

@@ -10,6 +10,13 @@ namespace Dpr.SequenceEditor
 		public bool relative;
 		public bool isFlip;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public PokemonRotateNode(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600494E*/ throw null; }
+		public PokemonRotateNode(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			node = Macro.Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			scale = Macro.ParseVector3(macro.GetValue("scale"));
+			relative = Macro.ParseBool(macro.GetValue("relative"), 0);
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), 0);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

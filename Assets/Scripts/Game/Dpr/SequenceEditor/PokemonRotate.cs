@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public bool relative;
 		public bool isFlip;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public PokemonRotate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600494A*/ throw null; }
+		public PokemonRotate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			scale = Macro.ParseVector3(macro.GetValue("scale"));
+			relative = Macro.ParseBool(macro.GetValue("relative"), 0);
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), 0);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

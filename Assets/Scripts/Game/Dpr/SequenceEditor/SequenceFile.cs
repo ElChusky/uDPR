@@ -6,10 +6,10 @@ namespace Dpr.SequenceEditor
 	public sealed class SequenceFile : global::UnityEngine.ScriptableObject
 	{
 		[global::UnityEngine.SerializeField]
-		private global::System.Collections.Generic.List<global::Dpr.SequenceEditor.Group> _groupData;
+		private global::System.Collections.Generic.List<global::Dpr.SequenceEditor.Group> _groupData = new global::System.Collections.Generic.List<global::Dpr.SequenceEditor.Group>();
 		private global::System.Collections.Generic.List<global::Dpr.SequenceEditor.CommandParam> _cachedCommandParams;
 		public global::System.Collections.Generic.List<global::Dpr.SequenceEditor.Group> GroupData { get { return this._groupData; } set { this._groupData = value; } }
-		public int MaxFrame { get { /*@B 0x6004BB5*/ throw null; } }
+		public int MaxFrame { get { return global::System.Linq.Enumerable.Max(GetCommandParams(), x => x.EndFrame) + 1; } }
 		public bool HasChainAttack { get; private set; }
 		public static global::Dpr.SequenceEditor.Macro Cast(global::Dpr.SequenceEditor.Macro macro) {
 			switch (macro.CommandNo)
@@ -555,6 +555,6 @@ namespace Dpr.SequenceEditor
 
 			return commandParams;
 		}
-		public SequenceFile() { /*@B 0x6004BB9*/ throw null; }
+		public SequenceFile() { }
 	}
 }

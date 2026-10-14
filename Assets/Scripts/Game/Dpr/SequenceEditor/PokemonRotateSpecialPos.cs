@@ -11,6 +11,14 @@ namespace Dpr.SequenceEditor
 		public bool isRot;
 		public float rotOfs;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public PokemonRotateSpecialPos(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600494C*/ throw null; }
+		public PokemonRotateSpecialPos(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trgPoke = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trgPoke"));
+			pos = Macro.Parse_SEQ_DEF_SPPOS(macro.GetValue("pos"));
+			ofs = Macro.ParseVector3(macro.GetValue("ofs"));
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), 1);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 1);
+			rotOfs = Macro.ParseFloat(macro.GetValue("rotOfs"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

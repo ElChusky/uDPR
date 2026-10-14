@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.ROTOM_EFFECT type;
 		public int opt;
-		public RotomStartMessage(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A64*/ throw null; }
+		public RotomStartMessage(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			type = Macro.Parse_ROTOM_EFFECT(macro.GetValue("type"));
+			opt = Macro.ParseInt(macro.GetValue("opt"));
+		}
 	}
 }

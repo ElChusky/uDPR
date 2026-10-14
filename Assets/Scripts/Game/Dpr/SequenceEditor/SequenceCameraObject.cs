@@ -36,27 +36,33 @@ namespace Dpr.SequenceEditor
 		protected float m_far;
 		protected float m_fov;
 		protected float _twist;
-		protected float m_PseudoTargetDistance;
+		protected float m_PseudoTargetDistance = 10f;
 		protected bool m_isCheckGround;
 		protected bool m_isCheckFreezeOnGround;
 		protected bool m_isFreezeRotation;
 		protected bool m_isForceUpdateRotation;
 		protected bool m_isTransformFreeze;
-		protected float m_freezeHeight;
+		protected float m_freezeHeight = -9999f;
 		protected bool m_isUpdateParam;
 		protected bool m_isCalcTarget;
 		protected global::UnityEngine.Transform m_targetTransform;
-		public global::UnityEngine.Transform transform { get { /*@B 0x6004B78*/ throw null; } }
-		protected float targetDistance { get { /*@B 0x6004B79*/ throw null; } }
-		public global::UnityEngine.Camera Camera { get { /*@B 0x6004B7A*/ throw null; } }
-		public global::UnityEngine.Vector3 RawPosition { get { /*@B 0x6004B7B*/ throw null; } }
-		public global::UnityEngine.Vector3 RawRotation { get { /*@B 0x6004B7C*/ throw null; } }
-		public float Near { get { /*@B 0x6004B7D*/ throw null; } set { /*@B 0x6004B7E*/ throw null; } }
-		public float Far { get { /*@B 0x6004B7F*/ throw null; } set { /*@B 0x6004B80*/ throw null; } }
-		public float Fov { get { /*@B 0x6004B81*/ throw null; } set { /*@B 0x6004B82*/ throw null; } }
-		public float Twist { get { return this._twist; } set { /*@B 0x6004B84*/ throw null; } }
-		public bool IsEnabled { get { /*@B 0x6004B85*/ throw null; } set { /*@B 0x6004B86*/ throw null; } }
-		public global::Dpr.Battle.View.BattlePostProcessFilter PostProcess { get { /*@B 0x6004B87*/ throw null; } }
+		public global::UnityEngine.Transform transform { get { return this.GetComponentThis(ref _cachedTransform); } }
+		protected float targetDistance { get { return Vector3.Distance(m_position, m_target); } }
+		public global::UnityEngine.Camera Camera { get { return this.GetComponentThis(ref _camera); } }
+		public global::UnityEngine.Vector3 RawPosition { get { return transform.position; } }
+		public global::UnityEngine.Vector3 RawRotation { get { return transform.rotation.eulerAngles; } }
+		public float Near { get { return Camera.nearClipPlane; } set { m_near = value; m_isUpdateParam = true; } }
+		public float Far { get { return Camera.farClipPlane; } set { m_far = value; m_isUpdateParam = true; } }
+		public float Fov { get { return Camera.fieldOfView; } set { m_fov = value; m_isUpdateParam = true; } }
+		public float Twist { get { return this._twist; } set { _twist = value; m_rotation.z = value; m_isUpdateParam = true; } }
+		public bool IsEnabled { get { return Camera.enabled; } set { Camera.enabled = _charaEffectCamera.enabled = _depthCamera.enabled = _compositor.enabled = value; } }
+		public global::Dpr.Battle.View.BattlePostProcessFilter PostProcess {
+			get {
+				if (_battlePostProcess == null)
+					_battlePostProcess = GetComponentInChildren<BattlePostProcessFilter>();
+				return _battlePostProcess;
+			}
+		}
 		public global::UnityEngine.Camera Compositor { get { return this._compositor; } }
 		public global::Dpr.SequenceEditor.SequenceCameraSystem.CameraStateType CameraState { get; protected set; }
 		public global::Dpr.SequenceEditor.SequenceCameraObject.CameraMode CurrentCameraMode { get; protected set; }
@@ -312,7 +318,7 @@ namespace Dpr.SequenceEditor
 			retPos.y = Mathf.Max(height, retPos.y);
 			retTrg.y = Mathf.Max(height, retTrg.y);
 		}
-		public SequenceCameraObject() { /*@B 0x6004BAF*/ throw null; }
+		public SequenceCameraObject() { }
 		public enum CameraMode
 		{
 			Default = 0,
@@ -348,7 +354,18 @@ namespace Dpr.SequenceEditor
 			public global::Dpr.SequenceEditor.SequenceCameraObject.PostEffect<global::Dpr.Rendering.ChromaticAberration> ChromaticAberration { get; private set; }
 			public global::Dpr.SequenceEditor.SequenceCameraObject.PostEffect<global::Dpr.Rendering.FeedbackBlur> FeedBackBlur { get; private set; }
 			public global::Dpr.SequenceEditor.SequenceCameraObject.PostEffect<global::Dpr.Rendering.BtlvPfx> BtlvPfx { get; private set; }
-			public PostEffects(global::Dpr.Battle.View.BattlePostProcessFilter filter, global::System.Nullable<global::Dpr.Battle.View.PfxParam> initialParam = default) { /*@B 0x600A6A9*/ throw null; }
+			public PostEffects(global::Dpr.Battle.View.BattlePostProcessFilter filter, global::System.Nullable<global::Dpr.Battle.View.PfxParam> initialParam = default) {
+				_pfxParam = initialParam.HasValue ? initialParam.Value : global::Dpr.Battle.View.PfxParam.Factory();
+				PostProcessFilter = filter;
+				PostProcessFilter.Reset();
+				Bloom = new PostEffect<global::SmartPoint.Rendering.Bloom>(filter);
+				DepthOfField = new PostEffect<global::SmartPoint.Rendering.DepthOfField>(filter);
+				Fxaa = new PostEffect<global::SmartPoint.Rendering.Fxaa>(filter);
+				RadialBlur = new PostEffect<global::Dpr.Rendering.RadialBlur>(filter);
+				ChromaticAberration = new PostEffect<global::Dpr.Rendering.ChromaticAberration>(filter);
+				FeedBackBlur = new PostEffect<global::Dpr.Rendering.FeedbackBlur>(filter);
+				BtlvPfx = new PostEffect<global::Dpr.Rendering.BtlvPfx>(filter);
+			}
 			public void InitializeExternalEffects(global::Dpr.SequenceEditor.SequenceCameraObject bufferCamera, global::Dpr.Rendering.ColorFilter colorFilter) {
 				_sequenceCameraObject = bufferCamera;
 
@@ -357,8 +374,12 @@ namespace Dpr.SequenceEditor
 
 				ColorFilter = new PostEffect<ColorFilter>(colorFilter);
 			}
-			public global::Dpr.Battle.View.PfxParam GetPfxParam() { /*@B 0x600A6AB*/ throw null; }
-			public void SetPfxParam(global::Dpr.Battle.View.PfxParam param, bool isUpdatePfx = true) { /*@B 0x600A6AC*/ throw null; }
+			public global::Dpr.Battle.View.PfxParam GetPfxParam() { return _pfxParam; }
+			public void SetPfxParam(global::Dpr.Battle.View.PfxParam param, bool isUpdatePfx = true) {
+				_pfxParam = param;
+				if (isUpdatePfx)
+					UpdatePfx();
+			}
 			public void UpdatePfx() {
 				PostProcessFilter.UpdatePfxParam(_pfxParam);
 				UpdateBtlvPfx();

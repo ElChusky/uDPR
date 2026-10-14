@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(1239401859), "darkred", "one_frame", "")]
 	public class RotomDelete : global::Dpr.SequenceEditor.Macro
 	{
-		public RotomDelete(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A65*/ throw null; }
+		public RotomDelete(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

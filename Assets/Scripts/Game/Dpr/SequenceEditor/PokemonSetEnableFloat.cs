@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public bool enable;
 		public bool visible;
-		public PokemonSetEnableFloat(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004963*/ throw null; }
+		public PokemonSetEnableFloat(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			enable = Macro.ParseBool(macro.GetValue("enable"), 1);
+			visible = Macro.ParseBool(macro.GetValue("visible"), 0);
+		}
 	}
 }

@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class PokemonSetOriginScale : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
-		public PokemonSetOriginScale(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004962*/ throw null; }
+		public PokemonSetOriginScale(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+		}
 	}
 }

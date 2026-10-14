@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class PostEffectDepthOfFieldFlg : global::Dpr.SequenceEditor.Macro
 	{
 		public bool isEnable;
-		public PostEffectDepthOfFieldFlg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B02*/ throw null; }
+		public PostEffectDepthOfFieldFlg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), 1);
+		}
 	}
 }

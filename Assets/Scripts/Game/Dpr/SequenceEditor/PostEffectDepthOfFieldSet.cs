@@ -10,6 +10,13 @@ namespace Dpr.SequenceEditor
 		public float blurry;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool isReset;
-		public PostEffectDepthOfFieldSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B03*/ throw null; }
+		public PostEffectDepthOfFieldSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			farDepth = Macro.ParseFloat(macro.GetValue("farDepth"), 30f);
+			focalLength = Macro.ParseFloat(macro.GetValue("focalLength"), 5f);
+			distance = Macro.ParseFloat(macro.GetValue("distance"));
+			blurry = Macro.ParseFloat(macro.GetValue("blurry"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			isReset = Macro.ParseBool(macro.GetValue("isReset"), 0);
+		}
 	}
 }
