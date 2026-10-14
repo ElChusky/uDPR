@@ -3557,9 +3557,112 @@ namespace Dpr.EvScript
             _msgWindowCoroutine = Sequencer.Start(OpenMsgFile(msgparam));
             return true;
         }
-		private global::Dpr.Message.MessageMsgFile GetMSBTFile(string msbtfilename) { /*@B 0x6008C04*/ throw null; }
-		private global::System.Collections.IEnumerator OpenMsgFile(global::Dpr.EvScript.EvDataManager.MsgOpenParam msgparam) { /*@B 0x6008C05*/ throw null; }
-		private void CloseMsg() { /*@B 0x6008C06*/ throw null; }
+		private global::Dpr.Message.MessageMsgFile GetMSBTFile(string msbtfilename) {
+            string fileName = msbtfilename.ToLower();
+            var msgFile = MessageManager.Instance.GetMsgFile(fileName.ToLower());
+            int retry = 5001;
+            while (msgFile == null)
+            {
+                msgFile = MessageManager.Instance.GetMsgFile(fileName);
+                if (--retry == 0)
+                    return null;
+            }
+            return msgFile;
+        }
+		private global::System.Collections.IEnumerator OpenMsgFile(global::Dpr.EvScript.EvDataManager.MsgOpenParam msgparam) {
+            bool talking = true;
+            var msgFile = GetMSBTFile(msgparam.MsbtFile);
+            if (msgFile == null)
+                yield return null;
+
+            if (_msgWindow != null)
+            {
+                while (_msgWindow.MsgState == MsgWindowDataModel.MsgWindowState.PlayingClose)
+                    yield return null;
+            }
+
+            _msgWindowParam.useMsgFile = msgFile;
+            _msgWindowParam.labelName = string.Empty;
+            _msgWindowParam.labelIndex = -1;
+            if (string.IsNullOrEmpty(msgparam.Label))
+            {
+                _msgWindowParam.labelIndex = msgparam.LabelIndex;
+                SetWork((int)EvWork.WORK_INDEX.SCWK_MSGINDEX, msgparam.LabelIndex);
+            }
+            else
+            {
+                _msgWindowParam.labelName = msgparam.Label;
+            }
+            _msgWindowParam.dataValue = 0;
+            _msgWindowParam.inputEnabled = msgparam.Input;
+            _msgWindowParam.onFinishedShowAllMessage = () => { talking = false; };
+            _msgWindowParam.playTextFeedSe = msgparam.PlayTextFeedSe;
+
+            if (MsgWindowManager.IsOpen)
+            {
+                MsgWindowManager.ReplaceMsg(_msgWindowParam);
+            }
+            else
+            {
+                _msgWindow = null;
+                switch (msgparam.WindowType)
+                {
+                    case MsgWindowType.DEFAULT:
+                        _msgWindow = MsgWindowManager.OpenMsg(_msgWindowParam);
+                        break;
+                    case MsgWindowType.BOARD_TYPE_TOWN:
+                        _msgWindowParam.frameTypeIndex = (MsgWindowDataModel.WindowFrameType)0;
+                        _msgWindow = MsgWindowManager.OpenBoardMsg(_msgWindowParam, 0);
+                        break;
+                    case MsgWindowType.BOARD_TYPE_ROAD:
+                        _msgWindowParam.frameTypeIndex = (MsgWindowDataModel.WindowFrameType)1;
+                        _msgWindow = MsgWindowManager.OpenBoardMsg(_msgWindowParam, GetArgInt(_evArg[4]));
+                        break;
+                    case MsgWindowType.BOARD_TYPE_POST:
+                        _msgWindowParam.frameTypeIndex = (MsgWindowDataModel.WindowFrameType)2;
+                        _msgWindow = MsgWindowManager.OpenBoardMsg(_msgWindowParam, 0);
+                        break;
+                    case MsgWindowType.BOARD_TYPE_INFO:
+                        _msgWindowParam.frameTypeIndex = (MsgWindowDataModel.WindowFrameType)3;
+                        _msgWindow = MsgWindowManager.OpenBoardMsg(_msgWindowParam, 0);
+                        break;
+                    case MsgWindowType.ITEM:
+                        _msgWindow = MsgWindowManager.OpenItemGetMsg(_msgWindowParam);
+                        break;
+                    default:
+                        _msgWindow = MsgWindowManager.OpenMsg(_msgWindowParam);
+                        break;
+                }
+            }
+
+            if (_isAutoMsg)
+                _msgWindow.EnableAutoMode(_eMsgSpeed, _autoTime);
+            else
+                _msgWindow.DisableAutoMode();
+
+            while (talking)
+                yield return null;
+
+            talking = true;
+            if (!MsgWindowManager.Instance.MsgWindow.IsAuto && msgparam.EndType == MsgEndType.Input)
+            {
+                while (talking)
+                {
+                    if (FieldInput.PushAB())
+                        talking = false;
+                    yield return null;
+                }
+            }
+
+            _msgWindowCoroutine = null;
+        }
+		private void CloseMsg() {
+            if (_msgWindowCoroutine != null)
+                Sequencer.Stop(_msgWindowCoroutine);
+
+            _msgWindowCoroutine = null;
+            MsgWindowManager.CloseMsg();
+        }
 		private bool CommandEquals(string eq, int val1, int val2) {
             string comparison = ReEQType(eq);
             switch (comparison)
@@ -3586,7 +3689,48 @@ namespace Dpr.EvScript
                     return false;
             }
         }
-		private bool IfJump_Call(bool jump, string eq, string label) { /*@B 0x6008C08*/ throw null; }
+		private bool IfJump_Call(bool jump, string eq, string label) {
+            string type = ReEQType(eq);
+            if (type == "EQ")
+            {
+                if (_cmp_flag != CmpResult.EQUAL)
+                    return false;
+            }
+            else if (type == "NE")
+            {
+                if (_cmp_flag == CmpResult.EQUAL)
+                    return false;
+            }
+            else if (type == "GT")
+            {
+                if (_cmp_flag != CmpResult.PLUS)
+                    return false;
+            }
+            else if (type == "GE")
+            {
+                if (_cmp_flag != CmpResult.EQUAL && _cmp_flag != CmpResult.PLUS)
+                    return false;
+            }
+            else if (type == "LT")
+            {
+                if (_cmp_flag != CmpResult.MINUS)
+                    return false;
+            }
+            else if (type == "LE")
+            {
+                if (_cmp_flag != CmpResult.MINUS && _cmp_flag != CmpResult.EQUAL)
+                    return false;
+            }
+            else
+            {
+                return false;
+            }
+
+            if (jump)
+                return JumpLabel(label, null);
+
+            return CallLabel(label);
+        }
 		private string ReEQType(string eq) {
             switch (eq)
             {
@@ -3608,7 +3752,48 @@ namespace Dpr.EvScript
                     return eq;
             }
         }
-		private bool Cmd_TalkMsg(global::Dpr.EvScript.EvScriptData ev, bool index = false) { /*@B 0x6008C0A*/ throw null; }
+		private bool Cmd_TalkMsg(global::Dpr.EvScript.EvScriptData ev, bool index = false) {
+            if (_talkStart == TalkState.EndWait)
+            {
+                if (_msgWindowCoroutine != null)
+                    return false;
+
+                _talkStart = TalkState.Init;
+                return true;
+            }
+
+            if (_talkStart != TalkState.Init)
+                return false;
+
+            EvData.Command command = ev.GetScript.Commands[ev.CommandIndex];
+            if (index)
+            {
+                _msgOpenParam.MsbtFile = GetArgString(ev, command.Arg[1]);
+                _msgOpenParam.Label = "";
+                _msgOpenParam.LabelIndex = GetArgInt(command.Arg[2]);
+                if (command.Arg.Count > 3)
+                    _msgOpenParam.PlayTextFeedSe = GetArgInt(command.Arg[3]) == 1;
+                else
+                    _msgOpenParam.PlayTextFeedSe = false;
+            }
+            else
+            {
+                string[] names = GetArgString(ev, command.Arg[1]).Split(new char[] { '%' });
+                _msgOpenParam.MsbtFile = names[0];
+                _msgOpenParam.Label = names[1];
+                if (command.Arg.Count > 2)
+                    _msgOpenParam.PlayTextFeedSe = GetArgInt(command.Arg[2]) == 1;
+                else
+                    _msgOpenParam.PlayTextFeedSe = false;
+            }
+
+            _msgOpenParam.WindowType = MsgWindowType.DEFAULT;
+            _msgOpenParam.Input = true;
+            _msgOpenParam.EndType = MsgEndType.Input;
+            OpenTalk(_msgOpenParam);
+            _talkStart = TalkState.EndWait;
+            return false;
+        }
 		private bool Cmd_ExplanationMsg(string msgfile, string label) {
             var msgFile = GetMSBTFile(msgfile);
             if (msgFile != null)
@@ -3630,8 +3815,37 @@ namespace Dpr.EvScript
 
             return false;
         }
-		private bool Cmd_TalkMsg(string msbt, string label) { /*@B 0x6008C0C*/ throw null; }
-		private void Cmd_TalkWindOpen() { /*@B 0x6008C0D*/ throw null; }
+		private bool Cmd_TalkMsg(string msbt, string label) {
+            if (_talkStart == TalkState.EndWait)
+            {
+                if (_msgWindowCoroutine == null)
+                {
+                    _talkStart = TalkState.Init;
+                    return true;
+                }
+            }
+            else if (_talkStart == TalkState.Init)
+            {
+                _msgOpenParam.MsbtFile = msbt;
+                _msgOpenParam.Label = label;
+                _msgOpenParam.WindowType = MsgWindowType.DEFAULT;
+                _msgOpenParam.EndType = MsgEndType.Input;
+                _msgOpenParam.Input = true;
+                _msgOpenParam.PlayTextFeedSe = false;
+                OpenTalk(_msgOpenParam);
+                _talkStart = TalkState.EndWait;
+                return false;
+            }
+
+            return false;
+        }
+		private void Cmd_TalkWindOpen() {
+            if (_talkStart == TalkState.Init && !string.IsNullOrEmpty(_talkOpenMsbt) && !string.IsNullOrEmpty(_talkOpenLabel))
+            {
+                FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_WIN_OPEN_FLAG, 1);
+                _talkStart = TalkState.Init;
+            }
+        }
 		private void Cmd_TalkWindClose() {
             if (_msgWindowCoroutine != null)
                 return;
@@ -3677,17 +3891,141 @@ namespace Dpr.EvScript
 		private bool CheckTrainer2vs2Type(int tr_id) {
             return GetTrainer(tr_id).FightType != 0;
         }
-		private bool EvCmdTrainerMessageSet(int wk1, int wk2) { /*@B 0x6008C12*/ throw null; }
-		private void EvCmdBoardMake(global::Dpr.EvScript.EvScriptData ev) { /*@B 0x6008C13*/ throw null; }
-		private bool EvCmdBoardReqDpr(global::Dpr.EvScript.EvScriptData ev) { /*@B 0x6008C14*/ throw null; }
-		private bool EvCmdBoardReqDpr() { /*@B 0x6008C15*/ throw null; }
+		private bool EvCmdTrainerMessageSet(int wk1, int wk2) {
+            if (_talkStart == TalkState.Init)
+            {
+                _talkStart = TalkState.EndWait;
+                int tr_id = FlagWork.GetWork((EvWork.WORK_INDEX)wk1);
+                int kind = FlagWork.GetWork((EvWork.WORK_INDEX)wk2);
+                _msgOpenParam.MsbtFile = "DP_trainer_msg";
+                _msgOpenParam.Label = GetTrainerMsg(tr_id, kind);
+                _msgOpenParam.WindowType = MsgWindowType.DEFAULT;
+                _msgOpenParam.Input = true;
+                _msgOpenParam.EndType = MsgEndType.Input;
+                _msgOpenParam.PlayTextFeedSe = false;
+                OpenTalk(_msgOpenParam);
+            }
+
+            if (_talkStart == TalkState.EndWait && _msgWindowCoroutine == null)
+            {
+                _talkStart = TalkState.Init;
+                return true;
+            }
+
+            return false;
+        }
+		private void EvCmdBoardMake(global::Dpr.EvScript.EvScriptData ev) {
+            EvData.Command command = ev.GetScript.Commands[ev.CommandIndex];
+            string[] names = GetArgString(ev, command.Arg[1]).Split(new char[] { '%' });
+            string type = GetArgString(ev, command.Arg[2]);
+            MsgWindowType windowType;
+            if (type == MsgWindowType.DEFAULT.ToString())
+                windowType = MsgWindowType.DEFAULT;
+            else if (type == MsgWindowType.NAME_PLATE.ToString())
+                windowType = MsgWindowType.NAME_PLATE;
+            else if (type == MsgWindowType.BOARD_TYPE_TOWN.ToString())
+                windowType = MsgWindowType.BOARD_TYPE_TOWN;
+            else if (type == MsgWindowType.BOARD_TYPE_ROAD.ToString())
+                windowType = MsgWindowType.BOARD_TYPE_ROAD;
+            else if (type == MsgWindowType.BOARD_TYPE_POST.ToString())
+                windowType = MsgWindowType.BOARD_TYPE_POST;
+            else if (type == MsgWindowType.BOARD_TYPE_INFO.ToString())
+                windowType = MsgWindowType.BOARD_TYPE_INFO;
+            else if (type == MsgWindowType.ITEM.ToString())
+                windowType = MsgWindowType.ITEM;
+            else
+                windowType = MsgWindowType.BOARD_TYPE_TOWN;
+
+            _msgOpenParam.MsbtFile = names[0];
+            _msgOpenParam.Label = names[1];
+            _msgOpenParam.WindowType = windowType;
+            _msgOpenParam.Input = true;
+            _msgOpenParam.PlayTextFeedSe = false;
+            if (command.Arg.Count > 3)
+                _msgOpenParam.PlayTextFeedSe = GetArgInt(command.Arg[3]) == 1;
+            _boardState = BOARD.BOARD_REQ_ADD;
+        }
+		private bool EvCmdBoardReqDpr(global::Dpr.EvScript.EvScriptData ev) {
+            if (_talkStart == TalkState.Init)
+            {
+                EvData.Command command = ev.GetScript.Commands[ev.CommandIndex];
+                string type = GetArgString(ev, command.Arg[1]);
+                if (type == BOARD.BOARD_REQ_WAIT.ToString())
+                    _boardState = BOARD.BOARD_REQ_WAIT;
+                else if (type == BOARD.BOARD_REQ_ADD.ToString())
+                    _boardState = BOARD.BOARD_REQ_ADD;
+                else if (type == BOARD.BOARD_REQ_DOWN.ToString())
+                    _boardState = BOARD.BOARD_REQ_DOWN;
+                else if (type == BOARD.BOARD_REQ_UP.ToString())
+                    _boardState = BOARD.BOARD_REQ_UP;
+                else if (type == BOARD.BOARD_REQ_DEL.ToString())
+                    _boardState = BOARD.BOARD_REQ_DEL;
+            }
+
+            return EvCmdBoardReqDpr();
+        }
+		private bool EvCmdBoardReqDpr() {
+            switch (_talkStart)
+            {
+                case TalkState.Init:
+                    _talkStart = TalkState.EndWait;
+                    switch (_boardState)
+                    {
+                        case BOARD.BOARD_REQ_ADD:
+                        case BOARD.BOARD_REQ_UP:
+                            OpenTalk(_msgOpenParam);
+                            break;
+                        case BOARD.BOARD_REQ_DOWN:
+                        case BOARD.BOARD_REQ_DEL:
+                            CloseMsg();
+                            break;
+                    }
+                    return false;
+
+                case TalkState.EndWait:
+                    switch (_boardState)
+                    {
+                        case BOARD.BOARD_REQ_ADD:
+                        case BOARD.BOARD_REQ_UP:
+                            if (_msgWindow.MsgState == MsgWindowDataModel.MsgWindowState.FinishedOpen || _msgWindow.MsgState == MsgWindowDataModel.MsgWindowState.EnterKeywait)
+                                _boardState = BOARD.BOARD_REQ_WAIT;
+                            break;
+                        case BOARD.BOARD_REQ_DOWN:
+                        case BOARD.BOARD_REQ_DEL:
+                            if (_msgWindow.MsgState == MsgWindowDataModel.MsgWindowState.Inactive)
+                                _boardState = BOARD.BOARD_REQ_WAIT;
+                            break;
+                    }
+                    break;
+            }
+
+            if (_boardState != BOARD.BOARD_REQ_WAIT)
+                return false;
+
+            _talkStart = TalkState.Init;
+            return true;
+        }
 		private bool EvCmdBoardReqWait() {
             if (_msgWindow == null)
                 return true;
 
             return _boardState == BOARD.BOARD_REQ_WAIT;
         }
-		private bool EvCmdBoardEndWait(global::Dpr.EvScript.EvWork.WORK_INDEX work) { /*@B 0x6008C17*/ throw null; }
+		private bool EvCmdBoardEndWait(global::Dpr.EvScript.EvWork.WORK_INDEX work) {
+            if (_msgWindow == null)
+                return true;
+
+            if (_msgWindowCoroutine == null)
+            {
+                if (MsgWindowManager.Instance.MsgWindow.IsAuto || FieldInput.PushAB())
+                    FlagWork.SetWork(work, 1);
+
+                if (FieldInput.PushX())
+                    FlagWork.SetWork(work, 0);
+            }
+
+            return false;
+        }
 		private void EvCmdInfoBoardMake(global::Dpr.EvScript.EvScriptData ev) { /*@B 0x6008C18*/ throw null; }
 		private void Cmd_If_Jump(string type, string label) {
             IfJump_Call(true, type, label);
