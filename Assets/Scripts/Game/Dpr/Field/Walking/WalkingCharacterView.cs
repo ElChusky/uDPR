@@ -4,7 +4,7 @@ namespace Dpr.Field.Walking
 	public class WalkingCharacterView : global::UnityEngine.MonoBehaviour
 	{
 		public float PokeScale;
-		private float toRunSpeed;
+		private float toRunSpeed = 2.8f;
 		public int anim;
 		public global::UnityEngine.Transform EffTransform;
 		public bool isWaitMotionMove;
@@ -13,43 +13,341 @@ namespace Dpr.Field.Walking
 		public bool IsStopUpdate;
 		public bool isKwWait;
 		private float AnimDuration;
-		public float defaultDuration;
-		public static readonly int[] WaitAnimIDs;
-		public static readonly int[] WaittoWalkIDs;
-		public static readonly int[] WaittoRunIDs;
-		public static readonly int[] WalktoRunIDs;
-		public static readonly int[] WalktoWaitIDs;
-		public static readonly int[] RuntoWalkIDs;
-		public static readonly int[] RuntoWaitIDs;
-		private void Awake() { /*@B 0x6008B0E*/ throw null; }
-		public void ChangeUpdateWhenOffScreen(global::FieldPokemonEntity entity) { /*@B 0x6008B0F*/ throw null; }
-		private void OnDestroy() { /*@B 0x6008B10*/ throw null; }
+		public float defaultDuration = 0.2f;
+		public static readonly int[] WaitAnimIDs = new int[] { 24, 25, 32, 0 };
+		public static readonly int[] WaittoWalkIDs = new int[] { 26, 1 };
+		public static readonly int[] WaittoRunIDs = new int[] { 29, 2 };
+		public static readonly int[] WalktoRunIDs = new int[] { 31, 29, 2 };
+		public static readonly int[] WalktoWaitIDs = new int[] { 27, 24, 25, 32, 0 };
+		public static readonly int[] RuntoWalkIDs = new int[] { 30, 28, 1 };
+		public static readonly int[] RuntoWaitIDs = new int[] { 28, 24, 25, 32, 0 };
+		private void Awake() {
+			transform.GetComponent<global::UnityEngine.Animator>().cullingMode = global::UnityEngine.AnimatorCullingMode.AlwaysAnimate;
+		}
+		public void ChangeUpdateWhenOffScreen(global::FieldPokemonEntity entity) {
+			global::UnityEngine.SkinnedMeshRenderer[] mesh = transform.GetComponentsInChildren<global::UnityEngine.SkinnedMeshRenderer>();
+			for (int i = 0; i < mesh.Length; i++)
+			{
+				bool isCluster = false;
+				for (int j = 0; j < entity.rendererCluster.Length; j++)
+				{
+					isCluster |= global::System.Array.Exists(entity.rendererCluster[j].renderers, x => x == mesh[i]);
+				}
+				if (!isCluster)
+				{
+					mesh[i].updateWhenOffscreen = true;
+				}
+			}
+		}
+		private void OnDestroy() {
+			EffTransform = null;
+			animPlayer = null;
+		}
 		public void SetAnimPlayer(global::AnimationPlayer player) { this.animPlayer = player; }
 		public global::AnimationPlayer GetAnimPlayer() { return this.animPlayer; }
-		public void CreateEffectPosition(global::UnityEngine.Vector3 pos) { /*@B 0x6008B13*/ throw null; }
-		public void AutoSelectAnimation(global::Dpr.Field.Walking.WalkingCharacterModel model) { /*@B 0x6008B14*/ throw null; }
-		public bool CheckSleepState(global::Dpr.Field.Walking.WalkingCharacterModel model) { /*@B 0x6008B15*/ throw null; }
-		public void AnimPlay(int index, float duration = 0f, float startTime = 0f) { /*@B 0x6008B16*/ throw null; }
-		public global::Dpr.Field.Walking.CorSystem AnimPlayForce(int index, global::Dpr.Field.Walking.CorSystem corSys, global::Dpr.Field.Walking.WalkingCharacterModel model, float duration = 0f, float startTime = 0f) { /*@B 0x6008B17*/ throw null; }
-		private float GetWaitDuration(int NextAnimID) { /*@B 0x6008B18*/ throw null; }
-		private int GetWaitToWait(int hokanAnim, int nextAnim) { /*@B 0x6008B19*/ throw null; }
-		public int GetWaitAnim(int prevWait, int nextWait) { /*@B 0x6008B1A*/ throw null; }
-		public int GetNeutralWaitAnim() { /*@B 0x6008B1B*/ throw null; }
-		public bool isHokanAnimation(int AnimID) { /*@B 0x6008B1C*/ throw null; }
-		private bool isWaitAnim(int AnimID) { /*@B 0x6008B1D*/ throw null; }
-		private bool isRunAnim(int AnimID) { /*@B 0x6008B1E*/ throw null; }
-		private bool isWalkAnim(int AnimID) { /*@B 0x6008B1F*/ throw null; }
-		public bool isNeedWait() { /*@B 0x6008B20*/ throw null; }
-		public void CheckForceLoop(int animIndex) { /*@B 0x6008B21*/ throw null; }
-		public int GetAnimIndex(global::Dpr.Field.Walking.WalkingCharacterView.AnimType animType) { /*@B 0x6008B22*/ throw null; }
+		public void CreateEffectPosition(global::UnityEngine.Vector3 pos) {
+			global::UnityEngine.GameObject obj = new global::UnityEngine.GameObject("EffPosition");
+			obj.transform.SetParent(transform);
+			obj.transform.localPosition = pos;
+			EffTransform = obj.transform;
+		}
+		public void AutoSelectAnimation(global::Dpr.Field.Walking.WalkingCharacterModel model) {
+			float deltaTime = global::SmartPoint.AssetAssistant.Sequencer.elapsedTime == 0f ? 0.016666f : global::SmartPoint.AssetAssistant.Sequencer.elapsedTime;
+			float layerWeight = animPlayer.layerWeight;
+			if (model.isForceAnimation || IsStopUpdate || CheckSleepState(model) || !animPlayer.IsValidCurrentPlayable)
+			{
+				return;
+			}
+			float nowSpeed = model.walkData.nowSpeed;
+			if (isHokanAnimation(PrevAnimID) && !animPlayer.IsPlayingEnd)
+			{
+				return;
+			}
+			float walkSpeed = model.walkData.walkSpeed * model.walkData.baseSpeed;
+			toRunSpeed = walkSpeed * 0.8f + model.walkData.baseSpeed * model.walkData.runSpeed * 0.2f;
+			float speed = 1f / deltaTime * nowSpeed;
+			toRunSpeed = model.controller.isChousei ? toRunSpeed : 150f;
+			if (speed < walkSpeed * 0.5f)
+			{
+				model.walkData.moveVec = global::UnityEngine.Vector3.zero;
+				if (model.walkData.isNeedRotate)
+				{
+					AnimPlay(GetAnimIndex(global::Dpr.Field.Walking.WalkingCharacterView.AnimType.Walk), 0f, 0f);
+					model.walkData.isNeedRotate = false;
+					return;
+				}
+				AnimPlay(GetAnimIndex(global::Dpr.Field.Walking.WalkingCharacterView.AnimType.Wait), 0f, 0f);
+			}
+			else if (toRunSpeed < speed)
+			{
+				AnimPlay(GetAnimIndex(global::Dpr.Field.Walking.WalkingCharacterView.AnimType.Run), 0f, 0f);
+			}
+			else
+			{
+				AnimPlay(GetAnimIndex(global::Dpr.Field.Walking.WalkingCharacterView.AnimType.Walk), 0f, 0f);
+			}
+		}
+		public bool CheckSleepState(global::Dpr.Field.Walking.WalkingCharacterModel model) {
+			int prevSleepLevel = model.PrevSleepLevel;
+			int sleepLevel = model.SleepLevel;
+			model.PrevSleepLevel = sleepLevel;
+			if (sleepLevel < 1)
+			{
+				return false;
+			}
+			if (model.isCanSleepAnimation)
+			{
+				if (sleepLevel == 3)
+				{
+					AnimPlay(38, 0f, 0f);
+				}
+				else if (sleepLevel == 2)
+				{
+					AnimPlay(37, 0f, 0f);
+				}
+				else if (sleepLevel == 1)
+				{
+					AnimPlay(36, 0f, 0f);
+				}
+				return true;
+			}
+			if (sleepLevel == 3 || sleepLevel == 1)
+			{
+				AnimPlay(0, 0f, 0f);
+				if (sleepLevel != prevSleepLevel)
+				{
+					animPlayer.SetAdditiveLayerTime(0.5f);
+				}
+			}
+			else if (sleepLevel == 2)
+			{
+				AnimPlay(0, 0f, 0f);
+				if (sleepLevel != prevSleepLevel)
+				{
+					animPlayer.SetAdditiveLayerTime(0.8f);
+				}
+			}
+			return true;
+		}
+		public void AnimPlay(int index, float duration = 0f, float startTime = 0f) {
+			if (index == -1 || animPlayer == null || animPlayer.currentIndex == index)
+			{
+				return;
+			}
+			if (animPlayer.clips[index] == null)
+			{
+				return;
+			}
+			CheckForceLoop(index);
+			float fadeTime = global::UnityEngine.Mathf.Clamp(animPlayer.clips[index].length * 0.2f, 0.2f, 0.4f);
+			if (animPlayer != null)
+			{
+				animPlayer.Play(index, fadeTime, startTime);
+			}
+		}
+		public global::Dpr.Field.Walking.CorSystem AnimPlayForce(int index, global::Dpr.Field.Walking.CorSystem corSys, global::Dpr.Field.Walking.WalkingCharacterModel model, float duration = 0f, float startTime = 0f) {
+			if (index == -1)
+			{
+				index = 0;
+			}
+			global::Dpr.Field.Walking.CorSystem sub = corSys.AddSub("");
+			model.isForceAnimation = true;
+			sub.onFinished += () => model.isForceAnimation = false;
+			AnimPlay(index, duration, startTime);
+			return sub;
+		}
+		private float GetWaitDuration(int NextAnimID) {
+			if (NextAnimID == 27 || NextAnimID == 28 || NextAnimID == 29 || NextAnimID == 31)
+			{
+				return 0f;
+			}
+			if (NextAnimID == 0)
+			{
+				int current = animPlayer.currentIndex;
+				if (current == 27 || current == 28 || current == 29 || current == 31)
+				{
+					return 0f;
+				}
+			}
+			return defaultDuration;
+		}
+		private int GetWaitToWait(int hokanAnim, int nextAnim) {
+			return global::Dpr.SubContents.Utils.GetExistAnim(animPlayer, hokanAnim, nextAnim);
+		}
+		public int GetWaitAnim(int prevWait, int nextWait) {
+			if (prevWait == nextWait)
+			{
+				return prevWait;
+			}
+			if (prevWait == 24 || prevWait == 25)
+			{
+				if (nextWait != 0)
+				{
+					return GetWaitToWait(20, nextWait);
+				}
+				return GetWaitToWait(19, 0);
+			}
+			if (prevWait == 32)
+			{
+				if (nextWait != 0)
+				{
+					return GetWaitToWait(22, nextWait);
+				}
+				return GetWaitToWait(21, 0);
+			}
+			if (prevWait == 0)
+			{
+				if (nextWait == 24 || nextWait == 25)
+				{
+					return GetWaitToWait(17, nextWait);
+				}
+				return GetWaitToWait(18, nextWait);
+			}
+			return nextWait;
+		}
+		public int GetNeutralWaitAnim() {
+			int index = global::Dpr.SubContents.Utils.GetExistAnim(animPlayer, WaitAnimIDs);
+			if (index == 32)
+			{
+				index = isKwWait ? 32 : 0;
+			}
+			return index;
+		}
+		public bool isHokanAnimation(int AnimID) {
+			return AnimID == 17 || AnimID == 18 || AnimID == 19 || AnimID == 20 || AnimID == 21 || AnimID == 26 || AnimID == 27 || AnimID == 28 || AnimID == 29 || AnimID == 30 || AnimID == 31 || AnimID == 22;
+		}
+		private bool isWaitAnim(int AnimID) {
+			return AnimID == 0 || AnimID == 24 || AnimID == 25 || AnimID == 27 || AnimID == 28;
+		}
+		private bool isRunAnim(int AnimID) {
+			return AnimID == 2 || AnimID == 29 || AnimID == 31;
+		}
+		private bool isWalkAnim(int AnimID) {
+			return AnimID == 1 || AnimID == 26 || AnimID == 30;
+		}
+		public bool isNeedWait() {
+			return PrevAnimID == 28 || PrevAnimID == 29 || PrevAnimID == 31 || PrevAnimID == 30;
+		}
+		public void CheckForceLoop(int animIndex) {
+			animPlayer.forceLoop = (animIndex | 1) == 25;
+		}
+		public int GetAnimIndex(global::Dpr.Field.Walking.WalkingCharacterView.AnimType animType) {
+			bool isPair = global::FlagWork.GetSysFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.SYS_FLAG_PAIR);
+			if (!global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.FureaiHiroba.FureaiManager>.isInstantiated && isPair)
+			{
+				return (int)animType;
+			}
+			int index;
+			if (isWaitMotionMove)
+			{
+				index = global::Dpr.SubContents.Utils.GetExistAnim(animPlayer, WaitAnimIDs);
+			}
+			else
+			{
+				switch (animType)
+				{
+					case global::Dpr.Field.Walking.WalkingCharacterView.AnimType.Wait:
+						if (isWalkAnim(PrevAnimID))
+						{
+							index = global::Dpr.SubContents.Utils.GetExistAnim(animPlayer, WalktoWaitIDs);
+						}
+						else if (isRunAnim(PrevAnimID))
+						{
+							index = global::Dpr.SubContents.Utils.GetExistAnim(animPlayer, RuntoWaitIDs);
+						}
+						else
+						{
+							index = global::Dpr.SubContents.Utils.GetExistAnim(animPlayer, WaitAnimIDs);
+						}
+						break;
+					case global::Dpr.Field.Walking.WalkingCharacterView.AnimType.Walk:
+						index = (int)animType;
+						if (isWaitAnim(PrevAnimID))
+						{
+							index = global::Dpr.SubContents.Utils.GetExistAnim(animPlayer, WaittoWalkIDs);
+						}
+						else if (isRunAnim(PrevAnimID))
+						{
+							index = global::Dpr.SubContents.Utils.GetExistAnim(animPlayer, RuntoWalkIDs);
+						}
+						break;
+					case global::Dpr.Field.Walking.WalkingCharacterView.AnimType.Run:
+						index = (int)animType;
+						if (isWaitAnim(PrevAnimID))
+						{
+							index = global::Dpr.SubContents.Utils.GetExistAnim(animPlayer, WaittoRunIDs);
+						}
+						else if (isWalkAnim(PrevAnimID))
+						{
+							index = global::Dpr.SubContents.Utils.GetExistAnim(animPlayer, WalktoRunIDs);
+						}
+						break;
+					default:
+						index = 0;
+						break;
+				}
+			}
+			if (index == 28 || index == 30)
+			{
+				if (global::EntityManager.activeFieldPlayer.moveVector != global::UnityEngine.Vector3.zero)
+				{
+					index = PrevAnimID;
+				}
+			}
+			else if (index == 32)
+			{
+				index = isKwWait ? 32 : 0;
+			}
+			if (index != PrevAnimID)
+			{
+				PrevAnimID = index;
+			}
+			return index;
+		}
 		public void OnValidate() { }
-		public bool State_PlayAnime(int index, float duration) { /*@B 0x6008B24*/ throw null; }
-		public bool IsPlayAnimeEnd(int index) { /*@B 0x6008B25*/ throw null; }
-		public float PlayAnimeTime(int index) { /*@B 0x6008B26*/ throw null; }
-		public bool IsNullStateAnime(int index) { /*@B 0x6008B27*/ throw null; }
+		public bool State_PlayAnime(int index, float duration) {
+			if (index < 0 || animPlayer == null || animPlayer.clips[index] == null)
+			{
+				return false;
+			}
+			if (animPlayer.currentIndex != index)
+			{
+				animPlayer.Play(index, duration, 0f);
+			}
+			return true;
+		}
+		public bool IsPlayAnimeEnd(int index) {
+			if (index < 0)
+			{
+				return false;
+			}
+			if (animPlayer == null)
+			{
+				return false;
+			}
+			if (animPlayer.currentIndex != index)
+			{
+				return false;
+			}
+			return animPlayer.currentRemaingTime <= 0f;
+		}
+		public float PlayAnimeTime(int index) {
+			if (index >= 0 && animPlayer != null && animPlayer.currentIndex == index)
+			{
+				return animPlayer.currentPlayingTime;
+			}
+			return 0f;
+		}
+		public bool IsNullStateAnime(int index) {
+			if (index < 0 || animPlayer == null)
+			{
+				return true;
+			}
+			return animPlayer.clips[index] == null;
+		}
 		public void DebugAnimeState() { }
-		public WalkingCharacterView() { /*@B 0x6008B29*/ throw null; }
-		static WalkingCharacterView() { /*@B 0x6008B2A*/ throw null; }
+		public WalkingCharacterView() { }
+		static WalkingCharacterView() { }
 		public enum AnimType
 		{
 			Wait = 0,
