@@ -7,6 +7,23 @@ namespace DPData
 		public global::DPData.DENDOU_RECORD[] record;
 		public uint savePoint;
 		public uint latestNumber;
-		public _DENDOU_SAVEDATA(int a) { /*@B 0x600292A*/ throw null; }
+		public _DENDOU_SAVEDATA(int a) {
+			record = new global::DPData.DENDOU_RECORD[30];
+			for (int i = 0; i < record.Length; i++)
+			{
+				global::DPData.DENDOU_RECORD rec = new global::DPData.DENDOU_RECORD();
+				rec.pokemon = new global::DPData.DENDOU_POKEMON_DATA_INSIDE[6];
+				for (int j = 0; j < rec.pokemon.Length; j++)
+				{
+					global::DPData.DENDOU_POKEMON_DATA_INSIDE poke = new global::DPData.DENDOU_POKEMON_DATA_INSIDE();
+					poke.waza = new ushort[4];
+					rec.pokemon[j] = poke;
+				}
+				rec.time = new global::DPData.GMTIME();
+				record[i] = rec;
+			}
+			savePoint = 0;
+			latestNumber = 0;
+		}
 	}
 }

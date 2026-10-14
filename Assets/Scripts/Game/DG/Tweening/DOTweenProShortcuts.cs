@@ -6,7 +6,9 @@ namespace DG.Tweening
 {
 	public static class DOTweenProShortcuts
 	{
-		static DOTweenProShortcuts() { /*@B 0x6002F26*/ throw null; }
+		static DOTweenProShortcuts() {
+			new SpiralPlugin();
+		}
 		public static global::DG.Tweening.Tweener DOSpiral(this global::UnityEngine.Transform target, float duration, global::System.Nullable<global::UnityEngine.Vector3> axis = default, global::DG.Tweening.SpiralMode mode = (global::DG.Tweening.SpiralMode)(0), float speed = 1f, float frequency = 10f, float depth = 0f, bool snapping = false) {
 			if (Mathf.Approximately(speed, 0f))
 				speed = 1f;

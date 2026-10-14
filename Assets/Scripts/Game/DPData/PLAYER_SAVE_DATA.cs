@@ -14,6 +14,25 @@ namespace DPData
 		public global::DPData.LOCATION_WORK TownMapLocation;
 		public bool isTokushuLocation;
 		public global::DPData.LOCATION_WORK TokushuLocation;
-		public PLAYER_SAVE_DATA(int a) { /*@B 0x600293F*/ throw null; }
+		public PLAYER_SAVE_DATA(int a) {
+			this = default;
+			gear_type = false;
+			shoes_flag = false;
+			form = 0;
+			bic_color = 0;
+			worpPoint.zenmetu.zoneID = 425;
+			worpPoint.zenmetu.posX = 6f;
+			worpPoint.zenmetu.posY = 0f;
+			worpPoint.zenmetu.posZ = 8f;
+			worpPoint.zenmetu.dir = 3;
+			walkcount = 0f;
+			natuki_walkcnt = 0;
+			TownMapLocation.zoneID = 422;
+			TownMapLocation.posX = -116f;
+			TownMapLocation.posY = 1f;
+			TownMapLocation.posZ = 886f;
+			TownMapLocation.dir = 0;
+			isTokushuLocation = false;
+		}
 	}
 }

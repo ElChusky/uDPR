@@ -17,9 +17,38 @@ namespace DPData
 		public uint[] calendar_markbit;
 		public global::DPData.MARK_MAP_POS[] mark_map_pos;
 		public global::DPData.POKETCH_POKE_HISTORY[] poke_history;
-		private static global::DPData.POKETCH_POKETORE_COUNT tempPoketore_count;
-		private static int tempPoketoreSaveDataIndex;
-		public POKETCH_DATA(int a) { /*@B 0x6002937*/ throw null; }
+		private static global::DPData.POKETCH_POKETORE_COUNT tempPoketore_count = default(global::DPData.POKETCH_POKETORE_COUNT);
+		private static int tempPoketoreSaveDataIndex = -1;
+		public POKETCH_DATA(int a) {
+			get_flag = false;
+			pedometer_flag = false;
+			dotart_modified_flag = false;
+			color_type = (global::DPData.POKETCH_COLOR)0;
+			app_count = 0;
+			app_index = 0;
+			app_flag = new bool[20];
+			for (int i = 0; i < app_flag.Length; i++)
+				app_flag[i] = false;
+			pedometer = 0;
+			dotart_data = new byte[192];
+			for (int i = 0; i < dotart_data.Length; i++)
+				dotart_data[i] = 0;
+			calendar_markbit = new uint[12];
+			for (int i = 0; i < calendar_markbit.Length; i++)
+				calendar_markbit[i] = 0;
+			mark_map_pos = new global::DPData.MARK_MAP_POS[6];
+			for (int i = 0; i < mark_map_pos.Length; i++)
+			{
+				mark_map_pos[i].x = 0;
+				mark_map_pos[i].y = 0;
+			}
+			poke_history = new global::DPData.POKETCH_POKE_HISTORY[12];
+			for (int i = 0; i < poke_history.Length; i++)
+			{
+				poke_history[i].monsno = 0;
+				poke_history[i].iconPattern = 0;
+			}
+		}
 		public void PokeHistoryAdd(ushort monsno, ushort pattern) {
             int count = PokeHistoryGetRecordCount();
             if (count >= 12)
@@ -111,6 +140,6 @@ namespace DPData
 
             PlayReportManager.PoketoreCount();
         }
-		static POKETCH_DATA() { /*@B 0x600293D*/ throw null; }
+		static POKETCH_DATA() { }
 	}
 }

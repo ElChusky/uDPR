@@ -13,7 +13,7 @@ namespace DPData
 		public int goodCount;
 		public global::DPData.UgStoneStatue[] ugStoneStatue;
 		public bool isEnable;
-		public bool isNull { get { /*@B 0x600295A*/ throw null; } }
+		public bool isNull { get { return zoneID == 0; } }
 		public global::UnityEngine.Vector2Int ReturnPos() {
             int ofsX = direction == 3 ? -2 : (direction == 2 ? 2 : 0);
             int ofsY = ofsX == 0 ? 2 : 0;

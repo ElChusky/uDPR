@@ -4,6 +4,16 @@ namespace DPData
 	public static class TopMenuWork
 	{
 		public const int TOPMENUITEM_NUM = 8;
-		public static global::DPData.TOPMENU_WORK Create() { /*@B 0x6002940*/ throw null; }
+		public static global::DPData.TOPMENU_WORK Create() {
+			global::DPData.TOPMENU_WORK work = default;
+			work.items = new global::DPData.TOPMENUITEM_WORK[TOPMENUITEM_NUM];
+			for (int i = 0; i < TOPMENUITEM_NUM; i++)
+			{
+				work.items[i].isNew = true;
+				work.items[i].index = i;
+			}
+			work.selectType = global::DPData.TOPMENUITEMTYPE.BAG;
+			return work;
+		}
 	}
 }

@@ -5,13 +5,22 @@ namespace Dpr
 	{
 		private string _assetBundleName;
 		private bool _isUnloadAllLoadedObjects;
-		private int _unloadDelayFrameCount;
+		private int _unloadDelayFrameCount = 3;
 		private bool _isUnloaded;
 		public string assetBundleName { get { return this._assetBundleName; } set { this._assetBundleName = value; } }
-		public bool isUnloadAllLoadedObjects { get { return this._isUnloadAllLoadedObjects; } set { /*@B 0x60030F8*/ throw null; } }
+		public bool isUnloadAllLoadedObjects { get { return this._isUnloadAllLoadedObjects; } set { this._isUnloadAllLoadedObjects = value; } }
 		public int unloadDelayFrameCount { get { return this._unloadDelayFrameCount; } set { this._unloadDelayFrameCount = value; } }
-		public bool isUnloaded { get { return this._isUnloaded; } set { /*@B 0x60030FC*/ throw null; } }
-		public override int Release() { /*@B 0x60030FD*/ throw null; }
-		public AssetBundleUnloader() { /*@B 0x60030FE*/ throw null; }
+		public bool isUnloaded { get { return this._isUnloaded; } set { this._isUnloaded = value; } }
+		public override int Release() {
+			if (referencedCount == 0)
+				return 0;
+			int count = base.Release();
+			if (count != 0)
+				return count;
+			_unloadDelayFrameCount = 3;
+			global::Dpr.AssetBundleUnloadManager.RegisterUnload(this);
+			return 0;
+		}
+		public AssetBundleUnloader() { }
 	}
 }

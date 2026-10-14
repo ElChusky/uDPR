@@ -6,8 +6,13 @@ namespace DPData
 	{
 		public short GridX;
 		public short GridY;
-		public bool IsNull { get { /*@B 0x6002958*/ throw null; } }
-		public DigPos(short x, short y) { /*@B 0x6002957*/ throw null; }
-		public static implicit operator global::DPData.DigPos(global::UnityEngine.Vector2Int v) { /*@B 0x6002959*/ throw null; }
+		public bool IsNull { get { return GridX == -1 && GridY == -1; } }
+		public DigPos(short x, short y) {
+			GridX = x;
+			GridY = y;
+		}
+		public static implicit operator global::DPData.DigPos(global::UnityEngine.Vector2Int v) {
+			return new global::DPData.DigPos((short)v.x, (short)v.y);
+		}
 	}
 }

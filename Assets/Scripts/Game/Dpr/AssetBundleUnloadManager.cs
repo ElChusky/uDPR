@@ -3,13 +3,41 @@ namespace Dpr
 {
 	public static class AssetBundleUnloadManager
 	{
-		private static global::System.Collections.Generic.HashSet<global::Dpr.AssetBundleUnloader> _unloads;
-		private static bool isInitialized;
-		public static void Initialize() { /*@B 0x60030FF*/ throw null; }
-		public static void Terminate() { /*@B 0x6003100*/ throw null; }
-		public static void RegisterUnload(global::Dpr.AssetBundleUnloader unloader) { /*@B 0x6003101*/ throw null; }
-		public static void UnloadDirect(global::Dpr.AssetBundleUnloader unloader) { /*@B 0x6003102*/ throw null; }
-		private static void OnLateUpdate(float deltaTime) { /*@B 0x6003103*/ throw null; }
-		static AssetBundleUnloadManager() { /*@B 0x6003104*/ throw null; }
+		private static global::System.Collections.Generic.HashSet<global::Dpr.AssetBundleUnloader> _unloads = new global::System.Collections.Generic.HashSet<global::Dpr.AssetBundleUnloader>();
+		private static bool isInitialized = false;
+		public static void Initialize() {
+			if (isInitialized)
+				return;
+			isInitialized = true;
+			global::SmartPoint.AssetAssistant.Sequencer.lateUpdate += OnLateUpdate;
+		}
+		public static void Terminate() {
+			if (!isInitialized)
+				return;
+			isInitialized = false;
+			global::SmartPoint.AssetAssistant.Sequencer.lateUpdate -= OnLateUpdate;
+		}
+		public static void RegisterUnload(global::Dpr.AssetBundleUnloader unloader) {
+			if (!isInitialized)
+				Initialize();
+			_unloads.Add(unloader);
+		}
+		public static void UnloadDirect(global::Dpr.AssetBundleUnloader unloader) {
+			global::SmartPoint.AssetAssistant.AssetBundleCache.ReleaseFromAssetBundleName(unloader.assetBundleName, unloader.isUnloadAllLoadedObjects);
+			unloader.isUnloaded = true;
+		}
+		private static void OnLateUpdate(float deltaTime) {
+			_unloads.RemoveWhere(unloader =>
+			{
+				if (unloader.unloadDelayFrameCount > 0)
+				{
+					unloader.unloadDelayFrameCount--;
+					return false;
+				}
+				UnloadDirect(unloader);
+				return true;
+			});
+		}
+		static AssetBundleUnloadManager() { }
 	}
 }

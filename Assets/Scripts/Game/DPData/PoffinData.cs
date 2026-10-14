@@ -9,11 +9,25 @@ namespace DPData
 		public byte Taste;
 		public bool IsNew;
 		public byte[] Flavor;
-		public bool IsNull { get { /*@B 0x6002951*/ throw null; } }
-		public PoffinData(byte id, byte lv, byte taste, byte[] flavor) { /*@B 0x600294D*/ throw null; }
-		public void ToNull() { /*@B 0x600294E*/ throw null; }
-		public int GetMostFlavorIndex() { /*@B 0x600294F*/ throw null; }
-		public float GetBONUS() { /*@B 0x6002950*/ throw null; }
+		public bool IsNull { get { return MstID == 0xFF || Flavor == null || Flavor.Length == 0; } }
+		public PoffinData(byte id, byte lv, byte taste, byte[] flavor) {
+			MstID = id;
+			Level = lv;
+			Taste = taste;
+			IsNew = true;
+			Flavor = new byte[5];
+			flavor.CopyTo(Flavor, 0);
+		}
+		public void ToNull() {
+			MstID = 0xFF;
+		}
+		public int GetMostFlavorIndex() {
+			byte val = global::System.Linq.Enumerable.Max(Flavor);
+			return global::System.Array.FindIndex(Flavor, x => val == x);
+		}
+		public float GetBONUS() {
+			return MstID == 29 ? 1.15f : 1f;
+		}
 		public global::InterviewWork.PoffineTaste GetPoffineType() {
             switch (MstID)
             {
@@ -30,6 +44,14 @@ namespace DPData
                     return InterviewWork.PoffineTaste.Etc;
             }
         }
-		public int CompareTo(global::DPData.PoffinData other) { /*@B 0x6002953*/ throw null; }
+		public int CompareTo(global::DPData.PoffinData other) {
+			if (IsNull && other.IsNull)
+				return 0;
+			if (IsNull)
+				return -1;
+			if (other.IsNull)
+				return 1;
+			return 0;
+		}
 	}
 }
