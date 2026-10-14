@@ -7,7 +7,7 @@ namespace SmartPoint.AssetAssistant
 		[global::UnityEngine.SerializeField]
 		private string _platformName;
 		[global::UnityEngine.SerializeField]
-		private bool _useSceneBrowser;
+		private bool _useSceneBrowser = true;
 		[global::UnityEngine.SerializeField]
 		private global::SmartPoint.AssetAssistant.Forms.MessageBoxManifestBase _messageBoxManifest;
 		[global::UnityEngine.SerializeField]
@@ -23,53 +23,53 @@ namespace SmartPoint.AssetAssistant
 		[global::UnityEngine.SerializeField]
 		private bool _webhookInEditMode;
 		[global::UnityEngine.SerializeField]
-		private string _webhookURL;
+		private string _webhookURL = string.Empty;
 		[global::UnityEngine.SerializeField]
 		private int _minimumResolution;
 		[global::UnityEngine.SerializeField]
-		private global::SmartPoint.AssetAssistant.PreloadRequest[] _preloadRequests;
+		private global::SmartPoint.AssetAssistant.PreloadRequest[] _preloadRequests = ArrayHelper.Empty<global::SmartPoint.AssetAssistant.PreloadRequest>();
 		[global::UnityEngine.SerializeField]
 		private global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod _preloadMethod;
 		[global::UnityEngine.SerializeField]
-		private global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] _initializeMethods;
+		private global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] _initializeMethods = ArrayHelper.Empty<SerializedMethod>();
 		[global::UnityEngine.SerializeField]
-		private global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] _assetManagerAfterSetupMethods;
+		private global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] _assetManagerAfterSetupMethods = ArrayHelper.Empty<SerializedMethod>();
 		[global::UnityEngine.SerializeField]
-		private global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] _sceneRestoreOperationMethods;
+		private global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] _sceneRestoreOperationMethods = ArrayHelper.Empty<SerializedMethod>();
 		[global::UnityEngine.SerializeField]
-		private global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] _sceneBeforeActivateOperationMethods;
+		private global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] _sceneBeforeActivateOperationMethods = ArrayHelper.Empty<SerializedMethod>();
 		[global::UnityEngine.SerializeField]
-		private string _startupScenePath;
+		private string _startupScenePath = string.Empty;
 		[global::UnityEngine.SerializeField]
-		private global::SmartPoint.AssetAssistant.ReferenceObject[] _permanentObjects;
+		private global::SmartPoint.AssetAssistant.ReferenceObject[] _permanentObjects = ArrayHelper.Empty<global::SmartPoint.AssetAssistant.ReferenceObject>();
 		[global::UnityEngine.SerializeField]
-		private bool _runBootSequence;
+		private bool _runBootSequence = true;
 		[global::UnityEngine.SerializeField]
-		private string _creationTime;
+		private string _creationTime = string.Empty;
 		[global::UnityEngine.SerializeField]
-		private string _buildVersion;
-		public static string platformName { get { /*@B AssetAssistant:0x60001C2*/ throw null; } }
-		public static global::SmartPoint.AssetAssistant.Forms.MessageBoxManifestBase messageBoxManifest { get { /*@B AssetAssistant:0x60001C3*/ throw null; } }
-		public static bool useSceneBrowser { get { /*@B AssetAssistant:0x60001C4*/ throw null; } }
-		public static string assetBundleTargetURI { get { /*@B AssetAssistant:0x60001C5*/ throw null; } }
-		public static string[] assetBundlesForEditor { get { /*@B AssetAssistant:0x60001C6*/ throw null; } }
-		public static string[] externalProjectNames { get { /*@B AssetAssistant:0x60001C7*/ throw null; } }
-		public static global::SmartPoint.AssetAssistant.AssetBundleTarget assetBundleTarget { get { /*@B AssetAssistant:0x60001C8*/ throw null; } }
-		public static bool runBootSequence { get { /*@B AssetAssistant:0x60001C9*/ throw null; } }
-		public static int minimumResolution { get { /*@B AssetAssistant:0x60001CA*/ throw null; } }
-		public static bool clearCacheFiles { get { /*@B AssetAssistant:0x60001CB*/ throw null; } }
-		public static bool webhookInEditMode { get { /*@B AssetAssistant:0x60001CC*/ throw null; } }
-		public static string webhookURL { get { /*@B AssetAssistant:0x60001CD*/ throw null; } }
-		public static string startupScenePath { get { /*@B AssetAssistant:0x60001CE*/ throw null; } }
-		public static global::SmartPoint.AssetAssistant.PreloadRequest[] preloadRequests { get { /*@B AssetAssistant:0x60001CF*/ throw null; } }
+		private string _buildVersion = string.Empty;
+		public static string platformName { get => instance == null ? string.Empty : instance._platformName; }
+		public static global::SmartPoint.AssetAssistant.Forms.MessageBoxManifestBase messageBoxManifest { get => instance == null ? null : instance._messageBoxManifest; }
+		public static bool useSceneBrowser { get => instance == null ? true : instance._useSceneBrowser; }
+		public static string assetBundleTargetURI { get => instance == null ? string.Empty : instance._assetBundleTargetURI; }
+		public static string[] assetBundlesForEditor { get => instance == null ? ArrayHelper.Empty<string>() : instance._assetBundlesForEditor; }
+		public static string[] externalProjectNames { get => instance == null ? ArrayHelper.Empty<string>() : instance._externalProjectNames; }
+		public static global::SmartPoint.AssetAssistant.AssetBundleTarget assetBundleTarget { get => instance == null ? default(global::SmartPoint.AssetAssistant.AssetBundleTarget) : instance._assetBundleTarget; }
+		public static bool runBootSequence { get => instance == null ? false : instance._runBootSequence; }
+		public static int minimumResolution { get => instance == null ? 0 : instance._minimumResolution; }
+		public static bool clearCacheFiles { get => instance == null ? false : instance._clearCacheFiles; }
+		public static bool webhookInEditMode { get => instance == null ? false : instance._webhookInEditMode; }
+		public static string webhookURL { get => instance == null ? string.Empty : instance._webhookURL; }
+		public static string startupScenePath { get => instance == null ? string.Empty : instance._startupScenePath; }
+		public static global::SmartPoint.AssetAssistant.PreloadRequest[] preloadRequests { get => instance == null ? null : instance._preloadRequests; }
 		public static global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod preloadMethod { get => instance == null ? default(SerializedMethod) : instance._preloadMethod; }
-		public static global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] initializeMethods { get { /*@B AssetAssistant:0x60001D1*/ throw null; } }
-		public static global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] assetManagerAfterSetupMethods { get { /*@B AssetAssistant:0x60001D2*/ throw null; } }
-		public static global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] sceneRestoreOperationMethods { get { /*@B AssetAssistant:0x60001D3*/ throw null; } }
-		public static global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] sceneBeforeActivateOperationMethods { get { /*@B AssetAssistant:0x60001D4*/ throw null; } }
+		public static global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] initializeMethods { get => instance == null ? ArrayHelper.Empty<SerializedMethod>() : instance._initializeMethods; }
+		public static global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] assetManagerAfterSetupMethods { get => instance == null ? ArrayHelper.Empty<SerializedMethod>() : instance._assetManagerAfterSetupMethods; }
+		public static global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] sceneRestoreOperationMethods { get => instance == null ? ArrayHelper.Empty<SerializedMethod>() : instance._sceneRestoreOperationMethods; }
+		public static global::SmartPoint.AssetAssistant.UnityExtensions.SerializedMethod[] sceneBeforeActivateOperationMethods { get => instance == null ? ArrayHelper.Empty<SerializedMethod>() : instance._sceneBeforeActivateOperationMethods; }
 		public static global::SmartPoint.AssetAssistant.ReferenceObject[] permanentObjects { get => instance == null ? null : instance._permanentObjects; }
-		public static string buildVersion { get { /*@B AssetAssistant:0x60001D6*/ throw null; } }
-		public static string creationTime { get { /*@B AssetAssistant:0x60001D7*/ throw null; } }
-		public StartupSettings() { /*@B AssetAssistant:0x60001D8*/ throw null; }
+		public static string buildVersion { get => instance == null ? string.Empty : instance._buildVersion; }
+		public static string creationTime { get => instance == null ? "" : instance._creationTime; }
+		public StartupSettings() { }
 	}
 }

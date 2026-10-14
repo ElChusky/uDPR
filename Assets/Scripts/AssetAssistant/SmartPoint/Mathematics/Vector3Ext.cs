@@ -4,21 +4,82 @@ namespace SmartPoint.Mathematics
 {
 	public static class Vector3Ext
 	{
-		public static ref global::UnityEngine.Vector3 FastClear(this ref global::UnityEngine.Vector3 self) { /*@B AssetAssistant:0x600001F*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastNegate(this ref global::UnityEngine.Vector3 self) { /*@B AssetAssistant:0x6000020*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastReciprocal(this ref global::UnityEngine.Vector3 self) { /*@B AssetAssistant:0x6000021*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastSet(this ref global::UnityEngine.Vector3 self, float s) { /*@B AssetAssistant:0x6000022*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastSet(this ref global::UnityEngine.Vector3 self, float x, float y, float z) { /*@B AssetAssistant:0x6000023*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastAdd(this ref global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V) { /*@B AssetAssistant:0x6000024*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastScale(this ref global::UnityEngine.Vector3 self, float s) { /*@B AssetAssistant:0x6000025*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastMul(this ref global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V) { /*@B AssetAssistant:0x6000026*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastScaleAdd(this ref global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V, float s) { /*@B AssetAssistant:0x6000027*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastLerp(this ref global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V, float s) { /*@B AssetAssistant:0x6000028*/ throw null; }
-		public static float FastLengthSq(this in global::UnityEngine.Vector3 self) { /*@B AssetAssistant:0x6000029*/ throw null; }
-		public static float FastDistanceSq(this in global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V) { /*@B AssetAssistant:0x600002A*/ throw null; }
-		public static float FastLength(this in global::UnityEngine.Vector3 self) { /*@B AssetAssistant:0x600002B*/ throw null; }
-		public static float FastDot(this in global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V) { /*@B AssetAssistant:0x600002C*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastCross(this ref global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V) { /*@B AssetAssistant:0x600002D*/ throw null; }
+		public static ref global::UnityEngine.Vector3 FastClear(this ref global::UnityEngine.Vector3 self) {
+			self.x = 0f;
+			self.y = 0f;
+			self.z = 0f;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Vector3 FastNegate(this ref global::UnityEngine.Vector3 self) {
+			self.x = -self.x;
+			self.y = -self.y;
+			self.z = -self.z;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Vector3 FastReciprocal(this ref global::UnityEngine.Vector3 self) {
+			self.x = 1f / self.x;
+			self.y = 1f / self.y;
+			self.z = 1f / self.z;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Vector3 FastSet(this ref global::UnityEngine.Vector3 self, float s) {
+			self.x = s;
+			self.y = s;
+			self.z = s;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Vector3 FastSet(this ref global::UnityEngine.Vector3 self, float x, float y, float z) {
+			self.x = x;
+			self.y = y;
+			self.z = z;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Vector3 FastAdd(this ref global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V) {
+			self.x += V.x;
+			self.y += V.y;
+			self.z += V.z;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Vector3 FastScale(this ref global::UnityEngine.Vector3 self, float s) {
+			self.x *= s;
+			self.y *= s;
+			self.z *= s;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Vector3 FastMul(this ref global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V) {
+			self.x *= V.x;
+			self.y *= V.y;
+			self.z *= V.z;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Vector3 FastScaleAdd(this ref global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V, float s) {
+			self.x += V.x * s;
+			self.y += V.y * s;
+			self.z += V.z * s;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Vector3 FastLerp(this ref global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V, float s) {
+			self.x += (V.x - self.x) * s;
+			self.y += (V.y - self.y) * s;
+			self.z += (V.z - self.z) * s;
+			return ref self;
+		}
+		public static float FastLengthSq(this in global::UnityEngine.Vector3 self) => self.x * self.x + self.y * self.y + self.z * self.z;
+		public static float FastDistanceSq(this in global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V) {
+			var d = new global::UnityEngine.Vector3(self.x - V.x, self.y - V.y, self.z - V.z);
+			return d.FastLengthSq();
+		}
+		public static float FastLength(this in global::UnityEngine.Vector3 self) => (float)Math.Sqrt(self.x * self.x + self.y * self.y + self.z * self.z);
+		public static float FastDot(this in global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V) => self.x * V.x + self.y * V.y + self.z * V.z;
+		public static ref global::UnityEngine.Vector3 FastCross(this ref global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V) {
+			float x = self.x;
+			float y = self.y;
+			float z = self.z;
+			self.x = y * V.z - z * V.y;
+			self.y = z * V.x - V.z * x;
+			self.z = V.y * x - y * V.x;
+			return ref self;
+		}
 		public static ref global::UnityEngine.Vector3 FastCrossNormalize(this ref global::UnityEngine.Vector3 self, in global::UnityEngine.Vector3 V) {
             // @02bca880: the flagless FastCross / FastLengthSq / FastScale are inlined; FastLength's own init flag
             // 0x4cc6281 is NOT tested here (only this method's 0x4cc6282 + the System.Math class-init), so the source
@@ -26,9 +87,49 @@ namespace SmartPoint.Mathematics
             self.FastCross(V);
             return ref self.FastScale(1.0f / (float)Math.Sqrt(self.FastLengthSq()));
         }
-		public static float FastNormalize(this ref global::UnityEngine.Vector3 self) { /*@B AssetAssistant:0x600002F*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastRotateX(this ref global::UnityEngine.Vector3 self, float angle) { /*@B AssetAssistant:0x6000030*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastRotateY(this ref global::UnityEngine.Vector3 self, float angle) { /*@B AssetAssistant:0x6000031*/ throw null; }
-		public static ref global::UnityEngine.Vector3 FastRotateZ(this ref global::UnityEngine.Vector3 self, float angle) { /*@B AssetAssistant:0x6000032*/ throw null; }
+		public static float FastNormalize(this ref global::UnityEngine.Vector3 self) {
+			float lengthSq = self.x * self.x + self.y * self.y + self.z * self.z;
+			if (lengthSq < 1E-05f)
+			{
+				self.z = 0f;
+				self.x = 0f;
+				self.y = 0f;
+			}
+			else
+			{
+				float inv = 1f / (float)Math.Sqrt(lengthSq);
+				self.x *= inv;
+				self.y *= inv;
+				self.z *= inv;
+			}
+			return lengthSq;
+		}
+		public static ref global::UnityEngine.Vector3 FastRotateX(this ref global::UnityEngine.Vector3 self, float angle) {
+			float sin = (float)Math.Sin(angle);
+			float cos = (float)Math.Cos(angle);
+			float y = self.y;
+			float z = self.z;
+			self.z = y * sin + z * cos;
+			self.y = y * cos - z * sin;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Vector3 FastRotateY(this ref global::UnityEngine.Vector3 self, float angle) {
+			float sin = (float)Math.Sin(angle);
+			float cos = (float)Math.Cos(angle);
+			float x = self.x;
+			float z = self.z;
+			self.z = z * cos - x * sin;
+			self.x = x * cos + z * sin;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Vector3 FastRotateZ(this ref global::UnityEngine.Vector3 self, float angle) {
+			float sin = (float)Math.Sin(angle);
+			float cos = (float)Math.Cos(angle);
+			float x = self.x;
+			float y = self.y;
+			self.x = y * sin + x * cos;
+			self.y = y * cos - x * sin;
+			return ref self;
+		}
 	}
 }

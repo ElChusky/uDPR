@@ -5,7 +5,10 @@ namespace SmartPoint.AssetAssistant
 {
 	public class Serializer
 	{
-		static Serializer() { /*@B AssetAssistant:0x6000119*/ throw null; }
+		static Serializer() {
+			if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.IPhonePlayer)
+				Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
+		}
 		public static string ToBase64String(object content) {
 			// @02bc5e20: StreamExtensions.SerializeBinaryFormatter inlined (its flag 0x4cc6298 @02bc5e78); one using, pads @02bc5f9c..02bc5fd4
 			using (var stream = new System.IO.MemoryStream())

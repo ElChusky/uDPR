@@ -5,8 +5,21 @@ namespace SmartPoint.Mathematics
 {
 	public static class QuaternionExt
 	{
-		public static ref global::UnityEngine.Quaternion FastNormalizeAxis(this ref global::UnityEngine.Quaternion self) { /*@B AssetAssistant:0x6000005*/ throw null; }
-		public static ref global::UnityEngine.Quaternion FastNormalize(this ref global::UnityEngine.Quaternion self) { /*@B AssetAssistant:0x6000006*/ throw null; }
+		public static ref global::UnityEngine.Quaternion FastNormalizeAxis(this ref global::UnityEngine.Quaternion self) {
+			float inv = 1f / (float)Math.Sqrt(self.x * self.x + self.y * self.y + self.z * self.z);
+			self.x *= inv;
+			self.y *= inv;
+			self.z *= inv;
+			return ref self;
+		}
+		public static ref global::UnityEngine.Quaternion FastNormalize(this ref global::UnityEngine.Quaternion self) {
+			float inv = 1f / (float)Math.Sqrt(self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w);
+			self.x *= inv;
+			self.y *= inv;
+			self.z *= inv;
+			self.w *= inv;
+			return ref self;
+		}
 		// SIGNATURE FIX (report b210): dump.cs @02bca120 returns `ref Quaternion` (x0 = self on return);
 		// The base code declared `public static Quaternion FastRotateY(this ref Quaternion self, float angle)`.
 		// FIX (b207 claim, @02bca120): float sinf / cosf of 0.5f * angle and the rotation y' = c*y + s*w, w' = c*w - s*y

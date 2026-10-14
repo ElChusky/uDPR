@@ -4,13 +4,44 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
 {
 	public static class StringExtensions
 	{
-		public static string ToDivisionSlash(this string self) { /*@B AssetAssistant:0x60001E4*/ throw null; }
-		public static string ToSlash(this string self) { /*@B AssetAssistant:0x60001E5*/ throw null; }
-		public static string RemoveStart(this string self, string value) { /*@B AssetAssistant:0x60001E6*/ throw null; }
-		public static void ToLowerSelf(this string self) { /*@B AssetAssistant:0x60001E7*/ throw null; }
-		public static bool IsNullOrEmpty(this string self) { /*@B AssetAssistant:0x60001E8*/ throw null; }
-		public static bool IsUrl(this string self) { /*@B AssetAssistant:0x60001E9*/ throw null; }
-		public static string RemoveEnd(this string self, string value) { /*@B AssetAssistant:0x60001EA*/ throw null; }
+		public static string ToDivisionSlash(this string self) {
+			return self.Replace('/', '\u2215');
+		}
+		public static string ToSlash(this string self) {
+			return self.Replace('\u2215', '/');
+		}
+		public static string RemoveStart(this string self, string value) {
+			if (self.IndexOf(value) != 0)
+				return self;
+			return self.Remove(0, value.Length);
+		}
+		public static unsafe void ToLowerSelf(this string self) {
+			int length = self.Length;
+			fixed (char* chars = self)
+			{
+				char* p = chars;
+				for (int i = 0; i < length; i++)
+				{
+					if ((uint)(*p - 'A') < 26u)
+						*p = (char)(*p + 32);
+					p++;
+				}
+			}
+		}
+		public static bool IsNullOrEmpty(this string self) {
+			return self == null || self == string.Empty;
+		}
+		public static bool IsUrl(this string self) {
+			var uri = new global::System.Uri(self);
+			return uri.Scheme == global::System.Uri.UriSchemeHttp || uri.Scheme == global::System.Uri.UriSchemeHttps;
+		}
+		public static string RemoveEnd(this string self, string value) {
+			int index = self.LastIndexOf(value);
+			int count = value.Length;
+			if (count + index == self.Length)
+				return self.Remove(index, count);
+			return self;
+		}
 		public static string CombinePath(this string self, string value) {
             // @02bc8420: the CHAR overload Replace('\\', '/') (RVA 026f83d0, w1 = 0x5c, w2 = 0x2f).
             return Path.Combine(self, value).Replace('\\', '/');

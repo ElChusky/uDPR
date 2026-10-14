@@ -3,8 +3,17 @@ namespace SmartPoint.Mathematics
 {
 	public static class FloatExt
 	{
-		public static ref float NormalizeRadians(this ref float self) { /*@B AssetAssistant:0x600001A*/ throw null; }
-		public static ref float NormalizeDegrees(this ref float self) { /*@B AssetAssistant:0x600001B*/ throw null; }
-		public static float LerpDegrees(float a1, float a2, float s) { /*@B AssetAssistant:0x600001C*/ throw null; }
+		public static ref float NormalizeRadians(this ref float self) {
+			self += (float)(int)(self * 0.15915494f + (self < 0f ? -0.5f : 0.5f)) * -6.2831855f;
+			return ref self;
+		}
+		public static ref float NormalizeDegrees(this ref float self) {
+			self += (float)(int)(self * 0.002777778f + (self < 0f ? -0.5f : 0.5f)) * -360f;
+			return ref self;
+		}
+		public static float LerpDegrees(float a1, float a2, float s) {
+			float delta = a2 - a1;
+			return delta.NormalizeDegrees() * s + a1;
+		}
 	}
 }

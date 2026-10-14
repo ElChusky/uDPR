@@ -3,7 +3,7 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
 {
 	public class SectionCounter
 	{
-		private static global::System.Collections.Generic.Dictionary<object, global::SmartPoint.AssetAssistant.UnityExtensions.SectionCounter> _sections;
+		private static global::System.Collections.Generic.Dictionary<object, global::SmartPoint.AssetAssistant.UnityExtensions.SectionCounter> _sections = new global::System.Collections.Generic.Dictionary<object, global::SmartPoint.AssetAssistant.UnityExtensions.SectionCounter>();
 		public float startTime { get; private set; }
 		public float lastTime { get; private set; }
 		public int count { get; private set; }
@@ -13,9 +13,40 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
 		private float nestedCount { get; set; }
 		[global::SmartPoint.AssetAssistant.AssetAssistantInitializeMethodAttribute(0)]
 		private static void Initialize() { }
-		public static void Start(object key) { /*@B AssetAssistant:0x600021D*/ throw null; }
-		public static global::SmartPoint.AssetAssistant.UnityExtensions.SectionCounter End(object key) { /*@B AssetAssistant:0x600021E*/ throw null; }
+		public static void Start(object key) {
+			SectionCounter counter = null;
+			if (!_sections.TryGetValue(key, out counter))
+			{
+				counter = new SectionCounter { nestedCount = 0f };
+				_sections.Add(key, counter);
+			}
+			counter.nestedCount += 1f;
+			if (counter.nestedCount == 1f)
+				counter.startTime = UnityEngine.Time.realtimeSinceStartup;
+		}
+		public static global::SmartPoint.AssetAssistant.UnityExtensions.SectionCounter End(object key) {
+			SectionCounter counter = null;
+			if (!_sections.TryGetValue(key, out counter))
+				return null;
+			counter.nestedCount -= 1f;
+			if (counter.nestedCount > 0f)
+				return null;
+			float now = UnityEngine.Time.realtimeSinceStartup;
+			float start = counter.startTime;
+			if (!float.IsNaN(start))
+			{
+				float elapsed = now - start;
+				counter.startTime = float.NaN;
+				counter.lastTime = elapsed;
+				counter.minTime = UnityEngine.Mathf.Min(counter.minTime, elapsed);
+				counter.maxTime = UnityEngine.Mathf.Max(counter.maxTime, elapsed);
+				int previous = counter.count;
+				counter.count = previous + 1;
+				counter.averageTime = (elapsed + counter.averageTime * (float)previous) / (float)(previous + 1);
+			}
+			return counter;
+		}
 		public SectionCounter() { }
-		static SectionCounter() { /*@B AssetAssistant:0x6000220*/ throw null; }
+		static SectionCounter() { }
 	}
 }

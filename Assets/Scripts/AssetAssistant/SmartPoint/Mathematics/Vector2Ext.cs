@@ -3,7 +3,7 @@ namespace SmartPoint.Mathematics
 {
 	public static class Vector2Ext
 	{
-		public static float FastLengthSq(this ref global::UnityEngine.Vector2 self) { /*@B AssetAssistant:0x600001D*/ throw null; }
-		public static float FastCross(this in global::UnityEngine.Vector2 self, in global::UnityEngine.Vector2 V) { /*@B AssetAssistant:0x600001E*/ throw null; }
+		public static float FastLengthSq(this ref global::UnityEngine.Vector2 self) => self.x * self.x + self.y * self.y;
+		public static float FastCross(this in global::UnityEngine.Vector2 self, in global::UnityEngine.Vector2 V) => self.x * V.y - self.y * V.x;
 	}
 }
