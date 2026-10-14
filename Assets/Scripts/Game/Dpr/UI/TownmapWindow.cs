@@ -16,7 +16,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.TownmapInfo _info;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.TownmapSymbolName _symbolName;
-		private global::Dpr.UI.Townmap.NoticeType _noticeType;
+		private global::Dpr.UI.Townmap.NoticeType _noticeType = global::Dpr.UI.Townmap.NoticeType.None;
 		private global::Dpr.UI.TownmapWindow.Param _param;
 		public override void OnCreate() {
 			base.OnCreate();
@@ -153,7 +153,7 @@ namespace Dpr.UI
 
 			_townmap.SetNoticeType(type);
 		}
-		public TownmapWindow() { /*@B 0x6005571*/ throw null; }
+		public TownmapWindow() { }
 		[global::System.Serializable]
 		private class GuideNavi
 		{

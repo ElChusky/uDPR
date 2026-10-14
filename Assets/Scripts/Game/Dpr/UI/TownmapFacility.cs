@@ -17,7 +17,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.TownmapFacilityItem _facilityItemPrefab;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image _facilityBg;
-		private global::System.Collections.Generic.List<global::Dpr.UI.TownmapFacilityItem> _facilities;
+		private global::System.Collections.Generic.List<global::Dpr.UI.TownmapFacilityItem> _facilities = new global::System.Collections.Generic.List<global::Dpr.UI.TownmapFacilityItem>();
 		public void Setup(global::Dpr.UI.Townmap.Cell cell) {
 			if (!Townmap.Cell.UseData(cell) || !cell.IsView())
 			{
@@ -88,6 +88,6 @@ namespace Dpr.UI
 
 			_facilityBg.gameObject.SetActive(_facilities.Count > 0);
 		}
-		public TownmapFacility() { /*@B 0x6005553*/ throw null; }
+		public TownmapFacility() { }
 	}
 }

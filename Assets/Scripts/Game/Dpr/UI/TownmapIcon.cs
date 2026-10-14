@@ -3,12 +3,23 @@ namespace Dpr.UI
 {
 	public class TownmapIcon : global::UnityEngine.MonoBehaviour
 	{
-		protected static readonly int animStateIn;
+		protected static readonly int animStateIn = global::UnityEngine.Animator.StringToHash("in");
 		protected global::UnityEngine.Animator _animator;
-		protected virtual void Awake() { /*@B 0x6005556*/ throw null; }
-		protected virtual void OnEnable() { /*@B 0x6005557*/ throw null; }
-		protected virtual global::System.Collections.IEnumerator OpPlay() { /*@B 0x6005558*/ throw null; }
+		protected virtual void Awake() {
+            _animator = GetComponent<global::UnityEngine.Animator>();
+        }
+		protected virtual void OnEnable() {
+            if (_animator != null)
+                StartCoroutine(OpPlay());
+        }
+		protected virtual global::System.Collections.IEnumerator OpPlay() {
+            // @0184f788: states 0 and 1 share the re-check = a while loop
+            while (!_animator.isActiveAndEnabled)
+                yield return null;
+
+            _animator.Play(animStateIn, 0, 0f);
+        }
 		public TownmapIcon() { }
-		static TownmapIcon() { /*@B 0x600555A*/ throw null; }
+		static TownmapIcon() { }
 	}
 }
