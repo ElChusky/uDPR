@@ -9,7 +9,11 @@ public class BattleJoinStateModel : global::NetStateModel
 	public global::OnlinePlayerCharacter opcCharacter { get; set; }
 	public global::UnionBattleContextMenu contextMenu { get; set; }
 	public global::UnionBattleRuleWindow unionBattleRuleWindow { get; set; }
-	public BattleJoinStateModel() { /*@B 0x600115D*/ throw null; }
+	public BattleJoinStateModel() {
+		contextMenu = new UnionBattleContextMenu();
+		contextMenu.battleJoinModel = this;
+		contextMenu.SetTransitionType();
+	}
 	protected override void Start() {
 		nowStateID = 0;
 		isOtherWaiting = false;
