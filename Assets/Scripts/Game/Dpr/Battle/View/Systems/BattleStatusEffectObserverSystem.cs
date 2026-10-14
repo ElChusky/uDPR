@@ -20,8 +20,15 @@ namespace Dpr.Battle.View.Systems
 		private global::Dpr.Battle.View.Objects.BOPokemon targetPokemon;
 		public bool IsPlaying { get; private set; }
 		public bool IsUnInitialized { get; private set; }
-		public bool IsFinish { get { /*@B 0x60063EB*/ throw null; } }
-		public BattleStatusEffectObserverSystem(global::Dpr.Battle.View.Systems.BattleViewSystem pViewSystem) { /*@B 0x60063EC*/ throw null; }
+		public bool IsFinish { get { return _sequence == 0; } }
+		public BattleStatusEffectObserverSystem(global::Dpr.Battle.View.Systems.BattleViewSystem pViewSystem) {
+			_viewSystem = pViewSystem;
+			_orderArr = new BtlvPos[7];
+			_sequence = 0;
+			_observerDatas = BattleDataTableManager.Instance.BattleDataTable.BattleStatusEffectObserverData;
+			IsPlaying = false;
+			IsUnInitialized = true;
+		}
 		public void Dispose() {
 			Mem.Del(ref _viewSystem);
 			Mem.DelAry(ref _orderArr);

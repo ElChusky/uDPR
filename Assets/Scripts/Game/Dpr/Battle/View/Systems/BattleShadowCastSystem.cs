@@ -8,8 +8,19 @@ namespace Dpr.Battle.View.Systems
 		private global::System.Collections.Generic.List<global::Dpr.Battle.View.Systems.ShadowCastObject> _castObjects;
 		private global::UnityEngine.Material _shadowCastMaterial;
 		private bool _isDraw;
-		public bool IsDraw { get { return this._isDraw; } set { /*@B 0x60063E2*/ throw null; } }
-		public BattleShadowCastSystem() { /*@B 0x60063E3*/ throw null; }
+		public bool IsDraw { get { return this._isDraw; } set {
+				_isDraw = value;
+				if (!_castObjects.IsNullOrEmpty())
+				{
+					foreach (var castObject in _castObjects)
+						castObject.SetDraw(_isDraw);
+				}
+			} }
+		public BattleShadowCastSystem() {
+			_castObjects = new global::System.Collections.Generic.List<global::Dpr.Battle.View.Systems.ShadowCastObject>(4);
+			_shadowCastMaterial = new global::UnityEngine.Material(global::SmartPoint.AssetAssistant.AssetManager.FindShader("Dpr/Objects/ShadowCast"));
+			_isDraw = true;
+		}
 		public void Dispose() {
             if (!_castObjects.IsNullOrEmpty())
             {

@@ -38,7 +38,7 @@ namespace Dpr.Battle.View.Systems
 		public const int RELEASE_GROUP_NO = -1;
 		public const float DEFAULT_MOTION_SPEED = 1f;
 		public const float OBJECT_OSCILLATION_OFFSET = 360f;
-		public static readonly global::System.Tuple<float, float> ROTATION_ADJUST;
+		public static readonly global::System.Tuple<float, float> ROTATION_ADJUST = new global::System.Tuple<float, float>(180f, 360f);
 		public const int CAMERA_SET_NEAR_ELEM = 0;
 		public const int CAMERA_SET_FAR_ELEM = 1;
 		public const int CAMERA_SET_FOV_ELEM = 2;
@@ -47,8 +47,8 @@ namespace Dpr.Battle.View.Systems
 		private global::Dpr.Battle.View.VectorHash<int, global::Dpr.ObjectEntity> _uPtrModelHash;
 		private global::Dpr.Battle.View.VectorHash<int, global::Dpr.Battle.View.Objects.BtlvEffectInstance> _uPtrParticleVectorHash;
 		private global::Dpr.Battle.View.VectorHash<int, global::Dpr.Battle.View.Objects.BtlvSound> _uPtrSoundHash;
-		private global::System.Collections.Generic.List<global::Dpr.SequenceEditor.CommandParam> _removeCommands;
-		private global::System.Collections.Generic.List<global::Effect.EffectManager.LoadParam> _effectLoadParams;
+		private global::System.Collections.Generic.List<global::Dpr.SequenceEditor.CommandParam> _removeCommands = new global::System.Collections.Generic.List<global::Dpr.SequenceEditor.CommandParam>();
+		private global::System.Collections.Generic.List<global::Effect.EffectManager.LoadParam> _effectLoadParams = new global::System.Collections.Generic.List<global::Effect.EffectManager.LoadParam>();
 		private void SEQ_CAMERA_FUNC_DEF_CameraMovePosition(global::Dpr.SequenceEditor.SequenceFile pSeqFile, global::Dpr.SequenceEditor.ISequenceViewSystem pViewSystem, global::Dpr.SequenceEditor.CommandParam param) {
 			if (param.Macro is CameraMovePosition macro)
 			{
@@ -6082,7 +6082,13 @@ namespace Dpr.Battle.View.Systems
 		private void BTL_SEQ_FUNC_DEF_TrainerSetEyeBlinkFlg(global::Dpr.SequenceEditor.SequenceFile pSeqFile, global::Dpr.SequenceEditor.ISequenceViewSystem pViewSystem, global::Dpr.SequenceEditor.CommandParam param) {
 			// Empty
 		}
-		public BattleSequenceSystem(global::Dpr.SequenceEditor.ISequenceViewSystem system) { /*@B 0x600637F*/ throw null; }
+		public BattleSequenceSystem(global::Dpr.SequenceEditor.ISequenceViewSystem system) {
+			_ISequenceViewSystem = system;
+			_isPlayWaitCamera = false;
+			_uPtrModelHash = new VectorHash<int, ObjectEntity>(64);
+			_uPtrParticleVectorHash = new VectorHash<int, BtlvEffectInstance>(0);
+			_uPtrSoundHash = new VectorHash<int, BtlvSound>(0);
+		}
 		public override void UnInitialize() {
 			base.UnInitialize();
 			_ISequenceViewSystem = null;
@@ -7703,9 +7709,97 @@ namespace Dpr.Battle.View.Systems
 		private void PreloadModelGBall(global::Dpr.SequenceEditor.SequenceFile pSeqFile, global::Dpr.SequenceEditor.ISequenceViewSystem pViewSystem, global::Dpr.SequenceEditor.CommandParam param) {
 			// Empty
 		}
-		private void PreloadParticle(global::Dpr.SequenceEditor.SequenceFile pSeqFile, global::Dpr.SequenceEditor.ISequenceViewSystem pViewSystem, global::Dpr.SequenceEditor.CommandParam param) { /*@B 0x6006395*/ throw null; }
-		private void PreloadParticleCutSceneTrainer(global::Dpr.SequenceEditor.SequenceFile pSeqFile, global::Dpr.SequenceEditor.ISequenceViewSystem pViewSystem, global::Dpr.SequenceEditor.CommandParam param) { /*@B 0x6006396*/ throw null; }
-		private void PreloadParticleSeal(global::Dpr.SequenceEditor.SequenceFile pSeqFile, global::Dpr.SequenceEditor.ISequenceViewSystem pViewSystem, global::Dpr.SequenceEditor.CommandParam param) { /*@B 0x6006397*/ throw null; }
+		private void PreloadParticle(global::Dpr.SequenceEditor.SequenceFile pSeqFile, global::Dpr.SequenceEditor.ISequenceViewSystem pViewSystem, global::Dpr.SequenceEditor.CommandParam param) {
+			if (param.Macro is ParticleCreate macro)
+			{
+				string path = macro.file;
+				var effectDatas = EffectManager.Instance.dbEffects.BattleEffectData;
+				pViewSystem.CheckWazaDataPath_Particle(ref path, macro.index, macro.isBallEffect, macro.isCapture, macro.isAttrEffect, macro.isStreamLineEffect);
+				if (BattleViewAssetManager.CachedEffectData.Any(x => x.Item1 == path))
+				{
+					Tuple<string, EffectData> cached = BattleViewAssetManager.CachedEffectData.Find(x => x.Item1 == path);
+					if (cached.Item2.referencedCount != 0)
+						return;
+					BattleViewAssetManager.CachedEffectData.Remove(cached);
+				}
+
+				string assetPath = path;
+				if (!macro.isStreamLineEffect && !macro.isAttrEffect)
+					assetPath = ("effect/prefab/battle/" + System.IO.Path.GetFileNameWithoutExtension(path)).ToLower();
+				var eff = Array.Find(effectDatas, x => x.AssetBundleName == assetPath);
+				if (eff == null)
+					return;
+
+				eff.AssetBundleName = eff.AssetBundleName.ToLower();
+				_preLoadCoroutines.Add(Sequencer.Start(EffectManager.Instance.OpLoad(new EffectManager.LoadParam[] { eff }, (effectData, isAllLoaded) =>
+				{
+					BattleViewAssetManager.CachedEffectData.Add(new Tuple<string, EffectData>(path, effectData));
+				})));
+			}
+		}
+		private void PreloadParticleCutSceneTrainer(global::Dpr.SequenceEditor.SequenceFile pSeqFile, global::Dpr.SequenceEditor.ISequenceViewSystem pViewSystem, global::Dpr.SequenceEditor.CommandParam param) {
+			if (param.Macro is DprParticleCreateCutSceneTrainer macro)
+			{
+				string path;
+				pViewSystem.SeqComFunc_GetTargetChara(macro.trg, 0);
+				BtlvPos vpos = pViewSystem.SeqComFunc_GetTargetCharaVPos(macro.trg, 0);
+				if (vpos == BtlvPos.BTL_VPOS_ERROR)
+					return;
+
+				path = pViewSystem.GetMainModule().GetClientTrainerEffect((byte)vpos);
+				var effectDatas = EffectManager.Instance.dbEffects.BattleEffectData;
+				if (BattleViewAssetManager.CachedEffectData.Any(x => x.Item1 == path))
+				{
+					Tuple<string, EffectData> cached = BattleViewAssetManager.CachedEffectData.Find(x => x.Item1 == path);
+					if (cached.Item2.referencedCount != 0)
+						return;
+					BattleViewAssetManager.CachedEffectData.Remove(cached);
+				}
+
+				var eff = Array.Find(effectDatas, x => x.AssetName == path);
+				if (eff == null)
+					return;
+
+				eff.AssetBundleName = eff.AssetBundleName.ToLower();
+				_preLoadCoroutines.Add(Sequencer.Start(EffectManager.Instance.OpLoad(new EffectManager.LoadParam[] { eff }, (effectData, isAllLoaded) =>
+				{
+					BattleViewAssetManager.CachedEffectData.Add(new Tuple<string, EffectData>(path, effectData));
+				})));
+			}
+		}
+		private void PreloadParticleSeal(global::Dpr.SequenceEditor.SequenceFile pSeqFile, global::Dpr.SequenceEditor.ISequenceViewSystem pViewSystem, global::Dpr.SequenceEditor.CommandParam param) {
+			if (param.Macro is DprParticleCreateSeal macro)
+			{
+				var effectDatas = EffectManager.Instance.dbEffects.BattleEffectData;
+				string path = string.Empty;
+				BtlvBallInfo ballInfo = pViewSystem.SeqComFunc_GetEffectBallInfo(macro.index);
+				if (ballInfo.HasBallSeal)
+				{
+					_preLoadCoroutines.Add(Sequencer.Start(ObjectEntity.PreLoadSealEffects(ballInfo.ballId, ballInfo.affixSealDatas)));
+					return;
+				}
+
+				pViewSystem.CheckWazaDataPath_Particle(ref path, macro.index, true, false, false, false);
+				if (BattleViewAssetManager.CachedEffectData.Any(x => x.Item1 == path))
+				{
+					Tuple<string, EffectData> cached = BattleViewAssetManager.CachedEffectData.Find(x => x.Item1 == path);
+					if (cached.Item2.referencedCount != 0)
+						return;
+					BattleViewAssetManager.CachedEffectData.Remove(cached);
+				}
+
+				string assetPath = ("effect/prefab/battle/" + System.IO.Path.GetFileNameWithoutExtension(path)).ToLower();
+				var eff = Array.Find(effectDatas, x => x.AssetBundleName == assetPath);
+				if (eff == null)
+					return;
+
+				eff.AssetBundleName = eff.AssetBundleName.ToLower();
+				_preLoadCoroutines.Add(Sequencer.Start(EffectManager.Instance.OpLoad(new EffectManager.LoadParam[] { eff }, (effectData, isAllLoaded) =>
+				{
+					BattleViewAssetManager.CachedEffectData.Add(new Tuple<string, EffectData>(path, effectData));
+				})));
+			}
+		}
 		private void PreloadModelAnimationConfig(global::Dpr.SequenceEditor.SequenceFile pSeqFile, global::Dpr.SequenceEditor.ISequenceViewSystem pViewSystem, global::Dpr.SequenceEditor.CommandParam param) {
 			// Empty
 		}
@@ -8496,6 +8590,6 @@ namespace Dpr.Battle.View.Systems
 			if (param.Macro is ContestPlaySE macro && macro.seID < (int)ContestSoundPlayer.PlaySE_ID.Num)
 				ContestSoundPlayer.player.PlaySeByID((ContestSoundPlayer.PlaySE_ID)macro.seID);
 		}
-		static BattleSequenceSystem() { /*@B 0x60063CF*/ throw null; }
+		static BattleSequenceSystem() { }
 	}
 }
