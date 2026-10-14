@@ -12818,17 +12818,90 @@ namespace Dpr.EvScript
             FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, BtlTowerWork.GameClear(mode) ? 1 : 0);
             return true;
         }
-		private bool EvCmd_BTWR_SUB_GET_RENSHOU_CNT() { /*@B 0x600905C*/ throw null; }
-		private bool EvCmd_BTWR_SUB_SET_SCORE() { /*@B 0x600905D*/ throw null; }
+		private bool EvCmd_BTWR_SUB_GET_RENSHOU_CNT() {
+            int mode = BtlTowerWork.GetMode();
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, (int)BtlTowerWork.GetRenshou(mode));
+            return true;
+        }
+		private bool EvCmd_BTWR_SUB_SET_SCORE() {
+            BtlTowerWork.UpdatePlayScore();
+            return true;
+        }
 		private bool EvCmd_BTWR_SUB_CHOICE_BTL_PARTNER() { return true; }
-		private bool EvCmd_BTWR_SUB_LOCAL_BTL_CALL() { /*@B 0x600905F*/ throw null; }
-		private bool EvCmd_BTWR_SUB_GET_PLAY_MODE() { /*@B 0x6009060*/ throw null; }
+		private bool EvCmd_BTWR_SUB_LOCAL_BTL_CALL() {
+            int mode = BtlTowerWork.GetMode();
+            BtlTowerWork.GetNowModeEnum(out TowerLotRule lotRule, out TowerLotCls lotCls);
+            int rank = BtlTowerWork.GetRank(mode);
+            int round = BtlTowerWork.GetRound(mode);
+            ulong seed = BtlTowerWork.GetTrainerRand(round - 1);
+            TowerLotResult lotResult = TrainerSystem.CreateTowerLotResult(lotRule, lotCls, rank, round, seed);
+            TowerTrID enemy1 = lotResult.GetTrainerID(0);
+            PokeParty enemy1Party = lotResult.CreatePokeParty(0);
+            SealTemplateID[] enemy1SealTIDs = lotResult.GetSealTemplates(0);
+            TowerTrID enemy2 = lotResult.GetTrainerID(1);
+            PokeParty enemy2Party = lotResult.CreatePokeParty(1);
+            SealTemplateID[] enemy2SealTIDs = lotResult.GetSealTemplates(1);
+            PokemonParam[] pokemonParams = Dpr.BattleMatching.BattleMatchingWork.pokemonParams;
+            int[] orderIndexList = Dpr.BattleMatching.BattleMatchingWork.orderIndexList;
+            PokeParty playerParty = new PokeParty();
+            for (int i = 0; i < orderIndexList.Length; i++)
+                playerParty.AddMember(pokemonParams[orderIndexList[i]]);
+            Dpr.PokeRegulation.ModifyLevelPokeParty(playerParty, Regulation.LevelRangeType.DRAG_DOWN, 50);
+            BtlRule rule = lotRule == TowerLotRule.Double ? BtlRule.BTL_RULE_DOUBLE : BtlRule.BTL_RULE_SINGLE;
+            ArenaID arenaID = GameManager.mapInfo[(int)PlayerWork.zoneID].BattleBg[0];
+            Dpr.EncountTools.SetupBattleTowerTrainer(PlayerWork.battleSetupParam, playerParty, rule, arenaID, 0, enemy1, enemy1Party, enemy1SealTIDs, enemy2, enemy2Party, enemy2SealTIDs, lotResult);
+            Btl_TrainerType1 = lotResult.GetTrainerType(0);
+            Btl_TrainerType2 = lotResult.GetTrainerType(1);
+            SetBattleReturn();
+            XLSXContent.TowerTrainerTable.SheetTrainerData trainerData = lotResult.GetTrainerData(0);
+            FieldManager.Instance.PreLoadEncEffect(lotRule == TowerLotRule.Double ? trainerData.doubleEnc : trainerData.singleEnc);
+            FieldManager.Instance.EncountStart(FieldManager.EncountFadeType.Normal, 0, 0);
+            _isCall_TrainerBtl = true;
+            _isBattleTowerBtl = true;
+            return true;
+        }
+		private bool EvCmd_BTWR_SUB_GET_PLAY_MODE() {
+            int mode = BtlTowerWork.GetMode();
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, mode);
+            return true;
+        }
 		private bool EvCmd_BTWR_SUB_SET_LEADER_CLEAR_FLAG() {
             return true;
         }
 		private bool EvCmd_BTWR_SUB_GET_LEADER_CLEAR_FLAG() { return true; }
-		private bool EvCmd_BTWR_SUB_ADD_BATTLE_POINT() { /*@B 0x6009063*/ throw null; }
-		private bool EvCmd_BTWR_SUB_RENSHOU_RIBBON_SET() { /*@B 0x6009064*/ throw null; }
+		private bool EvCmd_BTWR_SUB_ADD_BATTLE_POINT() {
+            int mode = BtlTowerWork.GetMode();
+            int rank = BtlTowerWork.GetRank(mode);
+            int bp = BtlTowerWork.GetBP();
+            int point = DataManager.TowerBattlePoint[rank - 1].BattlePoint[mode];
+            if (point > 0)
+                PlayerWork.playReportDataRef.battle_point += point;
+            BtlTowerWork.SetBP(point + bp);
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, point);
+            return true;
+        }
+		private bool EvCmd_BTWR_SUB_RENSHOU_RIBBON_SET() {
+            int[] orderIndexList = BattleMatchingWork.orderIndexList;
+            int team = BattleMatchingWork.battleTeamIndex;
+            if (team < 0)
+            {
+                for (int i = 0; i < orderIndexList.Length; i++)
+                    PlayerWork.playerParty.GetMemberPointer((uint)orderIndexList[i]).SetRibbon((uint)RibbonNo.SWSH_MASTER_TOWER);
+            }
+            else
+            {
+                for (int i = 0; i < orderIndexList.Length; i++)
+                {
+                    if (UIManager.TryGetTeamPokemonTrayIndex(team, orderIndexList[i], out int tray, out int index))
+                    {
+                        PokemonParam pp = Dpr.Box.BoxPokemonWork.GetPokemon(tray, index);
+                        pp.SetRibbon((uint)RibbonNo.SWSH_MASTER_TOWER);
+                        Dpr.Box.BoxPokemonWork.UpdatePokemon(pp, tray, index);
+                    }
+                }
+            }
+            return true;
+        }
 		private bool EvCmd_BTWR_SUB_GET_MINE_OBJ() { return true; }
 		private bool EvCmd_BTWR_SUB_UPDATE_RANDOM() {
             BtlTowerWork.Start();
@@ -12838,7 +12911,10 @@ namespace Dpr.EvScript
 		private bool EvCmd_BTWR_SUB_BTL_TRAINER_SET() {
             return true;
         }
-		private bool EvCmd_BTWR_PLAYER_WIN_CHECK() { /*@B 0x6009069*/ throw null; }
+		private bool EvCmd_BTWR_PLAYER_WIN_CHECK() {
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, _isBattleTowerWin ? 1 : 0);
+            return true;
+        }
 		private bool EvCmd_BTWR_SUB_ADD_BATTLE_POINT_MANUAL() {
             int bp = BtlTowerWork.GetBP();
             int addPoint = GetArgInt(_evArg[1]);
@@ -12848,7 +12924,11 @@ namespace Dpr.EvScript
             BtlTowerWork.SetBP(bp);
             return true;
         }
-		private bool EvCmdSaveRendouEnable() { /*@B 0x600906B*/ throw null; }
+		private bool EvCmdSaveRendouEnable() {
+            bool enable = SaveDataLinkage.IsEnable((SaveDataLinkage.LinkageApp)GetArgInt(_evArg[2]));
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, enable ? 1 : 0);
+            return true;
+        }
 		private bool EvCmd_RETURN_LOOP() {
             int num = GetArgInt(_evArg[1]);
             if (num > 0)
@@ -12862,27 +12942,83 @@ namespace Dpr.EvScript
             }
             return true;
         }
-		private bool EvCmd_INPUT_JUMP() { /*@B 0x600906D*/ throw null; }
-		private bool EvCmd_SET_VISIBILITY() { /*@B 0x600906E*/ throw null; }
+		private bool EvCmd_INPUT_JUMP() {
+            if (FieldInput.ButtonOn(GetArgInt(_evArg[1])))
+                JumpLabel(GetArgString(_evData, _evArg[2]), null);
+            return true;
+        }
+		private bool EvCmd_SET_VISIBILITY() {
+            string name = GetArgString(_evData, _evArg[1]);
+            int type = GetArgInt(_evArg[2]);
+            int value = GetArgInt(_evArg[3]);
+            FieldCharacterEntity[] characters = EntityManager.fieldCharacters;
+            for (int i = 0; i < characters.Length; i++)
+            {
+                FieldCharacterEntity entity = characters[i];
+                if (entity == null)
+                    continue;
+                if (entity.gameObject.name == name)
+                {
+                    ChangeVisibility(entity, type, value == 1);
+                    break;
+                }
+            }
+            return true;
+        }
 		private void ChangeVisibility(global::FieldCharacterEntity entity, int type, bool flag) {
             if (type == 0)
                 entity.watchVisibility = flag;
         }
-		private bool EvCmd_LOAD_CAMERA_CONTROLLER() { /*@B 0x6009070*/ throw null; }
-		private bool EvCmd_RELEASE_CAMERA_CONTROLLER() { /*@B 0x6009071*/ throw null; }
+		private bool EvCmd_LOAD_CAMERA_CONTROLLER() {
+            FieldAnimeCamera.instance.LoadRuntimeAnimatorController(GetArgString(_evData, _evArg[1]));
+            return true;
+        }
+		private bool EvCmd_RELEASE_CAMERA_CONTROLLER() {
+            FieldAnimeCamera.instance.ReleaseSetRuntimeAnimatorController();
+            return true;
+        }
 		private bool EvCmd_LOAD_WAIT_CAMERA_CONTROLLER() {
             return FieldAnimeCamera.instance.Ready();
         }
-		private bool EvCmd_CAMERA_CONTROLLER_PLAY() { /*@B 0x6009073*/ throw null; }
+		private bool EvCmd_CAMERA_CONTROLLER_PLAY() {
+            FieldAnimeCamera.instance.Play(GetArgString(_evData, _evArg[1]));
+            return true;
+        }
 		private bool EvCmd_CAMERA_CONTROLLER_WAIT() {
             if (_evArg.Length > 1)
                 return !FieldAnimeCamera.instance.IsPlay(GetArgString(_evData, _evArg[1]));
             return !FieldAnimeCamera.instance.IsPlay();
         }
-		private bool EvCmd_CAMERA_CONTROLLER_END() { /*@B 0x6009075*/ throw null; }
-		private bool EvCmd_TUREARUKI_POKEMON_TALK() { /*@B 0x6009076*/ throw null; }
-		private bool EvCmd_TUREARUKI_POKEMON_INDEX() { /*@B 0x6009077*/ throw null; }
-		private bool EvCmd_TUREARUKI_TAKE_ITEM() { /*@B 0x6009078*/ throw null; }
+		private bool EvCmd_CAMERA_CONTROLLER_END() {
+            FieldAnimeCamera.instance.Stop();
+            return true;
+        }
+		private bool EvCmd_TUREARUKI_POKEMON_TALK() {
+            if (!FieldManager.fwMng.IsCanTalk())
+            {
+                FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, 0);
+                return true;
+            }
+            if (Dpr.Field.Walking.FieldWalkingManager.talkState == Dpr.Field.Walking.FieldWalkingManager.TalkState.Talking)
+                return false;
+            if (Dpr.Field.Walking.FieldWalkingManager.talkState == Dpr.Field.Walking.FieldWalkingManager.TalkState.TalkEnd)
+            {
+                Dpr.Field.Walking.FieldWalkingManager.talkState = Dpr.Field.Walking.FieldWalkingManager.TalkState.None;
+                FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, FieldManager.fwMng.pokeTalkModel.IsMonohiroi() ? 1 : 0);
+                return true;
+            }
+            FieldManager.fwMng.Turearuki_Talk();
+            return false;
+        }
+		private bool EvCmd_TUREARUKI_POKEMON_INDEX() {
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, (int)PlayerWork.playerParty.GetMemberIndex(FieldManager.fwMng.PartnerPokeParam));
+            return true;
+        }
+		private bool EvCmd_TUREARUKI_TAKE_ITEM() {
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, FieldManager.fwMng.pokeTalkModel.GetItemID());
+            FieldManager.fwMng.pokeTalkModel.ResetItem();
+            return true;
+        }
 		private bool EvCmd_TUREARUKI_ITEM_TIMER_SET() { return true; }
 		private bool EvCmd_TUREARUKI_POKE_CREATE() {
             FieldManager.fwMng.isEvent = false;
@@ -12894,12 +13030,89 @@ namespace Dpr.EvScript
             FieldManager.fwMng.isEvent = GetArgInt(_evArg[1]) == 1;
             return true;
         }
-		private bool EvCmd_FIND_BG_ENABLE() { /*@B 0x600907C*/ throw null; }
-		private bool EvCmd_FIND_BG_DISABLE() { /*@B 0x600907D*/ throw null; }
-		private bool EvCmd_CALL_EFFECT() { /*@B 0x600907E*/ throw null; }
-		private bool EvCmd_STOP_EFFECT() { /*@B 0x600907F*/ throw null; }
-		public bool EvCmd_RELEASE_EFFECT() { /*@B 0x6009080*/ throw null; }
-		private bool EvCmd_CALL_EFFECT_OBJ() { /*@B 0x6009081*/ throw null; }
+		private bool EvCmd_FIND_BG_ENABLE() {
+            int index = GetArgInt(_evArg[1]);
+            string n = GetArgString(_evData, _evArg[2]);
+            Transform child = GameManager.connector.bgCacheObjects.transform.GetChild(index).Find(n);
+            if (child != null)
+                child.gameObject.SetActive(true);
+            return true;
+        }
+		private bool EvCmd_FIND_BG_DISABLE() {
+            int index = GetArgInt(_evArg[1]);
+            string n = GetArgString(_evData, _evArg[2]);
+            Transform child = GameManager.connector.bgCacheObjects.transform.GetChild(index).Find(n);
+            if (child != null)
+                child.gameObject.SetActive(false);
+            return true;
+        }
+		private bool EvCmd_CALL_EFFECT() {
+            if (_effSeq == 2)
+            {
+                _effSeq = 0;
+                return true;
+            }
+            if (_effSeq == 0)
+            {
+                // nested scope: the closure is created only here, as shipped
+                int index;
+                _effSeq = 1;
+                index = GetArgInt(_evArg[1]);
+                int effectId = GetArgInt(_evArg[2]);
+                float x = GetArgFloat(_evArg[3]);
+                float y = GetArgFloat(_evArg[4]);
+                float z = GetArgFloat(_evArg[5]);
+                FieldManager.Instance.CallEffect((EffectFieldID)effectId, new Vector3(x, y, z), eff =>
+                {
+                    _scriptEffects[index] = eff;
+                    _effSeq = 2;
+                }, eff => { });
+            }
+            return false;
+        }
+		private bool EvCmd_STOP_EFFECT() {
+            int index = GetArgInt(_evArg[1]);
+            int isForce = GetArgInt(_evArg[2]);
+            Effect.EffectInstance effect = _scriptEffects[index];
+            if (effect != null)
+                effect.Stop(0f, isForce == 1);
+            Coroutine coroutine = _scriptScaleCorutine[index];
+            if (coroutine != null)
+                Sequencer.Stop(coroutine);
+            return true;
+        }
+		public bool EvCmd_RELEASE_EFFECT() {
+            int index = GetArgInt(_evArg[1]);
+            _scriptEffects[index] = null;
+            Coroutine coroutine = _scriptScaleCorutine[index];
+            if (coroutine != null)
+                Sequencer.Stop(coroutine);
+            _scriptScaleCorutine[index] = null;
+            return true;
+        }
+		private bool EvCmd_CALL_EFFECT_OBJ() {
+            if (_effSeq == 2)
+            {
+                _effSeq = 0;
+                return true;
+            }
+            if (_effSeq == 0)
+            {
+                // nested scope: the closure is created only here, as shipped
+                int index;
+                _effSeq = 1;
+                index = GetArgInt(_evArg[1]);
+                int effectId = GetArgInt(_evArg[2]);
+                int objIndex = GetArgInt(_evArg[3]);
+                FieldObjectEntity entity = (objIndex >= 0 && objIndex < _fieldObjectEntity.Count) ? _fieldObjectEntity[objIndex] : null;
+                FieldManager.Instance.CallEffect((EffectFieldID)effectId, entity.transform, eff =>
+                {
+                    _scriptEffects[index] = eff;
+                    _effSeq = 2;
+                }, eff => { });
+            }
+            return false;
+        }
 		private bool EvCmd_EFF_SCALE() {
             int index = GetArgInt(_evArg[1]);
             float min = GetArgFloat(_evArg[2]);
@@ -12971,13 +13184,19 @@ namespace Dpr.EvScript
             }
             return _pokelistSequence < 0;
         }
-		private bool EvCmd_POKELIST_FORM_CHANGE_GET_RESULT() { /*@B 0x6009085*/ throw null; }
+		private bool EvCmd_POKELIST_FORM_CHANGE_GET_RESULT() {
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, _pokelistIndex);
+            return true;
+        }
 		private bool EvCmd_CASSET_VERSION_GET() {
             uint version = GetPokemonParam(-1, GetArgInt(_evArg[2])).GetCassetteVersion();
             FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, (int)version);
             return true;
         }
-		private bool EvCmd_BOX_OPEN_NORMAL() { /*@B 0x6009087*/ throw null; }
+		private bool EvCmd_BOX_OPEN_NORMAL() {
+            UIManager.Instance.CreateUIWindow<BoxWindow>(UIWindowID.BOX).Open(UIWindow.WINDOWID_FIELD, false);
+            return true;
+        }
 		private bool EvCmd_BOX_OPEN_SELECT() {
             BoxWindow window = UIManager.Instance.CreateUIWindow<BoxWindow>(UIWindowID.BOX);
             BoxWindow.OpenParam param = new BoxWindow.OpenParam();
@@ -12989,7 +13208,14 @@ namespace Dpr.EvScript
             FieldManager.Instance.SetAkLisnerTransform(entity.transform);
             return true;
         }
-		private bool EvCmd_AK_LISNER_POS() { /*@B 0x600908A*/ throw null; }
+		private bool EvCmd_AK_LISNER_POS() {
+            float x = GetArgFloat(_evArg[1]);
+            float y = GetArgFloat(_evArg[2]);
+            float z = GetArgFloat(_evArg[3]);
+            FieldManager.Instance.SetAkLisnerTransform(null);
+            AudioManager.Instance.SetListenerPosition(new Vector3(x, y, z));
+            return true;
+        }
 		private bool EvCmd_AK_LISNER_ROT() {
             float x = GetArgFloat(_evArg[1]);
             float y = GetArgFloat(_evArg[2]);
@@ -13002,10 +13228,22 @@ namespace Dpr.EvScript
             TvWork.RecordTvIntDataSet((TV_DATA_ID_INT)GetArgInt(_evArg[1]), GetArgInt(_evArg[2]));
             return true;
         }
-		private bool EvCmd_SET_TV_PLAYER_NAME() { /*@B 0x600908D*/ throw null; }
-		private bool EvCmd_SET_TV_POKE_NICK_NAME() { /*@B 0x600908E*/ throw null; }
-		private bool EvCmd_TV_TPIC_ENABLE() { /*@B 0x600908F*/ throw null; }
-		private bool EvCmd_TV_TPIC_BRANCH() { /*@B 0x6009090*/ throw null; }
+		private bool EvCmd_SET_TV_PLAYER_NAME() {
+            TvWork.RecordTvStrDataSet((TV_DATA_ID_STR)GetArgInt(_evArg[1]), PlayerWork.userName);
+            return true;
+        }
+		private bool EvCmd_SET_TV_POKE_NICK_NAME() {
+            TvWork.RecordTvStrDataSet((TV_DATA_ID_STR)GetArgInt(_evArg[1]), PlayerWork.playerParty.GetMemberPointer(0).GetNickName());
+            return true;
+        }
+		private bool EvCmd_TV_TPIC_ENABLE() {
+            TvWork.TVTpicEnable((TV_PROGRAM)GetArgInt(_evArg[1]));
+            return true;
+        }
+		private bool EvCmd_TV_TPIC_BRANCH() {
+            TvWork.TvBranchDataSet((TV_PROGRAM)GetArgInt(_evArg[1]), GetArgInt(_evArg[2]));
+            return true;
+        }
 		private bool EvCmd_AUTO_TANKEN_SET() {
             PlayerInputActive(false, true);
             FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG0, 0);
@@ -13013,7 +13251,14 @@ namespace Dpr.EvScript
                 () => FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG0, 1), UIWindow.WINDOWID_FIELD);
             return true;
         }
-		private bool EvCmd_AUTO_TANKEN_SET_WAIT() { /*@B 0x6009092*/ throw null; }
+		private bool EvCmd_AUTO_TANKEN_SET_WAIT() {
+            if (FlagWork.GetWork(EvWork.WORK_INDEX.SCWK_REG0) == 1)
+            {
+                FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG0, 0);
+                return true;
+            }
+            return false;
+        }
 		private bool EvCmd_USE_TANKENSET() {
             _eventEndDelegate += () =>
             {
@@ -13035,10 +13280,86 @@ namespace Dpr.EvScript
             matchingPassword.Clear();
             return true;
         }
-		private bool EvCmd_LOCALKOUKAN_APPLY() { /*@B 0x6009094*/ throw null; }
-		private bool EvCmd_ZUKAN_TOUROKU() { /*@B 0x6009095*/ throw null; }
-		private bool EvCmd_ZUKAN_TOUROKU_WAIT() { /*@B 0x6009096*/ throw null; }
-		private bool EvCmd_CHK_ZUKAN_TOUROKU() { /*@B 0x6009097*/ throw null; }
+		private bool EvCmd_LOCALKOUKAN_APPLY() {
+            LocalKoukan.Operation op;
+            if (FieldCanvas.isNPCTradeEnd)
+            {
+                FieldCanvas.isNPCTradeEnd = false;
+                FieldCanvas.isNPCTrading = false;
+                return true;
+            }
+            if (FieldCanvas.isNPCTrading)
+                return false;
+            int npcIndex = GetArgInt(_evArg[1]);
+            int trayNo = GetArgInt(_evArg[2]);
+            int pos = GetArgInt(_evArg[3]);
+            op = null;
+            PokemonParam myParam;
+            if (trayNo < 0)
+                myParam = PlayerWork.playerParty.GetMemberPointer((uint)pos);
+            else
+                myParam = Dpr.Box.BoxPokemonWork.GetPokemon(trayNo, pos);
+            if (myParam == null)
+                return true;
+            op = LocalKoukan.CreateOperation(myParam, npcIndex, PlayerWork.msgLangID, trayNo < 0, trayNo, pos);
+            if (op == null)
+                return true;
+            Demo_Trade demo = new Demo_Trade();
+            demo.MyPokeParam_Copy = op.from;
+            demo.FriendPokeParam_Copy = op.other;
+            LocalKoukanData.Sheetdata targetData = LocalKoukan.GetTargetData(npcIndex, PlayerWork.msgLangID);
+            int myId = (int)PlayerWork.playerStatus.id;
+            int friendId = targetData.trainerid;
+            string friendName = MessageManager.Instance.GetSimpleMessage("dp_scenario3", targetData.name_label);
+            demo.SetParam(myId, friendId, friendName, false, PlayerWork.msgLangID);
+            Dpr.UI.BoxWindow.LimitBox(true);
+            demo.OnEndDemo = () =>
+            {
+                FieldCanvas.isNPCTradeEnd = true;
+                op.Apply();
+                Dpr.UI.BoxWindow.LimitBox(false);
+            };
+            FieldCanvas.isNPCTrading = true;
+            PlayReportManager.NpcKoukan();
+            FieldCanvas.PlayDemo(demo, true);
+            return false;
+        }
+		private bool EvCmd_ZUKAN_TOUROKU() {
+            int tray = GetArgInt(_evArg[1]);
+            int idx = GetArgInt(_evArg[2]);
+            FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG0, 0);
+            UIZukanRegister window = UIManager.Instance.CreateUIWindow<UIZukanRegister>(UIWindowID.ZUKAN_REGISTER);
+            window.onClosed += _ => FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG0, 1);
+            PokemonParam pokemonParam;
+            if (tray < 0)
+                pokemonParam = PlayerWork.playerParty.GetMemberPointer((uint)idx);
+            else
+                pokemonParam = Dpr.Box.BoxPokemonWork.GetPokemon(tray, idx);
+            window.OpenRegisterOnly(pokemonParam, UIWindow.WINDOWID_PARENT);
+            return true;
+        }
+		private bool EvCmd_ZUKAN_TOUROKU_WAIT() {
+            if (FlagWork.GetWork(EvWork.WORK_INDEX.SCWK_REG0) == 1)
+            {
+                FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG0, 0);
+                return true;
+            }
+            return false;
+        }
+		private bool EvCmd_CHK_ZUKAN_TOUROKU() {
+            int tray = GetArgInt(_evArg[1]);
+            int idx = GetArgInt(_evArg[2]);
+            PokemonParam pokemonParam;
+            if (tray < 0)
+                pokemonParam = PlayerWork.playerParty.GetMemberPointer((uint)idx);
+            else
+                pokemonParam = Dpr.Box.BoxPokemonWork.GetPokemon(tray, idx);
+            int workNo = _evArg[3].data;
+            // Shipped: the IsGet result is discarded and the work is always set to 1.
+            ZukanWork.IsGet((uint)pokemonParam.GetMonsNo());
+            FlagWork.SetWork((EvWork.WORK_INDEX)workNo, 1);
+            return true;
+        }
 		private bool EvCmd_AUTO_SAVE() {
             if (_evArg.Length == 2 && GetArgInt(_evArg[1]) == 1)
                 return FieldManager.Instance.AutoSave(true, true, false, false);
@@ -13089,8 +13410,38 @@ namespace Dpr.EvScript
             }
             return _azukariyaSequence < 0;
         }
-		private bool EvCmd_TALK_UNION_NPC() { /*@B 0x600909C*/ throw null; }
-		private bool EvCmd_TALK_COLISEUM_NPC() { /*@B 0x600909D*/ throw null; }
+		private bool EvCmd_TALK_UNION_NPC() {
+            if (UnionFrontDeskStateController.Instance == null)
+                return true;
+            if (!UnionFrontDeskStateController.Instance.GetIsStart())
+            {
+                UnionFrontDeskStateController.Instance.SetIsStart(true);
+                UnionFrontDeskStateController.Instance.isTalkEnd = false;
+                UnionFrontDeskStateController.Instance.StartTalk();
+            }
+            else if (UnionFrontDeskStateController.Instance.isTalkEnd)
+            {
+                UnionFrontDeskStateController.Instance.SetIsStart(false);
+                return true;
+            }
+            return false;
+        }
+		private bool EvCmd_TALK_COLISEUM_NPC() {
+            if (ColiseumFrontDeskStateController.Instance == null)
+                return true;
+            if (!ColiseumFrontDeskStateController.Instance.GetIsStart())
+            {
+                ColiseumFrontDeskStateController.Instance.SetIsStart(true);
+                ColiseumFrontDeskStateController.Instance.isTalkEnd = false;
+                ColiseumFrontDeskStateController.Instance.StartTalk();
+            }
+            else if (ColiseumFrontDeskStateController.Instance.isTalkEnd)
+            {
+                ColiseumFrontDeskStateController.Instance.SetIsStart(false);
+                return true;
+            }
+            return false;
+        }
 		private bool EvCmd_POKETORE_GET_CHARGE() {
             ENC_SV_DATA encData = PlayerWork.Enc_SV_Data;
             FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, encData.PokeToreCharge >= 50 ? 1 : 0);
@@ -13123,7 +13474,15 @@ namespace Dpr.EvScript
             PlayerWork.Enc_SV_Data = encData;
             return true;
         }
-		private bool EvCmd_BICYCLE_COLOR_SET() { /*@B 0x60090A0*/ throw null; }
+		private bool EvCmd_BICYCLE_COLOR_SET() {
+            byte color = (byte)GetArgInt(_evArg[1]);
+            byte max = (byte)(EntityManager.activeFieldPlayer.bicycleColors.Length - 1);
+            if (color != 0)
+                color = color < max ? color : max;
+            EntityManager.activeFieldPlayer.bicycleColorIndex = color;
+            PlayerWork.bicycleColor = color;
+            return true;
+        }
 		private bool EvCmd_BICYCLE_COLOR_GET() {
             FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, PlayerWork.bicycleColor);
             return true;
@@ -13132,11 +13491,52 @@ namespace Dpr.EvScript
             MessageWordSetHelper.SetParkItemNameWord(GetArgInt(_evArg[1]), GetArgInt(_evArg[2]), GetArgInt(_evArg[3]));
             return true;
         }
-		private bool EvCmd_LOAD_UMA_ANIME() { /*@B 0x60090A3*/ throw null; }
-		private global::System.Collections.IEnumerator LoadUMAAsset() { /*@B 0x60090A4*/ throw null; }
-		private bool EvCmd_RELEASE_UMA_ANIME() { /*@B 0x60090A5*/ throw null; }
-		private bool EvCmd_LOAD_UMA_ANIME_WAIT() { /*@B 0x60090A6*/ throw null; }
-		private bool EvCmd_UMA_ANIME_PLAY() { /*@B 0x60090A7*/ throw null; }
+		private bool EvCmd_LOAD_UMA_ANIME() {
+            if (_umaAnimatorCtr == null)
+                _umaAnimatorCtr = new FieldAnimatorController[3];
+            Sequencer.Start(LoadUMAAsset());
+            return true;
+        }
+		private global::System.Collections.IEnumerator LoadUMAAsset() {
+            AssetManager.AppendAssetBundleRequest("field/animeobj/chapter111", true, null, null);
+            yield return AssetManager.DispatchRequests((eventType, name, asset) =>
+            {
+                if (asset is GameObject)
+                {
+                    for (int i = 0; i < _umaAnimatorCtr.Length; i++)
+                    {
+                        GameObject obj = UnityEngine.Object.Instantiate(asset) as GameObject;
+                        _umaAnimatorCtr[i] = obj.GetComponent<FieldAnimatorController>();
+                    }
+                }
+            });
+        }
+		private bool EvCmd_RELEASE_UMA_ANIME() {
+            for (int i = 0; i < _umaAnimatorCtr.Length; i++)
+            {
+                _umaAnimatorCtr[i].transform.GetChild(0).SetParent(_umaAnimatorCtr[i].GetReturnParent());
+                UnityEngine.Object.Destroy(_umaAnimatorCtr[i].gameObject);
+                _umaAnimatorCtr[i] = null;
+            }
+            AssetManager.UnloadAssetBundle("field/animeobj/chapter111");
+            return true;
+        }
+		private bool EvCmd_LOAD_UMA_ANIME_WAIT() {
+            for (int i = 0; i < _umaAnimatorCtr.Length; i++)
+            {
+                if (_umaAnimatorCtr[i] == null)
+                    return false;
+                if (!_umaAnimatorCtr[i].Ready())
+                    return false;
+            }
+            return true;
+        }
+		private bool EvCmd_UMA_ANIME_PLAY() {
+            int index = GetArgInt(_evArg[1]);
+            string stateName = GetArgString(_evData, _evArg[2]);
+            _umaAnimatorCtr[index].Play(stateName);
+            return true;
+        }
 		private bool EvCmd_UMA_ANIME_ATTACH() { /*@B 0x60090A8*/ throw null; }
 		private bool EvCmd_UMA_PLAY_WAIT() { /*@B 0x60090A9*/ throw null; }
 		private bool EvCmd_OBJ_ANIME_SPEED() { /*@B 0x60090AA*/ throw null; }
