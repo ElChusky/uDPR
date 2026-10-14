@@ -12,6 +12,24 @@ namespace Dpr.Battle.View.Playables
 		public float Randomness;
 		[global::UnityEngine.TooltipAttribute("スムーズフェードするか")]
 		public bool FadeOut;
-		public static global::Dpr.Battle.View.Playables.ShakeParam Factory(bool isShakeParam = false) { /*@B 0x60065E3*/ throw null; }
+		public static global::Dpr.Battle.View.Playables.ShakeParam Factory(bool isShakeParam = false) {
+			if (isShakeParam)
+			{
+				return new ShakeParam
+				{
+					Strength = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f),
+					Vibrato = 0,
+					Randomness = 0.0f,
+					FadeOut = false,
+				};
+			}
+			return new ShakeParam
+			{
+				Strength = new UnityEngine.Vector3(0.05f, 0.05f, 0.05f),
+				Vibrato = 10,
+				Randomness = 90.0f,
+				FadeOut = false,
+			};
+		}
 	}
 }

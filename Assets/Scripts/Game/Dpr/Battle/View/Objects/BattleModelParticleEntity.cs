@@ -8,14 +8,14 @@ namespace Dpr.Battle.View.Objects
 	{
 		[global::UnityEngine.SerializeField]
 		[global::SearchableEnumAttribute]
-		private global::EffectBattleID _effectBattleId;
+		private global::EffectBattleID _effectBattleId = global::EffectBattleID.NONE;
 		[global::UnityEngine.SerializeField]
 		private global::Effect.EffectInstance _effectInstance;
-		private static global::System.Collections.Generic.Dictionary<int, global::Effect.EffectData> _effectDataDic;
+		private static global::System.Collections.Generic.Dictionary<int, global::Effect.EffectData> _effectDataDic = new global::System.Collections.Generic.Dictionary<int, global::Effect.EffectData>();
 		private global::Effect.EffectData _effectData;
 		public bool IsLoaded { get; private set; }
 		public global::EffectBattleID EffectBattleId { get { return this._effectBattleId; } }
-		private bool isManualEffectDataRelease { get { /*@B 0x60066EF*/ throw null; } }
+		private bool isManualEffectDataRelease { get { return PlayerWork.isSealPreview; } }
 		protected override global::System.Collections.IEnumerator OnActivateOperation() {
 			if (IsLoaded)
 				yield break;
@@ -65,7 +65,7 @@ namespace Dpr.Battle.View.Objects
 
 			_effectDataDic.Clear();
 		}
-		public BattleModelParticleEntity() { /*@B 0x60066F5*/ throw null; }
-		static BattleModelParticleEntity() { /*@B 0x60066F6*/ throw null; }
+		public BattleModelParticleEntity() { }
+		static BattleModelParticleEntity() { }
 	}
 }

@@ -4,18 +4,24 @@ namespace Dpr.Battle.View.Objects
 {
 	public class BtlvPureObject : global::Dpr.Battle.View.ITranslationObject, global::System.IDisposable
 	{
-		private global::UnityEngine.Vector3 _translation;
-		private global::UnityEngine.Vector3 _translationOffset;
-		private global::UnityEngine.Vector3 _scale;
-		private global::UnityEngine.Vector3 _scaleOffset;
-		private global::UnityEngine.Vector3 _rotVec;
-		private global::UnityEngine.Vector3 _rotVecOffset;
+		private global::UnityEngine.Vector3 _translation = global::UnityEngine.Vector3.zero;
+		private global::UnityEngine.Vector3 _translationOffset = global::UnityEngine.Vector3.zero;
+		private global::UnityEngine.Vector3 _scale = global::UnityEngine.Vector3.one;
+		private global::UnityEngine.Vector3 _scaleOffset = global::UnityEngine.Vector3.one;
+		private global::UnityEngine.Vector3 _rotVec = global::UnityEngine.Vector3.zero;
+		private global::UnityEngine.Vector3 _rotVecOffset = global::UnityEngine.Vector3.zero;
 		protected bool _isSuspendUpdate;
 		protected string _name;
 		protected global::Dpr.Battle.View.PokeFollowInfo _pokeFollowInfo;
 		protected global::Dpr.Battle.View.BtlvObjectFollowInfo _objectFollowInfo;
-		public BtlvPureObject() { /*@B 0x60066BE*/ throw null; }
-		public virtual void Dispose() { /*@B 0x60066BF*/ throw null; }
+		public BtlvPureObject() {
+			BattleJobSystem.Add(this);
+		}
+		public virtual void Dispose() {
+			BattleJobSystem.Remove(this);
+			_pokeFollowInfo = null;
+			_objectFollowInfo = null;
+		}
 		public void SetTranslationVec(global::UnityEngine.Vector3 translation) {
 			_translation = translation;
 		}

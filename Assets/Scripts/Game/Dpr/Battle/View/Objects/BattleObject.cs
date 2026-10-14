@@ -4,25 +4,25 @@ namespace Dpr.Battle.View.Objects
 {
 	public abstract class BattleObject : global::Dpr.Battle.View.BtlvBehaviour, global::Dpr.Battle.View.ITranslationObject
 	{
-		protected global::UnityEngine.Vector3 m_translation;
-		protected global::UnityEngine.Vector3 m_translationOffset;
-		protected global::UnityEngine.Vector3 m_translationGOffset;
-		protected global::UnityEngine.Vector3 m_scale;
-		protected global::UnityEngine.Vector3 m_scaleOffset;
-		protected global::UnityEngine.Vector3 m_beforeTranslation;
-		protected global::UnityEngine.Vector3 m_nodeScaleTranslation;
-		protected global::UnityEngine.Vector3 m_nodeRotateTranslation;
-		protected global::UnityEngine.Vector3 m_rotVec;
-		protected global::UnityEngine.Vector3 m_rotVecOffset;
+		protected global::UnityEngine.Vector3 m_translation = global::UnityEngine.Vector3.zero;
+		protected global::UnityEngine.Vector3 m_translationOffset = global::UnityEngine.Vector3.zero;
+		protected global::UnityEngine.Vector3 m_translationGOffset = global::UnityEngine.Vector3.zero;
+		protected global::UnityEngine.Vector3 m_scale = global::UnityEngine.Vector3.one;
+		protected global::UnityEngine.Vector3 m_scaleOffset = global::UnityEngine.Vector3.one;
+		protected global::UnityEngine.Vector3 m_beforeTranslation = global::UnityEngine.Vector3.zero;
+		protected global::UnityEngine.Vector3 m_nodeScaleTranslation = global::UnityEngine.Vector3.zero;
+		protected global::UnityEngine.Vector3 m_nodeRotateTranslation = global::UnityEngine.Vector3.zero;
+		protected global::UnityEngine.Vector3 m_rotVec = global::UnityEngine.Vector3.zero;
+		protected global::UnityEngine.Vector3 m_rotVecOffset = global::UnityEngine.Vector3.zero;
 		protected bool m_isVisible;
 		protected bool m_isSubVisible;
 		protected bool m_suspendUpdate;
 		protected bool m_autoRotate;
 		protected bool m_isVisibleCameraHit;
 		protected bool m_isSubVisibleCameraHit;
-		protected float _animSpeed;
-		public int Index { get; set; }
-		public bool IsEnable { get; private set; }
+		protected float _animSpeed = 1.0f;
+		public int Index { get; set; } = -1;
+		public bool IsEnable { get; private set; } = true;
 		public int Priority { get; private set; }
 		public global::UnityEngine.Vector3 NodeScaleTranslation { get; set; }
 		public global::UnityEngine.Vector3 NodeRotateTranslation { get; set; }
@@ -42,18 +42,18 @@ namespace Dpr.Battle.View.Objects
 		public global::UnityEngine.Vector3 GetTranslationVec() {
 			return m_translation;
 		}
-		public void SetTranslationOffset(global::UnityEngine.Vector3 translation) { /*@B 0x6006674*/ throw null; }
+		public void SetTranslationOffset(global::UnityEngine.Vector3 translation) { m_translationOffset = translation; }
 		public global::UnityEngine.Vector3 GetTranslationOffset() {
 			return m_translationOffset;
 		}
-		public void SetScaleVec(global::UnityEngine.Vector3 scale) { /*@B 0x6006676*/ throw null; }
+		public void SetScaleVec(global::UnityEngine.Vector3 scale) { m_scale = scale; }
 		public global::UnityEngine.Vector3 GetScaleVec() {
 			return m_scale;
 		}
 		public void SetScaleOffset(global::UnityEngine.Vector3 scale) {
 			m_scaleOffset = scale;
 		}
-		public global::UnityEngine.Vector3 GetScaleOffset() { /*@B 0x6006679*/ throw null; }
+		public global::UnityEngine.Vector3 GetScaleOffset() { return m_scaleOffset; }
 		public void SetNodeScaleTranslation(global::UnityEngine.Vector3 translation) {
 			m_nodeScaleTranslation = translation;
 		}
@@ -103,7 +103,7 @@ namespace Dpr.Battle.View.Objects
 		public global::UnityEngine.Vector3 GetCalcRot() {
 			return new Vector3(m_rotVec.x + m_rotVecOffset.x, m_rotVec.y + m_rotVecOffset.y, m_rotVec.z + m_rotVecOffset.z);
 		}
-		protected BattleObject() { /*@B 0x6006689*/ throw null; }
+		protected BattleObject() { }
 		public enum ModelType
 		{
 			None = 0,

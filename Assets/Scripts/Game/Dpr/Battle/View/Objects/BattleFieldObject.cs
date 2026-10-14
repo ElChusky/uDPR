@@ -4,13 +4,13 @@ namespace Dpr.Battle.View.Objects
 	public class BattleFieldObject : global::Dpr.Battle.View.BtlvBehaviour
 	{
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.GameObject[] _cellingObjects;
+		private global::UnityEngine.GameObject[] _cellingObjects = global::SmartPoint.AssetAssistant.UnityExtensions.ArrayHelper.Empty<global::UnityEngine.GameObject>();
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.HeaderAttribute("プレイヤー、相手の順で登録")]
-		private global::UnityEngine.GameObject[] _singleBattleHideObjects;
+		private global::UnityEngine.GameObject[] _singleBattleHideObjects = global::SmartPoint.AssetAssistant.UnityExtensions.ArrayHelper.Empty<global::UnityEngine.GameObject>();
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.HeaderAttribute("プレイヤー、相手の順で登録")]
-		private global::UnityEngine.GameObject[] _doubleBattleHideObjects;
+		private global::UnityEngine.GameObject[] _doubleBattleHideObjects = global::SmartPoint.AssetAssistant.UnityExtensions.ArrayHelper.Empty<global::UnityEngine.GameObject>();
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.HeaderAttribute("2vs2用")]
 		private global::UnityEngine.GameObject[] _tagBattleHideObject;
@@ -120,7 +120,7 @@ namespace Dpr.Battle.View.Objects
 		private void OnDestroy() {
 			_cellingObjects = null;
 		}
-		public BattleFieldObject() { /*@B 0x6006663*/ throw null; }
+		public BattleFieldObject() { }
 		private enum HideObjectIndex
 		{
 			Player = 0,

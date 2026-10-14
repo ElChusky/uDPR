@@ -6,7 +6,7 @@ namespace Dpr.Battle.View.Objects
 {
 	public class BattleFieldEffect : global::EffectActivator
 	{
-		private static global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BattleFieldEffect> _registedEffects;
+		private static global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BattleFieldEffect> _registedEffects = new global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BattleFieldEffect>();
 		[global::UnityEngine.SerializeField]
 		[global::SearchableEnumAttribute]
 		private global::EffectBattleID _effectBattleId;
@@ -75,6 +75,6 @@ namespace Dpr.Battle.View.Objects
 			}
 		}
 		public BattleFieldEffect() { }
-		static BattleFieldEffect() { /*@B 0x6006655*/ throw null; }
+		static BattleFieldEffect() { }
 	}
 }

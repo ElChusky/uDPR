@@ -23,8 +23,73 @@ namespace Dpr.Battle.View.Objects
 		public int Guard;
 		public int LandingFall;
 		public int LandingFallEase;
-		public MotionTimingData(global::XLSXContent.BattleDataTable.SheetMotionTimingData data) { /*@B 0x60065FB*/ throw null; }
-		public static global::Dpr.Battle.View.Objects.MotionTimingData Factory() { /*@B 0x60065FC*/ throw null; }
-		public int GetTiming(global::BattlePokemonEntity.AnimationState state) { /*@B 0x60065FD*/ throw null; }
+		public MotionTimingData(global::XLSXContent.BattleDataTable.SheetMotionTimingData data) {
+			Buturi01 = data.Buturi01;
+			Buturi02 = data.Buturi02;
+			Buturi03 = data.Buturi03;
+			Tokusyu01 = data.Tokusyu01;
+			Tokusyu02 = data.Tokusyu02;
+			Tokusyu03 = data.Tokusyu03;
+			BodyBlow = data.BodyBlow;
+			Punch = data.Punch;
+			Kick = data.Kick;
+			Tail = data.Tail;
+			Bite = data.Bite;
+			Peck = data.Peck;
+			Radial = data.Radial;
+			Cry = data.Cry;
+			Dust = data.Dust;
+			Shot = data.Shot;
+			Guard = data.Guard;
+			LandingFall = data.LandingFall;
+			LandingFallEase = data.LandingFallEase;
+		}
+		public static global::Dpr.Battle.View.Objects.MotionTimingData Factory() {
+			return new MotionTimingData
+			{
+				Buturi01 = 0,
+				Buturi02 = 0,
+				Buturi03 = 0,
+				Tokusyu01 = 0,
+				Tokusyu02 = 0,
+				Tokusyu03 = 0,
+				BodyBlow = 0,
+				Punch = 0,
+				Kick = 0,
+				Tail = 0,
+				Bite = 0,
+				Peck = 0,
+				Radial = 0,
+				Cry = 0,
+				Dust = 0,
+				Shot = 0,
+				Guard = 0,
+				LandingFall = 0,
+				LandingFallEase = 1,
+			};
+		}
+		public int GetTiming(global::BattlePokemonEntity.AnimationState state) {
+			switch (state)
+			{
+				case global::BattlePokemonEntity.AnimationState.Buturi01: return Buturi01;
+				case global::BattlePokemonEntity.AnimationState.Buturi02: return Buturi02;
+				case global::BattlePokemonEntity.AnimationState.Buturi03: return Buturi03;
+				case global::BattlePokemonEntity.AnimationState.Tokusyu01: return Tokusyu01;
+				case global::BattlePokemonEntity.AnimationState.Tokusyu02: return Tokusyu02;
+				case global::BattlePokemonEntity.AnimationState.Tokusyu03: return Tokusyu03;
+				case global::BattlePokemonEntity.AnimationState.BodyBlow: return BodyBlow;
+				case global::BattlePokemonEntity.AnimationState.Punch: return Punch;
+				case global::BattlePokemonEntity.AnimationState.Kick: return Kick;
+				case global::BattlePokemonEntity.AnimationState.Tail: return Tail;
+				case global::BattlePokemonEntity.AnimationState.Bite: return Bite;
+				case global::BattlePokemonEntity.AnimationState.Peck: return Peck;
+				case global::BattlePokemonEntity.AnimationState.Radial: return Radial;
+				case global::BattlePokemonEntity.AnimationState.Cry: return Cry;
+				case global::BattlePokemonEntity.AnimationState.Dust: return Dust;
+				case global::BattlePokemonEntity.AnimationState.Shot: return Shot;
+				case global::BattlePokemonEntity.AnimationState.Guard: return Guard;
+				default: return 0;
+			}
+		}
 	}
 }

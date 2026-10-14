@@ -5,7 +5,7 @@ namespace Dpr.Battle.View.Objects
 	public sealed class BattleScreenObject : global::Dpr.Battle.View.BtlvBehaviour
 	{
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Camera[] _cameras;
+		private global::UnityEngine.Camera[] _cameras = new global::UnityEngine.Camera[2];
 		private global::Dpr.Battle.View.RefCounted[] _refCounteds;
 		public void Initialize(global::UnityEngine.Transform cluster) {
 			_refCounteds = new RefCounted[_cameras.Length];
@@ -42,7 +42,7 @@ namespace Dpr.Battle.View.Objects
 			_refCounteds[(int)CameraType.ScreenEffect].referencedCount = 0;
 			_cameras[(int)CameraType.ScreenEffect].enabled = false;
 		}
-		public BattleScreenObject() { /*@B 0x60066A9*/ throw null; }
+		public BattleScreenObject() { }
 		public enum CameraType
 		{
 			ScreenEffect = 0,

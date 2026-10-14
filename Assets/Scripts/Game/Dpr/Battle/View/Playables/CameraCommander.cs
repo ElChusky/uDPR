@@ -13,7 +13,7 @@ namespace Dpr.Battle.View.Playables
 		private global::Dpr.Battle.View.Playables.CameraData _cameraData;
 		private global::UnityEngine.Transform _aimTarget;
 		public global::Dpr.Battle.View.Objects.BOCamera TargetCamera { get { return this._targetCamera; } }
-		public global::UnityEngine.Camera Camera { get { /*@B 0x60065D8*/ throw null; } }
+		public global::UnityEngine.Camera Camera { get { return this.GetComponentThis(ref _camera); } }
 		private bool IsStop { get; set; }
 		public global::UnityEngine.Transform AimTarget { get { return this._aimTarget; } }
 		private void OnDestroy() {
@@ -45,6 +45,6 @@ namespace Dpr.Battle.View.Playables
 
 			_aimTarget = aimTarget;
 		}
-		public CameraCommander() { /*@B 0x60065DF*/ throw null; }
+		public CameraCommander() { }
 	}
 }

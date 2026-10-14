@@ -10,7 +10,12 @@ namespace Dpr.Battle.View.Objects
 		private global::System.Action _onComplete;
 		private bool isVoice;
 		public bool IsPlaying { get; private set; }
-		public BtlvSound(string name) { /*@B 0x60066D9*/ throw null; }
+		public BtlvSound(string name) {
+			_name = name;
+			_playEventId = 0;
+			_isPerpetuate = false;
+			IsPlaying = false;
+		}
 		public override void Dispose() {
 			base.Dispose();
 			_playEventId = 0;

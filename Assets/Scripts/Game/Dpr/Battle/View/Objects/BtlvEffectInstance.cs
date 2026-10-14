@@ -12,11 +12,24 @@ namespace Dpr.Battle.View.Objects
 		private global::Dpr.Battle.View.Objects.BattleScreenObject _screenObject;
 		public global::Effect.EffectInstance Effect { get { return this._effect; } private set { this._effect = value; } }
 		public bool IsStop { get; private set; }
-		public bool IsScreenEffect { get { /*@B 0x60066AE*/ throw null; } }
-		public bool AutoRotate { set { /*@B 0x60066AF*/ throw null; } }
+		public bool IsScreenEffect { get { return _drawType == SEQ_DEF_EFF_DRAWTYPE.SEQ_DEF_EFF_DRAWTYPE_SCREEN || _drawType == SEQ_DEF_EFF_DRAWTYPE.SEQ_DEF_EFF_DRAWTYPE_BEFORE; } }
+		public bool AutoRotate { set { _autoRotate = value; } }
 		public global::Dpr.BallDeco.AffixSealData SealData { get; private set; }
-		public BtlvEffectInstance(global::Effect.EffectData effectData, global::Dpr.SequenceEditor.SEQ_DEF_EFF_DRAWTYPE drawType = (global::Dpr.SequenceEditor.SEQ_DEF_EFF_DRAWTYPE)(0)) { /*@B 0x60066B2*/ throw null; }
-		public BtlvEffectInstance(global::Effect.EffectData effectData, global::Dpr.BallDeco.AffixSealData sealData) { /*@B 0x60066B3*/ throw null; }
+		public BtlvEffectInstance(global::Effect.EffectData effectData, global::Dpr.SequenceEditor.SEQ_DEF_EFF_DRAWTYPE drawType = (global::Dpr.SequenceEditor.SEQ_DEF_EFF_DRAWTYPE)(0)) {
+			_effect = global::Effect.EffectManager.Instance.Create(effectData, Vector3.zero, Quaternion.identity);
+			_name = _effect.particleSystem.name;
+			_drawType = drawType;
+			_isSuspendUpdate = false;
+			IsStop = false;
+		}
+		public BtlvEffectInstance(global::Effect.EffectData effectData, global::Dpr.BallDeco.AffixSealData sealData) {
+			_effect = global::Effect.EffectManager.Instance.Create(effectData, Vector3.zero, Quaternion.identity);
+			_name = _effect.particleSystem.name;
+			_drawType = SEQ_DEF_EFF_DRAWTYPE.SEQ_DEF_EFF_DRAWTYPE_NORAML;
+			_isSuspendUpdate = false;
+			IsStop = false;
+			SealData = sealData;
+		}
 		public override void Dispose() {
 			base.Dispose();
 			_effect = null;
