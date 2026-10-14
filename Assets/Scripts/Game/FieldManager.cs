@@ -21,8 +21,8 @@ public class FieldManager
 {
 	private const int MapSize = 64;
 	public global::System.Action OnZoneChangeOnce;
-	public static global::Dpr.Field.Walking.FieldWalkingManager fwMng;
-	public static global::Dpr.SubContents.Utils.AssetUnloader abUnloader;
+	public static global::Dpr.Field.Walking.FieldWalkingManager fwMng = new global::Dpr.Field.Walking.FieldWalkingManager();
+	public static global::Dpr.SubContents.Utils.AssetUnloader abUnloader = new global::Dpr.SubContents.Utils.AssetUnloader();
 	private global::FieldManager.UpdateType _updateType;
 	private global::FieldManager.EncountUpdateType _encountUpdateType;
 	private float _encountWait;
@@ -67,7 +67,7 @@ public class FieldManager
 	private uint _WalkEventName_Attribute;
 	private bool _initFlag;
 	private global::FieldManager.AutoSaveState _autoSaveState;
-	public static bool SealPrevFalg;
+	public static bool SealPrevFalg = false;
 	public global::UnityEngine.Vector3 eventTownMapPos = global::UnityEngine.Vector3.zero;
 	private global::System.Collections.Generic.List<int> unnnoonFormList = new global::System.Collections.Generic.List<int>(28);
 	private int _shorCutSeq;
@@ -2037,8 +2037,57 @@ public class FieldManager
 
         return false;
     }
-	private void OpenShortCut() { /*@B 0x600011A*/ throw null; }
-	public void StopShortCutData() { /*@B 0x600011B*/ throw null; }
+	private void OpenShortCut() {
+        AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_MENU_OPEN, null);
+        EvDataManager.Instanse.OnOpenMenu();
+        IsMenuOpen = true;
+        UIRegisterItemShortcut window = UIManager.Instance.CreateUIWindow<UIRegisterItemShortcut>(UIWindowID.REGISTER_ITEM_SHORTCUT);
+        window.OpenUse((ushort itemNo) =>
+        {
+            IsMenuOpen = false;
+            EvDataManager.Instanse.OnCloseMenu();
+            PlayerWork.isPlayerInputActive = false;
+            ItemNo id = (ItemNo)itemNo;
+            // @017a5310: mask 0x27 over 445..450 = the three rods and the bicycle, plus ANANUKENOHIMO.
+            if ((id == ItemNo.BORONOTURIZAO || id == ItemNo.IITURIZAO || id == ItemNo.SUGOITURIZAO || id == ItemNo.ZITENSYA || id == ItemNo.ANANUKENOHIMO)
+                && FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_PAIR))
+            {
+                EvDataManager.Instanse.JumpLabel("ev_unusable_pair_trainer", null);
+                return;
+            }
+
+            if (CheckAvailableFieldItem(id))
+            {
+                UseFieldItem(id);
+                return;
+            }
+
+            if (id == ItemNo.ZITENSYA && ZoneData.Bicycle)
+            {
+                GameManager.GetAttribute(EntityManager.activeFieldPlayer.gridPosition, out int code, out int stop, false);
+                if (AttributeID.MATR_IsBridgeV(code) || AttributeID.MATR_IsBridgeH(code) || FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_CYCLINGROAD))
+                {
+                    EvDataManager.Instanse.JumpLabel("ev_no_getoff_bycycle", null);
+                    return;
+                }
+            }
+
+            EvDataManager.Instanse.JumpLabel("ev_noused_item_talk", null);
+        });
+        window.onClosed = (UIWindow _) =>
+        {
+            if (IsMenuOpen)
+            {
+                IsMenuOpen = false;
+                EvDataManager.Instanse.OnCloseMenu();
+            }
+        };
+    }
+	public void StopShortCutData() {
+        _shorCutSeq = 0;
+        _shortCutPushTime = 0f;
+        _shortCutPushHoldId = 0;
+    }
 	public void LockHolePos(global::UnityEngine.Vector3 pos) {
         _is_ugHoleLock = true;
         _ugHolePos = pos;
@@ -2049,16 +2098,131 @@ public class FieldManager
 	public static void DebugLot(int randmark) {
         Instance._ugMainProc.EncountMonsLot(randmark);
     }
-	private void SetMapInfoCameraData(bool isforce) { /*@B 0x600011F*/ throw null; }
-	private bool CheckWeather() { /*@B 0x6000120*/ throw null; }
-	private void WeatherEffectPlay() { /*@B 0x6000121*/ throw null; }
-	private void CheckWeatherBGM() { /*@B 0x6000122*/ throw null; }
-	public void SetCloudShadowBaseEnable() { /*@B 0x6000123*/ throw null; }
+	private void SetMapInfoCameraData(bool isforce) {
+        if (ZoneData.ZoneID == ZoneID.UNKNOWN)
+            return;
+
+        // @0179ce94: FieldCamera.SetTempNormalCamera(SheetCamera, bool, float) inlined (wait 0).
+        GameManager.fieldCamera.SetTempNormalCamera(GameManager.mapInfo.Camera[(int)ZoneData.ZoneID], isforce, 0f);
+    }
+	private bool CheckWeather() {
+        if (PlayerWork.isEncount)
+            return false;
+
+        if (_nowWeather == WeatherWork.WeatherID)
+            return false;
+
+        _nowWeather = WeatherWork.WeatherID;
+        WeatherEffectPlay();
+        CheckWeatherBGM();
+        return true;
+    }
+	private void WeatherEffectPlay() {
+        if (_weatherEffectInstance != null)
+            _weatherEffectInstance.Stop(0f, false);
+
+        _weatherEffectInstance = null;
+        EffectFieldID index = WeatherWork.GetFieldEffectID();
+        if (index == EffectFieldID.NONE)
+            return;
+
+        CallEffect(index, (Transform)null, (EffectInstance eff) =>
+        {
+            _weatherEffectInstance = eff;
+            CameraFollower follower = _weatherEffectInstance.gameObject.GetComponent<CameraFollower>();
+            if (follower != null)
+                follower.SetCamera(GameManager.fieldCamera.GetComponent<Camera>());
+        }, null);
+    }
+	private void CheckWeatherBGM() {
+        // @017a21e0: SetWwiseEvent(uint) inlined (flag 0x4cbb309); the weather switch is a 16-entry id table at 0x3d0d960.
+        uint eventId;
+        if (ZoneData.MapType == MapType.MAPTYPE_TOWN || ZoneData.MapType == MapType.MAPTYPE_ROAD)
+        {
+            switch (_nowWeather)
+            {
+                case SYS_WEATHER.SUNNY: eventId = AK.EVENTS.SUNNY; break;
+                case SYS_WEATHER.CLOUDINESS: eventId = AK.EVENTS.CLOUDINESS; break;
+                case SYS_WEATHER.RAIN: eventId = AK.EVENTS.RAIN; break;
+                case SYS_WEATHER.STRAIN: eventId = AK.EVENTS.STRAIN; break;
+                case SYS_WEATHER.SPARK: eventId = AK.EVENTS.SPARK; break;
+                case SYS_WEATHER.SNOW: eventId = AK.EVENTS.SNOW; break;
+                case SYS_WEATHER.SNOWSTORM: eventId = AK.EVENTS.SNOWSTORM; break;
+                case SYS_WEATHER.SNOWSTORM_H: eventId = AK.EVENTS.SNOWSTORM_H; break;
+                case SYS_WEATHER.FOG: eventId = AK.EVENTS.FOG; break;
+                case SYS_WEATHER.VOLCANO: eventId = AK.EVENTS.VOLCANO; break;
+                case SYS_WEATHER.SANDSTORM: eventId = AK.EVENTS.SANDSTORM; break;
+                case SYS_WEATHER.DIAMONDDUST: eventId = AK.EVENTS.DIAMONDDUDT; break;
+                case SYS_WEATHER.SPIRIT: eventId = AK.EVENTS.SPIRIT; break;
+                case SYS_WEATHER.MYSTIC: eventId = AK.EVENTS.MISTIC; break;
+                case SYS_WEATHER.MIST1: eventId = AK.EVENTS.MIST1; break;
+                case SYS_WEATHER.MIST2: eventId = AK.EVENTS.MIST2; break;
+                case SYS_WEATHER.FLASH: eventId = AK.EVENTS.FLASH; break;
+                default: eventId = AK.EVENTS.WEATHER_SILENCE; break;
+            }
+        }
+        else
+        {
+            eventId = AK.EVENTS.WEATHER_SILENCE;
+        }
+
+        SetWwiseEvent(eventId);
+    }
+	public void SetCloudShadowBaseEnable() {
+        if (_weather != null)
+            _weather.SetCloudShadowBaseEnable();
+    }
 	public void SetCloudShadowBaseDisable() {
         if (_weather != null)
             _weather.SetCloudShadowBaseDisable();
     }
-	private global::Dpr.UI.UIManager.FieldUseResult UI_onFieldWaza(global::Dpr.UI.UIManager.FieldWazaParam param) { /*@B 0x6000125*/ throw null; }
+	private global::Dpr.UI.UIManager.FieldUseResult UI_onFieldWaza(global::Dpr.UI.UIManager.FieldWazaParam param) {
+        switch (param.wazaNo)
+        {
+            case WazaNo.ANAWOHORU:
+            {
+                bool escape = ZoneData.Escape;
+                if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_PAIR))
+                    return UIManager.FieldUseResult.Unusable_PairTrainer;
+
+                return escape ? UIManager.FieldUseResult.Available : UIManager.FieldUseResult.Unusable;
+            }
+
+            case WazaNo.TEREPOOTO:
+            {
+                bool fly = ZoneData.Fly;
+                if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_PAIR))
+                    return UIManager.FieldUseResult.Unusable_PairTrainer;
+
+                return fly ? UIManager.FieldUseResult.Available : UIManager.FieldUseResult.Unusable;
+            }
+
+            case WazaNo.TAMAGOUMI:
+            case WazaNo.MIRUKUNOMI:
+                if (param.targetPokemon == null)
+                {
+                    if (param.pokemon.GetHp() > param.pokemon.GetMaxHp() / 5)
+                        return UIManager.FieldUseResult.Available;
+                }
+                else if (param.pokemon != param.targetPokemon && !param.targetPokemon.IsEgg(EggCheckType.BOTH_EGG)
+                    && param.targetPokemon.GetHp() != 0 && param.targetPokemon.GetHp() != param.targetPokemon.GetMaxHp())
+                {
+                    return UIManager.FieldUseResult.Available;
+                }
+                return UIManager.FieldUseResult.Unusable;
+
+            case WazaNo.HURASSYU:
+                return FieldFlashWork.AvailableFlash() ? UIManager.FieldUseResult.Available : UIManager.FieldUseResult.Unusable;
+
+            case WazaNo.AMAIKAORI:
+                return FieldEncount.SetSweetEncount() != null ? UIManager.FieldUseResult.Available : UIManager.FieldUseResult.Unusable;
+
+            case WazaNo.KIRIBARAI:
+                return FieldMistWork.AvailableKiribarai() ? UIManager.FieldUseResult.Available : UIManager.FieldUseResult.Unusable;
+        }
+
+        return UIManager.FieldUseResult.Unusable;
+    }
 	public void UI_SelectWaza(global::Pml.WazaNo waza) {
         // @017a24d0: dig and teleport share the JumpLabel + MovePoke_RandomZone() tail (@017a2614).
         switch (waza)
@@ -2086,15 +2250,253 @@ public class FieldManager
                 break;
         }
     }
-	private global::Dpr.UI.UIManager.FieldUseResult UI_onUseFieldItem(global::Dpr.Item.ItemInfo item) { /*@B 0x6000127*/ throw null; }
-	private global::Dpr.UI.UIManager.FieldUseResult UI_onUseFieldItem(global::Pml.ItemNo id) { /*@B 0x6000128*/ throw null; }
-	private bool CheckAvailableFieldItem(global::Pml.ItemNo id) { /*@B 0x6000129*/ throw null; }
-	private bool CheckUseItem() { /*@B 0x600012A*/ throw null; }
-	private void UseFieldItem() { /*@B 0x600012B*/ throw null; }
-	private void UseFieldItem(global::Pml.ItemNo itemno) { /*@B 0x600012C*/ throw null; }
-	private void UI_onWazaFly(global::ZoneID zoneid, int locatorIndex) { /*@B 0x600012D*/ throw null; }
-	public bool StopSwayGrass_NextArea() { /*@B 0x600012E*/ throw null; }
-	private bool CheckIgnoreWeatherSweetEncount(global::SYS_WEATHER weather) { /*@B 0x600012F*/ throw null; }
+	private global::Dpr.UI.UIManager.FieldUseResult UI_onUseFieldItem(global::Dpr.Item.ItemInfo item) {
+        // @017a2680: UI_onUseFieldItem(ItemNo) inlined.
+        ItemNo id = (ItemNo)item.Id;
+        if ((id == ItemNo.BORONOTURIZAO || id == ItemNo.IITURIZAO || id == ItemNo.SUGOITURIZAO || id == ItemNo.ZITENSYA || id == ItemNo.ANANUKENOHIMO)
+            && FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_PAIR))
+            return UIManager.FieldUseResult.Unusable_PairTrainer;
+
+        return CheckAvailableFieldItem(id) ? UIManager.FieldUseResult.Available : UIManager.FieldUseResult.Unusable;
+    }
+	private global::Dpr.UI.UIManager.FieldUseResult UI_onUseFieldItem(global::Pml.ItemNo id) {
+        // mask 0x27 over 445..450 = the three rods and the bicycle, plus ANANUKENOHIMO.
+        if ((id == ItemNo.BORONOTURIZAO || id == ItemNo.IITURIZAO || id == ItemNo.SUGOITURIZAO || id == ItemNo.ZITENSYA || id == ItemNo.ANANUKENOHIMO)
+            && FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_PAIR))
+            return UIManager.FieldUseResult.Unusable_PairTrainer;
+
+        return CheckAvailableFieldItem(id) ? UIManager.FieldUseResult.Available : UIManager.FieldUseResult.Unusable;
+    }
+	private bool CheckAvailableFieldItem(global::Pml.ItemNo id) {
+        // jump tables 0x3d0d63c (76..94) and 0x3d0d625 (428..450).
+        switch (id)
+        {
+            case ItemNo.SIRUBAASUPUREE:
+            case ItemNo.GOORUDOSUPUREE:
+            case ItemNo.MUSIYOKESUPUREE:
+                if (ZoneData.MapType == MapType.MAPTYPE_UNDERGROUND)
+                    return false;
+                return !ItemWork.IsUseSpray(out ItemNo spray);
+
+            case ItemNo.ANANUKENOHIMO:
+                return ZoneData.Escape;
+
+            case ItemNo.AMAIMITU:
+                return FieldEncount.SetSweetEncount() != null;
+
+            case ItemNo.TANKENSETTO:
+            {
+                if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_CYCLINGROAD))
+                    return false;
+
+                if (EntityManager.activeFieldPlayer.IsSwim())
+                    return false;
+
+                GameManager.GetAttribute(EntityManager.activeFieldPlayer.gridPosition, out int code, out int stop, false);
+                if (AttributeID.MATR_IsBridge(code))
+                    return false;
+
+                if (!IsEnableSave(false))
+                    return false;
+
+                return EvDataManager.Instanse.IsCanGotoUG();
+            }
+
+            case ItemNo.POKETORE:
+            {
+                if (PlayerWork.IsFormBicycle())
+                    return false;
+
+                GameManager.GetAttribute(EntityManager.activeFieldPlayer.gridPosition, out int code, out int stop, false);
+                return AttributeID.MATR_IsGrass(code);
+            }
+
+            case ItemNo.POINTOKAADO:
+            case ItemNo.BOUKENNOOTO:
+            case ItemNo.POFINKEESU:
+            case ItemNo.DSPLAYER:
+                return true;
+
+            case ItemNo.BATORUSAATYAA:
+                return ZoneData.BattleSearcher;
+
+            case ItemNo.BORONOTURIZAO:
+                return _fishing.StartFishing(FishingRod.BoroiTurizao);
+
+            case ItemNo.IITURIZAO:
+                return _fishing.StartFishing(FishingRod.IiTurizao);
+
+            case ItemNo.SUGOITURIZAO:
+                return _fishing.StartFishing(FishingRod.SugoiTurizao);
+
+            case ItemNo.KODAKKUZYOURO:
+                return KinomiWork.IsWaterContactEntity() != null;
+
+            case ItemNo.ZITENSYA:
+            {
+                if (!ZoneData.Bicycle)
+                    return false;
+
+                if (EntityManager.activeFieldPlayer.IsSwim())
+                    return false;
+
+                FieldObjectEntity player = EntityManager.activeFieldPlayer;
+                if (!AttributeID.IsUseBicycle(player.gridPosition, player.Height))
+                    return false;
+
+                return !FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_CYCLINGROAD);
+            }
+        }
+
+        return false;
+    }
+	private bool CheckUseItem() {
+        if (PlayerWork.UsedFieldItem == null)
+            return false;
+
+        ItemNo id = (ItemNo)PlayerWork.UsedFieldItem.Id;
+        ItemNo[] fieldItems = new ItemNo[]
+        {
+            ItemNo.ANANUKENOHIMO, ItemNo.AMAIMITU, ItemNo.TANKENSETTO, ItemNo.POKETORE, ItemNo.BATORUSAATYAA, ItemNo.BORONOTURIZAO,
+            ItemNo.IITURIZAO, ItemNo.SUGOITURIZAO, ItemNo.KODAKKUZYOURO, ItemNo.ZITENSYA, ItemNo.MUSIYOKESUPUREE, ItemNo.SIRUBAASUPUREE,
+            ItemNo.GOORUDOSUPUREE, ItemNo.KINOMIPURANTAA, ItemNo.POINTOKAADO, ItemNo.POFINKEESU, ItemNo.BOUKENNOOTO, ItemNo.DSPLAYER,
+        };
+        for (int i = 0; i < fieldItems.Length; i++)
+        {
+            if (fieldItems[i] == id)
+                return true;
+        }
+
+        return PlayerWork.UsedFieldItem.GetItemType() == global::Dpr.Item.ItemInfo.eItemType.Kinomi;
+    }
+	private void UseFieldItem() {
+        UseFieldItem((ItemNo)PlayerWork.UsedFieldItem.Id);
+        PlayerWork.UsedFieldItem = null;
+    }
+	private void UseFieldItem(global::Pml.ItemNo itemno) {
+        switch (itemno)
+        {
+            case ItemNo.DUMMY_DATA:
+                return;
+
+            case ItemNo.SIRUBAASUPUREE:
+            case ItemNo.GOORUDOSUPUREE:
+            case ItemNo.MUSIYOKESUPUREE:
+                ItemWork.SetSpray(itemno, (short)(PlayerWork.UsedFieldItem.GetParam(global::Pml.Item.ItemData.PrmID.ATTACK) * 5));
+                return;
+
+            case ItemNo.ANANUKENOHIMO:
+                EvDataManager.Instanse.JumpLabel("ev_exec_item_ananukenohimo", null);
+                return;
+
+            case ItemNo.AMAIMITU:
+                EvDataManager.Instanse.JumpLabel("ev_exec_item_amaimitu", null);
+                return;
+
+            case ItemNo.TANKENSETTO:
+                EvDataManager.Instanse.JumpLabel("ev_ug_tankenset_do", null);
+                return;
+
+            case ItemNo.POKETORE:
+                EvDataManager.Instanse.JumpLabel("ev_poketore", null);
+                return;
+
+            case ItemNo.POINTOKAADO:
+                EvDataManager.Instanse.JumpLabel("ev_pointcard", null);
+                return;
+
+            case ItemNo.BOUKENNOOTO:
+                EvDataManager.Instanse.JumpLabel("ev_boukennooto", null);
+                return;
+
+            case ItemNo.BATORUSAATYAA:
+                EvDataManager.Instanse.JumpLabel("ev_btl_searcher", null);
+                return;
+
+            case ItemNo.BORONOTURIZAO:
+                _useRod = FishingRod.BoroiTurizao;
+                return;
+
+            case ItemNo.IITURIZAO:
+                _useRod = FishingRod.IiTurizao;
+                return;
+
+            case ItemNo.SUGOITURIZAO:
+                _useRod = FishingRod.SugoiTurizao;
+                return;
+
+            case ItemNo.KODAKKUZYOURO:
+            {
+                FieldKinomiGrowEntity entity = KinomiWork.IsWaterContactEntity();
+                if (entity == null)
+                    return;
+
+                PlayerWork.isPlayerInputActive = false;
+                FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_TARGET_OBJID, entity.EventParams.FieldObjectIndex);
+                EvDataManager.Instanse.JumpLabel("ev_kinomi_bag_zyouro", null);
+                return;
+            }
+
+            case ItemNo.POFINKEESU:
+                EvDataManager.Instanse.JumpLabel("ev_pofinkeesu", null);
+                return;
+
+            case ItemNo.ZITENSYA:
+                RidBicycle(() => PlayerWork.isPlayerInputActive = true);
+                return;
+
+            case ItemNo.DSPLAYER:
+                EvDataManager.Instanse.JumpLabel("ev_dsplayer", null);
+                return;
+        }
+
+        if (PlayerWork.UsedFieldItem.GetItemType() != global::Dpr.Item.ItemInfo.eItemType.Kinomi)
+            return;
+
+        PlayerWork.isPlayerInputActive = false;
+        FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_PARAM0, (int)itemno);
+        FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_TARGET_OBJID, KinomiWork.IsKinomiContactEntity().EventParams.FieldObjectIndex);
+        EvDataManager.Instanse.JumpLabel("ev_kinomi_bag_kinomi", null);
+    }
+	private void UI_onWazaFly(global::ZoneID zoneid, int locatorIndex) {
+        EvDataManager.Instanse.SorawotobuZoneId = zoneid;
+        EvDataManager.Instanse.SorawotobuLocatorIndex = locatorIndex;
+        FieldPoketch.UseHidenWaza(FieldPoketch.HidenWazaType.Sorawotobu);
+        EncountDataWork.MovePoke_RandomZone();
+        EncountDataWork.MovePoke_PlayerEqualZoneNextZone(zoneid);
+        StopSwayGrass_NextArea();
+    }
+	public bool StopSwayGrass_NextArea() {
+        // @0179c590: SwayGrass.is_swaygrass_flag read directly = the inlined SwayGrass_CheckValid().
+        if (!SwayGrass.SwayGrass_CheckValid())
+            return false;
+
+        AudioManager.Instance.PostEvent(AK.EVENTS.BA013_TO_NEXT_AREA);
+        SwayGrass.SwayGrass_InitSwayGrass();
+        return true;
+    }
+	private bool CheckIgnoreWeatherSweetEncount(global::SYS_WEATHER weather) {
+        switch (weather)
+        {
+            case SYS_WEATHER.CLOUDINESS:
+            case SYS_WEATHER.RAIN:
+            case SYS_WEATHER.STRAIN:
+            case SYS_WEATHER.SPARK:
+            case SYS_WEATHER.SNOW:
+            case SYS_WEATHER.SNOWSTORM:
+            case SYS_WEATHER.SNOWSTORM_H:
+            case SYS_WEATHER.VOLCANO:
+            case SYS_WEATHER.SANDSTORM:
+            case SYS_WEATHER.MYSTIC:
+            case SYS_WEATHER.MIST1:
+            case SYS_WEATHER.MIST2:
+            case SYS_WEATHER.FLASH:
+            case SYS_WEATHER.SPARK_EFF:
+                return true;
+        }
+
+        return false;
+    }
 	public bool StartSweetEncount() {
         // @017a358c: CheckIgnoreWeatherSweetEncount inlined (mask 0x3e6fe over weathers 0..17).
         if (CheckIgnoreWeatherSweetEncount(GetBatleWeather()))
@@ -2203,8 +2605,17 @@ public class FieldManager
         EncountStart(EncountFadeType.Normal);
         return true;
     }
-	public void SetBgmEvent(string eventName) { /*@B 0x6000131*/ throw null; }
-	public void SetBgmEvent(uint eventid) { /*@B 0x6000132*/ throw null; }
+	public void SetBgmEvent(string eventName) {
+        SetBgmEvent(AkSoundEngine.GetIDFromString(eventName));
+    }
+	public void SetBgmEvent(uint eventid) {
+        uint eventId = BGMFlagCheck(eventid);
+        AudioManager.Instance.SetBgmEvent(eventId, false);
+        // @0179cb..: NotSaveBgmEvent inlined (PC_NIGHT / PC_DAY / NAZO_A / NAZO_B are saved as 0).
+        DPData.SYSTEMDATA systemData = PlayerWork.SystemData;
+        systemData.fd_bgmEvnet = NotSaveBgmEvent(eventId) ? 0u : eventId;
+        PlayerWork.SystemData = systemData;
+    }
 	public void SetWwiseEvent(string eventName) {
         if (eventName == "")
             return;
@@ -2212,16 +2623,142 @@ public class FieldManager
         // @017a4318: BGMFlagCheck by `bl`, SetWwiseEvent(uint) inlined under its flag 0x4cbb309.
         SetWwiseEvent(BGMFlagCheck(AkSoundEngine.GetIDFromString(eventName)));
     }
-	private uint BGMFlagCheck(uint eventid) { /*@B 0x6000134*/ throw null; }
-	private bool NotSaveBgmEvent(uint eventid) { /*@B 0x6000135*/ throw null; }
-	public void SetWwiseEvent(uint eventid) { /*@B 0x6000136*/ throw null; }
-	public void UniqueBGMEvent(global::ZoneID nextid, global::ZoneID oldid) { /*@B 0x6000137*/ throw null; }
-	public void RidBicycle(global::System.Action onfinish) { /*@B 0x6000138*/ throw null; }
-	private bool FishingUpdate(float time) { /*@B 0x6000139*/ throw null; }
+	private uint BGMFlagCheck(uint eventid) {
+        AudioManager.Instance.SetBgmEvent(ItemWork.IsDsPlayer() ? AK.EVENTS.DSPLAYER_ON : AK.EVENTS.DSPLAYER_OFF, false);
+        if (FlagWork.GetFlag(EvWork.FLAG_INDEX.BGM_FLAG_C04_GINGA_FALSE))
+            AudioManager.Instance.SetBgmEvent(AK.EVENTS.C04_GINGA_FALSE, false);
+
+        // byte jump table 0x3d0d653 over D29..D26 (0xe594df50..5f).
+        switch (eventid)
+        {
+            case AK.EVENTS.D26:
+                return FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_BGM_D26) ? AK.EVENTS.D26_KEY : AK.EVENTS.D26;
+
+            case AK.EVENTS.B_OPE003:
+            {
+                DateTime now = GameManager.nowTime;
+                if (now.DayOfWeek != DayOfWeek.Friday)
+                    return AK.EVENTS.B_OPE003;
+
+                return now.Hour < 19 ? AK.EVENTS.B_OPE003 : AK.EVENTS.B_BOU002;
+            }
+
+            case AK.EVENTS.D27:
+            case AK.EVENTS.D27R0103:
+                if (FlagWork.GetWork(EvWork.WORK_INDEX.TOWNMAP_GUIDE_SEQUENCE) >= 9000)
+                {
+                    if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_BGM_D27))
+                        AudioManager.Instance.SetBgmEvent(AK.EVENTS.D27_GINGA_FALSE, false);
+                    else
+                        AudioManager.Instance.SetBgmEvent(AK.EVENTS.GINGA_TRUE, false);
+                }
+                break;
+
+            case AK.EVENTS.D28:
+            case AK.EVENTS.D28R0103:
+                if (FlagWork.GetWork(EvWork.WORK_INDEX.TOWNMAP_GUIDE_SEQUENCE) >= 9000)
+                {
+                    if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_BGM_D28))
+                        AudioManager.Instance.SetBgmEvent(AK.EVENTS.D28_GINGA_FALSE, false);
+                    else
+                        AudioManager.Instance.SetBgmEvent(AK.EVENTS.GINGA_TRUE, false);
+                }
+                break;
+
+            case AK.EVENTS.D29:
+            case AK.EVENTS.D29R0103:
+                if (FlagWork.GetWork(EvWork.WORK_INDEX.TOWNMAP_GUIDE_SEQUENCE) >= 9000)
+                {
+                    if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_BGM_D29))
+                        AudioManager.Instance.SetBgmEvent(AK.EVENTS.D29_GINGA_FALSE, false);
+                    else
+                        AudioManager.Instance.SetBgmEvent(AK.EVENTS.GINGA_TRUE, false);
+                }
+                break;
+        }
+
+        return eventid;
+    }
+	private bool NotSaveBgmEvent(uint eventid) {
+        return eventid == AK.EVENTS.PC_NIGHT || eventid == AK.EVENTS.PC_DAY || eventid == AK.EVENTS.NAZO_A || eventid == AK.EVENTS.NAZO_B;
+    }
+	public void SetWwiseEvent(uint eventid) {
+        AudioManager.Instance.PostEvent(eventid);
+    }
+	public void UniqueBGMEvent(global::ZoneID nextid, global::ZoneID oldid) {
+        global::XLSXContent.MapInfo mapInfo = GameManager.mapInfo;
+        if (nextid == ZoneID.UNKNOWN)
+            return;
+
+        global::XLSXContent.MapInfo.SheetZoneData next = mapInfo[(int)nextid];
+        if (PlayerWork.IsFormBicycle())
+        {
+            if (oldid == ZoneID.UNKNOWN)
+            {
+                AudioManager.Instance.PostEvent(AK.EVENTS.FADEIN_ON);
+                return;
+            }
+
+            global::XLSXContent.MapInfo.SheetZoneData old = mapInfo[(int)oldid];
+            if (next.MapType == MapType.MAPTYPE_CAVE)
+            {
+                if (old.MapType == MapType.MAPTYPE_CAVE)
+                    return;
+            }
+            else if (old.MapType != MapType.MAPTYPE_CAVE)
+            {
+                AudioManager.Instance.PostEvent(AK.EVENTS.FADEIN_ON);
+                return;
+            }
+        }
+
+        AudioManager.Instance.PostEvent(AK.EVENTS.FADEIN_OFF);
+    }
+	public void RidBicycle(global::System.Action onfinish) {
+        if (!PlayerWork.IsFormBicycle())
+        {
+            StopSwayGrass_NextArea();
+            EntityManager.activeFieldPlayer.SetRideBicycle(onfinish);
+            AudioManager.Instance.PlaySe(AK.EVENTS.S_FI009, null);
+            AudioManager.Instance.PostEvent(AK.EVENTS.FADEIN_ON);
+            SetBgmEvent(AK.EVENTS.BICYCLE);
+        }
+        else
+        {
+            EntityManager.activeFieldPlayer.SetNormalForm(onfinish);
+            AudioManager.Instance.PostEvent(AK.EVENTS.FADEIN_OFF);
+            // @017a3290: SetBgmEvent(string) inlined (GetIDFromString then SetBgmEvent(uint)).
+            SetBgmEvent(GetMapBgmState());
+        }
+
+        CallEffect(EffectFieldID.EF_F_CYCLE_RIDE, EntityManager.activeFieldPlayer.transform, null, null);
+    }
+	private bool FishingUpdate(float time) {
+        if (_useRod == FishingRod.None)
+            return false;
+
+        if (!_fishing.StartFishing(_useRod))
+            return false;
+
+        EvDataManager.Instanse.Cmd_ObjPauseAll();
+        if (StopSwayGrass_NextArea())
+            SetBgmEvent(GetNowBgmState());
+
+        _updateType = UpdateType.Fishing;
+        return true;
+    }
 	public void SetWazaAction(global::FieldManager.FieldWazaAction action) {
         _wazaAction = action;
     }
-	public void SetTownMapPos(global::ZoneID zoneid, ref global::UnityEngine.Vector3 pos) { /*@B 0x600013B*/ throw null; }
+	public void SetTownMapPos(global::ZoneID zoneid, ref global::UnityEngine.Vector3 pos) {
+        DPData.PLAYER_SAVE_DATA save = PlayerWork.PlayerSaveData;
+        save.TownMapLocation.zoneID = (int)zoneid;
+        save.TownMapLocation.posX = pos.x;
+        save.TownMapLocation.posY = pos.y;
+        save.TownMapLocation.posZ = pos.z;
+        save.TownMapLocation.dir = 0;
+        PlayerWork.PlayerSaveData = save;
+    }
 	public void GetTownMapPos(out global::ZoneID zoneid, out global::UnityEngine.Vector3 pos, bool isForcePrevious = false) {
         // @017a43b0: indoors (ROOM) or forced → the saved town-map location, else the current zone and the player position.
         if (isForcePrevious || ZoneData.MapType == MapType.MAPTYPE_ROOM)
@@ -2247,12 +2784,105 @@ public class FieldManager
         AudioManager.Instance.SetListenerPosition(_akLisnerTransform.position);
         AudioManager.Instance.SetListenerRotation(_akLisnerTransform.rotation);
     }
-	public void OnZoneChange_Subcontents(bool walk) { /*@B 0x600013F*/ throw null; }
-	public void CreateFreaiManager() { /*@B 0x6000140*/ throw null; }
-	public void DeleteFreaiManager() { /*@B 0x6000141*/ throw null; }
-	private void GetLegendPokeEncountInfo(global::Pml.PokePara.PokemonParam param, out string encSec, ref global::ArenaID arenaID, out string bgm, out global::BattleSetupEffectId setupEffect) { /*@B 0x6000142*/ throw null; }
-	private static global::XLSXContent.FieldEncountTable.Sheetlegendpoke GetFieldEncountTableLegendPoke(global::Pml.MonsNo monsNo, ushort formNo) { /*@B 0x6000143*/ throw null; }
-	public bool IsEnableSave(bool isIgnoreGround = false) { /*@B 0x6000144*/ throw null; }
+	public void OnZoneChange_Subcontents(bool walk) {
+        if (PlayerWork.zoneID == ZoneID.D11R0101)
+            CreateFreaiManager();
+        else
+            DeleteFreaiManager();
+
+        if (PlayerWork.zoneID == ZoneID.D11R0101 || PlayerWork.zoneID == ZoneID.C05R1001)
+        {
+            if (!SingletonMonoBehaviour<global::Dpr.SubContents.PoffinCookingSceneManager>.isInstantiated)
+                new GameObject("PoffinCookingManager").AddComponent<global::Dpr.SubContents.PoffinCookingSceneManager>();
+        }
+        else if (SingletonMonoBehaviour<global::Dpr.SubContents.PoffinCookingSceneManager>.isInstantiated)
+        {
+            UnityEngine.Object.Destroy(SingletonMonoBehaviour<global::Dpr.SubContents.PoffinCookingSceneManager>.Instance.gameObject);
+        }
+
+        if (fwMng.PartnerPokeParam == null)
+            fwMng.LoadPartnerPoke();
+
+        if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_PAIR))
+        {
+            int trainerId = FlagWork.GetWork(EvWork.WORK_INDEX.SYS_WORK_PAIR_TRAINER_ID);
+            if (trainerId != 0 && fwMng.SetPartnerNpcName((TrainerID)trainerId))
+            {
+                fwMng.NPCToPartner();
+                if (fwMng.isLoaded)
+                    fwMng.TurearukiWarp();
+            }
+        }
+        else if (FlagWork.GetWork(EvWork.WORK_INDEX.WK_PAIR_POKEMON_INDEX) != 0 && fwMng.PartnerPokeParam != null)
+        {
+            Sequencer.Start(fwMng.CreatePartner(false, false, !walk));
+        }
+
+        fwMng.prevArea = ZoneData.AreaID;
+    }
+	public void CreateFreaiManager() {
+        if (global::Dpr.FureaiHiroba.FureaiDataManager.Instance == null)
+            new GameObject("FureaiDataManager").AddComponent<global::Dpr.FureaiHiroba.FureaiDataManager>();
+    }
+	public void DeleteFreaiManager() {
+        if (SingletonMonoBehaviour<global::Dpr.FureaiHiroba.FureaiManager>.isInstantiated)
+            SingletonMonoBehaviour<global::Dpr.FureaiHiroba.FureaiManager>.Instance.Destroy();
+    }
+	private void GetLegendPokeEncountInfo(global::Pml.PokePara.PokemonParam param, out string encSec, ref global::ArenaID arenaID, out string bgm, out global::BattleSetupEffectId setupEffect) {
+        encSec = null;
+        bgm = null;
+        setupEffect = (BattleSetupEffectId)0;
+        global::XLSXContent.FieldEncountTable.Sheetlegendpoke data = GetFieldEncountTableLegendPoke(param.GetMonsNo(), param.GetFormNo());
+        if (data == null)
+            return;
+
+        if (data.isFixedEncSeq)
+            encSec = data.encSeq;
+
+        if (data.isFixedBGM)
+            bgm = data.bgmEvent;
+
+        if (data.isFixedBtlBg)
+            arenaID = data.btlBg;
+
+        if (data.isFixedSetupEffect)
+            setupEffect = data.setupEffect;
+
+        if (data.waza1 >= 0)
+            param.SetWaza(0, (WazaNo)data.waza1);
+
+        if (data.waza2 >= 0)
+            param.SetWaza(1, (WazaNo)data.waza2);
+
+        if (data.waza3 >= 0)
+            param.SetWaza(2, (WazaNo)data.waza3);
+
+        if (data.waza4 >= 0)
+            param.SetWaza(3, (WazaNo)data.waza4);
+    }
+	private static global::XLSXContent.FieldEncountTable.Sheetlegendpoke GetFieldEncountTableLegendPoke(global::Pml.MonsNo monsNo, ushort formNo) {
+        for (int i = 0; i < GameManager.fieldEncountTable.legendpoke.Length; i++)
+        {
+            global::XLSXContent.FieldEncountTable.Sheetlegendpoke data = GameManager.fieldEncountTable.legendpoke[i];
+            if (data.monsNo == monsNo && (data.formNo == -1 || data.formNo == formNo))
+                return data;
+        }
+
+        return null;
+    }
+	public bool IsEnableSave(bool isIgnoreGround = false) {
+        FieldPlayerEntity player = EntityManager.activeFieldPlayer;
+        if (IsNoEntry(player.gridPosition, player.worldPosition))
+            return false;
+
+        if (IsNoEntrySea(player.gridPosition, player.worldPosition))
+            return false;
+
+        if (!isIgnoreGround && !CollisionUtility.IsCollideGround(player.worldPosition, 1f, Layer.Ground))
+            return false;
+
+        return true;
+    }
 	public bool IsNoEntry(global::UnityEngine.Vector2Int gridPos, global::UnityEngine.Vector3 worldPos) {
         GameManager.GetAttribute(gridPos, out int code, out int stop, false);
         if (stop == 0x80)
@@ -2331,8 +2961,16 @@ public class FieldManager
 	public global::UgMainProc GetUgMainProc() {
         return _ugMainProc;
     }
-	private void SaveCheckCyclingRoad() { /*@B 0x6000149*/ throw null; }
-	static FieldManager() { /*@B 0x600014A*/ throw null; }
+	private void SaveCheckCyclingRoad() {
+        if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_CYCLINGROAD) || _now_zoneID != ZoneID.R206)
+            return;
+
+        Vector3 pos = EntityManager.activeFieldPlayer.worldPosition;
+        if (pos.z <= 681f && pos.z >= 576f && pos.x <= -298f && pos.x >= -307f && pos.y > 2.99f)
+            FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_CYCLINGROAD, true);
+    }
+	static FieldManager() {
+    }
 	public enum UpdateType
 	{
 		Field = 0,
