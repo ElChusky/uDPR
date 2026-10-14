@@ -4,9 +4,12 @@ namespace Dpr.Battle.Logic
 	public sealed class PokeChangeRequest
 	{
 		private readonly global::Dpr.Battle.Logic.MainModule m_pMainModule;
-		private global::Dpr.Battle.Logic.BtlPokePos[] m_requestPos;
+		private global::Dpr.Battle.Logic.BtlPokePos[] m_requestPos = new BtlPokePos[PokemonPosition.BTL_POS_NUM];
 		private byte m_requestCount;
-		public PokeChangeRequest(global::Dpr.Battle.Logic.MainModule pMainModule) { /*@B 0x6006C06*/ throw null; }
+		public PokeChangeRequest(global::Dpr.Battle.Logic.MainModule pMainModule) {
+            m_pMainModule = pMainModule;
+            m_requestCount = 0;
+        }
 		public void Clear() {
             m_requestCount = 0;
         }

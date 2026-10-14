@@ -110,7 +110,10 @@ namespace Dpr.Battle.Logic
 		{
 			public bool isBroken;
 			public bool isBecameMax;
-			public void CopyFrom(global::Dpr.Battle.Logic.SectionUtil.GWallUpdateResult src) { /*@B 0x600B49F*/ throw null; }
+			public void CopyFrom(global::Dpr.Battle.Logic.SectionUtil.GWallUpdateResult src) {
+                isBroken = src.isBroken;
+                isBecameMax = src.isBecameMax;
+            }
 			public GWallUpdateResult() { }
 		}
 	}

@@ -101,8 +101,30 @@ namespace Dpr.Battle.Logic
 
             return null;
         }
-		public bool GetDamage(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, out uint damage) { /*@B 0x6007CD1*/ throw null; }
-		public bool GetDamageReal(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, out uint damage) { /*@B 0x6007CD2*/ throw null; }
+		public bool GetDamage(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, out uint damage) {
+            for (int i = 0; i < m_count; i++)
+            {
+                if (m_bpp[i] == bpp && m_damageType[i] != 0)
+                {
+                    damage = (uint)(m_damage[i] + m_migawariDamage[i]);
+                    return true;
+                }
+            }
+            damage = 0;
+            return false;
+        }
+		public bool GetDamageReal(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, out uint damage) {
+            for (int i = 0; i < m_count; i++)
+            {
+                if (m_bpp[i] == bpp && m_damageType[i] == 1)
+                {
+                    damage = m_damage[i];
+                    return true;
+                }
+            }
+            damage = 0;
+            return false;
+        }
 		public global::Dpr.Battle.Logic.PokeSet.DamageType GetDamageType(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp) {
             for (int i = 0; i < m_count; i++)
             {

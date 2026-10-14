@@ -6,10 +6,10 @@ namespace Dpr.Battle.Logic
 	{
 		public global::Dpr.Battle.Logic.BTL_POKEPARAM bpp;
 		public global::Dpr.Battle.Logic.PokeActionCategory actionCategory;
-		public global::Dpr.Battle.Logic.PokeActionParam_Fight actionParam_Fight;
-		public global::Dpr.Battle.Logic.PokeActionParam_Item actionParam_Item;
-		public global::Dpr.Battle.Logic.PokeActionParam_PokeChange actionParam_PokeChange;
-		public global::Dpr.Battle.Logic.ActionDesc actionDesc;
+		public global::Dpr.Battle.Logic.PokeActionParam_Fight actionParam_Fight = new PokeActionParam_Fight();
+		public global::Dpr.Battle.Logic.PokeActionParam_Item actionParam_Item = new PokeActionParam_Item();
+		public global::Dpr.Battle.Logic.PokeActionParam_PokeChange actionParam_PokeChange = new PokeActionParam_PokeChange();
+		public global::Dpr.Battle.Logic.ActionDesc actionDesc = new ActionDesc();
 		public uint priority;
 		public byte clientID;
 		public bool fDone;
@@ -83,6 +83,6 @@ namespace Dpr.Battle.Logic
             }
             return action.bpp.IsGMode() || action.actionParam_Fight.gFlag || action.actionParam_Fight.forceGWaza;
         }
-		public PokeAction() { /*@B 0x6006BEF*/ throw null; }
+		public PokeAction() { }
 	}
 }

@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_AddSickCheckFail : global::Dpr.Battle.Logic.Section
 	{
-		public Section_AddSickCheckFail(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D5C*/ throw null; }
+		public Section_AddSickCheckFail(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_AddSickCheckFail.Result pResult, in global::Dpr.Battle.Logic.Section_AddSickCheckFail.Description description) {
 			AddSickFailCode failCode = checkFail(description.attacker, description.target, description.sick, description.sickCont, description.sickCause, description.overWriteMode);
 			if (failCode != AddSickFailCode.NONE)
@@ -167,7 +167,18 @@ namespace Dpr.Battle.Logic
 			public bool isFailResultDisplay_ByBasicRules;
 			public bool isFailResultDisplay_BySpecialFactors;
 			public bool isOtherEffectDisplayed;
-			public Description() { /*@B 0x600B4A3*/ throw null; }
+			public Description() {
+                attacker = null;
+                target = null;
+                sick = global::Pml.WazaData.WazaSick.WAZASICK_NONE;
+                sickCont.raw = 0;
+                sickCause = SickCause.OTHER;
+                wazaSerial = 0;
+                overWriteMode = SickOverWriteMode.CANT;
+                isFailResultDisplay_ByBasicRules = false;
+                isFailResultDisplay_BySpecialFactors = false;
+                isOtherEffectDisplayed = false;
+            }
 		}
 		public class Result
 		{

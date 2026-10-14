@@ -4,8 +4,10 @@ namespace Dpr.Battle.Logic
 	public sealed class PokeIDRec
 	{
 		private const int CAPACITY_PER_CLIENT = 6;
-		private byte[][] m_registeredID;
-		public PokeIDRec() { /*@B 0x6007692*/ throw null; }
+		private byte[][] m_registeredID = RectangularArrays.RectangularDefaultArray<byte>((int)BTL_CLIENT_ID.BTL_CLIENT_NUM, CAPACITY_PER_CLIENT);
+		public PokeIDRec() {
+            Clear();
+        }
 		public void Dispose() {
 			// 020cc050: empty in the binary
 		}

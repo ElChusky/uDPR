@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class PokeDesc
 	{
-		public global::Dpr.Battle.Logic.DefaultPowerUpDesc defaultPowerUpDesc;
+		public global::Dpr.Battle.Logic.DefaultPowerUpDesc defaultPowerUpDesc = new DefaultPowerUpDesc();
 		public bool isGEnableByNPC;
 		public static void Clear(global::Dpr.Battle.Logic.PokeDesc desc) {
             DEFAULT_POWERUP_DESC.Clear(desc.defaultPowerUpDesc);
@@ -13,6 +13,6 @@ namespace Dpr.Battle.Logic
             DEFAULT_POWERUP_DESC.Copy(dest.defaultPowerUpDesc, src.defaultPowerUpDesc);
             dest.isGEnableByNPC = src.isGEnableByNPC;
         }
-		public PokeDesc() { /*@B 0x60067D8*/ throw null; }
+		public PokeDesc() { }
 	}
 }

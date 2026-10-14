@@ -18,7 +18,7 @@ namespace Dpr.Battle.Logic
 
             return m_lastPosDmy;
         }
-		public PosPoke() { /*@B 0x60076D4*/ throw null; }
+		public PosPoke() { }
 		public void CopyFrom(in global::Dpr.Battle.Logic.PosPoke src) {
             for (int i = 0; i < m_state.Length; i++)
                 m_state[i].CopyFrom(src.m_state[i]);

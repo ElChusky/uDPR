@@ -5,8 +5,8 @@ namespace Dpr.Battle.Logic
 	{
 		public byte bossGrade;
 		public bool isBossRare;
-		public global::Dpr.Battle.Logic.RaidRewardItemData[] rewards;
-		public global::Dpr.Battle.Logic.RaidBossDesc bossDesc;
+		public global::Dpr.Battle.Logic.RaidRewardItemData[] rewards = Arrays.InitializeWithDefaultInstances<RaidRewardItemData>(48);
+		public global::Dpr.Battle.Logic.RaidBossDesc bossDesc = new RaidBossDesc();
 		public global::Dpr.Battle.Logic.RaidBossCaptureDifficulty bossCaptureDifficulty;
 		public bool needApplyCaptureCoefForSpGDuplication;
 		public void CopyFrom(global::Dpr.Battle.Logic.RaidBattleParam src) {
@@ -20,6 +20,6 @@ namespace Dpr.Battle.Logic
 			bossCaptureDifficulty = src.bossCaptureDifficulty;
 			needApplyCaptureCoefForSpGDuplication = src.needApplyCaptureCoefForSpGDuplication;
 		}
-		public RaidBattleParam() { /*@B 0x6006764*/ throw null; }
+		public RaidBattleParam() { }
 	}
 }

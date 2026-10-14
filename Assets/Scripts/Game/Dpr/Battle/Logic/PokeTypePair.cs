@@ -65,7 +65,13 @@ namespace Dpr.Battle.Logic
 		public static bool IsAnyTypeExist(global::Dpr.Battle.Logic.PokeTypePair pair) {
             return GetType1(pair) != (byte)Pml.PokeType.NULL || GetType2(pair) != (byte)Pml.PokeType.NULL || GetTypeEx(pair) != (byte)Pml.PokeType.NULL;
         }
-		public static implicit operator ushort(global::Dpr.Battle.Logic.PokeTypePair pair) { /*@B 0x60079F7*/ throw null; }
-		public static explicit operator global::Dpr.Battle.Logic.PokeTypePair(ushort value) { /*@B 0x60079F8*/ throw null; }
+		public static implicit operator ushort(global::Dpr.Battle.Logic.PokeTypePair pair) {
+            return pair.value;
+        }
+		public static explicit operator global::Dpr.Battle.Logic.PokeTypePair(ushort value) {
+            PokeTypePair pair;
+            pair.value = value;
+            return pair;
+        }
 	}
 }

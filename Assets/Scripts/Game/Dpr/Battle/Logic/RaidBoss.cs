@@ -120,26 +120,38 @@ namespace Dpr.Battle.Logic
 		public static bool ShouldSkipCaptureSequence(global::Dpr.Battle.Logic.MainModule pMainModule) {
             return pMainModule.GetRaidBattleParam().bossCaptureDifficulty == RaidBossCaptureDifficulty.IMPOSSIBLE;
         }
-		static RaidBoss() { /*@B 0x6007565*/ throw null; }
+		static RaidBoss() { }
 		public class SelectTargetParam
 		{
 			public global::Dpr.Battle.Logic.BattleEnv pBattleEnv;
 			public global::Dpr.Battle.Logic.Random pRandom;
-			public bool[] isSelectEnable;
+			public bool[] isSelectEnable = new bool[PokemonPosition.BTL_POS_NUM];
 			public bool equalizeWeight;
-			public SelectTargetParam() { /*@B 0x600B69C*/ throw null; }
+			public SelectTargetParam() {
+                pBattleEnv = null;
+                pRandom = null;
+                equalizeWeight = false;
+                for (byte i = 0; i < isSelectEnable.Length; i++)
+                    isSelectEnable[i] = true;
+            }
 		}
 		private struct GetCaptureValueCoefForSpGDuplicationTableElem
 		{
 			public global::Pml.MonsNo monsno;
 			public int coef;
-			public GetCaptureValueCoefForSpGDuplicationTableElem(global::Pml.MonsNo monsno, int coef) { /*@B 0x600B69D*/ throw null; }
+			public GetCaptureValueCoefForSpGDuplicationTableElem(global::Pml.MonsNo monsno, int coef) {
+                this.monsno = monsno;
+                this.coef = coef;
+            }
 		}
 		private struct GetCaptureValueCoefByCaptureDifficultyTableElem
 		{
 			public global::Dpr.Battle.Logic.RaidBossCaptureDifficulty difficulty;
 			public int coef;
-			public GetCaptureValueCoefByCaptureDifficultyTableElem(global::Dpr.Battle.Logic.RaidBossCaptureDifficulty difficulty, int coef) { /*@B 0x600B69E*/ throw null; }
+			public GetCaptureValueCoefByCaptureDifficultyTableElem(global::Dpr.Battle.Logic.RaidBossCaptureDifficulty difficulty, int coef) {
+                this.difficulty = difficulty;
+                this.coef = coef;
+            }
 		}
 	}
 }

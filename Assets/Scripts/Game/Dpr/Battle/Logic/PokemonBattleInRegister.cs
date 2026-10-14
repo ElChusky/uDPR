@@ -3,8 +3,10 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class PokemonBattleInRegister
 	{
-		private bool[] m_isPokemonBattleIn;
-		public PokemonBattleInRegister() { /*@B 0x600769B*/ throw null; }
+		private bool[] m_isPokemonBattleIn = new bool[PokeID.NUM];
+		public PokemonBattleInRegister() {
+            Clear();
+        }
 		public void Register(byte pokeId) {
 			if (pokeId < PokeID.NUM)
 				m_isPokemonBattleIn[pokeId] = true;

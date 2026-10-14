@@ -5,7 +5,10 @@ namespace Dpr.Battle.Logic
 	{
 		public int allDeadCausedClientID;
 		public int allDeadCausedPokeIdx;
-		public void Clear() { /*@B 0x6006765*/ throw null; }
+		public void Clear() {
+            allDeadCausedClientID = -1;
+            allDeadCausedPokeIdx = -1;
+        }
 		public PokeMemoryResult() { }
 	}
 }

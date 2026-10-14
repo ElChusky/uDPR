@@ -5,7 +5,13 @@ namespace Dpr.Battle.Logic
 	{
 		public global::Pml.ItemNo itemno;
 		public uint amount;
-		public RaidRewardItemData() { /*@B 0x600675D*/ throw null; }
-		public void CopyFrom(global::Dpr.Battle.Logic.RaidRewardItemData src) { /*@B 0x600675E*/ throw null; }
+		public RaidRewardItemData() {
+            itemno = 0;
+            amount = 0;
+        }
+		public void CopyFrom(global::Dpr.Battle.Logic.RaidRewardItemData src) {
+            itemno = src.itemno;
+            amount = src.amount;
+        }
 	}
 }

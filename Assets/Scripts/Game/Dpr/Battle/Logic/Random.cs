@@ -3,15 +3,33 @@ namespace Dpr.Battle.Logic
 {
 	public class Random
 	{
-		private global::Xoroshiro128Plus.Xoroshiro128Plus m_randomEngine;
+		private global::Xoroshiro128Plus.Xoroshiro128Plus m_randomEngine = new global::Xoroshiro128Plus.Xoroshiro128Plus();
 		private ulong m_seed;
-		public void Initialize() { /*@B 0x6007709*/ throw null; }
-		public void Initialize(ulong seed) { /*@B 0x600770A*/ throw null; }
+		public void Initialize() {
+            ulong seed = GenerateSeed();
+            m_seed = seed;
+            m_randomEngine = new global::Xoroshiro128Plus.Xoroshiro128Plus(seed);
+        }
+		public void Initialize(ulong seed) {
+            m_seed = seed;
+            m_randomEngine = new global::Xoroshiro128Plus.Xoroshiro128Plus(seed);
+        }
 		public ulong GetSeed() { return this.m_seed; }
-		public ulong GetValue() { /*@B 0x600770C*/ throw null; }
-		public ulong GetValue(ulong max) { /*@B 0x600770D*/ throw null; }
-		private static ulong GenerateSeed() { /*@B 0x600770E*/ throw null; }
-		public static int GetPublicRand(int range) { /*@B 0x600770F*/ throw null; }
-		public Random() { /*@B 0x6007710*/ throw null; }
+		public ulong GetValue() {
+            return m_randomEngine.NextULong();
+        }
+		public ulong GetValue(ulong max) {
+            ulong value = m_randomEngine.NextULong();
+            if (max != 0)
+                value %= max;
+            return value;
+        }
+		private static ulong GenerateSeed() {
+            return (ulong)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        }
+		public static int GetPublicRand(int range) {
+            return UnityEngine.Random.Range(0, range);
+        }
+		public Random() { }
 	}
 }

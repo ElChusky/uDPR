@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class PartyDesc
 	{
-		public global::Dpr.Battle.Logic.PokeDesc[] pokeDesc;
+		public global::Dpr.Battle.Logic.PokeDesc[] pokeDesc = Arrays.InitializeWithDefaultInstances<PokeDesc>(6);
 		public static void Clear(global::Dpr.Battle.Logic.PartyDesc desc) {
             for (byte i = 0; i < desc.pokeDesc.Length; i++)
                 PokeDesc.Clear(desc.pokeDesc[i]);
@@ -12,6 +12,6 @@ namespace Dpr.Battle.Logic
             for (byte i = 0; i < dest.pokeDesc.Length; i++)
                 PokeDesc.Copy(dest.pokeDesc[i], in src.pokeDesc[i]);
         }
-		public PartyDesc() { /*@B 0x60067DB*/ throw null; }
+		public PartyDesc() { }
 	}
 }

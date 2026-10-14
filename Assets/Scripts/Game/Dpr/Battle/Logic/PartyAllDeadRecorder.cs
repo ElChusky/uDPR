@@ -4,9 +4,14 @@ namespace Dpr.Battle.Logic
 	public sealed class PartyAllDeadRecorder
 	{
 		public const byte DEAD_ORDER_NONE = 5;
-		private byte[] m_partyAllDeadOrder;
-		public PartyAllDeadRecorder() { /*@B 0x6007686*/ throw null; }
-		public void Clear() { /*@B 0x6007687*/ throw null; }
+		private byte[] m_partyAllDeadOrder = new byte[(int)BTL_CLIENT_ID.BTL_CLIENT_NUM];
+		public PartyAllDeadRecorder() {
+            Clear();
+        }
+		public void Clear() {
+            for (int i = 0; i < (int)BTL_CLIENT_ID.BTL_CLIENT_NUM; i++)
+                m_partyAllDeadOrder[i] = DEAD_ORDER_NONE;
+        }
 		public void RecordPartyAllDead(byte clientID) {
 			if (clientID >= (int)BTL_CLIENT_ID.BTL_CLIENT_NUM)
 				return;

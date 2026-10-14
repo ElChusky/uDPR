@@ -7,7 +7,7 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.BTL_PARTY m_party;
 		private byte m_numSelect;
 		private bool m_bDisabledPutPosSequence;
-		private byte[] m_prohibit;
+		private byte[] m_prohibit = new byte[6];
 		public global::Dpr.Battle.Logic.BTL_PARTY GetParty() {
             return m_party;
         }
@@ -39,6 +39,6 @@ namespace Dpr.Battle.Logic
 		public bool IsDisabledPutPosSequence() {
             return m_bDisabledPutPosSequence;
         }
-		public PokeSelParam() { /*@B 0x6007CBB*/ throw null; }
+		public PokeSelParam() { }
 	}
 }
