@@ -1118,7 +1118,53 @@ namespace Dpr.Battle.Logic
 		public bool IsRecPlayBufOver() {
             return m_fRecPlayEndBufOver;
         }
-		private bool SubProc_UI_Setup(ref int seq) { /*@B 0x600786D*/ throw null; }
+		private bool SubProc_UI_Setup(ref int seq) {
+            switch (seq)
+            {
+                case 0:
+                    m_viewCore.CMD_StartSetup();
+                    seq++;
+                    goto case 1;
+
+                case 1:
+                    if (!m_viewCore.CMD_WaitSetup())
+                        return false;
+
+                    m_frEffectProc.Start(m_mainModule, getPokeCon(), m_viewCore, m_myID, getMyCoverPosNum());
+                    seq = 2;
+                    goto case 2;
+
+                case 2:
+                    if (!m_frEffectProc.Wait())
+                        return false;
+
+                    seq = 4;
+                    goto case 4;
+
+                case 4:
+                    if (m_cmdLimitTime != 0 || m_gameLimitTime != 0 || m_clientLimitTime != 0)
+                    {
+                        m_gameTimer.SetTime(GameTimer.TimerType.GAME, m_gameLimitTime);
+                        m_gameTimer.SetTime(GameTimer.TimerType.CLIENT, m_clientLimitTime);
+                        m_gameTimer.SetTime(GameTimer.TimerType.COMMAND, m_cmdLimitTime);
+                        if (m_gameLimitTime != 0)
+                            m_viewCore_CMD_EFFECT_DrawEnableTimer(GameTimer.TimerType.GAME, true);
+
+                        if (m_clientLimitTime != 0)
+                            m_viewCore_CMD_EFFECT_DrawEnableTimer(GameTimer.TimerType.CLIENT, true);
+                    }
+
+                    enemyPokeHPBase_Update();
+
+                    if (IsChapterSkipMode())
+                        m_viewCore.CMD_RecPlayer_StartSkip();
+
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
 		private bool SubProc_AI_Setup(ref int seq) {
             m_cmdLimitTime = (ushort)m_mainModule.GetCommandLimitTime();
             m_gameLimitTime = (ushort)m_mainModule.GetGameLimitTime();
@@ -1710,7 +1756,74 @@ namespace Dpr.Battle.Logic
             BtlPokePos targetPos = calc.DecideWazaTargetAutoForClient(m_mainModule, getPokeCon(), poke, waza, ref m_randContext);
             BTL_ACTION.SetFightParam(ref pActionParam, poke.GetID(), srcWaza, targetPos);
         }
-		private bool selact_Root(ref int seq) { /*@B 0x600788D*/ throw null; }
+		private bool selact_Root(ref int seq) {
+            BattleViewBase.SelectActionParam viewParam = null;
+
+            switch ((SelActRootSeq)seq)
+            {
+                case SelActRootSeq.SELACT_ROOTSEQ_START:
+                    selact_root_start(ref seq);
+                    if (seq != (int)SelActRootSeq.SELACT_ROOTSEQ_WAIT_MSG_CHECK)
+                        return false;
+
+                    goto case SelActRootSeq.SELACT_ROOTSEQ_WAIT_MSG_CHECK;
+
+                case SelActRootSeq.SELACT_ROOTSEQ_FRIENDSHIP_MSG_WAIT:
+                case SelActRootSeq.SELACT_ROOTSEQ_FREEFALL_WARN_WAIT:
+                    selact_root_friendship_msg_wait(ref seq);
+                    return false;
+
+                case SelActRootSeq.SELACT_ROOTSEQ_WAIT_MSG_CHECK:
+                    selact_root_wait_msg_check(ref seq);
+                    if (seq == (int)SelActRootSeq.SELACT_ROOTSEQ_SEL_START)
+                        goto case SelActRootSeq.SELACT_ROOTSEQ_SEL_START;
+
+                    goto case SelActRootSeq.SELACT_ROOTSEQ_WAIT_MSG_WAIT;
+
+                case SelActRootSeq.SELACT_ROOTSEQ_WAIT_MSG_WAIT:
+                    if (!m_viewCore.CMD_WaitMsg())
+                        return false;
+
+                    seq = (int)SelActRootSeq.SELACT_ROOTSEQ_SEL_START;
+                    goto case SelActRootSeq.SELACT_ROOTSEQ_SEL_START;
+
+                case SelActRootSeq.SELACT_ROOTSEQ_SEL_START:
+                    viewParam = new BattleViewBase.SelectActionParam();
+                    setupSelectActionUIParam(viewParam, m_procPoke, m_procPokeIdx);
+                    m_procActionUIRet.value = m_procAction;
+                    m_viewCore.CMD_UI_SelectAction_Start(viewParam, m_procActionUIRet);
+                    seq = (int)SelActRootSeq.SELACT_ROOTSEQ_SEL_MAIN;
+                    return false;
+
+                case SelActRootSeq.SELACT_ROOTSEQ_SEL_MAIN:
+                    selact_root_sel_main(ref seq);
+                    m_procAction = m_procActionUIRet.value;
+                    return false;
+
+                case SelActRootSeq.SELACT_ROOTSEQ_WAIT_UI_RESTART:
+                    if (m_viewCore.CMD_UI_WaitRestart())
+                        seq = (int)SelActRootSeq.SELACT_ROOTSEQ_SEL_START;
+                    return false;
+
+                case SelActRootSeq.SELACT_ROOTSEQ_FREEFALL_WARN:
+                    m_viewCore.CMD_UI_RestartIfNotStandBy();
+                    seq = (int)SelActRootSeq.SELACT_ROOTSEQ_FREEFALL_WARN_MSG;
+                    return false;
+
+                case SelActRootSeq.SELACT_ROOTSEQ_FREEFALL_WARN_MSG:
+                    if (!m_viewCore.CMD_UI_WaitRestart())
+                        return false;
+
+                    BTLV_STRPARAM.Setup(m_strParam, BtlStrType.BTL_STRTYPE_STD, BTL_STRID_STD.FreeFallBind);
+                    BTLV_STRPARAM.AddArg(m_strParam, m_procPoke.GetID());
+                    selact_startMsg(m_strParam);
+                    seq = (int)SelActRootSeq.SELACT_ROOTSEQ_FREEFALL_WARN_WAIT;
+                    return false;
+
+                default:
+                    return false;
+            }
+        }
 		private void setupSelectActionUIParam(global::Dpr.Battle.Logic.BattleViewBase.SelectActionParam pViewParam, global::Dpr.Battle.Logic.BTL_POKEPARAM pActPoke, byte actPokeIdx) {
             pViewParam.pActPoke = pActPoke;
             pViewParam.pokeIndex = actPokeIdx;
@@ -1770,7 +1883,15 @@ namespace Dpr.Battle.Logic
             m_currentActionCount = 0;
             BTL_ACTION.SetNULL(ref m_actionParam[m_procActionIndex]);
         }
-		private bool selact_root_start(ref int seq) { /*@B 0x6007891*/ throw null; }
+		private bool selact_root_start(ref int seq) {
+            setupCurrentPokeActionPtr();
+            if (checkActionForceSet(m_procPoke, ref m_actionParam[m_procActionIndex]))
+                selActSubProc_Set(selact_CheckFinish);
+            else
+                seq = (int)SelActRootSeq.SELACT_ROOTSEQ_WAIT_MSG_CHECK;
+
+            return false;
+        }
 		private void incrementAddActionCount() {
             m_currentActionCount++;
         }
@@ -1778,13 +1899,331 @@ namespace Dpr.Battle.Logic
             if (m_currentActionCount != 0)
                 m_currentActionCount--;
         }
-		private bool selact_root_friendship_msg_wait(ref int seq) { /*@B 0x6007894*/ throw null; }
-		private bool selact_root_wait_msg_check(ref int seq) { /*@B 0x6007895*/ throw null; }
-		private bool selact_root_sel_main(ref int seq) { /*@B 0x6007896*/ throw null; }
+		private bool selact_root_friendship_msg_wait(ref int seq) {
+            if (m_viewCore.CMD_WaitMsg())
+                seq = (int)SelActRootSeq.SELACT_ROOTSEQ_WAIT_MSG_CHECK;
+
+            return false;
+        }
+		private bool selact_root_wait_msg_check(ref int seq) {
+            if (m_prevPokeIdx != m_procPokeIdx || m_fStdMsgChanged)
+            {
+                if (setupSelectStartStr(m_procPoke, m_strParam))
+                {
+                    m_viewCore.CMD_StartMsg(m_strParam);
+                    m_fStdMsgChanged = false;
+                    m_b1stReadyMsgDisped = true;
+                }
+
+                m_prevPokeIdx = (sbyte)m_procPokeIdx;
+                seq = (int)SelActRootSeq.SELACT_ROOTSEQ_WAIT_MSG_WAIT;
+            }
+            else
+            {
+                seq = (int)SelActRootSeq.SELACT_ROOTSEQ_SEL_START;
+            }
+
+            return false;
+        }
+		private bool selact_root_sel_main(ref int seq) {
+            if (checkSelactForceQuit(selact_ForceQuit))
+            {
+                m_viewCore.CMD_UI_SelectAction_ForceQuit();
+                return false;
+            }
+
+            BtlAction action = m_viewCore.CMD_UI_SelectAction_Wait();
+            if (m_mainModule.GetRule() == BtlRule.BTL_RULE_SAFARI)
+            {
+                switch (action)
+                {
+                    case BtlAction.BTL_ACTION_FIGHT:
+                    case BtlAction.BTL_ACTION_SAFARI_BALL:
+                        return selectSafariBall(ref seq);
+
+                    case BtlAction.BTL_ACTION_ITEM:
+                    case BtlAction.BTL_ACTION_SAFARI_DORO:
+                        BTL_ACTION.SetSafariDoro(ref m_procActionUIRet.value, m_procPoke.GetID());
+                        selActSubProc_Set(selact_CheckFinish);
+                        return false;
+
+                    case BtlAction.BTL_ACTION_CHANGE:
+                    case BtlAction.BTL_ACTION_SAFARI_ESA:
+                        BTL_ACTION.SetSafariEsa(ref m_procActionUIRet.value, m_procPoke.GetID());
+                        selActSubProc_Set(selact_CheckFinish);
+                        return false;
+
+                    case BtlAction.BTL_ACTION_ESCAPE:
+                        return selectEscape(ref seq);
+
+                    case BtlAction.BTL_ACTION_CHEER:
+                        BTL_ACTION.SetCheer(ref m_procActionUIRet.value);
+                        selActSubProc_Set(selact_CheckFinish);
+                        return false;
+
+                    default:
+                        return false;
+                }
+            }
+
+            switch (action)
+            {
+                case BtlAction.BTL_ACTION_FIGHT:
+                    selActSubProc_Set(selact_Fight);
+                    return false;
+
+                case BtlAction.BTL_ACTION_ITEM:
+                    if (m_procPoke.CheckSick(WazaSick.WAZASICK_FREEFALL))
+                        return restartForFreeFall(ref seq);
+
+                    selActSubProc_Set(selact_Item);
+                    return false;
+
+                case BtlAction.BTL_ACTION_CHANGE:
+                    if (m_procPoke.CheckSick(WazaSick.WAZASICK_FREEFALL))
+                        return restartForFreeFall(ref seq);
+
+                    selActSubProc_Set(selact_SelectChangePokemon);
+                    return false;
+
+                case BtlAction.BTL_ACTION_ESCAPE:
+                    return selectEscape(ref seq);
+
+                case BtlAction.BTL_ACTION_CHEER:
+                    BTL_ACTION.SetCheer(ref m_procActionUIRet.value);
+                    selActSubProc_Set(selact_CheckFinish);
+                    return false;
+
+                case BtlAction.BTL_ACTION_SAFARI_BALL:
+                    return selectSafariBall(ref seq);
+
+                case BtlAction.BTL_ACTION_SAFARI_ESA:
+                    BTL_ACTION.SetSafariEsa(ref m_procActionUIRet.value, m_procPoke.GetID());
+                    selActSubProc_Set(selact_CheckFinish);
+                    return false;
+
+                case BtlAction.BTL_ACTION_SAFARI_DORO:
+                    BTL_ACTION.SetSafariDoro(ref m_procActionUIRet.value, m_procPoke.GetID());
+                    selActSubProc_Set(selact_CheckFinish);
+                    return false;
+
+                default:
+                    return false;
+            }
+
+            bool selectSafariBall(ref int s)
+            {
+                // the shipped code passes the safari ball item number (5); canUseBall ignores it
+                if (calc.ITEM_IsBall(5) && !canUseBall(m_strParam, 5, m_procPokeIdx))
+                {
+                    selActSubProc_Set(selact_Item);
+                    s = (int)Seqselact_Item.SEQ_CANT_USE_START;
+                    return false;
+                }
+
+                BTL_ACTION.SetSafariBall(ref m_procActionUIRet.value, m_procPoke.GetID());
+                selActSubProc_Set(selact_CheckFinish);
+                return false;
+            }
+
+            bool restartForFreeFall(ref int s)
+            {
+                m_viewCore.CMD_UI_Restart();
+                s = (int)SelActRootSeq.SELACT_ROOTSEQ_FREEFALL_WARN;
+                return false;
+            }
+
+            bool selectEscape(ref int s)
+            {
+                if (m_procPokeIdx == m_firstPokeIdx)
+                {
+                    if (m_procPoke.CheckSick(WazaSick.WAZASICK_FREEFALL) && m_mainModule.GetEscapeMode() != BtlEscapeMode.BTL_ESCAPE_MODE_CONFIRM)
+                        return restartForFreeFall(ref s);
+
+                    selActSubProc_Set(selact_Escape);
+                    return false;
+                }
+
+                BTL_ACTION_PARAM tmpAction = default;
+                while (true)
+                {
+                    if (m_procPokeIdx == 0)
+                        return false;
+
+                    m_procPokeIdx--;
+                    BTL_POKEPARAM bpp = getPokeCon().GetClientPokeData(m_myID, m_procPokeIdx);
+                    if (!checkActionForceSet(bpp, ref tmpAction))
+                        break;
+                }
+
+                ref BTL_ACTION_PARAM prevAction = ref m_actionParam[m_procPokeIdx + calcAddActionCountSum(m_procPokeIdx)];
+                if (BTL_ACTION.GetAction(prevAction) == BtlAction.BTL_ACTION_CHANGE)
+                    m_pokeSelResult.Pop();
+
+                if (BTL_ACTION.GetAction(prevAction) == BtlAction.BTL_ACTION_ITEM)
+                {
+                    if (selItemWork_IsFromPokeSelect(m_procPokeIdx))
+                        m_pokeSelResult.Pop();
+
+                    selItemWork_Restore(m_procPokeIdx);
+                }
+
+                if (BTL_ACTION.IsFightWithG(ref prevAction))
+                    m_isGSelectedThisTurn = false;
+
+                selActSubProc_Set(selact_Root);
+                return false;
+            }
+        }
 		private bool canStartG(global::Dpr.Battle.Logic.BTL_POKEPARAM pPoke) {
             return GMode.CanStartG(m_mainModule, m_pBattleEnv, (BTL_CLIENT_ID)m_myID) && !m_isGSelectedThisTurn && pPoke.CanStartG();
         }
-		private bool selact_Fight(ref int seq) { /*@B 0x6007898*/ throw null; }
+		private bool selact_Fight(ref int seq) {
+            switch ((Seqselact_Fight)seq)
+            {
+                case Seqselact_Fight.SEQ_START:
+                    if (checkWazaForceSet(m_procPoke, ref m_procAction))
+                    {
+                        selActSubProc_Set(selact_CheckFinish);
+                        break;
+                    }
+
+                    seq = (int)Seqselact_Fight.SEQ_SELECT_WAZA_START;
+                    break;
+
+                case Seqselact_Fight.SEQ_SELECT_WAZA_START:
+                    m_procActionUIRet.value = m_procAction;
+                    m_viewCore.CMD_UI_SelectWaza_Start(m_procPoke, m_procPokeIdx, m_procActionUIRet);
+                    seq = (int)Seqselact_Fight.SEQ_SELECT_WAZA_WAIT;
+                    break;
+
+                case Seqselact_Fight.SEQ_SELECT_WAZA_WAIT:
+                {
+                    if (checkSelactForceQuit(selact_ForceQuit))
+                    {
+                        m_viewCore.CMD_UI_SelectWaza_ForceQuit();
+                        break;
+                    }
+
+                    bool fDone = m_viewCore.CMD_UI_SelectWaza_Wait();
+                    m_procAction = m_procActionUIRet.value;
+                    if (!fDone)
+                        return false;
+
+                    if (BTL_ACTION.GetAction(m_procAction) == BtlAction.BTL_ACTION_NULL)
+                    {
+                        selActSubProc_Set(selact_Root);
+                        break;
+                    }
+
+                    BTL_POKEPARAM bpp = m_procPoke;
+                    WazaNo waza = BTL_ACTION.GetWazaID(ref m_procAction);
+                    if (bpp.IsGMode() || BTL_ACTION.IsFightWithG(ref m_procAction))
+                        waza = GWaza.GetGWaza(waza);
+
+                    if (is_unselectable_waza(bpp, waza, m_strParam))
+                    {
+                        BTLV_STRPARAM.SetWait(m_strParam, 0);
+                        selact_startMsg(m_strParam);
+                        seq = (int)Seqselact_Fight.SEQ_WAIT_UNSEL_WAZA_MSG;
+                        break;
+                    }
+
+                    seq = (int)Seqselact_Fight.SEQ_SELECT_WAZA_END;
+                    break;
+                }
+
+                case Seqselact_Fight.SEQ_SELECT_WAZA_END:
+                    if (m_viewCore.CMD_UI_SelectWaza_End())
+                        seq = (int)Seqselact_Fight.SEQ_CHECK_WAZA_TARGET;
+                    break;
+
+                case Seqselact_Fight.SEQ_CHECK_WAZA_TARGET:
+                {
+                    BtlRule rule = m_mainModule.GetRule();
+                    if (calc.RULE_IsNeedSelectTarget(rule))
+                    {
+                        if (rule == BtlRule.BTL_RULE_RAID && m_mainModule.GetMultiMode() == BtlMultiMode.BTL_MULTIMODE_RAID_P_A &&
+                            WAZADATA.GetWazaTarget(BTL_ACTION.GetWazaID(ref m_procAction)) == Pml.WazaData.WazaTarget.TARGET_FRIEND_SELECT)
+                        {
+                            m_procAction.fight_targetPos = 0;
+                            seq = (int)Seqselact_Fight.SEQ_DONE;
+                            break;
+                        }
+
+                        seq = (int)Seqselact_Fight.SEQ_SELECT_TARGET_START;
+                        break;
+                    }
+
+                    BtlPokePos myPos = m_mainModule.PokeIDtoPokePos(getPokeCon(), m_procPoke.GetID());
+                    m_procAction.fight_targetPos = (byte)m_mainModule.GetOpponentPokePos(myPos, 0);
+                    seq = (int)Seqselact_Fight.SEQ_DONE;
+                    break;
+                }
+
+                case Seqselact_Fight.SEQ_WAIT_UNSEL_TARGET_MSG:
+                    if (!m_viewCore.CMD_WaitMsg())
+                        return false;
+
+                    goto case Seqselact_Fight.SEQ_SELECT_TARGET_START;
+
+                case Seqselact_Fight.SEQ_SELECT_TARGET_START:
+                    m_procActionUIRet.value = m_procAction;
+                    m_viewCore.CMD_UI_SelectTarget_Start(m_procPokeIdx, m_procPoke, m_procActionUIRet);
+                    seq = (int)Seqselact_Fight.SEQ_SELECT_TARGET_WAIT;
+                    break;
+
+                case Seqselact_Fight.SEQ_SELECT_TARGET_WAIT:
+                {
+                    if (checkSelactForceQuit(selact_ForceQuit))
+                    {
+                        m_viewCore.CMD_UI_SelectTarget_ForceQuit();
+                        break;
+                    }
+
+                    BattleViewBase.BtlvResult result = m_viewCore.CMD_UI_SelectTarget_Wait();
+                    m_procAction = m_procActionUIRet.value;
+                    if (result == BattleViewBase.BtlvResult.CANCEL)
+                    {
+                        seq = (int)Seqselact_Fight.SEQ_SELECT_WAZA_START;
+                        break;
+                    }
+
+                    if (result != BattleViewBase.BtlvResult.DONE)
+                        return false;
+
+                    WazaNo waza = BTL_ACTION.GetWazaID(ref m_procAction);
+                    BtlPokePos targetPos = BTL_ACTION.GetWazaTargetPos(ref m_procAction);
+                    if (is_unselectable_target(m_procPoke, waza, targetPos, m_strParam))
+                    {
+                        BTLV_STRPARAM.SetWait(m_strParam, 0);
+                        selact_startMsg(m_strParam);
+                        seq = (int)Seqselact_Fight.SEQ_WAIT_UNSEL_TARGET_MSG;
+                        break;
+                    }
+
+                    seq = (int)Seqselact_Fight.SEQ_DONE;
+                    break;
+                }
+
+                case Seqselact_Fight.SEQ_WAIT_UNSEL_WAZA_MSG:
+                    if (!m_viewCore.CMD_WaitMsg())
+                        return false;
+
+                    m_viewCore.CMD_UI_SelectWaza_Restart(m_procPokeIdx);
+                    seq = (int)Seqselact_Fight.SEQ_SELECT_WAZA_WAIT;
+                    break;
+
+                case Seqselact_Fight.SEQ_DONE:
+                    if (BTL_ACTION.IsFightWithG(ref m_procAction))
+                        m_isGSelectedThisTurn = true;
+
+                    selActSubProc_Set(selact_CheckFinish);
+                    break;
+            }
+
+            return false;
+        }
 		private bool needGButtonDisplay(global::Dpr.Battle.Logic.BTL_POKEPARAM pActPoke) {
             return GMode.NeedGButtonDisplay(m_mainModule, m_pBattleEnv, (BTL_CLIENT_ID)m_myID) && !m_isGSelectedThisTurn && pActPoke.CanStartG();
         }
@@ -3853,7 +4292,55 @@ namespace Dpr.Battle.Logic
                     return true;
             }
         }
-		private bool SubProc_UI_LoseWild(ref int seq) { /*@B 0x60078F2*/ throw null; }
+		private bool SubProc_UI_LoseWild(ref int seq) {
+            if (m_mainModule.GetSetupStatusFlag(BTL_STATUS_FLAG.BTL_STATUS_FLAG_NO_LOSE))
+                return true;
+
+            switch (seq)
+            {
+                case 0:
+                    BTLV_STRPARAM.Setup(m_strParam, BtlStrType.BTL_STRTYPE_STD, BTL_STRID_STD.LoseStart);
+                    BTLV_STRPARAM.AddArg(m_strParam, m_myID);
+                    m_viewCore.CMD_StartMsg(m_strParam);
+                    break;
+
+                case 1:
+                {
+                    if (!m_viewCore.CMD_WaitMsg())
+                        return false;
+
+                    uint loseMoney = m_mainModule.FixLoseMoney();
+                    if (loseMoney != 0)
+                    {
+                        BTLV_STRPARAM.Setup(m_strParam, BtlStrType.BTL_STRTYPE_STD, BTL_STRID_STD.LoseMoneyWild);
+                        BTLV_STRPARAM.AddArg(m_strParam, m_myID);
+                        BTLV_STRPARAM.AddArg(m_strParam, (int)loseMoney);
+                        m_viewCore.CMD_StartMsg(m_strParam);
+                    }
+                    break;
+                }
+
+                case 2:
+                    if (!m_viewCore.CMD_WaitMsg())
+                        return false;
+
+                    BTLV_STRPARAM.Setup(m_strParam, BtlStrType.BTL_STRTYPE_STD, BTL_STRID_STD.LoseEnd);
+                    BTLV_STRPARAM.AddArg(m_strParam, m_myID);
+                    m_viewCore.CMD_StartMsg(m_strParam);
+                    break;
+
+                case 3:
+                    if (!m_viewCore.CMD_WaitMsg())
+                        return false;
+                    break;
+
+                default:
+                    return true;
+            }
+
+            seq++;
+            return false;
+        }
 		private bool SubProc_UI_ForceQuitWild(ref int seq) {
             m_viewCore.CMD_FinalizeFadeSkip();
             return true;
