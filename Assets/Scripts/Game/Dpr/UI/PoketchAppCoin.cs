@@ -12,7 +12,7 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite[] _coinSprites;
 		private global::Dpr.UI.PoketchAppCoin.CoinState _state;
-		public float CoinAnimationTime;
+		public float CoinAnimationTime = 0.01f;
 		private float _coinAnimationTimeCount;
 		private int _coinSpriteIndex;
 		private const string animationStateNameCointos = "Poketch_CoinMove01";
@@ -69,7 +69,7 @@ namespace Dpr.UI
 		public void PlayCoinBoundSE() {
 			AudioManager.Instance.PlaySe(EVENTS.S_FI309, null);
 		}
-		public PoketchAppCoin() { /*@B 0x60057CA*/ throw null; }
+		public PoketchAppCoin() { }
 		private enum CoinState
 		{
 			Idle = 0,

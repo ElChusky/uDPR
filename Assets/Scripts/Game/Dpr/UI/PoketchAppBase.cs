@@ -7,7 +7,7 @@ namespace Dpr.UI
 		public global::Dpr.UI.PoketchButton[] Buttons;
 		protected global::Dpr.UI.PoketchWindow _poketchInstance;
 		protected bool isInitialized;
-		public global::DPData.POKETCH_APPID AppID { get; protected set; }
+		public global::DPData.POKETCH_APPID AppID { get; protected set; } = global::DPData.POKETCH_APPID.NONE;
 		public global::Dpr.UI.PoketchButton PreButton { get; protected set; }
 		public global::Dpr.UI.PoketchWindow.TouchState PreState { get; protected set; }
 		public void Initialize() {
@@ -75,6 +75,6 @@ namespace Dpr.UI
 				Buttons[i].SetImage(false);
 			}
 		}
-		protected PoketchAppBase() { /*@B 0x6005796*/ throw null; }
+		protected PoketchAppBase() { }
 	}
 }

@@ -35,6 +35,6 @@ namespace Dpr.UI
 			_countImage1000.sprite = _numberSprites[count / 1000 % 10];
 			_count = count;
 		}
-		public PoketchAppCounter() { /*@B 0x60057DC*/ throw null; }
+		public PoketchAppCounter() { }
 	}
 }

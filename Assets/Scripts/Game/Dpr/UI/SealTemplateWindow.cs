@@ -11,7 +11,7 @@ namespace Dpr.UI
 {
 	public class SealTemplateWindow : global::Dpr.UI.UIWindow
 	{
-		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos;
+		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos = new global::UnityEngine.Vector2(0f, 100f);
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIText trainerTitleText;
 		[global::UnityEngine.SerializeField]
@@ -320,8 +320,8 @@ namespace Dpr.UI
 				_input.inputEnabled = true;
 			}, false);
 		}
-		public SealTemplateWindow() { /*@B 0x6005A61*/ throw null; }
-		static SealTemplateWindow() { /*@B 0x6005A62*/ throw null; }
+		public SealTemplateWindow() { }
+		static SealTemplateWindow() { }
 		private class SealTemplateInfo
 		{
 			public int SealId;

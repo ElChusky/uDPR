@@ -41,7 +41,7 @@ namespace Dpr.UI
 				_detail.description.SetupMessage(null, "CONTESTWAZA_INFO_018");
 			}
 		}
-		public PokemonStatusPanelContestWaza() { /*@B 0x60056E0*/ throw null; }
+		public PokemonStatusPanelContestWaza() { }
 		[global::System.Serializable]
 		private class DetailParam
 		{

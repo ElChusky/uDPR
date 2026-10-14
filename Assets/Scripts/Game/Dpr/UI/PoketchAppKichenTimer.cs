@@ -7,10 +7,10 @@ namespace Dpr.UI
 	{
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("背景アニメーションの切り替え間隔")]
-		private float _bgAniamationTime;
+		private float _bgAniamationTime = 0.3f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("ボタン明滅の切り替え間隔")]
-		private float _buttonBlinkTime;
+		private float _buttonBlinkTime = 0.5f;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image _secondsImage01;
 		[global::UnityEngine.SerializeField]
@@ -39,7 +39,7 @@ namespace Dpr.UI
 		private int _displaySeconds;
 		private global::Dpr.UI.PoketchAppKichenTimer.TimerBgState _bgState;
 		private float _bgAnimationTimeCount;
-		private bool _isButtonVisible;
+		private bool _isButtonVisible = true;
 		private const float PRESSED_OFFSET_Y = -10f;
 		private float _buttonBlinkTimeCount;
 		private global::UnityEngine.Vector3 _defaultStartButtonPosition;
@@ -231,7 +231,7 @@ namespace Dpr.UI
 				Buttons[i].SetActive(visible);
 			_isButtonVisible = visible;
 		}
-		public PoketchAppKichenTimer() { /*@B 0x600582A*/ throw null; }
+		public PoketchAppKichenTimer() { }
 		private enum TimerState
 		{
 			Idle = 0,

@@ -16,10 +16,10 @@ namespace Dpr.UI
 		private global::UnityEngine.UI.Image _imageBg;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image _imageIcon;
-		private int _index;
+		private int _index = -1;
 		private global::UnityEngine.Color _color;
-		private global::UnityEngine.Color[] _colors;
-		public global::UnityEngine.Color bgColor { get { /*@B 0x6005717*/ throw null; } }
+		private global::UnityEngine.Color[] _colors = new global::UnityEngine.Color[] { new global::UnityEngine.Color32(155, 157, 158, 255), new global::UnityEngine.Color32(209, 209, 210, 255), new global::UnityEngine.Color32(235, 235, 235, 255) };
+		public global::UnityEngine.Color bgColor { get { return _imageBg.color; } }
 		public global::Dpr.UI.PokemonStatusPanel panel { get { return this._panel; } }
 		public string messageLabelTitle { get { return this._messageLabelTitle; } }
 		public void Awake() {
@@ -53,6 +53,6 @@ namespace Dpr.UI
 				_imageIcon.color = _colors[1];
 			}
 		}
-		public PokemonStatusTab() { /*@B 0x600571E*/ throw null; }
+		public PokemonStatusTab() { }
 	}
 }

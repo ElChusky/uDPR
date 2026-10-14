@@ -34,12 +34,16 @@ namespace Dpr.UI
 			}
 			param.position = new Vector3(position.x + size.x, y, posZ);
 		}
-		protected override void OpenMessageWindow(global::Dpr.MsgWindow.MsgWindowParam messageParam) { /*@B 0x600576B*/ throw null; }
-		public PokemonWindowBase() { /*@B 0x600576C*/ throw null; }
+		protected override void OpenMessageWindow(global::Dpr.MsgWindow.MsgWindowParam messageParam) {
+			base.OpenMessageWindow(messageParam);
+			if (_messageWindowRoot != null)
+				_messageWindow.transform.position = _messageWindowRoot.position;
+		}
+		public PokemonWindowBase() { }
 		public class BaseParam
 		{
-			public int selectIndex;
-			public BaseParam() { /*@B 0x600AD4E*/ throw null; }
+			public int selectIndex = -1;
+			public BaseParam() { }
 		}
 	}
 }

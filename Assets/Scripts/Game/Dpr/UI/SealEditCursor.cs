@@ -27,19 +27,19 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Vector2 selectedPivot;
 		[global::UnityEngine.SerializeField]
-		private float correctBorderLessY;
+		private float correctBorderLessY = 100f;
 		[global::UnityEngine.SerializeField]
-		private float baseYValue;
+		private float baseYValue = 30f;
 		[global::UnityEngine.SerializeField]
-		private float correctYValue;
+		private float correctYValue = 30f;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.SealEditSealCountView countView;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color countDefaultColor;
+		private global::UnityEngine.Color countDefaultColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color countZeroColor;
+		private global::UnityEngine.Color countZeroColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color countMaxColor;
+		private global::UnityEngine.Color countMaxColor = global::UnityEngine.Color.white;
 		private global::UnityEngine.RectTransform rectTransform;
 		private global::UnityEngine.RectTransform sealIconRectTransform;
 		private global::UnityEngine.RectTransform infoTextRectTransform;
@@ -123,6 +123,6 @@ namespace Dpr.UI
 				infoTextObject.SetActive(false);
 			}
 		}
-		public SealEditCursor() { /*@B 0x60059C5*/ throw null; }
+		public SealEditCursor() { }
 	}
 }

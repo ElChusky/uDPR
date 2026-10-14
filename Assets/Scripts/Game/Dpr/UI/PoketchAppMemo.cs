@@ -13,27 +13,27 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image[] _unselectedImages;
 		[global::UnityEngine.SerializeField]
-		private int _texturePixelWidth;
+		private int _texturePixelWidth = 510;
 		[global::UnityEngine.SerializeField]
-		private int _texturePixelHeight;
+		private int _texturePixelHeight = 450;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color _pencolor;
+		private global::UnityEngine.Color _pencolor = global::UnityEngine.Color.black;
 		private global::Dpr.UI.PoketchAppMemo.PoketchAppMemoState _state;
 		private global::UnityEngine.UI.Image _cursorImage;
 		private global::UnityEngine.Texture2D _canvasTexture;
 		private global::UnityEngine.Color[] _canvasColorBuffer;
-		private int _pxWriteThickness;
-		private int _pxEraceThickness;
-		private int _lastPosPixelX;
-		private int _lastPosPixelY;
-		private float _displayMargin;
+		private int _pxWriteThickness = 11;
+		private int _pxEraceThickness = 23;
+		private int _lastPosPixelX = -1;
+		private int _lastPosPixelY = -1;
+		private float _displayMargin = 30f;
 		private bool _isTouchOld;
 		private const float DefaultButtonHeight = 220f;
 		private const float PressButtonHeight = 208f;
-		private global::UnityEngine.Vector2 IconSize;
-		private global::UnityEngine.Vector2 IconOffset;
-		private global::UnityEngine.Vector2 _defaultIconSize;
-		private global::UnityEngine.Vector2 _defaultIconOffset;
+		private global::UnityEngine.Vector2 IconSize = new global::UnityEngine.Vector2(64f, 64f);
+		private global::UnityEngine.Vector2 IconOffset = new global::UnityEngine.Vector2(30f, 30f);
+		private global::UnityEngine.Vector2 _defaultIconSize = new global::UnityEngine.Vector2(68f, 94f);
+		private global::UnityEngine.Vector2 _defaultIconOffset = new global::UnityEngine.Vector2(10f, -44f);
 		private bool _isCloseOnce;
 		protected override void OnInitialize() {
 			AppID = POKETCH_APPID.MEMO;
@@ -266,7 +266,7 @@ namespace Dpr.UI
 				}
 			}
 		}
-		public PoketchAppMemo() { /*@B 0x600584A*/ throw null; }
+		public PoketchAppMemo() { }
 		private enum PoketchAppMemoState
 		{
 			None = 0,

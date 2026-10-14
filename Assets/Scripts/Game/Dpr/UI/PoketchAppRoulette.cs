@@ -30,7 +30,7 @@ namespace Dpr.UI
 		private float _maxDecelerationTime;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("ペンの色")]
-		private global::UnityEngine.Color _pencolor;
+		private global::UnityEngine.Color _pencolor = global::UnityEngine.Color.black;
 		private global::Dpr.UI.PoketchAppRoulette.PoketchAppRouletteState _state;
 		private float _currentRotateZ;
 		private float _rotateSpeed;
@@ -40,15 +40,15 @@ namespace Dpr.UI
 		private global::UnityEngine.Texture2D _canvasTexture;
 		private global::UnityEngine.Color[] _canvasColorBuffer;
 		private global::UnityEngine.Color[] _clearColorBuffer;
-		private int _texturePixelWidth;
-		private int _texturePixelHeight;
-		private int _pxWriteThickness;
-		private int _lastPosPixelX;
-		private int _lastPosPixelY;
-		private float _displayMargin;
+		private int _texturePixelWidth = 460;
+		private int _texturePixelHeight = 460;
+		private int _pxWriteThickness = 5;
+		private int _lastPosPixelX = -1;
+		private int _lastPosPixelY = -1;
+		private float _displayMargin = 30f;
 		private bool _isTouchOld;
-		private global::UnityEngine.Vector2 _defaultButtonSize;
-		private global::UnityEngine.Vector2 _pressedButtonSize;
+		private global::UnityEngine.Vector2 _defaultButtonSize = new global::UnityEngine.Vector2(96f, 108f);
+		private global::UnityEngine.Vector2 _pressedButtonSize = new global::UnityEngine.Vector2(96f, 96f);
 		protected override void OnInitialize() {
 			AppID = POKETCH_APPID.ROULETTE;
 			Buttons[0].Initialize(null, uint.MaxValue);
@@ -307,7 +307,7 @@ namespace Dpr.UI
 				}
 			}
 		}
-		public PoketchAppRoulette() { /*@B 0x6005898*/ throw null; }
+		public PoketchAppRoulette() { }
 		private enum PoketchAppRouletteState
 		{
 			Stop = 0,

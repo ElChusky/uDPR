@@ -86,6 +86,6 @@ namespace Dpr.UI
 #endif
 			_knob.transform.position = new Vector3(span * index + _rootKnob.position.x, _knob.transform.position.y, 0f);
 		}
-		public PoketchAppColorChanger() { /*@B 0x60057D4*/ throw null; }
+		public PoketchAppColorChanger() { }
 	}
 }

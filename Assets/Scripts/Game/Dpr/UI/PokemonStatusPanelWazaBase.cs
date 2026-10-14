@@ -12,14 +12,21 @@ namespace Dpr.UI
 		protected global::Dpr.UI.Cursor _cursor;
 		[global::UnityEngine.SerializeField]
 		protected global::UnityEngine.RectTransform _detailRoot;
-		protected global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusWazaItem> _items;
+		protected global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusWazaItem> _items = new global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusWazaItem>();
 		protected int _selectIndex;
 		protected bool _showDetail;
 		protected global::UnityEngine.UI.VerticalLayoutGroup _verticalLayoutGroup;
 		protected global::Dpr.UI.PokemonStatusWazaItem _fromSwapItem;
 		protected global::UnityEngine.Vector3 _fromSwapPisiton;
 		protected int _fromSwapSiblingIndex;
-		protected virtual void Awake() { /*@B 0x6005700*/ throw null; }
+		protected virtual void Awake() {
+			if (_itemPrefab != null && _itemPrefab.gameObject.scene.name != null)
+			{
+				_itemPrefab.transform.SetParent(transform, false);
+				_itemPrefab.gameObject.SetActive(false);
+			}
+			_verticalLayoutGroup = _contents.GetComponent<global::UnityEngine.UI.VerticalLayoutGroup>();
+		}
 		public virtual void Setup(global::Pml.PokePara.PokemonParam pokemonParam, bool isContest) {
 			SetupKeyguide();
 			// UIManager.GetKeyguideData inlined (Keyguide[97] bounds check @01d9fdd0)
@@ -218,6 +225,6 @@ namespace Dpr.UI
 			SetupDetail();
 			return true;
 		}
-		public PokemonStatusPanelWazaBase() { /*@B 0x600570B*/ throw null; }
+		public PokemonStatusPanelWazaBase() { }
 	}
 }

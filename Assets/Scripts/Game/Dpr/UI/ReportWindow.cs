@@ -11,6 +11,6 @@ namespace Dpr.UI
 			SaveReport();
 			SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
 		}
-		public ReportWindow() { /*@B 0x6005901*/ throw null; }
+		public ReportWindow() { }
 	}
 }

@@ -7,7 +7,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.SealIconButon sealIconButon;
 		public int CategoryId { get; private set; }
 		public bool IsEnable { get; private set; }
-		public bool IsNoneCategory { get { /*@B 0x60059AF*/ throw null; } }
+		public bool IsNoneCategory { get { return CategoryId == 0; } }
 		public void Set(int categoryId) {
 			CategoryId = categoryId;
 			sealIconButon.SetCategoryIcon(categoryId);

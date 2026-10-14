@@ -10,7 +10,7 @@ namespace Dpr.UI
 	public class ReportWindowBase : global::Dpr.UI.UIWindow
 	{
 		[global::UnityEngine.SerializeField]
-		protected float _closeWaitTimeBySave;
+		protected float _closeWaitTimeBySave = 0.5f;
 		[global::UnityEngine.SerializeField]
 		protected global::Dpr.UI.UIText _place;
 		[global::UnityEngine.SerializeField]
@@ -188,6 +188,6 @@ namespace Dpr.UI
             contextMenuItemParams.Add(new ContextMenuItem.Param { menuId = ContextMenuID.REPORT_SAVE });
             contextMenuItemParams.Add(new ContextMenuItem.Param { menuId = ContextMenuID.REPORT_BACK });
         }
-		public ReportWindowBase() { /*@B 0x600590E*/ throw null; }
+		public ReportWindowBase() { }
 	}
 }

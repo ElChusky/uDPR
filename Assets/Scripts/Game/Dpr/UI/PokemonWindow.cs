@@ -826,10 +826,10 @@ namespace Dpr.UI
 
 			_input.inputEnabled = enable;
 		}
-		public PokemonWindow() { /*@B 0x6005763*/ throw null; }
+		public PokemonWindow() { }
 		public class Param : global::Dpr.UI.PokemonWindowBase.BaseParam
 		{
-			public Param() { /*@B 0x600AD0E*/ throw null; }
+			public Param() { }
 		}
 	}
 }

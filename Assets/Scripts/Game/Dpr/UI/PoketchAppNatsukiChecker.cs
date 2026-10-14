@@ -14,9 +14,9 @@ namespace Dpr.UI
 		private global::Dpr.UI.PoketchAppNatsukiCheckerIcon[] _pokeIcons;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("タッチ判定が生じるまでの時間(&ダブルタップ受付時間)")]
-		private float _touchTime;
+		private float _touchTime = 0.1f;
 		private global::UnityEngine.Material _matGrayScale;
-		private float _displayMargin;
+		private float _displayMargin = 30f;
 		private float _touchTimeCount;
 		private float _releaseTimeCount;
 		private bool _isTouchOld;
@@ -134,6 +134,6 @@ namespace Dpr.UI
 			}
 			_isTouchOld = isTouch;
 		}
-		public PoketchAppNatsukiChecker() { /*@B 0x6005853*/ throw null; }
+		public PoketchAppNatsukiChecker() { }
 	}
 }

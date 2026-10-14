@@ -46,7 +46,7 @@ namespace Dpr.UI
 		private int maxPalletIndex;
 		private global::Dpr.UI.Capsule2DGridCell selectedCapsule2DGridCell;
 		private global::Dpr.UI.Capsule2DGridCell pickedCapsule2DGridCell;
-		private int pickedAffixSealId;
+		private int pickedAffixSealId = -1;
 		private int pickedLatestPalletIndex;
 		private int pickedLatestCategoryIndex;
 		private global::Dpr.UI.Seal3DObject selectedSeal3DObject;
@@ -57,11 +57,11 @@ namespace Dpr.UI
 		private global::UnityEngine.Vector3[] rectCorners;
 		private global::UnityEngine.RaycastHit2D[] raycastHit2Ds;
 		private bool isChangeRotate;
-		private bool canResetRotate { get { /*@B 0x60059C6*/ throw null; } }
-		public global::Dpr.UI.Capsule2DViewController Capsule2DViewController { get { /*@B 0x60059C7*/ throw null; } }
-		public global::Dpr.UI.Capsule3DViewController Capsule3DViewController { get { /*@B 0x60059C8*/ throw null; } }
+		private bool canResetRotate { get { return currentCapsuleInfo.Is3DEditMode && isChangeRotate && !isBindCategoryTab && !isShowPullDown; } }
+		public global::Dpr.UI.Capsule2DViewController Capsule2DViewController { get { return capsuleViewController.View2DController; } }
+		public global::Dpr.UI.Capsule3DViewController Capsule3DViewController { get { return capsuleViewController.View3DController; } }
 		public bool IsShow { get; private set; }
-		public bool IsAllowPreview { get { /*@B 0x60059CB*/ throw null; } }
+		public bool IsAllowPreview { get { return !isShowPullDown; } }
 		public global::System.Action OnSelectSealWhenAffixSealMaxCount { get; set; }
 		public global::System.Collections.IEnumerator Initialize(global::Dpr.UI.UIInputController input, global::Dpr.UI.UIMsgWindowController msgWindowController) {
 			this.input = input;
@@ -1189,7 +1189,7 @@ namespace Dpr.UI
 			}
 			return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
 		}
-		public SealEditSceneController() { /*@B 0x60059F3*/ throw null; }
+		public SealEditSceneController() { }
 		private enum DecideActionResult
 		{
 			None = 0,

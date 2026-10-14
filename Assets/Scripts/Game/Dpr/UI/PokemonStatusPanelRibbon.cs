@@ -17,8 +17,8 @@ namespace Dpr.UI
 		private global::Dpr.UI.UIText _empty;
 		private bool _isSelectRibon;
 		private int _selectIndex;
-		private int _columnMax;
-		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusRibbonItem.Param> _itemParams;
+		private int _columnMax = 5;
+		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusRibbonItem.Param> _itemParams = new global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusRibbonItem.Param>();
 		private void Awake() {
 			_cursor.transform.SetParent(transform, false);
 			_cursor.SetActive(false);
@@ -80,7 +80,30 @@ namespace Dpr.UI
 			_description.SetupMessage(null, item.param.ribbonNo + 100);
 		}
 		private void OnUnSelectItemScrollViewItem(global::Dpr.UI.IUIButton button) { }
-		public override bool OnUpdate(float deltaTime) { /*@B 0x60056E7*/ throw null; }
+		public override bool OnUpdate(float deltaTime) {
+			if (!gameObject.activeSelf)
+				return false;
+			if (!isLimitRibon && !_isSelectRibon && _itemParams.Count > 0 && input.IsPushButton(UIManager.ButtonA, false))
+			{
+				Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_DONE, null);
+				SelectRibonMode(true);
+				return true;
+			}
+			if (!_isSelectRibon)
+				return false;
+			if (input.IsPushButton(UIManager.ButtonB, false))
+			{
+				Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_DONE, null);
+				SelectRibonMode(false);
+			}
+			else
+			{
+				if (!_isSelectRibon)
+					return false;
+				UpdateSelect(deltaTime);
+			}
+			return true;
+		}
 		private bool UpdateSelect(float deltaTime) {
 			if (input.IsPushButton(UIManager.StickLRight | UIManager.StickLLeft, false) && input.IsPushButton(UIManager.StickLDown | UIManager.StickLUp, false))
 				return true;
@@ -145,6 +168,6 @@ namespace Dpr.UI
 			onChangeAbuttonGuide.Invoke(IsShowAbutton(), keyguideData.MessageFile, keyguideData.MessageLabel);
 			_descRoot.gameObject.SetActive(enabled);
 		}
-		public PokemonStatusPanelRibbon() { /*@B 0x60056EA*/ throw null; }
+		public PokemonStatusPanelRibbon() { }
 	}
 }

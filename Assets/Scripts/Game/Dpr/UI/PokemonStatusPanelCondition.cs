@@ -154,6 +154,6 @@ namespace Dpr.UI
 			}
 			return true;
 		}
-		public PokemonStatusPanelCondition() { /*@B 0x60056DB*/ throw null; }
+		public PokemonStatusPanelCondition() { }
 	}
 }

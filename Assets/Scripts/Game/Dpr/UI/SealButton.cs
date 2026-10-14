@@ -9,9 +9,9 @@ namespace Dpr.UI
 		private global::UnityEngine.UI.Image typeIconImage;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIText countText;
-		public int SealId { get { /*@B 0x60059A4*/ throw null; } }
+		public int SealId { get { return Info.SealId; } }
 		public global::Dpr.UI.SealInfo Info { get; private set; }
-		public bool IsEnable { get { /*@B 0x60059A7*/ throw null; } }
+		public bool IsEnable { get { return Info.GetCount() > 0; } }
 		public void Set(int sealId) {
 			Info = new SealInfo(sealId);
 			sealIconButon.SetSealIcon(Info);

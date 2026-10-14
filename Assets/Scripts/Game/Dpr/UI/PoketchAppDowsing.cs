@@ -23,13 +23,13 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image[] _itemImages;
 		[global::UnityEngine.SerializeField]
-		private float _sonarWaitTime;
+		private float _sonarWaitTime = 0.5f;
 		[global::UnityEngine.SerializeField]
-		private float _sonarTime;
+		private float _sonarTime = 2f;
 		[global::UnityEngine.SerializeField]
-		private float _sonarSize;
+		private float _sonarSize = 200f;
 		[global::UnityEngine.SerializeField]
-		private float _sonarThicness;
+		private float _sonarThicness = 10f;
 		private global::Dpr.UI.PoketchAppDowsing.PoketchAppDowsingState _state;
 		private float _sonarTimeCount;
 		private global::UnityEngine.Vector2 _windowMin;
@@ -37,7 +37,7 @@ namespace Dpr.UI
 		private global::FieldPoketch.DowsingResult _result;
 		private global::System.Collections.Generic.List<global::UnityEngine.UI.Image> _findItemImageList;
 		private const float CenterOffsetRateY = 0.06999999f;
-		private global::UnityEngine.Vector2Int _playerPosition;
+		private global::UnityEngine.Vector2Int _playerPosition = new global::UnityEngine.Vector2Int(0, 0);
 		protected override void OnInitialize() {
 			AppID = POKETCH_APPID.DOWSING;
 			Buttons[0].Initialize(() => StartDowsing(), EVENTS.S_FI305);
@@ -167,7 +167,7 @@ namespace Dpr.UI
 		private void SetSonarAlpha(float alpha) {
 			_circleOuterImage.color = new Color(_circleOuterImage.color.r, _circleOuterImage.color.g, _circleOuterImage.color.b, alpha);
 		}
-		public PoketchAppDowsing() { /*@B 0x60057FC*/ throw null; }
+		public PoketchAppDowsing() { }
 		private enum PoketchAppDowsingState
 		{
 			None = 0,
