@@ -10,6 +10,13 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_ROTATE_ORDER rotOrder;
 		public bool castShadow;
 		public bool subCamera;
-		public ModelCreate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049B9*/ throw null; }
+		public ModelCreate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			file = Macro.ParseString(macro.GetValue("file"));
+			isMulti = Macro.ParseBool(macro.GetValue("isMulti"));
+			drawType = Macro.Parse_SEQ_DEF_DRAWTYPE(macro.GetValue("drawType"));
+			rotOrder = Macro.Parse_SEQ_DEF_ROTATE_ORDER(macro.GetValue("rotOrder"));
+			castShadow = Macro.ParseBool(macro.GetValue("castShadow"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"));
+		}
 	}
 }

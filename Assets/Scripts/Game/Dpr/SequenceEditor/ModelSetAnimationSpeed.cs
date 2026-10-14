@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public float speed;
 		public int slot;
-		public ModelSetAnimationSpeed(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049D7*/ throw null; }
+		public ModelSetAnimationSpeed(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			speed = Macro.ParseFloat(macro.GetValue("speed"));
+			slot = Macro.ParseInt(macro.GetValue("slot"), 0);
+		}
 	}
 }

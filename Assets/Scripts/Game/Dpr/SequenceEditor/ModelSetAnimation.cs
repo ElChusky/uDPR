@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public string file;
 		public bool loop;
 		public int slot;
-		public ModelSetAnimation(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049D4*/ throw null; }
+		public ModelSetAnimation(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			file = Macro.ParseString(macro.GetValue("file"));
+			loop = Macro.ParseBool(macro.GetValue("loop"));
+			slot = Macro.ParseInt(macro.GetValue("slot"), 0);
+		}
 	}
 }

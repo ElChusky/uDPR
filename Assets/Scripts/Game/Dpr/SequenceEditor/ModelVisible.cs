@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ModelVisible : global::Dpr.SequenceEditor.Macro
 	{
 		public bool visible;
-		public ModelVisible(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049C7*/ throw null; }
+		public ModelVisible(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			visible = Macro.ParseBool(macro.GetValue("visible"));
+		}
 	}
 }

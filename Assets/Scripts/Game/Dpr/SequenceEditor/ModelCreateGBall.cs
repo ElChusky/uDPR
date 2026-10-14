@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public bool subCamera;
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER trgChara;
 		public global::Dpr.SequenceEditor.BALL_ANIME animeType;
-		public ModelCreateGBall(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049BB*/ throw null; }
+		public ModelCreateGBall(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			drawType = Macro.Parse_SEQ_DEF_DRAWTYPE(macro.GetValue("drawType"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"));
+			trgChara = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trgChara"));
+			animeType = Macro.Parse_BALL_ANIME(macro.GetValue("animeType"));
+		}
 	}
 }

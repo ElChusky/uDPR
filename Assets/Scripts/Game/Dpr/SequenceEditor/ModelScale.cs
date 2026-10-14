@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 scale;
 		public bool relative;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public ModelScale(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049C1*/ throw null; }
+		public ModelScale(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			scale = Macro.ParseVector3(macro.GetValue("scale"), 1f, 1f, 1f);
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

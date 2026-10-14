@@ -14,6 +14,17 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 rot;
 		public bool changeLight;
 		public bool checkVisible;
-		public ModelFollowTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049CB*/ throw null; }
+		public ModelFollowTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), 1);
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			isPos = Macro.ParseBool(macro.GetValue("isPos"), true);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), true);
+			isScl = Macro.ParseBool(macro.GetValue("isScl"), true);
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			rot = Macro.ParseVector3(macro.GetValue("rot"));
+			changeLight = Macro.ParseBool(macro.GetValue("changeLight"));
+			checkVisible = Macro.ParseBool(macro.GetValue("checkVisible"));
+		}
 	}
 }

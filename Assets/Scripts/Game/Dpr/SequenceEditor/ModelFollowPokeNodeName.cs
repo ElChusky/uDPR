@@ -10,6 +10,13 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 posOfs;
 		public bool isRot;
 		public bool isScl;
-		public ModelFollowPokeNodeName(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049CA*/ throw null; }
+		public ModelFollowPokeNodeName(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), true);
+			pos = Macro.Parse_SEQ_DEF_POS(macro.GetValue("pos"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			posOfs = Macro.ParseVector3(macro.GetValue("posOfs"));
+			isRot = Macro.ParseBool(macro.GetValue("isRot"));
+			isScl = Macro.ParseBool(macro.GetValue("isScl"));
+		}
 	}
 }

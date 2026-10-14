@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public int colNo;
 		public global::UnityEngine.Vector3 col;
 		public float alpha;
-		public ModelSetConstantColor(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049CF*/ throw null; }
+		public ModelSetConstantColor(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			matName = Macro.ParseString(macro.GetValue("matName"));
+			colNo = Macro.ParseInt(macro.GetValue("colNo"));
+			col = Macro.ParseVector3(macro.GetValue("col"));
+			alpha = Macro.ParseFloat(macro.GetValue("alpha"), 1f);
+		}
 	}
 }

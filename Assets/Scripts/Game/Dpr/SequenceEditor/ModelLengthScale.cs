@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public float baseLen;
 		public bool[] scale;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public ModelLengthScale(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049C6*/ throw null; }
+		public ModelLengthScale(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			node = Macro.Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			baseLen = Macro.ParseFloat(macro.GetValue("baseLen"));
+			scale = Macro.ParseBoolArray(macro.GetValue("scale"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }
