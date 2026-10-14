@@ -12,7 +12,7 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image _tradeItemIcon;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector2[] _iconSizes;
+		private global::UnityEngine.Vector2[] _iconSizes = new global::UnityEngine.Vector2[] { new global::UnityEngine.Vector2(80f, 80f), new global::UnityEngine.Vector2(40f, 40f) };
 		private global::Dpr.UI.ShopExchangeItemItem.Param _param;
 		public global::Dpr.UI.ShopExchangeItemItem.Param param { get { return this._param; } }
 		public void Setup(global::Dpr.UI.ShopBase.ShopType shopType, global::Dpr.UI.ShopExchangeItemItem.Param param) {
@@ -94,7 +94,7 @@ namespace Dpr.UI
             else
                 ItemWork.AddItem((int)_param.GetItemNo(_shopType), amount);
         }
-		public ShopExchangeItemItem() { /*@B 0x6005B19*/ throw null; }
+		public ShopExchangeItemItem() { }
 		public class Param
 		{
 			public global::Pml.ItemNo tradeItemNo;

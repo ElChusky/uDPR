@@ -47,18 +47,18 @@ namespace Dpr.UI
 			if (param.unit > 1)
 				_name.text = _name.text + param.unitText;
 		}
-		public ShopUgExchangeItemItem() { /*@B 0x6005CB2*/ throw null; }
+		public ShopUgExchangeItemItem() { }
 		public class Param
 		{
-			public string unitText;
+			public string unitText = string.Empty;
 			public int tradeUgItemNo;
 			public int category;
 			public int ugItemID;
 			public int price;
 			public int unit;
 			public string itemLabel;
-			public int GetItemNo() { /*@B 0x600B00C*/ throw null; }
-			public Param() { /*@B 0x600B00D*/ throw null; }
+			public int GetItemNo() { return Pml.Item.UgItemManager.Instance.GetItemId(ugItemID); }
+			public Param() { }
 		}
 	}
 }

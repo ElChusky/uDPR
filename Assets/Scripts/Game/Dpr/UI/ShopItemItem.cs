@@ -9,7 +9,7 @@ namespace Dpr.UI
 		protected global::Dpr.UI.UIText _name;
 		[global::UnityEngine.SerializeField]
 		protected global::Dpr.UI.UIText _price;
-		protected global::Dpr.UI.ShopBase.ShopType _shopType;
+		protected global::Dpr.UI.ShopBase.ShopType _shopType = (global::Dpr.UI.ShopBase.ShopType)(-1);
 		protected int _index;
 		protected global::Dpr.Item.ItemInfo _itemInfo;
 		protected global::Dpr.UI.SealInfo _sealInfo;
@@ -18,16 +18,47 @@ namespace Dpr.UI
 		public global::Dpr.Item.ItemInfo GetItemInfo() { return this._itemInfo; }
 		public global::Dpr.UI.SealInfo GetSealInfo() { return this._sealInfo; }
 		public global::Dpr.Item.UgItemInfo GetUgItemInfo() { return this._ugItemInfo; }
-		public bool IsWazaMachine() { /*@B 0x6005B29*/ throw null; }
-		public bool IsBall() { /*@B 0x6005B2A*/ throw null; }
-		public virtual int GetNumForAdd() { /*@B 0x6005B2B*/ throw null; }
-		public virtual bool GetActive() { /*@B 0x6005B2C*/ throw null; }
-		public virtual void SetActive(bool isActive) { /*@B 0x6005B2D*/ throw null; }
+		public bool IsWazaMachine() {
+            switch (_shopType)
+            {
+                case global::Dpr.UI.ShopBase.ShopType.Seal:
+                case global::Dpr.UI.ShopBase.ShopType.TobariDepart4F:
+                case global::Dpr.UI.ShopBase.ShopType.Flower:
+                case global::Dpr.UI.ShopBase.ShopType.Boutique:
+                    return false;
+            }
+            return _itemInfo.IsWazaMachine();
+        }
+		public bool IsBall() {
+            switch (_shopType)
+            {
+                case global::Dpr.UI.ShopBase.ShopType.Seal:
+                case global::Dpr.UI.ShopBase.ShopType.TobariDepart4F:
+                case global::Dpr.UI.ShopBase.ShopType.Flower:
+                case global::Dpr.UI.ShopBase.ShopType.Boutique:
+                    return false;
+            }
+            return _itemInfo.Category == global::Dpr.Item.ItemInfo.CategoryType.Ball;
+        }
+		public virtual int GetNumForAdd() {
+            switch (_shopType)
+            {
+                case global::Dpr.UI.ShopBase.ShopType.Seal:
+                case global::Dpr.UI.ShopBase.ShopType.Flower:
+                    return global::Dpr.BallDeco.BallDecoWork.GetCanAddSealCount(_sealInfo.SealId);
+                case global::Dpr.UI.ShopBase.ShopType.TobariDepart4F:
+                    return 999 - _ugItemInfo.count;
+                default:
+                    return 999 - _itemInfo.count;
+            }
+        }
+		public virtual bool GetActive() { return gameObject.activeSelf; }
+		public virtual void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 		public virtual int GetIndex() { return this._index; }
 		public virtual void SetIndex(int index) { this._index = index; }
-		public virtual global::UnityEngine.RectTransform GetRectTransform() { /*@B 0x6005B30*/ throw null; }
+		public virtual global::UnityEngine.RectTransform GetRectTransform() { return transform as global::UnityEngine.RectTransform; }
 		public virtual void Select() { }
 		public virtual void UnSelect() { }
-		public ShopItemItem() { /*@B 0x6005B33*/ throw null; }
+		public ShopItemItem() { }
 	}
 }
