@@ -475,18 +475,560 @@ public class FieldManager
 		Sequencer.lateUpdate -= lateupdate;
 		Sequencer.postLateUpdate -= postLateUpdate;
 	}
-	public void update(float deltatime) { /*@B 0x60000E7*/ throw null; }
-	public void lateupdate(float deltatime) { /*@B 0x60000E8*/ throw null; }
-	public void postLateUpdate(float deltatime) { /*@B 0x60000E9*/ throw null; }
-	public void OnZoneChange(bool walk = true) { /*@B 0x60000EA*/ throw null; }
-	public void SetAutoSaveState(global::FieldManager.AutoSaveState state) { /*@B 0x60000EB*/ throw null; }
-	public bool AutoSave(bool isForce = false, bool mainsave = true, bool backup = true, bool underground = false) { /*@B 0x60000EC*/ throw null; }
-	public global::System.Collections.IEnumerator ZoneChangeAutoSave() { /*@B 0x60000ED*/ throw null; }
-	public void ZoneChangeSetZenmetu(global::ZoneID transition) { /*@B 0x60000EE*/ throw null; }
-	public global::System.Collections.IEnumerator OnSceneChange() { /*@B 0x60000EF*/ throw null; }
-	private void fdUpdate(float deltatime) { /*@B 0x60000F0*/ throw null; }
-	private void fdLateUpdate(float deltatime) { /*@B 0x60000F1*/ throw null; }
-	private void ugUpdate(float deltatime) { /*@B 0x60000F2*/ throw null; }
+	public void update(float deltatime) {
+        if (PlayerWork.transitionZoneID != ZoneID.UNKNOWN)
+            return;
+
+        if (EntityManager.activeFieldPlayer == null)
+            return;
+
+        if (FieldConnector.IsSetupOperationRunning)
+            return;
+
+        if (_updateType != UpdateType.DemoWait && IsDemoReqestStop())
+        {
+            _demoReturnType = _updateType;
+            _demoReturnInput = PlayerWork.isPlayerInputActive;
+            _updateType = UpdateType.DemoWait;
+        }
+
+        UpdateAkLisner();
+        EvDataManager.Instanse.UpdateCreate();
+        CheckWeather();
+
+        if (_wazaAction != null && !_wazaAction(deltatime))
+            _wazaAction = null;
+
+        switch (_updateType)
+        {
+            case UpdateType.Field:
+                if (SwayGrass.SwayGrass_CheckValid() && SwayGrass._callSwayBGM)
+                {
+                    AudioManager.Instance.RePostEvent(AK.EVENTS.BA013);
+                    SwayGrass._callSwayBGM = false;
+                }
+                fdUpdate(deltatime);
+                break;
+
+            case UpdateType.UnderGround:
+                ugUpdate(deltatime);
+                break;
+
+            case UpdateType.Encount:
+                EncountUpdate(deltatime);
+                break;
+
+            case UpdateType.Fishing:
+            {
+                FieldFishing.Result result = _fishing.Update(deltatime);
+                if (result.isFishing)
+                    return;
+
+                // jump table 0x3d0d5db over state 1..4.
+                switch (result.state)
+                {
+                    case FieldFishing.ResultState.Sucsess:
+                        EvDataManager.Instanse.JumpLabel("ev_fish_ok", () =>
+                        {
+                            EncountResult encResult = result.encResult;
+                            AttributeData.MapAttributeEx attriEx = result.attriEx;
+                            ushort sex;
+                            ushort seikaku;
+                            switch (encResult.HatudouTokusei)
+                            {
+                                case TokuseiNo.SINKURO:
+                                    seikaku = encResult.FixSeikaku[0] == Seikaku.NUM ? (ushort)0xFFFF : (ushort)encResult.FixSeikaku[0];
+                                    sex = 0xFF;
+                                    break;
+
+                                case TokuseiNo.MEROMEROBODHI:
+                                    sex = encResult.FixSex[0] > Sex.FEMALE ? (ushort)0xFF : (ushort)encResult.FixSex[0];
+                                    seikaku = 0xFFFF;
+                                    break;
+
+                                default:
+                                    seikaku = 0xFFFF;
+                                    sex = 0xFF;
+                                    break;
+                            }
+
+                            ushort formNo = GetFormNo(encResult.Enemy[0], encResult.karanaForm, encResult.annoForm);
+                            PokeParty party = EncountTools.CreateSimpleParty(result.encResult.Enemy[0], result.encResult.Level[0], MonsNo.NULL, 1, null, sex, seikaku, 0xFF, 0xFFFF, formNo, 0, 0);
+
+                            int item1rate;
+                            switch (result.encResult.HatudouTokusei)
+                            {
+                                case TokuseiNo.HUKUGAN:
+                                case TokuseiNo.KYOUUN:
+                                    item1rate = 60;
+                                    break;
+
+                                default:
+                                    item1rate = 50;
+                                    break;
+                            }
+                            EncountTools.SetWildPokemonItem(party.GetMemberPointer(0), UnityEngine.Random.Range(0, 100), item1rate, 20);
+
+                            TvWork.SetFishing(_useRod, result.encResult.Enemy[0]);
+                            PlayReportManager.StartWildBattle(PlayReportManager.eCaptureType.Fishing);
+                            if (result.encResult.Type == EncountResult.BtlType.Safari)
+                            {
+                                EncountTools.SetupBattleWild(PlayerWork.battleSetupParam, party, GameManager.mapInfo[(int)PlayerWork.zoneID].BattleBg[1], attriEx, GetBatleWeather(),
+                                    false, true, TrainerID.NONE, false, PlayerWork.SafariBallNum, false, false, null, 0, false);
+                            }
+                            else
+                            {
+                                EncountTools.SetupBattleWild(PlayerWork.battleSetupParam, party, GameManager.mapInfo[(int)PlayerWork.zoneID].BattleBg[1], attriEx, GetBatleWeather(),
+                                    false, true, TrainerID.NONE, false, -1, false, false, null, 0, false);
+                            }
+                            PreLoadEncEffect("mizu01");
+                            EncountStart(EncountFadeType.Normal);
+                            RecordWork.Add(RECORD_ID.RECID_FISHING_SUCCESS);
+                            _useRod = FishingRod.None;
+                        });
+                        _updateType = UpdateType.Field;
+                        return;
+
+                    case FieldFishing.ResultState.NoneEnc:
+                        EvDataManager.Instanse.JumpLabel("ev_fish_no_hit", null);
+                        break;
+
+                    case FieldFishing.ResultState.MissInput:
+                        TvWork.SetFishing(_useRod, MonsNo.NULL);
+                        EvDataManager.Instanse.JumpLabel("ev_fish_nige", null);
+                        break;
+
+                    case FieldFishing.ResultState.Cancel:
+                        EvDataManager.Instanse.JumpLabel("ev_fish_fast_inpu", null);
+                        break;
+
+                    default:
+                        return;
+                }
+                _updateType = UpdateType.Field;
+                _useRod = FishingRod.None;
+                break;
+            }
+
+            case UpdateType.DemoWait:
+                if (IsDemoReqestStop())
+                {
+                    EntityManager.activeFieldPlayer.PlayIdle();
+                    PlayerWork.isPlayerInputActive = false;
+                    if (PlayerWork.isHatchDemo && _autoSaveState != AutoSaveState.Stop)
+                        _autoSaveState = AutoSaveState.EventScript;
+                }
+                else
+                {
+                    PlayerWork.isPlayerInputActive = _demoReturnInput;
+                    _updateType = _demoReturnType;
+                }
+                break;
+        }
+    }
+	public void lateupdate(float deltatime) {
+        if (PlayerWork.transitionZoneID != ZoneID.UNKNOWN)
+            return;
+
+        switch (_updateType)
+        {
+            case UpdateType.Field:
+                fdLateUpdate(deltatime);
+                break;
+
+            case UpdateType.UnderGround:
+                ugLateUpdate(deltatime);
+                break;
+        }
+
+        AttributeEventSE();
+        AttributeEventEffect();
+        if (_is_ugHoleLock)
+            _ug_hole.transform.position = _ugHolePos;
+    }
+	public void postLateUpdate(float deltatime) {
+        LateMenuOpen();
+        if (_autoSaveState == AutoSaveState.EventScript && !IsMenuOpen && !FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_INPUT_OFF)
+            && PlayerWork.isPlayerInputActive && !EvDataManager.Instanse.IsRunningEvent())
+        {
+            AutoSave(false, true, true, false);
+            _autoSaveState = AutoSaveState.None;
+        }
+
+        IsResume = false;
+    }
+	public void OnZoneChange(bool walk = true) {
+        global::XLSXContent.MapInfo.SheetZoneData zoneData = ZoneData;
+        Before_zoneID = _now_zoneID;
+        _now_zoneID = zoneID;
+        if (Before_zoneID != _now_zoneID)
+            StopSwayGrass_NextArea();
+
+        if (!walk)
+        {
+            if (Before_zoneID != _now_zoneID)
+                GameManager.useSubAttribute = false;
+
+            if (Before_zoneID == ZoneID.UNKNOWN)
+                SaveCheckCyclingRoad();
+        }
+
+        if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_MAP_INFO_STOP))
+        {
+            FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_MAP_INFO_STOP, false);
+            FieldCanvas.ResetAreaNameWindow();
+        }
+        else if (zoneData.MapType == MapType.MAPTYPE_ROOM || zoneData.MapType == MapType.MAPTYPE_POKECEN || ZoneWork.IsSafariZone(zoneID))
+        {
+            FieldCanvas.ResetAreaNameWindow();
+        }
+        else if (Before_zoneID != _now_zoneID)
+        {
+            FieldCanvas.OpenAreaNameWindow(zoneData.MSLabel);
+        }
+
+        if (PlayerWork.ReserveZoneChangeNaminoriEnd)
+        {
+            if (EntityManager.activeFieldPlayer.IsSwim())
+                EntityManager.activeFieldPlayer.ChangeSwim(false);
+
+            PlayerWork.ReserveZoneChangeNaminoriEnd = false;
+        }
+
+        if (!SND_W_ID_CTRL_BGM_FLAG)
+        {
+            if (SwayGrass._callStopSwayBGM)
+                AudioManager.Instance.RePostEvent(AK.EVENTS.EV_END);
+
+            if (Before_zoneID != _now_zoneID && FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_BGM_D02))
+                AudioManager.Instance.SetBgmEvent(AK.EVENTS.D02_GINGA_FALSE, false);
+
+            if (walk || (Before_zoneID != ZoneID.UNKNOWN && Before_zoneID != _now_zoneID) || PlayerWork.Warp != PlayerWork.WarpType.None)
+            {
+                // @0179924c: SetBgmEvent(string) inlined (its flag 0x4cbb306): GetIDFromString then SetBgmEvent(uint).
+                if (!PlayerWork.IsFormSwim())
+                    SetBgmEvent(GetMapBgmState());
+            }
+            else
+            {
+                SetBgmEvent(GetNowBgmState());
+            }
+
+            string envSound = ZoneData.EnvironmentalSound;
+            if (envSound != "")
+                AudioManager.Instance.PlaySe(AudioManager.Instance.GetIdByName(envSound), null);
+
+            SwayGrass._callSwayBGM = false;
+            SwayGrass._callStopSwayBGM = false;
+        }
+
+        _weather.CheckZoneWeather();
+        if (!walk && Before_zoneID != _now_zoneID)
+        {
+            PlayerWork.UsedFieldWazaInArea.Clear();
+            if (PlayerWork.Flash)
+            {
+                if (Before_zoneID == ZoneID.UNKNOWN)
+                {
+                    PlayerWork.Flash = false;
+                }
+                else
+                {
+                    global::XLSXContent.MapInfo mapInfo = GameManager.mapInfo;
+                    if (mapInfo[(int)_now_zoneID].MapType != mapInfo[(int)Before_zoneID].MapType)
+                        PlayerWork.Flash = false;
+                    else
+                        PlayerWork.UsedFieldWazaInArea.Add(WazaNo.HURASSYU);
+                }
+            }
+        }
+
+        // @017993dc: L03 / R216 / R217 (bit mask from 351) or C09.
+        bool snowField;
+        switch (_now_zoneID)
+        {
+            case ZoneID.L03:
+            case ZoneID.R216:
+            case ZoneID.R217:
+            case ZoneID.C09:
+                snowField = true;
+                break;
+
+            default:
+                snowField = false;
+                break;
+        }
+        EnvironmentController.globalSnowFieldEnable = snowField;
+        if (snowField)
+        {
+            int paramIndex = (int)PlayerWork.Week + (int)ParamIndx.SnowCover_Sun;
+            paramIndex = Mathf.Clamp(paramIndex, (int)ParamIndx.SnowCover_Sun, (int)ParamIndx.SnowCover_Sat);
+            Snowfield.global.snowCover = DataManager.GetFieldCommonParam((ParamIndx)paramIndex);
+        }
+
+        global::XLSXContent.WaterSettings waterSettings = GameManager.waterSettings;
+        if (waterSettings != null)
+        {
+            WaterInteraction.waterSettings = null;
+            bool waterField = false;
+            for (int i = 0; i < waterSettings.Settings.Length; i++)
+            {
+                global::XLSXContent.WaterSettings.SheetSettings settings = waterSettings.Settings[i];
+                if (Array.IndexOf(settings.ZoneIDs, _now_zoneID) >= 0)
+                {
+                    WaterInteraction.waterSettings = settings;
+                    waterField = true;
+                    break;
+                }
+            }
+            EnvironmentController.globalWaterFieldEnable = waterField;
+        }
+
+        if (FieldMistWork.CheckMistWeather())
+        {
+            if (!PlayerWork.Kiribarai)
+            {
+                MistWork.Setup();
+                if (walk)
+                    MistWork.ChangeMist(1f, DataManager.FieldCommonParam[(int)ParamIndx.MistFadeInTime].param);
+                else
+                    MistWork.ChangeMist(1f, 0f);
+            }
+            else if (MistWork.IsEnable)
+            {
+                if (walk)
+                    MistWork.ChangeMist(0f, DataManager.FieldCommonParam[(int)ParamIndx.MistFadeOutTime].param);
+                else
+                    MistWork.ChangeMist(0f, 0f);
+            }
+        }
+        else
+        {
+            if (!walk && Before_zoneID != _now_zoneID)
+                PlayerWork.Kiribarai = false;
+
+            if (MistWork.IsEnable)
+            {
+                if (walk)
+                    MistWork.ChangeMist(0f, DataManager.FieldCommonParam[(int)ParamIndx.MistFadeOutTime].param);
+                else
+                    MistWork.ChangeMist(0f, 0f);
+            }
+        }
+
+        // @01799794: FieldFlashWork.AvailableFlash / IsEnable / ChangeDark(target, 0) inlined.
+        if (FieldFlashWork.AvailableFlash())
+            FlashWork.ChangeDark(1f);
+        else if (FlashWork.IsEnable)
+            FlashWork.ChangeDark(0f);
+
+        FieldObjWork.Clear();
+        if (walk)
+        {
+            EncountDataWork.MovePoke_NextZone();
+            SetMapInfoCameraData(false);
+            UniqueBGMEvent(_now_zoneID, Before_zoneID);
+            EvDataManager.Instanse.FieldZoneChange(true);
+        }
+        else
+        {
+            SetMapInfoCameraData(true);
+            if (_weatherEffectInstance != null)
+                _weatherEffectInstance.Stop(0f, true);
+
+            for (int i = 0; i < _encEffectAsset.Length; i++)
+            {
+                if (_encEffectAsset[i] != null)
+                {
+                    UnityEngine.Object.Destroy(_encEffectAsset[i]);
+                    _encEffectAsset[i] = null;
+                }
+            }
+            _encEffectCount = 0;
+            if (!ZoneWork.IsSpFishingZone(_now_zoneID))
+                SpFishing.UnloadFishngData();
+        }
+
+        CheckWeather();
+        OnZoneChange_Subcontents(walk);
+        OnZoneChangeOnce?.Invoke();
+        OnZoneChangeOnce = null;
+        OnZoneChangeEvent?.Invoke();
+        if (Before_zoneID != _now_zoneID)
+            FieldBattleSearcher.WalkClearFlag();
+    }
+	public void SetAutoSaveState(global::FieldManager.AutoSaveState state) {
+        if (_autoSaveState != AutoSaveState.None)
+        {
+            if (_autoSaveState == AutoSaveState.Stop)
+            {
+                if (state == AutoSaveState.None)
+                    _autoSaveState = AutoSaveState.None;
+                return;
+            }
+
+            if (state == AutoSaveState.Zone_Change)
+                return;
+        }
+
+        _autoSaveState = state;
+    }
+	public bool AutoSave(bool isForce = false, bool mainsave = true, bool backup = true, bool underground = false) {
+        if (!isForce)
+        {
+            if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_AUTOSAVE_STOP))
+                return true;
+
+            if (!IsEnableSave(underground))
+                return true;
+
+            if (ZoneWork.IsSafariZone(ZoneData.ZoneID))
+                return true;
+
+            mainsave = PlayerWork.config.autoreport && mainsave;
+        }
+
+        if (mainsave || backup)
+            PlayerWork.AutoSave(mainsave, backup);
+
+        return true;
+    }
+	public global::System.Collections.IEnumerator ZoneChangeAutoSave() {
+        if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_AUTOSAVE_STOP))
+            yield break;
+
+        if (PlayerWork.GetInt(EvWork.WORK_INDEX.WK_SCENE_GAME_START) == 0)
+            yield break;
+
+        if (_autoSaveState != AutoSaveState.None)
+        {
+            bool main = true;
+            bool backup = _autoSaveState != AutoSaveState.BattleResult;
+            bool ug = false;
+            if (_autoSaveState == AutoSaveState.BattleResult && ZoneWork.IsUnderGround(zoneID))
+                ug = true;
+
+            while (!AutoSave(false, main, backup, ug))
+                yield return null;
+
+            while (PlayerWork.IsSaveSystemBusy())
+                yield return null;
+        }
+
+        SetAutoSaveState(AutoSaveState.None);
+    }
+	public void ZoneChangeSetZenmetu(global::ZoneID transition) {
+        for (int i = 0; i < DataManager.ZenmetuZone.data.Length; i++)
+        {
+            global::XLSXContent.ZenmetuZone.Sheetdata data = DataManager.ZenmetuZone.data[i];
+            if (data.zoneID == transition)
+            {
+                PLAYER_SAVE_DATA saveData = PlayerWork.PlayerSaveData;
+                saveData.worpPoint.zenmetu.zoneID = (int)transition;
+                saveData.worpPoint.zenmetu.posX = data.gridX;
+                saveData.worpPoint.zenmetu.posY = data.height;
+                saveData.worpPoint.zenmetu.posZ = data.gridZ;
+                saveData.worpPoint.zenmetu.dir = data.dir;
+                PlayerWork.PlayerSaveData = saveData;
+                return;
+            }
+        }
+    }
+	public global::System.Collections.IEnumerator OnSceneChange() {
+        DeleteUpdate();
+        if (SingletonMonoBehaviour<EffectManager>.isInstantiated)
+            SingletonMonoBehaviour<EffectManager>.Instance.RemoveInstances(true);
+
+        StopShortCutData();
+        _isMenuOpenRequest = false;
+        if (!PlayerWork.isSealPreview)
+            IsMenuOpen = false;
+
+        if (global::Dpr.UnderGround.UgFieldManager.Instance != null)
+            global::Dpr.UnderGround.UgFieldManager.Instance.RemoveInputUpdate();
+
+        if (!_initFlag)
+            yield break;
+
+        // @01d4e5e0: GameManager.playEnding is read before the SetAutoSaveState call.
+        bool playEnding = GameManager.playEnding;
+        SetAutoSaveState(AutoSaveState.None);
+        if (!playEnding)
+        {
+            PlayerWork.FieldCacheFlag = true;
+            EvDataManager.Instanse.CacheSceneChangeRelease();
+            UIContestPhoto.ReleasePhotoResources();
+            if (_weatherEffectInstance != null)
+                _weatherEffectInstance.Stop(0f, false);
+
+            _weatherEffectInstance = null;
+            _nowWeather = SYS_WEATHER.MAX;
+            yield break;
+        }
+
+        while (!EvDataManager.Instanse.ForceUnload())
+            yield return null;
+
+        EvDataManager.Instanse.SceneChangeRelease();
+        if (_effectDataArray != null)
+        {
+            for (int i = 0; i < _effectDataArray.Length; i++)
+            {
+                if (_effectDataArray[i].effect != null)
+                    _effectDataArray[i].effect.Release();
+
+                _effectDataArray[i] = null;
+            }
+        }
+        _effectDataArray = null;
+
+        if (_weatherEffectInstance != null)
+            _weatherEffectInstance.Stop(0f, false);
+
+        _weatherEffectInstance = null;
+        _nowWeather = SYS_WEATHER.MAX;
+        _fishing.Clear();
+        _fishing = null;
+        FieldPoketch.UnregisterEvent();
+        FieldPoketch.CreanPoketchWindow();
+        GameManager.fieldCamera.EventCamera.Release();
+    }
+	private void fdUpdate(float deltatime) {
+        _weather.Update(deltatime);
+        MistWork.Update(deltatime);
+        FlashWork.Update(deltatime);
+        SwayGrass.Update(deltatime);
+        if (EvDataManager.Instanse.m_Update(deltatime))
+            return;
+
+        if (CheckEncount())
+            return;
+
+        if (FishingUpdate(deltatime))
+            return;
+
+        if (ControlPoketch())
+            return;
+
+        if (MenuOpenInvalidZone())
+            return;
+
+        MenuOpen(deltatime, false);
+    }
+	private void fdLateUpdate(float deltatime) {
+        if (EvDataManager.Instanse.m_LateUpdate(deltatime))
+        {
+            IsMenuOpen = false;
+            _isMenuOpenRequest = false;
+        }
+    }
+	private void ugUpdate(float deltatime) {
+        if (global::Dpr.UnderGround.UgFieldManager.Instance.IsContextMenuOpend)
+            return;
+
+        if (!EvDataManager.Instanse.m_Update(deltatime) && !_isMenuOpenRequest && _ugMainProc.update(deltatime) && !ZoneWork.IsSecretBase(PlayerWork.zoneID))
+            MenuOpen(deltatime, true);
+    }
 	private void ugLateUpdate(float deltatime) {
         if (EvDataManager.Instanse.m_LateUpdate(deltatime))
         {
@@ -939,7 +1481,18 @@ public class FieldManager
             isCaptureDemo, -1, isSymbol, isMitu, bgm, setupEffect, isCantUseBall);
         EncountStart(EncountFadeType.Normal);
     }
-	public void EncountStart(global::FieldManager.EncountFadeType type, global::Dpr.Trainer.TrainerID trainerid1 = (global::Dpr.Trainer.TrainerID)(0), global::Dpr.Trainer.TrainerID trainerid2 = (global::Dpr.Trainer.TrainerID)(0)) { /*@B 0x6000101*/ throw null; }
+	public void EncountStart(global::FieldManager.EncountFadeType type, global::Dpr.Trainer.TrainerID trainerid1 = (global::Dpr.Trainer.TrainerID)(0), global::Dpr.Trainer.TrainerID trainerid2 = (global::Dpr.Trainer.TrainerID)(0)) {
+        EvDataManager.Instanse.SetSaveObj();
+        EntityManager.activeFieldPlayer.EvEntityCmd.ScritpStopState();
+        EntityManager.activeFieldPlayer.PlayIdle(0.2f);
+        EntityManager.activeFieldPlayer.StopBicycleDecelerate();
+        _updateType = UpdateType.Encount;
+        _encountUpdateType = EncountUpdateType.CallEffect;
+        _encountFadeType = type;
+        _btl_trainerID1 = trainerid1;
+        _btl_trainerID2 = trainerid2;
+        FieldPoketch.HidePoketch(false);
+    }
 	public bool IsEncountUpdate() {
         return _updateType == UpdateType.Encount;
     }
@@ -1101,7 +1654,17 @@ public class FieldManager
             callType = calltype,
         });
     }
-	public void FootEventSE(global::FieldObjectEntity entity, bool running, bool bicycle, global::FieldManager.AttributeEventCallType calltype) { /*@B 0x6000108*/ throw null; }
+	public void FootEventSE(global::FieldObjectEntity entity, bool running, bool bicycle, global::FieldManager.AttributeEventCallType calltype) {
+        _attributeEntitySE.Enqueue(new AttributeEvent()
+        {
+            chartype = 0,
+            isRun = running,
+            isBic = bicycle,
+            entity = entity,
+            eventType = AttributeEventType.Run,
+            callType = calltype,
+        });
+    }
 	public void RequestAttributeEffect(global::FieldObjectEntity entity, global::FieldManager.AttributeEventType attri) {
         _attributeEntityEffect.Enqueue(new AttributeEvent()
         {
@@ -1189,19 +1752,291 @@ public class FieldManager
 
         return FieldPoketch.IsControlPoketch();
     }
-	public void ChangePoketchLarge() { /*@B 0x6000111*/ throw null; }
+	public void ChangePoketchLarge() {
+        FieldPlayerEntity player = EntityManager.activeFieldPlayer;
+        if (player != null)
+            player.moveVector = Vector3.zero;
+
+        PlayerWork.playReportDataRef.poketch_open++;
+        EvDataManager.Instanse.Cmd_ObjPauseAll();
+    }
 	public void ChangePoketchSmall() {
         EvDataManager.Instanse.Cmd_ObjPauseClearAll();
     }
-	public void MenuOpen(float deltatime, bool isIgnoreGround = false) { /*@B 0x6000113*/ throw null; }
-	private void LateMenuOpen() { /*@B 0x6000114*/ throw null; }
+	public void MenuOpen(float deltatime, bool isIgnoreGround = false) {
+        if (IsMenuOpen)
+            return;
+
+        if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_INPUT_OFF))
+            return;
+
+        if (UseShotCut(deltatime))
+            return;
+
+        if (!PlayerWork.isPlayerInputActive)
+            return;
+
+        if (PlayerWork.transitionZoneID != ZoneID.UNKNOWN)
+            return;
+
+        if (OpenUnionRoomWarp(isIgnoreGround))
+            return;
+
+        if (FieldInput.PushX() && IsEnableSave(isIgnoreGround) && !IsKariEyeHitCheck())
+            _isMenuOpenRequest = true;
+    }
+	private void LateMenuOpen() {
+        if (!_isMenuOpenRequest)
+            return;
+
+        bool hit = IsKariEyeHitCheck();
+        _isMenuOpenRequest = false;
+        if (hit)
+            return;
+
+        IsMenuOpen = true;
+        if (!FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_INPUT_OFF) && PlayerWork.isPlayerInputActive && !EvDataManager.Instanse.IsRunningEvent() && !UIManager.IsFieldOpenMenu())
+        {
+            EvDataManager.Instanse.OnOpenMenu();
+            XMenuTop window = UIManager.Instance.CreateUIWindow<XMenuTop>(UIWindowID.XMENU);
+            window.onClosed = (UIWindow _) =>
+            {
+                IsMenuOpen = false;
+                EvDataManager.Instanse.OnCloseMenu();
+                if (CheckUseItem())
+                {
+                    UseFieldItem();
+                    return;
+                }
+
+                if (PlayerWork.UsedFieldWazaNo != WazaNo.NULL)
+                {
+                    UI_SelectWaza(PlayerWork.UsedFieldWazaNo);
+                    PlayerWork.UsedFieldWazaNo = WazaNo.NULL;
+                }
+            };
+
+            XMenuTop.Param param = new XMenuTop.Param();
+            param.menuType = XMenuTop.Param.MenuType.Normal;
+            if (SingletonMonoBehaviour<global::Dpr.FureaiHiroba.FureaiManager>.isInstantiated && SingletonMonoBehaviour<global::Dpr.FureaiHiroba.FureaiManager>.Instance.isInHiroba)
+                param.menuType = XMenuTop.Param.MenuType.Fureai;
+
+            if (global::Dpr.UnderGround.UgFieldManager.isInstantiated)
+                param.menuType = XMenuTop.Param.MenuType.UnderGround;
+
+            if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_SAFARI_MODE))
+            {
+                param.menuType = XMenuTop.Param.MenuType.SafariGame;
+                XMenuTop.Param.Safari safari = new XMenuTop.Param.Safari();
+                safari.ballNum = PlayerWork.SafariBallNum;
+                safari.onRetire = () => EvDataManager.Instanse.RetireSafari();
+                param.safari = safari;
+            }
+
+            window.Open(param, (UIWindowID)(-2));
+            AudioManager.Instance.PlaySe(AK.EVENTS.UI_TOP_XOPEN, null);
+            return;
+        }
+
+        IsMenuOpen = false;
+        _isMenuOpenRequest = false;
+    }
 	private bool MenuOpenInvalidZone() {
         return PlayerWork.zoneID == ZoneID.UNION01 || PlayerWork.zoneID == ZoneID.UNION02 || PlayerWork.zoneID == ZoneID.UNION03;
     }
-	private bool OpenUnionRoomWarp(bool isUnderGround) { /*@B 0x6000116*/ throw null; }
-	public bool IsEnableUnionRoomWarp(bool isUnderGround) { /*@B 0x6000117*/ throw null; }
-	private bool UseShotCut(float deltatime) { /*@B 0x6000118*/ throw null; }
-	private bool IsKariEyeHitCheck() { /*@B 0x6000119*/ throw null; }
+	private bool OpenUnionRoomWarp(bool isUnderGround) {
+        // @017a10d0: `tbz push, #3` - FieldInput.Push(0x8) inlined (FieldInput flag 0x4cbb2eb), no IsEasyInput call.
+        if (!FieldInput.Push(0x8))
+            return false;
+
+        if (PlayerWork.IsSaveSystemBusy())
+            return false;
+
+        if (PlayerWork.IsAutoSaveSystemBusy())
+            return false;
+
+        if (Fader.isBusy)
+            return false;
+
+        if (EvDataManager.Instanse.IsRunningEvent())
+            return false;
+
+        if (!IsEnableUnionRoomWarp(isUnderGround))
+            return false;
+
+        IsMenuOpen = true;
+        EvDataManager.Instanse.OnOpenMenu();
+        YunionMenu window = UIManager.Instance.CreateUIWindow<YunionMenu>(UIWindowID.YUNION);
+        window.onClosed = (UIWindow _) =>
+        {
+            IsMenuOpen = false;
+            EvDataManager.Instanse.OnCloseMenu();
+        };
+        window.Open((UIWindowID)(-2));
+        return true;
+    }
+	public bool IsEnableUnionRoomWarp(bool isUnderGround) {
+        if (EvDataManager.Instanse.GetWork(EvWork.WORK_INDEX.WK_SCENE_PC0103) < 1)
+            return false;
+
+        if (isUnderGround)
+            return false;
+
+        if (MenuOpenInvalidZone())
+            return false;
+
+        if (SingletonMonoBehaviour<global::Dpr.FureaiHiroba.FureaiManager>.isInstantiated && SingletonMonoBehaviour<global::Dpr.FureaiHiroba.FureaiManager>.Instance.isInHiroba)
+            return false;
+
+        if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_CYCLINGROAD))
+            return false;
+
+        if (EntityManager.activeFieldPlayer.IsSwim())
+            return false;
+
+        GameManager.GetAttribute(EntityManager.activeFieldPlayer.gridPosition, out int code, out int stop, false);
+        if (AttributeID.MATR_IsBridgeV(code))
+            return false;
+
+        if (AttributeID.MATR_IsBridgeH(code))
+            return false;
+
+        if (!IsEnableSave(false))
+            return false;
+
+        return EvDataManager.Instanse.IsCanGotoUG();
+    }
+	private bool UseShotCut(float deltatime) {
+        if (SingletonMonoBehaviour<global::Dpr.FureaiHiroba.FureaiManager>.isInstantiated && SingletonMonoBehaviour<global::Dpr.FureaiHiroba.FureaiManager>.Instance.isInHiroba)
+            return false;
+
+        if (MenuOpenInvalidZone())
+            return false;
+
+        switch (_shorCutSeq)
+        {
+            case 0:
+                if (!FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_INPUT_OFF) && PlayerWork.isPlayerInputActive
+                    && UIRegisterItemShortcut.GetHighPriorityShortcutItemNo() != 0 && !IsMenuOpen
+                    && !EvDataManager.Instanse.IsRunningEvent() && !IsKariEyeHitCheck())
+                {
+                    // @017a0a20..: GameController push / on / release bytes tested against 0xC00 (FieldInput flags 0x4cbb2eb / 2ec / 2ed).
+                    if (FieldInput.Push(0xC00))
+                    {
+                        _shortCutPushHoldId = 1;
+                        _shortCutPushTime += deltatime;
+                    }
+                    else if (FieldInput.ButtonOn(0xC00))
+                    {
+                        if (_shortCutPushHoldId == 1)
+                        {
+                            _shortCutPushTime += deltatime;
+                            if (_shortCutPushTime > 0.5f)
+                            {
+                                PlayerWork.isPlayerInputActive = false;
+                                if (UIRegisterItemShortcut.GetRegisteredShortcutItemCount() < 2)
+                                    _shorCutSeq = 1;
+                                else
+                                    _shorCutSeq = 2;
+                            }
+                        }
+                    }
+                    else if (FieldInput.ButtonRelease(0xC00))
+                    {
+                        if (_shortCutPushHoldId == 1)
+                        {
+                            if (_shortCutPushTime <= 0f)
+                            {
+                                _shorCutSeq = 0;
+                                return false;
+                            }
+
+                            PlayerWork.isPlayerInputActive = false;
+                            _shortCutPushTime = 0f;
+                            _shorCutSeq = UIRegisterItemShortcut.GetRegisteredShortcutItemCount() > 1 ? 2 : 1;
+                        }
+                        _shortCutPushHoldId = 0;
+                    }
+                    else
+                    {
+                        _shorCutSeq = 0;
+                        _shortCutPushTime = 0f;
+                        _shortCutPushHoldId = 0;
+                    }
+                    break;
+                }
+
+                _shorCutSeq = 0;
+                _shortCutPushTime = 0f;
+                _shortCutPushHoldId = 0;
+                return false;
+
+            case 1:
+            {
+                if (IsKariEyeHitCheck())
+                {
+                    PlayerWork.isPlayerInputActive = true;
+                    _shorCutSeq = 0;
+                    _shortCutPushTime = 0f;
+                    _shortCutPushHoldId = 0;
+                    return false;
+                }
+
+                _shorCutSeq = 0;
+                _shortCutPushTime = 0f;
+                _shortCutPushHoldId = 0;
+                ItemNo itemNo = (ItemNo)UIRegisterItemShortcut.GetHighPriorityShortcutItemNo();
+                // @017a0bc8: mask 0x27 over 445..450 = the three rods and the bicycle, plus ANANUKENOHIMO.
+                if ((itemNo == ItemNo.BORONOTURIZAO || itemNo == ItemNo.IITURIZAO || itemNo == ItemNo.SUGOITURIZAO || itemNo == ItemNo.ZITENSYA || itemNo == ItemNo.ANANUKENOHIMO)
+                    && FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_PAIR))
+                {
+                    EvDataManager.Instanse.JumpLabel("ev_unusable_pair_trainer", null);
+                    break;
+                }
+
+                if (CheckAvailableFieldItem(itemNo))
+                {
+                    UseFieldItem(itemNo);
+                    break;
+                }
+
+                if (itemNo == ItemNo.ZITENSYA && ZoneData.Bicycle)
+                {
+                    GameManager.GetAttribute(EntityManager.activeFieldPlayer.gridPosition, out int code, out int stop, false);
+                    if (!PlayerWork.IsFormSwim()
+                        && (AttributeID.MATR_IsBridgeV(code) || AttributeID.MATR_IsBridgeH(code) || FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_CYCLINGROAD)))
+                    {
+                        EvDataManager.Instanse.JumpLabel("ev_no_getoff_bycycle", null);
+                        break;
+                    }
+                }
+
+                EvDataManager.Instanse.JumpLabel("ev_noused_item_talk", null);
+                break;
+            }
+
+            case 2:
+                _shorCutSeq = 0;
+                _shortCutPushTime = 0f;
+                _shortCutPushHoldId = 0;
+                OpenShortCut();
+                break;
+        }
+
+        return _shorCutSeq != 0;
+    }
+	private bool IsKariEyeHitCheck() {
+        List<FieldObjectMoveCode> moveCodes = EvDataManager.Instanse.FieldObjectMoveCodes;
+        Vector3 moveVector = Vector3.zero;
+        Vector2 hitpos = Vector2.zero;
+        for (int i = 0; i < moveCodes.Count; i++)
+        {
+            if (moveCodes[i] != null && moveCodes[i].TrainerEyeUpdate(ref moveVector, ref hitpos))
+                return true;
+        }
+
+        return false;
+    }
 	private void OpenShortCut() { /*@B 0x600011A*/ throw null; }
 	public void StopShortCutData() { /*@B 0x600011B*/ throw null; }
 	public void LockHolePos(global::UnityEngine.Vector3 pos) {
