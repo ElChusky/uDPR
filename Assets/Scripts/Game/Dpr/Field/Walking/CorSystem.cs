@@ -8,7 +8,7 @@ namespace Dpr.Field.Walking
 		public bool isFinished;
 		public bool isPlaying;
 		public bool isPause;
-		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.CorSystem> SubCoroutines;
+		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.CorSystem> SubCoroutines = new global::System.Collections.Generic.List<global::Dpr.Field.Walking.CorSystem>();
 		private global::System.Collections.IEnumerator MainIEnum;
 		private global::System.Collections.IEnumerator IEnum;
 		public event global::System.Action onStart;
@@ -16,28 +16,206 @@ namespace Dpr.Field.Walking
 		public event global::System.Action onCancel;
 		public event global::System.Action onPauseStart;
 		public event global::System.Action onPauseEnd;
-		public CorSystem(string name = "") { /*@B 0x6008979*/ throw null; }
-		public void Destroy() { /*@B 0x600897A*/ throw null; }
-		public global::UnityEngine.Coroutine Play(global::System.Collections.IEnumerator ienum) { /*@B 0x600897B*/ throw null; }
-		public void PrePlayCancel() { /*@B 0x600897C*/ throw null; }
-		public global::UnityEngine.Coroutine Play() { /*@B 0x600897D*/ throw null; }
+		public CorSystem(string name = "")
+		{
+			CorName = name;
+		}
+		public void Destroy()
+		{
+			SubCoroutines.Clear();
+			SubCoroutines = null;
+			MainIEnum = null;
+			IEnum = null;
+			ClearCallBacks();
+		}
+		public global::UnityEngine.Coroutine Play(global::System.Collections.IEnumerator ienum)
+		{
+			isFinished = false;
+			isPlaying = true;
+			onFinished += () =>
+			{
+				SubCoroutines.Clear();
+				ClearCallBacks();
+				MainIEnum = null;
+				IEnum = null;
+				isFinished = true;
+				isPlaying = false;
+				isPause = false;
+			};
+			MainIEnum = Main(ienum);
+			IEnum = ienum;
+			onStart?.Invoke();
+			return StartCoroutine(MainIEnum);
+		}
+		public void PrePlayCancel()
+		{
+			onFinished += () =>
+			{
+				SubCoroutines.Clear();
+				ClearCallBacks();
+				MainIEnum = null;
+				IEnum = null;
+				isFinished = true;
+				isPlaying = false;
+				isPause = false;
+			};
+			Cancel();
+		}
+		public global::UnityEngine.Coroutine Play() { return Play(IEnum); }
 		public void SetIEnum(global::System.Collections.IEnumerator ienum) { this.IEnum = ienum; }
-		public global::Dpr.Field.Walking.CorSystem OnStart(global::System.Action act) { /*@B 0x600897F*/ throw null; }
-		public global::Dpr.Field.Walking.CorSystem OnFinished(global::System.Action act) { /*@B 0x6008980*/ throw null; }
-		public global::Dpr.Field.Walking.CorSystem OnCancel(global::System.Action act) { /*@B 0x6008981*/ throw null; }
-		public global::Dpr.Field.Walking.CorSystem OnPauseStart(global::System.Action act) { /*@B 0x6008982*/ throw null; }
-		public global::Dpr.Field.Walking.CorSystem OnPauseEnd(global::System.Action act) { /*@B 0x6008983*/ throw null; }
-		public global::Dpr.Field.Walking.CorSystem AddSub(string name = "") { /*@B 0x6008984*/ throw null; }
-		public void Cancel() { /*@B 0x6008985*/ throw null; }
-		public void Pause() { /*@B 0x6008986*/ throw null; }
-		public global::UnityEngine.Coroutine Restart() { /*@B 0x6008987*/ throw null; }
-		private global::System.Collections.IEnumerator RestartCor() { /*@B 0x6008988*/ throw null; }
-		public void ClearCallBacks() { /*@B 0x6008989*/ throw null; }
-		public void StateDebug(global::UnityEngine.UI.Text text = null) { /*@B 0x600898A*/ throw null; }
-		private global::System.Collections.IEnumerator Main(global::System.Collections.IEnumerator ienum) { /*@B 0x600898B*/ throw null; }
-		private global::UnityEngine.Coroutine StartCoroutine(global::System.Collections.IEnumerator ienum) { /*@B 0x600898C*/ throw null; }
-		private void StopCoroutine(global::System.Collections.IEnumerator ienum) { /*@B 0x600898D*/ throw null; }
-		public global::UnityEngine.Coroutine WaitForSeconds(float duration, global::System.Action<global::Dpr.Field.Walking.CorSystem> OnUpdate = null) { /*@B 0x600898E*/ throw null; }
-		public global::System.Collections.IEnumerator Wait(global::System.Action<global::Dpr.Field.Walking.CorSystem> OnUpdate) { /*@B 0x600898F*/ throw null; }
+		public global::Dpr.Field.Walking.CorSystem OnStart(global::System.Action act)
+		{
+			onStart += act;
+			return this;
+		}
+		public global::Dpr.Field.Walking.CorSystem OnFinished(global::System.Action act)
+		{
+			onFinished += act;
+			return this;
+		}
+		public global::Dpr.Field.Walking.CorSystem OnCancel(global::System.Action act)
+		{
+			onCancel += act;
+			return this;
+		}
+		public global::Dpr.Field.Walking.CorSystem OnPauseStart(global::System.Action act)
+		{
+			onPauseStart += act;
+			return this;
+		}
+		public global::Dpr.Field.Walking.CorSystem OnPauseEnd(global::System.Action act)
+		{
+			onPauseEnd += act;
+			return this;
+		}
+		public global::Dpr.Field.Walking.CorSystem AddSub(string name = "")
+		{
+			CorSystem sub = new CorSystem(name);
+			SubCoroutines.Add(sub);
+			return sub;
+		}
+		public void Cancel()
+		{
+			if (!isPlaying)
+				return;
+			if (IEnum != null)
+				StopCoroutine(IEnum);
+			if (MainIEnum != null)
+				StopCoroutine(MainIEnum);
+			SubCoroutines.ForEach(x => x.Cancel());
+			onCancel?.Invoke();
+			onFinished?.Invoke();
+		}
+		public void Pause()
+		{
+			isPause = true;
+			SubCoroutines.ForEach(x => x.Pause());
+			if (IEnum != null)
+				StopCoroutine(IEnum);
+			if (MainIEnum != null)
+				StopCoroutine(MainIEnum);
+			onPauseStart?.Invoke();
+		}
+		public global::UnityEngine.Coroutine Restart()
+		{
+			isPause = false;
+			onPauseEnd?.Invoke();
+			return StartCoroutine(RestartCor());
+		}
+		private global::System.Collections.IEnumerator RestartCor()
+		{
+			for (int i = 0; i < SubCoroutines.Count; i++)
+			{
+				if (!SubCoroutines[i].isFinished)
+				{
+					global::UnityEngine.Coroutine cor = SubCoroutines[i].Restart();
+					if (cor != null)
+						yield return cor;
+				}
+			}
+			if (!isFinished)
+			{
+				if (IEnum != null)
+					MainIEnum = Main(IEnum);
+				if (MainIEnum != null)
+					yield return StartCoroutine(MainIEnum);
+			}
+		}
+		public void ClearCallBacks()
+		{
+			if (onStart != null)
+			{
+				foreach (global::System.Delegate d in onStart.GetInvocationList())
+					onStart -= (global::System.Action)d;
+			}
+			if (onFinished != null)
+			{
+				foreach (global::System.Delegate d in onFinished.GetInvocationList())
+					onFinished -= (global::System.Action)d;
+			}
+			if (onCancel != null)
+			{
+				foreach (global::System.Delegate d in onCancel.GetInvocationList())
+					onCancel -= (global::System.Action)d;
+			}
+			if (onPauseStart != null)
+			{
+				foreach (global::System.Delegate d in onPauseStart.GetInvocationList())
+					onPauseStart -= (global::System.Action)d;
+			}
+			if (onPauseEnd != null)
+			{
+				foreach (global::System.Delegate d in onPauseEnd.GetInvocationList())
+					onPauseEnd -= (global::System.Action)d;
+			}
+		}
+		public void StateDebug(global::UnityEngine.UI.Text text = null)
+		{
+			string stateName = CorName;
+			if (text != null)
+			{
+				onStart += () => text.text = stateName + ":実行中";
+				onCancel += () => text.text = stateName + ":キャンセル";
+				onFinished += () => text.text = stateName + ":終了";
+				onPauseStart += () => text.text = stateName + ":ポーズ中";
+				onPauseEnd += () => text.text = stateName + ":実行中";
+			}
+			else
+			{
+				onStart += () => { };
+				onCancel += () => { };
+				onFinished += () => { };
+				onPauseStart += () => { };
+				onPauseEnd += () => { };
+			}
+		}
+		private global::System.Collections.IEnumerator Main(global::System.Collections.IEnumerator ienum)
+		{
+			yield return StartCoroutine(ienum);
+			onFinished?.Invoke();
+		}
+		private global::UnityEngine.Coroutine StartCoroutine(global::System.Collections.IEnumerator ienum)
+		{
+			return global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::SmartPoint.AssetAssistant.Sequencer>.Instance.StartCoroutine(ienum);
+		}
+		private void StopCoroutine(global::System.Collections.IEnumerator ienum)
+		{
+			global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::SmartPoint.AssetAssistant.Sequencer>.Instance.StopCoroutine(ienum);
+		}
+		public global::UnityEngine.Coroutine WaitForSeconds(float duration, global::System.Action<global::Dpr.Field.Walking.CorSystem> OnUpdate = null)
+		{
+			this.duration = duration;
+			return AddSub("ウェイト").Play(Wait(OnUpdate));
+		}
+		public global::System.Collections.IEnumerator Wait(global::System.Action<global::Dpr.Field.Walking.CorSystem> OnUpdate)
+		{
+			while (duration > 0f && !isFinished)
+			{
+				duration = global::UnityEngine.Mathf.Max(duration - DeltaTime.deltaTime, 0f);
+				OnUpdate?.Invoke(this);
+				if (duration > 0f)
+					yield return new global::UnityEngine.WaitForEndOfFrame();
+			}
+		}
 	}
 }

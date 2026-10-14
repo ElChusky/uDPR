@@ -6,16 +6,37 @@ namespace Dpr.Field.Walking
 		public global::Dpr.Field.Walking.WalkingCharacterModel charaModel;
 		public global::Dpr.Field.Walking.WalkingCharacterView view;
 		public global::UnityEngine.Transform transform;
-		public global::Dpr.Field.Walking.CorSystem corSys;
+		public global::Dpr.Field.Walking.CorSystem corSys = new global::Dpr.Field.Walking.CorSystem("");
 		private global::Dpr.Field.Walking.AIModel.GetAI _GetAI;
-		public global::System.Collections.Generic.List<global::UnityEngine.Vector3> route { get { /*@B 0x60089F8*/ throw null; } }
-		public global::Dpr.Field.Walking.WalkData walkData { get { /*@B 0x60089F9*/ throw null; } }
-		public global::UnityEngine.Transform player { get { /*@B 0x60089FA*/ throw null; } }
-		public float playerDistance { get { /*@B 0x60089FB*/ throw null; } }
-		public global::Dpr.Field.Walking.AI AI { get { /*@B 0x60089FC*/ throw null; } }
-		public AIModel(global::Dpr.Field.Walking.WalkingCharacterController controller) { /*@B 0x60089FD*/ throw null; }
-		public virtual void Destroy() { /*@B 0x60089FE*/ throw null; }
-		public global::System.Collections.IEnumerator Loop(global::Dpr.Field.Walking.AIModel.EndCheck EndCheck, global::System.Action action) { /*@B 0x60089FF*/ throw null; }
+		public global::System.Collections.Generic.List<global::UnityEngine.Vector3> route { get { return charaModel.route; } }
+		public global::Dpr.Field.Walking.WalkData walkData { get { return charaModel.walkData; } }
+		public global::UnityEngine.Transform player { get { return EntityManager.activeFieldPlayer.transform; } }
+		public float playerDistance { get { return global::UnityEngine.Vector3.Distance(player.position, transform.position); } }
+		public global::Dpr.Field.Walking.AI AI { get { return _GetAI(); } }
+		public AIModel(global::Dpr.Field.Walking.WalkingCharacterController controller)
+		{
+			charaModel = controller.model;
+			view = controller.view;
+			transform = controller.transform;
+			_GetAI = () => controller.AI;
+		}
+		public virtual void Destroy()
+		{
+			charaModel = null;
+			view = null;
+			transform = null;
+			corSys.Destroy();
+			corSys = null;
+			_GetAI = null;
+		}
+		public global::System.Collections.IEnumerator Loop(global::Dpr.Field.Walking.AIModel.EndCheck EndCheck, global::System.Action action)
+		{
+			while (EndCheck() && !charaModel.isDestroyed)
+			{
+				action();
+				yield return new global::UnityEngine.WaitForEndOfFrame();
+			}
+		}
 		public delegate bool EndCheck();
 		public delegate global::Dpr.Field.Walking.AI GetAI();
 	}
