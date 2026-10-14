@@ -3,6 +3,6 @@ namespace Dpr.NetworkDbg
 {
 	public class TestPacketData : global::Dpr.NetworkUtils.ANetData<global::Dpr.NetworkDbg.TestSendStruct>
 	{
-		public TestPacketData() { /*@B 0x6003138*/ throw null; }
+		public TestPacketData() { }
 	}
 }

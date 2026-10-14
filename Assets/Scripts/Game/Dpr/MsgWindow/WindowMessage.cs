@@ -8,11 +8,11 @@ namespace Dpr.MsgWindow
 		private global::Dpr.Message.MessageTextLineDataModel[] textLineDataArray;
 		private global::Dpr.Message.MessageTextLineDataModel currentLineData;
 		private global::Dpr.Message.MessageEnumData.MsgEventID currentMsgEventId;
-		private global::Dpr.MsgWindow.WaitTimer waitTimer;
+		private global::Dpr.MsgWindow.WaitTimer waitTimer = new global::Dpr.MsgWindow.WaitTimer();
 		private global::Dpr.MsgWindow.WindowMessage.MsgState currentMsgState;
 		private float playLineMsgTime;
 		private float showMsgTime;
-		private float fastForwardMagnification;
+		private float fastForwardMagnification = 1f;
 		private int lineDataIndex;
 		private int useTextIndex;
 		private int currentLineStrNum;
@@ -21,45 +21,264 @@ namespace Dpr.MsgWindow
 		private global::System.Action<float> onMsgCallBack;
 		private global::System.Action onFinishedShowOneLine;
 		public global::Dpr.MsgWindow.WindowMessage.MsgState CurrentMsgState { get { return this.currentMsgState; } }
-		public void Initialize(global::Dpr.MsgWindow.MsgWindowConfig config, global::System.Action<float> onMsgCallBack) { /*@B 0x6003A4E*/ throw null; }
-		public void ResetMessage() { /*@B 0x6003A4F*/ throw null; }
-		public void Clear() { /*@B 0x6003A50*/ throw null; }
-		public void ResetTextColor() { /*@B 0x6003A51*/ throw null; }
-		public void OnFinalize() { /*@B 0x6003A52*/ throw null; }
-		public void SetUseFontAsset(global::TMPro.TMP_FontAsset useFontAsset) { /*@B 0x6003A54*/ throw null; }
-		public void ChangeUnknownFont() { /*@B 0x6003A55*/ throw null; }
-		public void SetPlayMsgTime(float playMsgTime) { /*@B 0x6003A56*/ throw null; }
-		public void SetPlaySpeedUpFlag(bool flag) { /*@B 0x6003A57*/ throw null; }
+		public void Initialize(global::Dpr.MsgWindow.MsgWindowConfig config, global::System.Action<float> onMsgCallBack) {
+			this.onMsgCallBack = onMsgCallBack;
+			fastForwardMagnification = config.fastForwardMagnification;
+			currentMsgState = MsgState.Wait;
+			textContainer.Initialize(config.scrollTextDuration, config.textLinePaddingOffset);
+		}
+		public void ResetMessage() {
+			currentMsgState = MsgState.Wait;
+			lineDataIndex = 0;
+			useTextIndex = 0;
+			showMsgTime = 0f;
+			playSpeedUpFlag = false;
+			SetCurrentLineData();
+			textContainer.ResetUIText();
+			if (currentLineData != null)
+				textContainer.SetTextEnabled(currentLineData.IsCenterMessage);
+		}
+		public void Clear() {
+			textLineDataArray = null;
+			currentLineData = null;
+			lineDataIndex = 0;
+			useTextIndex = 0;
+			showMsgTime = 0f;
+			playSpeedUpFlag = false;
+			textContainer.Clear();
+		}
+		public void ResetTextColor() {
+			if (isChangeTextColor)
+			{
+				isChangeTextColor = false;
+				textContainer.ResetTextColor();
+			}
+		}
+		public void OnFinalize() {
+			textContainer.OnFinalize();
+			currentLineData = null;
+			onMsgCallBack = null;
+			onFinishedShowOneLine = null;
+		}
+		public void SetUseFontAsset(global::TMPro.TMP_FontAsset useFontAsset) {
+			textContainer.SetUseFontAsset(useFontAsset);
+		}
+		public void ChangeUnknownFont() {
+			textContainer.ChangeUnknownFont();
+		}
+		public void SetPlayMsgTime(float playMsgTime) {
+			playLineMsgTime = playMsgTime;
+			showMsgTime = 0f;
+		}
+		public void SetPlaySpeedUpFlag(bool flag) {
+			playSpeedUpFlag = flag;
+		}
 		public void SetUseMessageLineDataArray(global::Dpr.Message.MessageTextLineDataModel[] textLineDataArray) { this.textLineDataArray = textLineDataArray; }
-		private void SetCurrentLineData() { /*@B 0x6003A59*/ throw null; }
-		public void SetTextColor(global::UnityEngine.Color newColor) { /*@B 0x6003A5A*/ throw null; }
-		public void CheckTextResize(global::Dpr.Message.MessageTextParseDataModel currentMessageData, float fontScale, int windowWidth) { /*@B 0x6003A5B*/ throw null; }
-		private float CheckOverText(global::Dpr.Message.MessageTextParseDataModel currentMessageData, float fontScale, int windowWidth) { /*@B 0x6003A5C*/ throw null; }
-		public void SetTextParam(float fontSize, float textWidth) { /*@B 0x6003A5D*/ throw null; }
-		public void SetFontSize(float fontSize) { /*@B 0x6003A5E*/ throw null; }
-		private bool IsRestMessageLine() { /*@B 0x6003A5F*/ throw null; }
-		private float GetEventValue() { /*@B 0x6003A60*/ throw null; }
-		public void StartPlayMessage() { /*@B 0x6003A61*/ throw null; }
-		public void RestartMessage() { /*@B 0x6003A62*/ throw null; }
-		public void UpdateMessage(float deltaTime) { /*@B 0x6003A63*/ throw null; }
-		private bool CanUpdateMessage() { /*@B 0x6003A64*/ throw null; }
-		private bool CheckWaitEvent(float deltaTime) { /*@B 0x6003A65*/ throw null; }
-		private bool CheckWaitState(float deltaTime) { /*@B 0x6003A66*/ throw null; }
-		private bool CheckTextScrollState(float deltaTime) { /*@B 0x6003A67*/ throw null; }
-		private void UpdateTextView(float deltaTime) { /*@B 0x6003A68*/ throw null; }
-		private float GetDeltaTime(float deltaTime) { /*@B 0x6003A69*/ throw null; }
-		private string SetLineMessage(int strIndex) { /*@B 0x6003A6A*/ throw null; }
-		private void CheckLineEvent() { /*@B 0x6003A6B*/ throw null; }
-		private void MsgEventEnd() { /*@B 0x6003A6C*/ throw null; }
-		private void MsgEventWait() { /*@B 0x6003A6D*/ throw null; }
-		private void MsgEventCallBack() { /*@B 0x6003A6E*/ throw null; }
-		private void MsgEventNewLine() { /*@B 0x6003A6F*/ throw null; }
-		private void MsgEventScrollLine() { /*@B 0x6003A70*/ throw null; }
-		private void MsgEventScrollPage() { /*@B 0x6003A71*/ throw null; }
-		public void DoNextPage() { /*@B 0x6003A72*/ throw null; }
-		private void DoNextLine() { /*@B 0x6003A73*/ throw null; }
-		private void DoScrollPage() { /*@B 0x6003A74*/ throw null; }
-		public WindowMessage() { /*@B 0x6003A75*/ throw null; }
+		private void SetCurrentLineData() {
+			currentMsgEventId = global::Dpr.Message.MessageEnumData.MsgEventID.None;
+			if (textLineDataArray != null)
+			{
+				currentLineData = textLineDataArray[lineDataIndex];
+				currentLineData.ResetMessageData();
+				currentLineStrNum = currentLineData.TotalStringLength;
+			}
+		}
+		public void SetTextColor(global::UnityEngine.Color newColor) {
+			isChangeTextColor = true;
+			textContainer.SetTextColor(newColor);
+		}
+		public void CheckTextResize(global::Dpr.Message.MessageTextParseDataModel currentMessageData, float fontScale, int windowWidth) {
+			if (currentMessageData != null)
+			{
+				float scale = CheckOverText(currentMessageData, fontScale, windowWidth);
+				if (scale != 1f)
+					textContainer.SetFontSize(scale * textContainer.FontSize);
+			}
+		}
+		private float CheckOverText(global::Dpr.Message.MessageTextParseDataModel currentMessageData, float fontScale, int windowWidth) {
+			float scale = 0f;
+			if (currentMessageData.HasOverWidthLineData(fontScale, windowWidth, out scale))
+				return scale;
+			return 1f;
+		}
+		public void SetTextParam(float fontSize, float textWidth) {
+			textContainer.SetTextParam(fontSize, textWidth);
+		}
+		public void SetFontSize(float fontSize) {
+			textContainer.SetFontSize(fontSize);
+		}
+		private bool IsRestMessageLine() {
+			if (textLineDataArray == null)
+				return false;
+			return lineDataIndex < textLineDataArray.Length - 1;
+		}
+		private float GetEventValue() {
+			if (currentLineData != null)
+				return currentLineData.GetNowMessageDataValue();
+			global::Dpr.Message.MessageHelper.EmitLog("currentLineData is null", global::UnityEngine.LogType.Error);
+			return 0f;
+		}
+		public void StartPlayMessage() {
+			if (textLineDataArray != null)
+			{
+				textLineDataArray[lineDataIndex].ResetMessageData();
+				textContainer.SetTextEnabled(currentLineData.IsCenterMessage);
+			}
+			currentMsgState = MsgState.Playing;
+		}
+		public void RestartMessage() {
+			ResetMessage();
+			currentMsgState = MsgState.Playing;
+		}
+		public void UpdateMessage(float deltaTime) {
+			if (!CanUpdateMessage())
+				return;
+			if (CheckWaitEvent(deltaTime))
+				return;
+			UpdateTextView(deltaTime);
+		}
+		private bool CanUpdateMessage() {
+			return currentMsgState != MsgState.End;
+		}
+		private bool CheckWaitEvent(float deltaTime) {
+			if (currentMsgState == MsgState.TextScroll)
+			{
+				CheckTextScrollState(deltaTime);
+				return true;
+			}
+			if (currentMsgState == MsgState.Wait)
+				return CheckWaitState(deltaTime);
+			return false;
+		}
+		private bool CheckWaitState(float deltaTime) {
+			if (waitTimer.IsFinishWait(deltaTime))
+				currentMsgState = MsgState.Playing;
+			return true;
+		}
+		private bool CheckTextScrollState(float deltaTime) {
+			if (!textContainer.MovingPosition(deltaTime))
+			{
+				DoNextLine();
+				currentMsgState = MsgState.Playing;
+			}
+			return true;
+		}
+		private void UpdateTextView(float deltaTime) {
+			int strIndex;
+			if (playLineMsgTime > 0f)
+			{
+				showMsgTime += GetDeltaTime(deltaTime);
+				strIndex = (int)(showMsgTime / playLineMsgTime);
+			}
+			else
+			{
+				strIndex = currentLineStrNum;
+			}
+			if (currentLineData != null)
+				textContainer.SetMessage(useTextIndex, SetLineMessage(strIndex), currentLineData.IsCenterMessage);
+			else
+				currentMsgEventId = global::Dpr.Message.MessageEnumData.MsgEventID.End;
+			CheckLineEvent();
+		}
+		private float GetDeltaTime(float deltaTime) {
+			if (playSpeedUpFlag)
+				deltaTime = fastForwardMagnification * deltaTime;
+			return deltaTime;
+		}
+		private string SetLineMessage(int strIndex) {
+			string str = currentLineData.GetTextUntilIndex(strIndex > currentLineStrNum ? currentLineStrNum : strIndex);
+			currentMsgEventId = currentLineData.NowEventId;
+			return str;
+		}
+		private void CheckLineEvent() {
+			switch (currentMsgEventId)
+			{
+				case global::Dpr.Message.MessageEnumData.MsgEventID.NewLine:
+					MsgEventNewLine();
+					break;
+				case global::Dpr.Message.MessageEnumData.MsgEventID.Wait:
+					MsgEventWait();
+					break;
+				case global::Dpr.Message.MessageEnumData.MsgEventID.ScrollPage:
+					MsgEventScrollPage();
+					break;
+				case global::Dpr.Message.MessageEnumData.MsgEventID.ScrollLine:
+					MsgEventScrollLine();
+					break;
+				case global::Dpr.Message.MessageEnumData.MsgEventID.CallBack:
+					MsgEventCallBack();
+					break;
+				case global::Dpr.Message.MessageEnumData.MsgEventID.End:
+					MsgEventEnd();
+					break;
+			}
+		}
+		private void MsgEventEnd() {
+			global::Dpr.Message.MessageHelper.EmitLog("MsgEvent End", global::UnityEngine.LogType.Log);
+			currentMsgState = MsgState.End;
+		}
+		private void MsgEventWait() {
+			global::Dpr.Message.MessageHelper.EmitLog("MsgEvent Wait", global::UnityEngine.LogType.Log);
+			waitTimer.SetLimitTime(GetEventValue());
+			waitTimer.ResetTimer();
+			currentMsgState = MsgState.Wait;
+		}
+		private void MsgEventCallBack() {
+			global::Dpr.Message.MessageHelper.EmitLog(string.Format("MsgEvent CallBack : Event Value - {0}", GetEventValue()), global::UnityEngine.LogType.Log);
+			onMsgCallBack?.Invoke(GetEventValue());
+		}
+		private void MsgEventNewLine() {
+			global::Dpr.Message.MessageHelper.EmitLog("MsgEvent NewLine", global::UnityEngine.LogType.Log);
+			onFinishedShowOneLine?.Invoke();
+			showMsgTime = 0f;
+			DoNextLine();
+		}
+		private void MsgEventScrollLine() {
+			global::Dpr.Message.MessageHelper.EmitLog("MsgEvent ScrollLine", global::UnityEngine.LogType.Log);
+			showMsgTime = 0f;
+			currentMsgState = MsgState.KeyWait;
+		}
+		private void MsgEventScrollPage() {
+			global::Dpr.Message.MessageHelper.EmitLog("MsgEvent ScrollPage", global::UnityEngine.LogType.Log);
+			showMsgTime = 0f;
+			currentMsgState = MsgState.KeyWait;
+		}
+		public void DoNextPage() {
+			playSpeedUpFlag = false;
+			if (currentMsgEventId == global::Dpr.Message.MessageEnumData.MsgEventID.ScrollPage)
+			{
+				textContainer.ResetUIText();
+				DoScrollPage();
+				currentMsgState = MsgState.Playing;
+			}
+			else if (currentMsgEventId == global::Dpr.Message.MessageEnumData.MsgEventID.ScrollLine)
+			{
+				textContainer.StartMovePositionY();
+				currentMsgState = MsgState.TextScroll;
+			}
+			else
+			{
+				global::Dpr.Message.MessageHelper.EmitLog(string.Format("currentMsgEventId is Not ScrollLine or ScrollPage : {0}", currentMsgEventId), global::UnityEngine.LogType.Error);
+			}
+		}
+		private void DoNextLine() {
+			if (IsRestMessageLine())
+			{
+				lineDataIndex++;
+				useTextIndex++;
+				SetCurrentLineData();
+			}
+		}
+		private void DoScrollPage() {
+			if (IsRestMessageLine())
+			{
+				lineDataIndex++;
+				useTextIndex = 0;
+				SetCurrentLineData();
+				textContainer.SetTextEnabled(currentLineData.IsCenterMessage);
+			}
+		}
+		public WindowMessage() { }
 		public enum MsgState
 		{
 			Wait = 0,

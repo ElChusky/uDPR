@@ -5,6 +5,6 @@ namespace Dpr.NetworkUtils
 	{
 		public override byte GetDataID { get { return 21; } }
 		public static byte DataID { get { return 21; } }
-		public NetDataAttachSealNetData() { /*@B 0x600398D*/ throw null; }
+		public NetDataAttachSealNetData() { }
 	}
 }

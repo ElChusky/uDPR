@@ -3,7 +3,7 @@ namespace Dpr.NetworkDbg
 {
 	public static class NetworkTestData
 	{
-		public static readonly string[] TEST_PASSWORD_ARRAY;
-		static NetworkTestData() { /*@B 0x6003137*/ throw null; }
+		public static readonly string[] TEST_PASSWORD_ARRAY = new string[] { string.Empty, "Hoge", "HogeHoge", "HogeHogeHoge" };
+		static NetworkTestData() { }
 	}
 }

@@ -5,6 +5,6 @@ namespace Dpr.NetworkUtils
 	{
 		public override byte GetDataID { get { return 101; } }
 		public static byte DataID { get { return 101; } }
-		public NetDataColiseumConfirmEntryData() { /*@B 0x60039B1*/ throw null; }
+		public NetDataColiseumConfirmEntryData() { }
 	}
 }
