@@ -4,9 +4,12 @@ namespace Dpr.Battle.Logic
 	public static class BattleAiSystem
 	{
 		public const int BASIC_RAND_RANGE = 256;
-		private static bool[] s_isTokuseiOpened;
+		private static bool[] s_isTokuseiOpened = new bool[PokeID.NUM];
 		private static ulong s_commonRandValue;
-		public static void InitSystem() { /*@B 0x6007E80*/ throw null; }
+		public static void InitSystem() {
+            for (int i = 0; i < PokeID.NUM; i++)
+                s_isTokuseiOpened[i] = false;
+        }
 		public static void QuitSystem() {
             AiScript.ReleaseAiScriptCache();
             BattleAiCommand.ClearCommandHandlers();
@@ -27,6 +30,6 @@ namespace Dpr.Battle.Logic
 		public static ulong GetCommonRand() {
             return s_commonRandValue;
         }
-		static BattleAiSystem() { /*@B 0x6007E86*/ throw null; }
+		static BattleAiSystem() { }
 	}
 }

@@ -3,9 +3,13 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class BTL_PARTY
 	{
-		private global::Dpr.Battle.Logic.BTL_POKEPARAM[] m_pMember;
+		private global::Dpr.Battle.Logic.BTL_POKEPARAM[] m_pMember = new global::Dpr.Battle.Logic.BTL_POKEPARAM[6];
 		private byte m_memberCount;
-		public BTL_PARTY() { /*@B 0x6007B81*/ throw null; }
+		public BTL_PARTY() {
+            m_memberCount = 0;
+            for (int i = 0; i < m_pMember.Length; i++)
+                m_pMember[i] = null;
+        }
 		public void Dispose() {
             // Empty in the binary (01fd9450: ret).
         }
@@ -71,8 +75,18 @@ namespace Dpr.Battle.Logic
 		public bool IsFull() {
             return m_memberCount >= DefineConstants.BTL_PARTY_MEMBER_MAX;
         }
-		public global::Dpr.Battle.Logic.BTL_POKEPARAM GetMemberData(byte idx) { /*@B 0x6007B8D*/ throw null; }
-		public global::Dpr.Battle.Logic.BTL_POKEPARAM GetMemberDataConst(byte idx) { /*@B 0x6007B8E*/ throw null; }
+		public global::Dpr.Battle.Logic.BTL_POKEPARAM GetMemberData(byte idx) {
+            if (idx >= m_memberCount)
+                return null;
+
+            return m_pMember[idx];
+        }
+		public global::Dpr.Battle.Logic.BTL_POKEPARAM GetMemberDataConst(byte idx) {
+            if (idx >= m_memberCount)
+                return null;
+
+            return m_pMember[idx];
+        }
 		public void SwapMembers(byte idx1, byte idx2) {
             BTL_POKEPARAM tmp = m_pMember[idx1];
             m_pMember[idx1] = m_pMember[idx2];

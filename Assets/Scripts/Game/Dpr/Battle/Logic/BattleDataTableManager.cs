@@ -5,19 +5,81 @@ namespace Dpr.Battle.Logic
 	public sealed class BattleDataTableManager
 	{
 		private static global::Dpr.Battle.Logic.BattleDataTableManager s_Instance;
-		private static readonly string[] AB_NAMES;
-		public static global::Dpr.Battle.Logic.BattleDataTableManager Instance { get { /*@B 0x60066F7*/ throw null; } }
+		private static readonly string[] AB_NAMES = new string[] { "battle_masterdatas" };
+		public static global::Dpr.Battle.Logic.BattleDataTableManager Instance { get {
+                if (s_Instance == null)
+                    s_Instance = new BattleDataTableManager();
+
+                return s_Instance;
+            } }
 		public global::XLSXContent.BattleDataTable BattleDataTable { get; private set; }
 		public global::XLSXContent.BattleDefaultPlacementData BattleDefaultPlacementData { get; private set; }
 		public global::XLSXContent.BattleWaitCameraData BattleWaitCameraData { get; private set; }
 		public global::XLSXContent.BattleSetupEffectLots BattleSetupEffectLots { get; private set; }
 		public bool IsInitialized { get; private set; }
 		private bool IsABAppended { get; set; }
-		private bool IsLoaded { get { /*@B 0x6006706*/ throw null; } }
-		public bool AppendAssetBundleRequests() { /*@B 0x6006704*/ throw null; }
-		public bool OnDispatchRequests(global::SmartPoint.AssetAssistant.RequestEventType eventType, string name, global::UnityEngine.Object asset) { /*@B 0x6006705*/ throw null; }
-		public void OnAfterLoadAll() { /*@B 0x6006707*/ throw null; }
-		private static void OnAfterLoadAll_Update(float deltaTime) { /*@B 0x6006708*/ throw null; }
+		private bool IsLoaded { get {
+                return BattleDataTable != null && BattleDefaultPlacementData != null && BattleWaitCameraData != null && BattleSetupEffectLots != null;
+            } }
+		public bool AppendAssetBundleRequests() {
+            if (IsInitialized || IsABAppended)
+                return false;
+
+            IsABAppended = true;
+            for (int i = 0; i < AB_NAMES.Length; i++)
+                global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(AB_NAMES[i], true, null, null);
+
+            return true;
+        }
+		public bool OnDispatchRequests(global::SmartPoint.AssetAssistant.RequestEventType eventType, string name, global::UnityEngine.Object asset) {
+            if (IsInitialized)
+                return false;
+
+            if (eventType == global::SmartPoint.AssetAssistant.RequestEventType.Cached)
+            {
+                if (Array.IndexOf(AB_NAMES, name) < 0)
+                    return false;
+
+                global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(name);
+                return true;
+            }
+
+            if (eventType != global::SmartPoint.AssetAssistant.RequestEventType.Activated)
+                return false;
+
+            bool result = false;
+            if (asset is global::XLSXContent.BattleDataTable dataTable)
+            {
+                BattleDataTable = dataTable;
+                result = true;
+            }
+            if (asset is global::XLSXContent.BattleDefaultPlacementData placementData)
+            {
+                BattleDefaultPlacementData = placementData;
+                result = true;
+            }
+            if (asset is global::XLSXContent.BattleWaitCameraData waitCameraData)
+            {
+                BattleWaitCameraData = waitCameraData;
+                return true;
+            }
+            if (asset is global::XLSXContent.BattleSetupEffectLots setupEffectLots)
+            {
+                BattleSetupEffectLots = setupEffectLots;
+                return true;
+            }
+            return result;
+        }
+		public void OnAfterLoadAll() {
+            if (IsInitialized)
+                return;
+
+            global::SmartPoint.AssetAssistant.Sequencer.update += OnAfterLoadAll_Update;
+            IsInitialized = true;
+        }
+		private static void OnAfterLoadAll_Update(float deltaTime) {
+            global::SmartPoint.AssetAssistant.Sequencer.update -= OnAfterLoadAll_Update;
+        }
 		public static global::XLSXContent.BattleSetupEffectLots.SheetArenaEffTable GetArenaEff(global::ArenaID arenaID) {
             var table = Instance.BattleSetupEffectLots.ArenaEffTable;
             if (table == null)
@@ -63,6 +125,6 @@ namespace Dpr.Battle.Logic
             return table[index];
         }
 		public BattleDataTableManager() { }
-		static BattleDataTableManager() { /*@B 0x600670D*/ throw null; }
+		static BattleDataTableManager() { }
 	}
 }
