@@ -16,6 +16,19 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool[] enableElemPos;
 		public bool[] enableElemTrg;
-		public SubCameraMoveRelativeTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600498A*/ throw null; }
+		public SubCameraMoveRelativeTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trgChara = Macro.Parse_SEQ_DEF_TRAINER_ADD(macro.GetValue("trgChara"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			trg = Macro.ParseVector3(macro.GetValue("trg"));
+			fov = Macro.ParseFloat(macro.GetValue("fov"));
+			rate = Macro.ParseInt(macro.GetValue("rate"), 100);
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), 1);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 1);
+			forceUpdate = Macro.ParseBool(macro.GetValue("forceUpdate"), 0);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			enableElemPos = Macro.ParseBoolArray(macro.GetValue("enableElemPos"), 1, 1, 1);
+			enableElemTrg = Macro.ParseBoolArray(macro.GetValue("enableElemTrg"), 1, 1, 1);
+		}
 	}
 }

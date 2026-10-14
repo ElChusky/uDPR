@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER trg;
 		public bool isDisp;
-		public TrainerDispShadow(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A2E*/ throw null; }
+		public TrainerDispShadow(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			isDisp = Macro.ParseBool(macro.GetValue("isDisp"));
+		}
 	}
 }

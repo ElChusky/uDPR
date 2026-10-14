@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SubCameraAnimationRotate : global::Dpr.SequenceEditor.Macro
 	{
 		public float pos;
-		public SubCameraAnimationRotate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600499A*/ throw null; }
+		public SubCameraAnimationRotate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			pos = Macro.ParseFloat(macro.GetValue("pos"));
+		}
 	}
 }

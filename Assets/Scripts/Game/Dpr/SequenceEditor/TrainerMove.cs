@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 pos;
 		public bool relative;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public TrainerMove(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A25*/ throw null; }
+		public TrainerMove(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER_ADD(macro.GetValue("trg"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

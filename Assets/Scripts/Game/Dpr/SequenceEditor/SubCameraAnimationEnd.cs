@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SubCameraAnimationEnd : global::Dpr.SequenceEditor.Macro
 	{
 		public bool isHoldPos;
-		public SubCameraAnimationEnd(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004999*/ throw null; }
+		public SubCameraAnimationEnd(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isHoldPos = Macro.ParseBool(macro.GetValue("isHoldPos"), 1);
+		}
 	}
 }

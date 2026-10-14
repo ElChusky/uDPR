@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SubCameraCheckGroundFlg : global::Dpr.SequenceEditor.Macro
 	{
 		public bool flg;
-		public SubCameraCheckGroundFlg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600499D*/ throw null; }
+		public SubCameraCheckGroundFlg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			flg = Macro.ParseBool(macro.GetValue("flg"), 1);
+		}
 	}
 }

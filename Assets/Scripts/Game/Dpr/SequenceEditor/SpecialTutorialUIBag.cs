@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SpecialTutorialUIBag : global::Dpr.SequenceEditor.Macro
 	{
 		public bool visible;
-		public SpecialTutorialUIBag(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A5A*/ throw null; }
+		public SpecialTutorialUIBag(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			visible = Macro.ParseBool(macro.GetValue("visible"), 0);
+		}
 	}
 }

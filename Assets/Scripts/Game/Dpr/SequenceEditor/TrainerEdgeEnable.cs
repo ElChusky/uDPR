@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER trg;
 		public bool visible;
-		public TrainerEdgeEnable(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A36*/ throw null; }
+		public TrainerEdgeEnable(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			visible = Macro.ParseBool(macro.GetValue("visible"));
+		}
 	}
 }

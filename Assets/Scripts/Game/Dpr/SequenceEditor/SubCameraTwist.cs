@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public bool isFlip;
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS flipTrg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public SubCameraTwist(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004993*/ throw null; }
+		public SubCameraTwist(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			twist = Macro.ParseFloat(macro.GetValue("twist"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), 1);
+			flipTrg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("flipTrg"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

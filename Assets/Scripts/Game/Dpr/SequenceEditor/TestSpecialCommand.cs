@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public int valType;
 		public int valInt;
 		public global::UnityEngine.Vector3 ValVec;
-		public TestSpecialCommand(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A6B*/ throw null; }
+		public TestSpecialCommand(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			valType = Macro.ParseInt(macro.GetValue("valType"));
+			valInt = Macro.ParseInt(macro.GetValue("valInt"));
+			ValVec = Macro.ParseVector3(macro.GetValue("ValVec"));
+		}
 	}
 }

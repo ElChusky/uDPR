@@ -5,8 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SplinePositionData : global::UnityEngine.ScriptableObject
 	{
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector3[] _positions;
-		public global::UnityEngine.Vector3[] GetPositions() { /*@B 0x6004BC6*/ throw null; }
-		public SplinePositionData() { /*@B 0x6004BC7*/ throw null; }
+		private global::UnityEngine.Vector3[] _positions = new global::UnityEngine.Vector3[1];
+		public global::UnityEngine.Vector3[] GetPositions() { return _positions; }
+		public SplinePositionData() { }
 	}
 }
