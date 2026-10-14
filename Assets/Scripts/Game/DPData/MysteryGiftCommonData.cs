@@ -12,7 +12,7 @@ namespace DPData
 		public byte dataType;
 		public byte cardMessageID;
 		public byte[] padding;
-		public bool IsReceiveOnce { get { /*@B 0x6002930*/ throw null; } }
-		public bool IsReceiveOneDay { get { /*@B 0x6002931*/ throw null; } }
+		public bool IsReceiveOnce { get { return (receiveFlag & 1) != 0; } }
+		public bool IsReceiveOneDay { get { return (receiveFlag & 4) != 0; } }
 	}
 }

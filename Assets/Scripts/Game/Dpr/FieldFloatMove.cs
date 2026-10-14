@@ -3,20 +3,56 @@ namespace Dpr
 {
 	public class FieldFloatMove
 	{
-		public global::System.Func<float, float> EaseFunc;
+		public global::System.Func<float, float> EaseFunc = EaseDefault;
 		private float BaseValue;
-		public bool IsBusy { get { /*@B 0x600308C*/ throw null; } }
+		public bool IsBusy { get { return TargetTime > 0f; } }
 		public float CurrentValue { get; private set; }
 		public float TargetValue { get; private set; }
 		public float CurrentTime { get; private set; }
 		public float TargetTime { get; private set; }
-		public void SetValue(float value) { /*@B 0x6003095*/ throw null; }
-		public void Stop() { /*@B 0x6003096*/ throw null; }
-		public void Update(float deltaTime) { /*@B 0x6003097*/ throw null; }
-		public void MoveTime(float targetValue, float time) { /*@B 0x6003098*/ throw null; }
-		public static float EaseDefault(float inValue) { /*@B 0x6003099*/ throw null; }
-		public static float EaseInOutSin(float inValue) { /*@B 0x600309A*/ throw null; }
-		public static float EaseOutSin(float inValue) { /*@B 0x600309B*/ throw null; }
-		public FieldFloatMove() { /*@B 0x600309C*/ throw null; }
+		public void SetValue(float value) {
+			TargetTime = 0f;
+			CurrentValue = value;
+		}
+		public void Stop() {
+			TargetTime = 0f;
+		}
+		public void Update(float deltaTime) {
+			if (TargetTime > 0f)
+			{
+				CurrentTime += deltaTime;
+				if (CurrentTime >= TargetTime)
+				{
+					CurrentValue = TargetValue;
+					TargetTime = 0f;
+				}
+				else
+				{
+					CurrentValue = global::UnityEngine.Mathf.Lerp(BaseValue, TargetValue, EaseFunc(CurrentTime / TargetTime));
+				}
+			}
+		}
+		public void MoveTime(float targetValue, float time) {
+			if (time > 0f)
+			{
+				BaseValue = CurrentValue;
+				TargetValue = targetValue;
+				CurrentTime = 0f;
+				TargetTime = time;
+				return;
+			}
+			CurrentValue = targetValue;
+			TargetTime = 0f;
+		}
+		public static float EaseDefault(float inValue) {
+			return inValue;
+		}
+		public static float EaseInOutSin(float inValue) {
+			return -0.5f * (global::UnityEngine.Mathf.Cos(global::UnityEngine.Mathf.PI * inValue) - 1f);
+		}
+		public static float EaseOutSin(float inValue) {
+			return global::UnityEngine.Mathf.Sin(inValue * global::UnityEngine.Mathf.PI * 0.5f);
+		}
+		public FieldFloatMove() { }
 	}
 }

@@ -200,14 +200,198 @@ namespace Dpr
             SealTemplateID[] enemy2SealTIDs = lot.GetSealTemplates(1);
             SetupBattleTowerTrainer(battleSetupParam, playerParty, lot.IsSingle() ? BtlRule.BTL_RULE_SINGLE : BtlRule.BTL_RULE_DOUBLE, arenaID, weatherType, enemy1, enemy1Party, enemy1SealTIDs, enemy2, enemy2Party, enemy2SealTIDs, lotResult);
         }
-		public static void GetTrainerExParams(global::Dpr.Trainer.TrainerID enemyID0, global::Dpr.Trainer.TrainerID enemyID1, global::Dpr.Trainer.TrainerID partnerId, global::Dpr.Battle.Logic.BtlRule rule, out global::ArenaID trainerArenaID, out global::BattleSetupEffectId trainerSetupEffectId, out global::EffectBattleID trainerEffectBattleId) { /*@B 0x60030A4*/ throw null; }
+		public static void GetTrainerExParams(global::Dpr.Trainer.TrainerID enemyID0, global::Dpr.Trainer.TrainerID enemyID1, global::Dpr.Trainer.TrainerID partnerId, global::Dpr.Battle.Logic.BtlRule rule, out global::ArenaID trainerArenaID, out global::BattleSetupEffectId trainerSetupEffectId, out global::EffectBattleID trainerEffectBattleId) {
+            trainerArenaID = ArenaID.UNKNOWN;
+            trainerSetupEffectId = BattleSetupEffectId.NONE;
+            trainerEffectBattleId = EffectBattleID.NONE;
+            if (enemyID0 == TrainerID.NONE || enemyID0 == TrainerID.MAX)
+                return;
+
+            var trainerData = TrainerSystem.GetTrainerData(enemyID0);
+            var trainerType = TrainerSystem.GetTrainerType(trainerData.TypeID);
+            if (trainerData.ArenaID != ArenaID.UNKNOWN)
+                trainerArenaID = trainerData.ArenaID;
+
+            int index;
+            if (rule == BtlRule.BTL_RULE_DOUBLE)
+            {
+                if (enemyID1 == TrainerID.NONE)
+                    index = 1;
+                else
+                    index = partnerId != TrainerID.NONE ? 3 : 2;
+            }
+            else
+            {
+                index = 0;
+            }
+            if (trainerType.BtlEffId[index] != BattleSetupEffectId.NONE)
+                trainerSetupEffectId = trainerType.BtlEffId[index];
+            if (trainerData.EffectID != EffectBattleID.NONE)
+                trainerEffectBattleId = trainerData.EffectID;
+        }
 		public static void SetWeather(global::Dpr.Battle.Logic.BTL_FIELD_SITUATION situation, global::SYS_WEATHER weatherType) {
             WeatherWork.GetBtlWeatherID(out BtlWeather weather, out BtlGround ground, weatherType);
             situation.fieldWeather = (byte)weatherType;
             situation.weather = (byte)weather;
             situation.ground = ground;
         }
-		public static void OnPostBattle(global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM bsp, global::Pml.PokeParty iPtrPlayerParty, out int outEvolveCheckTargetIndices, out global::System.Collections.IEnumerator outDispError) { /*@B 0x60030A6*/ throw null; }
+		public static void OnPostBattle(global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM bsp, global::Pml.PokeParty iPtrPlayerParty, out int outEvolveCheckTargetIndices, out global::System.Collections.IEnumerator outDispError) {
+            PlayReportManager.AddBattle();
+            if (bsp.competitor == BtlCompetitor.BTL_COMPETITOR_COMM)
+                PlayerWork.playReportDataRef.net_battle++;
+
+            outEvolveCheckTargetIndices = 0;
+            outDispError = null;
+            PokeParty battleParty = bsp.party[0];
+            bool isIgnore = m_isIgnorePokeReflectAfterBattle;
+            m_isIgnorePokeReflectAfterBattle = false;
+
+            if (!isIgnore && bsp.competitor != BtlCompetitor.BTL_COMPETITOR_INST && bsp.competitor != BtlCompetitor.BTL_COMPETITOR_COMM && bsp.competitor != BtlCompetitor.BTL_COMPETITOR_DEMO_CAPTURE)
+            {
+                uint memberCount = iPtrPlayerParty.GetMemberCount();
+                for (uint i = 0; i < memberCount; i++)
+                {
+                    PokemonParam dst = iPtrPlayerParty.GetMemberPointerConst(i);
+                    PokemonParam src = battleParty.GetMemberPointerConst(i);
+                    uint beforeLevel = dst.GetLevel();
+                    uint afterLevel = src.GetLevel();
+                    if (isEvolveCheckTarget(iPtrPlayerParty, (byte)i, bsp.result, beforeLevel < afterLevel))
+                        outEvolveCheckTargetIndices |= 1 << (int)i;
+
+                    MonsNo monsNo = src.GetMonsNo();
+                    bool isFormChangePoke = false;
+                    if (monsNo == MonsNo.SHEIMI)
+                    {
+                        isFormChangePoke = true;
+                    }
+                    else if (monsNo == MonsNo.MINOMUTTI && bsp.pokeResult[i].totalTurnCount != 0)
+                    {
+                        src.ChangeFormNo(bsp.fieldSituation.bgComponent.minomuttiFormNo, null);
+                        ZukanWork.SetPoke(src, GET_STATUS.GET);
+                        isFormChangePoke = true;
+                    }
+
+                    if (isFormChangePoke)
+                    {
+                        bool isPartnerChange = FieldManager.fwMng.BtlCheckPartnerPokeChangeFrom((int)i + 1, src);
+                        dst.CopyFrom(src);
+                        if (isPartnerChange && (dst.GetMonsNo() == MonsNo.SHEIMI || dst.GetMonsNo() == MonsNo.MINOMUTTI))
+                            FieldManager.fwMng.BtlSetPartnerPokeChangeFrom(dst);
+                    }
+                    else
+                    {
+                        dst.CopyFrom(src);
+                    }
+                }
+
+                if (bsp.getMoney != 0)
+                    MoneyWork.Add(bsp.getMoney);
+                iPtrPlayerParty.PokerusCatchCheck();
+                iPtrPlayerParty.PokerusInfectionCheck();
+                if (bsp.result == BtlResult.BTL_RESULT_WIN || bsp.result == BtlResult.BTL_RESULT_CAPTURE)
+                    ReflectTokuseiMonohiroiMitsuatsume(iPtrPlayerParty);
+
+                PlayerWork.capturedMonsNo = MonsNo.NULL;
+                if (bsp.result == BtlResult.BTL_RESULT_CAPTURE)
+                {
+                    PokemonParam capturedPoke = bsp.party[1].GetMemberPointer(bsp.capturedPokeIdx);
+                    capturedPoke.SetMemories(Pml.PokePara.Memories.FIRST_CONTACT_PLACE, (uint)PlayerWork.zoneID);
+                    if (capturedPoke.GetGetBall() == (uint)BallId.HIIRUBOORU)
+                        capturedPoke.RecoverAll();
+                    if (capturedPoke.GetMonsNo() == MonsNo.DAAKURAI || capturedPoke.GetMonsNo() == MonsNo.SHEIMI || capturedPoke.GetMonsNo() == MonsNo.ARUSEUSU)
+                        capturedPoke.SetEventPokeFlag(true);
+                    PlayerWork.capturedPokemon = capturedPoke;
+                    PlayerWork.capturedMonsNo = capturedPoke.GetMonsNo();
+                    PlayerWork.capturedBallCountTvTopic = 0;
+                    if (bsp.competitor != BtlCompetitor.BTL_COMPETITOR_DEMO_CAPTURE && bsp.rule != BtlRule.BTL_RULE_SAFARI)
+                        PlayerWork.capturedBallCountTvTopic = bsp.throwBallNum;
+                    if (PlayerWork.IsMovePokemon)
+                        EncountDataWork.SetMovePokeData_Status(PlayerWork.MovePokemonIndex, EncountDataWork.GetPokeStatus.Get);
+                    if (bsp.competitor != BtlCompetitor.BTL_COMPETITOR_DEMO_CAPTURE && bsp.rule == BtlRule.BTL_RULE_SAFARI)
+                        PlayerWork.SafariCaptureMonsNo.Add(capturedPoke.GetMonsNo());
+                    PlayReportManager.AddCapture();
+                    PlayReportManager.SaveReportLog_PokemonId((uint)capturedPoke.GetMonsNo(), capturedPoke.GetFormNo(), 0, capturedPoke.IsRare() ? 1u : 0u);
+                    FieldManager.Instance.SetAutoSaveState(FieldManager.AutoSaveState.BattleResult);
+                }
+                else if (bsp.competitor != BtlCompetitor.BTL_COMPETITOR_TRAINER && bsp.competitor != BtlCompetitor.BTL_COMPETITOR_DEMO_CAPTURE)
+                {
+                    if (bsp.rule != BtlRule.BTL_RULE_SAFARI && bsp.throwBallNum > 2)
+                    {
+                        if (bsp.result == BtlResult.BTL_RESULT_RUN || bsp.result == BtlResult.BTL_RESULT_RUN_ENEMY)
+                            TvWork.CaptureFailed(bsp.throwBallNum, false);
+                        else if (bsp.result == BtlResult.BTL_RESULT_WIN)
+                            TvWork.CaptureFailed(bsp.throwBallNum, true);
+                    }
+                }
+            }
+
+            if (bsp.competitor == BtlCompetitor.BTL_COMPETITOR_COMM)
+            {
+                outEvolveCheckTargetIndices = 0;
+                switch (bsp.result)
+                {
+                    case BtlResult.BTL_RESULT_LOSE:
+                    case BtlResult.BTL_RESULT_WIN:
+                    case BtlResult.BTL_RESULT_DRAW:
+                        Dpr.BattleMatching.BattleMatchingWork.battleResult = bsp.result;
+                        break;
+                    case BtlResult.BTL_RESULT_RUN:
+                        Dpr.BattleMatching.BattleMatchingWork.battleResult = BtlResult.BTL_RESULT_LOSE;
+                        break;
+                    case BtlResult.BTL_RESULT_RUN_ENEMY:
+                        Dpr.BattleMatching.BattleMatchingWork.battleResult = BtlResult.BTL_RESULT_WIN;
+                        break;
+                    case BtlResult.BTL_RESULT_COMM_ERROR:
+                        outDispError = DispErrorCoroutine(bsp.commError, bsp.isDisplayedCommError);
+                        Dpr.BattleMatching.BattleMatchingWork.battleResult = bsp.result;
+                        break;
+                }
+            }
+            else
+            {
+                switch (bsp.result)
+                {
+                    case BtlResult.BTL_RESULT_LOSE:
+                    case BtlResult.BTL_RESULT_DRAW:
+                        outEvolveCheckTargetIndices = 0;
+                        FlagWork.SetWork(Dpr.EvScript.EvWork.WORK_INDEX.SCWK_ANSWER, 0);
+                        if (!FlagWork.GetSysFlag(Dpr.EvScript.EvWork.SYSFLAG_INDEX.SYS_ZENMETU_MUSI))
+                        {
+                            PlayerWork.IsZenmetuFlag = true;
+                            PlayReportManager.AddZenmetu();
+                        }
+                        break;
+                    case BtlResult.BTL_RESULT_WIN:
+                        if (PlayerWork.IsMovePokemon)
+                            EncountDataWork.SetMovePokeData_Status(PlayerWork.MovePokemonIndex, EncountDataWork.GetPokeStatus.Kill);
+                        FlagWork.SetWork(Dpr.EvScript.EvWork.WORK_INDEX.SCWK_ANSWER, 1);
+                        SetTrainerWinFlag(bsp);
+                        break;
+                    case BtlResult.BTL_RESULT_RUN:
+                        if (bsp.competitor == BtlCompetitor.BTL_COMPETITOR_TRAINER || bsp.competitor == BtlCompetitor.BTL_COMPETITOR_INST)
+                            FlagWork.SetWork(Dpr.EvScript.EvWork.WORK_INDEX.SCWK_ANSWER, 0);
+                        break;
+                }
+
+                if (IsRecoverFromPartner(bsp))
+                    iPtrPlayerParty.RecoverAll();
+
+                if (bsp.result != BtlResult.BTL_RESULT_WIN && PlayerWork.IsMovePokemon)
+                {
+                    EncountDataWork.SetMovePokeData(bsp.party[1].GetMemberPointer(0), false);
+                    EncountDataWork.JumpMovePokeAffterBattle(PlayerWork.zoneID);
+                }
+
+                Dpr.Field.SwayGrass.BtlResultRensa(bsp.result);
+            }
+
+            if (bsp.rule == BtlRule.BTL_RULE_SAFARI)
+            {
+                PlayerWork.SafariBallNum = bsp.safariBallNum;
+                if (PlayerWork.SafariBallNum == 0 && Dpr.EvScript.EvDataManager.Instanse != null)
+                    Dpr.EvScript.EvDataManager.Instanse.SetSafariEndEventFromBattle(bsp.result);
+            }
+        }
 		public static void OnPostRegisterZukan(global::Pml.PokePara.PokemonParam capturePokemonParam, int throwBallCount) {
             if (capturePokemonParam != null && throwBallCount > 0)
                 TvWork.CapturePokemon(capturePokemonParam, throwBallCount);
@@ -259,7 +443,21 @@ namespace Dpr
             ushort formNo = pp.GetFormNo();
             return isLevelUp;
         }
-		public static void GetAttEff(global::AttributeData.MapAttributeEx mapAttributeEx, global::ArenaID arenaID, global::BattleSetupEffectLot lot, out global::BattleSetupEffectId setupEffectId, out global::EffectBattleID effectBattleID, out string soundEventNama) { /*@B 0x60030AC*/ throw null; }
+		public static void GetAttEff(global::AttributeData.MapAttributeEx mapAttributeEx, global::ArenaID arenaID, global::BattleSetupEffectLot lot, out global::BattleSetupEffectId setupEffectId, out global::EffectBattleID effectBattleID, out string soundEventNama) {
+            var attEff = BattleDataTableManager.GetAttEff(mapAttributeEx, arenaID);
+            if (attEff != null)
+            {
+                effectBattleID = attEff.EffectID;
+                soundEventNama = attEff.SoundEventName;
+            }
+            else
+            {
+                effectBattleID = EffectBattleID.NONE;
+                soundEventNama = null;
+            }
+            var ruleEff = BattleDataTableManager.GetRuleEff(lot);
+            setupEffectId = ruleEff != null ? ruleEff.BattleID : BattleSetupEffectId.NONE;
+        }
 		public static global::BattleSetupEffectLot GetBattleSetupEffectLot(global::Dpr.Battle.Logic.BtlRule rule, global::Dpr.Battle.Logic.BtlCompetitor competitor = (global::Dpr.Battle.Logic.BtlCompetitor)(0), global::Dpr.Battle.Logic.BtlMultiMode multiMode = (global::Dpr.Battle.Logic.BtlMultiMode)(0), global::Dpr.Trainer.TrainerID trainerID0 = (global::Dpr.Trainer.TrainerID)(707), global::Dpr.Trainer.TrainerID trainerID1 = (global::Dpr.Trainer.TrainerID)(707)) {
             if (competitor == BtlCompetitor.BTL_COMPETITOR_TRAINER || competitor == BtlCompetitor.BTL_COMPETITOR_INST)
             {

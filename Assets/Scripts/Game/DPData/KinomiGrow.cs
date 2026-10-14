@@ -11,7 +11,7 @@ namespace DPData
 		private byte _selfPlant;
 		private byte _padding0;
 		private byte _padding1;
-		public bool wet { get { /*@B 0x600292C*/ throw null; } set { /*@B 0x600292D*/ throw null; } }
-		public bool selfPlant { get { /*@B 0x600292E*/ throw null; } set { /*@B 0x600292F*/ throw null; } }
+		public bool wet { get { return _wet != 0; } set { _wet = (byte)(value ? 1 : 0); } }
+		public bool selfPlant { get { return _selfPlant != 0; } set { _selfPlant = (byte)(value ? 1 : 0); } }
 	}
 }

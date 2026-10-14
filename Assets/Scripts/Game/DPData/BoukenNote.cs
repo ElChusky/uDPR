@@ -5,6 +5,8 @@ namespace DPData
 	public struct BoukenNote
 	{
 		public byte[] VanishNew;
-		public BoukenNote(int a) { /*@B 0x6002929*/ throw null; }
+		public BoukenNote(int a) {
+			VanishNew = new byte[24];
+		}
 	}
 }
