@@ -10,7 +10,14 @@ namespace Dpr.Battle.Logic
 		private byte m_gaugeInit;
 		private byte m_repairTurnCount;
 		private byte m_repairTurnMax;
-		public GWall() { /*@B 0x600765F*/ throw null; }
+		public GWall() {
+			m_repairTurnCount = 0;
+			m_repairTurnMax = 0;
+			m_isAppeared = false;
+			m_gaugeMax = 0;
+			m_gaugeNow = 0;
+			m_gaugeInit = 0;
+		}
 		public void CopyFrom(in global::Dpr.Battle.Logic.GWall src) {
             m_isAppeared = src.m_isAppeared;
             m_gaugeMax = src.m_gaugeMax;

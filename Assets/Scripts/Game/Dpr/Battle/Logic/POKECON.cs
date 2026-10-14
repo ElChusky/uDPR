@@ -6,9 +6,9 @@ namespace Dpr.Battle.Logic
 	public sealed class POKECON
 	{
 		private readonly global::Dpr.Battle.Logic.MainModule m_mainModule;
-		private global::Dpr.Battle.Logic.BTL_PARTY[] m_party;
-		private global::Dpr.Battle.Logic.BTL_POKEPARAM[] m_activePokeParam;
-		private global::Dpr.Battle.Logic.BTL_POKEPARAM[] m_storedPokeParam;
+		private global::Dpr.Battle.Logic.BTL_PARTY[] m_party = Arrays.InitializeWithDefaultInstances<BTL_PARTY>(5);
+		private global::Dpr.Battle.Logic.BTL_POKEPARAM[] m_activePokeParam = new BTL_POKEPARAM[30];
+		private global::Dpr.Battle.Logic.BTL_POKEPARAM[] m_storedPokeParam = new BTL_POKEPARAM[30];
 		private static global::Pml.PokeParty s_tmpPokeParty;
 		public static void InitSystem() {
             if (s_tmpPokeParty != null)
@@ -20,7 +20,14 @@ namespace Dpr.Battle.Logic
             if (s_tmpPokeParty != null)
                 s_tmpPokeParty = null;
         }
-		public POKECON(global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.Logic.FieldStatus fieldStatus) { /*@B 0x6007B98*/ throw null; }
+		public POKECON(global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.Logic.FieldStatus fieldStatus) {
+			m_mainModule = mainModule;
+			for (int i = 0; i < m_storedPokeParam.Length; i++)
+			{
+				m_activePokeParam[i] = null;
+				m_storedPokeParam[i] = new BTL_POKEPARAM(fieldStatus);
+			}
+		}
 		public void Dispose() {
             for (int i = 0; i < m_activePokeParam.Length; i++)
                 m_activePokeParam[i] = null;

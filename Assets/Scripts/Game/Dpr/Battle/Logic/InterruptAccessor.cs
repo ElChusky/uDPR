@@ -4,7 +4,9 @@ namespace Dpr.Battle.Logic
 	public sealed class InterruptAccessor
 	{
 		private global::Dpr.Battle.Logic.InterruptCode m_interrupt;
-		public InterruptAccessor() { /*@B 0x6006BC9*/ throw null; }
+		public InterruptAccessor() {
+			m_interrupt = InterruptCode.NONE;
+		}
 		public void Clear() {
 			m_interrupt = InterruptCode.NONE;
 		}

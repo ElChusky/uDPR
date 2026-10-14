@@ -4,10 +4,50 @@ namespace Dpr.Battle.Logic
 {
 	public static class GShockMessageSummarizer
 	{
-		private static readonly global::Dpr.Battle.Logic.GShockMessageSummarizer.RankEffectDesc[] RANK_EFFECT_DESC;
-		private static readonly global::Dpr.Battle.Logic.GShockMessageSummarizer.SickDesc[] SICK_DESC;
-		private static global::Dpr.Battle.Logic.GShockMessageSummarizer.CureSickDesc[] CURESICK_DESC;
-		private static readonly global::Dpr.Battle.Logic.GShockMessageSummarizer.OthersDesc[] OTHERS_DESC;
+		private static readonly global::Dpr.Battle.Logic.GShockMessageSummarizer.RankEffectDesc[] RANK_EFFECT_DESC = new RankEffectDesc[]
+		{
+			new RankEffectDesc(GShock.Effect.RANKUP_ATK, global::Pml.WazaData.WazaRankEffect.ATTACK, 1, 0x31, 0x2c, 0x19f),
+			new RankEffectDesc(GShock.Effect.RANKUP_DEF, global::Pml.WazaData.WazaRankEffect.DEFENCE, 1, 0x31, 0x2c, 0x19f),
+			new RankEffectDesc(GShock.Effect.RANKUP_SPATK, global::Pml.WazaData.WazaRankEffect.SP_ATTACK, 1, 0x31, 0x2c, 0x19f),
+			new RankEffectDesc(GShock.Effect.RANKUP_SPDEF, global::Pml.WazaData.WazaRankEffect.SP_DEFENCE, 1, 0x31, 0x2c, 0x19f),
+			new RankEffectDesc(GShock.Effect.RANKUP_AGI, global::Pml.WazaData.WazaRankEffect.AGILITY, 1, 0x31, 0x2c, 0x19f),
+			new RankEffectDesc(GShock.Effect.RANKUP_CRITICAL, global::Pml.WazaData.WazaRankEffect.CRITICAL_RATIO, 1, 0x31, 0x582, 0x1bb),
+			new RankEffectDesc(GShock.Effect.RANKDOWN_ATK, global::Pml.WazaData.WazaRankEffect.ATTACK, 1, 0x32, 0x80, 0x1ad),
+			new RankEffectDesc(GShock.Effect.RANKDOWN_DEF, global::Pml.WazaData.WazaRankEffect.DEFENCE, 1, 0x32, 0x80, 0x1ad),
+			new RankEffectDesc(GShock.Effect.RANKDOWN_SPATK, global::Pml.WazaData.WazaRankEffect.SP_ATTACK, 1, 0x32, 0x80, 0x1ad),
+			new RankEffectDesc(GShock.Effect.RANKDOWN_SPDEF, global::Pml.WazaData.WazaRankEffect.SP_DEFENCE, 1, 0x32, 0x80, 0x1ad),
+			new RankEffectDesc(GShock.Effect.RANKDOWN_AGI, global::Pml.WazaData.WazaRankEffect.AGILITY, 1, 0x32, 0x80, 0x1ad),
+			new RankEffectDesc(GShock.Effect.RANKDOWN_AGI2, global::Pml.WazaData.WazaRankEffect.AGILITY, 2, 0x32, 0x80, 0x1ad),
+			new RankEffectDesc(GShock.Effect.RANKDOWN_AVOID, global::Pml.WazaData.WazaRankEffect.AVOID, 1, 0x32, 0x80, 0x1ad),
+		};
+		private static readonly global::Dpr.Battle.Logic.GShockMessageSummarizer.SickDesc[] SICK_DESC = new SickDesc[]
+		{
+			new SickDesc(0x2e, 0x174, 0x1bd),
+			new SickDesc(0x2a, 0x1a0, 0x1be),
+			new SickDesc(0x2d, 0x188, 0x1bf),
+			new SickDesc(0x2c, 0x15c, 0x1c0),
+			new SickDesc(0x2b, 0x140, 0x1bc),
+			new SickDesc(0x2f, 0x1d4, 0x1c1),
+			new SickDesc(0x30, 0x1bc, 0x1c2),
+		};
+		private static global::Dpr.Battle.Logic.GShockMessageSummarizer.CureSickDesc[] CURESICK_DESC = new CureSickDesc[]
+		{
+			new CureSickDesc { sick = (Sick)1, message_unit = 0x17c },
+			new CureSickDesc { sick = (Sick)2, message_unit = 0x1a8 },
+			new CureSickDesc { sick = (Sick)3, message_unit = 0x190 },
+			new CureSickDesc { sick = (Sick)4, message_unit = 0x168 },
+			new CureSickDesc { sick = (Sick)5, message_unit = 0x150 },
+		};
+		private static readonly global::Dpr.Battle.Logic.GShockMessageSummarizer.OthersDesc[] OTHERS_DESC = new OthersDesc[]
+		{
+			new OthersDesc { gShockEffect = GShock.Effect.TOOSENBOU, message_unit = 0x49c, message_summarized = 0x1c5 },
+			new OthersDesc { gShockEffect = GShock.Effect.AKUBI, message_unit = 0x384, message_summarized = 0x1c3 },
+			new OthersDesc { gShockEffect = GShock.Effect.ICHAMON, message_unit = 0x30a, message_summarized = 0x1c6 },
+			new OthersDesc { gShockEffect = GShock.Effect.SUNAZIGOKU, message_unit = 0x468, message_summarized = 0x1c7 },
+			new OthersDesc { gShockEffect = GShock.Effect.HONOONOUZU, message_unit = 0x460, message_summarized = 0x1c8 },
+			new OthersDesc { gShockEffect = GShock.Effect.RECOVER_HP, message_unit = 0x20c, message_summarized = 0x1c9 },
+			new OthersDesc { gShockEffect = GShock.Effect.DECREMENT_PP, message_unit = 0x7d6, message_summarized = 0x1ca },
+		};
 		private static bool rank_GetDesc(ref global::Dpr.Battle.Logic.GShockMessageSummarizer.RankEffectDesc pParam, global::Dpr.Battle.Logic.GShock.Effect gShockEffect) {
 			for (byte i = 0; i < RANK_EFFECT_DESC.Length; i++)
 			{
@@ -79,7 +119,18 @@ namespace Dpr.Battle.Logic
 				rank_GetMessageParam(pStrParam, gShockEffect);
 			}
 		}
-		private static bool sick_GetDesc(out global::Dpr.Battle.Logic.GShockMessageSummarizer.SickDesc pParam, ushort effectNo) { /*@B 0x6006BB4*/ throw null; }
+		private static bool sick_GetDesc(out global::Dpr.Battle.Logic.GShockMessageSummarizer.SickDesc pParam, ushort effectNo) {
+			for (byte i = 0; i < SICK_DESC.Length; i++)
+			{
+				if (SICK_DESC[i].effectNo == effectNo)
+				{
+					pParam = SICK_DESC[i];
+					return true;
+				}
+			}
+			pParam = null;
+			return false;
+		}
 		private static void sick_SetupMessage_Unit(global::Dpr.Battle.Logic.StrParam pStrParam, ushort effectNo, ushort pokeID) {
 			if (sick_GetDesc(out SickDesc desc, effectNo))
 			{
@@ -310,7 +361,7 @@ namespace Dpr.Battle.Logic
 					break;
 			}
 		}
-		static GShockMessageSummarizer() { /*@B 0x6006BC3*/ throw null; }
+		static GShockMessageSummarizer() { }
 		private struct RankEffectDesc
 		{
 			public global::Dpr.Battle.Logic.GShock.Effect gShockEffect;
@@ -319,14 +370,25 @@ namespace Dpr.Battle.Logic
 			public ushort defaultEffectNo;
 			public ushort message_unit;
 			public ushort message_summarized;
-			public RankEffectDesc(global::Dpr.Battle.Logic.GShock.Effect gShockEffect, global::Pml.WazaData.WazaRankEffect rankEffect, int rankVolume, ushort defaultEffectNo, ushort message_unit, ushort message_summarized) { /*@B 0x600B499*/ throw null; }
+			public RankEffectDesc(global::Dpr.Battle.Logic.GShock.Effect gShockEffect, global::Pml.WazaData.WazaRankEffect rankEffect, int rankVolume, ushort defaultEffectNo, ushort message_unit, ushort message_summarized) {
+				this.gShockEffect = gShockEffect;
+				this.rankEffect = rankEffect;
+				this.rankVolume = rankVolume;
+				this.defaultEffectNo = defaultEffectNo;
+				this.message_unit = message_unit;
+				this.message_summarized = message_summarized;
+			}
 		}
 		private class SickDesc
 		{
 			public ushort effectNo;
 			public ushort message_unit;
 			public ushort message_summarized;
-			public SickDesc(ushort effectNo, ushort message_unit, ushort message_summarized) { /*@B 0x600B49A*/ throw null; }
+			public SickDesc(ushort effectNo, ushort message_unit, ushort message_summarized) {
+				this.effectNo = effectNo;
+				this.message_unit = message_unit;
+				this.message_summarized = message_summarized;
+			}
 		}
 		private class CureSickDesc
 		{

@@ -12,9 +12,72 @@ namespace Dpr.Battle.Logic
 		private readonly global::Dpr.Battle.Logic.ActionDesc m_pActionDesc;
 		private readonly global::Dpr.Battle.Logic.WazaParam m_pWazaParam;
 		private global::Dpr.Battle.Logic.GShock.Effect m_gShockEffect;
-		private global::Dpr.Battle.Logic.GShockEffectParam.PosData[] m_posData;
-		private static readonly global::Dpr.Battle.Logic.GShockEffectParam.IsNeedSummarizeTableElem[] IsNeedSummarizeTable;
-		public GShockEffectParam(in global::Dpr.Battle.Logic.GShockEffectParam.SetupParam param) { /*@B 0x6006B97*/ throw null; }
+		private global::Dpr.Battle.Logic.GShockEffectParam.PosData[] m_posData = Arrays.InitializeWithDefaultInstances<PosData>(DefineConstants.BTL_POSIDX_MAX);
+		private static readonly global::Dpr.Battle.Logic.GShockEffectParam.IsNeedSummarizeTableElem[] IsNeedSummarizeTable = new IsNeedSummarizeTableElem[]
+		{
+			new IsNeedSummarizeTableElem(GShock.Effect.NONE, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.WEATHER_SHINE, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.WEATHER_RAIN, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.WEATHER_SNOW, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.WEATHER_SAND, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.FIELD_ELEC, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.FIELD_GRASS, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.FIELD_MIST, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.FIELD_PSYCO, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKUP_ATK, false, true),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKUP_DEF, false, true),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKUP_SPATK, false, true),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKUP_SPDEF, false, true),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKUP_AGI, false, true),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKUP_CRITICAL, false, true),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKDOWN_ATK, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKDOWN_DEF, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKDOWN_SPATK, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKDOWN_SPDEF, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKDOWN_AGI, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKDOWN_AGI2, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.RANKDOWN_AVOID, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.SICK_DOKU, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.SICK_MAHI, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.SICK_DOKU_MAHI, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.SICK_DOKU_MAHI_NEMURI, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.SICK_KONRAN, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.SICK_MEROMERO, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.SIDE_HONOO, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.SIDE_IWA, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.AURORAVEIL, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.STEALTHROCK, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.STEALTHROCK_HAGANE, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.JURYOKU, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.NEKONIKOBAN, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.TOOSENBOU, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.AKUBI, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.ICHAMON, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.SYUUKAKU, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.SUNAZIGOKU, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.HONOONOUZU, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.KIRIBARAI, false, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.DECREMENT_PP, true, false),
+			new IsNeedSummarizeTableElem(GShock.Effect.RECOVER_HP, false, true),
+			new IsNeedSummarizeTableElem(GShock.Effect.CURE_SICK, false, true),
+		};
+		public GShockEffectParam(in global::Dpr.Battle.Logic.GShockEffectParam.SetupParam param) {
+			m_pMainModule = param.pMainModule;
+			m_pBattleEnv = param.pBattleEnv;
+			m_pAttaker = param.pAttaker;
+			m_pDefender = param.pDefender;
+			m_pActionDesc = param.pActionDesc;
+			m_pWazaParam = param.pWazaParam;
+			m_gShockEffect = param.gShockEffect;
+			for (int i = 0; i < DefineConstants.BTL_POSIDX_MAX; i++)
+			{
+				m_posData[i].isEffected = false;
+				m_posData[i].effectNo = (ushort)BtlEff.BTLEFF_MAX;
+				m_posData[i].effectVolume = 0;
+				m_posData[i].curedPokeSick = Sick.NONE;
+				m_posData[i].targetPokeID = PokeID.INVALID;
+			}
+		}
 		public bool IsNeedSummarize() {
 			if (m_pMainModule.GetRule() != BtlRule.BTL_RULE_RAID)
 				return false;
@@ -129,7 +192,7 @@ namespace Dpr.Battle.Logic
 			m_posData[(int)pos].curedPokeSick = sick;
 			SetEffected(pos, (ushort)BtlEff.BTLEFF_HP_RECOVER);
 		}
-		static GShockEffectParam() { /*@B 0x6006BA9*/ throw null; }
+		static GShockEffectParam() { }
 		public class SetupParam
 		{
 			public global::Dpr.Battle.Logic.MainModule pMainModule;
@@ -155,7 +218,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.GShock.Effect effect;
 			public bool needSummarize_ByBossAttack;
 			public bool needSummarize_ByPlayerAttack;
-			public IsNeedSummarizeTableElem(global::Dpr.Battle.Logic.GShock.Effect effect, bool needSummarize_ByBossAttack, bool needSummarize_ByPlayerAttack) { /*@B 0x600B498*/ throw null; }
+			public IsNeedSummarizeTableElem(global::Dpr.Battle.Logic.GShock.Effect effect, bool needSummarize_ByBossAttack, bool needSummarize_ByPlayerAttack) {
+				this.effect = effect;
+				this.needSummarize_ByBossAttack = needSummarize_ByBossAttack;
+				this.needSummarize_ByPlayerAttack = needSummarize_ByPlayerAttack;
+			}
 		}
 	}
 }
