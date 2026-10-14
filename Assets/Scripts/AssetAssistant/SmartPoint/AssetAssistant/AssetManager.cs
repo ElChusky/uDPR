@@ -346,21 +346,729 @@ namespace SmartPoint.AssetAssistant
             _requestPacket.packet.Add(item);
             return new AssetRequestOperation(item);
         }
-		public static global::SmartPoint.AssetAssistant.AssetRequestOperation DispatchRequests(global::SmartPoint.AssetAssistant.RequestEventCallback callback = null) { /*@B AssetAssistant:0x600009B*/ throw null; }
-		public static global::SmartPoint.AssetAssistant.AssetBundleCache LoadAssetBundle(string assetBundleName) { /*@B AssetAssistant:0x600009C*/ throw null; }
-		private static global::SmartPoint.AssetAssistant.AssetBundleCache LoadAssetBundle(global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest manifest, global::SmartPoint.AssetAssistant.AssetBundleRecord record, bool loadAllAssets = true, bool loadDependency = true, string[] variants = null) { /*@B AssetAssistant:0x600009D*/ throw null; }
-		public static global::UnityEngine.Object LoadAsset(string assetPath, bool cached = false) { /*@B AssetAssistant:0x600009E*/ throw null; }
-		public static int UnloadAssetBundleAtAssetPath(string assetPath) { /*@B AssetAssistant:0x600009F*/ throw null; }
-		public static int UnloadAssetBundle(string assetBundleName) { /*@B AssetAssistant:0x60000A0*/ throw null; }
-		private static void Update(float deltaTime) { /*@B AssetAssistant:0x60000A2*/ throw null; }
-		private static global::SmartPoint.AssetAssistant.AssetBundleRecord GetAssetBundleRecord(global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest manifest, string assetBundleName) { /*@B AssetAssistant:0x60000A3*/ throw null; }
-		private static void OnStreamWriteFinished(global::System.IAsyncResult asyncResult) { /*@B AssetAssistant:0x60000A4*/ throw null; }
-		private static bool ProcessRequestItem(global::SmartPoint.AssetAssistant.IAssetRequestItem requestItem) { /*@B AssetAssistant:0x60000A5*/ throw null; }
-		public static string RemapVariantName(string assetBundleName, string[] variants) { /*@B AssetAssistant:0x60000A6*/ throw null; }
-		public static void OnResumeSingleton() { /*@B AssetAssistant:0x60000A7*/ throw null; }
-		private static void OnDestroy() { /*@B AssetAssistant:0x60000A8*/ throw null; }
+		public static global::SmartPoint.AssetAssistant.AssetRequestOperation DispatchRequests(global::SmartPoint.AssetAssistant.RequestEventCallback callback = null) {
+            if (_requestPacket == null)
+                return null;
+            _requestPacket.callback = callback;
+            foreach (IAssetRequestItem item in _requestPacket.packet)
+            {
+                if (item.callback == null)
+                    item.callback = callback;
+            }
+            _requestList.AddLast(_requestPacket);
+            AssetRequestOperation operation = new AssetRequestOperation(_requestPacket.packet);
+            _requestPacket = null;
+            return operation;
+        }
+		public static global::SmartPoint.AssetAssistant.AssetBundleCache LoadAssetBundle(string assetBundleName) {
+            if (string.IsNullOrEmpty(assetBundleName))
+                return null;
+            AssetBundleDownloadManifest manifest = _defaultManifest;
+            AssetBundleRecord record = GetAssetBundleRecord(manifest, assetBundleName);
+            if (StartupSettings.assetBundleTarget == AssetBundleTarget.AssetDatabase && record.projectName.IsNullOrEmpty())
+                return null;
+            Debug.Log("LoadAssetBundle:" + assetBundleName);
+            AssetBundleCache cache = LoadAssetBundle(manifest, record, true, true, null);
+            if (cache == null || cache.assetBundle == null)
+                Debug.LogError("AssetBundle not found!:" + assetBundleName);
+            return cache;
+        }
+		private static global::SmartPoint.AssetAssistant.AssetBundleCache LoadAssetBundle(global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest manifest, global::SmartPoint.AssetAssistant.AssetBundleRecord record, bool loadAllAssets = true, bool loadDependency = true, string[] variants = null) {
+            Debug.Log(string.Format("LoadAssetBundle Start: {0} (Time: {1})", record.assetBundleName, Time.realtimeSinceStartup));
+            // inlined AssetBundleCache.Get(name, true): IsNullOrEmpty + _container.TryGetValue + null test, no isLoaded test
+            AssetBundleCache cache = AssetBundleCache.Get(record.assetBundleName, true);
+            if (cache != null)
+            {
+                cache.AddRef();
+            }
+            else
+            {
+                cache = AssetBundleCache.Add(record, false, variants);
+                if (loadDependency && !record.projectName.IsNullOrEmpty())
+                {
+                    string[] dependencies = cache.remapDependencies;
+                    for (int i = 0; i < dependencies.Length; i++)
+                        LoadAssetBundle(manifest, manifest.GetAssetBundleRecord(dependencies[i]), false, true, null);
+                }
+                string path = cachePath.CombinePath(cache.record.projectName + "/");
+                if (Application.isEditor && global::System.Linq.Enumerable.Any(StartupSettings.assetBundlesForEditor, __ => __ == record.assetBundleName))
+                {
+                    path = editorPath;
+                    Debug.Log(path.CombinePath(record.assetBundleName));
+                }
+                cache.assetBundle = AssetBundle.LoadFromFile(path.CombinePath(record.assetBundleName));
+                if (loadAllAssets)
+                {
+                    cache.loadedAssets = cache.assetBundle.LoadAllAssets();
+                    Object[] assets = cache.loadedAssets;
+                    for (int i = 0; i < assets.Length; i++)
+                    {
+                        Shader shader = assets[i] as Shader;
+                        if ((object)shader != null)
+                        {
+                            Debug.Log("Register Shader: " + shader.name);
+                            _shaders.Add(shader);
+                        }
+                    }
+                    cache.isLoaded = true;
+                }
+            }
+            Debug.Log(string.Format("LoadAssetBundle Finished: {0} (Time: {1})", record.assetBundleName, Time.realtimeSinceStartup));
+            return cache;
+        }
+		public static global::UnityEngine.Object LoadAsset(string assetPath, bool cached = false) {
+            AssetBundleDownloadManifest manifest = _defaultManifest;
+            if (SceneDatabase.Contains(assetPath))
+            {
+                Debug.LogError("Scene is not supported!: " + assetPath);
+                return null;
+            }
+            string assetBundleName = manifest.GetAssetBundleNameAtPath(assetPath);
+            Debug.Log("LoadAsset:" + assetPath + assetBundleName);
+            if (string.IsNullOrEmpty(assetBundleName))
+                return Resources.Load(assetPath);
+            AssetBundleRecord record = GetAssetBundleRecord(manifest, assetBundleName);
+            Debug.Log("LoadAsset:" + record.projectName);
+            if (StartupSettings.assetBundleTarget == AssetBundleTarget.AssetDatabase && record.projectName.IsNullOrEmpty())
+                return Sequencer.editorProxy.LoadMainAssetAtPath(assetPath);
+            AssetBundleCache cache = LoadAssetBundle(manifest, record, true, true, null);
+            if (cache != null && cache.assetBundle != null)
+            {
+                Object asset = cache.assetBundle.LoadAsset(assetPath);
+                if (Application.isEditor)
+                    Sequencer.editorProxy.ReloadEditorShaders(asset);
+                if (!cached)
+                    AssetBundleCache.ReleaseFromAssetBundleName(assetBundleName, false);
+                return asset;
+            }
+            Debug.LogError("AssetBundle not found!:" + assetBundleName);
+            return null;
+        }
+		public static int UnloadAssetBundleAtAssetPath(string assetPath) {
+            AssetBundleDownloadManifest manifest = GetManifest(assetPath, out assetPath);
+            if (SceneDatabase.Contains(assetPath))
+            {
+                Debug.LogError("Scene is not supported!: " + assetPath);
+                return -1;
+            }
+            if (manifest == null)
+                return 0;
+            return AssetBundleCache.ReleaseFromAssetBundleName(manifest.GetAssetBundleNameAtPath(assetPath), false);
+        }
+		public static int UnloadAssetBundle(string assetBundleName) { return AssetBundleCache.ReleaseFromAssetBundleName(assetBundleName, false); }
+		private static void Update(float deltaTime) {
+            if (_errorRequestList.Count < 1)
+            {
+                _removePackets.Clear();
+                foreach (RequestItemPacket packet in _requestList)
+                {
+                    bool finished = true;
+                    foreach (IAssetRequestItem item in packet.packet)
+                        finished &= ProcessRequestItem(item);
+                    if (finished)
+                        _removePackets.Add(packet);
+                }
+                foreach (RequestItemPacket packet in _removePackets)
+                {
+                    if (packet.callback != null)
+                        packet.callback(RequestEventType.Complete, string.Empty, null);
+                    packet.packet.Clear();
+                    packet.callback = null;
+                    _requestList.Remove(packet);
+                }
+                if (_dependencyRequestPacket != null)
+                {
+                    _requestList.AddFirst(_dependencyRequestPacket);
+                    _dependencyRequestPacket = null;
+                }
+            }
+            else
+            {
+                global::SmartPoint.AssetAssistant.Forms.MessageBox.Show("リトライしますか？", "インストールエラー", global::SmartPoint.AssetAssistant.Forms.MessageBoxButtons.RetryCancel, null, result => {
+                    if (result == global::SmartPoint.AssetAssistant.Forms.MessageBoxResult.Cancel || result == global::SmartPoint.AssetAssistant.Forms.MessageBoxResult.Retry)
+                        _errorRequestList.Clear();
+                });
+            }
+        }
+		private static global::SmartPoint.AssetAssistant.AssetBundleRecord GetAssetBundleRecord(global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest manifest, string assetBundleName) {
+            if (manifest != null)
+            {
+                AssetBundleRecord record = manifest.GetAssetBundleRecord(assetBundleName);
+                if (record != null)
+                {
+                    if (!record.isSimulation)
+                        return record;
+                    Debug.Log("Simulation AssetBundle: " + assetBundleName);
+                }
+                else if (StartupSettings.assetBundleTarget != AssetBundleTarget.AssetDatabase)
+                {
+                    Debug.LogError("AssetBundle not found!:" + assetBundleName);
+                    return null;
+                }
+            }
+            return new AssetBundleRecord("", assetBundleName);
+        }
+		private static void OnStreamWriteFinished(global::System.IAsyncResult asyncResult) {
+            AssetBundleRequestItem item = (AssetBundleRequestItem)asyncResult.AsyncState;
+            AssetBundleRecord record = item.cache.record;
+            record.hash = record.latest.hash;
+            record.latest = null;
+            item.fileStream.EndWrite(asyncResult);
+            item.fileStream.Close();
+            item.fileStream = null;
+            item.cache.Release();
+        }
+		private static bool ProcessRequestItem(global::SmartPoint.AssetAssistant.IAssetRequestItem requestItem) {
+            RequestEventCallback callback = requestItem.callback;
+            switch (requestItem.status)
+            {
+                case RequestStatus.ResolveDependencies:
+                {
+                    if (requestItem is AssetBundleRequestItem)
+                    {
+                        AssetBundleRequestItem assetBundleRequestItem = (AssetBundleRequestItem)requestItem;
+                        Debug.Log(string.Format("ResolveDependencies: {0} (Time: {1})", assetBundleRequestItem.uri, Time.realtimeSinceStartup));
+                        // inlined AssetBundleCache.Get(uri, true)
+                        AssetBundleCache cache = AssetBundleCache.Get(requestItem.uri, true);
+                        if (cache != null)
+                        {
+                            if (StartupSettings.assetBundleTarget == AssetBundleTarget.AssetDatabase && cache.record == null && cache.variants != assetBundleRequestItem.variants)
+                            {
+                                while (AssetBundleCache.ReleaseFromAssetBundleName(requestItem.uri, false) > 0) { }
+                                return false;
+                            }
+                            assetBundleRequestItem.cache = cache;
+                            cache.AddRef();
+                            foreach (string dependency in cache.record.allDependencies)
+                            {
+                                AssetBundleCache dependencyCache = AssetBundleCache.Get(RemapVariantName(dependency, assetBundleRequestItem.variants), true);
+                                if (dependencyCache == null)
+                                {
+                                    while (AssetBundleCache.ReleaseFromAssetBundleName(requestItem.uri, false) > 0) { }
+                                    return false;
+                                }
+                                dependencyCache.AddRef();
+                            }
+                            goto case RequestStatus.WaitForCacheLoading;
+                        }
+                        AssetBundleRecord record = GetAssetBundleRecord(requestItem.manifest, requestItem.uri);
+                        if (record == null)
+                        {
+                            requestItem.status = RequestStatus.FileNotFound;
+                            return false;
+                        }
+                        if (record.isStreamingSceneAssetBundle)
+                            assetBundleRequestItem.loadAllAssets = false;
+                        assetBundleRequestItem.cache = AssetBundleCache.Add(record, false, assetBundleRequestItem.variants);
+                        if (record.projectName.IsNullOrEmpty())
+                        {
+                            assetBundleRequestItem.cache.isLoaded = true;
+                        }
+                        else
+                        {
+                            foreach (string dependency in assetBundleRequestItem.cache.remapDependencies)
+                            {
+                                AssetBundleCache dependencyCache = AssetBundleCache.Get(dependency, true);
+                                if (dependencyCache != null)
+                                {
+                                    dependencyCache.AddRef();
+                                    continue;
+                                }
+                                if (_dependencyRequestPacket == null)
+                                    _dependencyRequestPacket = new RequestItemPacket();
+                                AssetBundleRequestItem dependencyItem = new AssetBundleRequestItem(requestItem.manifest, dependency, false, false, assetBundleRequestItem.variants);
+                                dependencyItem.cache = AssetBundleCache.Add(requestItem.manifest.GetAssetBundleRecord(dependencyItem.uri), false, assetBundleRequestItem.variants);
+                                if (dependencyItem.cache.record == null)
+                                    Debug.LogError("AssetBundle not exists!: " + dependencyItem.uri);
+                                if (dependencyItem.cache.record.latest != null)
+                                    dependencyItem.status = dependencyItem.cache.record.isBeginInstalled ? RequestStatus.WaitForInstallation : RequestStatus.LoadAndInstall;
+                                _dependencyRequestPacket.packet.Add(dependencyItem);
+                            }
+                        }
+                        if (record.latest == null)
+                            goto case RequestStatus.LoadAssetBundle;
+                        if (!record.isBeginInstalled)
+                            goto case RequestStatus.LoadAndInstall;
+                        goto case RequestStatus.WaitForInstallation;
+                    }
+                    if (requestItem is AssetRequestItem)
+                    {
+                        AssetRequestItem assetRequestItem = (AssetRequestItem)requestItem;
+                        string assetBundleName;
+                        // inlined SceneDatabase.Contains
+                        if (SceneDatabase.Contains(requestItem.uri))
+                            assetBundleName = SceneDatabase.GetAssetBundleName(requestItem.uri);
+                        else if (GetAssetBundleRecord(assetRequestItem.manifest, assetRequestItem.assetBundleName) == null)
+                            assetBundleName = Sequencer.editorProxy.GetAssetBundleNameAtPath(requestItem.uri);
+                        else
+                            assetBundleName = requestItem.manifest.GetAssetBundleNameAtPath(requestItem.uri);
+                        if (string.IsNullOrEmpty(assetBundleName))
+                            goto case RequestStatus.LoadAsset;
+                        assetRequestItem.assetBundleName = assetBundleName;
+                        AssetBundleCache cache = AssetBundleCache.Get(assetBundleName, true);
+                        if (cache != null)
+                        {
+                            cache.AddRef();
+                            goto case RequestStatus.LoadAsset;
+                        }
+                        if (_dependencyRequestPacket == null)
+                            _dependencyRequestPacket = new RequestItemPacket();
+                        _dependencyRequestPacket.packet.Add(new AssetBundleRequestItem(requestItem.manifest, assetBundleName, false, true, null));
+                        requestItem.status = RequestStatus.LoadAsset;
+                        return false;
+                    }
+                    return false;
+                }
+                case RequestStatus.LoadAndInstall:
+                {
+                    if (!_cacheEnabled)
+                        goto case RequestStatus.LoadAssetBundle;
+                    requestItem.status = RequestStatus.LoadAndInstall;
+                    AssetBundleRequestItem assetBundleRequestItem = requestItem as AssetBundleRequestItem;
+                    if (!requestItem.error.IsNullOrEmpty())
+                    {
+                        assetBundleRequestItem.webRequest.Dispose();
+                        assetBundleRequestItem.webRequest = null;
+                        requestItem.error = null;
+                        return false;
+                    }
+                    if (assetBundleRequestItem.webRequest == null)
+                    {
+                        AssetBundleDownloadManifest latest = requestItem.manifest.latest;
+                        if (latest == null || StartupSettings.assetBundleTarget == AssetBundleTarget.AssetDatabase)
+                        {
+                            Debug.LogError("Not found latest manifest!: " + requestItem.manifest.projectName);
+                            return false;
+                        }
+                        global::UnityEngine.Networking.UnityWebRequest webRequest = global::UnityEngine.Networking.UnityWebRequest.Get(latest.path + requestItem.uri);
+                        webRequest.SendWebRequest();
+                        assetBundleRequestItem.webRequest = webRequest;
+                        return false;
+                    }
+                    if (assetBundleRequestItem.webRequest.isHttpError || assetBundleRequestItem.webRequest.isNetworkError)
+                    {
+                        if (!assetBundleRequestItem.webRequest.error.IsNullOrEmpty())
+                            requestItem.error = assetBundleRequestItem.webRequest.error;
+                        else
+                            requestItem.error = "error";
+                        _errorRequestList.Add(requestItem);
+                        return false;
+                    }
+                    if (!assetBundleRequestItem.webRequest.isDone)
+                        return false;
+                    // inlined RecordedHash.isValid
+                    if (assetBundleRequestItem.cache.record.hash.isValid)
+                    {
+                        try
+                        {
+                            global::System.IO.File.Delete(cachePath + "/" + Application.productName + "/" + assetBundleRequestItem.cache.record.hash.ToString());
+                            assetBundleRequestItem.cache.record.hash = default(RecordedHash);
+                        }
+                        catch
+                        {
+                        }
+                    }
+                    byte[] data = assetBundleRequestItem.webRequest.downloadHandler.data;
+                    string path = cachePath + "/" + requestItem.manifest.projectName + "/" + assetBundleRequestItem.cache.record.latest.hash.ToString();
+                    assetBundleRequestItem.cache.AddRef();
+                    assetBundleRequestItem.createRequest = AssetBundle.LoadFromMemoryAsync(data);
+                    assetBundleRequestItem.fileStream = new global::System.IO.FileStream(path, global::System.IO.FileMode.Create, global::System.IO.FileAccess.Write, global::System.IO.FileShare.None, 4096, true);
+                    assetBundleRequestItem.fileStream.BeginWrite(data, 0, (int)assetBundleRequestItem.cache.record.size, new global::System.AsyncCallback(OnStreamWriteFinished), assetBundleRequestItem);
+                    goto case RequestStatus.LoadAssetBundle;
+                }
+                case RequestStatus.RequestInstallation:
+                {
+                    requestItem.status = RequestStatus.RequestInstallation;
+                    InstallRequestItem installRequestItem = requestItem as InstallRequestItem;
+                    int sendCount = 0;
+                    for (int i = 0; i < installRequestItem.items.Length; i++)
+                    {
+                        InstallRequestItem.InstallItem item = installRequestItem.items[i];
+                        if (item.record.latest == null)
+                            continue;
+                        if (item.webRequest != null)
+                        {
+                            item.webRequest.Dispose();
+                            installRequestItem.items[i].webRequest = null;
+                        }
+                        global::UnityEngine.Networking.UnityWebRequest webRequest = global::UnityEngine.Networking.UnityWebRequest.Get(requestItem.manifest.latest.path + item.record.assetBundleName);
+                        webRequest.downloadHandler = new InstallHandler(requestItem.manifest.projectName + "/" + item.record.latest.hash.ToString(), _preallocatedBuffer);
+                        webRequest.timeout = 0;
+                        if (sendCount < MaxInstallRequest)
+                        {
+                            webRequest.SendWebRequest();
+                            webRequest.timeout = Timeout;
+                            installRequestItem.items[i].send = true;
+                            sendCount++;
+                        }
+                        installRequestItem.items[i].webRequest = webRequest;
+                    }
+                    goto case RequestStatus.InstallAssetBundles;
+                }
+                case RequestStatus.InstallAssetBundles:
+                {
+                    requestItem.status = RequestStatus.InstallAssetBundles;
+                    InstallRequestItem installRequestItem = requestItem as InstallRequestItem;
+                    bool isError = false;
+                    int sendCount = 0;
+                    bool isFinished = true;
+                    foreach (InstallRequestItem.InstallItem item in installRequestItem.items)
+                    {
+                        if (item.webRequest == null || !item.send)
+                            continue;
+                        if (item.webRequest.isHttpError || item.webRequest.isNetworkError)
+                        {
+                            Debug.LogError("Install failed!: " + item.webRequest.url);
+                            isFinished = false;
+                            item.send = false;
+                            isError = true;
+                        }
+                        else if (item.webRequest.isDone)
+                        {
+                            // TO CHECK: `bic x8, x0, x0, asr #63` clamps the ulong->long value at 0 before the add (@022e1870)
+                            installRequestItem.installSize += global::System.Math.Max(0L, (long)item.webRequest.downloadedBytes);
+                            item.webRequest.Dispose();
+                            item.webRequest = null;
+                            item.record.hash = item.record.latest.hash;
+                            item.record.lastWriteTime = item.record.latest.lastWriteTime;
+                            item.record.latest = null;
+                            isFinished = false;
+                            item.record.isBeginInstalled = false;
+                            item.send = false;
+                        }
+                        else
+                        {
+                            if (item.send)
+                                sendCount++;
+                            isFinished = false;
+                        }
+                    }
+                    if (isError)
+                    {
+                        requestItem.status = RequestStatus.RequestInstallation;
+                        _errorRequestList.Add(requestItem);
+                        return false;
+                    }
+                    if (sendCount < MaxInstallRequest)
+                    {
+                        foreach (InstallRequestItem.InstallItem item in installRequestItem.items)
+                        {
+                            if (item.webRequest == null || item.send)
+                                continue;
+                            item.send = true;
+                            item.webRequest.timeout = Timeout;
+                            item.webRequest.SendWebRequest();
+                            sendCount++;
+                            if (sendCount == MaxInstallRequest)
+                                break;
+                        }
+                    }
+                    if (!isFinished)
+                        return false;
+                    if (!_cacheEnabled)
+                        goto case RequestStatus.Complete;
+                    goto case RequestStatus.SaveManifest;
+                }
+                case RequestStatus.SaveManifest:
+                {
+                    AssetBundleDownloadManifest manifest = (requestItem as InstallRequestItem).manifest;
+                    manifest.Save(cachePath + "/" + manifest.projectName + ".bin", false);
+                    goto case RequestStatus.Complete;
+                }
+                case RequestStatus.WaitForInstallation:
+                {
+                    requestItem.status = RequestStatus.WaitForInstallation;
+                    if ((requestItem as AssetBundleRequestItem).cache.record.isBeginInstalled)
+                        return false;
+                    goto case RequestStatus.LoadAssetBundle;
+                }
+                case RequestStatus.WaitForCacheLoading:
+                {
+                    requestItem.status = RequestStatus.WaitForCacheLoading;
+                    AssetBundleRequestItem assetBundleRequestItem = requestItem as AssetBundleRequestItem;
+                    if (!assetBundleRequestItem.cache.isLoaded)
+                    {
+                        Debug.Log("Wait request " + requestItem.uri);
+                        return false;
+                    }
+                    if (assetBundleRequestItem.loadAllAssets)
+                        goto case RequestStatus.LoadAsset;
+                    goto case RequestStatus.LoadFinished;
+                }
+                case RequestStatus.WaitForCacheWriting:
+                {
+                    // TO CHECK: shipped jump goes to the SaveManifest block (@022e4d40 -> 022e1a88), which reads `requestItem as InstallRequestItem`
+                    AssetBundleRequestItem assetBundleRequestItem = requestItem as AssetBundleRequestItem;
+                    if (assetBundleRequestItem != null && assetBundleRequestItem.fileStream == null)
+                        goto case RequestStatus.SaveManifest;
+                    return false;
+                }
+                case RequestStatus.WaitForReloadShaders:
+                {
+                    requestItem.status = RequestStatus.WaitForReloadShaders;
+                    AssetBundleRequestItem assetBundleRequestItem = requestItem as AssetBundleRequestItem;
+                    if (assetBundleRequestItem.customInstruction.keepWaiting)
+                        return false;
+                    if (callback != null)
+                    {
+                        foreach (Object asset in assetBundleRequestItem.cache.loadedAssets)
+                            callback(RequestEventType.Activated, asset.name, asset);
+                    }
+                    goto case RequestStatus.LoadFinished;
+                }
+                case RequestStatus.LoadAssetBundle:
+                {
+                    AssetBundleRequestItem assetBundleRequestItem;
+                    requestItem.status = RequestStatus.LoadAssetBundle;
+                    assetBundleRequestItem = requestItem as AssetBundleRequestItem;
+                    if (assetBundleRequestItem.createRequest != null)
+                    {
+                        if (!assetBundleRequestItem.createRequest.isDone)
+                            return false;
+                        assetBundleRequestItem.cache.assetBundle = assetBundleRequestItem.createRequest.assetBundle;
+                        assetBundleRequestItem.cache.isLoaded = true;
+                    }
+                    else if (StartupSettings.assetBundleTarget != AssetBundleTarget.AssetDatabase || !assetBundleRequestItem.cache.record.projectName.IsNullOrEmpty())
+                    {
+                        string path = cachePath.CombinePath(assetBundleRequestItem.cache.record.projectName + "/");
+                        if (Application.isEditor && global::System.Linq.Enumerable.Any(StartupSettings.assetBundlesForEditor, __ => __ == assetBundleRequestItem.uri))
+                        {
+                            path = editorPath;
+                            Debug.Log(path.CombinePath(assetBundleRequestItem.uri));
+                        }
+                        path = path.CombinePath(_cacheEnabled ? assetBundleRequestItem.cache.record.hash.ToString() : assetBundleRequestItem.uri);
+                        if (_cacheEnabled && !global::System.IO.File.Exists(path))
+                        {
+                            Debug.LogError("File not found!:" + path);
+                            requestItem.status = RequestStatus.FileNotFound;
+                            return false;
+                        }
+                        byte[] buffer;
+                        // inlined AssetBundleMemory.GetBuffer
+                        if (AssetBundleMemory.GetBuffer(requestItem.uri, out buffer))
+                        {
+                            Debug.Log("AssetBundle in memory: " + requestItem.uri);
+                            assetBundleRequestItem.createRequest = AssetBundle.LoadFromMemoryAsync(buffer);
+                        }
+                        else
+                        {
+                            assetBundleRequestItem.createRequest = AssetBundle.LoadFromFileAsync(path);
+                        }
+                        if (assetBundleRequestItem.createRequest == null)
+                            Debug.LogError("File not found!: " + requestItem.uri);
+                        return false;
+                    }
+                    if (assetBundleRequestItem.loadAllAssets)
+                        goto case RequestStatus.LoadAsset;
+                    goto case RequestStatus.LoadFinished;
+                }
+                case RequestStatus.LoadAsset:
+                {
+                    requestItem.status = RequestStatus.LoadAsset;
+                    AssetBundleRequestItem assetBundleRequestItem = requestItem as AssetBundleRequestItem;
+                    AssetRequestItem assetRequestItem = requestItem as AssetRequestItem;
+                    if (assetBundleRequestItem != null)
+                    {
+                        AssetBundleCache cache = assetBundleRequestItem.cache;
+                        if (StartupSettings.assetBundleTarget == AssetBundleTarget.AssetDatabase && cache.record.projectName.IsNullOrEmpty())
+                        {
+                            string[] paths = Sequencer.editorProxy.GetAssetPathsFromAssetBundle(requestItem.uri);
+                            if (paths.Length == 0)
+                            {
+                                Debug.LogError("File not found!:" + requestItem.uri);
+                                requestItem.status = RequestStatus.FileNotFound;
+                            }
+                            for (int i = 0; i < paths.Length; i++)
+                            {
+                                if (cache.loadedAssets[i] == null)
+                                {
+                                    cache.loadedAssets[i] = Sequencer.editorProxy.LoadMainAssetAtPath(paths[i]);
+                                    Sequencer.editorProxy.ReloadVariantAssets(cache.loadedAssets[i], assetBundleRequestItem.variants);
+                                }
+                                else if (cache.loadedAssets[i] == _waitObject)
+                                {
+                                    return false;
+                                }
+                            }
+                            if (callback != null)
+                            {
+                                foreach (Object asset in cache.loadedAssets)
+                                    callback(RequestEventType.Activated, asset.name, asset);
+                            }
+                            goto case RequestStatus.LoadFinished;
+                        }
+                        if (assetBundleRequestItem.assetRequest != null)
+                        {
+                            if (!assetBundleRequestItem.assetRequest.isDone)
+                                return false;
+                            cache.loadedAssets = (assetBundleRequestItem.assetRequest as AssetBundleRequest).allAssets;
+                            if (Application.isEditor)
+                            {
+                                foreach (Object asset in cache.loadedAssets)
+                                    Sequencer.editorProxy.ReloadEditorShaders(asset);
+                            }
+                            if (callback != null)
+                            {
+                                foreach (Object asset in cache.loadedAssets)
+                                    callback(RequestEventType.Activated, asset.name, asset);
+                            }
+                            goto case RequestStatus.LoadFinished;
+                        }
+                        if (!assetBundleRequestItem.cache.canLoadAsset)
+                            return false;
+                        if (cache.allLoaded)
+                        {
+                            if (callback != null)
+                            {
+                                foreach (Object asset in cache.loadedAssets)
+                                    callback(RequestEventType.Activated, asset.name, asset);
+                            }
+                            goto case RequestStatus.LoadFinished;
+                        }
+                        assetBundleRequestItem.assetRequest = assetBundleRequestItem.cache.assetBundle.LoadAllAssetsAsync();
+                        Debug.Log(string.Format("Loading all assets: {0} (Time: {1})", requestItem.uri, Time.realtimeSinceStartup));
+                        return false;
+                    }
+                    if (assetRequestItem == null)
+                        return false;
+                    if (assetRequestItem.resourceRequest != null)
+                    {
+                        if (!assetRequestItem.resourceRequest.isDone)
+                            return false;
+                        if (!SceneDatabase.Contains(assetRequestItem.uri) && callback != null)
+                        {
+                            Object asset;
+                            AsyncOperation operation = assetRequestItem.resourceRequest;
+                            if (operation is AssetBundleRequest assetBundleRequest)
+                                asset = assetBundleRequest.asset;
+                            else if (operation is ResourceRequest resourceRequest)
+                                asset = resourceRequest.asset;
+                            else
+                                asset = null;
+                            if (Application.isEditor)
+                                Sequencer.editorProxy.ReloadEditorShaders(asset);
+                            callback(RequestEventType.Activated, asset.name, asset);
+                        }
+                        goto case RequestStatus.LoadFinished;
+                    }
+                    AssetBundleCache assetCache = null;
+                    if (!string.IsNullOrEmpty(assetRequestItem.assetBundleName))
+                    {
+                        assetCache = AssetBundleCache.Get(assetRequestItem.assetBundleName, true);
+                        if (assetCache == null || !assetCache.canLoadAsset)
+                            return false;
+                    }
+                    if (SceneDatabase.Contains(assetRequestItem.uri))
+                    {
+                        if (StartupSettings.assetBundleTarget == AssetBundleTarget.AssetDatabase && assetRequestItem.assetBundleName != null && GetAssetBundleRecord(assetRequestItem.manifest, assetRequestItem.assetBundleName) != null)
+                            assetRequestItem.resourceRequest = Sequencer.editorProxy.LoadLevelAdditiveAsyncInPlayMode(assetRequestItem.uri);
+                        else
+                            assetRequestItem.resourceRequest = global::UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(assetRequestItem.uri, global::UnityEngine.SceneManagement.LoadSceneMode.Additive);
+                        return false;
+                    }
+                    if (assetCache == null)
+                    {
+                        assetRequestItem.resourceRequest = Resources.LoadAsync(assetRequestItem.uri);
+                        return false;
+                    }
+                    int index = global::System.Array.IndexOf(assetCache.record.assetPaths, assetRequestItem.uri);
+                    if (index == -1)
+                    {
+                        Debug.LogWarning("Don't match asset uri: " + assetRequestItem.uri);
+                    }
+                    else if (assetCache.loadedAssets[index] != null)
+                    {
+                        Object asset = assetCache.loadedAssets[index];
+                        if (asset == _waitObject)
+                            return false;
+                        if (callback != null)
+                            callback(RequestEventType.Activated, asset.name, asset);
+                        goto case RequestStatus.LoadFinished;
+                    }
+                    if (requestItem.manifest != null)
+                    {
+                        if (!assetCache.canLoadAsset)
+                            return false;
+                        if (assetCache.record.assetPaths.Length == 1)
+                            assetRequestItem.resourceRequest = assetCache.assetBundle.LoadAllAssetsAsync();
+                        else
+                            assetRequestItem.resourceRequest = assetCache.assetBundle.LoadAssetAsync(assetRequestItem.uri);
+                        assetCache.loadedAssets[index] = _waitObject;
+                        return false;
+                    }
+                    Object editorAsset = Sequencer.editorProxy.LoadMainAssetAtPath(assetRequestItem.uri);
+                    if (callback != null)
+                        callback(RequestEventType.Activated, editorAsset.name, editorAsset);
+                    goto case RequestStatus.LoadFinished;
+                }
+                case RequestStatus.LoadFinished:
+                {
+                    requestItem.status = RequestStatus.LoadFinished;
+                    if (requestItem is AssetBundleRequestItem)
+                    {
+                        AssetBundleRequestItem assetBundleRequestItem = (AssetBundleRequestItem)requestItem;
+                        Debug.Log(string.Format("AssetBundleFinished: {0} (Time: {1})", requestItem.uri, Time.realtimeSinceStartup));
+                        if (callback != null)
+                            callback(RequestEventType.Cached, requestItem.uri, assetBundleRequestItem.cache.assetBundle);
+                        if (assetBundleRequestItem.fileStream != null)
+                            goto case RequestStatus.WaitForCacheWriting;
+                    }
+                    else if (requestItem is AssetRequestItem)
+                    {
+                        AssetRequestItem assetRequestItem = (AssetRequestItem)requestItem;
+                        if (!string.IsNullOrEmpty(assetRequestItem.assetBundleName))
+                            AssetBundleCache.ReleaseFromAssetBundleName(assetRequestItem.assetBundleName, false);
+                    }
+                    goto case RequestStatus.Complete;
+                }
+                case RequestStatus.Complete:
+                    requestItem.status = RequestStatus.Complete;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+		public static string RemapVariantName(string assetBundleName, string[] variants) {
+            if (variants != null && variants.Length != 0)
+            {
+                string name = _defaultManifest.FindMatchAssetBundleNameWithVariants(assetBundleName, variants);
+                if (StartupSettings.assetBundleTarget == AssetBundleTarget.AssetDatabase && name == assetBundleName)
+                    return Sequencer.editorProxy.FindMatchAssetBundleNameWithVariants(name, variants);
+                return name;
+            }
+            return assetBundleName;
+        }
+		public static void OnResumeSingleton() {
+            foreach (ReferenceObject referenceObject in StartupSettings.permanentObjects)
+            {
+                string path = referenceObject.path;
+                if (!string.IsNullOrEmpty(path))
+                    UnloadAssetBundleAtAssetPath(path);
+            }
+            AssetBundleCache.Destroy();
+        }
+		private static void OnDestroy() {
+            foreach (ReferenceObject referenceObject in StartupSettings.permanentObjects)
+            {
+                string path = referenceObject.path;
+                if (!string.IsNullOrEmpty(path))
+                    UnloadAssetBundleAtAssetPath(path);
+            }
+            foreach (PreloadRequest preloadRequest in StartupSettings.preloadRequests)
+            {
+                string assetBundleName = preloadRequest.assetBundleName;
+                if (string.IsNullOrEmpty(assetBundleName))
+                    continue;
+                AssetBundleRecord record = GetAssetBundleRecord(_defaultManifest, assetBundleName);
+                if (StartupSettings.assetBundleTarget != AssetBundleTarget.AssetDatabase || !record.projectName.IsNullOrEmpty())
+                    AssetBundleCache.ReleaseFromAssetBundleName(assetBundleName, false);
+            }
+            AssetBundleCache.Destroy();
+        }
 		public AssetManager() { }
-		static AssetManager() { /*@B AssetAssistant:0x60000AA*/ throw null; }
+		static AssetManager() {
+            // Timeout = 60, _preallocatedBuffer = new byte[0x40000], _cacheEnabled = true: all already field initialisers.
+        }
 		public delegate void OnRequestError();
 	}
 }
