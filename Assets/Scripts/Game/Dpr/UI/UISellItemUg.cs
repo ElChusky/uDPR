@@ -9,7 +9,7 @@ namespace Dpr.UI
 	public class UISellItemUg : global::Dpr.UI.UIWindow
 	{
 		private const string BagPocketMessageFileName = "ss_bag_pocket";
-		private static readonly string[] CategoryNameMessageLabels;
+		private static readonly string[] CategoryNameMessageLabels = new string[] { "SS_bag_pocket_017", "SS_bag_pocket_018", "SS_bag_pocket_024", "SS_bag_pocket_019", "SS_bag_pocket_020", "SS_bag_pocket_021", "SS_bag_pocket_022", "", "SS_bag_pocket_023" };
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIButtonSelector categorySelector;
 		[global::UnityEngine.SerializeField]
@@ -32,13 +32,13 @@ namespace Dpr.UI
 		private global::Dpr.UI.UgItemSelectAmount selectAmount;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.BagIconPanel bagIconPanel;
-		private global::System.Collections.Generic.Dictionary<int, global::Pml.UgFather.UgFatherDataManager.SellItemData> sellItemDataTable;
-		private global::System.Collections.Generic.Dictionary<int, int> convertItemIdTable;
-		private global::System.Collections.Generic.List<global::Dpr.Item.ItemInfo> itemInfoList;
+		private global::System.Collections.Generic.Dictionary<int, global::Pml.UgFather.UgFatherDataManager.SellItemData> sellItemDataTable = new global::System.Collections.Generic.Dictionary<int, global::Pml.UgFather.UgFatherDataManager.SellItemData>();
+		private global::System.Collections.Generic.Dictionary<int, int> convertItemIdTable = new global::System.Collections.Generic.Dictionary<int, int>();
+		private global::System.Collections.Generic.List<global::Dpr.Item.ItemInfo> itemInfoList = new global::System.Collections.Generic.List<global::Dpr.Item.ItemInfo>();
 		private global::Pml.UgFather.UgFatherDataManager dataManagerPtr;
 		private global::UnityEngine.Coroutine removeNewIconCoroutine;
-		private global::Dpr.UI.KeyGuideCreater keyguide;
-		private global::Dpr.SubContents.ShowMessageWindow msgWindow;
+		private global::Dpr.UI.KeyGuideCreater keyguide = new global::Dpr.UI.KeyGuideCreater();
+		private global::Dpr.SubContents.ShowMessageWindow msgWindow = new global::Dpr.SubContents.ShowMessageWindow();
 		private global::Dpr.Message.MessageMsgFile shopMsgFile;
 		private global::Dpr.UI.BagCategoryButton currentCategoryButton;
 		private global::Dpr.UI.BagItemButton currentSelectItem;
@@ -46,11 +46,32 @@ namespace Dpr.UI
 		private global::Dpr.UI.UISellItemUg.MenuState state;
 		private int nowAmount;
 		private int getUgItemCount;
-		public override void OnCreate() { /*@B 0x6005CB3*/ throw null; }
+		public override void OnCreate() {
+			base.OnCreate();
+			dataManagerPtr = global::Pml.UgFather.UgFatherDataManager.Instance;
+			ugItemPanel.Initialize();
+			bagIconPanel.Initialize(global::ItemWork.GetBagIconSex());
+			scrollView.Initialize(OnRequiredItemData, OnSelectItemScrollViewItem, OnUnSelectItemScrollViewItem);
+			selectAmount.Hide();
+			state = MenuState.Wait;
+			SetupItemData();
+			shopMsgFile = MessageManager.Instance.GetMsgFile("ss_fld_shop");
+			msgWindow.Setup("dlp_underground", global::PlayerWork.config.msg_speed, false);
+		}
 		public void Open(global::UIWindowID prevWindowId = (global::UIWindowID)(-1)) {
 			Sequencer.Start(OpOpen(prevWindowId));
 		}
-		private global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) { /*@B 0x6005CB5*/ throw null; }
+		private global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) {
+			OnOpen(prevWindowId);
+			keyguide.Open(SubContentsPatternID.UgSellItem, transform, false);
+			categorySelector.Initialize(OnSelectCategoryButton, OnUnSelectCategoryButton);
+			SetupCategoryData();
+			yield return OpPlayOpenWindowAnimation(_prevWindowId, null);
+			Sequencer.update -= OnUpdate;
+			Sequencer.update += OnUpdate;
+			state = MenuState.SelectItem;
+			_input.inputEnabled = true;
+		}
 		private void SetupCategoryData() {
 			ItemInfo.CategoryType[] categoryArray = dataManagerPtr.CreateSellItemCategoryArray();
 
@@ -182,7 +203,14 @@ namespace Dpr.UI
 			state = MenuState.OpenConfirm;
 			nowAmount = amount;
 		}
-		private void OnUpdateStateSelectAmount() { /*@B 0x6005CBE*/ throw null; }
+		private void OnUpdateStateSelectAmount() {
+			selectAmount.OnUpdate();
+			if (IsPushButton(UIManager.ButtonB, false))
+			{
+				state = MenuState.SelectItem;
+				msgWindow.CloseMsgWindow();
+			}
+		}
 		private void OnUpdateStateConfirm() {
 			MessageWordSetHelper.SetUgItemNameWord(0, sellItemData.ugItemID, getUgItemCount);
 			MessageWordSetHelper.SetDigitWord(1, getUgItemCount);
@@ -361,8 +389,8 @@ namespace Dpr.UI
 			UIManager.Instance._ReleaseUIWindow(this);
 			onClosed_?.Invoke(this);
 		}
-		public UISellItemUg() { /*@B 0x6005CD4*/ throw null; }
-		static UISellItemUg() { /*@B 0x6005CD5*/ throw null; }
+		public UISellItemUg() { }
+		static UISellItemUg() { }
 		private enum MenuState
 		{
 			Wait = 0,

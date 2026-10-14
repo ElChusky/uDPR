@@ -13,22 +13,52 @@ namespace Dpr.UI
 		private global::Dpr.UI.UgItemSelectAmount selectUgItemAmount;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.SellUgItemPanel ugItemPanel;
-		private global::System.Collections.Generic.Dictionary<int, global::Pml.UgFather.UgFatherDataManager.SellItemData> buyItemDataTable;
-		private global::System.Collections.Generic.List<global::Dpr.UI.ShopUgExchangeItemItem.Param> _itemParams;
+		private global::System.Collections.Generic.Dictionary<int, global::Pml.UgFather.UgFatherDataManager.SellItemData> buyItemDataTable = new global::System.Collections.Generic.Dictionary<int, global::Pml.UgFather.UgFatherDataManager.SellItemData>();
+		private global::System.Collections.Generic.List<global::Dpr.UI.ShopUgExchangeItemItem.Param> _itemParams = new global::System.Collections.Generic.List<global::Dpr.UI.ShopUgExchangeItemItem.Param>();
 		private global::Pml.UgFather.UgFatherDataManager dataManagerPtr;
 		private global::Dpr.UI.UIShopUg.UgShopParam _param;
-		private global::Dpr.SubContents.ShowMessageWindow msgWindow;
+		private global::Dpr.SubContents.ShowMessageWindow msgWindow = new global::Dpr.SubContents.ShowMessageWindow();
 		private global::Dpr.Message.MessageMsgFile shopMsgFile;
-		private global::Dpr.UI.KeyGuideCreater keyguide;
+		private global::Dpr.UI.KeyGuideCreater keyguide = new global::Dpr.UI.KeyGuideCreater();
 		private global::Dpr.UI.ShopUgExchangeItemItem _selectShopUgItem;
 		private global::Pml.UgFather.UgFatherDataManager.SellItemData buyItemData;
 		private global::Dpr.UI.UIShopUg.MenuState state;
 		private int nowAmount;
 		private int tardeUgItemCount;
 		private bool isPrevSelectWazaMachine;
-		public override void OnCreate() { /*@B 0x6005CFD*/ throw null; }
-		public void Open(global::Dpr.UI.UIShopUg.UgShopParam param, global::UIWindowID prevWindowId = (global::UIWindowID)(-1)) { /*@B 0x6005CFE*/ throw null; }
-		private global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) { /*@B 0x6005CFF*/ throw null; }
+		public override void OnCreate() {
+			base.OnCreate();
+			dataManagerPtr = UgFatherDataManager.Instance;
+			ugItemPanel.Initialize();
+			selectUgItemAmount.Hide();
+			state = MenuState.Wait;
+			shopMsgFile = MessageManager.Instance.GetMsgFile("ss_fld_shop");
+			_itemListScrollView.Initialize(OnRequiredItemData, OnSelectItemScrollViewItem, OnUnSelectItemScrollViewItem);
+			msgWindow.Setup("dlp_underground", global::PlayerWork.config.msg_speed, false);
+		}
+		public void Open(global::Dpr.UI.UIShopUg.UgShopParam param, global::UIWindowID prevWindowId = (global::UIWindowID)(-1)) {
+			_param = param;
+			Sequencer.Start(OpOpen(prevWindowId));
+		}
+		private global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) {
+			OnOpen(prevWindowId);
+			keyguide.Open(SubContentsPatternID.ShopUg, transform, false);
+			AudioManager.Instance.SetBgmEvent(EVENTS.DUCKON_BGM, false);
+			_cursor.transform.SetParent(transform, false);
+			_cursor.SetActive(false);
+			_selectShopUgItem = null;
+			dataManagerPtr.SetupUgShopItems(_param.shopType, _param.randomSheed, _param.dayOfWeek, _itemParams);
+			CreateBuyItemDataTable();
+			_itemListScrollView.Setup(_itemParams.Count, 0, 0f, false);
+			_wazaItemDescriptionType = 0;
+			_itemDescriptionPanel.SetWazaDescriptionType(0);
+			yield return OpPlayOpenWindowAnimation(_prevWindowId, null);
+			Sequencer.update -= OnUpdate;
+			Sequencer.update += OnUpdate;
+			state = MenuState.SelectItem;
+			_input.inputEnabled = true;
+			_cursor.SetActive(true);
+		}
 		private void CreateBuyItemDataTable() {
 			buyItemDataTable.Clear();
 			foreach (var param in _itemParams)
@@ -69,7 +99,13 @@ namespace Dpr.UI
 
 			HideWazaDescription(); // inlined, shared flag 0x4cbe6e1
 		}
-		private void HideWazaDescription() { /*@B 0x6005D03*/ throw null; }
+		private void HideWazaDescription() {
+			if (_itemParams.Count > 0 && _wazaItemDescriptionType != 0)
+			{
+				_wazaItemDescriptionType = 0;
+				_itemDescriptionPanel.SetWazaDescriptionType(0);
+			}
+		}
 		private bool OnUpdateInput() {
 			if (msgWindow.IsOpen)
 				return true;
@@ -176,7 +212,14 @@ namespace Dpr.UI
 			state = MenuState.OpenConfirm;
 			nowAmount = buyItemData.unit * amount;
 		}
-		private void OnUpdateStateSelectAmount() { /*@B 0x6005D08*/ throw null; }
+		private void OnUpdateStateSelectAmount() {
+			selectUgItemAmount.OnUpdate();
+			if (IsPushButton(UIManager.ButtonB, false))
+			{
+				state = MenuState.SelectItem;
+				msgWindow.CloseMsgWindow();
+			}
+		}
 		private void OnUpdateStateConfirm() {
 			MessageWordSetHelper.SetUgItemNameWord(0, _selectShopUgItem.param.ugItemID, nowAmount);
 			MessageWordSetHelper.SetDigitWord(1, nowAmount);
@@ -249,8 +292,13 @@ namespace Dpr.UI
 					data.haveCount = UgItemWork.GetItemInfo(tradeUgItemId).count;
 			}
 		}
-		private void OnFinishSellProcess() { /*@B 0x6005D0C*/ throw null; }
-		private bool CheckIsEmptySelectItem() { /*@B 0x6005D0D*/ throw null; }
+		private void OnFinishSellProcess() {
+			state = MenuState.SelectItem;
+			nowAmount = 0;
+		}
+		private bool CheckIsEmptySelectItem() {
+			return _itemParams.Count < 1;
+		}
 		private void OnRequiredItemData(global::Dpr.UI.IUIButton button) {
 			var shopItem = button as ShopUgExchangeItemItem; // no null test in the binary (@01dd019c)
 			shopItem.Setup(_itemParams[shopItem.index]);
@@ -265,7 +313,32 @@ namespace Dpr.UI
 			_cursor.transform.SetParent(shopItem.transform, false);
 			UpdateItemUI();
 		}
-		private void UpdateItemUI() { /*@B 0x6005D10*/ throw null; }
+		private void UpdateItemUI() {
+			_itemDescriptionPanel.Set(ShopType.Underground, _selectShopUgItem);
+			if (_selectShopUgItem.IsUnderGroundItem())
+			{
+				_itemDescriptionPanel.SetWazaDescriptionType(_wazaItemDescriptionType);
+				if (isPrevSelectWazaMachine)
+				{
+					keyguide.ReplaceKeyguid(SubContentsPatternID.ShopUg);
+					isPrevSelectWazaMachine = false;
+				}
+			}
+			else if (_selectShopUgItem.GetItemInfo().IsWazaMachine())
+			{
+				if (!isPrevSelectWazaMachine)
+				{
+					keyguide.ReplaceKeyguid(SubContentsPatternID.ShopUg_WazaMachine);
+					isPrevSelectWazaMachine = true;
+				}
+			}
+			else if (isPrevSelectWazaMachine)
+			{
+				keyguide.ReplaceKeyguid(SubContentsPatternID.ShopUg);
+				isPrevSelectWazaMachine = false;
+			}
+			ugItemPanel.ShowSellItemPanel(buyItemDataTable[_selectShopUgItem.param.ugItemID]);
+		}
 		private void OnUnSelectItemScrollViewItem(global::Dpr.UI.IUIButton button) {
 			button.UnSelect();
 		}
@@ -280,7 +353,7 @@ namespace Dpr.UI
 			onClosed_?.Invoke(this);
 			UIManager.Instance.ClearCachedSprites(); // keyguide is never Released here (shipped)
 		}
-		public UIShopUg() { /*@B 0x6005D14*/ throw null; }
+		public UIShopUg() { }
 		public class UgShopParam
 		{
 			public global::Pml.UgFather.UgFatherDataManager.UgShopType shopType;

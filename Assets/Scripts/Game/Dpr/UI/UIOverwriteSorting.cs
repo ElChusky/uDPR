@@ -6,8 +6,14 @@ namespace Dpr.UI
 	{
 		private global::UnityEngine.Canvas _canvas;
 		private int _sortingOrder;
-		private void Awake() { /*@B 0x600516E*/ throw null; }
-		private void OnEnable() { /*@B 0x600516F*/ throw null; }
+		private void Awake() {
+			_canvas = GetComponent<global::UnityEngine.Canvas>();
+			_sortingOrder = _canvas.sortingOrder;
+		}
+		private void OnEnable() {
+			if (_canvas.overrideSorting)
+				_canvas.sortingOrder = _canvas.rootCanvas.sortingOrder + _sortingOrder;
+		}
 		public UIOverwriteSorting() { }
 	}
 }

@@ -6,7 +6,7 @@ namespace Dpr.UI
 {
 	public class UISeal : global::Dpr.UI.UIWindow
 	{
-		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos;
+		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos = new global::UnityEngine.Vector2(0f, 100f);
 		public const string QuestionCapsuleActionMessageLabel = "DLP_stickers_003";
 		public const string CantAffixSealMoreMessageLabel = "DLP_stickers_005";
 		public const string QuestionRemoveAllAffixSealsMessageLabel = "DLP_stickers_007";
@@ -37,8 +37,8 @@ namespace Dpr.UI
 		private global::Dpr.UI.SealEditSceneController sealEditSceneController;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform contextMenuPosition;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private readonly int _animStateIn = global::UnityEngine.Animator.StringToHash("in");
+		private readonly int _animStateOut = global::UnityEngine.Animator.StringToHash("out");
 		private global::Dpr.UI.UIMsgWindowController msgWindowController;
 		private global::Dpr.UI.Keyguide keyguide;
 		private global::Dpr.UI.CapsuleInfo[] capsuleInfos;
@@ -708,8 +708,8 @@ namespace Dpr.UI
 			};
 			contextMenu.Open(param);
 		}
-		public UISeal() { /*@B 0x6005A34*/ throw null; }
-		static UISeal() { /*@B 0x6005A35*/ throw null; }
+		public UISeal() { }
+		static UISeal() { }
 		private enum ActionType
 		{
 			None = 0,

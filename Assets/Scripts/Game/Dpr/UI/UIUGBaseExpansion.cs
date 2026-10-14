@@ -16,7 +16,7 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIText expansionInfoText;
 		private global::Pml.UgFather.UgFatherDataManager.RequiredExpansionItemData[] requiredItemDataArray;
-		private global::Dpr.SubContents.ShowMessageWindow msgWindow;
+		private global::Dpr.SubContents.ShowMessageWindow msgWindow = new global::Dpr.SubContents.ShowMessageWindow();
 		private bool canExpansion;
 		public override void OnCreate() {
 			base.OnCreate();
@@ -126,7 +126,7 @@ namespace Dpr.UI
 			UIManager.Instance._ReleaseUIWindow(this);
 			onClosed_?.Invoke(this);
 		}
-		public UIUGBaseExpansion() { /*@B 0x6005D25*/ throw null; }
+		public UIUGBaseExpansion() { }
 		[global::System.Serializable]
 		public struct UIRequiredItem
 		{

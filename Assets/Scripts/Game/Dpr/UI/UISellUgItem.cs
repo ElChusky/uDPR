@@ -38,11 +38,31 @@ namespace Dpr.UI
 		private global::Dpr.UI.UISellUgItem.MenuState state;
 		private int nowAmount;
 		private int getUgItemCount;
-		public override void OnCreate() { /*@B 0x6005CDC*/ throw null; }
+		public override void OnCreate() {
+			base.OnCreate();
+			dataManagerPtr = UgFatherDataManager.Instance;
+			ugItemPanel.Initialize();
+			scrollView.Initialize(OnRequiredItemData, OnSelectItemScrollViewItem, OnUnSelectItemScrollViewItem);
+			selectAmount.Hide();
+			state = MenuState.Wait;
+			shopMsgFile = MessageManager.Instance.GetMsgFile("ss_fld_shop");
+			msgWindow.Setup("dlp_underground", global::PlayerWork.config.msg_speed, false);
+		}
 		public void Open(global::UIWindowID prevWindowId = (global::UIWindowID)(-1)) {
 			Sequencer.Start(OpOpen(prevWindowId));
 		}
-		private global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) { /*@B 0x6005CDE*/ throw null; }
+		private global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) {
+			OnOpen(prevWindowId);
+			ReloadScrollView(0, 0f);
+			currentCategoryButton.SetNewIconEnable(IsIncludeNewItemInCurrentList());
+			keyguide.Open(SubContentsPatternID.UgSellItem, transform, false);
+			noDataMessageObj.SetActive(itemInfoList.Count < 1);
+			yield return OpPlayOpenWindowAnimation(prevWindowId, null);
+			Sequencer.update -= OnUpdate;
+			Sequencer.update += OnUpdate;
+			state = MenuState.SelectItem;
+			_input.inputEnabled = true;
+		}
 		private void OnUpdate(float deltaTime) {
 			if (UIManager.Instance.GetCurrentUIWindow<UIWindow>() != this)
 				return;
@@ -122,7 +142,14 @@ namespace Dpr.UI
 			state = MenuState.OpenConfirm;
 			nowAmount = amount;
 		}
-		private void OnUpdateStateSelectAmount() { /*@B 0x6005CE4*/ throw null; }
+		private void OnUpdateStateSelectAmount() {
+			selectAmount.OnUpdate();
+			if (IsPushButton(UIManager.ButtonB, false))
+			{
+				state = MenuState.SelectItem;
+				msgWindow.CloseMsgWindow();
+			}
+		}
 		private void OnUpdateStateConfirm() {
 			MessageWordSetHelper.SetUgItemNameWord(0, sellItemData.ugItemID, getUgItemCount);
 			MessageWordSetHelper.SetDigitWord(1, getUgItemCount);
@@ -266,7 +293,7 @@ namespace Dpr.UI
 			UIManager.Instance._ReleaseUIWindow(this);
 			onClosed_?.Invoke(this);
 		}
-		public UISellUgItem() { /*@B 0x6005CF7*/ throw null; }
+		public UISellUgItem() { }
 		private enum MenuState
 		{
 			Wait = 0,

@@ -11,7 +11,7 @@ namespace Dpr.UI
 		private global::UnityEngine.GameObject[] frameObjArray;
 		[global::UnityEngine.SerializeField]
 		private global::DG.Tweening.DOTweenAnimation scaleTween;
-		private global::Dpr.UI.UIInputController inputController;
+		private global::Dpr.UI.UIInputController inputController = new global::Dpr.UI.UIInputController();
 		private global::Audio.AudioManager audioManager;
 		private global::Dpr.UI.UISelectorWindow.WindowState windowState;
 		private float timer;
@@ -239,7 +239,7 @@ namespace Dpr.UI
 			if (arrowParent.activeSelf != active)
 				arrowParent.SetActive(active);
 		}
-		public UISelectorWindow() { /*@B 0x6005344*/ throw null; }
+		public UISelectorWindow() { }
 		public enum WindowItemID
 		{
 			CategorySelector = 0,

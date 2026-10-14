@@ -8,11 +8,11 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image countImage;
 		[global::UnityEngine.SerializeField]
-		private int startCount;
+		private int startCount = 10;
 		private global::DG.Tweening.DOTweenAnimation[] tweenArray;
 		private global::UnityEngine.Sprite[] countSprArray;
 		private global::UnityEngine.RectTransform imageRect;
-		private global::UnityEngine.Vector3 initScale;
+		private global::UnityEngine.Vector3 initScale = global::UnityEngine.Vector3.zero;
 		private float initAlpha;
 		private bool bIsActive;
 		private void Start() {
@@ -58,6 +58,6 @@ namespace Dpr.UI
 		private void OnDestroy() {
 			countSprArray = null;
 		}
-		public UIRemainingCountDown() { /*@B 0x600518C*/ throw null; }
+		public UIRemainingCountDown() { }
 	}
 }

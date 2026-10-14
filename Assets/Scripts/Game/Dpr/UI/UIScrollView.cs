@@ -14,9 +14,9 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIScrollView.DirectionType direction;
 		[global::UnityEngine.SerializeField]
-		private int duplicateItemCount;
+		private int duplicateItemCount = 2;
 		[global::UnityEngine.SerializeField]
-		private int beginScrollCount;
+		private int beginScrollCount = 1;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.IndexSelector indexSelector;
 		private global::System.Action<global::Dpr.UI.IUIButton> onRequiedItemData;
@@ -42,7 +42,10 @@ namespace Dpr.UI
 		private int gridItemCount;
 		private float maxScrollValue;
 		private global::Dpr.UI.IUIButton selectedItemNode;
-		private float ContentAnchorPos { get { /*@B 0x600518D*/ throw null; } }
+		private float ContentAnchorPos { get {
+			var pos = scrollRect.content.anchoredPosition;
+			return isHorizontal ? pos.x : pos.y;
+		} }
 		public int GridItemCount { get { return this.gridItemCount; } }
 		public global::System.Collections.Generic.LinkedList<global::Dpr.UI.IUIButton> ScrollItems { get { return this.scrollRectItems; } }
 		private void Awake() {
@@ -118,7 +121,13 @@ namespace Dpr.UI
                 scrollRectItems.AddLast(item.GetComponent<IUIButton>());
             }
         }
-		public void Initialize(global::System.Action<global::Dpr.UI.IUIButton> onRequiedItemData, global::System.Action<global::Dpr.UI.IUIButton> onSelectItem, global::System.Action<global::Dpr.UI.IUIButton> onUnSelectItem) { /*@B 0x6005191*/ throw null; }
+		public void Initialize(global::System.Action<global::Dpr.UI.IUIButton> onRequiedItemData, global::System.Action<global::Dpr.UI.IUIButton> onSelectItem, global::System.Action<global::Dpr.UI.IUIButton> onUnSelectItem) {
+			this.onRequiedItemData = onRequiedItemData;
+			this.onSelectItem = onSelectItem;
+			this.onUnSelectItem = onUnSelectItem;
+			selectedItemNode = null;
+			isActive = true;
+		}
 		public void Setup(int itemCount, int selectIndex = 0, float scrollPos = 0f, bool isForceScroll = false) {
             this.itemCount = itemCount;
             int rowCount = Mathf.CeilToInt((float)itemCount / gridItemCount);
@@ -445,7 +454,7 @@ namespace Dpr.UI
             Vector2 pos = scrollRect.content.anchoredPosition;
             scrollRect.content.anchoredPosition = isHorizontal ? new Vector2(value, pos.y) : new Vector2(pos.x, value);
         }
-		public UIScrollView() { /*@B 0x60051A1*/ throw null; }
+		public UIScrollView() { }
 		public enum DirectionType
 		{
 			Vertical = 0,

@@ -131,8 +131,50 @@ namespace Dpr.UI
 			msgParam = Utils.CreateMsgWindowParam("dp_poffin_main", "DP_poffin_main_171", false, false);
 			Utils.DrawMessage(msgParam, ref _messageWindow);
 		}
-		private void ContinueConfirmation() { /*@B 0x600540A*/ throw null; }
-		private void EndCooking() { /*@B 0x600540B*/ throw null; }
+		private void ContinueConfirmation() {
+			isEnableInput = false;
+			bool isCanMake = PlayerWork.poffinSaveData.isCanMakePoffin();
+			if (ItemWork.GetItemInfosByCategory(Dpr.Item.ItemInfo.CategoryType.Nuts).Count == 0 || !isCanMake)
+			{
+				EndCooking();
+			}
+			else
+			{
+				msgParam = Utils.CreateMsgWindowParam("dp_poffin_main", "DP_poffin_main_172", false, false);
+				Utils.DrawMessage(msgParam, ref _messageWindow);
+				msgParam.onFinishedShowAllMessage = () =>
+				{
+					MsgWindowManager.OpenYesNoMenu(selectIndex =>
+					{
+						OnExit.Invoke();
+						if (selectIndex == 0)
+						{
+							UIManager.Instance.CreateUIWindow<UIPofinKinomiSelect>(UIWindowID.POFIN).Open(true);
+						}
+						else
+						{
+							DOVirtual.DelayedCall(0.2f, () =>
+							{
+								UIPofinKinomiSelect.isPofinEnd = true;
+								Utils.PlayCurrentFieldBGM(true);
+							}, true);
+						}
+						global::GameManager.fieldCamera.SetActive(true);
+						_messageWindow.CloseWindow();
+					}, (ContextMenuWindow.CursorType)1, true, true, null, AK.EVENTS.UI_COMMON_DECIDE);
+				};
+			}
+		}
+		private void EndCooking() {
+			OnExit.Invoke();
+			DOVirtual.DelayedCall(0.2f, () =>
+			{
+				UIPofinKinomiSelect.isPofinEnd = true;
+				Utils.PlayCurrentFieldBGM(true);
+			}, true);
+			global::GameManager.fieldCamera.SetActive(true);
+			_messageWindow.CloseWindow();
+		}
 		private global::DG.Tweening.Tweener Enter() {
 			group.alpha = 0f;
 			pofinInfo.alpha = 0f;
@@ -167,6 +209,6 @@ namespace Dpr.UI
 			pofin3D_Demo.isEnd = true;
 			return group.DOFade(0f, 0.2f);
 		}
-		public UIPofinResult() { /*@B 0x600540E*/ throw null; }
+		public UIPofinResult() { }
 	}
 }
