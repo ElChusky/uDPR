@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public string materialName;
 		public string paramName;
 		public bool value;
-		public ModelSetBoolParam(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049D3*/ throw null; }
+		public ModelSetBoolParam(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			materialName = Macro.ParseString(macro.GetValue("materialName"));
+			paramName = Macro.ParseString(macro.GetValue("paramName"));
+			value = Macro.ParseBool(macro.GetValue("value"));
+		}
 	}
 }

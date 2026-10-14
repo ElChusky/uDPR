@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public string materialName;
 		public string paramName;
 		public global::UnityEngine.Vector3 value;
-		public ModelSetVectorParam(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049D1*/ throw null; }
+		public ModelSetVectorParam(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			materialName = Macro.ParseString(macro.GetValue("materialName"));
+			paramName = Macro.ParseString(macro.GetValue("paramName"));
+			value = Macro.ParseVector3(macro.GetValue("value"));
+		}
 	}
 }

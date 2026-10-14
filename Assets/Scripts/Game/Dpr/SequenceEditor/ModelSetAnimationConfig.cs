@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ModelSetAnimationConfig : global::Dpr.SequenceEditor.Macro
 	{
 		public string file;
-		public ModelSetAnimationConfig(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049D5*/ throw null; }
+		public ModelSetAnimationConfig(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			file = Macro.ParseString(macro.GetValue("file"));
+		}
 	}
 }

@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public string node;
 		public bool isAnimScl;
 		public bool isLocalScl;
-		public Old3DSoundAttachTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049F3*/ throw null; }
+		public Old3DSoundAttachTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), true);
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			isAnimScl = Macro.ParseBool(macro.GetValue("isAnimScl"));
+			isLocalScl = Macro.ParseBool(macro.GetValue("isLocalScl"));
+		}
 	}
 }

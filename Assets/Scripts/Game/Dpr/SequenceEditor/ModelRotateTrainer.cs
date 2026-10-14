@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public float ofs;
 		public bool vertical;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public ModelRotateTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049C4*/ throw null; }
+		public ModelRotateTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			ofs = Macro.ParseFloat(macro.GetValue("ofs"));
+			vertical = Macro.ParseBool(macro.GetValue("vertical"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

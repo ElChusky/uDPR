@@ -4,6 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-1109088652), "pink", "", "")]
 	public class ModelSpMoveReset : global::Dpr.SequenceEditor.Macro
 	{
-		public ModelSpMoveReset(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049DB*/ throw null; }
+		public ModelSpMoveReset(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+		}
 	}
 }

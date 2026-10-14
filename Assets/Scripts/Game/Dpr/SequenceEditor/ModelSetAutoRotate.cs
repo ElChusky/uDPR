@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ModelSetAutoRotate : global::Dpr.SequenceEditor.Macro
 	{
 		public bool isEnable;
-		public ModelSetAutoRotate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049CD*/ throw null; }
+		public ModelSetAutoRotate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), true);
+		}
 	}
 }

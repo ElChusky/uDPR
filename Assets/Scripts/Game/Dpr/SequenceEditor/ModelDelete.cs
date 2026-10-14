@@ -4,6 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(1872424259), "pink", "", "")]
 	public class ModelDelete : global::Dpr.SequenceEditor.Macro
 	{
-		public ModelDelete(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049BC*/ throw null; }
+		public ModelDelete(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+		}
 	}
 }

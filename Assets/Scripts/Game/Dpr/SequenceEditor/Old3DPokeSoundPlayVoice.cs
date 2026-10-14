@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public string node;
 		public global::Dpr.SequenceEditor.VOICE_TYPE playType;
 		public string voiceName;
-		public Old3DPokeSoundPlayVoice(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049F6*/ throw null; }
+		public Old3DPokeSoundPlayVoice(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			playType = Macro.Parse_VOICE_TYPE(macro.GetValue("playType"));
+			voiceName = Macro.ParseString(macro.GetValue("voiceName"));
+		}
 	}
 }

@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_TR_TEX type;
 		public string matName;
 		public int texNo;
-		public ModelReplaceTextureTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049DA*/ throw null; }
+		public ModelReplaceTextureTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			type = Macro.Parse_SEQ_DEF_TR_TEX(macro.GetValue("type"));
+			matName = Macro.ParseString(macro.GetValue("matName"));
+			texNo = Macro.ParseInt(macro.GetValue("texNo"));
+		}
 	}
 }

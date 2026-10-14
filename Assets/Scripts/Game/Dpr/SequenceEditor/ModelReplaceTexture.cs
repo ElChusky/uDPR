@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public string file;
 		public string matName;
 		public int texNo;
-		public ModelReplaceTexture(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049D9*/ throw null; }
+		public ModelReplaceTexture(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			file = Macro.ParseString(macro.GetValue("file"));
+			matName = Macro.ParseString(macro.GetValue("matName"));
+			texNo = Macro.ParseInt(macro.GetValue("texNo"));
+		}
 	}
 }

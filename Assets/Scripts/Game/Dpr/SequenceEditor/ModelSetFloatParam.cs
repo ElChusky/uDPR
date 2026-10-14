@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public string materialName;
 		public string paramName;
 		public float value;
-		public ModelSetFloatParam(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049D2*/ throw null; }
+		public ModelSetFloatParam(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			materialName = Macro.ParseString(macro.GetValue("materialName"));
+			paramName = Macro.ParseString(macro.GetValue("paramName"));
+			value = Macro.ParseFloat(macro.GetValue("value"));
+		}
 	}
 }
