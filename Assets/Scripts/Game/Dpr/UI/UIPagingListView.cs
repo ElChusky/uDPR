@@ -17,7 +17,7 @@ namespace Dpr.UI
 		private int contentsItemCount;
 		private global::System.Collections.Generic.List<global::Dpr.UI.IUIButton> itemButtonList;
 		public event global::System.Action<global::Dpr.UI.IUIButton> OnRequiredItemData;
-		public int PageIndex { get { /*@B 0x6005173*/ throw null; } }
+		public int PageIndex { get { return pagingIndexSelector.CurrentIndex; } }
 		public int PageCount { get; private set; }
 		public global::Dpr.UI.IUIButton SelectedItem { get; private set; }
 		public void Initialize() {

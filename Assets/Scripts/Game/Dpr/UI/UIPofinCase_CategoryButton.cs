@@ -9,7 +9,7 @@ namespace Dpr.UI
 		public global::System.Action OnEnableCallback;
 		private global::UnityEngine.UI.Image image;
 		private global::Dpr.UI.UIText text;
-		private static readonly global::UnityEngine.Color OffColor;
+		private static readonly global::UnityEngine.Color OffColor = new global::UnityEngine.Color32(200, 200, 200, 255);
 		public global::UnityEngine.Sprite SelectedImage;
 		public global::UnityEngine.Sprite UnselectedImage;
 		public bool isOn { get; private set; }
@@ -31,6 +31,6 @@ namespace Dpr.UI
 			isOn = false;
 		}
 		public UIPofinCase_CategoryButton() { }
-		static UIPofinCase_CategoryButton() { /*@B 0x60053C6*/ throw null; }
+		static UIPofinCase_CategoryButton() { }
 	}
 }

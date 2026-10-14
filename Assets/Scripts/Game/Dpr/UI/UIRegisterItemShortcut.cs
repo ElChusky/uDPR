@@ -20,23 +20,23 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image[] arrowImages;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color unselectArrowColor;
+		private global::UnityEngine.Color unselectArrowColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color selectArrowColor;
+		private global::UnityEngine.Color selectArrowColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite unselectButtonBaseSprite;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite selectButtonBaseSprite;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite disableButtonBaseSprite;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private readonly int _animStateIn = global::UnityEngine.Animator.StringToHash("in");
+		private readonly int _animStateOut = global::UnityEngine.Animator.StringToHash("out");
 		private global::Dpr.UI.UIMsgWindowController msgWindowController;
 		private global::Dpr.UI.UIInputController inputController;
 		private global::Dpr.UI.UIRegisterItemShortcut.BootType bootType;
 		private ushort registerItemNo;
 		private global::System.Action<ushort> onUseCallBack;
-		private int selectIndex;
+		private int selectIndex = -1;
 		private bool isAllRegistered;
 		public static ushort GetHighPriorityShortcutItemNo() {
             // fully unrolled over the 4 shortcut slots @01a1f8f0
@@ -233,7 +233,7 @@ namespace Dpr.UI
                 msgWindowController.OpenMsgWindow(UIMsgWindowController.MessageFileType.Bag, ResultRegisterItemMessageLabel, true, false, null, () => Close(onClosed));
             }
         }
-		public UIRegisterItemShortcut() { /*@B 0x60058FD*/ throw null; }
+		public UIRegisterItemShortcut() { }
 		private enum BootType
 		{
 			Register = 0,

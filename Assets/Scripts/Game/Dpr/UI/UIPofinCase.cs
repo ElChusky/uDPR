@@ -12,7 +12,7 @@ namespace Dpr.UI
 {
 	public class UIPofinCase : global::Dpr.UI.UIWindow
 	{
-		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos;
+		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos = new global::UnityEngine.Vector2(0f, 100f);
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIPofinCase_CategorySelector categorySelector;
 		[global::UnityEngine.SerializeField]
@@ -32,7 +32,7 @@ namespace Dpr.UI
 		private global::XLSXContent.PoffinResult.SheetSheet1[] poffinResultDatas;
 		private global::DPData.PoffinData[] poffinDatas;
 		private int selectedIndex;
-		public int selectPartyIndex;
+		public int selectPartyIndex = -1;
 		private float scrollPos;
 		private global::Dpr.UI.UIPofinCase_ItemButton currentItemButton;
 		private global::Dpr.Message.MessageMsgFile poffinMainMsgFile;
@@ -142,7 +142,14 @@ namespace Dpr.UI
 				}
 			}
 		}
-		private void UpdateKeyGuide() { /*@B 0x60053AB*/ throw null; }
+		private void UpdateKeyGuide() {
+			var param = new global::Dpr.UI.Keyguide.Param();
+			param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.POFFINCASE_DECIDE });
+			param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.POFFINCASE_CLOSE });
+			var keyguide = UIManager.Instance.GetKeyguide(null, true);
+			keyguide.transform.SetParent(transform, false);
+			keyguide.Open(param);
+		}
 		private void OnRequiredItemData(global::Dpr.UI.IUIButton button) {
 			var itemButton = button as UIPofinCase_ItemButton;
 			if (itemButton == null)
@@ -468,7 +475,7 @@ namespace Dpr.UI
 		private void HidePoffin3DModel() {
 			poffin3DModel.ChangeModel("", true);
 		}
-		public UIPofinCase() { /*@B 0x60053BD*/ throw null; }
-		static UIPofinCase() { /*@B 0x60053BE*/ throw null; }
+		public UIPofinCase() { }
+		static UIPofinCase() { }
 	}
 }

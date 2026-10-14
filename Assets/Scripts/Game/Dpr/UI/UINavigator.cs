@@ -47,7 +47,7 @@ namespace Dpr.UI
 		public virtual bool IsStop(global::Dpr.UI.UINavigator.NavigateType type) {
             return _isStops[(int)type];
         }
-		public UINavigator() { /*@B 0x600516D*/ throw null; }
+		public UINavigator() { }
 		public enum NavigateType
 		{
 			None = -1,

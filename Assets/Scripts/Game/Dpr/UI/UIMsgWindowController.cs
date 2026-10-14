@@ -12,10 +12,10 @@ namespace Dpr.UI
 		private global::System.Action onFinishedContinueMessage;
 		private bool isWaitMsgWindow;
 		private global::System.Nullable<global::UnityEngine.Vector2> windowAnchorPosition;
-		private global::Dpr.MsgWindow.MsgWindowParam msgWindowParam;
-		private global::System.Collections.Generic.List<string> continueMessageLabels;
-		private global::System.Collections.Generic.List<global::System.Action> continueMessageOnSets;
-		public bool isOpen { get { /*@B 0x6005150*/ throw null; } }
+		private global::Dpr.MsgWindow.MsgWindowParam msgWindowParam = new global::Dpr.MsgWindow.MsgWindowParam();
+		private global::System.Collections.Generic.List<string> continueMessageLabels = new global::System.Collections.Generic.List<string>();
+		private global::System.Collections.Generic.List<global::System.Action> continueMessageOnSets = new global::System.Collections.Generic.List<global::System.Action>();
+		public bool isOpen { get { return msgWindow != null; } }
 		public static string GetMessageFileName(global::Dpr.UI.UIMsgWindowController.MessageFileType messageFileType) {
 			switch (messageFileType)
 			{
@@ -160,7 +160,7 @@ namespace Dpr.UI
 			MsgWindowManager.ReplaceMsg(msgWindowParam);
 			return true;
 		}
-		public UIMsgWindowController() { /*@B 0x600515E*/ throw null; }
+		public UIMsgWindowController() { }
 		public enum MessageFileType
 		{
 			Bag = 0,

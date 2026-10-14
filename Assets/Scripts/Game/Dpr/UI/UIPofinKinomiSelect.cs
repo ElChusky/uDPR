@@ -19,21 +19,21 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform startButton;
 		private global::Dpr.Item.ItemListMemory itemListMemory;
-		private global::Dpr.Item.ItemInfo.CategoryType[] categoryTypes;
+		private global::Dpr.Item.ItemInfo.CategoryType[] categoryTypes = new global::Dpr.Item.ItemInfo.CategoryType[] { global::Dpr.Item.ItemInfo.CategoryType.Nuts };
 		private global::Dpr.UI.UIMsgWindowController msgWindowController;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
-		private global::System.Collections.Generic.List<global::Dpr.UI.BagItemButton> GrayButtons;
+		private readonly int _animStateIn = global::UnityEngine.Animator.StringToHash("in");
+		private readonly int _animStateOut = global::UnityEngine.Animator.StringToHash("out");
+		private global::System.Collections.Generic.List<global::Dpr.UI.BagItemButton> GrayButtons = new global::System.Collections.Generic.List<global::Dpr.UI.BagItemButton>();
 		private bool isEnd;
 		private bool isSortSelect;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image[] berryImages;
-		private global::System.Collections.Generic.List<global::Dpr.Item.ItemInfo> itemList;
+		private global::System.Collections.Generic.List<global::Dpr.Item.ItemInfo> itemList = new global::System.Collections.Generic.List<global::Dpr.Item.ItemInfo>();
 		private global::Dpr.MsgWindow.MsgWindow msgWindow;
 		private global::UnityEngine.UI.HorizontalLayoutGroup horizontalLayout;
 		[global::UnityEngine.SerializeField]
-		private int posy;
-		private global::System.Collections.Generic.List<global::DG.Tweening.Tweener> Tws;
+		private int posy = -68;
+		private global::System.Collections.Generic.List<global::DG.Tweening.Tweener> Tws = new global::System.Collections.Generic.List<global::DG.Tweening.Tweener>();
 		private global::Dpr.UI.Keyguide.Param keyguideParam;
 		private const string QuestionSortMessageLabel = "SS_bag_083";
 		private const string NewSortMessageLabel = "SS_bag_079";
@@ -47,11 +47,11 @@ namespace Dpr.UI
 		private const string NewSortResultMessageLabel = "SS_bag_088";
 		private const string FavoriteSortResultMessageLabel = "SS_bag_087";
 		private const string NumberSortResultMessageLabel = "SS_bag_086";
-		private bool isPushB { get { /*@B 0x60053DC*/ throw null; } }
-		private bool isPushA { get { /*@B 0x60053DD*/ throw null; } }
-		private bool isPushX { get { /*@B 0x60053DE*/ throw null; } }
-		private bool isPushY { get { /*@B 0x60053DF*/ throw null; } }
-		private bool isPushPlus { get { /*@B 0x60053E0*/ throw null; } }
+		private bool isPushB { get { return (GameController.push & GameController.ButtonMask.B) != 0; } }
+		private bool isPushA { get { return Utils.PushA; } }
+		private bool isPushX { get { return (GameController.push & GameController.ButtonMask.X) != 0; } }
+		private bool isPushY { get { return (GameController.push & GameController.ButtonMask.Y) != 0; } }
+		private bool isPushPlus { get { return (GameController.push & GameController.ButtonMask.Plus) != 0; } }
 		public override void OnCreate() {
 			base.OnCreate();
 			GrayButtons = new List<BagItemButton>();
@@ -401,6 +401,6 @@ namespace Dpr.UI
 			// UIMsgWindowController.OpenMsgWindow(MessageFileType, …) inlined with GetMessageFileName (flag 0x4cbca9a @01a1c594)
 			msgWindowController.OpenMsgWindow(UIMsgWindowController.MessageFileType.Bag, labelName, true, false, null, () => bagItemPanel.SetRemoveNewEnable(true));
 		}
-		public UIPofinKinomiSelect() { /*@B 0x60053F7*/ throw null; }
+		public UIPofinKinomiSelect() { }
 	}
 }

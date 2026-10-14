@@ -16,8 +16,8 @@ namespace Dpr.UI
 		private global::Dpr.UI.BagItemPanel bagItemPanel;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIText sellItemPriceText;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private readonly int _animStateIn = global::UnityEngine.Animator.StringToHash("in");
+		private readonly int _animStateOut = global::UnityEngine.Animator.StringToHash("out");
 		private global::Dpr.Item.ItemListMemory itemListMemory;
 		private global::Dpr.UI.UIMsgWindowController msgWindowController;
 		private bool isWaitUpdate;
@@ -229,6 +229,6 @@ namespace Dpr.UI
 			UpdateSellItemPriceText(item);
 			UpdateKeyGuide();
 		}
-		public UISellItem() { /*@B 0x6005A78*/ throw null; }
+		public UISellItem() { }
 	}
 }
