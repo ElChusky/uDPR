@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public int index;
 		public float duration;
 		public float startTime;
-		public DprPokemonRateMotion(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AB5*/ throw null; }
+		public DprPokemonRateMotion(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			index = Macro.ParseInt(macro.GetValue("index"), 0);
+			duration = Macro.ParseFloat(macro.GetValue("duration"));
+			startTime = Macro.ParseFloat(macro.GetValue("startTime"));
+		}
 	}
 }

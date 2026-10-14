@@ -4,6 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-711265159), "green", "one_frame", "")]
 	public class DprParticleHide : global::Dpr.SequenceEditor.Macro
 	{
-		public DprParticleHide(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004ACE*/ throw null; }
+		public DprParticleHide(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+		}
 	}
 }

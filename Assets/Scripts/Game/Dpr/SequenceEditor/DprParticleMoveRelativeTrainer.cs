@@ -10,6 +10,13 @@ namespace Dpr.SequenceEditor
 		public bool isRot;
 		public bool forceUpdate;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public DprParticleMoveRelativeTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AD0*/ throw null; }
+		public DprParticleMoveRelativeTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			nodeIndex = Macro.ParseInt(macro.GetValue("nodeIndex"), 0);
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 0);
+			forceUpdate = Macro.ParseBool(macro.GetValue("forceUpdate"), 0);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

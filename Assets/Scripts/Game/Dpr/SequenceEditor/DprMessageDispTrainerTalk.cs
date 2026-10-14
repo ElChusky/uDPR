@@ -4,6 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(178517864), "purple", "one_frame", "")]
 	public class DprMessageDispTrainerTalk : global::Dpr.SequenceEditor.Macro
 	{
-		public DprMessageDispTrainerTalk(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B09*/ throw null; }
+		public DprMessageDispTrainerTalk(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+		}
 	}
 }

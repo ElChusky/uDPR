@@ -14,6 +14,17 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 rot;
 		public bool isAnimScl;
 		public bool isLocalScl;
-		public DprParticleFollowTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AD1*/ throw null; }
+		public DprParticleFollowTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), 1);
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			nodeIndex = Macro.ParseInt(macro.GetValue("nodeIndex"), 0);
+			isPos = Macro.ParseBool(macro.GetValue("isPos"), 1);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 1);
+			isScl = Macro.ParseBool(macro.GetValue("isScl"), 1);
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			rot = Macro.ParseVector3(macro.GetValue("rot"));
+			isAnimScl = Macro.ParseBool(macro.GetValue("isAnimScl"), 0);
+			isLocalScl = Macro.ParseBool(macro.GetValue("isLocalScl"), 0);
+		}
 	}
 }

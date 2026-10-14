@@ -4,6 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(1215501066), "white", "", "")]
 	public class DprDummyLabel : global::Dpr.SequenceEditor.Macro
 	{
-		public DprDummyLabel(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AAE*/ throw null; }
+		public DprDummyLabel(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+		}
 	}
 }

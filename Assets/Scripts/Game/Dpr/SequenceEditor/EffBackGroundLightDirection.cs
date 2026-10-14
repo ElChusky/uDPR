@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 dir;
 		public bool flip;
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS flipTrg;
-		public EffBackGroundLightDirection(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A01*/ throw null; }
+		public EffBackGroundLightDirection(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			reset = Macro.ParseBool(macro.GetValue("reset"));
+			dir = Macro.ParseVector3(macro.GetValue("dir"));
+			flip = Macro.ParseBool(macro.GetValue("flip"));
+			flipTrg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("flipTrg"));
+		}
 	}
 }

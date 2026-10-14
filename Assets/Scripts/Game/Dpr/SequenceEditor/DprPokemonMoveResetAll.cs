@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class DprPokemonMoveResetAll : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT place;
-		public DprPokemonMoveResetAll(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AB1*/ throw null; }
+		public DprPokemonMoveResetAll(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			place = Macro.Parse_SEQ_DEF_DEFAULT_PLACEMENT(macro.GetValue("place"));
+		}
 	}
 }

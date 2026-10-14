@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 endColor;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool isForce;
-		public DprPokemonUndiscoveredSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AB3*/ throw null; }
+		public DprPokemonUndiscoveredSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			startColor = Macro.ParseVector3(macro.GetValue("startColor"), 0f, 0f, 0f);
+			endColor = Macro.ParseVector3(macro.GetValue("endColor"), 1f, 1f, 1f);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			isForce = Macro.ParseBool(macro.GetValue("isForce"), 0);
+		}
 	}
 }

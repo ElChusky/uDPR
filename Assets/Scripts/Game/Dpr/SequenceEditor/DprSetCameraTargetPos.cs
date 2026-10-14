@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class DprSetCameraTargetPos : global::Dpr.SequenceEditor.Macro
 	{
 		public global::UnityEngine.Vector3 pos;
-		public DprSetCameraTargetPos(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004ACA*/ throw null; }
+		public DprSetCameraTargetPos(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+		}
 	}
 }

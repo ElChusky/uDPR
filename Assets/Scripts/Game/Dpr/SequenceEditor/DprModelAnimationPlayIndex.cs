@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public float duration;
 		public float startTime;
 		public bool isLoop;
-		public DprModelAnimationPlayIndex(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AD7*/ throw null; }
+		public DprModelAnimationPlayIndex(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			index = Macro.ParseInt(macro.GetValue("index"), 0);
+			duration = Macro.ParseFloat(macro.GetValue("duration"));
+			startTime = Macro.ParseFloat(macro.GetValue("startTime"));
+			isLoop = Macro.ParseBool(macro.GetValue("isLoop"), 0);
+		}
 	}
 }

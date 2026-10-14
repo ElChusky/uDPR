@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public bool isUpdateRot;
 		public global::UnityEngine.Vector3 rot;
 		public bool relative;
-		public DprCameraRotationFreeze(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AC4*/ throw null; }
+		public DprCameraRotationFreeze(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), 0);
+			isUpdateRot = Macro.ParseBool(macro.GetValue("isUpdateRot"), 0);
+			rot = Macro.ParseVector3(macro.GetValue("rot"));
+			relative = Macro.ParseBool(macro.GetValue("relative"), 0);
+		}
 	}
 }

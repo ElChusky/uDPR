@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class EffBackGroundChangeAnimState : global::Dpr.SequenceEditor.Macro
 	{
 		public string state;
-		public EffBackGroundChangeAnimState(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A03*/ throw null; }
+		public EffBackGroundChangeAnimState(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			state = Macro.ParseString(macro.GetValue("state"));
+		}
 	}
 }

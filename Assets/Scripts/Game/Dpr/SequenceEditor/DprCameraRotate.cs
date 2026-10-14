@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool relative;
 		public bool[] enableElemRot;
-		public DprCameraRotate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004ABF*/ throw null; }
+		public DprCameraRotate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			rot = Macro.ParseVector3(macro.GetValue("rot"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			enableElemRot = Macro.ParseBoolArray(macro.GetValue("enableElemRot"), 1, 1, 1);
+		}
 	}
 }

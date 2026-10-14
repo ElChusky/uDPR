@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public float duration;
 		public float startTime;
 		public bool isLoop;
-		public DprTrainerChangeMotionIndex(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004ABA*/ throw null; }
+		public DprTrainerChangeMotionIndex(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER_ADD(macro.GetValue("trg"));
+			index = (SEQ_DEF_TRAINER_MOTION)Macro.ParseInt(macro.GetValue("index"));
+			duration = Macro.ParseFloat(macro.GetValue("duration"));
+			startTime = Macro.ParseFloat(macro.GetValue("startTime"));
+			isLoop = Macro.ParseBool(macro.GetValue("isLoop"), 0);
+		}
 	}
 }

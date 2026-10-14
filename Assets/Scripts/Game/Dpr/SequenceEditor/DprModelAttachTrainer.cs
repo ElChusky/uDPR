@@ -12,6 +12,15 @@ namespace Dpr.SequenceEditor
 		public bool changeLight;
 		public bool isAnimScl;
 		public bool isLocalScl;
-		public DprModelAttachTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004ADA*/ throw null; }
+		public DprModelAttachTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), 1);
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			node = (SEQ_DEF_NODE_MODEL)Macro.ParseInt(macro.GetValue("node"));
+			ignoreDominantHand = Macro.ParseBool(macro.GetValue("ignoreDominantHand"), 0);
+			enableDominantHoldBallHand = Macro.ParseBool(macro.GetValue("enableDominantHoldBallHand"), 0);
+			changeLight = Macro.ParseBool(macro.GetValue("changeLight"));
+			isAnimScl = Macro.ParseBool(macro.GetValue("isAnimScl"), 0);
+			isLocalScl = Macro.ParseBool(macro.GetValue("isLocalScl"), 0);
+		}
 	}
 }

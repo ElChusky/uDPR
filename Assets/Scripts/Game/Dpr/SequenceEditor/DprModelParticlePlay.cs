@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class DprModelParticlePlay : global::Dpr.SequenceEditor.Macro
 	{
 		public int particleIndex;
-		public DprModelParticlePlay(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004ADB*/ throw null; }
+		public DprModelParticlePlay(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			particleIndex = Macro.ParseInt(macro.GetValue("particleIndex"), 0);
+		}
 	}
 }
