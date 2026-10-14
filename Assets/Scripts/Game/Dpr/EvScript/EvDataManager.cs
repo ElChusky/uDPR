@@ -664,8 +664,124 @@ namespace Dpr.EvScript
             FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.FLAG_STOP_EYE_ENCOUNT, false);
             SetCommandUseTime();
         }
-		public bool m_Update(float time) { /*@B 0x6008B72*/ throw null; }
-		public bool m_LateUpdate(float time) { /*@B 0x6008B73*/ throw null; }
+		public bool m_Update(float time) {
+            EntityMoveCodeCheck();
+            FieldShip.Update(time);
+            _lateUpdateMoveCode = false;
+            if (UpdateEvdata(time, false))
+                return true;
+
+            if (_updateDelegate != null)
+            {
+                _updateDelegate(time);
+                if (_updateDelegate != null)
+                    return true;
+            }
+
+            if (_isFadeEventReturnInput && _eventListIndex < 0 && _battleReturnData.EventListIndex < 0 && !Fader.isBusy && Fader.fillPower <= 0f)
+            {
+                PlayerInputActive(true, true);
+                _isFadeEventReturnInput = false;
+            }
+
+            PendingInitScripts();
+            // CheckSceneChangeLabel / CheckUpdateSPLabel are inlined here in the binary.
+            if (CheckSceneChangeLabel())
+                return true;
+
+            if (CheckBattleReturnLabel())
+                return true;
+
+            if (CheckUpdateSPLabel())
+                return true;
+
+            if (Fader.isBusy)
+                return true;
+
+            HoneyWork.UpdateTime();
+            KinomiWork.UpdateGrowTime();
+            bool isExistEgg = AzukariyaWork.IsExistEgg();
+            AzukariyaWork.CheckLayEgg();
+            bool isMoveOldman = false;
+            if (AzukariyaInitEventFlag || (!isExistEgg && AzukariyaWork.IsExistEgg()))
+            {
+                if (AzukariyaWork.IsExistOldmanZone() && AzukariyaWork.IsLoadedOldman())
+                {
+                    AzukariyaWork.MoveOldmanEvent();
+                    isMoveOldman = true;
+                    AzukariyaInitEventFlag = false;
+                }
+            }
+
+            if (CheckPartyEggHatching())
+            {
+                EntityManager.activeFieldPlayer.StopCrossInputAndBicycle();
+                // EggHatchingEvent is inlined here in the binary.
+                EggHatchingEvent();
+                return true;
+            }
+
+            if (isMoveOldman)
+                return true;
+
+            if (ScriptStartCheck(time))
+                return true;
+
+            Vector3 playerPos = EntityManager.activeFieldPlayer.worldPosition;
+            Vector2Int playerGrid = EntityManager.activeFieldPlayer.gridPosition;
+            bool isRun = EntityManager.activeFieldPlayer.IsRun();
+            for (int i = 0; i < FieldObjectMoveCodes.Count; i++)
+            {
+                var moveCode = FieldObjectMoveCodes[i];
+                if (moveCode == null || moveCode.IsMissing())
+                    continue;
+
+                if (moveCode.IsNoneStart())
+                    moveCode.MVCodeStart();
+
+                moveCode.MoveCodeUpdate(time, ref playerPos, ref playerGrid, isRun);
+            }
+
+            _tairyouHasseiMane.Update(time);
+            _lateUpdateMoveCode = true;
+            return false;
+        }
+		public bool m_LateUpdate(float time) {
+            if (_lateUpdateMoveCode)
+            {
+                for (int i = 0; i < FieldObjectMoveCodes.Count; i++)
+                {
+                    var moveCode = FieldObjectMoveCodes[i];
+                    if (moveCode != null && !moveCode.IsMissing())
+                        moveCode.MoveCodeLateUpdate(time);
+                }
+            }
+
+            if (_isEqZoneWorp && EntityManager.activeFieldPlayer.gridPosition != _eqZoneWorpGrid)
+                _isEqZoneWorp = false;
+
+            if (_eventListIndex < 0 && _battleReturnData.EventListIndex < 0)
+            {
+                var player = EntityManager.activeFieldPlayer;
+                if (player != null)
+                {
+                    Vector3 playerPos = player.worldPosition;
+                    Vector3 playerVec = player.InputMoveVector;
+                    var walls = EntityManager.fieldTobariGymWalls;
+                    for (int i = 0; i < walls.Length; i++)
+                    {
+                        var wall = walls[i];
+                        if (wall != null && wall.CheckHit(playerPos, playerVec))
+                        {
+                            _tobariGymWallEntity = wall;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
 		private bool FindLabel(string label) {
             return _findAllLabel.ContainsKey(label);
         }
@@ -684,7 +800,69 @@ namespace Dpr.EvScript
             // SetEventListIndex has no caller in the binary: inlined here as SetCloudScaleEnd + store -1 (02c45de0).
             SetEventListIndex(-1);
         }
-		private bool CheckBattleReturnLabel() { /*@B 0x6008B77*/ throw null; }
+		private bool CheckBattleReturnLabel() {
+            int eventListIndex = _battleReturnData.EventListIndex;
+            if (eventListIndex == -1)
+                return false;
+
+            // The binary shows SetEventListIndex(eventListIndex) inlined here (the idx == -1 arm folded away).
+            if (_eventListIndex == -1)
+                SetCloudScaleStart();
+
+            _eventListIndex = eventListIndex;
+            _eventList[eventListIndex].LabelIndex = _battleReturnData.LabelIndex;
+            _eventList[_eventListIndex].CommandIndex = _battleReturnData.CommandIndex;
+            // GetScript is inlined here; its result is unused (only the List bounds check survives).
+            _ = _eventList[_eventListIndex].GetScript;
+            _battleReturnData.EventListIndex = -1;
+            for (int i = 0; i < FieldObjectMoveCodes.Count; i++)
+            {
+                var moveCode = FieldObjectMoveCodes[i];
+                if (moveCode != null && !moveCode.IsMissing())
+                    moveCode.MVCodeStop();
+            }
+
+            PlayerInputActive(false, true);
+            if (_isBattleTowerBtl)
+            {
+                _isBattleTowerWin = FlagWork.GetWork(EvWork.WORK_INDEX.SCWK_ANSWER) == 1;
+                if (_isBattleTowerWin)
+                    EvCmd_PLAY_REPORT_BTLTOWER_WIN();
+
+                var pokemonParams = BattleMatchingWork.pokemonParams;
+                if (pokemonParams != null)
+                {
+                    int mode = BtlTowerWork.GetMode();
+                    int rank = BtlTowerWork.GetRank(mode);
+                    int count = BattleMatchingWork.orderIndexList.Length;
+                    var monsNoList = new List<uint>();
+                    var formNoList = new List<uint>();
+                    for (int i = 0; i < count; i++)
+                    {
+                        var param = pokemonParams[BattleMatchingWork.orderIndexList[i]];
+                        if (param == null)
+                            continue;
+
+                        monsNoList.Add((uint)param.GetMonsNo());
+                        formNoList.Add(param.GetFormNo());
+                    }
+
+                    bool isTypeB = (mode | 1) == 3;
+                    if ((mode | 2) == 2)
+                        PlayReportManager.SaveReportLog_TowerSingle((uint)rank, isTypeB ? 1u : 0u, monsNoList.ToArray(), formNoList.ToArray(), (uint)count);
+                    else
+                        PlayReportManager.SaveReportLog_TowerDouble((uint)rank, isTypeB ? 1u : 0u, monsNoList.ToArray(), formNoList.ToArray(), (uint)count);
+                }
+            }
+            else
+            {
+                FieldManager.Instance.SetAutoSaveState(FieldManager.AutoSaveState.None);
+            }
+
+            _isBattleTowerBtl = false;
+            _battleReturnHitObject = null;
+            return true;
+        }
 		private bool CheckUpdateSPLabel() {
             bool result = JumpLabel(_callLabel_UpdateSP, null);
             _callLabel_UpdateSP = "";
@@ -825,7 +1003,33 @@ namespace Dpr.EvScript
 
             return _battleReturnData.EventListIndex >= 0;
         }
-		public bool CheckPosEvent(out global::UnityEngine.Vector3 outWorldPos, global::FieldPlayerEntity player) { /*@B 0x6008B89*/ throw null; }
+		public bool CheckPosEvent(out global::UnityEngine.Vector3 outWorldPos, global::FieldPlayerEntity player) {
+            outWorldPos = Vector3.zero;
+            if (_eventListIndex >= 0 || _battleReturnData.EventListIndex >= 0)
+                return false;
+
+            // IsPlayingUgEnterOrExit is inlined here in the binary.
+            if (IsPlayingUgEnterOrExit())
+                return false;
+
+            if (_posEventLabelReserve != null)
+                return false;
+
+            if (_eventEndPosition == FieldObjectEntity.PositionToGrid(player.worldPosition + player.moveVector))
+                return false;
+
+            _eventEndPosition = Vector2Int.zero;
+            var entityParam = FieldGridCollision.CheckGridEventMoveEntity(out outWorldPos, player);
+            if (entityParam == null)
+                return false;
+
+            PlayerInputActive(false, false);
+            Vector2Int nowGrid = FieldObjectEntity.PositionToGrid(outWorldPos);
+            Vector2Int oldGrid = player.oldGridPosition;
+            _heroMoveGridCenterFrontDir = SetupHeroMoveGridCenterFrontDir(in entityParam.StopGridArea, in nowGrid, in oldGrid);
+            _posEventLabelReserve = entityParam.ContactLabel;
+            return true;
+        }
 		public global::Dpr.EvScript.EvDataManager.EntityParam GetPosEventFromGrid(global::UnityEngine.Vector2Int gridPos) {
             if (_entityParamList == null)
                 return null;
