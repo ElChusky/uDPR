@@ -3,7 +3,7 @@ namespace Dpr.Message
 {
 	public class LabelTagDataModel
 	{
-		public int index;
+		public int index = -1;
 		public global::Dpr.Message.MessageEnumData.TagPatternID patternID;
 		public global::Dpr.Message.MessageEnumData.GroupTagID tagGroupID;
 		public global::Dpr.Message.MessageEnumData.MsgLangId langID;
@@ -11,9 +11,14 @@ namespace Dpr.Message
 		public ushort tagID;
 		public string strValue;
 		public int tagParameter;
-		public string[] tagWords;
+		public string[] tagWords = new string[0];
 		public int forceArticle;
-		public bool IsWordTag { get { /*@B 0x6003C69*/ throw null; } }
-		public LabelTagDataModel() { /*@B 0x6003C6A*/ throw null; }
+		public bool IsWordTag { get {
+            return patternID == MessageEnumData.TagPatternID.Word
+                || patternID == MessageEnumData.TagPatternID.GrammarWord
+                || patternID == MessageEnumData.TagPatternID.Digit
+                || patternID == MessageEnumData.TagPatternID.SpriteFont;
+        } }
+		public LabelTagDataModel() { }
 	}
 }

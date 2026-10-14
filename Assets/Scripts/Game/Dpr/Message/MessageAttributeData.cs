@@ -3,11 +3,11 @@ namespace Dpr.Message
 {
 	public class MessageAttributeData
 	{
-		public int gender;
-		public int initialSound;
-		public int countablity;
-		public int articlePresence;
-		public int displayPattern;
-		public MessageAttributeData() { /*@B 0x6003BB1*/ throw null; }
+		public int gender = -1;
+		public int initialSound = -1;
+		public int countablity = -1;
+		public int articlePresence = -1;
+		public int displayPattern = -1;
+		public MessageAttributeData() { }
 	}
 }

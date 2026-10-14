@@ -8,10 +8,28 @@ namespace Dpr.Message
 		public string fileName;
 		public global::SmartPoint.AssetAssistant.AssetRequestOperation operation;
 		public global::System.Action<global::Dpr.Message.LoadFontAssetTask> onCompleteLoadAct;
-		public bool IsDone { get { /*@B 0x6003B78*/ throw null; } }
-		public global::UnityEngine.Object Asset { get { /*@B 0x6003B79*/ throw null; } }
-		public void OnFinishedLoad() { /*@B 0x6003B7A*/ throw null; }
-		public void Dispose() { /*@B 0x6003B7B*/ throw null; }
+		public bool IsDone { get {
+            if (operation == null)
+                return true;
+            return !operation.keepWaiting;
+        } }
+		public global::UnityEngine.Object Asset { get {
+            return operation.assetBundleRequest.cache.FindFirstAsset<global::TMPro.TMP_FontAsset>();
+        } }
+		public void OnFinishedLoad() {
+            onCompleteLoadAct = null;
+            bRunning = false;
+        }
+		public void Dispose() {
+            if (operation != null)
+            {
+                // Inlined empty EmitLog: only the Format + MessageHelper class-init survive (@02101918); LogType unrecoverable.
+                global::Dpr.Message.MessageHelper.EmitLog(string.Format("Dispose FontAsset LoadTask [{0}]: refCnt [{1}]", fileName, operation.assetBundleRequest.cache.referencedCount));
+                global::SmartPoint.AssetAssistant.AssetBundleCache.ReleaseFromAssetBundleChache(operation.assetBundleRequest.cache, false);
+            }
+            operation = null;
+            onCompleteLoadAct = null;
+        }
 		public LoadFontAssetTask() { }
 	}
 }

@@ -9,8 +9,34 @@ namespace Dpr.Message
 		private int currentIndex;
 		private int processingFileNum;
 		public bool IsReady { get { return this.bIsReady; } }
-		public override bool keepWaiting { get { /*@B 0x6003BC6*/ throw null; } }
-		public void SetData(global::Dpr.Message.MsbtDataModel[] dataModelArray, int processingFileNum) { /*@B 0x6003BC5*/ throw null; }
+		public override bool keepWaiting { get {
+            if (!bIsReady)
+                return true;
+
+            int processed = 0;
+            while (currentIndex < arrayNum)
+            {
+                var dataModel = dataModelArray[currentIndex];
+                if (!dataModel.IsCreate)
+                    dataModel.CreateLabelTable();
+
+                processed++;
+                if (processed >= processingFileNum)
+                    return true;
+
+                currentIndex++;
+            }
+
+            bIsReady = false;
+            return false;
+        } }
+		public void SetData(global::Dpr.Message.MsbtDataModel[] dataModelArray, int processingFileNum) {
+            currentIndex = 0;
+            this.dataModelArray = dataModelArray;
+            arrayNum = dataModelArray.Length;
+            this.processingFileNum = processingFileNum;
+            bIsReady = true;
+        }
 		public LoadMsbtOperation() { }
 	}
 }

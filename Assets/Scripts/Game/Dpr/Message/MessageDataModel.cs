@@ -5,10 +5,10 @@ namespace Dpr.Message
 	{
 		private const int LOAD_PROCESS_NUM = 20;
 		private const string UNDER_BAR = "_";
-		private global::System.Collections.Generic.Dictionary<int, global::Dpr.Message.MsbtDataModel> msbtDataTable;
-		private global::Dpr.Message.MessageEnumData.MsgLangId userLanguageId;
-		private global::Dpr.Message.LoadMsbtOperation loadMsbtOp;
-		private global::System.Text.StringBuilder fileNameCapSb;
+		private global::System.Collections.Generic.Dictionary<int, global::Dpr.Message.MsbtDataModel> msbtDataTable = new global::System.Collections.Generic.Dictionary<int, global::Dpr.Message.MsbtDataModel>(512);
+		private global::Dpr.Message.MessageEnumData.MsgLangId userLanguageId = global::Dpr.Message.MessageEnumData.MsgLangId.JPN;
+		private global::Dpr.Message.LoadMsbtOperation loadMsbtOp = new global::Dpr.Message.LoadMsbtOperation();
+		private global::System.Text.StringBuilder fileNameCapSb = new global::System.Text.StringBuilder();
 		private string[] languageVariants;
 		private bool bIsKanji;
 		private bool bInit;
@@ -16,40 +16,184 @@ namespace Dpr.Message
 		public bool Initialized { get { return this.bInitialized; } }
 		public bool IsCalledInitialize { get { return this.bInit; } }
 		public global::Dpr.Message.LoadMsbtOperation LoadMsbtOperation { get { return this.loadMsbtOp; } }
-		public bool IsAlreadySetLoadOpData { get { /*@B 0x6003BCB*/ throw null; } }
+		public bool IsAlreadySetLoadOpData { get { return loadMsbtOp.IsReady; } }
 		public global::Dpr.Message.MessageEnumData.MsgLangId UserSelectLanguageID { get { return this.userLanguageId; } }
 		public bool IsKanji { get { return this.bIsKanji; } }
 		public string[] Variants { get { return this.languageVariants; } }
-		public void Initialize(global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BCC*/ throw null; }
-		public void InitializedManager() { /*@B 0x6003BCD*/ throw null; }
-		public void Dispose() { /*@B 0x6003BCE*/ throw null; }
-		public void SetUserSelectLanguageID(global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BD0*/ throw null; }
-		public void SetJPNKanjiFlag(bool flag) { /*@B 0x6003BD2*/ throw null; }
-		public string GetFileNameCapStr(global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BD3*/ throw null; }
+		public void Initialize(global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            bIsKanji = false;
+            msbtDataTable.Clear();
+            SetUserSelectLanguageID(languageId);
+            bInit = true;
+        }
+		public void InitializedManager() { bInitialized = true; }
+		public void Dispose() {
+            loadMsbtOp = null;
+            msbtDataTable.Clear();
+        }
+		public void SetUserSelectLanguageID(global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            userLanguageId = languageId;
+            fileNameCapSb.Clear();
+            // GetFileNameCapStr inlined (its flag 0x4cc05f9 @02102e04)
+            fileNameCapSb.Append(GetFileNameCapStr(languageId));
+            languageVariants = new string[] { MessageDataConstants.ROOT_FOLDER_NAME_TABLE[(int)userLanguageId].ToLower() };
+        }
+		public void SetJPNKanjiFlag(bool flag) {
+            bIsKanji = flag;
+            SetUserSelectLanguageID(userLanguageId);
+        }
+		public string GetFileNameCapStr(global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            return GetAssetFolderNameByLanguageId(languageId) + UNDER_BAR;
+        }
 		public string GetJPNKanjiFileNameCapStr() {
             // @02103170: the static is read directly (GetJPNKanjiAssetBundleName's flag 0x4cc059a is not tested)
             return MessageDataConstants.JPN_KANJI_ASSET_FOLDER_NAME + UNDER_BAR;
         }
-		public string ConvertMSBTFileKey(string fileName, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BD5*/ throw null; }
-		public string ConvertMSBTFileKey(string fileName, global::Dpr.Message.MessageEnumData.MsgLangId languageId, bool kanji) { /*@B 0x6003BD6*/ throw null; }
-		public string GetAssetBundleName(global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BD7*/ throw null; }
-		public string GetJPNKanjiAssetBundleName() { /*@B 0x6003BD8*/ throw null; }
-		private string GetAssetFolderNameByLanguageId(global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BD9*/ throw null; }
-		public bool IsAlreadyLoadFile(string fileKey) { /*@B 0x6003BDB*/ throw null; }
-		public global::Dpr.Message.MessageMsgFile GetMsgFile(string fileName, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BDC*/ throw null; }
-		public void AddMsgDataFile(string fileName, global::Dpr.Message.MsbtData msbtData) { /*@B 0x6003BDD*/ throw null; }
-		public void CreateAllLabelTable() { /*@B 0x6003BDE*/ throw null; }
-		public void SetLoadOperationData() { /*@B 0x6003BDF*/ throw null; }
+		public string ConvertMSBTFileKey(string fileName, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            return ConvertMSBTFileKey(fileName, languageId, bIsKanji);
+        }
+		public string ConvertMSBTFileKey(string fileName, global::Dpr.Message.MessageEnumData.MsgLangId languageId, bool kanji) {
+            // GetJPNKanjiFileNameCapStr (flag 0x4cc05fa) and GetFileNameCapStr (flag 0x4cc05f9) are inlined here
+            string capStr;
+            if (languageId == MessageEnumData.MsgLangId.JPN && kanji)
+                capStr = GetJPNKanjiFileNameCapStr();
+            else if (userLanguageId == languageId)
+                capStr = fileNameCapSb.ToString();
+            else
+                capStr = GetFileNameCapStr(languageId);
+
+            return (capStr + fileName).Replace(".msbt", "");
+        }
+		public string GetAssetBundleName(global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            return MessageDataConstants.ASSET_FOLDER_NAME_TABLE[(int)languageId];
+        }
+		public string GetJPNKanjiAssetBundleName() {
+            return MessageDataConstants.JPN_KANJI_ASSET_FOLDER_NAME;
+        }
+		private string GetAssetFolderNameByLanguageId(global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            if (MessageDataConstants.ASSET_FOLDER_NAME_TABLE.ContainsKey((int)languageId))
+                return MessageDataConstants.ASSET_FOLDER_NAME_TABLE[(int)languageId];
+
+            // Inlined empty EmitLog: only the Format + MessageHelper class-init survive (@021030f0); LogType unrecoverable.
+            MessageHelper.EmitLog(string.Format("LanguageID Not Found Table : {0}", languageId));
+            return string.Empty;
+        }
+		public bool IsAlreadyLoadFile(string fileKey) {
+            return msbtDataTable.ContainsKey(fileKey.GetHashCode());
+        }
+		public global::Dpr.Message.MessageMsgFile GetMsgFile(string fileName, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            string fileKey = ConvertMSBTFileKey(fileName, languageId, bIsKanji);
+            // IsAlreadyLoadFile inlined (its flag 0x4cc05fd @021034f8)
+            if (IsAlreadyLoadFile(fileKey))
+                return new MessageMsgFile(msbtDataTable[fileKey.GetHashCode()]);
+
+            // Inlined empty EmitLog: only the Concat + MessageHelper class-init survive (@021035cc); LogType unrecoverable.
+            MessageHelper.EmitLog("[" + fileKey + "] File Not Loaded");
+            return null;
+        }
+		public void AddMsgDataFile(string fileName, global::Dpr.Message.MsbtData msbtData) {
+            if (msbtData == null)
+                return;
+
+            // IsAlreadyLoadFile inlined (its flag 0x4cc05fd @021036d0)
+            if (IsAlreadyLoadFile(fileName))
+                return;
+
+            var dataModel = new MsbtDataModel(msbtData.labelDataArray, msbtData.langID, msbtData.hash, fileName, msbtData.isResident);
+            msbtDataTable.Add(fileName.GetHashCode(), dataModel);
+        }
+		public void CreateAllLabelTable() {
+            foreach (int key in msbtDataTable.Keys)
+                msbtDataTable[key].CreateLabelTable();
+        }
+		public void SetLoadOperationData() {
+            var dataModelArray = new MsbtDataModel[msbtDataTable.Count];
+            int index = 0;
+            foreach (int key in msbtDataTable.Keys)
+            {
+                dataModelArray[index] = msbtDataTable[key];
+                index++;
+            }
+            // LoadMsbtOperation.SetData inlined (@02103aa4)
+            loadMsbtOp.SetData(dataModelArray, LOAD_PROCESS_NUM);
+        }
 		public void AddBinMsbtFileData(global::Dpr.Message.LoadMsbtFileTask loadTask) { }
-		public void UnloadMSBTFileByLanguageId(global::Dpr.Message.MessageEnumData.MsgLangId langId) { /*@B 0x6003BE1*/ throw null; }
-		public global::Dpr.Message.AttributeInfo GetAttributeInfo(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BE2*/ throw null; }
-		public global::Dpr.Message.MessageGlossaryParseDataModel GetGloosaryParseData(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BE3*/ throw null; }
-		public global::Dpr.Message.MessageGlossaryParseDataModel GetGloosaryParseData(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BE4*/ throw null; }
-		public global::Dpr.Message.MessageTextParseDataModel GetTextParseData(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BE5*/ throw null; }
-		public global::Dpr.Message.MessageTextParseDataModel GetTextParseData(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BE6*/ throw null; }
-		private global::Dpr.Message.LabelData GetLabelData(string fileName, string labelName, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BE7*/ throw null; }
-		private global::Dpr.Message.LabelData GetLabelData(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003BE8*/ throw null; }
-		public MessageDataModel() { /*@B 0x6003BE9*/ throw null; }
+		public void UnloadMSBTFileByLanguageId(global::Dpr.Message.MessageEnumData.MsgLangId langId) {
+            var removeKeys = new global::System.Collections.Generic.List<int>();
+            foreach (int key in msbtDataTable.Keys)
+            {
+                var dataModel = msbtDataTable[key];
+                if (!dataModel.IsResident && dataModel.langID == langId)
+                    removeKeys.Add(key);
+            }
+
+            foreach (int key in removeKeys)
+            {
+                msbtDataTable[key].ClearData();
+                msbtDataTable.Remove(key.GetHashCode());
+            }
+        }
+		public global::Dpr.Message.AttributeInfo GetAttributeInfo(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            var labelData = GetLabelData(fileName, label, languageId);
+            return new AttributeInfo(labelData.attributeValueArray);
+        }
+		public global::Dpr.Message.MessageGlossaryParseDataModel GetGloosaryParseData(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            var labelData = GetLabelData(fileName, label, languageId);
+            if (labelData == null)
+                return null;
+
+            var parseData = new MessageGlossaryParseDataModel();
+            parseData.SetLabelData(labelData, languageId);
+            return parseData;
+        }
+		public global::Dpr.Message.MessageGlossaryParseDataModel GetGloosaryParseData(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            var labelData = GetLabelData(fileName, labelIndex, languageId);
+            if (labelData == null)
+                return null;
+
+            var parseData = new MessageGlossaryParseDataModel();
+            parseData.SetLabelData(labelData, languageId);
+            return parseData;
+        }
+		public global::Dpr.Message.MessageTextParseDataModel GetTextParseData(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            var labelData = GetLabelData(fileName, label, languageId);
+            if (labelData == null)
+                return null;
+
+            var parseData = new MessageTextParseDataModel();
+            parseData.SetLabelData(labelData, languageId);
+            return parseData;
+        }
+		public global::Dpr.Message.MessageTextParseDataModel GetTextParseData(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            var labelData = GetLabelData(fileName, labelIndex, languageId);
+            if (labelData == null)
+                return null;
+
+            var parseData = new MessageTextParseDataModel();
+            parseData.SetLabelData(labelData, languageId);
+            return parseData;
+        }
+		private global::Dpr.Message.LabelData GetLabelData(string fileName, string labelName, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            string fileKey = ConvertMSBTFileKey(fileName, languageId, bIsKanji);
+            // IsAlreadyLoadFile inlined (its flag 0x4cc05fd)
+            if (IsAlreadyLoadFile(fileKey))
+                return msbtDataTable[fileKey.GetHashCode()].GetLabelDataByName(labelName);
+
+            // Inlined empty EmitLog: only the Concat + MessageHelper class-init survive; LogType unrecoverable.
+            MessageHelper.EmitLog("[" + fileKey + "] File Not Loaded");
+            return null;
+        }
+		private global::Dpr.Message.LabelData GetLabelData(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            string fileKey = ConvertMSBTFileKey(fileName, languageId, bIsKanji);
+            // IsAlreadyLoadFile inlined (its flag 0x4cc05fd)
+            if (IsAlreadyLoadFile(fileKey))
+                return msbtDataTable[fileKey.GetHashCode()].GetLabelDataByIndex(labelIndex);
+
+            // Inlined empty EmitLog: only the Concat + MessageHelper class-init survive; LogType unrecoverable.
+            MessageHelper.EmitLog("[" + fileKey + "] File Not Loaded");
+            return null;
+        }
+		public MessageDataModel() { }
 		public enum LoadResult
 		{
 			Success = 0,
