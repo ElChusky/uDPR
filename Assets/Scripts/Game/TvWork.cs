@@ -8,13 +8,167 @@ using System;
 using XLSXContent;
 public static class TvWork
 {
-	public static global::Dpr.Message.MessageEnumData.GenderID CurrentStrDataGenderId;
-	private static global::ZoneID[] WeatherReportZone;
-	private static readonly int[] IgnoreDouguMotteruYasei;
+	public static global::Dpr.Message.MessageEnumData.GenderID CurrentStrDataGenderId = MessageEnumData.GenderID.Neuter;
+	private static global::ZoneID[] WeatherReportZone = new ZoneID[] { ZoneID.R212B, ZoneID.R213, ZoneID.R216, ZoneID.L03, ZoneID.C09 };
+	private static readonly int[] IgnoreDouguMotteruYasei = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 19, 22, 27, 30, 33, 36, 37, 38, 39, 42, 46, 47, 54, 59, 64, 66, 68, 70, 71, 72, 73, 74, 75, 76, 77, 91, 93, 98, 101, 105, 107, 108, 110, 111, 112, 113, 115, 116, 123, 126, 139, 141, 145, 146, 147, 148, 149, 150 };
 	public static int RandRange(int min, int max) {
         return UnityEngine.Random.Range(min, max);
     }
-	public static void GetLinkRecord(global::DPData.TV_PROGRAM tvProgram, out global::DPData.TV_DATA_ID_INT[] recordInt, out global::DPData.TV_DATA_ID_STR[] recordStr) { /*@B 0x6000D09*/ throw null; }
+	public static void GetLinkRecord(global::DPData.TV_PROGRAM tvProgram, out global::DPData.TV_DATA_ID_INT[] recordInt, out global::DPData.TV_DATA_ID_STR[] recordStr) {
+        recordInt = null;
+        recordStr = null;
+        switch (tvProgram)
+        {
+            case TV_PROGRAM.PRG_0_Chousen_BtlTower:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA000 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA000 };
+                break;
+            case TV_PROGRAM.PRG_1_Anatano_Pokemon:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA001 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA001, TV_DATA_ID_STR.TV_STR_DATA002 };
+                break;
+            case TV_PROGRAM.PRG_2_Okiniiri_Poketch:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA002 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA003 };
+                break;
+            case TV_PROGRAM.PRG_3_Chousen_Contest:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA003, TV_DATA_ID_INT.TV_INT_DATA004 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA004, TV_DATA_ID_STR.TV_STR_DATA005 };
+                break;
+            case TV_PROGRAM.PRG_4_Seikakusindan:
+                recordInt = new TV_DATA_ID_INT[0];
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA006 };
+                break;
+            case TV_PROGRAM.PRG_5_Pofinryouri:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA006 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA007 };
+                break;
+            case TV_PROGRAM.PRG_6_Turearuki_Mankitu:
+                recordInt = new TV_DATA_ID_INT[0];
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA008, TV_DATA_ID_STR.TV_STR_DATA009 };
+                break;
+            case TV_PROGRAM.PRG_7_Sukina_Balldeco:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA007 };
+                recordStr = new TV_DATA_ID_STR[0];
+                break;
+            case TV_PROGRAM.PRG_8_Pokemon_HokakuSeikou:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA008, TV_DATA_ID_INT.TV_INT_DATA009, TV_DATA_ID_INT.TV_INT_DATA010 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA010, TV_DATA_ID_STR.TV_STR_DATA011 };
+                break;
+            case TV_PROGRAM.PRG_9_Pokemon_HokakuSippai:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA011 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA012 };
+                break;
+            case TV_PROGRAM.PRG_10_Sekai_Turu:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA012, TV_DATA_ID_INT.TV_INT_DATA013 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA013 };
+                break;
+            case TV_PROGRAM.PRG_11_Group_Norikae:
+                recordInt = new TV_DATA_ID_INT[0];
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA014, TV_DATA_ID_STR.TV_STR_DATA015 };
+                break;
+            case TV_PROGRAM.PRG_12_KakusiDouguHakken:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA014, TV_DATA_ID_INT.TV_INT_DATA048 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA016 };
+                break;
+            case TV_PROGRAM.PRG_13_Tamago_Kaetta:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA015 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA017, TV_DATA_ID_STR.TV_STR_DATA018 };
+                break;
+            case TV_PROGRAM.PRG_14_Seimeihandan:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA016 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA019, TV_DATA_ID_STR.TV_STR_DATA020 };
+                break;
+            case TV_PROGRAM.PRG_15_Kasekihori:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA017 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA021 };
+                break;
+            case TV_PROGRAM.PRG_16_SafariGame:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA018, TV_DATA_ID_INT.TV_INT_DATA019 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA022 };
+                break;
+            case TV_PROGRAM.PRG_17_Ryouyaku:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA020 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA023, TV_DATA_ID_STR.TV_STR_DATA024 };
+                break;
+            case TV_PROGRAM.PRG_18_Housaku:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA021, TV_DATA_ID_INT.TV_INT_DATA022 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA025 };
+                break;
+            case TV_PROGRAM.PRG_19_SinGroup:
+                recordInt = new TV_DATA_ID_INT[0];
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA026, TV_DATA_ID_STR.TV_STR_DATA027 };
+                break;
+            case TV_PROGRAM.PRG_20_CustumBall_Sakusei:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA023, TV_DATA_ID_INT.TV_INT_DATA024 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA028 };
+                break;
+            case TV_PROGRAM.PRG_21_RareMonohiroi:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA025 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA029, TV_DATA_ID_STR.TV_STR_DATA030 };
+                break;
+            case TV_PROGRAM.PRG_22_Himitukiti_iine_sareta:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA026 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA031 };
+                break;
+            case TV_PROGRAM.PRG_23_Himitukiti_iine_sita:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA027 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA032 };
+                break;
+            case TV_PROGRAM.PRG_24_BtlTower_Rensyou_Kousin:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA028, TV_DATA_ID_INT.TV_INT_DATA029 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA033 };
+                break;
+            case TV_PROGRAM.PRG_25_Ookisasokutei_kousin:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA030, TV_DATA_ID_INT.TV_INT_DATA031, TV_DATA_ID_INT.TV_INT_DATA032 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA034 };
+                break;
+            case TV_PROGRAM.PRG_26_Kinomi_Meijin:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA033 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA035 };
+                break;
+            case TV_PROGRAM.PRG_27_Daisitugen_Meijin:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA034 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA036 };
+                break;
+            case TV_PROGRAM.PRG_28_Sekizou_Hakkutunin:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA035 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA037 };
+                break;
+            case TV_PROGRAM.PRG_29_DigudaKouseki:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA036 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA038 };
+                break;
+            case TV_PROGRAM.PRG_30_Group_Syoukai:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA037 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA039, TV_DATA_ID_STR.TV_STR_DATA040 };
+                break;
+            case TV_PROGRAM.PRG_31_Tenki_1:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA038 };
+                recordStr = new TV_DATA_ID_STR[0];
+                break;
+            case TV_PROGRAM.PRG_33_TairyouHassei:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA039, TV_DATA_ID_INT.TV_INT_DATA040 };
+                recordStr = new TV_DATA_ID_STR[0];
+                break;
+            case TV_PROGRAM.PRG_34_Pokemon_Aisyou:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA041, TV_DATA_ID_INT.TV_INT_DATA042 };
+                recordStr = new TV_DATA_ID_STR[0];
+                break;
+            case TV_PROGRAM.PRG_35_KinomiJouhou:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA043 };
+                recordStr = new TV_DATA_ID_STR[0];
+                break;
+            case TV_PROGRAM.PRG_36_DouguMotteruYasei:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA044, TV_DATA_ID_INT.TV_INT_DATA045 };
+                recordStr = new TV_DATA_ID_STR[0];
+                break;
+            case TV_PROGRAM.PRG_37_FashionChange:
+                recordInt = new TV_DATA_ID_INT[] { TV_DATA_ID_INT.TV_INT_DATA046, TV_DATA_ID_INT.TV_INT_DATA047 };
+                recordStr = new TV_DATA_ID_STR[] { TV_DATA_ID_STR.TV_STR_DATA041 };
+                break;
+        }
+    }
 	public static void Initialize() {
         TV_DATA tvData = PlayerWork.tvData;
         tvData.UseRecord = new TV_RECORD { int_data = new int[48], str_data = new TV_STR_DATA[42] };
@@ -665,7 +819,7 @@ public static class TvWork
             }
         }
     }
-	static TvWork() { /*@B 0x6000D54*/ throw null; }
+	static TvWork() { }
 	public class RecordData
 	{
 		public global::TvWork.RecordData.PersonalityData Personality;

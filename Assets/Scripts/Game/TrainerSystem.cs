@@ -7,16 +7,23 @@ using XLSXContent;
 using Xoroshiro128Plus;
 public static class TrainerSystem
 {
-	private static global::TrainerSystem.CompTowerMatching _comparerTowerMatching;
-	private static global::TrainerSystem.CompTowerSingleStock _comparerTowerSingleStock;
-	private static global::TrainerSystem.CompTowerDoubleStock _comparerTowerDoubleStock;
-	private static global::TrainerSystem.CompTowerTrainerPoke _compareTowerTrainerPoke;
-	private static readonly global::TrainerSystem.TagTableElem[] TAG_TABLE;
-	private static global::XLSXContent.TowerTrainerTable TowerTrainerTable { get { /*@B 0x60003E7*/ throw null; } }
-	private static global::XLSXContent.TowerMatchingTable TowerMatchingTable { get { /*@B 0x60003E8*/ throw null; } }
-	private static global::XLSXContent.TowerSingleStockTable TowerSingleStockTable { get { /*@B 0x60003E9*/ throw null; } }
-	private static global::XLSXContent.TowerDoubleStockTable TowerDoubleStockTable { get { /*@B 0x60003EA*/ throw null; } }
-	private static global::XLSXContent.TrainerTable TrainerTable { get { /*@B 0x60003FE*/ throw null; } }
+	private static global::TrainerSystem.CompTowerMatching _comparerTowerMatching = new CompTowerMatching();
+	private static global::TrainerSystem.CompTowerSingleStock _comparerTowerSingleStock = new CompTowerSingleStock();
+	private static global::TrainerSystem.CompTowerDoubleStock _comparerTowerDoubleStock = new CompTowerDoubleStock();
+	private static global::TrainerSystem.CompTowerTrainerPoke _compareTowerTrainerPoke = new CompTowerTrainerPoke();
+	private static readonly global::TrainerSystem.TagTableElem[] TAG_TABLE = new TagTableElem[]
+	{
+		new TagTableElem(TrainerType.FUTAGO_1, TrainerType.FUTAGO_2, TrainerType.FUTAGO_1),
+		new TagTableElem(TrainerType.LOVELOVE_1, TrainerType.LOVELOVE_2, TrainerType.LOVELOVE_1),
+		new TagTableElem(TrainerType.DOUBLETEAM_1, TrainerType.DOUBLETEAM_2, TrainerType.DOUBLETEAM_1),
+		new TagTableElem(TrainerType.FAMILY_1, TrainerType.FAMILY_2, TrainerType.FAMILY_1),
+		new TagTableElem(TrainerType.INTERVIEW_1, TrainerType.INTERVIEW_2, TrainerType.INTERVIEW_1),
+	};
+	private static global::XLSXContent.TowerTrainerTable TowerTrainerTable { get => GameData.DataManager.TowerTrainerTable; }
+	private static global::XLSXContent.TowerMatchingTable TowerMatchingTable { get => GameData.DataManager.TowerMatchingTable; }
+	private static global::XLSXContent.TowerSingleStockTable TowerSingleStockTable { get => GameData.DataManager.TowerSingleStockTable; }
+	private static global::XLSXContent.TowerDoubleStockTable TowerDoubleStockTable { get => GameData.DataManager.TowerDoubleStockTable; }
+	private static global::XLSXContent.TrainerTable TrainerTable { get => GameData.DataManager.TrainerTable; }
 	public static global::Pml.PokePara.PokemonParam createPokemon(in global::TrainerSystem.PokeParamForCreate pokeData, global::XLSXContent.TowerTrainerTable.SheetTrainerData trainerData, global::XLSXContent.TrainerTable.SheetTrainerType trainerTypeData, ulong personal_rand) {
         // @02cb7f80: trainerData (x1) is never read
         var initSpec = new InitialSpec();
@@ -491,7 +498,7 @@ public static class TrainerSystem
 
         return TrainerType.INVALID;
     }
-	static TrainerSystem() { /*@B 0x600040F*/ throw null; }
+	static TrainerSystem() { }
 	public class CompTowerMatching : global::System.Collections.IComparer
 	{
 		public int Compare(object x, object y) {
@@ -788,6 +795,10 @@ public static class TrainerSystem
 		public global::Dpr.Trainer.TrainerType typeA;
 		public global::Dpr.Trainer.TrainerType typeB;
 		public global::Dpr.Trainer.TrainerType tagType;
-		public TagTableElem(global::Dpr.Trainer.TrainerType typeA, global::Dpr.Trainer.TrainerType typeB, global::Dpr.Trainer.TrainerType tagType) { /*@B 0x6009347*/ throw null; }
+		public TagTableElem(global::Dpr.Trainer.TrainerType typeA, global::Dpr.Trainer.TrainerType typeB, global::Dpr.Trainer.TrainerType tagType) {
+			this.typeA = typeA;
+			this.typeB = typeB;
+			this.tagType = tagType;
+		}
 	}
 }

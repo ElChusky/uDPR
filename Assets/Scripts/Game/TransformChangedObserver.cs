@@ -3,6 +3,10 @@ public class TransformChangedObserver : global::UnityEngine.EventSystems.UIBehav
 {
 	[global::UnityEngine.SerializeField]
 	public global::UnityEngine.UI.ScrollRect _scrollRect;
-	protected override void OnRectTransformDimensionsChange() { /*@B 0x60003D8*/ throw null; }
+	protected override void OnRectTransformDimensionsChange() {
+		base.OnRectTransformDimensionsChange();
+		if (_scrollRect != null)
+			_scrollRect.verticalNormalizedPosition = 0f;
+	}
 	public TransformChangedObserver() { }
 }
