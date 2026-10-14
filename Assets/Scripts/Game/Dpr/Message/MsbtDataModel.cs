@@ -14,11 +14,48 @@ namespace Dpr.Message
 		public bool IsCreate { get { return this.bIsCreate; } }
 		public bool IsResident { get { return this.bIsResident; } }
 		public global::Dpr.Message.LabelData[] LabelDataArray { get { return this.labelDataArray; } }
-		public MsbtDataModel(global::Dpr.Message.LabelData[] labelDataArray, global::Dpr.Message.MessageEnumData.MsgLangId langID, int hash, string fileName, bool isResident) { /*@B 0x6003BB7*/ throw null; }
-		public void ClearData() { /*@B 0x6003BB8*/ throw null; }
-		public void CreateLabelTable() { /*@B 0x6003BB9*/ throw null; }
-		public int GetTextNum() { /*@B 0x6003BBB*/ throw null; }
-		public global::Dpr.Message.LabelData GetLabelDataByName(string labelName) { /*@B 0x6003BBC*/ throw null; }
-		public global::Dpr.Message.LabelData GetLabelDataByIndex(int labelIndex) { /*@B 0x6003BBD*/ throw null; }
+		public MsbtDataModel(global::Dpr.Message.LabelData[] labelDataArray, global::Dpr.Message.MessageEnumData.MsgLangId langID, int hash, string fileName, bool isResident) {
+			bIsCreate = false;
+			this.langID = langID;
+			this.hash = hash;
+			this.fileName = fileName.ToLower();
+			this.labelDataArray = labelDataArray;
+			bIsResident = isResident;
+		}
+		public void ClearData() {
+			labelDataArray = null;
+			labelIndexTable.Clear();
+		}
+		public void CreateLabelTable() {
+			int num = labelDataArray.Length;
+			if (labelIndexTable == null)
+				labelIndexTable = new global::System.Collections.Generic.Dictionary<int, int>(num);
+			for (; currentIndex < num; currentIndex++)
+			{
+				global::Dpr.Message.LabelData labelData = labelDataArray[currentIndex];
+				if (string.IsNullOrEmpty(labelData.labelName))
+					continue;
+				int key = labelData.labelName.GetHashCode();
+				if (!labelIndexTable.ContainsKey(key))
+					labelIndexTable.Add(key, labelData.arrayIndex);
+			}
+			bIsCreate = true;
+		}
+		public int GetTextNum() {
+			return labelDataArray.Length;
+		}
+		public global::Dpr.Message.LabelData GetLabelDataByName(string labelName) {
+			int key = labelName.GetHashCode();
+			if (labelIndexTable.ContainsKey(key))
+				return labelDataArray[labelIndexTable[key]];
+			global::Dpr.Message.MessageHelper.EmitLog("[" + labelName + "] Label Not Found in " + fileName, global::UnityEngine.LogType.Error);
+			return null;
+		}
+		public global::Dpr.Message.LabelData GetLabelDataByIndex(int labelIndex) {
+			if (labelIndex >= 0 && labelIndex < labelDataArray.Length)
+				return labelDataArray[labelIndex];
+			global::Dpr.Message.MessageHelper.EmitLog(string.Format("[{0}] Array Index Outof {1} : Total Num {2}", labelIndex, fileName, labelDataArray.Length), global::UnityEngine.LogType.Error);
+			return null;
+		}
 	}
 }

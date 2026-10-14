@@ -7,11 +7,51 @@ namespace Dpr.Message
 		private global::System.Action<global::Dpr.Message.LoadMsbtFileTask> OnCompleteLoadMsbtAction;
 		private bool bIsLoading;
 		public bool IsLoading { get { return this.bIsLoading; } }
-		public void Initialize(global::System.Action<global::Dpr.Message.LoadAssetBundleTask> onCompleteLoadAssetAct, global::System.Action<global::Dpr.Message.LoadMsbtFileTask> onCompleteLoadMsbtAct) { /*@B 0x6003DFF*/ throw null; }
-		public void Dispose() { /*@B 0x6003E00*/ throw null; }
-		public void RegistLoadCommonAssetBundleTask(string asssetBundleName) { /*@B 0x6003E01*/ throw null; }
-		public void RegistLoadAssetBundleTask(string asssetBundleName) { /*@B 0x6003E02*/ throw null; }
-		public void RequestLoadAssetBundle(global::System.Action onFinishedLoadRequest) { /*@B 0x6003E03*/ throw null; }
+		public void Initialize(global::System.Action<global::Dpr.Message.LoadAssetBundleTask> onCompleteLoadAssetAct, global::System.Action<global::Dpr.Message.LoadMsbtFileTask> onCompleteLoadMsbtAct) {
+			bIsLoading = false;
+			OnCompleteLoadAssetAction = onCompleteLoadAssetAct;
+			OnCompleteLoadMsbtAction = onCompleteLoadMsbtAct;
+		}
+		public void Dispose() {
+			if (bIsLoading)
+				global::Dpr.Message.MessageHelper.EmitLog("MSBT AssetBundle Load Process Running !!!!!!!", global::UnityEngine.LogType.Error);
+			OnCompleteLoadAssetAction = null;
+			OnCompleteLoadMsbtAction = null;
+			bIsLoading = false;
+		}
+		public void RegistLoadCommonAssetBundleTask(string asssetBundleName) {
+			global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(asssetBundleName, true, (requestEventType, name, asset) =>
+			{
+				if (requestEventType != global::SmartPoint.AssetAssistant.RequestEventType.Activated)
+					return;
+				global::Dpr.Message.MessageHelper.ExtractionLangNameByName(name);
+				global::Dpr.Message.MsbtData msbtData = asset as global::Dpr.Message.MsbtData;
+				global::Dpr.Message.LoadAssetBundleTask task = new global::Dpr.Message.LoadAssetBundleTask();
+				task.fileName = name;
+				task.msbtData = msbtData;
+				OnCompleteLoadAssetAction?.Invoke(task);
+			}, null);
+		}
+		public void RegistLoadAssetBundleTask(string asssetBundleName) {
+			global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(asssetBundleName, true, (requestEventType, name, asset) =>
+			{
+				if (requestEventType != global::SmartPoint.AssetAssistant.RequestEventType.Activated)
+					return;
+				global::Dpr.Message.MsbtData msbtData = asset as global::Dpr.Message.MsbtData;
+				global::Dpr.Message.LoadAssetBundleTask task = new global::Dpr.Message.LoadAssetBundleTask();
+				task.fileName = name;
+				task.msbtData = msbtData;
+				OnCompleteLoadAssetAction?.Invoke(task);
+			}, null);
+		}
+		public void RequestLoadAssetBundle(global::System.Action onFinishedLoadRequest) {
+			bIsLoading = true;
+			global::SmartPoint.AssetAssistant.AssetManager.DispatchRequests((requestEventType, name, asset) =>
+			{
+				bIsLoading = false;
+				onFinishedLoadRequest?.Invoke();
+			});
+		}
 		public MsgDataFileLoader() { }
 	}
 }

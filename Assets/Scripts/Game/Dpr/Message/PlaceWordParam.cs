@@ -3,7 +3,11 @@ namespace Dpr.Message
 {
 	public class PlaceWordParam : global::Dpr.Message.AWordParamBase
 	{
-		public PlaceWordParam(string labelName) { /*@B 0x6003DE5*/ throw null; }
-		public override void SetWordParam(global::Dpr.Message.MessageTagDataModel tagDataModel) { /*@B 0x6003DE6*/ throw null; }
+		public PlaceWordParam(string labelName) {
+			strValue = labelName;
+		}
+		public override void SetWordParam(global::Dpr.Message.MessageTagDataModel tagDataModel) {
+			tagDataModel.SetPlaceWordParam(strValue, count, gender, initialSound, articlePresence, countablity, strWidth);
+		}
 	}
 }

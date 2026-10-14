@@ -4,46 +4,560 @@ namespace Dpr.Message
 	public class MsbtParser
 	{
 		private const char NEW_LINE_CHAR = '\u000D';
-		private global::System.Collections.Generic.List<global::Dpr.Message.WordData> wordDataList;
-		private global::Dpr.Message.LabelParseProcessor parseProcessor;
-		private global::Dpr.Message.MessageEnumData.MsgLangId msgLangID;
+		private global::System.Collections.Generic.List<global::Dpr.Message.WordData> wordDataList = new global::System.Collections.Generic.List<global::Dpr.Message.WordData>();
+		private global::Dpr.Message.LabelParseProcessor parseProcessor = new global::Dpr.Message.LabelParseProcessor();
+		private global::Dpr.Message.MessageEnumData.MsgLangId msgLangID = global::Dpr.Message.MessageEnumData.MsgLangId.Num;
 		private global::TMPro.TMP_FontAsset fontAsset;
 		private float fontSize;
-		private global::Dpr.Message.MessageEnumData.MsgLangId fontTagLangID;
-		private int sizeTagScale;
-		public void Initialize() { /*@B 0x6003CD3*/ throw null; }
-		public global::Dpr.Message.LabelData[] ParseMsbtBinData(byte[] binDataArray, global::Dpr.Message.MessageEnumData.MsgLangId langID, int patchVersion) { /*@B 0x6003CD4*/ throw null; }
-		private global::Dpr.Message.MsbtParser.MsbtFileData ParseMsbtFileData(byte[] msbtByteDataArray) { /*@B 0x6003CD5*/ throw null; }
-		private global::Dpr.Message.LabelData[] ConvertParseTextDataToFormatMsbtData(global::Dpr.Message.MsbtParser.MsbtFileData dataModel, int patchVersion) { /*@B 0x6003CD6*/ throw null; }
-		private global::Dpr.Message.StyleInfo CreateStyleInfo(int styleIndex, global::Dpr.Message.MessageEnumData.MsgControlID controlID) { /*@B 0x6003CD7*/ throw null; }
-		private int[] CreateAttributeInfo(global::Dpr.Message.MessageAttributeDataModel attributeDataModel) { /*@B 0x6003CD8*/ throw null; }
-		private global::Dpr.Message.TagData[] CreateTagDataArray(global::Dpr.Message.MsbtParser.LabelDataModel dataModel) { /*@B 0x6003CD9*/ throw null; }
-		private void SetForceTagReference(global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) { /*@B 0x6003CDA*/ throw null; }
-		private void GrmTagReference(int listIndex, global::Dpr.Message.MessageEnumData.GrmID tagId, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) { /*@B 0x6003CDB*/ throw null; }
-		private void ENTagReference(int listIndex, global::Dpr.Message.LabelTagDataModel tagData, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) { /*@B 0x6003CDC*/ throw null; }
-		private void FRTagReference(int listIndex, global::Dpr.Message.LabelTagDataModel tagData, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) { /*@B 0x6003CDD*/ throw null; }
-		private void ITTagReference(int listIndex, global::Dpr.Message.LabelTagDataModel tagData, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) { /*@B 0x6003CDE*/ throw null; }
-		private void DETagReference(int listIndex, global::Dpr.Message.LabelTagDataModel tagData, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) { /*@B 0x6003CDF*/ throw null; }
-		private void ESTagReference(int listIndex, global::Dpr.Message.LabelTagDataModel tagData, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) { /*@B 0x6003CE0*/ throw null; }
-		private void SetForceGrmId(int listIndex, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID forceGrmId) { /*@B 0x6003CE1*/ throw null; }
-		private global::Dpr.Message.WordData[] CreateWordDataArray(global::Dpr.Message.LabelParseDataModel parseDataModel, out string errorMsg) { /*@B 0x6003CE2*/ throw null; }
-		private global::Dpr.Message.MsbtParser.MsgEventData CreateEventDataByCtrl2ID(global::Dpr.Message.MessageEnumData.Ctrl2ID tagId, float tagParameter) { /*@B 0x6003CE3*/ throw null; }
-		private void AddStrWordData(string str) { /*@B 0x6003CE4*/ throw null; }
-		private void AddNewLineWordData(global::Dpr.Message.MessageEnumData.MsgEventID eventID, string str) { /*@B 0x6003CE5*/ throw null; }
-		public void SetFontAsset(global::Dpr.Message.MessageEnumData.MsgLangId langID) { /*@B 0x6003CE6*/ throw null; }
-		private float CalcStrWidth(string str) { /*@B 0x6003CE7*/ throw null; }
-		public MsbtParser() { /*@B 0x6003CE8*/ throw null; }
+		private global::Dpr.Message.MessageEnumData.MsgLangId fontTagLangID = global::Dpr.Message.MessageEnumData.MsgLangId.JPN;
+		private int sizeTagScale = 100;
+		public void Initialize() {
+			parseProcessor.Initialize();
+		}
+		public global::Dpr.Message.LabelData[] ParseMsbtBinData(byte[] binDataArray, global::Dpr.Message.MessageEnumData.MsgLangId langID, int patchVersion) {
+			fontSize = 0f;
+			msgLangID = langID;
+			global::Dpr.Message.MsbtParser.MsbtFileData dataModel = ParseMsbtFileData(binDataArray);
+			return ConvertParseTextDataToFormatMsbtData(dataModel, patchVersion);
+		}
+		private global::Dpr.Message.MsbtParser.MsbtFileData ParseMsbtFileData(byte[] msbtByteDataArray) {
+			global::Nintendo.MessageStudio.Lib.BinMsgFile binMsgFile = new global::Nintendo.MessageStudio.Lib.BinMsgFile();
+			binMsgFile.SetMSBTFileData(msbtByteDataArray);
+			global::Dpr.Message.MsbtParser.MsbtFileData msbtFileData = new global::Dpr.Message.MsbtParser.MsbtFileData();
+			int textNum = binMsgFile.GetTextNum();
+			global::Dpr.Message.MsbtParser.LabelDataModel[] labelDataModelArray = new global::Dpr.Message.MsbtParser.LabelDataModel[textNum];
+			for (int i = 0; i < textNum; i++)
+			{
+				parseProcessor.Reset();
+				parseProcessor.Process(binMsgFile.GetText(i));
+				labelDataModelArray[i] = new global::Dpr.Message.MsbtParser.LabelDataModel
+				{
+					labelIndex = i,
+					arrayIndex = binMsgFile.GetIndexAttribute(i, 0x41),
+					styleIndex = binMsgFile.GetStyle(i),
+					labelName = binMsgFile.GetLabel(i),
+					parseDataModel = parseProcessor.CreateParseDataModel(),
+					patchVersion = binMsgFile.GetIndexAttribute(binMsgFile.GetAttributes(i), 0x43),
+				};
+			}
+			msbtFileData.binMsgFile = binMsgFile;
+			msbtFileData.langID = msgLangID;
+			msbtFileData.labelDataModelArray = labelDataModelArray;
+			return msbtFileData;
+		}
+		private global::Dpr.Message.LabelData[] ConvertParseTextDataToFormatMsbtData(global::Dpr.Message.MsbtParser.MsbtFileData dataModel, int patchVersion) {
+			int maxDataIndex = dataModel.GetMaxDataIndex();
+			int labelNum = dataModel.LabelNum;
+			global::Dpr.Message.MsbtParser.LabelDataModel[] sortedArray = new global::Dpr.Message.MsbtParser.LabelDataModel[maxDataIndex];
+			for (int i = 0; i < labelNum; i++)
+			{
+				global::Dpr.Message.MsbtParser.LabelDataModel labelDataModel = dataModel.labelDataModelArray[i];
+				int index = dataModel.GetIndexAttributeData(labelDataModel.labelIndex);
+				if (sortedArray[index] != null)
+				{
+					global::Dpr.Message.MessageHelper.EmitLog(string.Format("{0} : Index {1} is Already Setting Data Index!!!!", labelDataModel.labelName, index), global::UnityEngine.LogType.Error);
+				}
+				else if (labelDataModel.patchVersion <= patchVersion)
+				{
+					labelDataModel.arrayIndex = index;
+					sortedArray[index] = labelDataModel;
+				}
+			}
+			global::Dpr.Message.LabelData[] labelDataArray = new global::Dpr.Message.LabelData[maxDataIndex];
+			for (int j = 0; j < maxDataIndex; j++)
+			{
+				global::Dpr.Message.MsbtParser.LabelDataModel labelDataModel = sortedArray[j];
+				global::Dpr.Message.LabelData labelData = new global::Dpr.Message.LabelData();
+				if (labelDataModel != null)
+				{
+					int labelIndex = labelDataModel.labelIndex;
+					labelData.labelIndex = labelIndex;
+					labelData.arrayIndex = labelDataModel.arrayIndex;
+					labelData.labelName = labelDataModel.labelName;
+					labelData.styleInfo = CreateStyleInfo(labelDataModel.styleIndex, dataModel.CheckControlID(labelIndex));
+					labelData.attributeValueArray = CreateAttributeInfo(dataModel.GetAttributeDataModel(labelIndex));
+					labelData.tagDataArray = CreateTagDataArray(labelDataModel);
+					string errorMsg = string.Empty;
+					labelData.wordDataArray = CreateWordDataArray(labelDataModel.parseDataModel, out errorMsg);
+				}
+				labelDataArray[j] = labelData;
+			}
+			return labelDataArray;
+		}
+		private global::Dpr.Message.StyleInfo CreateStyleInfo(int styleIndex, global::Dpr.Message.MessageEnumData.MsgControlID controlID) {
+			global::Dpr.Message.StyleInfo styleInfo = new global::Dpr.Message.StyleInfo();
+			if (styleIndex >= 0)
+			{
+				global::Dpr.Message.MessageStyleData formatData = global::Dpr.Message.MessageFontDataConstants.FONT_STYLE_DATA_TABLE[styleIndex];
+				global::Dpr.Message.MessageStyleDataModel styleDataModel = new global::Dpr.Message.MessageStyleDataModel(styleIndex, formatData);
+				styleInfo.styleIndex = styleIndex;
+				styleInfo.fontSize = styleDataModel.fontSize;
+				styleInfo.colorIndex = formatData.fontColorIndex;
+				styleInfo.maxWidth = styleDataModel.maxTextWidth;
+				styleInfo.controlID = controlID;
+				fontSize = styleDataModel.fontSize;
+			}
+			return styleInfo;
+		}
+		private int[] CreateAttributeInfo(global::Dpr.Message.MessageAttributeDataModel attributeDataModel) {
+			return new int[]
+			{
+				attributeDataModel.gender,
+				attributeDataModel.initialSound,
+				attributeDataModel.countablity,
+				attributeDataModel.displayPattern,
+				attributeDataModel.articlePresence,
+			};
+		}
+		private global::Dpr.Message.TagData[] CreateTagDataArray(global::Dpr.Message.MsbtParser.LabelDataModel dataModel) {
+			global::System.Collections.Generic.List<global::Dpr.Message.TagData> tagDataArray = new global::System.Collections.Generic.List<global::Dpr.Message.TagData>();
+			global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList = dataModel.TagDataList;
+			SetForceTagReference(tagDataList);
+			foreach (global::Dpr.Message.LabelTagDataModel tagDataModel in tagDataList)
+			{
+				global::Dpr.Message.TagData tagData = new global::Dpr.Message.TagData();
+				if (tagDataModel.IsWordTag)
+				{
+					tagData.tagIndex = tagDataModel.index;
+					tagData.groupID = tagDataModel.tagGroupID;
+					tagData.tagID = tagDataModel.tagID;
+					tagData.tagPatternID = tagDataModel.patternID;
+					tagData.tagParameter = tagDataModel.tagParameter;
+					tagData.tagWordArray = tagDataModel.tagWords;
+					tagData.forceArticle = tagDataModel.forceArticle;
+					tagData.forceGrmID = tagDataModel.forceGrmID;
+					tagDataArray.Add(tagData);
+				}
+			}
+			return tagDataArray.ToArray();
+		}
+		private void SetForceTagReference(global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) {
+			if (tagDataList == null || tagDataList.Count < 1)
+				return;
+			for (int i = 0; i < tagDataList.Count; i++)
+			{
+				global::Dpr.Message.LabelTagDataModel tagData = tagDataList[i];
+				switch (tagData.tagGroupID)
+				{
+					case global::Dpr.Message.MessageEnumData.GroupTagID.Grm:
+						GrmTagReference(i, (global::Dpr.Message.MessageEnumData.GrmID)tagData.tagID, tagDataList);
+						break;
+					case global::Dpr.Message.MessageEnumData.GroupTagID.EN:
+						ENTagReference(i, tagData, tagDataList);
+						break;
+					case global::Dpr.Message.MessageEnumData.GroupTagID.FR:
+						FRTagReference(i, tagData, tagDataList);
+						break;
+					case global::Dpr.Message.MessageEnumData.GroupTagID.IT:
+						ITTagReference(i, tagData, tagDataList);
+						break;
+					case global::Dpr.Message.MessageEnumData.GroupTagID.DE:
+						DETagReference(i, tagData, tagDataList);
+						break;
+					case global::Dpr.Message.MessageEnumData.GroupTagID.ES:
+						ESTagReference(i, tagData, tagDataList);
+						break;
+				}
+			}
+		}
+		private void GrmTagReference(int listIndex, global::Dpr.Message.MessageEnumData.GrmID tagId, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) {
+			if (tagId == global::Dpr.Message.MessageEnumData.GrmID.ForceMasculine)
+				SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Masculine);
+		}
+		private void ENTagReference(int listIndex, global::Dpr.Message.LabelTagDataModel tagData, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) {
+			switch (tagData.tagID)
+			{
+				case 7:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Singular);
+					break;
+				case 8:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Plural);
+					break;
+				case 9:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.InitialCap);
+					break;
+			}
+		}
+		private void FRTagReference(int listIndex, global::Dpr.Message.LabelTagDataModel tagData, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) {
+			switch (tagData.tagID)
+			{
+				case 13:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Singular);
+					break;
+				case 14:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Plural);
+					break;
+				case 18:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.InitialCap);
+					break;
+			}
+		}
+		private void ITTagReference(int listIndex, global::Dpr.Message.LabelTagDataModel tagData, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) {
+			switch (tagData.tagID)
+			{
+				case 13:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Singular);
+					break;
+				case 14:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Plural);
+					break;
+				case 15:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Masculine);
+					break;
+				case 22:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.InitialCap);
+					break;
+			}
+		}
+		private void DETagReference(int listIndex, global::Dpr.Message.LabelTagDataModel tagData, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) {
+			switch (tagData.tagID)
+			{
+				case 11:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Singular);
+					break;
+				case 12:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Plural);
+					break;
+				case 13:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.InitialCap);
+					break;
+			}
+		}
+		private void ESTagReference(int listIndex, global::Dpr.Message.LabelTagDataModel tagData, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList) {
+			switch (tagData.tagID)
+			{
+				case 15:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Singular);
+					break;
+				case 16:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.Plural);
+					break;
+				case 17:
+					SetForceGrmId(listIndex, tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID.InitialCap);
+					break;
+			}
+		}
+		private void SetForceGrmId(int listIndex, global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList, global::Dpr.Message.MessageEnumData.ForceGrmID forceGrmId) {
+			for (int i = listIndex + 1; i < tagDataList.Count; i++)
+			{
+				global::Dpr.Message.LabelTagDataModel tagData = tagDataList[i];
+				tagData.forceGrmID = forceGrmId;
+				if (tagData.patternID == global::Dpr.Message.MessageEnumData.TagPatternID.Word)
+					break;
+			}
+		}
+		private global::Dpr.Message.WordData[] CreateWordDataArray(global::Dpr.Message.LabelParseDataModel parseDataModel, out string errorMsg) {
+			errorMsg = string.Empty;
+			fontTagLangID = msgLangID;
+			sizeTagScale = 100;
+			global::System.Text.StringBuilder strBuilder = new global::System.Text.StringBuilder();
+			wordDataList.Clear();
+			int tagIndex = 0;
+			int tagListIndex = 0;
+			foreach (string str in parseDataModel.StringList)
+			{
+				if (str.Length != 1)
+				{
+					strBuilder.Append(str);
+					continue;
+				}
+				char c = str[0];
+				if (c == NEW_LINE_CHAR)
+				{
+					AddNewLineWordData(global::Dpr.Message.MessageEnumData.MsgEventID.NewLine, strBuilder.ToString());
+					strBuilder.Clear();
+				}
+				else if (c == '▼')
+				{
+					AddNewLineWordData(global::Dpr.Message.MessageEnumData.MsgEventID.ScrollPage, strBuilder.ToString());
+					strBuilder.Clear();
+				}
+				else if (c == '▽')
+				{
+					AddNewLineWordData(global::Dpr.Message.MessageEnumData.MsgEventID.ScrollLine, strBuilder.ToString());
+					strBuilder.Clear();
+				}
+				else if (c == '|')
+				{
+					global::Dpr.Message.LabelTagDataModel tagData = parseDataModel.TagDataList[tagListIndex];
+					switch (tagData.patternID)
+					{
+						case global::Dpr.Message.MessageEnumData.TagPatternID.Word:
+						case global::Dpr.Message.MessageEnumData.TagPatternID.Digit:
+						case global::Dpr.Message.MessageEnumData.TagPatternID.GrammarWord:
+						{
+							AddStrWordData(strBuilder.ToString());
+							strBuilder.Clear();
+							global::Dpr.Message.WordData wordData = new global::Dpr.Message.WordData();
+							wordData.patternID = global::Dpr.Message.MessageEnumData.WordDataPatternID.WordTag;
+							wordData.eventID = global::Dpr.Message.MessageEnumData.MsgEventID.None;
+							wordData.tagIndex = tagIndex;
+							wordDataList.Add(wordData);
+							tagIndex++;
+							break;
+						}
+						case global::Dpr.Message.MessageEnumData.TagPatternID.SpriteFont:
+						{
+							AddStrWordData(strBuilder.ToString());
+							strBuilder.Clear();
+							global::Dpr.Message.WordData wordData = new global::Dpr.Message.WordData();
+							wordData.patternID = global::Dpr.Message.MessageEnumData.WordDataPatternID.SpriteFont;
+							wordData.eventID = global::Dpr.Message.MessageEnumData.MsgEventID.None;
+							wordData.tagIndex = tagIndex;
+							wordDataList.Add(wordData);
+							tagIndex++;
+							break;
+						}
+						case global::Dpr.Message.MessageEnumData.TagPatternID.RichText:
+						{
+							AddStrWordData(strBuilder.ToString());
+							strBuilder.Clear();
+							global::Dpr.Message.WordData wordData = new global::Dpr.Message.WordData();
+							if (tagData.tagGroupID == global::Dpr.Message.MessageEnumData.GroupTagID.System)
+							{
+								if (tagData.tagID == 1)
+								{
+									if (tagData.langID == 0)
+										fontTagLangID = global::Dpr.Message.MessageDataConstants.CONVERT_LANG_ID_TABLE[(int)msgLangID];
+									else
+										fontTagLangID = global::Dpr.Message.MessageDataConstants.CONVERT_LANG_ID_TABLE[(int)tagData.langID];
+									wordData.patternID = global::Dpr.Message.MessageEnumData.WordDataPatternID.FontTag;
+								}
+								else if (tagData.tagID == 3)
+								{
+									wordData.patternID = global::Dpr.Message.MessageEnumData.WordDataPatternID.ColorTag;
+								}
+								else if (tagData.tagID == 2)
+								{
+									sizeTagScale = tagData.tagParameter == 0 ? 100 : tagData.tagParameter;
+									wordData.patternID = global::Dpr.Message.MessageEnumData.WordDataPatternID.SizeTag;
+								}
+							}
+							else if (tagData.tagGroupID == global::Dpr.Message.MessageEnumData.GroupTagID.Ctrl1 && tagData.tagID >= 3 && tagData.tagID <= 5)
+							{
+								wordData.patternID = global::Dpr.Message.MessageEnumData.WordDataPatternID.CtrlTag;
+							}
+							wordData.str = tagData.strValue;
+							wordData.eventID = global::Dpr.Message.MessageEnumData.MsgEventID.None;
+							wordDataList.Add(wordData);
+							break;
+						}
+						case global::Dpr.Message.MessageEnumData.TagPatternID.ControlMessage:
+						{
+							global::Dpr.Message.MsbtParser.MsgEventData eventData = CreateEventDataByCtrl2ID((global::Dpr.Message.MessageEnumData.Ctrl2ID)tagData.tagID, tagData.tagParameter);
+							switch (eventData.endEventId)
+							{
+								case global::Dpr.Message.MessageEnumData.MsgEventID.Wait:
+								case global::Dpr.Message.MessageEnumData.MsgEventID.CallBack:
+								case global::Dpr.Message.MessageEnumData.MsgEventID.GuidIcon:
+								{
+									global::Dpr.Message.WordData wordData = new global::Dpr.Message.WordData();
+									wordData.patternID = global::Dpr.Message.MessageEnumData.WordDataPatternID.Event;
+									wordData.tagValue = eventData.tagParameter;
+									wordData.eventID = eventData.endEventId;
+									wordData.str = strBuilder.ToString();
+									wordDataList.Add(wordData);
+									strBuilder.Clear();
+									break;
+								}
+								case global::Dpr.Message.MessageEnumData.MsgEventID.ScrollPage:
+								case global::Dpr.Message.MessageEnumData.MsgEventID.ScrollLine:
+									AddNewLineWordData(eventData.endEventId, strBuilder.ToString());
+									strBuilder.Clear();
+									break;
+								case global::Dpr.Message.MessageEnumData.MsgEventID.NewLine:
+									AddNewLineWordData(global::Dpr.Message.MessageEnumData.MsgEventID.NewLine, strBuilder.ToString());
+									strBuilder.Clear();
+									break;
+							}
+							break;
+						}
+					}
+					tagListIndex++;
+				}
+				else
+				{
+					strBuilder.Append(c);
+				}
+			}
+			if (strBuilder.Length > 0)
+				AddStrWordData(strBuilder.ToString());
+			int lastIndex = wordDataList.Count - 1;
+			if (lastIndex < 0)
+			{
+				global::Dpr.Message.WordData endWordData = new global::Dpr.Message.WordData();
+				endWordData.patternID = global::Dpr.Message.MessageEnumData.WordDataPatternID.Event;
+				endWordData.eventID = global::Dpr.Message.MessageEnumData.MsgEventID.End;
+				wordDataList.Add(endWordData);
+			}
+			else
+			{
+				global::Dpr.Message.WordData lastWordData = wordDataList[lastIndex];
+				switch (lastWordData.eventID)
+				{
+					case global::Dpr.Message.MessageEnumData.MsgEventID.NewLine:
+						if (string.IsNullOrEmpty(lastWordData.str))
+						{
+							errorMsg = "改行タグの直後に改行コードが利用されています";
+							if (wordDataList.Count > 1)
+							{
+								wordDataList[wordDataList.Count - 2].eventID = global::Dpr.Message.MessageEnumData.MsgEventID.End;
+								wordDataList.RemoveAt(wordDataList.Count - 1);
+								break;
+							}
+						}
+						lastWordData.eventID = global::Dpr.Message.MessageEnumData.MsgEventID.End;
+						break;
+					case global::Dpr.Message.MessageEnumData.MsgEventID.Wait:
+					case global::Dpr.Message.MessageEnumData.MsgEventID.CallBack:
+					{
+						global::Dpr.Message.WordData endWordData = new global::Dpr.Message.WordData();
+						endWordData.patternID = global::Dpr.Message.MessageEnumData.WordDataPatternID.Event;
+						endWordData.eventID = global::Dpr.Message.MessageEnumData.MsgEventID.End;
+						wordDataList.Add(endWordData);
+						break;
+					}
+					case global::Dpr.Message.MessageEnumData.MsgEventID.End:
+						break;
+					default:
+						lastWordData.eventID = global::Dpr.Message.MessageEnumData.MsgEventID.End;
+						break;
+				}
+			}
+			return wordDataList.ToArray();
+		}
+		private global::Dpr.Message.MsbtParser.MsgEventData CreateEventDataByCtrl2ID(global::Dpr.Message.MessageEnumData.Ctrl2ID tagId, float tagParameter) {
+			global::Dpr.Message.MsbtParser.MsgEventData eventData = new global::Dpr.Message.MsbtParser.MsgEventData();
+			switch (tagId)
+			{
+				case global::Dpr.Message.MessageEnumData.Ctrl2ID.LineFeed:
+					eventData.endEventId = global::Dpr.Message.MessageEnumData.MsgEventID.ScrollLine;
+					break;
+				case global::Dpr.Message.MessageEnumData.Ctrl2ID.PageClear:
+					eventData.endEventId = global::Dpr.Message.MessageEnumData.MsgEventID.ScrollPage;
+					eventData.tagParameter = tagParameter;
+					break;
+				case global::Dpr.Message.MessageEnumData.Ctrl2ID.WaitOne:
+					eventData.endEventId = global::Dpr.Message.MessageEnumData.MsgEventID.Wait;
+					eventData.tagParameter = tagParameter * 0.01f;
+					break;
+				case global::Dpr.Message.MessageEnumData.Ctrl2ID.CallBackOne:
+					eventData.endEventId = global::Dpr.Message.MessageEnumData.MsgEventID.CallBack;
+					eventData.tagParameter = tagParameter;
+					break;
+				case global::Dpr.Message.MessageEnumData.Ctrl2ID.GuidIcon:
+					eventData.endEventId = global::Dpr.Message.MessageEnumData.MsgEventID.GuidIcon;
+					break;
+				default:
+					eventData.endEventId = global::Dpr.Message.MessageEnumData.MsgEventID.End;
+					global::Dpr.Message.MessageHelper.EmitLog(string.Format("Not Found Ctrl2Tag : {0}", tagId), global::UnityEngine.LogType.Warning);
+					break;
+			}
+			return eventData;
+		}
+		private void AddStrWordData(string str) {
+			if (string.IsNullOrEmpty(str))
+				return;
+			global::Dpr.Message.WordData wordData = new global::Dpr.Message.WordData();
+			wordData.patternID = global::Dpr.Message.MessageEnumData.WordDataPatternID.Str;
+			wordData.str = str;
+			wordData.eventID = global::Dpr.Message.MessageEnumData.MsgEventID.None;
+			wordData.strWidth = CalcStrWidth(str);
+			wordDataList.Add(wordData);
+		}
+		private void AddNewLineWordData(global::Dpr.Message.MessageEnumData.MsgEventID eventID, string str) {
+			if (string.IsNullOrEmpty(str) && wordDataList.Count > 0)
+			{
+				switch (wordDataList[wordDataList.Count - 1].eventID)
+				{
+					case global::Dpr.Message.MessageEnumData.MsgEventID.NewLine:
+					case global::Dpr.Message.MessageEnumData.MsgEventID.ScrollPage:
+					case global::Dpr.Message.MessageEnumData.MsgEventID.ScrollLine:
+					case global::Dpr.Message.MessageEnumData.MsgEventID.End:
+						return;
+				}
+			}
+			global::Dpr.Message.WordData wordData = new global::Dpr.Message.WordData();
+			wordData.patternID = global::Dpr.Message.MessageEnumData.WordDataPatternID.Event;
+			wordData.eventID = eventID;
+			wordData.str = str;
+			wordData.strWidth = CalcStrWidth(str);
+			wordDataList.Add(wordData);
+		}
+		public void SetFontAsset(global::Dpr.Message.MessageEnumData.MsgLangId langID) {
+			if (msgLangID != global::Dpr.Message.MessageEnumData.MsgLangId.Num
+				&& global::Dpr.Message.MessageDataConstants.CONVERT_LANG_ID_TABLE[(int)msgLangID] == global::Dpr.Message.MessageDataConstants.CONVERT_LANG_ID_TABLE[(int)langID])
+				return;
+			global::Dpr.Message.MessageEnumData.MsgLangId fontLangID = global::Dpr.Message.MessageDataConstants.CONVERT_LANG_ID_TABLE[(int)langID];
+			// The shipped body only bounds-checks the font file name it looks up; nothing else survives (no store, no call).
+			string fontFileName = global::Dpr.Message.MessageFontDataConstants.FONT_FILE_NAME_ARRAY[global::Dpr.Message.MessageFontDataConstants.FONT_FILE_TABLE[(int)fontLangID]];
+		}
+		private float CalcStrWidth(string str) {
+			if (fontAsset == null || fontSize <= 0f || string.IsNullOrEmpty(str))
+				return 0f;
+			global::TMPro.TMP_FontAsset useFontAsset = msgLangID == fontTagLangID ? fontAsset : null;
+			return global::Dpr.Message.MessageHelper.CheckMessageWidth(useFontAsset, str, sizeTagScale / 100f);
+		}
+		public MsbtParser() {
+		}
 		private class MsbtFileData
 		{
 			public global::Dpr.Message.MessageEnumData.MsgLangId langID = MessageEnumData.MsgLangId.JPN;
 			public global::Dpr.Message.MsbtParser.LabelDataModel[] labelDataModelArray;
 			public global::Nintendo.MessageStudio.Lib.BinMsgFile binMsgFile;
-			public int LabelNum { get { /*@B 0x600A344*/ throw null; } }
-			public global::Dpr.Message.MessageAttributeDataModel GetAttributeDataModel(int labelIndex) { /*@B 0x600A345*/ throw null; }
-			public global::Dpr.Message.MessageEnumData.MsgControlID CheckControlID(int labelIndex) { /*@B 0x600A346*/ throw null; }
-			public int GetMaxDataIndex() { /*@B 0x600A347*/ throw null; }
-			public int GetIndexAttributeData(int labelIndex) { /*@B 0x600A348*/ throw null; }
-			public MsbtFileData() { /*@B 0x600A349*/ throw null; }
+			public int LabelNum { get { return labelDataModelArray.Length; } }
+			public global::Dpr.Message.MessageAttributeDataModel GetAttributeDataModel(int labelIndex) {
+			string label = labelDataModelArray[labelIndex].labelName;
+			global::Dpr.Message.MessageAttributeDataModel attributeDataModel = new global::Dpr.Message.MessageAttributeDataModel();
+			switch (global::Dpr.Message.MessageDataConstants.CONVERT_LANG_ID_TABLE[(int)langID])
+			{
+				case global::Dpr.Message.MessageEnumData.MsgLangId.USA:
+					attributeDataModel.ApplyENAttributeData(binMsgFile, label);
+					break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.FRA:
+					attributeDataModel.ApplyFRAttributeData(binMsgFile, label);
+					break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.ITA:
+					attributeDataModel.ApplyITAttributeData(binMsgFile, label);
+					break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.DEU:
+					attributeDataModel.ApplyDEAttributeData(binMsgFile, label);
+					break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.ESP:
+					attributeDataModel.ApplyESAttributeData(binMsgFile, label);
+					break;
+			}
+			return attributeDataModel;
+		}
+			public global::Dpr.Message.MessageEnumData.MsgControlID CheckControlID(int labelIndex) {
+			foreach (global::Dpr.Message.LabelTagDataModel tagData in labelDataModelArray[labelIndex].TagDataList)
+			{
+				if (tagData.tagGroupID != global::Dpr.Message.MessageEnumData.GroupTagID.Ctrl1)
+					continue;
+				if (tagData.tagID == 6)
+					return global::Dpr.Message.MessageEnumData.MsgControlID.BattleOneline;
+				if (tagData.tagID == 7)
+					return global::Dpr.Message.MessageEnumData.MsgControlID.UnknownMessage;
+			}
+			return global::Dpr.Message.MessageEnumData.MsgControlID.None;
+		}
+			public int GetMaxDataIndex() {
+			int maxIndex = 0;
+			foreach (global::Dpr.Message.MsbtParser.LabelDataModel labelDataModel in labelDataModelArray)
+			{
+				if (labelDataModel == null)
+					continue;
+				int index = GetIndexAttributeData(labelDataModel.labelIndex);
+				if (maxIndex < index)
+					maxIndex = index;
+			}
+			return maxIndex + 1;
+		}
+			public int GetIndexAttributeData(int labelIndex) {
+			return binMsgFile.GetIndexAttribute(binMsgFile.GetAttributes(labelDataModelArray[labelIndex].labelName), 0x41);
+		}
+			public MsbtFileData() {
+			}
 		}
 		private class LabelDataModel
 		{
@@ -53,7 +567,7 @@ namespace Dpr.Message
 			public int arrayIndex;
 			public int styleIndex;
 			public int patchVersion;
-			public global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> TagDataList { get { /*@B 0x600A34A*/ throw null; } }
+			public global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> TagDataList { get { return parseDataModel.TagDataList; } }
 			public LabelDataModel() { }
 		}
 		private class MsgEventData
