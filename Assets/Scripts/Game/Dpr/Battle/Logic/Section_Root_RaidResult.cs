@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Root_RaidResult : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Root_RaidResult(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070D9*/ throw null; }
+		public Section_Root_RaidResult(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Root_RaidResult.Result pResult, in global::Dpr.Battle.Logic.Section_Root_RaidResult.Description description) {
 			GetServerCommandPutter().Act_RaidResult();
 		}

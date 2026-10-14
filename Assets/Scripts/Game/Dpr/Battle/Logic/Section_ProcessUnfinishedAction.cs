@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_ProcessUnfinishedAction : global::Dpr.Battle.Logic.Section
 	{
-		public Section_ProcessUnfinishedAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007032*/ throw null; }
+		public Section_ProcessUnfinishedAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ProcessUnfinishedAction.Result pResult, in global::Dpr.Battle.Logic.Section_ProcessUnfinishedAction.Description description) {
 			PokeActionContainer pokeActionContainer = description.pokeActionContainer;
 			while (!pokeActionContainer.IsAllActionDone())
@@ -53,7 +53,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.PokeActionContainer pokeActionContainer;
-			public Description() { /*@B 0x600B5D4*/ throw null; }
+			public Description() {
+				pokeActionContainer = null;
+			}
 		}
 		public class Result
 		{

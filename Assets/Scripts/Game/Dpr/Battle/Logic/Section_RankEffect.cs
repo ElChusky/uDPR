@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RankEffect : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RankEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007071*/ throw null; }
+		public Section_RankEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RankEffect.Result pResult, in global::Dpr.Battle.Logic.Section_RankEffect.Description desc) {
 			pResult.isValid = false;
 			pResult.effectedVolume = 0;
@@ -66,7 +66,21 @@ namespace Dpr.Battle.Logic
 			public bool fStdMsg;
 			public global::Dpr.Battle.Logic.StrParam preMessage;
 			public global::Dpr.Battle.Logic.RankEffectViewType effectViewType;
-			public Description() { /*@B 0x600B5E6*/ throw null; }
+			public Description() {
+				atkPokeID = PokeID.INVALID;
+				pTarget = null;
+				effect = global::Pml.WazaData.WazaRankEffect.NONE;
+				volume = 0;
+				cause = RankEffectCause.OTHER;
+				itemID = 0;
+				rankEffSerial = 0;
+				canPutFailMessage = false;
+				bMigawariThrew = false;
+				pSimpleEffectFailManager = null;
+				fStdMsg = false;
+				preMessage = null;
+				effectViewType = RankEffectViewType.DISABLE;
+			}
 		}
 		public class Result
 		{

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Migawari_Delete : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Migawari_Delete(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007002*/ throw null; }
+		public Section_Migawari_Delete(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Migawari_Delete.Result pResult, in global::Dpr.Battle.Logic.Section_Migawari_Delete.Description description) {
 			byte pokeID = description.poke.GetID();
 			BtlPokePos pos = GetPokePos(pokeID);
@@ -15,8 +15,8 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
-			public bool canPutDefaultMessage;
-			public Description() { /*@B 0x600B5C8*/ throw null; }
+			public bool canPutDefaultMessage = true;
+			public Description() { }
 		}
 		public class Result
 		{

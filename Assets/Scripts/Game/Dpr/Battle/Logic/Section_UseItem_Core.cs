@@ -40,7 +40,7 @@ namespace Dpr.Battle.Logic
 				}
 				return s_itemEffectTableInstance;
 			} }
-		public Section_UseItem_Core(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600718B*/ throw null; }
+		public Section_UseItem_Core(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_UseItem_Core.Result pResult, in global::Dpr.Battle.Logic.Section_UseItem_Core.Description description) {
             pResult.useResult = TrainerItemResult.NORMAL;
             pResult.isConsumed = false;
@@ -459,7 +459,13 @@ namespace Dpr.Battle.Logic
 			public byte actParam;
 			public byte targetID;
 			public global::Dpr.Battle.Logic.POKE_CAPTURED_CONTEXT capContext;
-			public Description() { /*@B 0x600B648*/ throw null; }
+			public Description() {
+				poke = null;
+				itemID = 0;
+				actParam = 0;
+				targetID = PokeID.INVALID;
+				capContext = null;
+			}
 		}
 		public class Result
 		{
@@ -474,7 +480,11 @@ namespace Dpr.Battle.Logic
 			public global::Pml.Item.ItemData.PrmID effect;
 			public byte range;
 			public global::Dpr.Battle.Logic.Section_UseItem_Core.ItemEffectFuncPtr func;
-			public ItemEffectInfo(global::Pml.Item.ItemData.PrmID effect, byte range, global::Dpr.Battle.Logic.Section_UseItem_Core.ItemEffectFuncPtr func) { /*@B 0x600B64E*/ throw null; }
+			public ItemEffectInfo(global::Pml.Item.ItemData.PrmID effect, byte range, global::Dpr.Battle.Logic.Section_UseItem_Core.ItemEffectFuncPtr func) {
+				this.effect = effect;
+				this.range = range;
+				this.func = func;
+			}
 		}
 	}
 }

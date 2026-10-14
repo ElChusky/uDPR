@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_SortByAgility : global::Dpr.Battle.Logic.Section
 	{
-		public Section_SortByAgility(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007105*/ throw null; }
+		public Section_SortByAgility(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_SortByAgility.Result pResult, in global::Dpr.Battle.Logic.Section_SortByAgility.Description description) {
 			uint count = description.targets.GetCount();
 			if (count == 0)

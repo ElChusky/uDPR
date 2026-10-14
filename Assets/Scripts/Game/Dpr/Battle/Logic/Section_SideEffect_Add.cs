@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_SideEffect_Add : global::Dpr.Battle.Logic.Section
 	{
-		public Section_SideEffect_Add(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070DF*/ throw null; }
+		public Section_SideEffect_Add(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_SideEffect_Add.Result result, in global::Dpr.Battle.Logic.Section_SideEffect_Add.Description desc) {
             result.isSuccessed = false;
             var contParam = new BTL_SICKCONTOBJ(desc.cont);
@@ -39,7 +39,15 @@ namespace Dpr.Battle.Logic
 			public ushort successEffectNo;
 			public global::Dpr.Battle.Logic.StrParam successMessage;
 			public bool isReplaceSuccessMessageArgs0ByExpandSide;
-			public Description() { /*@B 0x600B60E*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+				effect = BtlSideEffect.BTL_SIDEEFF_NULL;
+				side = BtlSide.BTL_SIDE_NULL;
+				cont.raw = 0;
+				successEffectNo = 234;
+				successMessage = new StrParam();
+				isReplaceSuccessMessageArgs0ByExpandSide = false;
+			}
 		}
 		public class Result
 		{

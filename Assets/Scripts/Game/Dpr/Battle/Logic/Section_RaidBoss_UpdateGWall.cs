@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RaidBoss_UpdateGWall : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RaidBoss_UpdateGWall(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600706C*/ throw null; }
+		public Section_RaidBoss_UpdateGWall(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RaidBoss_UpdateGWall.Result pResult, in global::Dpr.Battle.Logic.Section_RaidBoss_UpdateGWall.Description description) {
 			if (GetRule() != BtlRule.BTL_RULE_RAID)
 				return;
@@ -50,8 +50,8 @@ namespace Dpr.Battle.Logic
 		}
 		public class Result
 		{
-			public global::Dpr.Battle.Logic.SectionUtil.GWallUpdateResult gWallUpdateResult;
-			public Result() { /*@B 0x600B5E5*/ throw null; }
+			public global::Dpr.Battle.Logic.SectionUtil.GWallUpdateResult gWallUpdateResult = new SectionUtil.GWallUpdateResult();
+			public Result() { }
 		}
 	}
 }

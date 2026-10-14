@@ -5,7 +5,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Simulation_Damage : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Simulation_Damage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070F3*/ throw null; }
+		public Section_Simulation_Damage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Simulation_Damage.Result result, in global::Dpr.Battle.Logic.Section_Simulation_Damage.Description description) {
 			result.damage = 0;
 			if (description.waza == WazaNo.NULL || !WAZADATA.IsDamage(description.waza))
@@ -59,7 +59,13 @@ namespace Dpr.Battle.Logic
 			public global::Pml.WazaNo waza;
 			public bool isAffinityEnable;
 			public bool isRandomEnable;
-			public Description() { /*@B 0x600B620*/ throw null; }
+			public Description() {
+				atkPokeID = PokeID.INVALID;
+				defPokeID = PokeID.INVALID;
+				waza = global::Pml.WazaNo.NULL;
+				isAffinityEnable = false;
+				isRandomEnable = false;
+			}
 		}
 		public class Result
 		{

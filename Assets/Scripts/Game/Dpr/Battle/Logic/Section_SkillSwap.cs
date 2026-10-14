@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_SkillSwap : global::Dpr.Battle.Logic.Section
 	{
-		public Section_SkillSwap(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070FA*/ throw null; }
+		public Section_SkillSwap(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_SkillSwap.Result pResult, in global::Dpr.Battle.Logic.Section_SkillSwap.Description desc) {
 			BTL_POKEPARAM attacker = desc.attacker;
 			BTL_POKEPARAM target = desc.targets.Get(0);
@@ -68,9 +68,9 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.PokeSet targets;
-			public bool needFailMessageDisplay;
+			public bool needFailMessageDisplay = true;
 			public global::Dpr.Battle.Logic.TokuseiChangeCause cause;
-			public Description() { /*@B 0x600B624*/ throw null; }
+			public Description() { }
 		}
 		public class Result
 		{

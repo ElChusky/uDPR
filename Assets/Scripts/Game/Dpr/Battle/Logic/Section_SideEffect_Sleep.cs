@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_SideEffect_Sleep : global::Dpr.Battle.Logic.Section
 	{
-		public Section_SideEffect_Sleep(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070E6*/ throw null; }
+		public Section_SideEffect_Sleep(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_SideEffect_Sleep.Result result, in global::Dpr.Battle.Logic.Section_SideEffect_Sleep.Description description) {
 			result.isSuccessed = false;
 			BtlSide[] expandSide = Arrays.InitializeWithDefaultInstances<BtlSide>(2);
@@ -41,7 +41,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BtlSide side;
 			public byte[] flags;
 			public bool wakeUpFlag;
-			public Description() { /*@B 0x600B614*/ throw null; }
+			public Description() {
+				side = BtlSide.BTL_SIDE_NULL;
+				wakeUpFlag = false;
+				flags = new byte[3];
+			}
 		}
 		public class Result
 		{

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_SimpleDamage : global::Dpr.Battle.Logic.Section
 	{
-		public Section_SimpleDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070EC*/ throw null; }
+		public Section_SimpleDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_SimpleDamage.Result pResult, in global::Dpr.Battle.Logic.Section_SimpleDamage.Description description) {
 			pResult.isDamaged = false;
 			if (description.damage == 0)
@@ -51,7 +51,14 @@ namespace Dpr.Battle.Logic
 			public byte damageCausePokeID;
 			public global::Dpr.Battle.Logic.StrParam message;
 			public bool doDeadProcess;
-			public Description() { /*@B 0x600B61C*/ throw null; }
+			public Description() {
+				poke = null;
+				damage = 0;
+				damageCause = DamageCause.OTHER;
+				damageCausePokeID = PokeID.INVALID;
+				message = null;
+				doDeadProcess = false;
+			}
 		}
 		public class Result
 		{

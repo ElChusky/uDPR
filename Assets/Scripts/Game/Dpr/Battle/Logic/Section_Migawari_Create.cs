@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Migawari_Create : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Migawari_Create(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FF1*/ throw null; }
+		public Section_Migawari_Create(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Migawari_Create.Result pResult, in global::Dpr.Battle.Logic.Section_Migawari_Create.Description description) {
 			pResult.isCreated = false;
 			BTL_POKEPARAM poke = description.poke;
@@ -57,7 +57,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
-			public Description() { /*@B 0x600B5C4*/ throw null; }
+			public Description() {
+				poke = null;
+			}
 		}
 		public class Result
 		{

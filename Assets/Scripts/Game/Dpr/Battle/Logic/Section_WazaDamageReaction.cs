@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaDamageReaction : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaDamageReaction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60071C1*/ throw null; }
+		public Section_WazaDamageReaction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaDamageReaction.Result pResult, in global::Dpr.Battle.Logic.Section_WazaDamageReaction.Description desc) {
 			GetEventLauncher().Event_WazaDamageReaction(desc.attacker, desc.defender, desc.wazaParam, desc.affinity, desc.damage, desc.critical_flag, desc.fMigawari);
 		}
@@ -12,11 +12,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM defender;
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
-			public global::Pml.Battle.TypeAffinity.AffinityID affinity;
+			public global::Pml.Battle.TypeAffinity.AffinityID affinity = global::Pml.Battle.TypeAffinity.AffinityID.TYPEAFF_1;
 			public uint damage;
 			public bool critical_flag;
 			public bool fMigawari;
-			public Description() { /*@B 0x600B659*/ throw null; }
+			public Description() { }
 		}
 		public class Result
 		{

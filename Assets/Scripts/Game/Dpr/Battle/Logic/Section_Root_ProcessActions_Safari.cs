@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Root_ProcessActions_Safari : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Root_ProcessActions_Safari(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070CF*/ throw null; }
+		public Section_Root_ProcessActions_Safari(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Root_ProcessActions_Safari.Result pResult, in global::Dpr.Battle.Logic.Section_Root_ProcessActions_Safari.Description description) {
 			GetSharedData().GetInterruptAccessor().Clear();
 			GetServerCommandQueue().Initialize();
@@ -18,7 +18,32 @@ namespace Dpr.Battle.Logic
 			}
 			pResult.interrupt = GetSharedData().GetInterruptAccessor().GetRequest();
 		}
-		private void processPlayer(global::Dpr.Battle.Logic.SVCL_ACTION clientInstructions) { /*@B 0x60070D1*/ throw null; }
+		private void processPlayer(global::Dpr.Battle.Logic.SVCL_ACTION clientInstructions) {
+			byte numAction = SVCL_ACTION.GetNumAction(clientInstructions, 0);
+			for (byte i = 0; i < numAction; i++)
+			{
+				ref BTL_ACTION_PARAM action = ref SVCL_ACTION.Get(clientInstructions, 0, i);
+				byte cmd = action.gen_cmd;
+				byte pokeID = action.gen_pokeID;
+				switch ((BtlAction)cmd)
+				{
+					case BtlAction.BTL_ACTION_ESCAPE:
+						escape(pokeID);
+						break;
+					case BtlAction.BTL_ACTION_SAFARI_BALL:
+						throwSafariBall(pokeID);
+						break;
+					case BtlAction.BTL_ACTION_SAFARI_ESA:
+						throwEsa(pokeID);
+						break;
+					case BtlAction.BTL_ACTION_SAFARI_DORO:
+						throwDoro(pokeID);
+						break;
+					default:
+						break;
+				}
+			}
+		}
 		private void processEnemy(global::Dpr.Battle.Logic.SVCL_ACTION clientInstructions) {
 			byte numAction = SVCL_ACTION.GetNumAction(clientInstructions, 1);
 			for (byte i = 0; i < numAction; i++)
@@ -91,7 +116,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.SVCL_ACTION pClientInstructions;
-			public Description() { /*@B 0x600B606*/ throw null; }
+			public Description() {
+				pClientInstructions = null;
+			}
 		}
 		public class Result
 		{

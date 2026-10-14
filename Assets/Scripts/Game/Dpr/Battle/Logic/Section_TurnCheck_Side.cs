@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_TurnCheck_Side : global::Dpr.Battle.Logic.Section
 	{
-		public Section_TurnCheck_Side(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600714B*/ throw null; }
+		public Section_TurnCheck_Side(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_TurnCheck_Side.Result pResult, in global::Dpr.Battle.Logic.Section_TurnCheck_Side.Description description) {
 			// the side loop (2 trips) is fully unrolled in the binary (02170880: side 0 block, 02170978: side 1 block)
 			for (var side = BtlSide.BTL_SIDE_1ST; side < BtlSide.BTL_SIDE_NUM; side++)

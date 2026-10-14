@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Root_InterruptPokeChange : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Root_InterruptPokeChange(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070B8*/ throw null; }
+		public Section_Root_InterruptPokeChange(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Root_InterruptPokeChange.Result pResult, in global::Dpr.Battle.Logic.Section_Root_InterruptPokeChange.Description description) {
 			GetSharedData().GetInterruptAccessor().Clear();
 			GetServerCommandQueue().Initialize();
@@ -64,7 +64,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.SVCL_ACTION pClientInstructions;
-			public Description() { /*@B 0x600B600*/ throw null; }
+			public Description() {
+				pClientInstructions = null;
+			}
 		}
 		public class Result
 		{

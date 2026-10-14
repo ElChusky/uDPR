@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_SideEffect_Swap : global::Dpr.Battle.Logic.Section
 	{
-		public Section_SideEffect_Swap(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070EA*/ throw null; }
+		public Section_SideEffect_Swap(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_SideEffect_Swap.Result result, in global::Dpr.Battle.Logic.Section_SideEffect_Swap.Description description) {
 			result.isChanged = false;
 			BtlSide side1 = description.side1;
@@ -29,7 +29,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BtlSide side1;
 			public global::Dpr.Battle.Logic.BtlSide side2;
 			public global::Dpr.Battle.Logic.Section_SideEffect_Swap.SidefEffectSwapCheck checkFunc;
-			public Description() { /*@B 0x600B61A*/ throw null; }
+			public Description() {
+				side1 = BtlSide.BTL_SIDE_NULL;
+				side2 = BtlSide.BTL_SIDE_NULL;
+				checkFunc = null;
+			}
 		}
 		public class Result
 		{

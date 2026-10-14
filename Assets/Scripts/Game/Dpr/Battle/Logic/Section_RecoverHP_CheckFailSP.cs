@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RecoverHP_CheckFailSP : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RecoverHP_CheckFailSP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600708B*/ throw null; }
+		public Section_RecoverHP_CheckFailSP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RecoverHP_CheckFailSP.Result pResult, in global::Dpr.Battle.Logic.Section_RecoverHP_CheckFailSP.Description description) {
 			pResult.isFailed = false;
 			if (description.poke.CheckSick(Pml.WazaData.WazaSick.WAZASICK_KAIHUKUHUUJI))
@@ -17,7 +17,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
 			public bool isFailMsgEnable;
-			public Description() { /*@B 0x600B5F2*/ throw null; }
+			public Description() {
+				poke = null;
+				isFailMsgEnable = false;
+			}
 		}
 		public class Result
 		{

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Root_FirstPokeIn : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Root_FirstPokeIn(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070AF*/ throw null; }
+		public Section_Root_FirstPokeIn(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Root_FirstPokeIn.Result pResult, in global::Dpr.Battle.Logic.Section_Root_FirstPokeIn.Description description) {
 			GetSharedData().GetInterruptAccessor().Clear();
 			changeWeather();

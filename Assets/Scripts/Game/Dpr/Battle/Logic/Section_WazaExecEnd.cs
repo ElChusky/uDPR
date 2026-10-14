@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExecEnd : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExecEnd(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60071CD*/ throw null; }
+		public Section_WazaExecEnd(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExecEnd.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExecEnd.Description description) {
 			if (!description.isWazaEffective)
 				GetServerCommandPutter().SetActionRecord(description.attacker.GetID(), ActionRecorder.ActionID.FAILED_MASTER);

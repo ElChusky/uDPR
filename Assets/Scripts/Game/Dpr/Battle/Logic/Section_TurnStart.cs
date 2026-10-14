@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_TurnStart : global::Dpr.Battle.Logic.Section
 	{
-		public Section_TurnStart(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007177*/ throw null; }
+		public Section_TurnStart(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_TurnStart.Result pResult, in global::Dpr.Battle.Logic.Section_TurnStart.Description description) {
 			GetBattleEnv().GetActionRecorder().StartTurn();
 			GetBattleEnv().GetDeadRec().StartTurn();

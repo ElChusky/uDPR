@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_SortActionOrder : global::Dpr.Battle.Logic.Section
 	{
-		public Section_SortActionOrder(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070FF*/ throw null; }
+		public Section_SortActionOrder(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_SortActionOrder.Result pResult, in global::Dpr.Battle.Logic.Section_SortActionOrder.Description description) {
 			// setPriority is inlined here (021c2864..021c28b0); sort is a tail call
 			setPriority(description.actionContainer);
@@ -56,7 +56,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.PokeActionContainer actionContainer;
-			public Description() { /*@B 0x600B626*/ throw null; }
+			public Description() {
+				actionContainer = null;
+			}
 		}
 		public class Result
 		{

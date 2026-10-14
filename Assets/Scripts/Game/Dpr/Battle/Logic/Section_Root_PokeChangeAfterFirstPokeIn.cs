@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Root_PokeChangeAfterFirstPokeIn : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Root_PokeChangeAfterFirstPokeIn(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070C0*/ throw null; }
+		public Section_Root_PokeChangeAfterFirstPokeIn(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Root_PokeChangeAfterFirstPokeIn.Result pResult, in global::Dpr.Battle.Logic.Section_Root_PokeChangeAfterFirstPokeIn.Description description) {
 			GetSharedData().GetInterruptAccessor().Clear();
 			GetServerCommandQueue().Initialize();

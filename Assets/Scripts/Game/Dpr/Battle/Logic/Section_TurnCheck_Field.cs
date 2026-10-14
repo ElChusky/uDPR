@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_TurnCheck_Field : global::Dpr.Battle.Logic.Section
 	{
-		public Section_TurnCheck_Field(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007129*/ throw null; }
+		public Section_TurnCheck_Field(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_TurnCheck_Field.Result pResult, in global::Dpr.Battle.Logic.Section_TurnCheck_Field.Description description) {
 			// incTurnCount and removeEffect are inlined here (removeEffect keeps its own init flag 0x4cc0984 inside the loop)
 			for (var effect = EffectType.EFF_WEATHER; effect < EffectType.EFF_MAX; effect++)

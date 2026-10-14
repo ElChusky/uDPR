@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_ProcessAction : global::Dpr.Battle.Logic.Section
 	{
-		public Section_ProcessAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007008*/ throw null; }
+		public Section_ProcessAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ProcessAction.Result pResult, in global::Dpr.Battle.Logic.Section_ProcessAction.Description description) {
 			processActionCore(description.pokeAction);
 			raidboss_updateGwazaUseSchedule(description.pokeAction);
@@ -69,7 +69,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.PokeAction pokeAction;
-			public Description() { /*@B 0x600B5CC*/ throw null; }
+			public Description() {
+				pokeAction = null;
+			}
 		}
 		public class Result
 		{

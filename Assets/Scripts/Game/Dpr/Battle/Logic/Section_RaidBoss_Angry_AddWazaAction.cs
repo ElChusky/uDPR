@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RaidBoss_Angry_AddWazaAction : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RaidBoss_Angry_AddWazaAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600704A*/ throw null; }
+		public Section_RaidBoss_Angry_AddWazaAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RaidBoss_Angry_AddWazaAction.Result pResult, in global::Dpr.Battle.Logic.Section_RaidBoss_Angry_AddWazaAction.Description description) {
 			PokeAction pokeAction = null;
 			if (GetRule() != BtlRule.BTL_RULE_RAID)
@@ -47,7 +47,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.DominantPriority dominantPriority;
-			public Description() { /*@B 0x600B5DA*/ throw null; }
+			public Description() {
+				dominantPriority = DominantPriority.DEFAULT;
+			}
 		}
 		public class Result
 		{

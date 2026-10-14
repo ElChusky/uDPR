@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RankEffect_CheckEffective : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RankEffect_CheckEffective(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007078*/ throw null; }
+		public Section_RankEffect_CheckEffective(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RankEffect_CheckEffective.Result pResult, in global::Dpr.Battle.Logic.Section_RankEffect_CheckEffective.Description description) {
             pResult.isValid = false;
             BTL_POKEPARAM attacker = (description.attackerID == PokeID.INVALID) ? null : GetPokeParam(description.attackerID);
@@ -102,7 +102,18 @@ namespace Dpr.Battle.Logic
 			public bool canPutFailMessage;
 			public bool canMigawariThrew;
 			public global::Dpr.Battle.Logic.SimpleEffectFailManager pSimpleEffectFailManager;
-			public Description() { /*@B 0x600B5E8*/ throw null; }
+			public Description() {
+				attackerID = PokeID.INVALID;
+				targetID = PokeID.INVALID;
+				effect = global::Pml.WazaData.WazaRankEffect.NONE;
+				volume = 0;
+				cause = RankEffectCause.OTHER;
+				itemID = 0;
+				rankEffSerial = 0;
+				canPutFailMessage = false;
+				canMigawariThrew = false;
+				pSimpleEffectFailManager = null;
+			}
 		}
 		public class Result
 		{

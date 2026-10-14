@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RaidBoss_Angry : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RaidBoss_Angry(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007044*/ throw null; }
+		public Section_RaidBoss_Angry(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RaidBoss_Angry.Result pResult, in global::Dpr.Battle.Logic.Section_RaidBoss_Angry.Description description) {
 			if (GetRule() != BtlRule.BTL_RULE_RAID)
 				return;
@@ -46,7 +46,10 @@ namespace Dpr.Battle.Logic
 		{
 			public bool canPutMessage;
 			public bool canInsertWazaAction;
-			public Description() { /*@B 0x600B5D8*/ throw null; }
+			public Description() {
+				canPutMessage = true;
+				canInsertWazaAction = true;
+			}
 		}
 		public class Result
 		{

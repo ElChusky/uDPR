@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RaidBoss_BreakGWall : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RaidBoss_BreakGWall(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600704E*/ throw null; }
+		public Section_RaidBoss_BreakGWall(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RaidBoss_BreakGWall.Result pResult, in global::Dpr.Battle.Logic.Section_RaidBoss_BreakGWall.Description desc) {
 			if (GetRule() != BtlRule.BTL_RULE_RAID)
 				return;

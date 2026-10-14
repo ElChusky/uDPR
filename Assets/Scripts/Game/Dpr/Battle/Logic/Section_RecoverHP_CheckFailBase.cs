@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RecoverHP_CheckFailBase : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RecoverHP_CheckFailBase(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007089*/ throw null; }
+		public Section_RecoverHP_CheckFailBase(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RecoverHP_CheckFailBase.Result pResult, in global::Dpr.Battle.Logic.Section_RecoverHP_CheckFailBase.Description description) {
             pResult.isFailed = false;
             if (!description.poke.IsFightEnable() || description.poke.IsHPFull())
@@ -12,7 +12,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
-			public Description() { /*@B 0x600B5F0*/ throw null; }
+			public Description() {
+				poke = null;
+			}
 		}
 		public class Result
 		{

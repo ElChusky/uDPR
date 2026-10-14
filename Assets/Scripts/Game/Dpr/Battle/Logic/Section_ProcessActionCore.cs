@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_ProcessActionCore : global::Dpr.Battle.Logic.Section
 	{
-		public Section_ProcessActionCore(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007010*/ throw null; }
+		public Section_ProcessActionCore(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ProcessActionCore.Result pResult, in global::Dpr.Battle.Logic.Section_ProcessActionCore.Description description) {
 			if (description.pokeAction.fDone)
 				return;
@@ -175,7 +175,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.PokeAction pokeAction;
-			public Description() { /*@B 0x600B5CE*/ throw null; }
+			public Description() {
+				pokeAction = null;
+			}
 		}
 		public class Result
 		{

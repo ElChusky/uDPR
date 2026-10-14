@@ -6,7 +6,7 @@ namespace Dpr.Battle.Logic
 		private const int EFF_SIMPLE = 0;
 		private const int EFF_POS = 1;
 		private const int EFF_VECTOR = 2;
-		public Section_ViewEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60071AE*/ throw null; }
+		public Section_ViewEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ViewEffect.Result pResult, in global::Dpr.Battle.Logic.Section_ViewEffect.Description description) {
 			if (description.pos_to == BtlPokePos.POS_NULL)
 			{

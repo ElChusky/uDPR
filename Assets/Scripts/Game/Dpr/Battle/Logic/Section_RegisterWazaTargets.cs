@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RegisterWazaTargets : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RegisterWazaTargets(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600708F*/ throw null; }
+		public Section_RegisterWazaTargets(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RegisterWazaTargets.Result pResult, in global::Dpr.Battle.Logic.Section_RegisterWazaTargets.Description description) {
 			MainModule mainModule = GetMainModule();
 			bool isTargetTemptEnable = false;
@@ -369,10 +369,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM pAttacker;
 			public global::Dpr.Battle.Logic.WazaParam pWazaParam;
-			public global::Dpr.Battle.Logic.BtlPokePos targetPos;
-			public byte aimTargetID;
+			public global::Dpr.Battle.Logic.BtlPokePos targetPos = BtlPokePos.POS_NULL;
+			public byte aimTargetID = PokeID.INVALID;
 			public global::Dpr.Battle.Logic.PokeSet pPokeSet;
-			public Description() { /*@B 0x600B5F6*/ throw null; }
+			public Description() { }
 		}
 		public class Result
 		{

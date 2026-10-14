@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_UseItemEquip : global::Dpr.Battle.Logic.Section
 	{
-		public Section_UseItemEquip(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007186*/ throw null; }
+		public Section_UseItemEquip(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_UseItemEquip.Result pResult, in global::Dpr.Battle.Logic.Section_UseItemEquip.Description description) {
 			pResult.isUsed = false;
 			var poke = GetPokeParam(description.userPokeID);
@@ -68,10 +68,10 @@ namespace Dpr.Battle.Logic
 		}
 		public class Description
 		{
-			public byte userPokeID;
+			public byte userPokeID = PokeID.INVALID;
 			public bool isSkipHPFull;
 			public bool isUseDead;
-			public Description() { /*@B 0x600B646*/ throw null; }
+			public Description() { }
 		}
 		public class Result
 		{

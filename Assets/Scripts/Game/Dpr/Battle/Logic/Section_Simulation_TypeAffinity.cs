@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Simulation_TypeAffinity : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Simulation_TypeAffinity(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070F7*/ throw null; }
+		public Section_Simulation_TypeAffinity(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Simulation_TypeAffinity.Result result, in global::Dpr.Battle.Logic.Section_Simulation_TypeAffinity.Description description) {
 			result.affinity = TypeAffinity.AffinityID.TYPEAFF_1;
 			BTL_POKEPARAM attacker = GetPokeParam(description.atkPokeID);
@@ -49,7 +49,12 @@ namespace Dpr.Battle.Logic
 			public byte defPokeID;
 			public global::Pml.WazaNo waza;
 			public bool onlyAttacker;
-			public Description() { /*@B 0x600B622*/ throw null; }
+			public Description() {
+				atkPokeID = PokeID.INVALID;
+				defPokeID = PokeID.INVALID;
+				waza = global::Pml.WazaNo.NULL;
+				onlyAttacker = false;
+			}
 		}
 		public class Result
 		{
