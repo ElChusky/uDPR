@@ -14530,7 +14530,7 @@ namespace Dpr.EvScript
                 case EvCmdID.NAME._BOARD_REQ: return EvCmdBoardReq();
                 case EvCmdID.NAME._BOARD_REQ_WAIT: return EvCmdBoardReqWait();
                 case EvCmdID.NAME._BOARD_MSG: return EvCmdBoardMsg();
-                case EvCmdID.NAME._BOARD_END_WAIT: return EvCmdBoardEndWait();
+                case EvCmdID.NAME._BOARD_END_WAIT: return EvCmdBoardMsg(); // shipped: table[90] = table[89] = 87 -> same block @02c5b42c as _BOARD_MSG
                 case EvCmdID.NAME._EASY_BOARD_MSG: return EvMacro_EASY_BOARD_MSG();
                 case EvCmdID.NAME._EASY_INFOBOARD_MSG: return EvMacro_EASY_INFOBOARD_MSG();
                 case EvCmdID.NAME._MENU_REQ: return EvCmdMenuReq();
