@@ -5,7 +5,7 @@ namespace Dpr.UI
 	{
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image newIconImage;
-		public void SetNewIconEnable(bool isEnabled) { /*@B 0x6004C13*/ throw null; }
+		public void SetNewIconEnable(bool isEnabled) { newIconImage.enabled = isEnabled; }
 		public BagCategoryButton() { }
 	}
 }

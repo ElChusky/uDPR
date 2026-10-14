@@ -15,7 +15,7 @@ namespace Dpr.UI
 		private float _openPosX;
 		private float _closePosX;
 		private global::System.Nullable<int> _searchType;
-		private int _subIndex;
+		private int _subIndex = -1;
 		public global::Dpr.UI.BoxWindow.SEARCH_DATA SearchData { get; private set; }
 		public void Initialize() {
 			RectTransform rectTransform = transform as RectTransform;
@@ -137,6 +137,6 @@ namespace Dpr.UI
 			float size = _subObject.gameObject.activeSelf ? height : height - subHeight;
 			(_mainObject.transform as RectTransform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size);
 		}
-		public BoxSearchDescription() { /*@B 0x6004F35*/ throw null; }
+		public BoxSearchDescription() { }
 	}
 }

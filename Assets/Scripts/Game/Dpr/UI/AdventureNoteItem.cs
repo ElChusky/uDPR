@@ -58,10 +58,10 @@ namespace Dpr.UI
 		public AdventureNoteItem() { }
 		public class Param
 		{
-			public global::AdventureNoteID noteId;
+			public global::AdventureNoteID noteId = (global::AdventureNoteID)(-1);
 			public global::System.Collections.Generic.List<global::XLSXContent.AdventureNoteData.SheetData> datas;
 			public global::Dpr.UI.AdventureNoteItem.Param.StateNew stateNew;
-			public Param() { /*@B 0x600A6C1*/ throw null; }
+			public Param() { }
 			public enum StateNew
 			{
 				Show = 0,

@@ -39,6 +39,6 @@ namespace Dpr.UI
 			Audio.AudioManager.Instance.PlaySe(AK.EVENTS.S_FI248, null);
 			_note.Setup(_currentDatas, _pageIndex);
 		}
-		public AdventureBase() { /*@B 0x6004BEC*/ throw null; }
+		public AdventureBase() { }
 	}
 }

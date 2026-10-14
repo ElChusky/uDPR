@@ -7,10 +7,10 @@ namespace Dpr.UI
 		public BoxInfinityScrollItem() { }
 		public class BaseParam
 		{
-			public int paramIndex;
-			public global::System.Collections.Generic.List<global::Dpr.UI.BoxInfinityScrollItem.BaseParam.ItemParam> itemParams;
+			public int paramIndex = -1;
+			public global::System.Collections.Generic.List<global::Dpr.UI.BoxInfinityScrollItem.BaseParam.ItemParam> itemParams = new global::System.Collections.Generic.List<global::Dpr.UI.BoxInfinityScrollItem.BaseParam.ItemParam>();
 			public global::Dpr.UI.BoxWindow.DisplayMode displayMode;
-			public BaseParam() { /*@B 0x600A8AA*/ throw null; }
+			public BaseParam() { }
 			public class ItemParam
 			{
 				public global::Pml.PokePara.PokemonParam pokemonParam;

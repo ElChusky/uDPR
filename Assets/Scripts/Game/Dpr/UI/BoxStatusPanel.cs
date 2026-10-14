@@ -58,7 +58,17 @@ namespace Dpr.UI
 		private const int _msgJudgeBaseNo = 232;
 		private const int _msgTraningedNo = 577;
 		private const string langIconSoriteNameBase = "cmn_ico_txt_lang_{0}_00";
-		private static global::System.Collections.Generic.Dictionary<global::Dpr.Message.MessageEnumData.MsgLangId, string> LangageIconSpriteNames;
+		private static global::System.Collections.Generic.Dictionary<global::Dpr.Message.MessageEnumData.MsgLangId, string> LangageIconSpriteNames = new global::System.Collections.Generic.Dictionary<global::Dpr.Message.MessageEnumData.MsgLangId, string>() {
+			{ global::Dpr.Message.MessageEnumData.MsgLangId.JPN, "jpn" },
+			{ global::Dpr.Message.MessageEnumData.MsgLangId.USA, "eng" },
+			{ global::Dpr.Message.MessageEnumData.MsgLangId.FRA, "fra" },
+			{ global::Dpr.Message.MessageEnumData.MsgLangId.ITA, "ita" },
+			{ global::Dpr.Message.MessageEnumData.MsgLangId.DEU, "ger" },
+			{ global::Dpr.Message.MessageEnumData.MsgLangId.ESP, "spa" },
+			{ global::Dpr.Message.MessageEnumData.MsgLangId.KOR, "kor" },
+			{ global::Dpr.Message.MessageEnumData.MsgLangId.SCH, "chs" },
+			{ global::Dpr.Message.MessageEnumData.MsgLangId.TCH, "cht" },
+		};
 		public void Initialize() {
 			var rectTransform = transform as RectTransform;
 			_openPosX = rectTransform.localPosition.x;
@@ -259,7 +269,7 @@ namespace Dpr.UI
 			return _msgCodeBaseString + msgNo;
 		}
 		public BoxStatusPanel() { }
-		static BoxStatusPanel() { /*@B 0x6004F73*/ throw null; }
+		static BoxStatusPanel() { }
 		private enum StatusType
 		{
 			Hp = 0,

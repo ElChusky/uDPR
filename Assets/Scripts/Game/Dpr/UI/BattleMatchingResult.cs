@@ -6,7 +6,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.UIBattleMatching _battleMatchingUIPtr;
 		private global::System.Action _onFinishState;
 		private bool _ready;
-		private float _readyWaitTime;
+		private float _readyWaitTime = 3f;
 		private float _readyProgressTime;
 		private bool _closed;
 		public void Initialize(global::System.Action onFinishState) {
@@ -56,6 +56,6 @@ namespace Dpr.UI
 				});
 			}
 		}
-		public BattleMatchingResult() { /*@B 0x6004CDD*/ throw null; }
+		public BattleMatchingResult() { }
 	}
 }

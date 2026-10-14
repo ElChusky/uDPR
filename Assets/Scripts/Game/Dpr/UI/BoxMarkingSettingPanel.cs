@@ -12,7 +12,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.Cursor _cursor;
 		private int _markIndex;
 		private global::Pml.PokePara.PokemonParam _pokemonParam;
-		private global::Pml.PokePara.BoxMarkColor[] _markColors;
+		private global::Pml.PokePara.BoxMarkColor[] _markColors = new global::Pml.PokePara.BoxMarkColor[6];
 		private int _trayIndex;
 		private int _posIndex;
 		private global::System.Action<global::Pml.PokePara.PokemonParam, int, int> _onClosed;
@@ -84,6 +84,6 @@ namespace Dpr.UI
 
 			_cursor.transform.SetParent(_markImages[_markIndex].transform, false);
 		}
-		public BoxMarkingSettingPanel() { /*@B 0x6004F10*/ throw null; }
+		public BoxMarkingSettingPanel() { }
 	}
 }

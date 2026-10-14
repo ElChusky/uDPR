@@ -8,8 +8,8 @@ namespace Dpr.UI
 	{
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.BoxInfinityScrollItem _prefab;
-		private int _showItemNum;
-		private int _outsideItemNum;
+		private int _showItemNum = 1;
+		private int _outsideItemNum = 1;
 		private global::UnityEngine.UI.ScrollRect _scrollRect;
 		private global::UnityEngine.UI.HorizontalOrVerticalLayoutGroup _layoutGroup;
 		private global::System.Collections.Generic.List<global::Dpr.UI.BoxInfinityScrollItem.BaseParam> _params;
@@ -174,6 +174,6 @@ namespace Dpr.UI
 			else
 				_scrollRect.verticalNormalizedPosition = spos;
 		}
-		public BoxInfinityScroll() { /*@B 0x6004ED7*/ throw null; }
+		public BoxInfinityScroll() { }
 	}
 }

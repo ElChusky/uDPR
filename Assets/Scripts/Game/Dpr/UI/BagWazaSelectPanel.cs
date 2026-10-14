@@ -7,8 +7,8 @@ namespace Dpr.UI
 		private global::Dpr.UI.PokemonStatusWazaItem[] wazaItems;
 		[global::UnityEngine.SerializeField]
 		protected global::Dpr.UI.Cursor _cursor;
-		private global::Dpr.UI.IndexSelector indexSelector;
-		private global::Dpr.UI.UIInputController inputController;
+		private global::Dpr.UI.IndexSelector indexSelector = new global::Dpr.UI.IndexSelector(true, true, true);
+		private global::Dpr.UI.UIInputController inputController = new global::Dpr.UI.UIInputController();
 		private global::System.Action<int> onDecideCallback;
 		private global::System.Action onCancelCallback;
 		public bool IsShow { get; private set; }
@@ -76,6 +76,6 @@ namespace Dpr.UI
 			wazaItems[indexSelector.CurrentIndex].Select(true);
 			_cursor.transform.SetParent(wazaItems[indexSelector.CurrentIndex].transform, false);
 		}
-		public BagWazaSelectPanel() { /*@B 0x6004C5F*/ throw null; }
+		public BagWazaSelectPanel() { }
 	}
 }

@@ -10,12 +10,12 @@ namespace Dpr.UI
 		private global::System.Action<ushort> _onCountDown;
 		private bool _ready;
 		private bool _stopped;
-		private float _readyWaitTime;
+		private float _readyWaitTime = 3f;
 		private float _readyProgressTime;
 		private bool _isHost;
 		private bool _isCountDown;
 		private const int START_UI_COUNTDOWN_COUNT = 10;
-		private global::Dpr.NetworkUtils.CountDownTimer _countTimer;
+		private global::Dpr.NetworkUtils.CountDownTimer _countTimer = new global::Dpr.NetworkUtils.CountDownTimer();
 		private global::Dpr.UI.BattleMatchingSelectPokemon.State _currentState;
 		public void Initialize(global::System.Action onFinishState, global::System.Action onSelect, global::System.Action<ushort> onCountDown) {
 			_onFinishState = onFinishState;
@@ -240,7 +240,7 @@ namespace Dpr.UI
 			if (_pokemonSelectUIPtr != null)
 				_pokemonSelectUIPtr.UpdateUITimeText(_countTimer.GetMinuteStr(), _countTimer.GetSecondStr());
 		}
-		public BattleMatchingSelectPokemon() { /*@B 0x6004D0C*/ throw null; }
+		public BattleMatchingSelectPokemon() { }
 		private enum State
 		{
 			None = 0,

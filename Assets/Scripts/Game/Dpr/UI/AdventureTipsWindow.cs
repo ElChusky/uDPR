@@ -61,6 +61,6 @@ namespace Dpr.UI
 				Close(onClosed, _prevWindowId);
 			}
 		}
-		public AdventureTipsWindow() { /*@B 0x6004C11*/ throw null; }
+		public AdventureTipsWindow() { }
 	}
 }

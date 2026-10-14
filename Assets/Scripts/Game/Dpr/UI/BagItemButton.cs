@@ -24,8 +24,8 @@ namespace Dpr.UI
 		private int index;
 		private global::UnityEngine.RectTransform rectTransform;
 		private global::Dpr.Item.ItemInfo item;
-		public bool IsNull { get { /*@B 0x6004C18*/ throw null; } }
-		public bool IsNew { get { /*@B 0x6004C19*/ throw null; } }
+		public bool IsNull { get { return item == null; } }
+		public bool IsNew { get { return item.bIsNew; } }
 		public int GetIndex() {
 			return index;
 		}

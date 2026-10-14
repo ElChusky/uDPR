@@ -16,8 +16,8 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Transform _boxRoot;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color32 _grayColor;
-		private bool[] _isHitSearch;
+		private global::UnityEngine.Color32 _grayColor = new global::UnityEngine.Color32(160, 160, 160, 255);
+		private bool[] _isHitSearch = new bool[30];
 		private bool _isSearchActive;
 		public bool IsSelected { get; private set; }
 		public void SetPokemonChips(int index, global::Dpr.UI.BoxWindow.SEARCH_DATA searchData = null) {
@@ -80,6 +80,6 @@ namespace Dpr.UI
 			}
 			return IsSelected;
 		}
-		public BoxListItem() { /*@B 0x6004EF5*/ throw null; }
+		public BoxListItem() { }
 	}
 }

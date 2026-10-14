@@ -5,14 +5,14 @@ namespace Dpr.UI
 	{
 		private global::Dpr.UI.UIBattleMatching _battleMatchingUIPtr;
 		private global::Dpr.UI.UIBattleMatchingTeamSelect _teamSelect;
-		private global::Dpr.UI.UIInputController _inputController;
+		private global::Dpr.UI.UIInputController _inputController = new global::Dpr.UI.UIInputController();
 		private global::System.Action _onFinishState;
 		private global::System.Action _onLeave;
 		private global::System.Action _onSelect;
 		private global::System.Action _onCancel;
 		private bool _ready;
 		private bool _closed;
-		private float _readyWaitTime;
+		private float _readyWaitTime = 3f;
 		private float _readyProgressTime;
 		private bool _openingWindow;
 		private bool _openedTeamSelect;
@@ -208,7 +208,7 @@ namespace Dpr.UI
 				_battleMatchingUIPtr.ShowMessageWindow(Dpr.BattleMatching.BattleMatchingWork.GetReadyAllBattleTeams() ? "SS_net_net_btl_029" : "SS_net_net_btl_028", null, true);
 			}
 		}
-		public BattleMatchingSelectBattleTeam() { /*@B 0x6004CF7*/ throw null; }
+		public BattleMatchingSelectBattleTeam() { }
 		private enum State
 		{
 			None = 0,
