@@ -9,7 +9,7 @@ using System;
 using UnityEngine;
 public class FieldPlayerEntity : global::FieldCharacterEntity
 {
-	private static readonly int _StencilRefID;
+	private static readonly int _StencilRefID = Shader.PropertyToID("_StencilRef");
 	[global::UnityEngine.SerializeField]
 	protected global::UnityEngine.Renderer[] _hatRenderers;
 	[global::UnityEngine.SerializeField]
@@ -34,7 +34,7 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 	protected int _bicycleMaterialIndex;
 	[global::System.NonSerialized]
 	public bool isExtrudable;
-	private global::JumpCalculator _path;
+	private global::JumpCalculator _path = new JumpCalculator();
 	private bool _setupMaterials;
 	[global::System.NonSerialized]
 	private bool _hit_se_request;
@@ -42,19 +42,19 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 	private float _hit_se_wait;
 	public global::UnityEngine.Vector3 InputMoveVector;
 	private float _beforeAngle;
-	public int FormType;
+	public int FormType = -1;
 	private global::XLSXContent.MapAttributeTable.SheetData nowAttribute;
 	private bool isAttributeStop;
-	private bool FootSeWalkStartEvent;
-	private global::FieldPlayerEntity.CheckGridCollisionFunc CheckGridCollision;
+	private bool FootSeWalkStartEvent = true;
+	private global::FieldPlayerEntity.CheckGridCollisionFunc CheckGridCollision = new CheckGridCollisionFunc();
 	private int _sandFallSeq;
 	private float _sandFallWait;
 	private float _sandFallPosZ;
 	private bool UpdateInputAngleDisable;
-	private int KairikiPushObjectIndex;
+	private int KairikiPushObjectIndex = -1;
 	private float KairikiPushTime;
 	private float debugInputTime;
-	private float debugInputVectolX;
+	private float debugInputVectolX = 1.0f;
 	private bool _isCrossUpdate;
 	private global::UnityEngine.Vector2 _crossInputVectol;
 	private global::UnityEngine.Vector2 _crossStopPosition;
@@ -68,7 +68,7 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 	private int nextForm;
 	private global::System.Action formFinish;
 	private bool changeFormRetInput;
-	private global::BicycleJump _bicJump;
+	private global::BicycleJump _bicJump = new BicycleJump();
 	private bool _isCycDownHillMode;
 	private float _bicOldAcceleration;
 	private float _bicAccelerationTime;
@@ -76,19 +76,19 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 	private bool _isBicMaxSpeed;
 	private global::FieldPlayerEntity.IceFloorStateType IceFloorState;
 	private global::UnityEngine.Vector3 IceFloorDirection;
-	private int IceSlidingLevel;
+	private int IceSlidingLevel = 1;
 	private float IceSlidingSpeed;
 	private bool IsIceSlope;
 	private float IceFloorStopTime;
 	private global::UnityEngine.Vector3 IceFloorStartGridCenterPos;
-	private global::Dpr.FieldObjectMove IceSlopeDownMove;
-	private global::Dpr.FieldObjectRotateYaw IceSlidingRotate;
-	private global::DIR IceFloorDirtyNextDir;
+	private global::Dpr.FieldObjectMove IceSlopeDownMove = new FieldObjectMove();
+	private global::Dpr.FieldObjectRotateYaw IceSlidingRotate = new FieldObjectRotateYaw();
+	private global::DIR IceFloorDirtyNextDir = DIR.DIR_NOT;
 	private global::FieldPlayerEntity.MoveFloorType CurrentMoveFloor;
 	private global::FieldPlayerEntity.MoveFloorType NextMoveFloor;
 	private float MoveFloorTime;
 	private float PrevRotateOffset;
-	private global::Dpr.FieldObjectRotateYaw MoveFloorRotate;
+	private global::Dpr.FieldObjectRotateYaw MoveFloorRotate = new FieldObjectRotateYaw();
 	private const float RotateAnimeOneCycleTime = 0.5f;
 	private const float NaminoriCheckDistance = 0.7f;
 	public const float NaminoriWaterSurfaceOfs = 0.5f;
@@ -99,10 +99,10 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 	private const float NaminoriSeWaitTime = 0.6f;
 	private float NaminoriSeWait;
 	private global::FieldPlayerEntity.NaminoriEventRequestType NaminoriEventRequest;
-	private global::FieldPlayerEntity.CheckGridCollisionCheckSwimFunc CheckGridCollisionCheckSwim;
-	private global::FieldPlayerEntity.CheckGridCollisionCalcSwimFunc CheckGridCollisionCalcSwim;
-	private global::FieldPlayerEntity.CheckGridCollisionEndSwimFunc CheckGridCollisionEndSwim;
-	private global::FieldPlayerEntity.CheckGridCollisionCalcSwimEndFunc CheckGridCollisionCalcSwimEnd;
+	private global::FieldPlayerEntity.CheckGridCollisionCheckSwimFunc CheckGridCollisionCheckSwim = new CheckGridCollisionCheckSwimFunc();
+	private global::FieldPlayerEntity.CheckGridCollisionCalcSwimFunc CheckGridCollisionCalcSwim = new CheckGridCollisionCalcSwimFunc();
+	private global::FieldPlayerEntity.CheckGridCollisionEndSwimFunc CheckGridCollisionEndSwim = new CheckGridCollisionEndSwimFunc();
+	private global::FieldPlayerEntity.CheckGridCollisionCalcSwimEndFunc CheckGridCollisionCalcSwimEnd = new CheckGridCollisionCalcSwimEndFunc();
 	private global::UnityEngine.Vector3 BiidaruPosOriginal;
 	private global::UnityEngine.Vector3 BiidaruMoveStartPos;
 	private global::UnityEngine.Vector3 BiidaruMoveEndPos;
@@ -111,8 +111,8 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 	private global::DIR SwampDeepInputDir;
 	private int SwampDeepInputCount;
 	private global::FieldPlayerEntity.SwampPhaseType SwampPhase;
-	private global::Dpr.FieldObjectMove SwampMove;
-	private global::Dpr.FieldFloatMove SwampWait;
+	private global::Dpr.FieldObjectMove SwampMove = new FieldObjectMove();
+	private global::Dpr.FieldFloatMove SwampWait = new FieldFloatMove();
 	private bool isPlayedSwampStartEffect;
 	private bool isSwampLoopEffect;
 	private const float WaterFallUpCheckDistance = 0.7f;
@@ -187,9 +187,9 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 	public bool DashFlag { get; private set; }
 	public global::System.Func<global::FieldPlayerEntity, bool> LateUpdateEvent { get; set; }
 	public float MoveSpeed { get; private set; }
-	public int FashionTableID { get; set; }
+	public int FashionTableID { get; set; } = -1;
 	public global::UnityEngine.Transform BiidaruTransform { get; private set; }
-	public global::Dpr.FieldFloatMove VisiblePodMove { get; private set; }
+	public global::Dpr.FieldFloatMove VisiblePodMove { get; private set; } = new FieldFloatMove();
 	public void ChangeVariation(int index) {
         index = Mathf.Clamp(index, 0, _variations.Length);
         if (index == _currentVariation)
@@ -2104,7 +2104,57 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 
         IceFloorDirtyNextDir = GetDir();
     }
-	private bool CheckIceFloor(float deltaTime) { /*@B 0x600078B*/ throw null; }
+	private bool CheckIceFloor(float deltaTime) {
+        if (FieldPoketch.IsControlPoketch() && IceFloorDirtyNextDir == DIR.DIR_NOT)
+            IceFloorDirtyNextDir = GetDir();
+
+        if (currentSequence != SequenceID.Active || !PlayerWork.isPlayerInputActive)
+            return false;
+
+        Vector2Int grid = PositionToGrid(worldPosition + moveVector);
+        // IsIceGrid never reads its height argument
+        if (!IsIceGrid(grid, worldPosition.y))
+            return false;
+
+        Vector3 direction;
+        if (IceFloorDirtyNextDir != DIR.DIR_NOT)
+        {
+            DIR dir = IceFloorDirtyNextDir;
+            IceFloorDirtyNextDir = DIR.DIR_NOT;
+            switch (dir)
+            {
+                case DIR.DIR_UP: direction = Vector3.back; break;
+                case DIR.DIR_DOWN: direction = Vector3.forward; break;
+                case DIR.DIR_LEFT: direction = Vector3.right; break;
+                case DIR.DIR_RIGHT: direction = Vector3.left; break;
+                default: return false;
+            }
+
+            Vector3 center = Vec2ToVec3Position(GridToPosition(grid), worldPosition.y);
+            if (CollisionUtility.CollideGround(center + direction, 1.0f, Layer.Ground) > 0.1f)
+                return false;
+        }
+        else if (grid != gridPosition)
+        {
+            Vector2 diff = GridToPosition(grid) - GridToPosition(gridPosition);
+            direction = new Vector3(diff.x, 0.0f, (diff.y != 0.0f && diff.x != 0.0f) ? 0.0f : diff.y);
+        }
+        else
+        {
+            if (moveVector == Vector3.zero)
+                return false;
+
+            direction = CalcIceMoveDirection(moveVector);
+            if (Vector3.Dot(InputMoveVector, direction) <= 0.0f)
+                return false;
+        }
+
+        if (CheckColIceFloor(direction, DataManager.FieldCommonParam[(int)ParamIndx.IceFloorSpdLv1].param * deltaTime, out Vector3 outVelocity))
+            return false;
+
+        IceFloorDirection = direction;
+        return true;
+    }
 	private global::UnityEngine.Vector3 CalcIceMoveDirection(global::UnityEngine.Vector3 inputVector) {
         if (inputVector.x * inputVector.x < inputVector.z * inputVector.z)
             return inputVector.z > 0.0f ? Vector3.forward : Vector3.back;
@@ -2355,7 +2405,11 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 
         return default;
     }
-	private bool IsIceGrid(global::UnityEngine.Vector2Int grid, float height) { /*@B 0x6000798*/ throw null; }
+	private bool IsIceGrid(global::UnityEngine.Vector2Int grid, float height) {
+        GameManager.GetAttribute(grid, out int code, out int stop);
+        var table = GameManager.GetAttributeTable(code);
+        return table != null && AttributeID.MATR_IsIce(code);
+    }
 	private bool CheckMoveFloor(float deltaTime) {
         if (currentSequence == SequenceID.Active && PlayerWork.isPlayerInputActive)
         {
@@ -2500,7 +2554,11 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 	public bool IsSwim() {
         return PlayerWork.IsFormSwim();
     }
-	private global::UnityEngine.Vector3 CalcCheckFrontGridDirection() { /*@B 0x60007A2*/ throw null; }
+	private global::UnityEngine.Vector3 CalcCheckFrontGridDirection() {
+        var forward = transform.forward;
+        forward.y = 0.0f;
+        return forward.normalized;
+    }
 	public bool CheckSwim() {
         if (!FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.BADGE_ID_C05))
             return false;
@@ -2526,7 +2584,14 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
         return FieldGridCollision.CheckGriCollisionMoveEntity(out Vector3 outVelocity, worldPosition, velocity, 0.4f, CheckGridCollisionCheckSwim,
             FieldGridCollision.GridCollisionIgnoreDir.None) == FieldGridCollision.GridCollisionType.None;
     }
-	private global::Dpr.FieldGridCollision.GridCollisionType CheckGridCollisionCheckSwimCore(global::UnityEngine.Vector2Int grid) { /*@B 0x60007A4*/ throw null; }
+	private global::Dpr.FieldGridCollision.GridCollisionType CheckGridCollisionCheckSwimCore(global::UnityEngine.Vector2Int grid) {
+        GameManager.GetAttribute(grid, out int code, out int stop);
+        if (!CanEntryAttributeCommon(code, stop))
+            return FieldGridCollision.GridCollisionType.NoEntry;
+
+        return EvDataManager.Instanse.CheckEventObjectGrid(grid.x, grid.y, worldPosition.y) ?
+            FieldGridCollision.GridCollisionType.Npc : FieldGridCollision.GridCollisionType.None;
+    }
 	public global::UnityEngine.Vector3 CalcSwimTargetPosition() {
         var direction = CalcCheckFrontGridDirection();
         var frontPos = worldPosition + direction * NaminoriCheckDistance;
@@ -2630,7 +2695,14 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
         return FieldGridCollision.CheckGriCollisionMoveEntity(out Vector3 outVelocity, worldPosition, velocity, 0.4f, CheckGridCollisionEndSwim,
             FieldGridCollision.GridCollisionIgnoreDir.None) == FieldGridCollision.GridCollisionType.None;
     }
-	private global::Dpr.FieldGridCollision.GridCollisionType CheckGridCollisionEndSwimCore(global::UnityEngine.Vector2Int grid) { /*@B 0x60007A9*/ throw null; }
+	private global::Dpr.FieldGridCollision.GridCollisionType CheckGridCollisionEndSwimCore(global::UnityEngine.Vector2Int grid) {
+        GameManager.GetAttribute(grid, out int code, out int stop);
+        if (!CanEntryAttributeCommon(code, stop))
+            return FieldGridCollision.GridCollisionType.NoEntry;
+
+        return EvDataManager.Instanse.CheckEventObjectGrid(grid.x, grid.y, worldPosition.y) ?
+            FieldGridCollision.GridCollisionType.Npc : FieldGridCollision.GridCollisionType.None;
+    }
 	public global::UnityEngine.Vector3 CalcSwimEndTargetPosition() {
         var direction = CalcCheckFrontGridDirection();
         var frontPos = worldPosition + direction * NaminoriCheckDistance;
@@ -2673,11 +2745,21 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
         return EvDataManager.Instanse.CheckEventObjectGrid(grid.x, grid.y, worldPosition.y) ?
             FieldGridCollision.GridCollisionType.Npc : FieldGridCollision.GridCollisionType.None;
     }
-	public void RequestStartSwimEvent() { /*@B 0x60007AC*/ throw null; }
+	public void RequestStartSwimEvent() {
+        if (PlayerWork.transitionZoneID != ZoneID.UNKNOWN)
+            return;
+
+        NaminoriEventRequest = NaminoriEventRequestType.StartSwim;
+    }
 	private void RequestEndSwimEvent() {
         NaminoriEventRequest = NaminoriEventRequestType.EndSwim;
     }
-	public void StartSwimEvent() { /*@B 0x60007AE*/ throw null; }
+	public void StartSwimEvent() {
+        if (PlayerWork.transitionZoneID != ZoneID.UNKNOWN)
+            return;
+
+        JumpPlayerActionEvent("ev_hiden_naminori");
+    }
 	private void EndSwimEvent() {
         JumpPlayerActionEvent("ev_hiden_naminori_end");
     }
@@ -2708,30 +2790,117 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
         if (!IsPlayNaminoriEffect && NaminoriEffect != null)
             StopSwimEffect();
     }
-	public void PlaySwimEffect() { /*@B 0x60007B3*/ throw null; }
-	private void PlayNaminoriLoopSE(float time) { /*@B 0x60007B4*/ throw null; }
+	public void PlaySwimEffect() {
+        StopSwimEffect();
+        IsPlayNaminoriEffect = true;
+        FieldManager.Instance.CallEffect(EffectFieldID.EF_F_WAZA_SURF, BiidaruTransform, new Vector3(0.0f, 0.5f, 0.0f),
+            instance => NaminoriEffect = instance, null);
+        NaminoriAudio = AudioManager.Instance.PlaySe(AK.EVENTS.S_FI033, instance =>
+        {
+            if (NaminoriAudio == instance)
+                NaminoriAudio = null;
+        });
+        NaminoriSeWait = 0.0f;
+    }
+	private void PlayNaminoriLoopSE(float time) {
+        NaminoriSeWait += time;
+        if (NaminoriSeWait >= NaminoriSeWaitTime)
+        {
+            NaminoriAudio = AudioManager.Instance.PlaySe(AK.EVENTS.S_FI033, instance =>
+            {
+                if (NaminoriAudio == instance)
+                    NaminoriAudio = null;
+            });
+            NaminoriSeWait = 0.0f;
+        }
+    }
 	public void PlayWaterFallUpEffect() {
         PlayWaterFallEffectCommon(180.0f);
     }
 	public void PlayWaterFallDownEffect() {
         PlayWaterFallEffectCommon(0.0f);
     }
-	private void PlayWaterFallEffectCommon(float yawAngle) { /*@B 0x60007B7*/ throw null; }
-	public void StopSwimEffect() { /*@B 0x60007B8*/ throw null; }
+	private void PlayWaterFallEffectCommon(float yawAngle) {
+        StopSwimEffect();
+        IsPlayNaminoriEffect = true;
+        FieldManager.Instance.CallEffect(EffectFieldID.EF_F_WAZA_WATERFALL, BiidaruTransform, new Vector3(0.0f, 0.5f, 0.0f),
+            new Vector3(0.0f, yawAngle, 0.0f), instance => NaminoriEffect = instance, null);
+    }
+	public void StopSwimEffect() {
+        IsPlayNaminoriEffect = false;
+        if (NaminoriEffect != null)
+        {
+            NaminoriEffect.Stop(0.0f, false);
+            NaminoriEffect = null;
+        }
+        if (NaminoriAudio != null)
+        {
+            NaminoriAudio.Stop();
+            NaminoriAudio = null;
+        }
+        NaminoriSeWait = 0.0f;
+    }
 	public bool IsBusySwimEffect() {
         return IsPlayNaminoriEffect;
     }
 	private void UpdateParts(float deltaTime) {
         UpdateBiidaru(deltaTime);
     }
-	private void LateUpdateParts(float deltaTime) { /*@B 0x60007BB*/ throw null; }
-	public void ResetBiidaruOffset() { /*@B 0x60007BE*/ throw null; }
-	private void MoveBiidaruOffset(global::UnityEngine.Vector3 start, global::UnityEngine.Vector3 end, float time) { /*@B 0x60007BF*/ throw null; }
-	private void UpdateBiidaru(float deltaTime) { /*@B 0x60007C0*/ throw null; }
-	private void UpdateBiidaruNode() { /*@B 0x60007C1*/ throw null; }
-	public void VisiblePod(bool visible) { /*@B 0x60007C4*/ throw null; }
-	private void UpdateVisiblePod(float deltaTime) { /*@B 0x60007C5*/ throw null; }
-	public global::UnityEngine.Transform GetPodEffectAttachTransform() { /*@B 0x60007C6*/ throw null; }
+	private void LateUpdateParts(float deltaTime) {
+        UpdateVisiblePod(deltaTime);
+        UpdateBiidaruNode();
+        UpdateSwimEffect(deltaTime);
+    }
+	public void ResetBiidaruOffset() {
+        BiidaruMoveStartPos = Vector3.zero;
+        BiidaruMoveEndPos = Vector3.zero;
+        BiidaruMoveTime.SetValue(0.0f);
+    }
+	private void MoveBiidaruOffset(global::UnityEngine.Vector3 start, global::UnityEngine.Vector3 end, float time) {
+        BiidaruMoveStartPos = start;
+        BiidaruMoveEndPos = end;
+        BiidaruMoveTime.SetValue(0.0f);
+        BiidaruMoveTime.MoveTime(1.0f, time);
+    }
+	private void UpdateBiidaru(float deltaTime) {
+        BiidaruMoveTime.Update(deltaTime);
+    }
+	private void UpdateBiidaruNode() {
+        if (BiidaruTransform == null)
+        {
+            var node = transform.FindDeep("mcl_00", false);
+            if (node != null)
+            {
+                BiidaruTransform = node.transform;
+                BiidaruPosOriginal = BiidaruTransform.localPosition;
+            }
+        }
+
+        if (BiidaruTransform != null)
+            BiidaruTransform.localPosition = BiidaruPosOriginal + Vector3.Lerp(BiidaruMoveStartPos, BiidaruMoveEndPos, BiidaruMoveTime.CurrentValue);
+    }
+	public void VisiblePod(bool visible) {
+        VisiblePodMove.SetValue(visible ? 0.0f : 1.0f);
+        VisiblePodMove.MoveTime(visible ? 1.0f : 0.0f, 0.4f);
+    }
+	private void UpdateVisiblePod(float deltaTime) {
+        if (!VisiblePodMove.IsBusy)
+            return;
+
+        VisiblePodMove.Update(deltaTime);
+        var skinnedRenderer = _podRenderer as SkinnedMeshRenderer;
+        if (skinnedRenderer != null)
+            skinnedRenderer.rootBone.localScale = Vector3.one * Mathf.Lerp(0.2f, 1.0f, VisiblePodMove.CurrentValue);
+
+        _podRenderer.enabled = VisiblePodMove.IsBusy || VisiblePodMove.CurrentValue != 0.0f;
+    }
+	public global::UnityEngine.Transform GetPodEffectAttachTransform() {
+        var skinnedRenderer = _podRenderer as SkinnedMeshRenderer;
+        if (skinnedRenderer == null)
+            return null;
+
+        return skinnedRenderer.rootBone.Find("Eff_attach");
+    }
 	public bool CheckRockClimbing(global::FieldObjectEntity eventObject) {
         var forward = transform.forward;
         forward.y = 0.0f;
@@ -2763,7 +2932,36 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 
         return true;
     }
-	public void CalcRockClimbingTargetPosition(global::FieldObjectEntity eventObject, out global::UnityEngine.Vector3 climbStart, out global::UnityEngine.Vector3 climbEnd, out global::UnityEngine.Vector3 standPos) { /*@B 0x60007C8*/ throw null; }
+	public void CalcRockClimbingTargetPosition(global::FieldObjectEntity eventObject, out global::UnityEngine.Vector3 climbStart, out global::UnityEngine.Vector3 climbEnd, out global::UnityEngine.Vector3 standPos) {
+        climbStart = Vector3.zero;
+        climbEnd = Vector3.zero;
+        standPos = Vector3.zero;
+
+        var direction = CalcRockClimbingDirection(eventObject);
+        var size = eventObject.EventParams.ContactSize;
+        var offset = new Vector3(direction.x * size.x * 0.5f, 0.0f, direction.z * size.y * 0.5f);
+
+        var position = eventObject.worldPosition;
+        position.x -= (eventObject.EventParams.ContactSize.x + -1.0f) * 0.5f;
+        position.z += (eventObject.EventParams.ContactSize.y + -1.0f) * 0.5f;
+
+        climbStart = position;
+        climbStart = climbStart - offset;
+        climbStart.y = worldPosition.y;
+
+        climbEnd = position;
+        climbEnd = climbEnd + offset;
+
+        standPos = climbEnd;
+        standPos = standPos + direction * 0.5f;
+        standPos = Vec2ToVec3Position(GridToPosition(PositionToGrid(standPos)), worldPosition.y);
+        standPos.y += CollisionUtility.CollideGround(standPos, 30.0f, Layer.Ground);
+        climbEnd.y = standPos.y;
+
+        var climbDir = (climbEnd - climbStart).normalized;
+        climbStart = climbStart + climbDir * 0.3f;
+        climbEnd = climbEnd - climbDir * 0.3f;
+    }
 	public global::UnityEngine.Vector3 CalcRockClimbingAnotherTalkPosition(global::FieldObjectEntity eventObject) {
         var position = eventObject.worldPosition;
         var direction = CalcRockClimbingDirection(eventObject);
@@ -2923,7 +3121,11 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
                 break;
         }
     }
-	private bool IsSwampDeepGrid(global::UnityEngine.Vector2Int grid, float height) { /*@B 0x60007D1*/ throw null; }
+	private bool IsSwampDeepGrid(global::UnityEngine.Vector2Int grid, float height) {
+        GameManager.GetAttribute(grid, out int code, out int stop);
+        var table = GameManager.GetAttributeTable(code);
+        return table != null && AttributeID.MATR_IsSwampDeep(code);
+    }
 	private bool CheckWaterfallDown(global::UnityEngine.Vector2 inputDir) {
         var direction = CalcCheckFrontGridDirection();
         if (direction.z < 0.0f)
@@ -2977,8 +3179,8 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 	private void WaterfallDownEvent() {
         JumpPlayerActionEvent("ev_hiden_takikudari");
     }
-	public FieldPlayerEntity() { /*@B 0x60007D8*/ throw null; }
-	static FieldPlayerEntity() { /*@B 0x60007D9*/ throw null; }
+	public FieldPlayerEntity() { }
+	static FieldPlayerEntity() { }
 	public class SequenceID : global::FieldCharacterEntity.SequenceID
 	{
 		public const int Jump = 16385;
@@ -3000,7 +3202,14 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 	}
 	public class CheckGridCollisionFunc : global::Dpr.FieldGridCollision.ICheckGridFunc
 	{
-		public global::Dpr.FieldGridCollision.GridCollisionType Check(global::UnityEngine.Vector2Int grid) { /*@B 0x6009550*/ throw null; }
+		public global::Dpr.FieldGridCollision.GridCollisionType Check(global::UnityEngine.Vector2Int grid) {
+            var player = EntityManager.activeFieldPlayer;
+            if (player != null && player.CanEntryAttribute(grid, player.worldPosition.y))
+                return player.CanEntryNomoseGymWaterGrid(grid, player.worldPosition.y) ?
+                    FieldGridCollision.GridCollisionType.None : FieldGridCollision.GridCollisionType.NoEntry;
+
+            return FieldGridCollision.GridCollisionType.NoEntry;
+        }
 		public CheckGridCollisionFunc() { }
 	}
 	private enum IceFloorStateType
