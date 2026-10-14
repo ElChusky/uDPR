@@ -16,65 +16,262 @@ namespace Dpr.MsgWindow
 		private float[] msgSpeedArray;
 		private global::TMPro.TMP_FontAsset useFontAsset;
 		private global::Dpr.MsgWindow.MsgWindowDataModel.MsgWindowState msgState;
-		private global::Dpr.MsgWindow.WaitTimer waitTimer;
-		private string speakerName;
+		private global::Dpr.MsgWindow.WaitTimer waitTimer = new global::Dpr.MsgWindow.WaitTimer();
+		private string speakerName = string.Empty;
 		private float showOneFontTimeSec;
 		private float defaultShowOneFontTimeSec;
 		private float fontSize;
-		private bool inputEnabled;
-		public bool IsOpen { get { /*@B 0x6003B12*/ throw null; } }
+		private bool inputEnabled = true;
+		public bool IsOpen { get {
+                if (msgState == MsgWindowState.PlayingClose)
+                    return false;
+                return msgState != MsgWindowState.Inactive;
+            } }
 		public global::Dpr.MsgWindow.MsgWindowDataModel.MsgWindowState MsgState { get { return this.msgState; } }
 		public bool InputEnabled { get { return this.inputEnabled; } }
-		public bool IsShowLastKeywaitIcon { get { /*@B 0x6003B17*/ throw null; } }
-		public bool IsShowLoadingIcon { get { /*@B 0x6003B18*/ throw null; } }
-		public bool CanInputClose { get { /*@B 0x6003B1A*/ throw null; } }
-		public string LabelName { get { /*@B 0x6003B1B*/ throw null; } }
+		public bool IsShowLastKeywaitIcon { get { return currentMsgParam.showLastKeywaitIcon; } }
+		public bool IsShowLoadingIcon { get { return currentMsgParam.showLoadingIcon; } }
+		public bool CanInputClose { get { return currentMsgParam.inputEnabled && currentMsgParam.inputCloseEnabled; } }
+		public string LabelName { get {
+                if (!string.IsNullOrEmpty(currentMsgParam.labelName))
+                    return currentMsgParam.labelName;
+                if (currentMsgParam.textDataModel != null)
+                    return currentMsgParam.textDataModel.LabelName;
+                return string.Empty;
+            } }
 		public string SpeakerName { get { return this.speakerName; } }
-		public global::Dpr.Message.MessageTextParseDataModel MessageData { get { /*@B 0x6003B1F*/ throw null; } }
-		public float ShowOneFontTimeSec { get { /*@B 0x6003B20*/ throw null; } }
-		public bool IsUnknownMessage { get { /*@B 0x6003B21*/ throw null; } }
-		public bool HasBattleOnelineTag { get { /*@B 0x6003B22*/ throw null; } }
-		public bool IsNetwork { get { /*@B 0x6003B23*/ throw null; } }
-		public global::System.Nullable<global::UnityEngine.Vector2> WndAnchorPosition { get { /*@B 0x6003B35*/ throw null; } }
-		public int TextWidth { get { /*@B 0x6003B36*/ throw null; } }
+		public global::Dpr.Message.MessageTextParseDataModel MessageData { get {
+                if (currentMessageDataModel != null)
+                    return currentMessageDataModel;
+                return currentMsgParam.textDataModel;
+            } }
+		public float ShowOneFontTimeSec { get {
+                if (currentMsgParam != null && currentMsgParam.forceSetMsgSpeed != global::DPData.MSGSPEED.MSGSPEED_MAX)
+                    return msgSpeedArray[(int)currentMsgParam.forceSetMsgSpeed];
+                return showOneFontTimeSec;
+            } }
+		public bool IsUnknownMessage { get {
+                var data = MessageData;
+                if (data == null)
+                    return false;
+                return data.IsUnknownMessage;
+            } }
+		public bool HasBattleOnelineTag { get {
+                var data = MessageData;
+                if (data == null)
+                    return false;
+                return data.IsOneLineTagMessage();
+            } }
+		public bool IsNetwork { get {
+                if (currentMsgParam != null)
+                    return currentMsgParam.isNetwork;
+                return false;
+            } }
+		public global::System.Nullable<global::UnityEngine.Vector2> WndAnchorPosition { get { return currentMsgParam.wndAnchorPos; } }
+		public int TextWidth { get {
+                var data = MessageData;
+                if (data == null)
+                    return 0;
+                return data.TextWidth;
+            } }
 		public float FrameWidth { get => TextWidth * MessageDataConstants.ASPECT_SCALE.x; }
-		public int SortingOrder { get { /*@B 0x6003B38*/ throw null; } }
-		public float SpeakerFrameWidth { get { /*@B 0x6003B39*/ throw null; } }
-		public float SpeakerNameFontSize { get { /*@B 0x6003B3A*/ throw null; } }
-		public float FontSize { get { /*@B 0x6003B3B*/ throw null; } }
-		public float FontScale { get { /*@B 0x6003B3C*/ throw null; } }
-		public global::UnityEngine.Color FontColor { get { /*@B 0x6003B3D*/ throw null; } }
-		public global::UnityEngine.Color NetworkFonrColor { get { /*@B 0x6003B3E*/ throw null; } }
+		public int SortingOrder { get { return currentMsgParam.sortingOrder; } }
+		public float SpeakerFrameWidth { get { return MessageFontDataConstants.FONT_SIZE_TABLE[1] * 12f; } }
+		public float SpeakerNameFontSize { get { return MessageFontDataConstants.FONT_SIZE_TABLE[1]; } }
+		public float FontSize { get {
+                var data = MessageData;
+                if (data != null && data.IsUnknownMessage)
+                    return 80f;
+                return fontSize;
+            } }
+		public float FontScale { get { return fontSize / useFontAsset.creationSettings.pointSize; } }
+		public global::UnityEngine.Color FontColor { get {
+                var data = MessageData;
+                if (data == null)
+                    return MessageFontDataConstants.DEFAULT_FONT_COLOR;
+                return data.GetFontColor();
+            } }
+		public global::UnityEngine.Color NetworkFonrColor { get { return MessageFontDataConstants.NETWORK_TEXT_COLOR; } }
 		public global::TMPro.TMP_FontAsset FontAsset { get { return this.useFontAsset; } set { this.useFontAsset = value; } }
-		public void Initialize(float[] msgSpeedArray, int waitFinishFrame, global::Dpr.MsgWindow.MsgWindowDataContainer dataContainer) { /*@B 0x6003B0F*/ throw null; }
-		public void OnFinalize() { /*@B 0x6003B10*/ throw null; }
-		public void Clear() { /*@B 0x6003B11*/ throw null; }
-		public void ChangeMsgState(global::Dpr.MsgWindow.MsgWindowDataModel.MsgWindowState nextState) { /*@B 0x6003B14*/ throw null; }
-		public void ChangeMsgSpeed(global::DPData.MSGSPEED msgSpeed) { /*@B 0x6003B15*/ throw null; }
-		public void SetInputEnabled(bool enabled) { /*@B 0x6003B19*/ throw null; }
-		public bool HasSpeakerName() { /*@B 0x6003B1C*/ throw null; }
-		public void ClearSpeakerName() { /*@B 0x6003B1E*/ throw null; }
-		public void FormatTextData() { /*@B 0x6003B24*/ throw null; }
-		public void FormatItemGetTextData() { /*@B 0x6003B25*/ throw null; }
-		private void SetPocketIconData() { /*@B 0x6003B26*/ throw null; }
-		public void SetBtlMsgWindowParam(global::Dpr.MsgWindow.MsgWindowParam btlMsgWindowParam) { /*@B 0x6003B27*/ throw null; }
-		public void ResetParam() { /*@B 0x6003B28*/ throw null; }
-		public void SetMsgWindowParam(global::Dpr.MsgWindow.MsgWindowParam msgWindowParam) { /*@B 0x6003B29*/ throw null; }
-		public void SetBoardMsgWindowParam(global::Dpr.MsgWindow.MsgWindowParam msgWindowParam) { /*@B 0x6003B2A*/ throw null; }
-		private void SetWindowParameters() { /*@B 0x6003B2B*/ throw null; }
-		private string CreateSpeakerName() { /*@B 0x6003B2C*/ throw null; }
-		private void SetWindowDataFromMessageData() { /*@B 0x6003B2D*/ throw null; }
-		public void OnStartOpen() { /*@B 0x6003B2E*/ throw null; }
-		public void OnFinishedOpen() { /*@B 0x6003B2F*/ throw null; }
-		public void OnFinishedMessage() { /*@B 0x6003B30*/ throw null; }
-		public void CheckWaitFinishTime(float deltaTime) { /*@B 0x6003B31*/ throw null; }
-		public void OnClose() { /*@B 0x6003B32*/ throw null; }
-		public void OnFinishedClose() { /*@B 0x6003B33*/ throw null; }
-		public void CallFinishedCallback() { /*@B 0x6003B34*/ throw null; }
-		public bool CheckShowRoadsignByPattern(int pattern) { /*@B 0x6003B41*/ throw null; }
-		public global::Dpr.MsgWindow.RoadsignViewData GetRoadsignViewDataByPattern(int pattern) { /*@B 0x6003B42*/ throw null; }
-		public void ClearCallbackFunc() { /*@B 0x6003B43*/ throw null; }
-		public MsgWindowDataModel() { /*@B 0x6003B44*/ throw null; }
+		public void Initialize(float[] msgSpeedArray, int waitFinishFrame, global::Dpr.MsgWindow.MsgWindowDataContainer dataContainer) {
+            this.msgSpeedArray = msgSpeedArray;
+            speakerNameTable = dataContainer.SpeakerNameTable;
+            roadsignViewDataTable = dataContainer.RoadsignViewDataTable;
+            msgState = MsgWindowState.Inactive;
+            ChangeMsgSpeed(global::PlayerWork.config.msg_speed);
+            waitTimer.SetLimitTime(waitFinishFrame * (1f / 30f));
+        }
+		public void OnFinalize() {
+            msgState = MsgWindowState.Inactive;
+            if (currentMsgParam != null)
+                currentMsgParam = null;
+            if (currentMessageDataModel != null)
+                currentMessageDataModel = null;
+        }
+		public void Clear() {
+            msgState = MsgWindowState.Inactive;
+            if (currentMsgParam != null)
+                currentMsgParam = null;
+            if (currentMessageDataModel != null)
+                currentMessageDataModel = null;
+        }
+		public void ChangeMsgState(global::Dpr.MsgWindow.MsgWindowDataModel.MsgWindowState nextState) {
+            MessageHelper.EmitLog(string.Format("Change Msg State : {0}", nextState));
+            msgState = nextState;
+        }
+		public void ChangeMsgSpeed(global::DPData.MSGSPEED msgSpeed) {
+            MessageHelper.EmitLog(string.Format("Change Msg Speed : {0}", msgSpeed));
+            float timeSec = msgSpeedArray[(int)msgSpeed];
+            showOneFontTimeSec = timeSec;
+            defaultShowOneFontTimeSec = timeSec;
+        }
+		public void SetInputEnabled(bool enabled) { inputEnabled = enabled; }
+		public bool HasSpeakerName() { return !string.IsNullOrEmpty(speakerName); }
+		public void ClearSpeakerName() { speakerName = string.Empty; }
+		public void FormatTextData() {
+            var data = MessageData;
+            if (data == null)
+                return;
+            data.ApplyFormat();
+        }
+		public void FormatItemGetTextData() {
+            SetPocketIconData();
+            var data = MessageData;
+            if (data == null)
+                return;
+            data.ApplyFormat();
+        }
+		private void SetPocketIconData() {
+            var data = MessageData;
+            if (data == null || data.TagDataList.Count <= 0)
+                return;
+            var itemInfo = global::ItemWork.GetItemInfo(currentMsgParam.dataValue);
+            if (itemInfo == null)
+            {
+                MessageHelper.EmitLog(string.Format("Item Nomber {0} is not found", currentMsgParam.dataValue), global::UnityEngine.LogType.Error);
+                return;
+            }
+            foreach (var tagData in data.TagDataList)
+            {
+                if (tagData.tagGroupId == MessageEnumData.GroupTagID.Name)
+                {
+                    switch ((MessageEnumData.NameID)tagData.tagId)
+                    {
+                        case MessageEnumData.NameID.Pocket:
+                        case MessageEnumData.NameID.ItemText:
+                        case MessageEnumData.NameID.BagPocketIcon:
+                        case MessageEnumData.NameID.PocketIcon:
+                            MessageWordSetHelper.SetPocketNameWord(tagData.index, (global::Pml.ItemNo)currentMsgParam.dataValue);
+                            break;
+                    }
+                }
+                else if (tagData.tagGroupId == MessageEnumData.GroupTagID.Character1 && tagData.tagId == (int)MessageEnumData.Character1ID.PocketIcon)
+                {
+                    char iconChar = MessageHelper.ConvertUnicodeToChar(MessageDataConstants.POCKET_ICON_CODE_TABLE[(int)itemInfo.Category]);
+                    tagData.strValue = iconChar.ToString();
+                }
+            }
+        }
+		public void SetBtlMsgWindowParam(global::Dpr.MsgWindow.MsgWindowParam btlMsgWindowParam) {
+            currentMsgParam = btlMsgWindowParam;
+            SetWindowParameters();
+            showOneFontTimeSec = defaultShowOneFontTimeSec;
+            SetWindowDataFromMessageData();
+        }
+		public void ResetParam() { waitTimer.ResetTimer(); }
+		public void SetMsgWindowParam(global::Dpr.MsgWindow.MsgWindowParam msgWindowParam) {
+            currentMsgParam = msgWindowParam;
+            currentMessageDataModel = msgWindowParam.GetTextParseDataModel();
+            SetWindowParameters();
+            if (msgWindowParam.bBatchDisplay)
+                showOneFontTimeSec = 0f;
+            else
+                showOneFontTimeSec = defaultShowOneFontTimeSec;
+            SetWindowDataFromMessageData();
+        }
+		public void SetBoardMsgWindowParam(global::Dpr.MsgWindow.MsgWindowParam msgWindowParam) {
+            currentMsgParam = msgWindowParam;
+            currentMessageDataModel = msgWindowParam.GetTextParseDataModel();
+            SetWindowParameters();
+            showOneFontTimeSec = 0f;
+            SetWindowDataFromMessageData();
+        }
+		private void SetWindowParameters() {
+            speakerName = CreateSpeakerName();
+            inputEnabled = currentMsgParam.inputEnabled;
+        }
+		private string CreateSpeakerName() {
+            int key = LabelName.GetHashCode();
+            if (!speakerNameTable.ContainsKey(key))
+                return string.Empty;
+            var messageManager = global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<MessageManager>.Instance;
+            string label = speakerNameTable[key];
+            string name;
+            if (label == USER_LABEL)
+            {
+                name = global::PlayerWork.userName;
+            }
+            else if (label == RIVAL_LABEL)
+            {
+                name = messageManager.GetRivalName();
+            }
+            else if (label == RIVAL_MOTHER_LABEL)
+            {
+                name = messageManager.GetRivalMotherName();
+            }
+            else if (label == ORIGINAL_NAME_LABEL)
+            {
+                if (currentMsgParam != null)
+                    return currentMsgParam.originalSpeakerName;
+                MessageHelper.EmitLog("ORIGINAL_NAME_LABEL : currentMsgParam is null");
+                return string.Empty;
+            }
+            else
+            {
+                return messageManager.GetNameMessage("dlp_speakers_name", label);
+            }
+            return name.GetInvalidRichText();
+        }
+		private void SetWindowDataFromMessageData() {
+            var data = MessageData;
+            if (data == null)
+            {
+                MessageHelper.EmitLog("currentMessageDataModel is null", global::UnityEngine.LogType.Error);
+                return;
+            }
+            fontSize = data.FontSize;
+        }
+		public void OnStartOpen() { ChangeMsgState(MsgWindowState.PlayingOpen); }
+		public void OnFinishedOpen() {
+            ChangeMsgState(MsgWindowState.FinishedOpen);
+            currentMsgParam.onFinishedOpenWindow?.Invoke();
+        }
+		public void OnFinishedMessage() { msgState = MsgWindowState.WaitFinishMessage; }
+		public void CheckWaitFinishTime(float deltaTime) {
+            if (waitTimer.IsFinishWait(deltaTime))
+            {
+                ChangeMsgState(MsgWindowState.FinishedShowMessage);
+                currentMsgParam.onFinishedShowAllMessage?.Invoke();
+            }
+        }
+		public void OnClose() { ChangeMsgState(MsgWindowState.PlayingClose); }
+		public void OnFinishedClose() {
+            ChangeMsgState(MsgWindowState.Inactive);
+            currentMsgParam?.onFinishedCloseWindow?.Invoke();
+        }
+		public void CallFinishedCallback() { currentMsgParam?.onFinishedCloseWindow?.Invoke(); }
+		public bool CheckShowRoadsignByPattern(int pattern) { return roadsignViewDataTable.ContainsKey(pattern) && pattern > 0; }
+		public global::Dpr.MsgWindow.RoadsignViewData GetRoadsignViewDataByPattern(int pattern) { return roadsignViewDataTable[pattern]; }
+		public void ClearCallbackFunc() {
+            MessageHelper.EmitLog("Clear All MsgWindowCallback!!");
+            if (currentMsgParam != null)
+            {
+                currentMsgParam.onFinishedOpenWindow = null;
+                currentMsgParam.onFinishedCloseWindow = null;
+                currentMsgParam.onFinishedShowAllMessage = null;
+            }
+        }
+		public MsgWindowDataModel() { }
 		public enum MsgWindowState
 		{
 			Inactive = 0,

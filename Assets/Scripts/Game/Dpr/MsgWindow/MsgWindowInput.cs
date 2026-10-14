@@ -3,19 +3,39 @@ namespace Dpr.MsgWindow
 {
 	public class MsgWindowInput
 	{
-		private global::GameController.LogicalInput localInput;
-		private void AssignInputDecide() { /*@B 0x6003A30*/ throw null; }
-		public void SubscribeToGameController() { /*@B 0x6003A31*/ throw null; }
-		public void RemoveFromGameController() { /*@B 0x6003A32*/ throw null; }
-		public bool IsInputDecideButtonPush() { /*@B 0x6003A33*/ throw null; }
-		public bool IsInputDecideButtonRelease() { /*@B 0x6003A34*/ throw null; }
+		private global::GameController.LogicalInput localInput = new global::GameController.LogicalInput();
+		private void AssignInputDecide() {
+            localInput.Clear();
+            int mask = 0xC303;
+            if (global::PlayerWork.playerData.config.input_mode != global::DPData.INPUTMODE.INPUTMODE_CHOIRAKU)
+                mask = 0x303;
+            localInput.Assign((int)KeyAssignId.Decide, mask);
+        }
+		public void SubscribeToGameController() {
+            AssignInputDecide();
+            global::GameController.Subscribe(localInput);
+        }
+		public void RemoveFromGameController() {
+            global::GameController.Remove(localInput);
+            localInput.Clear();
+        }
+		public bool IsInputDecideButtonPush() {
+            if (global::UnityEngine.Input.GetKeyDown(global::UnityEngine.KeyCode.L))
+                return true;
+            return IsButtonPush(KeyAssignValue.InputDecide);
+        }
+		public bool IsInputDecideButtonRelease() {
+            if (global::UnityEngine.Input.GetKeyUp(global::UnityEngine.KeyCode.L))
+                return true;
+            return IsButtonRelease(KeyAssignValue.InputDecide);
+        }
 		private bool IsButtonPush(int assignValue) {
             return (assignValue & ~localInput.push) == 0;
         }
 		private bool IsButtonRelease(int assignValue) {
             return (assignValue & ~localInput.release) == 0;
         }
-		public MsgWindowInput() { /*@B 0x6003A37*/ throw null; }
+		public MsgWindowInput() { }
 		private enum KeyAssignId
 		{
 			Decide = 0,
