@@ -6,8 +6,16 @@ namespace Dpr.Battle.Logic
 		public global::Dpr.Battle.Logic.BtlPokePos targetPos;
 		public bool isCaptured;
 		public bool isZukanRegistered;
-		public void Clear() { /*@B 0x600698A*/ throw null; }
-		public void Set(global::Dpr.Battle.Logic.BtlPokePos pos, bool captured, bool zukanRegistered) { /*@B 0x600698B*/ throw null; }
+		public void Clear() {
+			targetPos = BtlPokePos.POS_NULL;
+			isCaptured = false;
+			isZukanRegistered = false;
+		}
+		public void Set(global::Dpr.Battle.Logic.BtlPokePos pos, bool captured, bool zukanRegistered) {
+			targetPos = pos;
+			isCaptured = captured;
+			isZukanRegistered = zukanRegistered;
+		}
 		public POKE_CAPTURED_CONTEXT() { }
 	}
 }

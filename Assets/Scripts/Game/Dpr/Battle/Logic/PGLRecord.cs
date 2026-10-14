@@ -9,7 +9,25 @@ namespace Dpr.Battle.Logic
 
             return pMainModule.GetBattleSetupParam().competitor == BtlCompetitor.BTL_COMPETITOR_COMM;
         }
-		public static void PokeIDtoRecordIdx(out bool pIsPlayerSide, out byte pRecordIdx, global::Dpr.Battle.Logic.MainModule pMainModule, byte pokeID) { /*@B 0x6007682*/ throw null; }
+		public static void PokeIDtoRecordIdx(out bool pIsPlayerSide, out byte pRecordIdx, global::Dpr.Battle.Logic.MainModule pMainModule, byte pokeID) {
+			BTL_CLIENT_ID clientID = PokeID.PokeIdToClientId(pokeID);
+			pRecordIdx = 0;
+			pIsPlayerSide = false;
+			byte basePokeID = PokeID.GetClientBasePokeId(clientID);
+			pIsPlayerSide = pMainModule.IsFriendClientID((byte)clientID, pMainModule.GetPlayerClientID());
+			if (pIsPlayerSide)
+			{
+				if (pMainModule.GetPlayerClientID() != (byte)clientID)
+					pRecordIdx = 3;
+			}
+			else if ((byte)clientID > 1)
+			{
+				pRecordIdx = 3;
+			}
+			pRecordIdx += (byte)global::System.Math.Max(pokeID - basePokeID, 0);
+			if (pRecordIdx > 5)
+				pRecordIdx = 5;
+		}
 		public static void Record(global::Dpr.Battle.Logic.BATTLE_PGL_RECORD_SET pBuffer, global::Dpr.Battle.Logic.MainModule pMainModule, global::Dpr.Battle.Logic.BTL_POKEPARAM pDeadPoke, global::Dpr.Battle.Logic.PGLRecord.RecParam pRecParam) {
             if (!IsNeed(pMainModule))
                 return;
@@ -67,7 +85,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Pml.WazaNo wazaID;
-			public RecParam(global::Dpr.Battle.Logic.BTL_POKEPARAM _attacker, global::Pml.WazaNo _wazaID) { /*@B 0x600B6B8*/ throw null; }
+			public RecParam(global::Dpr.Battle.Logic.BTL_POKEPARAM _attacker, global::Pml.WazaNo _wazaID) {
+				attacker = _attacker;
+				wazaID = _wazaID;
+			}
 		}
 	}
 }

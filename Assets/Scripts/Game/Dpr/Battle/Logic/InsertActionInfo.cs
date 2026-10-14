@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 	public sealed class InsertActionInfo
 	{
 		public bool isTokuseiWindowDisplay;
-		public global::Dpr.Battle.Logic.StrParam prevActionMessage;
+		public global::Dpr.Battle.Logic.StrParam prevActionMessage = new StrParam();
 		public void CopyFrom(global::Dpr.Battle.Logic.InsertActionInfo src) {
             isTokuseiWindowDisplay = src.isTokuseiWindowDisplay;
             prevActionMessage.CopyFrom(src.prevActionMessage);
@@ -13,6 +13,6 @@ namespace Dpr.Battle.Logic
             isTokuseiWindowDisplay = false;
             prevActionMessage.Clear();
         }
-		public InsertActionInfo() { /*@B 0x6006BD8*/ throw null; }
+		public InsertActionInfo() { }
 	}
 }

@@ -4,8 +4,40 @@ namespace Dpr.Battle.Logic
 {
 	public static class GShock
 	{
-		private static readonly global::Dpr.Battle.Logic.GShock.GSHOCK_EFFECT_TABLE_ELEM[] GSHOCK_EFFECT_TABLE;
-		private static readonly global::Dpr.Battle.Logic.GShock.GSHOCK_EFFECT_TABLE_SP_ELEM[] GSHOCK_EFFECT_TABLE_SP;
+		private static readonly global::Dpr.Battle.Logic.GShock.GSHOCK_EFFECT_TABLE_ELEM[] GSHOCK_EFFECT_TABLE = new GSHOCK_EFFECT_TABLE_ELEM[]
+		{
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x2f8, Effect.RANKDOWN_AGI),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x2f5, Effect.WEATHER_SHINE),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x2fd, Effect.WEATHER_RAIN),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x2f7, Effect.FIELD_ELEC),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x305, Effect.FIELD_GRASS),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x2fb, Effect.WEATHER_SNOW),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x2f9, Effect.RANKUP_ATK),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x2fc, Effect.RANKUP_SPATK),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x303, Effect.RANKUP_SPDEF),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x2fe, Effect.RANKUP_AGI),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x301, Effect.FIELD_PSYCO),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x2f6, Effect.RANKDOWN_SPATK),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x302, Effect.WEATHER_SAND),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x2fa, Effect.RANKDOWN_DEF),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x300, Effect.RANKDOWN_ATK),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x304, Effect.RANKDOWN_SPDEF),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x306, Effect.RANKUP_DEF),
+			new GSHOCK_EFFECT_TABLE_ELEM((WazaNo)0x2ff, Effect.FIELD_MIST),
+		};
+		private static readonly global::Dpr.Battle.Logic.GShock.GSHOCK_EFFECT_TABLE_SP_ELEM[] GSHOCK_EFFECT_TABLE_SP = new GSHOCK_EFFECT_TABLE_SP_ELEM[]
+		{
+			new GSHOCK_EFFECT_TABLE_SP_ELEM((MonsNo)6, 0, 9, Effect.SIDE_HONOO, 0),
+			new GSHOCK_EFFECT_TABLE_SP_ELEM((MonsNo)12, 0, 6, Effect.SICK_DOKU_MAHI_NEMURI, 1),
+			new GSHOCK_EFFECT_TABLE_SP_ELEM((MonsNo)25, 0, 12, Effect.SICK_MAHI, 2),
+			new GSHOCK_EFFECT_TABLE_SP_ELEM((MonsNo)52, 0, 0, Effect.NEKONIKOBAN, 3),
+			new GSHOCK_EFFECT_TABLE_SP_ELEM((MonsNo)68, 0, 1, Effect.RANKUP_CRITICAL, 4),
+			new GSHOCK_EFFECT_TABLE_SP_ELEM((MonsNo)94, 0, 7, Effect.TOOSENBOU, 5),
+			new GSHOCK_EFFECT_TABLE_SP_ELEM((MonsNo)131, 0, 14, Effect.AURORAVEIL, 6),
+			new GSHOCK_EFFECT_TABLE_SP_ELEM((MonsNo)133, 0, 0, Effect.SICK_MEROMERO, 7),
+			new GSHOCK_EFFECT_TABLE_SP_ELEM((MonsNo)143, 0, 0, Effect.SYUUKAKU, 8),
+			new GSHOCK_EFFECT_TABLE_SP_ELEM((MonsNo)99, 0, 10, Effect.RANKDOWN_AGI2, 24),
+		};
 		public static global::Dpr.Battle.Logic.GShock.Effect GetEffect(global::Dpr.Battle.Logic.BTL_POKEPARAM poke, global::Pml.WazaNo wazano) {
 			if (poke.IsSpecialG())
 			{
@@ -50,7 +82,7 @@ namespace Dpr.Battle.Logic
 			}
 			return (byte)PokeType.NULL;
 		}
-		static GShock() { /*@B 0x600765E*/ throw null; }
+		static GShock() { }
 		public enum Effect : byte
 		{
 			NONE = 0,
@@ -103,7 +135,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Pml.WazaNo wazano;
 			public global::Dpr.Battle.Logic.GShock.Effect effect;
-			public GSHOCK_EFFECT_TABLE_ELEM(global::Pml.WazaNo wazano, global::Dpr.Battle.Logic.GShock.Effect effect) { /*@B 0x600B6B6*/ throw null; }
+			public GSHOCK_EFFECT_TABLE_ELEM(global::Pml.WazaNo wazano, global::Dpr.Battle.Logic.GShock.Effect effect) {
+				this.wazano = wazano;
+				this.effect = effect;
+			}
 		}
 		private struct GSHOCK_EFFECT_TABLE_SP_ELEM
 		{
@@ -112,7 +147,13 @@ namespace Dpr.Battle.Logic
 			public byte wazaType;
 			public global::Dpr.Battle.Logic.GShock.Effect shockEffect;
 			public int specialWazaNameIndex;
-			public GSHOCK_EFFECT_TABLE_SP_ELEM(global::Pml.MonsNo monsno, ushort formno, byte wazaType, global::Dpr.Battle.Logic.GShock.Effect shockEffect, int specialWazaNameIndex) { /*@B 0x600B6B7*/ throw null; }
+			public GSHOCK_EFFECT_TABLE_SP_ELEM(global::Pml.MonsNo monsno, ushort formno, byte wazaType, global::Dpr.Battle.Logic.GShock.Effect shockEffect, int specialWazaNameIndex) {
+				this.monsno = monsno;
+				this.formno = formno;
+				this.wazaType = wazaType;
+				this.shockEffect = shockEffect;
+				this.specialWazaNameIndex = specialWazaNameIndex;
+			}
 		}
 	}
 }

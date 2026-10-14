@@ -2701,7 +2701,7 @@ namespace Dpr.Battle.Logic
                 return false;
             return pp.GetPersonalRnd() == partner.GetPersonalRnd();
         }
-		static MainModule() { /*@B 0x6007B80*/ throw null; }
+		static MainModule() { }
 		private delegate bool pSubProc(ref int UnnamedParameter);
 		private delegate bool pMainProc();
 		private enum LocalSeq

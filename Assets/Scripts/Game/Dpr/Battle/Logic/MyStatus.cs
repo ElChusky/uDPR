@@ -12,7 +12,7 @@ namespace Dpr.Battle.Logic
 		public byte body_type;
 		public byte hat;
 		public byte shoes;
-		private global::Pml.Sex _sex { get { /*@B 0x60067CB*/ throw null; } }
+		private global::Pml.Sex _sex { get { return sex ? global::Pml.Sex.MALE : global::Pml.Sex.FEMALE; } }
 		public MyStatus() { }
 		public void Deserialize(in global::DPData.MYSTATUS status) {
             name = status.name;

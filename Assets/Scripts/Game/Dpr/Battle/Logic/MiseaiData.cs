@@ -4,8 +4,14 @@ namespace Dpr.Battle.Logic
 	public class MiseaiData
 	{
 		public global::Pml.PokeParty iPtrPartyFullMember;
-		public sbyte[] memberSelectedIndex;
-		public MiseaiData() { /*@B 0x6006757*/ throw null; }
-		public void Clear() { /*@B 0x6006758*/ throw null; }
+		public sbyte[] memberSelectedIndex = new sbyte[6];
+		public MiseaiData() {
+			Clear();
+		}
+		public void Clear() {
+			iPtrPartyFullMember = null;
+			for (int i = 0; i < 6; i++)
+				memberSelectedIndex[i] = -1;
+		}
 	}
 }

@@ -3,9 +3,9 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class GameTimer
 	{
-		private global::System.Diagnostics.Stopwatch[] m_timeCount;
-		private ushort[] m_limitTime;
-		private bool[][] m_isPause;
+		private global::System.Diagnostics.Stopwatch[] m_timeCount = Arrays.InitializeWithDefaultInstances<global::System.Diagnostics.Stopwatch>(3);
+		private ushort[] m_limitTime = new ushort[3];
+		private bool[][] m_isPause = RectangularArrays.RectangularDefaultArray<bool>(3, 2);
 		public void Initialize() { }
 		public uint GetTime(global::Dpr.Battle.Logic.GameTimer.TimerType type) {
             if (type > TimerType.COMMAND)
@@ -64,7 +64,7 @@ namespace Dpr.Battle.Logic
             for (int i = 0; i < m_isPause[(int)type].Length; i++)
                 m_isPause[(int)type][i] = false;
         }
-		public GameTimer() { /*@B 0x6007A4E*/ throw null; }
+		public GameTimer() { }
 		public enum TimerType
 		{
 			GAME = 0,
