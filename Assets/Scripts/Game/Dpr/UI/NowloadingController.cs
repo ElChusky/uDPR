@@ -10,17 +10,67 @@ namespace Dpr.UI
 		private float _waitTime;
 		private float _progressTime;
 		private bool _isWaiting;
-		private static readonly int animStatePlay;
+		private static readonly int animStatePlay = global::UnityEngine.Animator.StringToHash("CmnLoadMon1");
 		private float _animLength;
 		private float _animTime;
-		private void Awake() { /*@B 0x6005109*/ throw null; }
-		public void Open(float waitTime = 5f, int sortOrder = 16390) { /*@B 0x600510A*/ throw null; }
-		public void Close() { /*@B 0x600510B*/ throw null; }
-		private void Setup(float waitTime = 5f, int sortOrder = 16390) { /*@B 0x600510C*/ throw null; }
-		private void OnUpdate(float deltaTime) { /*@B 0x600510D*/ throw null; }
-		private void SetActive(bool active) { /*@B 0x600510E*/ throw null; }
-		public void EnableBackground(bool enabled) { /*@B 0x600510F*/ throw null; }
+		private void Awake() {
+			global::Dpr.UI.UIManager.Instance.RegisterNowloading(this);
+			SetActive(false);
+		}
+		public void Open(float waitTime = 5f, int sortOrder = 16390) {
+			global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+			global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+			if (!gameObject.activeSelf)
+			{
+				_progressTime = 0f;
+				_isWaiting = true;
+				gameObject.SetActive(true);
+				_animTime = 0f;
+			}
+			Setup(waitTime, sortOrder);
+		}
+		public void Close() {
+			global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+			gameObject.SetActive(false);
+		}
+		private void Setup(float waitTime = 5f, int sortOrder = 16390) {
+			if (_isWaiting)
+			{
+				_isWaiting = _progressTime < waitTime;
+				_waitTime = waitTime;
+			}
+			global::UnityEngine.Canvas canvas = GetComponent<global::UnityEngine.Canvas>();
+			if (canvas != null)
+				canvas.sortingOrder = sortOrder;
+			SetActive(!_isWaiting);
+		}
+		private void OnUpdate(float deltaTime) {
+			if (_isWaiting)
+			{
+				_progressTime += deltaTime;
+				if (_waitTime <= _progressTime)
+				{
+					SetActive(true);
+					_isWaiting = false;
+				}
+			}
+			if (_animatorLoading.isActiveAndEnabled)
+			{
+				_animatorLoading.Play(animStatePlay, 0, _animTime);
+				_animTime += (1f / 30f) / _animLength;
+			}
+		}
+		private void SetActive(bool active) {
+			_animatorLoading.speed = 0f;
+			global::UnityEngine.AnimatorClipInfo[] clipInfos = _animatorLoading.GetCurrentAnimatorClipInfo(0);
+			if (clipInfos.Length != 0)
+				_animLength = clipInfos[0].clip.length;
+			_animatorLoading.gameObject.SetActive(active);
+		}
+		public void EnableBackground(bool enabled) {
+			_imageBackground.gameObject.SetActive(enabled);
+		}
 		public NowloadingController() { }
-		static NowloadingController() { /*@B 0x6005111*/ throw null; }
+		static NowloadingController() { }
 	}
 }

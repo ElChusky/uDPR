@@ -130,7 +130,26 @@ namespace Dpr.UI
 
 			return UpdateItemSwap(deltaTime);
 		}
-		private void UpdateSelect(float deltaTime) { /*@B 0x600566A*/ throw null; }
+		private void UpdateSelect(float deltaTime) {
+			int count = _activeItems.Count;
+			if (count == 0)
+				return;
+
+			int selectIndex;
+			if (_input.IsPushButton(UIManager.StickLDown))
+				selectIndex = (_selectIndex + 1) % count;
+			else if (_input.IsRepeatButton(UIManager.StickLDown))
+				selectIndex = global::UnityEngine.Mathf.Min(_selectIndex + 1, count - 1);
+			else if (_input.IsPushButton(UIManager.StickLUp))
+				selectIndex = (count - 1 + _selectIndex) % count;
+			else if (_input.IsRepeatButton(UIManager.StickLUp))
+				selectIndex = global::UnityEngine.Mathf.Max(_selectIndex - 1, 0);
+			else
+				return;
+
+			if (SetSelectIndex(selectIndex))
+				Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_SELECT, null);
+		}
 		private bool UpdateSwap(float deltaTime) {
 			if (_fromSwapItem != null && _input.IsPushButton(UIManager.ButtonA | UIManager.ButtonY))
 			{
@@ -272,7 +291,18 @@ namespace Dpr.UI
 
 			return _activeItems[_selectIndex];
 		}
-		public void BeginSwap(global::UnityEngine.Events.UnityAction<global::Dpr.UI.PokemonPartyItem, global::Dpr.UI.PokemonPartyItem> onSwapChanged) { /*@B 0x6005670*/ throw null; }
+		public void BeginSwap(global::UnityEngine.Events.UnityAction<global::Dpr.UI.PokemonPartyItem, global::Dpr.UI.PokemonPartyItem> onSwapChanged) {
+			_onSwapChanged = onSwapChanged;
+			_verticalLayoutGroup.enabled = false;
+			_fromSwapItem = _activeItems[_selectIndex];
+			// PokemonPartyItem.EnableSwapMode(true) and Select(0) inlined
+			_fromSwapItem.EnableSwapMode(true);
+			_fromSwapItem.Select(0);
+			_fromSwapSiblingIndex = _fromSwapItem.transform.GetSiblingIndex();
+			_fromSwapItem.transform.SetSiblingIndex(_contentRoot.childCount);
+			// Wwise id 0x2766BC88 has no AK.EVENTS name
+			Audio.AudioManager.Instance.PlaySe(661048456u, null);
+		}
 		public bool IsSwapMode() {
 			return _fromSwapItem != null || _fromItemSwapItem != null;
 		}
@@ -287,13 +317,13 @@ namespace Dpr.UI
 			Image image = _basePlateRoot.GetChild(siblingIndex).GetComponent<Image>();
 			image.sprite = _spriteBasePlates[plateType & 1];
 		}
-		public PokemonParty() { /*@B 0x6005674*/ throw null; }
+		public PokemonParty() { }
 		public class Param
 		{
-			public global::System.Collections.Generic.List<global::Dpr.UI.PokemonPartyItem.Param> itemParams;
+			public global::System.Collections.Generic.List<global::Dpr.UI.PokemonPartyItem.Param> itemParams = new global::System.Collections.Generic.List<global::Dpr.UI.PokemonPartyItem.Param>();
 			public int selectIndex;
 			public bool isMultiBattle;
-			public Param() { /*@B 0x600AC80*/ throw null; }
+			public Param() { }
 		}
 	}
 }

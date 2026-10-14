@@ -60,7 +60,22 @@ namespace Dpr.UI
 			UIManager.Instance._ReleaseUIWindow(this);
 			onClosed_?.Invoke(this);
 		}
-		private void OnUpdate(float deltaTime) { /*@B 0x6005693*/ throw null; }
+		private void OnUpdate(float deltaTime) {
+			if (UIManager.Instance.GetCurrentUIWindow<UIWindow>() != this)
+				return;
+			if (_modelView.OnUpdate(deltaTime, _input))
+				return;
+			if (IsActiveMessageWindow())
+				return;
+
+			if (IsPushButton(UIManager.ButtonB))
+			{
+				Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_MENU_CLOSE, null);
+				_param.onSelected?.Invoke(-1);
+				Close(onClosed, _prevWindowId);
+			}
+			_party.OnUpdate(deltaTime, _input);
+		}
 		private void OnSelectChangedPartyItem(global::Dpr.UI.PokemonPartyItem partyItem, int selectIndex) {
 			SetupModelView(partyItem.param.pokemonParam);
 
@@ -105,9 +120,9 @@ namespace Dpr.UI
 		public PokemonSelectWindow() { }
 		public class Param : global::Dpr.UI.PokemonWindowBase.BaseParam
 		{
-			public global::Dpr.UI.PokemonSelectWindow.Param.SelectType selectType;
+			public global::Dpr.UI.PokemonSelectWindow.Param.SelectType selectType = global::Dpr.UI.PokemonSelectWindow.Param.SelectType.Default;
 			public global::UnityEngine.Events.UnityAction<int> onSelected;
-			public Param() { /*@B 0x600AC99*/ throw null; }
+			public Param() { }
 			[global::System.FlagsAttribute]
 			public enum SelectType
 			{

@@ -12,10 +12,80 @@ namespace Dpr.UI
 		public global::UnityEngine.UI.Image monsIcon { get { return this._imageMonsIcon; } }
 		public global::UnityEngine.UI.Image itemIcon { get { return this._imageItemIcon; } }
 		public global::UnityEngine.UI.Image ballDecoIcon { get { return this._imageBallDecoIcon; } }
-		public void Load(global::Pml.PokePara.PokemonParam pokemonParam, int tray = -1, int pos = -1) { /*@B 0x6005115*/ throw null; }
-		public void Load(global::Pml.PokePara.PokemonParam pokemonParam, global::Pml.ItemNo itemNo, int tray = -1, int pos = -1) { /*@B 0x6005116*/ throw null; }
-		public void Copy(global::Dpr.UI.PokemonIcon src) { /*@B 0x6005117*/ throw null; }
-		public void SwapItemIcon(global::Dpr.UI.PokemonIcon from) { /*@B 0x6005118*/ throw null; }
+		public void Load(global::Pml.PokePara.PokemonParam pokemonParam, int tray = -1, int pos = -1) {
+			if (_imageMonsIcon != null)
+			{
+				global::Dpr.UI.UIManager.Instance.LoadSpritePokemon(pokemonParam.GetMonsNo(), pokemonParam.GetFormNo(), pokemonParam.GetSex(), pokemonParam.GetRareType(), pokemonParam.IsEgg(global::Pml.PokePara.EggCheckType.BOTH_EGG), sprite =>
+				{
+					_imageMonsIcon.sprite = sprite;
+					_imageMonsIcon.gameObject.SetActive(sprite != null);
+				});
+			}
+
+			ushort itemNo = pokemonParam.GetItem();
+			if (_imageItemIcon != null)
+			{
+				if (itemNo == 0)
+				{
+					_imageItemIcon.gameObject.SetActive(false);
+				}
+				else
+				{
+					global::Dpr.UI.UIManager.Instance.LoadSpriteItem((global::Pml.ItemNo)itemNo, sprite =>
+					{
+						_imageItemIcon.sprite = sprite;
+						_imageItemIcon.gameObject.SetActive(sprite != null);
+					});
+				}
+			}
+
+			if (_imageBallDecoIcon != null)
+			{
+				if (tray == -1 && pos == -1)
+					global::Dpr.BallDeco.BallDecoWork.GetPokeIndex(pokemonParam, out tray, out pos);
+				int capsuleId = global::Dpr.BallDeco.BallDecoWork.GetAttachCapsuleId(pokemonParam.GetID(), pokemonParam.GetPersonalRnd(), tray, pos);
+				bool isEgg = pokemonParam.IsEgg(global::Pml.PokePara.EggCheckType.BOTH_EGG);
+				_imageBallDecoIcon.gameObject.SetActive(capsuleId >= 0 && !isEgg);
+			}
+		}
+		public void Load(global::Pml.PokePara.PokemonParam pokemonParam, global::Pml.ItemNo itemNo, int tray = -1, int pos = -1) {
+			if (_imageMonsIcon != null)
+			{
+				global::Dpr.UI.UIManager.Instance.LoadSpritePokemon(pokemonParam.GetMonsNo(), pokemonParam.GetFormNo(), pokemonParam.GetSex(), pokemonParam.GetRareType(), pokemonParam.IsEgg(global::Pml.PokePara.EggCheckType.BOTH_EGG), sprite =>
+				{
+					_imageMonsIcon.sprite = sprite;
+					_imageMonsIcon.gameObject.SetActive(sprite != null);
+				});
+			}
+
+			if (_imageItemIcon != null && itemNo != global::Pml.ItemNo.DUMMY_DATA)
+			{
+				global::Dpr.UI.UIManager.Instance.LoadSpriteItem(itemNo, sprite =>
+				{
+					_imageItemIcon.sprite = sprite;
+					_imageItemIcon.gameObject.SetActive(sprite != null);
+				});
+			}
+
+			if (_imageBallDecoIcon != null)
+			{
+				if (tray == -1 && pos == -1)
+					global::Dpr.BallDeco.BallDecoWork.GetPokeIndex(pokemonParam, out tray, out pos);
+				int capsuleId = global::Dpr.BallDeco.BallDecoWork.GetAttachCapsuleId(pokemonParam.GetID(), pokemonParam.GetPersonalRnd(), tray, pos);
+				_imageBallDecoIcon.gameObject.SetActive(capsuleId >= 0);
+			}
+		}
+		public void Copy(global::Dpr.UI.PokemonIcon src) {
+			if (_imageMonsIcon != null)
+				_imageMonsIcon.sprite = src._imageMonsIcon.sprite;
+			if (_imageItemIcon != null)
+				_imageItemIcon.sprite = src._imageItemIcon.sprite;
+		}
+		public void SwapItemIcon(global::Dpr.UI.PokemonIcon from) {
+			global::UnityEngine.Sprite sprite = _imageItemIcon.sprite;
+			_imageItemIcon.sprite = from._imageItemIcon.sprite;
+			from._imageItemIcon.sprite = sprite;
+		}
 		public PokemonIcon() { }
 	}
 }

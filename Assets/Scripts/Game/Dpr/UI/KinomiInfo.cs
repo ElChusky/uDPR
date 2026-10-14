@@ -8,15 +8,19 @@ namespace Dpr.UI
 		private const float RaderChartMaxValue = 1f;
 		private const string IconAssetNameFormat = "img_berry_{0:000}";
 		private const string DescriptionMessageFileName = "dp_berries_info";
-		private static readonly string[] HardnessTextLabels;
+		private static readonly string[] HardnessTextLabels = new string[] { null, "DP_poffin_main_012", "DP_poffin_main_013", "DP_poffin_main_014", "DP_poffin_main_015", "DP_poffin_main_016" };
 		private global::XLSXContent.KinomiData.SheetData data;
-		public int Id { get { /*@B 0x60054D0*/ throw null; } }
+		public int Id { get { return data.TagNo; } }
 		public int ItemId { get; private set; }
 		public int Index { get; private set; }
-		public string DescriptionText { get { /*@B 0x60054D5*/ throw null; } }
-		public string HardnessTextLabel { get { /*@B 0x60054D6*/ throw null; } }
-		public float GetSize { get { /*@B 0x60054D9*/ throw null; } }
-		public KinomiInfo(global::Dpr.Item.ItemInfo info) { /*@B 0x60054D7*/ throw null; }
+		public string DescriptionText { get { return global::Dpr.Message.MessageManager.Instance.GetSimpleMessage(DescriptionMessageFileName, Index); } }
+		public string HardnessTextLabel { get { return HardnessTextLabels[data.Firmness]; } }
+		public float GetSize { get { return data.Size; } }
+		public KinomiInfo(global::Dpr.Item.ItemInfo info) {
+			Index = info.GroupId;
+			ItemId = info.Id;
+			data = global::GameData.DataManager.KinomiData.Data[Index];
+		}
 		public string GetIconAssetName() {
 			return string.Format(IconAssetNameFormat, Id);
 		}
@@ -35,6 +39,6 @@ namespace Dpr.UI
                 GetValue(data.Sour),
             };
 		}
-		static KinomiInfo() { /*@B 0x60054DB*/ throw null; }
+		static KinomiInfo() { }
 	}
 }

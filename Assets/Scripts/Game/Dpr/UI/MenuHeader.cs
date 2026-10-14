@@ -9,9 +9,9 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.GameObject _timerObj;
 		[global::UnityEngine.SerializeField]
-		private string useMsbtName;
+		private string useMsbtName = "";
 		[global::UnityEngine.SerializeField]
-		private string timeLabelName;
+		private string timeLabelName = "";
 		private global::Dpr.Message.MessageMsgFile _useMsgFile;
 		public void Setup() {
 			_useMsgFile = null;
@@ -54,6 +54,6 @@ namespace Dpr.UI
 			Dpr.Contest.ContestUtils.EmitLog("MsgFile is Null!!");
 			return false;
 		}
-		public MenuHeader() { /*@B 0x60050F0*/ throw null; }
+		public MenuHeader() { }
 	}
 }

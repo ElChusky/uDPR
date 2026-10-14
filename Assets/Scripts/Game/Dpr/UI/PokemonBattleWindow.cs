@@ -13,7 +13,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.PokemonBattleWindow.Param _param;
 		private global::Dpr.Battle.Logic.PokeSelParam _selParam;
 		private global::System.Collections.Generic.Dictionary<global::Dpr.UI.PokemonBattleWindow.PositionType, global::Dpr.Battle.Logic.BTL_POKEPARAM> selectedPokemonDict;
-		private global::System.Collections.Generic.List<global::Pml.PokePara.PokemonParam> _pokemonParams;
+		private global::System.Collections.Generic.List<global::Pml.PokePara.PokemonParam> _pokemonParams = new global::System.Collections.Generic.List<global::Pml.PokePara.PokemonParam>();
 		private global::Dpr.Battle.Logic.BTL_POKEPARAM _currentPokemon;
 		public global::UnityEngine.Events.UnityAction<global::System.Collections.Generic.List<global::Dpr.Battle.Logic.BTL_POKEPARAM>, global::Dpr.UI.PokemonBattleWindow.PositionType> onPokemonSwap;
 		public global::UnityEngine.Events.UnityAction OnSwapCancel;
@@ -453,7 +453,7 @@ namespace Dpr.UI
 
 			return selectedPokeParam.GetID() == param.GetID();
 		}
-		public PokemonBattleWindow() { /*@B 0x6005651*/ throw null; }
+		public PokemonBattleWindow() { }
 		private enum SelectType
 		{
 			Party = 0,
@@ -476,13 +476,13 @@ namespace Dpr.UI
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM leftPokeParam;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM rightPokeParam;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM swapWaitPokemon;
-			public bool isCancel;
-			public bool isSwap;
+			public bool isCancel = true;
+			public bool isSwap = true;
 			public bool isSwapRuleSwap;
 			public bool isPokeList;
 			public bool isBattleTower;
 			public bool isNet;
-			public Param() { /*@B 0x600AC5C*/ throw null; }
+			public Param() { }
 			public enum BattleType
 			{
 				Normal = 0,

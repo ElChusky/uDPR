@@ -9,7 +9,7 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Transform _transModel;
 		[global::UnityEngine.SerializeField]
-		private float _fov;
+		private float _fov = 30f;
 		[global::UnityEngine.SerializeField]
 		private float _reflectionAlpha;
 		[global::UnityEngine.SerializeField]
@@ -17,11 +17,13 @@ namespace Dpr.UI
 		private global::Dpr.UI.PokemonModelView.Param _param;
 		private global::Audio.AudioInstance _voiceInstance;
 		private global::XLSXContent.UIDatabase.SheetPokemonVoice _voiceData;
-		private global::UnityEngine.Vector2 _rotationLimitX;
-		private int _animationIdle;
+		private global::UnityEngine.Vector2 _rotationLimitX = global::UnityEngine.Vector2.zero;
+		private int _animationIdle = -1;
 		private int _animActionIndex;
 		public int animActionIndex { get { return this._animActionIndex; } }
-		protected override void OnEnable() { /*@B 0x6005599*/ throw null; }
+		protected override void OnEnable() {
+			base.OnEnable();
+		}
 		public void Setup(global::Dpr.UI.PokemonModelView.Param param, global::UnityEngine.Events.UnityAction<global::Pml.PokePara.PokemonParam> onSetup = null) {
             _param = param;
             _animActionIndex = 0;
@@ -172,14 +174,14 @@ namespace Dpr.UI
                     UIManager.Instance.modelView.PlayAnimation(_animationIdle, true);
             }
         }
-		public PokemonModelView() { /*@B 0x60055A4*/ throw null; }
+		public PokemonModelView() { }
 		public class Param
 		{
-			public global::Dpr.UI.UIModelViewController.ModelViewType type;
+			public global::Dpr.UI.UIModelViewController.ModelViewType type = global::Dpr.UI.UIModelViewController.ModelViewType.Party;
 			public global::Pml.PokePara.PokemonParam pokemonParam;
 			public float offsetX;
 			public global::UnityEngine.Canvas canvas;
-			public Param() { /*@B 0x600ABDB*/ throw null; }
+			public Param() { }
 		}
 	}
 }
