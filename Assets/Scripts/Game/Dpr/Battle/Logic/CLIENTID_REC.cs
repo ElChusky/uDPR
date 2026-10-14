@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 	public class CLIENTID_REC
 	{
 		public byte count;
-		public byte[] clientID;
-		public CLIENTID_REC() { /*@B 0x6007558*/ throw null; }
+		public byte[] clientID = new byte[5];
+		public CLIENTID_REC() { }
 	}
 }

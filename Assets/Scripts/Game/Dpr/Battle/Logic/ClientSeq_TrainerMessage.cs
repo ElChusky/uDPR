@@ -10,8 +10,20 @@ namespace Dpr.Battle.Logic
 		private bool m_isFinished;
 		private byte m_clientId;
 		private global::Dpr.Battle.Logic.TrainerMessageID m_messageId;
-		public ClientSeq_TrainerMessage() { /*@B 0x60075F2*/ throw null; }
-		public void Setup(in global::Dpr.Battle.Logic.ClientSeq_TrainerMessage.SetupParam setupParam) { /*@B 0x60075F3*/ throw null; }
+		public ClientSeq_TrainerMessage() {
+			m_pMainModule = null;
+			m_pViewSystem = null;
+			m_pMessageManager = null;
+			m_isFinished = true;
+			m_clientId = 0;
+			m_seq = 0;
+			m_messageId = global::Dpr.Battle.Logic.TrainerMessageID.MESSAGE_NUM;
+		}
+		public void Setup(in global::Dpr.Battle.Logic.ClientSeq_TrainerMessage.SetupParam setupParam) {
+			m_pMainModule = setupParam.pMainModule;
+			m_pViewSystem = setupParam.pViewSystem;
+			m_pMessageManager = setupParam.pMessageManager;
+		}
 		public void Start(byte clientId, global::Dpr.Battle.Logic.TrainerMessageID messageId) {
             m_seq = 0;
             m_isFinished = false;

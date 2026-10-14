@@ -297,7 +297,16 @@ namespace Dpr.Battle.Logic
 			public int captureValueCoef;
 			public bool isMustSuccess;
 			public bool isCriticalEnable;
-			public JudgeParam() { /*@B 0x600B6A4*/ throw null; }
+			public JudgeParam() {
+				mainModule = null;
+				battleEnv = null;
+				userPoke = null;
+				targetPoke = null;
+				itemID = 0;
+				isMustSuccess = false;
+				isCriticalEnable = false;
+				captureValueCoef = 4096;
+			}
 		}
 		public class JudgeResult
 		{

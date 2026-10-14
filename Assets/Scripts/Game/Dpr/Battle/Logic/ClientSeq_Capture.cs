@@ -9,11 +9,30 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.BattleViewBase m_viewSystem;
 		private int m_seq;
 		private bool m_isFinished;
-		public ClientSeq_Capture() { /*@B 0x60075ED*/ throw null; }
-		public void Setup(in global::Dpr.Battle.Logic.ClientSeq_Capture.SetupParam setupParam) { /*@B 0x60075EE*/ throw null; }
-		public void Start() { /*@B 0x60075EF*/ throw null; }
+		public ClientSeq_Capture() {
+			m_mainModule = null;
+			m_client = null;
+			m_pokecon = null;
+			m_viewSystem = null;
+			m_seq = 0;
+			m_isFinished = false;
+		}
+		public void Setup(in global::Dpr.Battle.Logic.ClientSeq_Capture.SetupParam setupParam) {
+			m_mainModule = setupParam.mainModule;
+			m_client = setupParam.client;
+			m_pokecon = setupParam.pokecon;
+			m_viewSystem = setupParam.viewSystem;
+		}
+		public void Start() {
+			m_seq = 0;
+			m_isFinished = false;
+		}
 		public bool IsFinished() { return this.m_isFinished; }
-		public void Update() { /*@B 0x60075F1*/ throw null; }
+		public void Update() {
+			if (m_isFinished)
+				return;
+			m_isFinished = true;
+		}
 		public class SetupParam
 		{
 			public global::Dpr.Battle.Logic.MainModule mainModule;

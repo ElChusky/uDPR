@@ -6,8 +6,11 @@ namespace Dpr.Battle.Logic
 	public sealed class ClientPublicInformation
 	{
 		private readonly global::Dpr.Battle.Logic.POKECON m_pokecon;
-		private global::Dpr.Battle.Logic.ClientPublicInformation.Party m_party;
-		public ClientPublicInformation(global::Dpr.Battle.Logic.POKECON pokecon) { /*@B 0x60075D9*/ throw null; }
+		private global::Dpr.Battle.Logic.ClientPublicInformation.Party m_party = new Party();
+		public ClientPublicInformation(global::Dpr.Battle.Logic.POKECON pokecon) {
+			m_pokecon = pokecon;
+			InitPartyInformation(m_party);
+		}
 		private void InitPartyInformation(global::Dpr.Battle.Logic.ClientPublicInformation.Party party) {
 			for (int i = 0; i < DefineConstants.BTL_PARTY_MEMBER_MAX; i++)
 			{
@@ -148,8 +151,8 @@ namespace Dpr.Battle.Logic
 		}
 		private class Party
 		{
-			public global::Dpr.Battle.Logic.ClientPublicInformation.Pokemon[] member;
-			public Party() { /*@B 0x600B6A7*/ throw null; }
+			public global::Dpr.Battle.Logic.ClientPublicInformation.Pokemon[] member = Arrays.InitializeWithDefaultInstances<Pokemon>(6);
+			public Party() { }
 		}
 	}
 }

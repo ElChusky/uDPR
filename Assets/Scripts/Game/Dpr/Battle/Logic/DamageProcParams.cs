@@ -3,11 +3,11 @@ namespace Dpr.Battle.Logic
 {
 	public class DamageProcParams
 	{
-		public global::Dpr.Battle.Logic.BTL_POKEPARAM[] bpp;
-		public ushort[] dmg;
-		public global::Pml.Battle.TypeAffinity.AffinityID[] affAry;
-		public global::Dpr.Battle.Logic.CriticalType[] criticalTypes;
-		public global::Dpr.Battle.Logic.KoraeruCause[] koraeru_cause;
-		public DamageProcParams() { /*@B 0x6007559*/ throw null; }
+		public global::Dpr.Battle.Logic.BTL_POKEPARAM[] bpp = new BTL_POKEPARAM[5];
+		public ushort[] dmg = new ushort[5];
+		public global::Pml.Battle.TypeAffinity.AffinityID[] affAry = new global::Pml.Battle.TypeAffinity.AffinityID[5];
+		public global::Dpr.Battle.Logic.CriticalType[] criticalTypes = new CriticalType[5];
+		public global::Dpr.Battle.Logic.KoraeruCause[] koraeru_cause = new KoraeruCause[5];
+		public DamageProcParams() { }
 	}
 }

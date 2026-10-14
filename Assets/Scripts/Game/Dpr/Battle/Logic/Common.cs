@@ -8,7 +8,7 @@ namespace Dpr.Battle.Logic
 	{
 		private const int FALSE = 0;
 		private const int TRUE = 1;
-		internal static ushort[] SortTargetsByAgility_rank;
+		internal static ushort[] SortTargetsByAgility_rank = new ushort[6];
 		public static int GetEventVar(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, global::Dpr.Battle.Logic.EventVar.Label label) {
             return args.pEventSystem.EVENTVAR_GetValue(label);
         }
@@ -972,6 +972,6 @@ namespace Dpr.Battle.Logic
 		public static bool IsEscapeEnableBattle(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args) {
             return args.pMainModule.IsEscapeEnableBattle();
         }
-		static Common() { /*@B 0x6006A8F*/ throw null; }
+		static Common() { }
 	}
 }

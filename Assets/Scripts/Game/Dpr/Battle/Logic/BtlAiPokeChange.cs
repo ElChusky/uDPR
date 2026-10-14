@@ -219,6 +219,6 @@ namespace Dpr.Battle.Logic
 			return Call(CMD_IF_RND_UNDER, new long[] { 85 }) != 0;
 		}
 		public BtlAiPokeChange() { }
-		static BtlAiPokeChange() { /*@B 0x6008096*/ throw null; }
+		static BtlAiPokeChange() { }
 	}
 }
