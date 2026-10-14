@@ -31,12 +31,12 @@ namespace Dpr.Battle.View.Systems
 		private global::Dpr.Battle.View.Objects.BattleScreenObject m_iPtrScreenObject;
 		private global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlvPos, string> m_skrtModelDict;
 		private global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM m_wazaParam;
-		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetPoke;
-		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetDamage;
-		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetTrainer;
+		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetPoke = new global::Dpr.Battle.Logic.BtlvPos[2];
+		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetDamage = new global::Dpr.Battle.Logic.BtlvPos[7];
+		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetTrainer = new global::Dpr.Battle.Logic.BtlvPos[2];
 		private global::Dpr.Battle.Logic.BtlEff m_comEffectId;
-		private global::Pml.BallId[] m_effectBallId;
-		private global::Dpr.Battle.View.BtlvBallInfo[] m_effectBallInfo;
+		private global::Pml.BallId[] m_effectBallId = new global::Pml.BallId[4];
+		private global::Dpr.Battle.View.BtlvBallInfo[] m_effectBallInfo = new global::Dpr.Battle.View.BtlvBallInfo[4];
 		private int m_comIsVisibleTame;
 		private bool m_comIsMigawari;
 		private bool m_comMigawariReserve;
@@ -51,8 +51,8 @@ namespace Dpr.Battle.View.Systems
 		private global::System.Func<bool> m_pComWaitFunc;
 		private bool m_isStartMsgDisplay;
 		private int m_wazaMsgFrame;
-		private global::Dpr.Battle.Logic.BtlvPos m_beforePlayEffPos;
-		private global::Dpr.Battle.Logic.BtlEff m_beforePlayEffNo;
+		private global::Dpr.Battle.Logic.BtlvPos m_beforePlayEffPos = global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_ERROR;
+		private global::Dpr.Battle.Logic.BtlEff m_beforePlayEffNo = global::Dpr.Battle.Logic.BtlEff.BTLEFF_MAX;
 		private bool m_isFieldIndoor;
 		private bool m_isFieldStadium;
 		private bool m_isFieldRoseTower;
@@ -75,7 +75,7 @@ namespace Dpr.Battle.View.Systems
 		private global::Dpr.Battle.View.TaskManager m_iPtrTaskManager;
 		private global::Dpr.Battle.View.TaskManager m_iPtrTaskManagerLate;
 		private global::System.Collections.Generic.Stack<global::System.Tuple<int, uint, uint>> m_uPtrSoundPlayingIDHash;
-		private int m_shadowResolutionBackup;
+		private int m_shadowResolutionBackup = -1;
 		private bool IsSuspendSequenceSystem { get {
                 if (m_pComWaitFunc != null)
                     return true;
@@ -93,7 +93,7 @@ namespace Dpr.Battle.View.Systems
 		private global::Dpr.Battle.View.Systems.BattleViewSystem.WazaSequenceType WazaSequence { get; set; }
 		private global::Dpr.Battle.View.Systems.BattleViewSystem.EndSequenceType EndSequence { get; set; }
 		public bool IsStencilEnable { get; set; }
-		private bool IsAllTaskFinished { get { /*@B 0x60064C8*/ throw null; } }
+		private bool IsAllTaskFinished { get { return m_iPtrTaskManager.IsAllFinished && m_iPtrTaskManagerLate.IsAllFinished; } }
 		public float blurry { get; set; }
 		public global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlvPos, string> PositionForModelIDDict { get { return this.m_skrtModelDict; } set { this.m_skrtModelDict = value; } }
 		public bool IsApplicationPause { get; set; }
@@ -3043,7 +3043,12 @@ namespace Dpr.Battle.View.Systems
 		public override bool CMD_WaitSetup() {
             return SetupSequenceState == SetupSequenceStateType.NONE || SetupSequenceState == SetupSequenceStateType.FINISH;
         }
-		private void PlaySequenceStartDemo(bool isKeepResource = true) { /*@B 0x6006462*/ throw null; }
+		private void PlaySequenceStartDemo(bool isKeepResource = true) {
+			m_sequenceSeq = SequenceSeq.WAIT_LOAD;
+			m_seqKeepResource = isKeepResource;
+			m_isSoundPlayingFinishCheckInvalid = false;
+			m_soundPlayingFinishWaitCount = 0;
+		}
 		private void StartRareSequence(global::Dpr.Battle.Logic.BtlvPos[] posArr, int arrNum, bool isKeepResource = true) {
             SetComTargetReset();
 
@@ -3294,8 +3299,43 @@ namespace Dpr.Battle.View.Systems
             ResetAll();
             return true;
         }
-		public BattleViewSystem(global::Dpr.Battle.Logic.BTLV_INIT_PARAM initParam) : base(default(global::Dpr.Battle.Logic.BTLV_INIT_PARAM)) { /*@B 0x600646B*/ throw null; }
-		private void InitializeMember() { /*@B 0x600646C*/ throw null; }
+		public BattleViewSystem(global::Dpr.Battle.Logic.BTLV_INIT_PARAM initParam) : base(initParam) {
+			BattleViewAssetManager.Initialize();
+			InitializeMember();
+		}
+		private void InitializeMember() {
+			m_isFinalize = false;
+			m_isFinalizeFadeSkip = false;
+			EndSequence = EndSequenceType.FADE;
+			m_iPtrWeatherSystem = new BattleWeatherSystem();
+			m_iPtrBattleGroundEffectSystem = new BattleGroundEffectSystem(this);
+			m_wazaParam = BTLV_WAZA_EFF_PARAM.Factory();
+			InitializeSequenceState = InitializeSequenceStateType.Unregistered;
+			SetupSequenceState = SetupSequenceStateType.NONE;
+			m_pComWaitFunc = null;
+			m_isStartMsgDisplay = false;
+			m_wazaMsgFrame = 0;
+			m_isFieldIndoor = GetMainModule().GetBattleSetupParam().fieldSituation.bgComponent.isIndoor;
+			m_isFieldStadium = false;
+			m_isFieldRoseTower = false;
+			m_isFieldStadiumWide = false;
+			m_isFieldWaitcamExcept = false;
+			m_reqCheckPinch = false;
+			m_canChangePinch = false;
+			m_isSoundPlayingFinishCheckInvalid = false;
+			m_soundPlayingFinishWaitCount = 0;
+			m_pokePinchSound = global::Dpr.Battle.View.Objects.BtlvSound.CreatePerpetuateSound(0x61eff5ae);
+			m_deadActParam = DeadActParam.Factory();
+			m_memberChangeActParam = MemberChangeActParam.Factory();
+			m_memberOutActParam = MemberOutActParam.Factory();
+			m_startGActParam = StartGActParam.Factory();
+			m_endGActParam = EndGActParam.Factory();
+			m_trainerTalkParam = TrainerTalkParam.Factory();
+			m_attrEffParam = BTLV_ATTR_EFF_PARAM.Factory();
+			m_iPtrTaskManager = new global::Dpr.Battle.View.TaskManager(24);
+			m_iPtrTaskManagerLate = new global::Dpr.Battle.View.TaskManager(24);
+			m_uPtrSoundPlayingIDHash = new global::System.Collections.Generic.Stack<global::System.Tuple<int, uint, uint>>(64);
+		}
 		public override void CMD_ACT_WazaEffect_Start(global::Dpr.Battle.Logic.BtlPokePos atPokePos, global::Dpr.Battle.Logic.BtlPokePos defPokePos, global::Pml.WazaNo waza, byte wazaType, global::Pml.WazaData.WazaTarget wazaRange, global::Dpr.Battle.Logic.BtlvWazaEffect_TurnType turnType, byte continueCount, bool syncDamageEffect, bool isGShockOccur) {
             m_wazaParam.m_atkPos = atPokePos;
             m_wazaParam.m_defPos = defPokePos;
@@ -3523,7 +3563,14 @@ namespace Dpr.Battle.View.Systems
             m_wazaParam.m_frame = 0;
             m_wazaParam.m_elaspedTime = 0.0f;
         }
-		private void PlaySequenceEffect(global::Dpr.Battle.Logic.BtlEff no, bool isKeepResource = false) { /*@B 0x6006478*/ throw null; }
+		private void PlaySequenceEffect(global::Dpr.Battle.Logic.BtlEff no, bool isKeepResource = false) {
+			if (!CheckCanPlayEffect(m_comTargetPoke[0], no))
+				return;
+
+			var data = m_battleDataTable.FindMiscEffectData(no);
+			if (data != null)
+				PlaySequenceCore("btlv/waza/sequence/" + data.CmdSeqName, isKeepResource);
+		}
 		public override void CMD_ACT_DamageEffectSingle_Start(global::Pml.WazaNo wazaID, global::Dpr.Battle.Logic.BtlPokePos defPokePos, global::Pml.Battle.TypeAffinity.AboutAffinityID affAbout) {
             SetComTargetReset();
 
@@ -4446,8 +4493,23 @@ namespace Dpr.Battle.View.Systems
                 }
             }
         }
-		private bool CheckCanPlayEffect(global::Dpr.Battle.Logic.BtlvPos vPos, global::Dpr.Battle.Logic.BtlEff effectNo) { /*@B 0x60064D3*/ throw null; }
-		private void ResetCheckCanPlayEffect() { /*@B 0x60064D4*/ throw null; }
+		private bool CheckCanPlayEffect(global::Dpr.Battle.Logic.BtlvPos vPos, global::Dpr.Battle.Logic.BtlEff effectNo) {
+			if (effectNo > global::Dpr.Battle.Logic.BtlEff.BTLEFF_MAX)
+				return false;
+
+			if ((effectNo == global::Dpr.Battle.Logic.BtlEff.BTLEFF_STATUS_UP_G || effectNo == global::Dpr.Battle.Logic.BtlEff.BTLEFF_STATUS_DOWN_G ||
+				 effectNo == global::Dpr.Battle.Logic.BtlEff.BTLEFF_STATUS_UP || effectNo == global::Dpr.Battle.Logic.BtlEff.BTLEFF_STATUS_DOWN) &&
+				m_beforePlayEffPos == vPos && m_beforePlayEffNo == effectNo)
+				return false;
+
+			m_beforePlayEffPos = vPos;
+			m_beforePlayEffNo = effectNo;
+			return true;
+		}
+		private void ResetCheckCanPlayEffect() {
+			m_beforePlayEffPos = global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_ERROR;
+			m_beforePlayEffNo = global::Dpr.Battle.Logic.BtlEff.BTLEFF_MAX;
+		}
 		private global::Pml.BallId GetCaptureBall(global::Dpr.Battle.Logic.BtlvPos vPos, out bool isStrangeBall) {
             BallId ballId = (BallId)GetViewSrcData(vPos).GetGetBall();
             isStrangeBall = Pml.Item.ItemManager.IsStrangeBall(ballId);
@@ -4463,14 +4525,32 @@ namespace Dpr.Battle.View.Systems
 
             return info;
         }
-		public override global::Dpr.Battle.Logic.BtlRule GetBattleRule() { /*@B 0x60064D7*/ throw null; }
-		public global::Dpr.Battle.Logic.PartyDesc GetPartySetupParam(byte clientId) { /*@B 0x60064D8*/ throw null; }
-		public global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM GetWazaParam() { /*@B 0x60064D9*/ throw null; }
-		public global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM SetWazaParam(global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM param) { /*@B 0x60064DA*/ throw null; }
-		public global::Dpr.Battle.View.Systems.BTLV_ATTR_EFF_PARAM GetAttrEffParam() { /*@B 0x60064DB*/ throw null; }
+		public override global::Dpr.Battle.Logic.BtlRule GetBattleRule() {
+			MainModule mainModule = GetMainModule();
+			if (mainModule != null)
+				return mainModule.GetRule();
+			return 0;
+		}
+		public global::Dpr.Battle.Logic.PartyDesc GetPartySetupParam(byte clientId) {
+			MainModule mainModule = GetMainModule();
+			if (mainModule != null)
+				return mainModule.GetPartySetupParam(clientId);
+			return null;
+		}
+		public global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM GetWazaParam() { return m_wazaParam; }
+		public global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM SetWazaParam(global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM param) {
+			m_wazaParam = param;
+			return param;
+		}
+		public global::Dpr.Battle.View.Systems.BTLV_ATTR_EFF_PARAM GetAttrEffParam() { return m_attrEffParam; }
 		public string GetSoundEventName() { return this.m_attrSoundEvent; }
-		public global::Dpr.Battle.View.Systems.TrainerTalkParam GetTrainerTalkParam() { /*@B 0x60064DD*/ throw null; }
-		public global::Dpr.Battle.Logic.BattleViewBase.BtlvMode GetBtlvMode() { /*@B 0x60064DE*/ throw null; }
+		public global::Dpr.Battle.View.Systems.TrainerTalkParam GetTrainerTalkParam() { return m_trainerTalkParam; }
+		public global::Dpr.Battle.Logic.BattleViewBase.BtlvMode GetBtlvMode() {
+			MainModule mainModule = GetMainModule();
+			if (mainModule != null && mainModule.GetCompetitor(false) == BtlCompetitor.BTL_COMPETITOR_DEMO_CAPTURE)
+				return BtlvMode.CAPTURE;
+			return BtlvMode.BATTLE;
+		}
 		private void ResetDefaultCamera(int frame = 0, global::Dpr.Battle.View.EaseFunc moveType = (global::Dpr.Battle.View.EaseFunc)(0)) {
             ResetDefaultCamera(frame, moveType, m_iPtrCameraSystem);
         }
@@ -4610,15 +4690,45 @@ namespace Dpr.Battle.View.Systems
             near = data.MainCamNear;
             far = data.MainCamFar;
         }
-		public float GetTimeZoneSensorScale() { /*@B 0x60064E5*/ throw null; }
-		private global::Dpr.Battle.Logic.BattleEffectComponentData GetBattleEffectComponentData() { /*@B 0x60064E6*/ throw null; }
-		private bool WaitLoadSequence() { /*@B 0x60064E7*/ throw null; }
+		public float GetTimeZoneSensorScale() {
+			PeriodOfDay period = GameManager.currentPeriodOfDay;
+			var dataTable = BattleDataTableManager.Instance.BattleDataTable;
+			switch (period)
+			{
+				case PeriodOfDay.Morning:
+					return dataTable.GetBattleConstantFloat(global::Dpr.Battle.View.BattleConstantKey.DOF_SENSOR_SCALE_MORNING);
+				case PeriodOfDay.Daytime:
+					return dataTable.GetBattleConstantFloat(global::Dpr.Battle.View.BattleConstantKey.DOF_SENSOR_SCALE_DAYTIME);
+				case PeriodOfDay.Evening:
+					return dataTable.GetBattleConstantFloat(global::Dpr.Battle.View.BattleConstantKey.DOF_SENSOR_SCALE_EVENING);
+				case PeriodOfDay.Night:
+					return dataTable.GetBattleConstantFloat(global::Dpr.Battle.View.BattleConstantKey.DOF_SENSOR_SCALE_NIGHT);
+				case PeriodOfDay.Midnight:
+					return dataTable.GetBattleConstantFloat(global::Dpr.Battle.View.BattleConstantKey.DOF_SENSOR_SCALE_MIDNIGHT);
+			}
+			return 1f;
+		}
+		private global::Dpr.Battle.Logic.BattleEffectComponentData GetBattleEffectComponentData() {
+			MainModule mainModule = GetMainModule();
+			if (mainModule != null)
+				return mainModule.GetBattleEffectData();
+			return null;
+		}
+		private bool WaitLoadSequence() { return m_iPtrSequenceSystem.IsPreLoaded; }
 		private bool WaitSequenceResource() { return true; }
 		private bool IsExistGPoke() { return false; }
 		private bool IsExistGPokeSide(bool playerSide) { return false; }
-		public string GetBattleModelPath(string idx) { /*@B 0x60064EB*/ throw null; }
-		public string GetBttleWazaModelPath(string idx) { /*@B 0x60064EC*/ throw null; }
-		public string GetBallModelPath(int idx) { /*@B 0x60064ED*/ throw null; }
+		public string GetBattleModelPath(string idx) { return ("effect/prefab/battle/" + global::System.IO.Path.GetFileNameWithoutExtension(idx)).ToLower(); }
+		public string GetBttleWazaModelPath(string idx) { return ("effmodel/" + global::System.IO.Path.GetFileNameWithoutExtension(idx)).ToLower(); }
+		public string GetBallModelPath(int idx) {
+			BtlvBallInfo ballInfo = m_effectBallInfo[idx];
+			string path = string.Format("{0}/ob{1:D4}_00", "objects", (int)ballInfo.ballId + 200);
+			if (ballInfo.isStrangeBall)
+				path = string.Format("{0}/ob{1:D4}_00", "objects", 299);
+			if (string.IsNullOrEmpty(path))
+				path = string.Format("{0}/ob{1:D4}_00", "objects", 204);
+			return path;
+		}
 		public void ResetPokemon(global::Dpr.Battle.Logic.BtlvPos vPos, int frame, global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE moveType, global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT placement = (global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT)(0)) {
             Vector3 pos = Vector3.zero;
             Vector3 scale = Vector3.one;
@@ -4759,7 +4869,11 @@ namespace Dpr.Battle.View.Systems
             // Size.L = 3 = BTL_RULE_SAFARI (the binary reuses the rule register, csel eq @01c92b38).
             m_defaultPlacementData.GetTrainerPlacementData(rule, vPos, rule == BtlRule.BTL_RULE_SAFARI ? Size.L : pokeSize, placement, out pPos, out pDeg);
         }
-		public global::Dpr.Battle.View.Objects.BattleViewCharacter GetTrainerModel(global::Dpr.Battle.Logic.BtlvPos vPos) { /*@B 0x60064F6*/ throw null; }
+		public global::Dpr.Battle.View.Objects.BattleViewCharacter GetTrainerModel(global::Dpr.Battle.Logic.BtlvPos vPos) {
+			if (vPos == global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_ERROR)
+				return null;
+			return m_iPtrCharacterSystem.GetTrainerModel(vPos);
+		}
 		private void SetVisibleTrainerObject(bool value) {
             if (m_iPtrCharacterSystem == null)
                 return;
@@ -4790,13 +4904,13 @@ namespace Dpr.Battle.View.Systems
             }
         }
 		public global::Dpr.Battle.View.Objects.BattleScreenObject GetScreenObject() { return this.m_iPtrScreenObject; }
-		public void SetReqCheckPinch(bool value) { /*@B 0x60064FB*/ throw null; }
+		public void SetReqCheckPinch(bool value) { m_reqCheckPinch = value; }
 		public bool IsReqCheckPinch() { return this.m_reqCheckPinch; }
-		public void SetCanChangePinch(bool value) { /*@B 0x60064FD*/ throw null; }
+		public void SetCanChangePinch(bool value) { m_canChangePinch = value; }
 		public bool IsCanChangePinch() { return this.m_canChangePinch; }
-		public void SetIsSoundPlayingFinishCheckInvalid(bool value) { /*@B 0x60064FF*/ throw null; }
+		public void SetIsSoundPlayingFinishCheckInvalid(bool value) { m_isSoundPlayingFinishCheckInvalid = value; }
 		private void SaveFog() { }
-		private bool UIFog_Wait() { /*@B 0x6006501*/ throw null; }
+		private bool UIFog_Wait() { return BattleViewCore.Instance.UISystem.UIFog_Wait(); }
 		private void SetComTargetReset() {
             for (int i = 0; i < (int)BtlvPos.BTL_VPOS_NUM; i++)
                 m_comTargetDamage[i] = BtlvPos.BTL_VPOS_ERROR;
@@ -5014,19 +5128,117 @@ namespace Dpr.Battle.View.Systems
 
             return BtlvUtility.GetUniqueWazaDataTurnType(no, (MonsNo)bpp.GetMonsNo(), bpp.GetFormNo(), turnType);
         }
-		public void CheckWazaDataPath_Particle(ref string path, int idx, bool isBallEffect, bool isCapture, bool isAttributeEffect, bool isStreamLineEffect) { /*@B 0x6006508*/ throw null; }
+		public void CheckWazaDataPath_Particle(ref string path, int idx, bool isBallEffect, bool isCapture, bool isAttributeEffect, bool isStreamLineEffect) {
+			var effectManager = global::Effect.EffectManager.Instance;
+			if (isBallEffect)
+			{
+				path = m_battleDataTable.BallEffectData[(int)m_effectBallId[idx]].IntroEffectAssetbundleName;
+				return;
+			}
+			if (isCapture)
+			{
+				path = m_battleDataTable.BallEffectData[(int)m_effectBallId[idx]].CaptureEffectAssetbundleName;
+				return;
+			}
+
+			var effects = effectManager.dbEffects.BattleEffectData;
+			if (isAttributeEffect)
+			{
+				if (m_attrEffParam.attrEffectID == EffectBattleID.NONE)
+					return;
+				path = effects[(int)m_attrEffParam.attrEffectID].AssetBundleName;
+			}
+			else if (isStreamLineEffect)
+			{
+				if (m_attrEffParam.streamLineEffectID == EffectBattleID.NONE)
+					return;
+				path = effects[(int)m_attrEffParam.streamLineEffectID].AssetBundleName;
+			}
+		}
 		public global::System.Collections.Generic.Stack<global::System.Tuple<int, uint, uint>> GetSoundPlayingIDHashTable() { return this.m_uPtrSoundPlayingIDHash; }
 		public global::Dpr.Battle.View.Systems.BattleSequenceSystem GetSequenceSystem() { return this.m_iPtrSequenceSystem; }
 		public global::Dpr.Battle.View.Systems.BattleCharacterSystem GetCharacterSystem() { return this.m_iPtrCharacterSystem; }
-		public global::Dpr.SequenceEditor.SequenceCameraSystem GetCameraSystem() { /*@B 0x6006510*/ throw null; }
+		public global::Dpr.SequenceEditor.SequenceCameraSystem GetCameraSystem() { return m_iPtrCameraSystem; }
 		public global::Dpr.Battle.View.Systems.BattleWeatherSystem GetBattleWeatherSystem() { return this.m_iPtrWeatherSystem; }
 		public global::Dpr.Battle.View.Systems.BattleGroundEffectSystem GetBattleGroundEffectSystem() { return this.m_iPtrBattleGroundEffectSystem; }
-		public global::Dpr.Battle.View.Systems.BattleViewUISystem GetHUD() { /*@B 0x6006513*/ throw null; }
+		public global::Dpr.Battle.View.Systems.BattleViewUISystem GetHUD() { return BattleViewCore.Instance.UISystem; }
 		public global::Dpr.Battle.View.TaskManager GetTaskManager() { return this.m_iPtrTaskManager; }
 		public global::Dpr.Battle.View.TaskManager GetTaskManagerLate() { return this.m_iPtrTaskManagerLate; }
-		private bool IsGosanke(global::Dpr.Battle.Logic.BTL_POKEPARAM pokeParam) { /*@B 0x6006516*/ throw null; }
-		private bool IsGosanke(global::Pml.PokePara.PokemonParam pokeParam) { /*@B 0x6006517*/ throw null; }
-		private string GetGosankeThrowSeq(uint friendShip) { /*@B 0x6006518*/ throw null; }
+		private bool IsGosanke(global::Dpr.Battle.Logic.BTL_POKEPARAM pokeParam) {
+			// shipped precedence: (pokeParam != null && mons == 387) || mons == 390 || mons == 393 (01c82de0)
+			if (pokeParam != null && pokeParam.GetHenshinMonsNo() == 387 || pokeParam.GetHenshinMonsNo() == 390 || pokeParam.GetHenshinMonsNo() == 393)
+				return pokeParam.GetSrcData().IsOwnedOriginalParent();
+			return false;
+		}
+		private bool IsGosanke(global::Pml.PokePara.PokemonParam pokeParam) {
+			// shipped precedence: (pokeParam != null && mons == 387) || mons == 390 || mons == 393
+			if (pokeParam != null && (int)pokeParam.GetMonsNo() == 387 || (int)pokeParam.GetMonsNo() == 390 || (int)pokeParam.GetMonsNo() == 393)
+				return pokeParam.IsOwnedOriginalParent();
+			return false;
+		}
+		private string GetGosankeThrowSeq(uint friendShip) {
+			var motionDatas = BattleDataTableManager.Instance.BattleDataTable.PokemonEntryMotionData;
+			if (GetMainModule().GetSetupStatusFlag(BTL_STATUS_FLAG.BTL_STATUS_TUTORIAL))
+				return m_battleDataTable.GetSetupIntroPlaySequenceData(BattleSetupIntroID.THROW_PLAYER_SINGLE_HAPPY_A).SeqName;
+
+			XLSXContent.BattleDataTable.SheetPokemonEntryMotionData motionData = null;
+			for (int i = 0; i < motionDatas.Length; i++)
+			{
+				var data = motionDatas[i];
+				if (data.friendship == null)
+					continue;
+
+				if (data.friendship.Length == 2)
+				{
+					if (data.friendship[0] <= friendShip && friendShip <= data.friendship[1])
+					{
+						motionData = data;
+						break;
+					}
+				}
+				else if (data.friendship.Length == 1 && data.friendship[0] == friendShip)
+				{
+					motionData = data;
+					break;
+				}
+			}
+
+			BattleSetupIntroID introId = BattleSetupIntroID.THROW_PLAYER_SINGLE;
+			if (motionData != null)
+			{
+				int rand = UnityEngine.Random.Range(0, 100);
+				int index = 0;
+				int sum = 0;
+				for (int i = 0; i < motionData.rate.Length; i++)
+				{
+					int min = sum + 1;
+					sum += motionData.rate[i];
+					if (min <= rand + 1 && rand + 1 <= sum)
+					{
+						index = i;
+						break;
+					}
+				}
+
+				if (index < motionData.AnimationState.Length)
+				{
+					switch ((BattlePokemonEntity.AnimationState)motionData.AnimationState[index])
+					{
+						case BattlePokemonEntity.AnimationState.F_Happy:
+							introId = BattleSetupIntroID.THROW_PLAYER_SINGLE_HAPPY_B;
+							break;
+						case BattlePokemonEntity.AnimationState.F_Hate:
+							introId = BattleSetupIntroID.THROW_PLAYER_SINGLE_HATE;
+							break;
+						case BattlePokemonEntity.AnimationState.F_Happy_A:
+						case BattlePokemonEntity.AnimationState.F_Happy_C:
+							introId = BattleSetupIntroID.THROW_PLAYER_SINGLE_HAPPY_C;
+							break;
+					}
+				}
+			}
+			return m_battleDataTable.GetSetupIntroPlaySequenceData(introId).SeqName;
+		}
 		public enum BattleViewSide
 		{
 			PLAYER_SIDE = 0,
