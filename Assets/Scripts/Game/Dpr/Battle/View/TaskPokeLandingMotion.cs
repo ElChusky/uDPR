@@ -24,8 +24,42 @@ namespace Dpr.Battle.View
 		private global::Dpr.Battle.View.Objects.PokeEffWeight _pokeEffWeight;
 		private string _effectFileName;
 		private bool _isContest;
-		public TaskPokeLandingMotion(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem, global::Dpr.Battle.Logic.BtlvPos vPos, global::Dpr.Battle.View.Objects.BattleViewCharacter pPoke, float introHeight, global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT placement = (global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT)(0)) { /*@B 0x6006026*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006027*/ throw null; }
+		public TaskPokeLandingMotion(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem, global::Dpr.Battle.Logic.BtlvPos vPos, global::Dpr.Battle.View.Objects.BattleViewCharacter pPoke, float introHeight, global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT placement = (global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT)(0)) {
+			_iPtrBtlvSystem = pBtlvSystem;
+			_vPos = vPos;
+			_iPtrPoke = pPoke as BOPokemon;
+			_introHeight = introHeight;
+			_effectFileName = string.Empty;
+			_isContest = PlayerWork.isContest;
+			_iPtrBtlvSystem.GetDefaultPokePos(vPos, ref _defualtPokePos, ref _rotY, placement);
+			_battleDataTable = global::Dpr.Battle.Logic.BattleDataTableManager.Instance.BattleDataTable;
+			if (!_isContest)
+			{
+				_btlvSound = new BtlvSound(_battleDataTable.GetBattleConstantString(BattleConstantKey.LANDING_SOUND_REGISTER));
+				_btlvSound.CreateSound(_battleDataTable.GetBattleConstantString(BattleConstantKey.LANDING_SOUND_REGISTER), false);
+				_pokeEffWeight = _iPtrPoke.CheckPokemonEffectWeight();
+			}
+			int frame = _battleDataTable.GetBattleConstantInt(BattleConstantKey.POKE_LANDING_POLE_SCALE_FRAME);
+			Vector3 centerPos = Vector3.zero;
+			_iPtrPoke.GetNodeBasePositionSequence(SEQ_DEF_NODE.SEQ_DEF_NODE_CENTER, ref centerPos);
+			centerPos.x = 0.0f;
+			centerPos.y = _iPtrPoke.GetScaleOffset().y * centerPos.y;
+			centerPos.z = 0.0f;
+			_centerOfsY = centerPos.y;
+			_iPtrPoke.SetScaleVec(Vector4.one * 0.01f);
+			TaskVector4Control transTask = new TaskVector4Control(centerPos, Vector4.zero, Ease.Linear, frame, x => _iPtrPoke.SetTranslationOffset(x));
+			pBtlvSystem.GetTaskManagerLate().RegisterTask(transTask, true);
+			TaskVector4Control sclTask = new TaskVector4Control(Vector4.one * 0.01f, Vector4.one, Ease.Linear, frame, x => _iPtrPoke.SetScaleVec(x));
+			pBtlvSystem.GetTaskManagerLate().RegisterTask(sclTask, true);
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _iPtrBtlvSystem);
+			Mem.Del(ref _iPtrPoke);
+			Mem.DelIDisposable(ref _iPtrTaskTransPos);
+			Mem.DelIDisposable(ref _iPtrTaskTransScl);
+			Mem.Del(ref _battleDataTable);
+			Mem.Del(ref _btlvSound);
+		}
 		public override void Update(float deltaTime, float currentSeqeunceTime, int step) {
 			switch (_seq)
 			{
@@ -152,7 +186,16 @@ namespace Dpr.Battle.View
 					break;
 			}
 		}
-		static TaskPokeLandingMotion() { /*@B 0x6006029*/ throw null; }
+		static TaskPokeLandingMotion() {
+			LANDING_SWITCH_NAME = new global::System.Collections.Generic.Dictionary<PokeEffWeight, string>
+			{
+				{ PokeEffWeight.HEAVY, "LL" },
+				{ PokeEffWeight.LIGHT_HEAVY, "L" },
+				{ PokeEffWeight.MIDDLE, "M" },
+				{ PokeEffWeight.LIGHT, "S" },
+				{ PokeEffWeight.NONE, "Flight" },
+			};
+		}
 		private enum Sequence
 		{
 			SEQ_SETUP = 0,

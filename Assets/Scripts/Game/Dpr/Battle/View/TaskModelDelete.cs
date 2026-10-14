@@ -5,9 +5,20 @@ namespace Dpr.Battle.View
 	{
 		private global::UnityEngine.GameObject m_oHdlModel;
 		private global::System.Action _onFinishAction;
-		protected override bool IsFinishCondition { get { /*@B 0x6005FF6*/ throw null; } }
-		public TaskModelDelete(global::UnityEngine.GameObject go, global::System.Action finishAction, int lifeTime) { /*@B 0x6005FF7*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6005FF8*/ throw null; }
-		protected override void OnFinishTask() { /*@B 0x6005FF9*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime < _frame; } }
+		public TaskModelDelete(global::UnityEngine.GameObject go, global::System.Action finishAction, int lifeTime) {
+			m_oHdlModel = go;
+			_frame = 0;
+			_onFinishAction = finishAction;
+			_lifeTime = lifeTime;
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref m_oHdlModel);
+			Mem.Del(ref _onFinishAction);
+		}
+		protected override void OnFinishTask() {
+			m_oHdlModel.SetActive(false);
+			_onFinishAction?.Invoke();
+		}
 	}
 }

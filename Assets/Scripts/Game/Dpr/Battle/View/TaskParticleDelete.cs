@@ -6,9 +6,21 @@ namespace Dpr.Battle.View
 		private global::Dpr.Battle.View.Objects.BtlvEffectInstance _effectInstance;
 		private global::System.Action _onFinishAction;
 		private global::Dpr.SequenceEditor.SEQ_DEF_PARTICLE_DELETE _deleteType;
-		protected override bool IsFinishCondition { get { /*@B 0x6006001*/ throw null; } }
-		public TaskParticleDelete(global::Dpr.Battle.View.Objects.BtlvEffectInstance instance, global::Dpr.SequenceEditor.SEQ_DEF_PARTICLE_DELETE deleteType, global::System.Action finishAction, int lifeTime, int frame = 0) { /*@B 0x6006002*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006003*/ throw null; }
-		protected override void OnFinishTask() { /*@B 0x6006004*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskParticleDelete(global::Dpr.Battle.View.Objects.BtlvEffectInstance instance, global::Dpr.SequenceEditor.SEQ_DEF_PARTICLE_DELETE deleteType, global::System.Action finishAction, int lifeTime, int frame = 0) {
+			_effectInstance = instance;
+			_onFinishAction = finishAction;
+			_deleteType = deleteType;
+			_lifeTime = lifeTime;
+			_frame = frame;
+		}
+		protected override void OnDispose() {
+			Mem.DelIDisposable(ref _effectInstance);
+			Mem.Del(ref _onFinishAction);
+		}
+		protected override void OnFinishTask() {
+			_effectInstance.Kill(_deleteType == global::Dpr.SequenceEditor.SEQ_DEF_PARTICLE_DELETE.SEQ_DEF_PARTICLE_DELETE_KILL);
+			_onFinishAction?.Invoke();
+		}
 	}
 }

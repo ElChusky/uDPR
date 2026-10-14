@@ -12,10 +12,36 @@ namespace Dpr.Battle.View
 		private global::System.Tuple<float, float> _focalLength;
 		private global::System.Tuple<float, float> _distance;
 		private global::System.Tuple<float, float> _blurry;
-		protected override bool IsFinishCondition { get { /*@B 0x6006051*/ throw null; } }
-		public TaskDepthOfFieldControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject, bool isAutoFocus, float fNumber, float focusDistance, int lifeTime, global::DG.Tweening.Ease easingType) : base(default(global::Dpr.SequenceEditor.SequenceCameraObject)) { /*@B 0x6006052*/ throw null; }
-		public TaskDepthOfFieldControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject, float farDepth, float focalLength, float distance, float blurry, int lifeTime, global::DG.Tweening.Ease easingType) : base(default(global::Dpr.SequenceEditor.SequenceCameraObject)) { /*@B 0x6006053*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006054*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskDepthOfFieldControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject, bool isAutoFocus, float fNumber, float focusDistance, int lifeTime, global::DG.Tweening.Ease easingType) : base(cameraObject) {
+			_mode = Mode.SWSH;
+			// GetPostEffects() / GetPfxParam() inlined (0x94-byte tail copied from +0x58 -> +0x2c)
+			global::Dpr.Battle.View.PfxParam pfxParam = _cameraObject.GetPostEffects().GetPfxParam();
+			_isAutoFocus = isAutoFocus;
+			_fNumber = new global::System.Tuple<float, float>(pfxParam.dofFocalLength, fNumber);
+			_focusDistance = new global::System.Tuple<float, float>(pfxParam.dofDistance, focusDistance);
+			_lifeTime = lifeTime;
+			_easingType = easingType;
+			pfxParam.isDofEnabled = true;
+			_cameraObject.GetPostEffects().SetPfxParam(pfxParam, true);
+		}
+		public TaskDepthOfFieldControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject, float farDepth, float focalLength, float distance, float blurry, int lifeTime, global::DG.Tweening.Ease easingType) : base(cameraObject) {
+			_mode = Mode.DPR;
+			_cameraObject = cameraObject;
+			// GetPostEffects() / GetPfxParam() inlined
+			global::Dpr.Battle.View.PfxParam pfxParam = _cameraObject.GetPostEffects().GetPfxParam();
+			_farDepth = new global::System.Tuple<float, float>(pfxParam.dofFarDepth, farDepth);
+			_focalLength = new global::System.Tuple<float, float>(pfxParam.dofFocalLength, focalLength);
+			_distance = new global::System.Tuple<float, float>(pfxParam.dofDistance, distance);
+			_blurry = new global::System.Tuple<float, float>(global::SmartPoint.Rendering.DepthOfField.blurry, blurry);
+			_lifeTime = lifeTime;
+			_easingType = easingType;
+			pfxParam.isDofEnabled = true;
+			_cameraObject.GetPostEffects().SetPfxParam(pfxParam, true);
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _cameraObject);
+		}
 		protected override global::Dpr.Battle.View.PfxParam OnUpdate(int frame, float raito, ref global::Dpr.Battle.View.PfxParam pfxParam) {
 			switch (_mode)
 			{

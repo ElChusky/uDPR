@@ -23,13 +23,54 @@ namespace Dpr.Battle.View
 		public bool IsEffectEnable { get; set; }
 		public global::Dpr.Battle.View.TaskManager Parent { get; set; }
 		public bool IsFinished { get { return this._isSelfDelete; } }
-		public float Duration { get { /*@B 0x6005FD5*/ throw null; } }
-		public Task() { /*@B 0x6005FD6*/ throw null; }
-		public void Dispose() { /*@B 0x6005FD7*/ throw null; }
+		public float Duration { get { return _endTime - _startTime; } }
+		public Task() {
+			_priority = 0;
+			_iPtrPrev = null;
+			_iPtrNext = null;
+			_isSelfDelete = false;
+			_frame = 0;
+			_lifeTime = 0;
+			_isStart = false;
+			_onStart = null;
+			Parent = null;
+			_endTime = 0f;
+			_advanceMode = AdvanceMode.Step;
+			_startTime = 0f;
+			_elapsedTime = 0f;
+		}
+		public void Dispose() {
+			OnDispose();
+			Clear();
+		}
 		protected virtual void OnDispose() { }
-		public void Clear(global::Dpr.Battle.View.Task iPtrDummyTask) { /*@B 0x6005FD9*/ throw null; }
-		public void Delete() { /*@B 0x6005FDA*/ throw null; }
-		protected virtual void Clear() { /*@B 0x6005FDB*/ throw null; }
+		public void Clear(global::Dpr.Battle.View.Task iPtrDummyTask) {
+			Clear();
+			_iPtrPrev = iPtrDummyTask;
+			_iPtrNext = iPtrDummyTask;
+			_priority = 0;
+		}
+		public void Delete() {
+			_iPtrPrev._iPtrNext = _iPtrNext;
+			_iPtrNext._iPtrPrev = _iPtrPrev;
+			OnDispose();
+			Clear();
+		}
+		protected virtual void Clear() {
+			_priority = 0;
+			_iPtrNext = null;
+			_iPtrPrev = null;
+			_isSelfDelete = false;
+			_frame = 0;
+			_lifeTime = 0;
+			_isStart = false;
+			_onFinished = null;
+			_onStart = null;
+			Parent = null;
+			_startTime = 0f;
+			_endTime = 0f;
+			_elapsedTime = 0f;
+		}
 		public virtual void Update(float deltaTime, float currentSequenceTime, int step) {
 			if (!_isStart)
 			{
@@ -72,13 +113,36 @@ namespace Dpr.Battle.View
 				FinishTask();
 			}
 		}
-		protected virtual void FinishTask() { /*@B 0x6005FDD*/ throw null; }
-		public global::Dpr.Battle.View.Task SetOnStart(global::System.Action onStart) { /*@B 0x6005FDE*/ throw null; }
-		public global::Dpr.Battle.View.Task SetOnFinished(global::System.Action onFinished) { /*@B 0x6005FDF*/ throw null; }
-		public global::Dpr.Battle.View.Task SetStartTime(float startTime) { /*@B 0x6005FE0*/ throw null; }
-		public global::Dpr.Battle.View.Task SetEndTime(float endTime) { /*@B 0x6005FE1*/ throw null; }
-		public global::Dpr.Battle.View.Task SetDuration(float duration) { /*@B 0x6005FE2*/ throw null; }
-		public global::Dpr.Battle.View.Task SetAdvanceMode(global::Dpr.Battle.View.Task.AdvanceMode mode) { /*@B 0x6005FE3*/ throw null; }
+		protected virtual void FinishTask() {
+			OnFinishTask();
+			_isSelfDelete = true;
+			_onFinished?.Invoke();
+		}
+		public global::Dpr.Battle.View.Task SetOnStart(global::System.Action onStart) {
+			_onStart = onStart;
+			return this;
+		}
+		public global::Dpr.Battle.View.Task SetOnFinished(global::System.Action onFinished) {
+			_onFinished = onFinished;
+			return this;
+		}
+		public global::Dpr.Battle.View.Task SetStartTime(float startTime) {
+			_startTime = startTime;
+			return this;
+		}
+		public global::Dpr.Battle.View.Task SetEndTime(float endTime) {
+			_endTime = endTime;
+			_duration = endTime - _startTime;
+			return this;
+		}
+		public global::Dpr.Battle.View.Task SetDuration(float duration) {
+			_duration = duration;
+			return this;
+		}
+		public global::Dpr.Battle.View.Task SetAdvanceMode(global::Dpr.Battle.View.Task.AdvanceMode mode) {
+			_advanceMode = mode;
+			return this;
+		}
 		protected virtual void OnUpdate(int frame, float raito) { }
 		protected virtual void OnFinishTask() { }
 		public enum AdvanceMode

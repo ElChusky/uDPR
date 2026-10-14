@@ -5,8 +5,13 @@ namespace Dpr.Battle.View
 	public sealed class TaskChromaticAberrationControl : global::Dpr.Battle.View.TaskPostEffectCotrol
 	{
 		private global::Dpr.Battle.View.FromToPair<global::UnityEngine.Vector2> _disper;
-		protected override bool IsFinishCondition { get { /*@B 0x600604A*/ throw null; } }
-		public TaskChromaticAberrationControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject, global::UnityEngine.Vector2 disper, int lifeTime, global::DG.Tweening.Ease easingType) : base(default(global::Dpr.SequenceEditor.SequenceCameraObject)) { /*@B 0x600604B*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskChromaticAberrationControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject, global::UnityEngine.Vector2 disper, int lifeTime, global::DG.Tweening.Ease easingType) : base(cameraObject) {
+			// GetPostEffects() / GetPfxParam() inlined (one field read from +0x58 -> +0x44)
+			_disper = new FromToPair<Vector2>(cameraObject.GetPostEffects().GetPfxParam().chromaticAberrationMagnificationDispersion, disper);
+			_lifeTime = lifeTime;
+			_easingType = easingType;
+		}
 		protected override global::Dpr.Battle.View.PfxParam OnUpdate(int frame, float raito, ref global::Dpr.Battle.View.PfxParam pfxParam) {
 			// Vector2 -> Vector4 in, Vector4 -> Vector3 -> Vector2 out (op_Implicit 0x29a4ea0 then 0x29a1de0, 01e84734 / 01e84774)
 			pfxParam.chromaticAberrationMagnificationDispersion = (Vector3)Mathe.Easing.EasedValue(_disper.from, _disper.to, raito, _easingType);

@@ -21,11 +21,49 @@ namespace Dpr.Battle.View
 		private global::UnityEngine.Vector3 _trg;
 		private global::UnityEngine.Vector3 _posOfs;
 		private global::UnityEngine.Vector3 _trgOfs;
-		protected override bool IsFinishCondition { get { /*@B 0x600600D*/ throw null; } }
-		public TaskCameraMove(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, global::UnityEngine.Vector3 endPos, global::DG.Tweening.Ease easingType, int lifeTime) { /*@B 0x600600E*/ throw null; }
-		public TaskCameraMove(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, global::UnityEngine.Vector3 endPos, global::UnityEngine.Vector3 endTrg, float endFov, global::DG.Tweening.Ease easingType, int frame) { /*@B 0x600600F*/ throw null; }
-		public TaskCameraMove(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, global::UnityEngine.Vector3 endPos, global::UnityEngine.Vector3 endTrg, global::UnityEngine.Vector3 endPosOfs, global::UnityEngine.Vector3 endTrgOfs, float endFov, global::DG.Tweening.Ease easingType, int frame) { /*@B 0x6006010*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006011*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskCameraMove(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, global::UnityEngine.Vector3 endPos, global::DG.Tweening.Ease easingType, int lifeTime) {
+			_iPtrCamerasystem = pBtlvCameraSystem;
+			_startPos = pBtlvCameraSystem.GetPosition();
+			_endPos = endPos;
+			_lifeTime = lifeTime;
+			_easingType = easingType;
+			_startTrg = _endTrg = Vector3.zero;
+			_startFov = 0f;
+			_endFov = 0f;
+			_mode = UpdateMode.MoveOnly;
+		}
+		public TaskCameraMove(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, global::UnityEngine.Vector3 endPos, global::UnityEngine.Vector3 endTrg, float endFov, global::DG.Tweening.Ease easingType, int frame) {
+			_iPtrCamerasystem = pBtlvCameraSystem;
+			_startPos = _iPtrCamerasystem.GetPosition();
+			_endPos = endPos;
+			_startTrg = _iPtrCamerasystem.GetTarget();
+			_endTrg = endTrg;
+			_startFov = _iPtrCamerasystem.Fov;
+			_endFov = endFov;
+			_lifeTime = frame;
+			_easingType = easingType;
+			_mode = UpdateMode.All;
+		}
+		public TaskCameraMove(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, global::UnityEngine.Vector3 endPos, global::UnityEngine.Vector3 endTrg, global::UnityEngine.Vector3 endPosOfs, global::UnityEngine.Vector3 endTrgOfs, float endFov, global::DG.Tweening.Ease easingType, int frame) {
+			_iPtrCamerasystem = pBtlvCameraSystem;
+			_startPos = _iPtrCamerasystem.GetPosition();
+			_endPos = endPos;
+			_startTrg = _iPtrCamerasystem.GetTarget();
+			_endTrg = endTrg;
+			_startPosOfs = _iPtrCamerasystem.GetPositionOffset();
+			_endPosOfs = endPosOfs;
+			_startTrgOfs = _iPtrCamerasystem.GetTargetOffset();
+			_endTrgOfs = endTrgOfs;
+			_startFov = _iPtrCamerasystem.Fov;
+			_endFov = endFov;
+			_lifeTime = frame;
+			_easingType = easingType;
+			_mode = UpdateMode.All;
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _iPtrCamerasystem);
+		}
 		protected override void OnUpdate(int frame, float raito) {
 			switch (_mode)
 			{

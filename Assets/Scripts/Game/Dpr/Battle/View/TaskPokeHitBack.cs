@@ -9,8 +9,17 @@ namespace Dpr.Battle.View
 		private global::UnityEngine.Vector3 _startPos;
 		private global::UnityEngine.Vector3 _hitbackPos;
 		private float _elapsedTime;
-		public TaskPokeHitBack(global::Dpr.Battle.View.Objects.BattleViewCharacter target, int cnt = 0, int maxCnt = 3) { /*@B 0x6006023*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006024*/ throw null; }
+		public TaskPokeHitBack(global::Dpr.Battle.View.Objects.BattleViewCharacter target, int cnt = 0, int maxCnt = 3) {
+			_iPtrPoke = target;
+			_frame = cnt;
+			_lifeTime = maxCnt;
+			_current = Sequence.BACK;
+			_startPos = target.GetTranslationVec();
+			_hitbackPos = _startPos + -target.transform.forward * 0.6f;
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _iPtrPoke);
+		}
 		public override void Update(float deltaTime, float currentSeqeunceTime, int step) {
 			// Does not call base.Update: the step/raito machinery is bypassed; _lifeTime is a frame count at the target frame rate
 			_elapsedTime += SmartPoint.AssetAssistant.Sequencer.elapsedTime;

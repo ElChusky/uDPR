@@ -4,9 +4,16 @@ namespace Dpr.Battle.View
 	public sealed class TaskFinishFuncCall : global::Dpr.Battle.View.Task
 	{
 		private global::System.Action _onFinishFunc;
-		protected override bool IsFinishCondition { get { /*@B 0x6005FE6*/ throw null; } }
-		public TaskFinishFuncCall(int lifeTime, global::System.Action onFinish) { /*@B 0x6005FE7*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6005FE8*/ throw null; }
-		protected override void OnFinishTask() { /*@B 0x6005FE9*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskFinishFuncCall(int lifeTime, global::System.Action onFinish) {
+			_onFinishFunc = onFinish;
+			_lifeTime = lifeTime;
+		}
+		protected override void OnDispose() {
+			_onFinishFunc = null;
+		}
+		protected override void OnFinishTask() {
+			_onFinishFunc?.Invoke();
+		}
 	}
 }

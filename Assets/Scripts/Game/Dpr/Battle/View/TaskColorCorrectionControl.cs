@@ -12,9 +12,23 @@ namespace Dpr.Battle.View
 		private global::Dpr.Battle.View.FromToPair<float> _contrast;
 		private global::Dpr.Battle.View.FromToPair<float> _temperature;
 		private global::Dpr.Battle.View.FromToPair<float> _sepiaToneWeight;
-		protected override bool IsFinishCondition { get { /*@B 0x6006046*/ throw null; } }
-		public TaskColorCorrectionControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject, global::UnityEngine.Vector3 colorScale, global::UnityEngine.Vector3 colorBias, float brightness, float saturation, float contrast, float temperature, float sepiaToneWeight, int lifeTime, global::DG.Tweening.Ease easeingType) : base(default(global::Dpr.SequenceEditor.SequenceCameraObject)) { /*@B 0x6006047*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006048*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskColorCorrectionControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject, global::UnityEngine.Vector3 colorScale, global::UnityEngine.Vector3 colorBias, float brightness, float saturation, float contrast, float temperature, float sepiaToneWeight, int lifeTime, global::DG.Tweening.Ease easeingType) : base(cameraObject) {
+			// GetPostEffects() / GetPfxParam() inlined (fields read from +0x58 -> +0x10)
+			PfxParam pfxParam = cameraObject.GetPostEffects().GetPfxParam();
+			_colorScale = new FromToPair<Vector3>(new Vector3(pfxParam.colorScaleR, pfxParam.colorScaleG, pfxParam.colorScaleB), colorScale);
+			_colorBias = new FromToPair<Vector3>(new Vector3(pfxParam.colorBiasR, pfxParam.colorBiasG, pfxParam.colorBiasB), colorBias);
+			_brightness = new FromToPair<float>(pfxParam.colorBrightness, brightness);
+			_saturation = new FromToPair<float>(pfxParam.colorSaturation, saturation);
+			_contrast = new FromToPair<float>(pfxParam.colorContrast, contrast);
+			_temperature = new FromToPair<float>(pfxParam.colorTemperature, temperature);
+			_sepiaToneWeight = new FromToPair<float>(pfxParam.sepiaToneWeight, sepiaToneWeight);
+			_lifeTime = lifeTime;
+			_easingType = easeingType;
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _cameraObject);
+		}
 		protected override global::Dpr.Battle.View.PfxParam OnUpdate(int frame, float raito, ref global::Dpr.Battle.View.PfxParam pfxParam) {
 			Vector3 colorScale = Mathe.Easing.EasedValue(_colorScale.from, _colorScale.to, raito, _easingType);
 			Vector3 colorBias = Mathe.Easing.EasedValue(_colorBias.from, _colorBias.to, raito, _easingType);

@@ -5,9 +5,17 @@ namespace Dpr.Battle.View
 	{
 		private global::Dpr.Battle.View.Objects.BattleViewCharacter _iPtrPoke;
 		private bool _isWaitFinish;
-		protected override bool IsFinishCondition { get { /*@B 0x600601F*/ throw null; } }
-		public TaskPokemonLookAt(global::Dpr.Battle.View.Objects.BattleViewCharacter pPoke, global::UnityEngine.Vector3 pos, int lifeTime) { /*@B 0x6006020*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006021*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskPokemonLookAt(global::Dpr.Battle.View.Objects.BattleViewCharacter pPoke, global::UnityEngine.Vector3 pos, int lifeTime) {
+			_iPtrPoke = pPoke;
+			_frame = 0;
+			_lifeTime = lifeTime;
+			_isWaitFinish = false;
+			_iPtrPoke.StartLookAt(pos);
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _iPtrPoke);
+		}
 		public override void Update(float deltaTime, float currentSeqeunceTime, int step) {
 #if PC_UNLOCKED_FPS
 			// PC (s37): 30 Hz frames, as Task.Update
