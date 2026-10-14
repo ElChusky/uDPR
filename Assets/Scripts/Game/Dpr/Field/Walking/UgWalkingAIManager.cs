@@ -3,7 +3,9 @@ namespace Dpr.Field.Walking
 {
 	public class UgWalkingAIManager : global::Dpr.Field.Walking.WalkingAIManager
 	{
-		protected override global::Dpr.Field.Walking.WalkingCharacterController AddController(global::UnityEngine.GameObject go) { /*@B 0x60089F6*/ throw null; }
-		public UgWalkingAIManager() { /*@B 0x60089F7*/ throw null; }
+		protected override global::Dpr.Field.Walking.WalkingCharacterController AddController(global::UnityEngine.GameObject go) {
+			return go.AddComponent<global::Dpr.Field.Walking.UgPokeController>();
+		}
+		public UgWalkingAIManager() { }
 	}
 }

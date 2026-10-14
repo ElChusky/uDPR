@@ -3,7 +3,7 @@ namespace Dpr.Field.Walking
 {
 	public class WalkingAIManager
 	{
-		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.WalkingCharacterController> walkingCharacters;
+		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.WalkingCharacterController> walkingCharacters = new global::System.Collections.Generic.List<global::Dpr.Field.Walking.WalkingCharacterController>();
 		public bool isAllStop;
 		[global::UnityEngine.SerializeField]
 		private global::FieldObjectEntity testEntity;
@@ -11,16 +11,149 @@ namespace Dpr.Field.Walking
 		public int Button01;
 		[global::Dpr.SubContents.ButtonAttribute("TestSub", "TestSub", new object[] {  })]
 		public int Button02;
-		public global::Dpr.Field.Walking.WalkingCharacterController ToWalkingCharacter(global::FieldObjectEntity entity) { /*@B 0x6008A70*/ throw null; }
-		public virtual void Destroy(bool isDestroyGameObject = false) { /*@B 0x6008A71*/ throw null; }
-		public void StopAll(bool isStop) { /*@B 0x6008A72*/ throw null; }
-		private global::Dpr.Field.Walking.WalkingCharacterModel CreateFieldWalkModel(global::FieldObjectEntity entity) { /*@B 0x6008A73*/ throw null; }
-		private global::Dpr.Field.Walking.WalkingCharacterController CommonSetUp(global::FieldObjectEntity entity) { /*@B 0x6008A74*/ throw null; }
-		protected virtual global::Dpr.Field.Walking.WalkingCharacterController AddController(global::UnityEngine.GameObject go) { /*@B 0x6008A75*/ throw null; }
-		public void SubWalkingCharacter(global::FieldObjectEntity entity, bool isDestroy = false) { /*@B 0x6008A76*/ throw null; }
-		public void TestAdd() { /*@B 0x6008A77*/ throw null; }
-		public void TestSub() { /*@B 0x6008A78*/ throw null; }
-		public static global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> GetNearEmptyPosition(global::UnityEngine.Vector2Int grid, bool ignoreNaname = false, bool isFureai = false) { /*@B 0x6008A79*/ throw null; }
-		public WalkingAIManager() { /*@B 0x6008A7A*/ throw null; }
+		public global::Dpr.Field.Walking.WalkingCharacterController ToWalkingCharacter(global::FieldObjectEntity entity)
+		{
+			global::Dpr.Field.Walking.WalkingCharacterController controller = CommonSetUp(entity);
+			global::Dpr.EvScript.EvDataManager.Instanse.FieldObjectEntityAdd(entity);
+			entity.EventParams.Type = global::Dpr.EvScript.EvDataManager.EntityType.Npc;
+			entity.EventParams.VanishFlagIndex = 1;
+			global::SmartPoint.AssetAssistant.Sequencer.earlyLateUpdate += controller.MyUpdate;
+			global::SmartPoint.AssetAssistant.Sequencer.lateUpdate += controller.MyLateUpdate;
+			walkingCharacters.Add(controller);
+			return controller;
+		}
+		public virtual void Destroy(bool isDestroyGameObject = false)
+		{
+			// shipped: always inspects element 0, Count times (SubWalkingCharacter removes it from the list)
+			for (int i = walkingCharacters.Count - 1; i >= 0; i--)
+			{
+				if (walkingCharacters[0] != null && walkingCharacters[0].model.entity.GetType() == typeof(global::FieldPokemonEntity))
+				{
+					SubWalkingCharacter(walkingCharacters[0].model.entity, isDestroyGameObject);
+				}
+			}
+			if (isDestroyGameObject)
+			{
+				EntityManager.BuildFieldEntities();
+			}
+			walkingCharacters.Clear();
+		}
+		public void StopAll(bool isStop)
+		{
+			if (isAllStop == isStop)
+			{
+				return;
+			}
+			isAllStop = isStop;
+			float speed = isStop ? 0f : 1f;
+			for (int i = 0; i < walkingCharacters.Count; i++)
+			{
+				global::Dpr.Field.Walking.WalkingCharacterController controller = walkingCharacters[i];
+				if (controller.view.GetAnimPlayer().IsValidCurrentPlayable)
+				{
+					controller.view.GetAnimPlayer().SetAnimSpeed(speed);
+				}
+				controller.model.isStopUpdate = isStop;
+			}
+		}
+		private global::Dpr.Field.Walking.WalkingCharacterModel CreateFieldWalkModel(global::FieldObjectEntity entity)
+		{
+			return new global::Dpr.Field.Walking.WalkingCharacterModel(new global::Dpr.Field.Walking.WalkData(entity));
+		}
+		private global::Dpr.Field.Walking.WalkingCharacterController CommonSetUp(global::FieldObjectEntity entity)
+		{
+			global::UnityEngine.GameObject go = entity.gameObject;
+			global::UnityEngine.Vector3 localScale = go.transform.localScale;
+			global::Dpr.Field.Walking.WalkingCharacterController controller = AddController(go);
+			global::Dpr.Field.Walking.WalkingCharacterModel model = CreateFieldWalkModel(entity);
+			model.SetController(controller);
+			global::Dpr.Field.Walking.WalkingCharacterView view = go.AddComponent<global::Dpr.Field.Walking.WalkingCharacterView>();
+			view.SetAnimPlayer(model.animPlayer);
+			view.PokeScale = localScale.x;
+			if (entity.GetType() == typeof(global::FieldPokemonEntity))
+			{
+				view.ChangeUpdateWhenOffScreen((global::FieldPokemonEntity)entity);
+			}
+			controller.SetView(view);
+			controller.SetModel(model);
+			model.transform.Find("Origin")?.gameObject.AddComponent<global::Dpr.FureaiHiroba.MoveHosei>();
+			EntityManager.BuildFieldEntities();
+			return controller;
+		}
+		protected virtual global::Dpr.Field.Walking.WalkingCharacterController AddController(global::UnityEngine.GameObject go)
+		{
+			return go.AddComponent<global::Dpr.Field.Walking.WalkingCharacterController>();
+		}
+		public void SubWalkingCharacter(global::FieldObjectEntity entity, bool isDestroy = false)
+		{
+			global::UnityEngine.GameObject go = entity.gameObject;
+			global::Dpr.Field.Walking.WalkingCharacterController controller = go.GetComponent<global::Dpr.Field.Walking.WalkingCharacterController>();
+			if (controller == null)
+			{
+				return;
+			}
+			global::Dpr.Field.Walking.WalkingCharacterModel model = controller.model;
+			controller.view.AnimPlay(0, 0f, 0f);
+			controller.emoticon.Delete();
+			if (go.transform.Find("Origin") != null)
+			{
+				global::UnityEngine.Object.Destroy(go.transform.Find("Origin").gameObject.GetComponent<global::Dpr.FureaiHiroba.MoveHosei>());
+			}
+			global::SmartPoint.AssetAssistant.Sequencer.earlyLateUpdate -= controller.MyUpdate;
+			global::SmartPoint.AssetAssistant.Sequencer.lateUpdate -= controller.MyLateUpdate;
+			walkingCharacters.Remove(controller);
+			controller.isSubWalking = true;
+			global::UnityEngine.Object.Destroy(controller);
+			global::UnityEngine.Object.Destroy(go.GetComponent<global::Dpr.Field.Walking.WalkingCharacterView>());
+			model.Destroy();
+			testEntity = null;
+			if (isDestroy)
+			{
+				EntityManager.Remove(entity);
+				global::UnityEngine.Object.Destroy(go);
+			}
+		}
+		public void TestAdd()
+		{
+			if (testEntity != null)
+			{
+				TestSub();
+			}
+			ToWalkingCharacter(testEntity);
+		}
+		public void TestSub()
+		{
+			if (testEntity != null)
+			{
+				SubWalkingCharacter(testEntity, false);
+			}
+		}
+		public static global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> GetNearEmptyPosition(global::UnityEngine.Vector2Int grid, bool ignoreNaname = false, bool isFureai = false)
+		{
+			float height = EntityManager.activeFieldPlayer.Height;
+			global::XLSXContent.AttributeMatrix attributes = GameManager.GetMapAttributeMattrix();
+			global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> result = new global::System.Collections.Generic.List<global::UnityEngine.Vector2Int>();
+			global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> objectGrids = global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(EntityManager.fieldObjects, x => x.gridPosition));
+			for (int y = -1; y < 2; y++)
+			{
+				for (int x = -1; x < 2; x++)
+				{
+					global::UnityEngine.Vector2Int CheckGrid = grid + new global::UnityEngine.Vector2Int(x, y);
+					GameManager.GetAttribute(attributes, CheckGrid, out int code, out int stop, true);
+					global::Dpr.SubContents.Utils.MoveTypeResult enter = global::Dpr.SubContents.Utils.isEnterbleAttribute(code, stop, global::Ug.MoveType.Ground);
+					if (isFureai && global::System.Array.Exists(global::Dpr.FureaiHiroba.FureaiDataManager.DontEnterPoints, a => a == grid))
+					{
+						enter = global::Dpr.SubContents.Utils.MoveTypeResult.CantEnter;
+					}
+					bool exists = objectGrids.Exists(pos => pos == CheckGrid);
+					if (enter == global::Dpr.SubContents.Utils.MoveTypeResult.OK && !(x == 0 && y == 0) && !exists)
+					{
+						result.Add(new global::UnityEngine.Vector2Int(x, y));
+					}
+				}
+			}
+			return result;
+		}
+		public WalkingAIManager() { }
 	}
 }

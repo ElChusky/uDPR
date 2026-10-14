@@ -7,15 +7,31 @@ namespace Dpr.Field.Walking
             // b241: the override is a bare tail `b WalkingCharacterController.SetModel` @01ce5590 (the base code had a copy of the base body).
             base.SetModel(model);
         }
-		public override void AISetting() { /*@B 0x6008AAE*/ throw null; }
-		public override global::Dpr.Field.Walking.AIModel CreateAIModel() { /*@B 0x6008AAF*/ throw null; }
+		public override void AISetting()
+		{
+			AI.AddState<global::Dpr.Field.Walking.UG_NormalState>();
+			AI.AddState<global::Dpr.Field.Walking.UG_FoundState>();
+			AI.AddState<global::Dpr.Field.Walking.UG_TeleporterState>();
+			AI.AddState<global::Dpr.Field.Walking.UG_TeleporterFoundState>();
+		}
+		public override global::Dpr.Field.Walking.AIModel CreateAIModel()
+		{
+			return new global::Dpr.Field.Walking.AIUgModel(this);
+		}
 		protected override void ModelUpdate(float deltaTime) {
             // b241: bare tail `b WalkingCharacterController.ModelUpdate` @01ce5780 (the base code had a copy of the base body).
             base.ModelUpdate(deltaTime);
         }
-		public override void MyLateUpdate(float deltaTime) { /*@B 0x6008AB1*/ throw null; }
-		public override void MyUpdate(float deltaTime) { /*@B 0x6008AB2*/ throw null; }
+		public override void MyLateUpdate(float deltaTime)
+		{
+			model.collisionModel.LateUpdate(deltaTime);
+		}
+		public override void MyUpdate(float deltaTime)
+		{
+			// shipped override is a bare tail `b WalkingCharacterController.MyUpdate` @01ce58a0
+			base.MyUpdate(deltaTime);
+		}
 		public override void CheckAttribute() { }
-		public UgPokeController() { /*@B 0x6008AB4*/ throw null; }
+		public UgPokeController() { }
 	}
 }
