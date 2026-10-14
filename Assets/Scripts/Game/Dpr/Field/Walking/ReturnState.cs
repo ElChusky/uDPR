@@ -8,14 +8,39 @@ namespace Dpr.Field.Walking
 		private const int happy1 = 43;
 		private const int happy2 = 44;
 		private const int happy3 = 45;
-		private static readonly int[] Happys;
-		private global::Dpr.FureaiHiroba.FureaiPokeModel fureaiModel { get { /*@B 0x6008A47*/ throw null; } }
-		private global::Dpr.FureaiHiroba.PokeSanpoModel sanpoModel { get { /*@B 0x6008A48*/ throw null; } }
+		private static readonly int[] Happys = new int[] { happy2, happy1, happy3 };
+		private global::Dpr.FureaiHiroba.FureaiPokeModel fureaiModel { get { return model.fureaiModel; } }
+		private global::Dpr.FureaiHiroba.PokeSanpoModel sanpoModel { get { return model.sanpoModel; } }
 		private global::Dpr.Field.Walking.AIFureaiModel model { get => (AIFureaiModel)base.model; }
-		public ReturnState(global::Dpr.Field.Walking.AIFureaiModel model) : base(default(global::Dpr.Field.Walking.AIModel)) { /*@B 0x6008A4A*/ throw null; }
-		public override void CommonUpdate() { /*@B 0x6008A4B*/ throw null; }
-		protected override void StateUpdate() { /*@B 0x6008A4C*/ throw null; }
-		public override void Enter() { /*@B 0x6008A4D*/ throw null; }
-		static ReturnState() { /*@B 0x6008A4E*/ throw null; }
+		public ReturnState(global::Dpr.Field.Walking.AIFureaiModel model) : base(model) { }
+		public override void CommonUpdate() {
+			base.CommonUpdate();
+			global::UnityEngine.Transform playerTransform = player;
+			sanpoModel.Update(deltaTime, playerTransform, model.transform);
+			global::Dpr.Field.Walking.WalkData walkData = model.walkData;
+			walkData.LookAtTarget(player.position, deltaTime, 3f);
+			if (model.charaModel.CollidedCount >= 11)
+			{
+				global::Dpr.Field.Walking.AICommon.Warp(model, false);
+			}
+		}
+		protected override void StateUpdate() {
+			global::Dpr.Field.Walking.WalkData walkData = model.walkData;
+			global::System.Collections.Generic.List<global::UnityEngine.Vector3> route = model.route;
+			if (fureaiModel.sanpoModel.isAddWalking && !isNearPlayer)
+			{
+				Play(new global::Dpr.Field.Walking.PlayAnim(global::Dpr.SubContents.Utils.GetExistAnim(walkData.entity, Happys), 0.2f, 0f), () => isNearPlayer = true);
+			}
+			if (isNearPlayer)
+			{
+				model.OnPlayerNear();
+				return;
+			}
+			walkData.Move(deltaTime, 10f, 2.5f, 0f);
+		}
+		public override void Enter() {
+			isNearPlayer = false;
+		}
+		static ReturnState() { }
 	}
 }

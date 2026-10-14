@@ -6,7 +6,15 @@ namespace Dpr.Field.Walking
 		private int anim;
 		private float duration;
 		private float startTime;
-		public PlayAnim(int anim, float duration = 0.2f, float startTime = 0f) { /*@B 0x6008A90*/ throw null; }
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008A91*/ throw null; }
+		public PlayAnim(int anim, float duration = 0.2f, float startTime = 0f) {
+			this.anim = anim;
+			this.duration = duration;
+			this.startTime = startTime;
+		}
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) {
+			global::Dpr.Field.Walking.CorSystem corSys = model.AI.GetNowState().corSys;
+			global::Dpr.Field.Walking.CorSystem sub = model.view.AnimPlayForce(anim, corSys, model.charaModel, duration, startTime);
+			yield return sub.Play(model.charaModel.WaitforAnimationFinish(() => sub.isPlaying));
+		}
 	}
 }

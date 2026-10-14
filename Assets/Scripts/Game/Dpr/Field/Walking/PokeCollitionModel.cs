@@ -3,8 +3,20 @@ namespace Dpr.Field.Walking
 {
 	public class PokeCollitionModel : global::Dpr.Field.Walking.WalkingCollisionModelBase
 	{
-		public PokeCollitionModel(global::Dpr.Field.Walking.WalkData walkData) : base(default(global::Dpr.Field.Walking.WalkData)) { /*@B 0x6008B07*/ throw null; }
-		public override void CollisionUpdate(float deltaTime) { /*@B 0x6008B08*/ throw null; }
-		public override void ExCollisionUpdate(float deltaTime, global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> characters) { /*@B 0x6008B09*/ throw null; }
+		public PokeCollitionModel(global::Dpr.Field.Walking.WalkData walkData) : base(walkData) { }
+		public override void CollisionUpdate(float deltaTime) {
+			base.CollisionUpdate(deltaTime);
+		}
+		public override void ExCollisionUpdate(float deltaTime, global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> characters) {
+			if (characters == null)
+				return;
+			foreach (global::Dpr.FureaiHiroba.FureaiPokeModel character in characters)
+			{
+				if ((!walkData.isNeedWalk && character.walkData.isNeedWalk) || walkData.priority < character.walkData.priority)
+				{
+					CheckCollision(character.entity, bodySize + 0.5f, 1f, false, false, character.walkData.priority, false);
+				}
+			}
+		}
 	}
 }

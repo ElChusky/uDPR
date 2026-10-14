@@ -3,7 +3,31 @@ namespace Dpr.Field.Walking
 {
 	public class NpcWalkingState : global::Dpr.Field.Walking.WalkingState
 	{
-		public NpcWalkingState(global::Dpr.Field.Walking.AIModel model) : base(default(global::Dpr.Field.Walking.AIModel)) { /*@B 0x6008A31*/ throw null; }
-		protected override void StateUpdate() { /*@B 0x6008A32*/ throw null; }
+		public NpcWalkingState(global::Dpr.Field.Walking.AIModel model) : base(model) {
+			global::Dpr.Field.Walking.WalkingCharacterModel charaModel = model.charaModel;
+			charaModel.collisionModel = new global::Dpr.Field.Walking.NpcCollitionModel(charaModel.walkData);
+		}
+		protected override void StateUpdate() {
+			walkModel.bodySize = 0.05f;
+			walkModel.awayDistanceOffset = 0.15f;
+			walkModel.farDistanceOffset = 0.15f;
+			walkModel.walkSpeed = 5f;
+			walkModel.runSpeed = 5f;
+			if (!walkModel.isNeedWalk || global::SmartPoint.Components.Fader.isBusy)
+			{
+				walkModel.nowSpeed = 0f;
+			}
+			else
+			{
+				walkModel.NPCMove(deltaTime, 3000f, 1.5f);
+				global::UnityEngine.Vector3 pos = walkModel.entity.transform.position + walkModel.entity.moveVector;
+				if (global::Dpr.SubContents.Utils.isEnterbleAttribute(pos, global::Ug.MoveType.Ground, false) != global::Dpr.SubContents.Utils.MoveTypeResult.OK)
+				{
+					walkModel.entity.moveVector = global::UnityEngine.Vector3.zero;
+				}
+			}
+			global::Dpr.Field.Walking.AICommon.GetTarget(model);
+			walkModel.LookAtTarget(player.position, deltaTime, 60f);
+		}
 	}
 }

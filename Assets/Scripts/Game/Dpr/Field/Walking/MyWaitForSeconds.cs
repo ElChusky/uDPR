@@ -6,7 +6,13 @@ namespace Dpr.Field.Walking
 		public bool IsCompleted;
 		private float elapsedTime;
 		private float targetTime;
-		public override bool keepWaiting { get { /*@B 0x6008AAA*/ throw null; } }
-		public MyWaitForSeconds(float targetTime) { /*@B 0x6008AAB*/ throw null; }
+		public override bool keepWaiting { get {
+			elapsedTime += global::SmartPoint.AssetAssistant.Sequencer.elapsedTime;
+			IsCompleted = elapsedTime >= targetTime;
+			return elapsedTime < targetTime;
+		} }
+		public MyWaitForSeconds(float targetTime) {
+			this.targetTime = targetTime;
+		}
 	}
 }

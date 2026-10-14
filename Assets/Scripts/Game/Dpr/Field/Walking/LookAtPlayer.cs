@@ -5,7 +5,17 @@ namespace Dpr.Field.Walking
 	{
 		private float duration;
 		private float speed;
-		public LookAtPlayer(float duration, float speed = 5f) { /*@B 0x6008A8C*/ throw null; }
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008A8D*/ throw null; }
+		public LookAtPlayer(float duration, float speed = 5f) {
+			this.duration = duration;
+			this.speed = speed;
+		}
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) {
+			global::UnityEngine.Transform player = EntityManager.activeFieldPlayer.transform;
+			yield return model.Loop(() => 0f < duration, () =>
+			{
+				duration -= global::SmartPoint.AssetAssistant.Sequencer.elapsedTime;
+				model.walkData.LookAtTarget(player.position, global::SmartPoint.AssetAssistant.Sequencer.elapsedTime, speed);
+			});
+		}
 	}
 }
