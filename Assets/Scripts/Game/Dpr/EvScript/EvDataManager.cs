@@ -26,8 +26,8 @@ namespace Dpr.EvScript
 {
 	public class EvDataManager
 	{
-		private static global::Dpr.EvScript.EvDataManager _instanse;
-		public static bool IsFirstInitializedAfterSaveDataLoad;
+		private static global::Dpr.EvScript.EvDataManager _instanse = null;
+		public static bool IsFirstInitializedAfterSaveDataLoad = false;
 		private const string Path_Parsons = "persons/field/";
 		private const string Path_Poke_Model = "pokemons/field/";
 		private const int Graphic_Gimmick = 500;
@@ -225,7 +225,16 @@ namespace Dpr.EvScript
 		private global::Dpr.UI.FloorWindow _floorWindow;
 		private global::Dpr.UI.MoneyWindow _moneyWindow;
 		private global::System.Text.StringBuilder matchingPassword = new global::System.Text.StringBuilder();
-		private static global::System.Collections.Generic.Dictionary<int, global::Pml.MonsNo> KasekiFukugenTable;
+		private static global::System.Collections.Generic.Dictionary<int, global::Pml.MonsNo> KasekiFukugenTable = new Dictionary<int, MonsNo>
+		{
+			{ 103, MonsNo.PUTERA },
+			{ 101, MonsNo.OMUNAITO },
+			{ 102, MonsNo.KABUTO },
+			{ 99, MonsNo.RIRIIRA },
+			{ 100, MonsNo.ANOPUSU },
+			{ 104, MonsNo.TATETOPUSU },
+			{ 105, MonsNo.ZUGAIDOSU },
+		};
 		private int _openTownMapSeq;
 		private bool _isOpenBtlTowerRecode;
 		private int _softwareKeyboardSubState;
@@ -258,10 +267,28 @@ namespace Dpr.EvScript
 		private const int RockClimbSequence_EndJumpEnd = 6;
 		private global::UnityEngine.Coroutine _cmdReportSaveCoroutine;
 		private int _seqRankingView;
-		private static global::System.ValueTuple<int, int, int>[] PokemonSizeTable;
+		private static global::System.ValueTuple<int, int, int>[] PokemonSizeTable = new ValueTuple<int, int, int>[]
+		{
+			new ValueTuple<int, int, int>(290, 1, 0),
+			new ValueTuple<int, int, int>(300, 1, 10),
+			new ValueTuple<int, int, int>(400, 2, 110),
+			new ValueTuple<int, int, int>(500, 4, 310),
+			new ValueTuple<int, int, int>(600, 20, 710),
+			new ValueTuple<int, int, int>(700, 50, 2710),
+			new ValueTuple<int, int, int>(800, 100, 7710),
+			new ValueTuple<int, int, int>(900, 150, 17710),
+			new ValueTuple<int, int, int>(1000, 150, 50886),
+			new ValueTuple<int, int, int>(1100, 100, 47710),
+			new ValueTuple<int, int, int>(1200, 50, 57710),
+			new ValueTuple<int, int, int>(1300, 20, 62710),
+			new ValueTuple<int, int, int>(1400, 5, 64710),
+			new ValueTuple<int, int, int>(1500, 2, 65210),
+			new ValueTuple<int, int, int>(1600, 1, 65410),
+			new ValueTuple<int, int, int>(1700, 1, 65510),
+		};
 		private bool _isOpenCertificate;
 		private int returnSequenceID;
-		public static bool EventCameraEnable;
+		public static bool EventCameraEnable = false;
 		private bool _boukennootoTipsOpen;
 		private const int FashionSeq_Reqest = 0;
 		private const int FashionSeq_Wait = 1;
@@ -16363,13 +16390,295 @@ namespace Dpr.EvScript
             }
             return true;
         }
-		public bool ForceUnload() { /*@B 0x600911C*/ throw null; }
-		public bool IsLoadAssetBundle() { /*@B 0x600911D*/ throw null; }
-		private void LoadObjectCreate(global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) { /*@B 0x600911E*/ throw null; }
-		private void LoadObjectCreate_BOX(global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) { /*@B 0x600911F*/ throw null; }
-		private void LoadObjectCreate_Asset(global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) { /*@B 0x6009120*/ throw null; }
-		private void LoadObjectCreate_KinomiGrow(global::XLSXContent.KinomiPlaceData.SheetSheet1 kinomiPlaceData) { /*@B 0x6009121*/ throw null; }
-		public int FieldObjectEntityAdd(global::FieldObjectEntity entity) { /*@B 0x6009122*/ throw null; }
+		public bool ForceUnload() {
+            PokemonCenter.ReleaseAll();
+            FieldShip.Terminate();
+            if (_nowInstantiate)
+                return false;
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+            {
+                if (_AssetReqOpeList[i] != null && !_AssetReqOpeList[i].isEnd)
+                    return false;
+            }
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+            {
+                if (_AssetReqOpeList[i] != null)
+                {
+                    AssetManager.UnloadAssetBundle(_AssetReqOpeList[i].ReqOpe.assetBundleRequest.uri);
+                    _AssetReqOpeList[i] = null;
+                }
+            }
+            _AssetReqOpeList.Clear();
+            _loadObjectList.Clear();
+            _loadObjectIndex = 0;
+            return true;
+        }
+		public bool IsLoadAssetBundle() {
+            bool result = true;
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+            {
+                if (_AssetReqOpeList[i] != null && !_AssetReqOpeList[i].isEnd)
+                {
+                    if (_AssetReqOpeList[i].ReqOpe.assetBundleRequest.status == RequestStatus.Complete)
+                        _AssetReqOpeList[i].isEnd = true;
+                    else
+                        result = false;
+                }
+            }
+            return result;
+        }
+		private void LoadObjectCreate(global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) {
+            _nowInstantiate = true;
+            if (lodata.AssetReqIndex != -1)
+                LoadObjectCreate_Asset(lodata);
+            else
+                LoadObjectCreate_BOX(lodata);
+        }
+		private void LoadObjectCreate_BOX(global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) {
+            var placeData = lodata.PlaceData;
+            if (!placeData.TalkLabel.Contains("ev_kinomi"))
+            {
+                GameObject go = new GameObject();
+                go.name = placeData.ID;
+                go.transform.SetParent(_loadObjectParent);
+                FieldObjectEntity entity = go.AddComponent<FieldObjectEntity>();
+                if (placeData.Size.x < 1f)
+                    placeData.Size.x = 1f;
+                if (placeData.Size.y < 1f)
+                    placeData.Size.y = 1f;
+                entity.SetYawAngleDirect(lodata.Angle);
+                entity.transform.localScale = Vector3.one;
+                Vector3 pos = Vector3.zero;
+                pos = new Vector3(lodata.Position.x < 0f ? lodata.Position.x : -lodata.Position.x, lodata.Height, lodata.Position.y);
+                entity.EventParams.ContactSize = new Vector2(placeData.Size.x, placeData.Size.y);
+                entity.EventParams.ContactLabel = placeData.ContactLabel;
+                entity.EventParams.TalkLabel = placeData.TalkLabel;
+                entity.EventParams.Type = EntityType.Board;
+                entity.EventParams.Dowsing = placeData.Dowsing;
+                entity.EventParams.HeightIgnore = placeData.HeightIgnore;
+                entity.EventParams.Rockclimb = placeData.TalkLabel == "ev_hiden_kabenobori";
+                if (entity.EventParams.Rockclimb)
+                    entity.isLanding = false;
+                entity.EventParams.TalkRange = placeData.TalkToRange > 0f ? placeData.TalkToRange : 1f;
+                entity.EventParams.LocaitionZoneID = placeData.zoneID;
+                entity.SetPositionDirect(pos);
+                entity.EventParams.VanishFlagIndex = placeData.Work >= EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE ? -1 : (int)placeData.Work;
+                if (entity.EventParams.VanishFlagIndex > -1 && entity.EventParams.VanishFlagIndex != (int)EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag((EvWork.FLAG_INDEX)entity.EventParams.VanishFlagIndex))
+                    entity.gameObject.SetActive(false);
+                entity.EventParams.SaveObject = false;
+                entity.EventParams.TalkSegment = placeData.TalkToSize;
+                entity.EventParams.TalkBit = (byte)placeData.TalkBit;
+                FieldObjectEntityAdd(entity);
+            }
+            _nowInstantiate = false;
+        }
+		private void LoadObjectCreate_Asset(global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) {
+            var placeData = lodata.PlaceData;
+            int flagNo = (int)placeData.Work;
+            if (flagNo >= (int)EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE)
+                flagNo = -1;
+            int graphicIndex = lodata.replaceGraphicIndex != -1 ? lodata.replaceGraphicIndex : placeData.ObjectGraphicIndex;
+            int personsCount = DataManager.CharacterGraphics.Data.Length;
+            if (graphicIndex == 4)
+                graphicIndex = PlayerWork.playerSex ? 4 : 0;
+            UnityEngine.Object[] assets = _AssetReqOpeList[lodata.AssetReqIndex].ReqOpe.assetBundleRequest.cache.loadedAssets;
+            for (int i = 0; i < assets.Length; i++)
+            {
+                if (!(assets[i] is GameObject prefab))
+                    continue;
+                prefab.SetActive(false);
+                if (graphicIndex >= Graphic_SekiZou && graphicIndex < Graphic_SekiZouMAX)
+                {
+                    graphicIndex -= Graphic_SekiZou;
+                    global::XLSXContent.StatueEffectRawData.Sheettable statue = null;
+                    bool found = false;
+                    for (int j = 0; j < DataManager.statueEffectRawData.table.Length; )
+                    {
+                        statue = DataManager.statueEffectRawData[j];
+                        j++;
+                        if (graphicIndex == statue.statueId)
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        continue;
+                    GameObject statueObj = UnityEngine.Object.Instantiate<GameObject>(prefab, _loadObjectParent);
+                    statueObj.transform.localPosition = new Vector3(placeData.Position.x, placeData.HeightLayer, placeData.Position.y);
+                    statueObj.transform.localEulerAngles = new Vector3(0f, placeData.Rotation, 0f);
+                    statueObj.name = placeData.ID;
+                    statueObj.transform.localScale = new Vector3(statue.fieldScale, statue.fieldScale, statue.fieldScale);
+                    bool vanish = false;
+                    if (flagNo > -1 && flagNo != (int)EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE)
+                        vanish = FlagWork.GetFlag((EvWork.FLAG_INDEX)flagNo);
+                    statueObj.SetActive(!vanish);
+                    continue;
+                }
+                if (prefab.GetComponent<FieldObjectEntity>() == null)
+                    return;
+                GameObject obj = UnityEngine.Object.Instantiate<GameObject>(prefab, _loadObjectParent);
+                obj.name = placeData.ID;
+                obj.SetActive(true);
+                FieldObjectEntity entity = obj.GetComponent<FieldObjectEntity>();
+                Vector2 gridPos = FieldObjectEntity.GridToPosition(new Vector2Int((int)lodata.Position.x, (int)lodata.Position.y));
+                entity.SetPositionDirect(new Vector3(gridPos.x, lodata.Height, gridPos.y));
+                entity.SetYawAngleDirect(lodata.Angle);
+                float sizeX = Mathf.Max(placeData.Size.x, 1f);
+                float sizeY = Mathf.Max(placeData.Size.y, 1f);
+                entity.transform.localScale = Vector3.one;
+                entity.EventParams.ContactSize = new Vector2(sizeX, sizeY);
+                if (graphicIndex < Graphic_Poke)
+                {
+                    if (graphicIndex < personsCount)
+                    {
+                        entity.transform.localScale *= DataManager.CharacterGraphics.Data[graphicIndex].Scale;
+                        FieldCharacterEntity chara = entity as FieldCharacterEntity;
+                        if (chara != null)
+                        {
+                            chara.HandScale = DataManager.CharacterGraphics.Data[graphicIndex].HandScale;
+                            if (graphicIndex == 9)
+                                chara.watchVisibility = true;
+                            else if (graphicIndex == 8)
+                                chara.watchVisibility = FlagWork.GetFlag(EvWork.FLAG_INDEX.FE_POKETCH_GET);
+                            chara.SetAnimationEvents(DataManager.CharacterGraphics.Data[graphicIndex].animTbl);
+                        }
+                        entity.EventParams.IsObject = false;
+                        entity.EventParams.CharacterGraphicsIndex = graphicIndex;
+                    }
+                }
+                else
+                {
+                    Vector3 scale = Vector3.one;
+                    string uri = _AssetReqOpeList[lodata.AssetReqIndex].ReqOpe.assetBundleRequest.uri;
+                    string[] split = uri.Split('/');
+                    uri = split[split.Length - 1];
+                    var catalog = System.Linq.Enumerable.FirstOrDefault(DataManager.PokemonInfo.Catalog, __ => __.AssetBundleName == uri);
+                    if (catalog != null)
+                        scale = scale * catalog.FieldScale;
+                    entity.transform.localScale = scale * (placeData.Size.x > 0f ? placeData.Size.x : 1f);
+                    entity.EventParams.IsObject = false;
+                    if ((graphicIndex >= 4250000 && graphicIndex < 4260000) || (graphicIndex >= 4270000 && graphicIndex < 4280000))
+                    {
+                        FieldPokemonEntity pokeEntity = (FieldPokemonEntity)entity;
+                        if (pokeEntity != null)
+                            pokeEntity.SetAlwaysAnimateCullingMode();
+                    }
+                }
+                if (flagNo > -1 && flagNo != (int)EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag((EvWork.FLAG_INDEX)flagNo))
+                    entity.SetActive(false);
+                if (PlayerWork.isDebugNpcVisble)
+                    entity.SetActive(false);
+                if (placeData.MoveParam2 == 1)
+                {
+                    float originY = (entity.transform.localScale.y - 1f) * 10f * -0.04f;
+                    Transform origin = entity.transform.Find("Origin");
+                    Vector3 originPos = origin.localPosition;
+                    originPos.y = originY;
+                    origin.localPosition = originPos;
+                }
+                entity.EventParams.ContactLabel = placeData.ContactLabel;
+                entity.EventParams.TalkLabel = placeData.TalkLabel;
+                entity.EventParams.VanishFlagIndex = flagNo;
+                entity.EventParams.Type = EntityType.Npc;
+                entity.EventParams.Dowsing = placeData.Dowsing;
+                entity.EventParams.HeightIgnore = placeData.HeightIgnore;
+                entity.EventParams.Kairiki = placeData.ObjectGraphicIndex == 503;
+                entity.EventParams.Iwakudaki = placeData.ObjectGraphicIndex == 502;
+                entity.EventParams.Iaigiri = placeData.ObjectGraphicIndex == 501;
+                entity.EventParams.SnowBall = placeData.ObjectGraphicIndex == 506;
+                entity.EventParams.AzukariyaOldMan = placeData.TalkLabel.Contains("ev_sodateya_m");
+                entity.EventParams.HoneyTree = placeData.ObjectGraphicIndex == 505;
+                entity.EventParams.Sit = placeData.MoveParam2 == 1;
+                entity.EventParams.IdleAnimOverride = -1;
+                entity.EventParams.WalkAnimOverride = -1;
+                switch (placeData.MoveParam2)
+                {
+                    case 2:
+                        entity.EventParams.IdleAnimOverride = 34;
+                        entity.EventParams.WalkAnimOverride = 35;
+                        break;
+                    case 3:
+                        entity.EventParams.IdleAnimOverride = 18;
+                        break;
+                    case 4:
+                        entity.EventParams.BattleReturnNotRotate = true;
+                        break;
+                    case 2400:
+                        entity.EventParams.IdleAnimOverride = 24;
+                        break;
+                }
+                if (entity.EventParams.Sit)
+                    entity.EventParams.BattleReturnNotRotate = true;
+                entity.EventParams.TrainerID = placeData.TrainerID;
+                entity.EventParams.TalkRange = placeData.TalkToRange > 0f ? placeData.TalkToRange : 1f;
+                entity.EventParams.LocaitionZoneID = placeData.zoneID;
+                entity.EventParams.TalkSegment = placeData.TalkToSize;
+                entity.EventParams.TalkBit = (byte)placeData.TalkBit;
+                FieldObjectMoveCode moveCode = new FieldObjectMoveCode();
+                moveCode.SetEntity(entity);
+                moveCode._mv_defaultPosition = new Vector3Int((int)-placeData.Position.x, placeData.HeightLayer, (int)placeData.Position.y);
+                moveCode.Ev_Type = lodata.Ev_Type;
+                moveCode.MoveCode = lodata.MoveCode;
+                moveCode.MoveParam0 = lodata.MoveParam0;
+                moveCode.MoveParam1 = lodata.MoveParam1;
+                moveCode.MoveParam2 = lodata.MoveParam2;
+                moveCode.MoveLimitX = lodata.MoveLimitX;
+                moveCode.MoveLimitZ = lodata.MoveLimitZ;
+                moveCode.mv_dir = lodata.mv_dir;
+                moveCode.mv_old_dir = lodata.mv_old_dir;
+                moveCode.MoveDirHead = lodata.MoveDirHead;
+                moveCode.Param_from_LoadData = lodata.useloadData;
+                moveCode.BaseMoveCode = placeData.MoveCode;
+                if (placeData.TrainerID != 0)
+                {
+                    moveCode.OnEyeAction = OnEyeCallBack;
+                    moveCode.TrainerID = placeData.TrainerID;
+                }
+                if (FieldObjectMoveCodes.Contains(moveCode))
+                    entity.EventParams.MoveCodeIndex = FieldObjectMoveCodes.IndexOf(moveCode);
+                else
+                {
+                    FieldObjectMoveCodes.Add(moveCode);
+                    entity.EventParams.MoveCodeIndex = FieldObjectMoveCodes.Count - 1;
+                }
+                ColorVariation colorVariation = entity.GetComponent<ColorVariation>();
+                if (colorVariation != null)
+                    colorVariation.ColorIndex = placeData.ColorIndex < 0 ? PlayerWork.colorID : placeData.ColorIndex;
+                FieldObjectEntityAdd(entity);
+            }
+            _nowInstantiate = false;
+        }
+		private void LoadObjectCreate_KinomiGrow(global::XLSXContent.KinomiPlaceData.SheetSheet1 kinomiPlaceData) {
+            Vector3 pos = FieldObjectEntity.Vec2ToVec3Position(FieldObjectEntity.GridToPosition(new Vector2Int((int)kinomiPlaceData.Position.x, (int)kinomiPlaceData.Position.z)), kinomiPlaceData.Position.y);
+            GameObject go = new GameObject();
+            go.name = kinomiPlaceData.ID;
+            go.transform.SetParent(_loadObjectParent);
+            FieldKinomiGrowEntity entity = go.AddComponent<FieldKinomiGrowEntity>();
+            entity.transform.localEulerAngles = Vector3.zero;
+            entity.transform.localScale = Vector3.one;
+            entity.SetPositionDirect(pos);
+            entity.KinomiPlaceIndex = kinomiPlaceData.Index;
+            entity.EventParams.ContactSize = Vector2.one;
+            entity.EventParams.ContactLabel = string.Empty;
+            entity.EventParams.TalkLabel = "ev_kinomi";
+            entity.EventParams.Type = EntityType.Board;
+            entity.EventParams.TalkRange = DataManager.GetFieldCommonParam(ParamIndx.KinomiTalkRange);
+            entity.EventParams.TalkAngle = -1f;
+            entity.EventParams.TalkSegment = Vector2.zero;
+            entity.EventParams.TalkBit = 15;
+            FieldObjectEntityAdd(entity);
+            _FieldKinomiGrowEntity.Add(entity);
+            entity.UpdateStatus();
+            _nowInstantiate = false;
+        }
+		public int FieldObjectEntityAdd(global::FieldObjectEntity entity) {
+            if (_fieldObjectEntity.Contains(entity))
+                return _fieldObjectEntity.IndexOf(entity);
+            _fieldObjectEntity.Add(entity);
+            entity.EventParams.FieldObjectIndex = _fieldObjectEntity.Count - 1;
+            return entity.EventParams.FieldObjectIndex;
+        }
 		public void FieldObjectEntityRemove(global::FieldObjectEntity entity) {
             if (_fieldObjectEntity.Contains(entity))
                 _fieldObjectEntity[_fieldObjectEntity.IndexOf(entity)] = null;
@@ -16377,19 +16686,19 @@ namespace Dpr.EvScript
             _fieldObjectEntity.RemoveAll(val => val == null);
             EntityMoveCodeCheck();
         }
-		static EvDataManager() { /*@B 0x6009124*/ throw null; }
+		static EvDataManager() { }
 		public class EntityParam
 		{
-			public string TalkLabel;
-			public string ContactLabel;
-			public int VanishFlagIndex;
-			public bool IsContact;
-			public global::Dpr.EvScript.EvWork.WORK_INDEX WorkIndex;
-			public int WorkValue;
+			public string TalkLabel = "";
+			public string ContactLabel = "";
+			public int VanishFlagIndex = -1;
+			public bool IsContact = true;
+			public global::Dpr.EvScript.EvWork.WORK_INDEX WorkIndex = EvWork.WORK_INDEX.SCWK_WK_SAVE_SIZE;
+			public int WorkValue = -1;
 			public global::Dpr.EvScript.EvDataManager.EntityType Type;
 			public global::UnityEngine.RectInt StopGridArea;
 			public bool IsEventRunning;
-			public int MoveCodeIndex;
+			public int MoveCodeIndex = -1;
 			public bool Kairiki;
 			public bool Iwakudaki;
 			public bool Iaigiri;
@@ -16402,25 +16711,25 @@ namespace Dpr.EvScript
 			public global::UnityEngine.Vector2 ContactSize;
 			public bool IsContactCenter;
 			public bool Sit;
-			public int IdleAnimOverride;
-			public int WalkAnimOverride;
+			public int IdleAnimOverride = -1;
+			public int WalkAnimOverride = -1;
 			public global::Dpr.Trainer.TrainerID TrainerID;
-			public int FieldObjectIndex;
-			public int[] NearObject;
+			public int FieldObjectIndex = -1;
+			public int[] NearObject = new int[8];
 			public const int NearNone = -10;
-			public float TalkRange;
+			public float TalkRange = 1f;
 			public bool isTalkHit;
 			public float TalkAngle;
-			public bool SaveObject;
+			public bool SaveObject = true;
 			public global::ZoneID LocaitionZoneID;
-			public bool IsObject;
+			public bool IsObject = true;
 			public global::UnityEngine.Vector2 TalkSegment;
 			public byte TalkBit;
-			public int CharacterGraphicsIndex;
+			public int CharacterGraphicsIndex = -1;
 			public bool BattleReturnNotRotate;
 			public bool isNoPlayerHit;
 			public bool IsInvalidVanishActive;
-			public EntityParam() { /*@B 0x600B8F2*/ throw null; }
+			public EntityParam() { }
 		}
 		public enum EntityType
 		{
@@ -16540,10 +16849,10 @@ namespace Dpr.EvScript
 			public bool IsLoadFast;
 			public int Distance;
 			public bool IsCreated;
-			public int AssetReqIndex;
-			public string ObjectName;
+			public int AssetReqIndex = -1;
+			public string ObjectName = "";
 			public global::XLSXContent.PlaceData.SheetData PlaceData;
-			public global::UnityEngine.Vector2 Position;
+			public global::UnityEngine.Vector2 Position = Vector2.zero;
 			public float Height;
 			public float Angle;
 			public int MoveCode;
@@ -16557,8 +16866,8 @@ namespace Dpr.EvScript
 			public int mv_old_dir;
 			public int mv_dir;
 			public bool useloadData;
-			public int replaceGraphicIndex;
-			public LoadObjectData() { /*@B 0x600B8FB*/ throw null; }
+			public int replaceGraphicIndex = -1;
+			public LoadObjectData() { }
 		}
 		private class AssetReqOpeRef
 		{
