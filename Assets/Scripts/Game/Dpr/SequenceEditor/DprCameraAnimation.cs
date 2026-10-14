@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class DprCameraAnimation : global::Dpr.SequenceEditor.Macro
 	{
 		public string camFile;
-		public DprCameraAnimation(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AC9*/ throw null; }
+		public DprCameraAnimation(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			camFile = Macro.ParseString(macro.GetValue("camFile"));
+		}
 	}
 }

@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-1043592799), "orange", "one_frame", "")]
 	public class ContestShowOpeningMsg : global::Dpr.SequenceEditor.Macro
 	{
-		public ContestShowOpeningMsg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B29*/ throw null; }
+		public ContestShowOpeningMsg(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

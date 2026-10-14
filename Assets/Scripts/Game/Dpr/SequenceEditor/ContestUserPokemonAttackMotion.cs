@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ContestUserPokemonAttackMotion : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_ATK_MOT motion;
-		public ContestUserPokemonAttackMotion(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B12*/ throw null; }
+		public ContestUserPokemonAttackMotion(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			motion = Macro.Parse_SEQ_DEF_ATK_MOT(macro.GetValue("motion"));
+		}
 	}
 }

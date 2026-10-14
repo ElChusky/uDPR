@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER trg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_NODE_MODEL node;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public DprCameraLookAtTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AC1*/ throw null; }
+		public DprCameraLookAtTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			node = (SEQ_DEF_NODE_MODEL)Macro.ParseInt(macro.GetValue("node"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

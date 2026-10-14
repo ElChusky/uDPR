@@ -11,6 +11,14 @@ namespace Dpr.SequenceEditor
 		public bool isFlip;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool[] enableElem;
-		public ContestPokemonMovePositionRelativeStage(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B18*/ throw null; }
+		public ContestPokemonMovePositionRelativeStage(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			isRotPos = Macro.ParseBool(macro.GetValue("isRotPos"));
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			enableElem = Macro.ParseBoolArray(macro.GetValue("enableElem"), 1, 1, 1);
+		}
 	}
 }

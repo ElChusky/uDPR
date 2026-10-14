@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-1368487062), "orange", "", "")]
 	public class ContestHensin : global::Dpr.SequenceEditor.Macro
 	{
-		public ContestHensin(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B33*/ throw null; }
+		public ContestHensin(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

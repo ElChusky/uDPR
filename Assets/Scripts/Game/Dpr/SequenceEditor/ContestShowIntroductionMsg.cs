@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public string label;
 		public int index;
-		public ContestShowIntroductionMsg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B2A*/ throw null; }
+		public ContestShowIntroductionMsg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			label = Macro.ParseString(macro.GetValue("label"));
+			index = Macro.ParseInt(macro.GetValue("index"), 0);
+		}
 	}
 }

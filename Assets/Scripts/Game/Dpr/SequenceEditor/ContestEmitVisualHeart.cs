@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ContestEmitVisualHeart : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER trg;
-		public ContestEmitVisualHeart(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B25*/ throw null; }
+		public ContestEmitVisualHeart(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+		}
 	}
 }

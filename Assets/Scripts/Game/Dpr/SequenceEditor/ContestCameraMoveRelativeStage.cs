@@ -11,6 +11,14 @@ namespace Dpr.SequenceEditor
 		public bool relative;
 		public bool[] enableElemPos;
 		public bool[] enableElemTrg;
-		public ContestCameraMoveRelativeStage(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B2E*/ throw null; }
+		public ContestCameraMoveRelativeStage(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			trg = Macro.ParseVector3(macro.GetValue("trg"));
+			fov = Macro.ParseFloat(macro.GetValue("fov"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			enableElemPos = Macro.ParseBoolArray(macro.GetValue("enableElemPos"), 1, 1, 1);
+			enableElemTrg = Macro.ParseBoolArray(macro.GetValue("enableElemTrg"), 1, 1, 1);
+		}
 	}
 }

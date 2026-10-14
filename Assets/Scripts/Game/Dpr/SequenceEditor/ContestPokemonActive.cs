@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public bool active;
-		public ContestPokemonActive(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B0D*/ throw null; }
+		public ContestPokemonActive(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			active = Macro.ParseBool(macro.GetValue("active"), 1);
+		}
 	}
 }

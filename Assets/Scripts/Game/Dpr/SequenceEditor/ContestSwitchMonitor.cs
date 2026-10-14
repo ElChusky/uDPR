@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-186067497), "orange", "", "")]
 	public class ContestSwitchMonitor : global::Dpr.SequenceEditor.Macro
 	{
-		public ContestSwitchMonitor(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B23*/ throw null; }
+		public ContestSwitchMonitor(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

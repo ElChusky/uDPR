@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public bool isEnable;
 		public float height;
 		public bool isFreeze;
-		public DprCameraGroundCheckFlg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AC3*/ throw null; }
+		public DprCameraGroundCheckFlg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"));
+			height = Macro.ParseFloat(macro.GetValue("height"), 0.1f);
+			isFreeze = Macro.ParseBool(macro.GetValue("isFreeze"), 0);
+		}
 	}
 }

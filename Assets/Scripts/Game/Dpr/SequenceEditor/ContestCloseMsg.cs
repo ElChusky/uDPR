@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(1462525048), "orange", "one_frame", "")]
 	public class ContestCloseMsg : global::Dpr.SequenceEditor.Macro
 	{
-		public ContestCloseMsg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B28*/ throw null; }
+		public ContestCloseMsg(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

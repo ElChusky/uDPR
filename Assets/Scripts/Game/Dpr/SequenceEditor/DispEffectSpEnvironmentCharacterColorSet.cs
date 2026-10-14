@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public float characterLightIntensity;
 		public global::UnityEngine.Vector3 characterReflectorColor;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public DispEffectSpEnvironmentCharacterColorSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AFE*/ throw null; }
+		public DispEffectSpEnvironmentCharacterColorSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isReset = Macro.ParseBool(macro.GetValue("isReset"), 0);
+			characterLightColor = Macro.ParseVector3(macro.GetValue("characterLightColor"), 1f, 1f, 1f);
+			characterLightIntensity = Macro.ParseFloat(macro.GetValue("characterLightIntensity"), 1.2f);
+			characterReflectorColor = Macro.ParseVector3(macro.GetValue("characterReflectorColor"), 1f, 1f, 1f);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

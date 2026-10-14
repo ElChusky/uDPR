@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(1740178463), "orange", "", "")]
 	public class ContestLaunchUserWaza : global::Dpr.SequenceEditor.Macro
 	{
-		public ContestLaunchUserWaza(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B30*/ throw null; }
+		public ContestLaunchUserWaza(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }
