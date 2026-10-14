@@ -4,7 +4,7 @@ namespace Dpr.SubContents
 	public class EmitEffectParam
 	{
 		public global::EffectContestID fxID;
-		public int poolCount;
-		public EmitEffectParam() { /*@B 0x6003297*/ throw null; }
+		public int poolCount = 1;
+		public EmitEffectParam() { }
 	}
 }

@@ -5,7 +5,7 @@ namespace Dpr.SubContents
 {
 	public class EffectEmitter
 	{
-		private global::System.Collections.Generic.Dictionary<int, global::Dpr.SubContents.EffectEmitter.EmitEffectData> fxTable;
+		private global::System.Collections.Generic.Dictionary<int, global::Dpr.SubContents.EffectEmitter.EmitEffectData> fxTable = new global::System.Collections.Generic.Dictionary<int, global::Dpr.SubContents.EffectEmitter.EmitEffectData>();
 		private global::Effect.EffectManager fxManager;
 		private int loadCount;
 		private int loadedCount;
@@ -64,7 +64,7 @@ namespace Dpr.SubContents
 			if (fxTable.ContainsKey((int)fxID))
 				fxTable[(int)fxID].StopFx(fadeTime);
 		}
-		public EffectEmitter() { /*@B 0x6003296*/ throw null; }
+		public EffectEmitter() { }
 		private class EmitEffectData
 		{
 			private global::Effect.EffectManager effectManagerPtr;
@@ -74,7 +74,7 @@ namespace Dpr.SubContents
 			private global::UnityEngine.Transform parent;
 			private int useCount;
 			private int emptyIndex;
-			public bool HasEmptyIndex { get { /*@B 0x6009F6A*/ throw null; } }
+			public bool HasEmptyIndex { get { return useCount < fxInstArray.Length; } }
 			public void Setup(global::UnityEngine.Transform parent, global::Effect.EffectManager effectManager, global::Effect.EffectData fxData, int count) {
 				this.parent = parent;
 				this.fxData = fxData;

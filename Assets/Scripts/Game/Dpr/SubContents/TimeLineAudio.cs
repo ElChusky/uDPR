@@ -45,6 +45,6 @@ namespace Dpr.SubContents
 		private void OnDestroy() {
 			audioInstance = null;
 		}
-		public TimeLineAudio() { /*@B 0x600333E*/ throw null; }
+		public TimeLineAudio() { }
 	}
 }

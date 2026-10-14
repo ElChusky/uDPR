@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public string cfgfile;
 		public string pakfile;
 		public bool isPlayer;
-		public TrainerSetAnimationConfig(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A37*/ throw null; }
+		public TrainerSetAnimationConfig(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER_ADD(macro.GetValue("trg"));
+			cfgfile = Macro.ParseString(macro.GetValue("cfgfile"));
+			pakfile = Macro.ParseString(macro.GetValue("pakfile"));
+			isPlayer = Macro.ParseBool(macro.GetValue("isPlayer"), 0);
+		}
 	}
 }

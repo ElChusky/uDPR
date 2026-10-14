@@ -12,9 +12,9 @@ namespace Dpr.SubContents
 		private float waitTimer;
 		private float timeScale;
 		private int goalPointNumber;
-		public bool IsStateNone { get { /*@B 0x600338A*/ throw null; } }
-		public bool IsStateFinishArrive { get { /*@B 0x600338B*/ throw null; } }
-		public bool IsStateFinishLeave { get { /*@B 0x600338C*/ throw null; } }
+		public bool IsStateNone { get { return currentState == MoveState.None; } }
+		public bool IsStateFinishArrive { get { return currentState == MoveState.FinishArrive; } }
+		public bool IsStateFinishLeave { get { return currentState == MoveState.FinishLeave; } }
 		public void Initialize(global::FieldPlayerEntity player) {
 			this.player = player;
 			currentState = MoveState.None;

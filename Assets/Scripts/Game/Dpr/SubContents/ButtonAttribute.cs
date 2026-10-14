@@ -7,6 +7,10 @@ namespace Dpr.SubContents
 		public string Function { get; private set; }
 		public string Name { get; private set; }
 		public object[] Parameters { get; private set; }
-		public ButtonAttribute(string function, string name, params object[] parameters) { /*@B 0x600327C*/ throw null; }
+		public ButtonAttribute(string function, string name, params object[] parameters) {
+			Function = function;
+			Name = name;
+			Parameters = parameters;
+		}
 	}
 }

@@ -8,19 +8,19 @@ namespace Dpr.SubContents
 	public class ShowMessageWindow
 	{
 		private global::Dpr.Message.MessageMsgFile msgFile;
-		private global::Dpr.MsgWindow.MsgWindowInput input;
-		private global::Dpr.MsgWindow.MsgWindowParam msgWindowParam;
+		private global::Dpr.MsgWindow.MsgWindowInput input = new global::Dpr.MsgWindow.MsgWindowInput();
+		private global::Dpr.MsgWindow.MsgWindowParam msgWindowParam = new global::Dpr.MsgWindow.MsgWindowParam();
 		private global::Dpr.MsgWindow.MsgWindow msgWindow;
 		private global::System.Nullable<global::UnityEngine.Vector2> wndAnchorPos;
 		private global::System.Action onClosedWindow;
 		private global::Dpr.SubContents.ShowMessageWindow.ShowMode currentMode;
-		private global::DPData.MSGSPEED msgSpeed;
+		private global::DPData.MSGSPEED msgSpeed = global::DPData.MSGSPEED.MSGSPEED_MAX;
 		private float showDuration;
 		private float timer;
 		private bool isNetworkMode;
-		public bool IsOpen { get { /*@B 0x60032AE*/ throw null; } }
+		public bool IsOpen { get { if (msgWindow == null) return false; return msgWindow.IsOpen; } }
 		public global::Dpr.MsgWindow.MsgWindowParam MsgWindowParam { get { return this.msgWindowParam; } }
-		public global::Dpr.MsgWindow.MsgWindowDataModel.MsgWindowState MsgWindowState { get { /*@B 0x60032B0*/ throw null; } }
+		public global::Dpr.MsgWindow.MsgWindowDataModel.MsgWindowState MsgWindowState { get { return msgWindow.MsgState; } }
 		public void Setup(string msbtName, global::DPData.MSGSPEED msgSpeed, bool isNetwork = false) {
 			isNetworkMode = isNetwork;
 			SetMsgSpeed(msgSpeed);
@@ -188,7 +188,7 @@ namespace Dpr.SubContents
 			if (MsgWindowManager.IsOpen)
 				MsgWindowManager.CloseMsg();
 		}
-		public ShowMessageWindow() { /*@B 0x60032C3*/ throw null; }
+		public ShowMessageWindow() { }
 		private enum ShowMode
 		{
 			AutoClose = 0,

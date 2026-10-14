@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class UIFogSet : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_UI_FOG param;
-		public UIFogSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049FE*/ throw null; }
+		public UIFogSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			param = Macro.Parse_SEQ_DEF_UI_FOG(macro.GetValue("param"));
+		}
 	}
 }

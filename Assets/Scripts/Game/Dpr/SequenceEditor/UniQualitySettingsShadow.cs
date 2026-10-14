@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public bool isReset;
 		public float shadowDistance;
 		public float shadowNearPlaneOffset;
-		public UniQualitySettingsShadow(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B0B*/ throw null; }
+		public UniQualitySettingsShadow(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isReset = Macro.ParseBool(macro.GetValue("isReset"), 0);
+			shadowDistance = Macro.ParseFloat(macro.GetValue("shadowDistance"), 20f);
+			shadowNearPlaneOffset = Macro.ParseFloat(macro.GetValue("shadowNearPlaneOffset"), 3f);
+		}
 	}
 }

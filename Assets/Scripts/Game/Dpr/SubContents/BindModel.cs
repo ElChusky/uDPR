@@ -13,13 +13,13 @@ namespace Dpr.SubContents
 		[global::System.NonSerialized]
 		public global::UnityEngine.Object LoadedAsset;
 		[global::System.NonSerialized]
-		public string Rename;
+		public string Rename = "";
 		[global::System.NonSerialized]
 		public global::XLSXContent.PokemonInfo.SheetCatalog catalog;
 		[global::System.NonSerialized]
 		public bool isVariants;
 		[global::System.NonSerialized]
-		public float scale;
+		public float scale = -1f;
 		[global::System.NonSerialized]
 		public global::Pml.PokePara.PokemonParam pokeParam;
 		public string GetAssetName() {
@@ -32,6 +32,6 @@ namespace Dpr.SubContents
             parent = null;
             pokeParam = null;
         }
-		public BindModel() { /*@B 0x6003369*/ throw null; }
+		public BindModel() { }
 	}
 }
