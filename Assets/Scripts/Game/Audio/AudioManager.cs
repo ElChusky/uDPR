@@ -7,30 +7,84 @@ namespace Audio
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.GameObject _prefab;
 		[global::UnityEngine.SerializeField]
-		private int[] _poolCounts;
+		private int[] _poolCounts = new int[] { 64, 8 };
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Transform _listenerRoot;
 		[global::UnityEngine.SerializeField]
-		private string _commonBankName;
-		private global::System.Collections.Generic.List<global::Audio.AudioManager.ListenerParam> _listenerParams;
-		private global::System.Collections.Generic.List<global::Audio.AudioInstance> _audioInstances;
-		private global::ObjectPool<global::Audio.AudioManager.PoolType, global::Audio.AudioInstance> _objectPool;
-		private global::System.Collections.Generic.HashSet<global::Audio.AudioData> _audioDatas;
+		private string _commonBankName = "Delphis_Main";
+		private global::System.Collections.Generic.List<global::Audio.AudioManager.ListenerParam> _listenerParams = new global::System.Collections.Generic.List<global::Audio.AudioManager.ListenerParam>();
+		private global::System.Collections.Generic.List<global::Audio.AudioInstance> _audioInstances = new global::System.Collections.Generic.List<global::Audio.AudioInstance>();
+		private global::ObjectPool<global::Audio.AudioManager.PoolType, global::Audio.AudioInstance> _objectPool = new global::ObjectPool<global::Audio.AudioManager.PoolType, global::Audio.AudioInstance>();
+		private global::System.Collections.Generic.HashSet<global::Audio.AudioData> _audioDatas = new global::System.Collections.Generic.HashSet<global::Audio.AudioData>();
 		private uint _eventId;
 		private uint _bgmPlayId;
 		private bool _isUpdateListenerCamera;
 		private float _duration;
 		public global::UnityEngine.Events.UnityAction<uint> onFinishBgm;
-		private int _configVoice;
+		private int _configVoice = -1;
 		private const uint STOP_DEFAULT_SE = 0u;
 		private const uint STOP_DEFAULT_VOICE = 0u;
 		public float duration { get { return this._duration; } }
 		private void OnDestroy() { }
-		private global::System.Collections.IEnumerator Start() { /*@B 0x60029D9*/ throw null; }
-		private void OnSettingValueChanged(global::ConfigID configId, int value) { /*@B 0x60029DA*/ throw null; }
-		public float GetVolume(global::Audio.AudioManager.ListenerType type, global::Audio.AudioManager.VolumeType volumeType = (global::Audio.AudioManager.VolumeType)(1)) { /*@B 0x60029DB*/ throw null; }
-		public void SetVolume(global::Audio.AudioManager.ListenerType type, float volume, global::Audio.AudioManager.VolumeType volumeType = (global::Audio.AudioManager.VolumeType)(1)) { /*@B 0x60029DC*/ throw null; }
-		private void SetVolumeInternal(global::Audio.AudioManager.ListenerType type) { /*@B 0x60029DD*/ throw null; }
+		private global::System.Collections.IEnumerator Start() {
+			_configVoice = -1;
+			global::ConfigWork.onValueChanged += OnSettingValueChanged;
+			_prefab.SetActive(true);
+			_objectPool.Instantiates(_poolCounts[0], PoolType.Se, _prefab, transform);
+			_objectPool.Instantiates(_poolCounts[1], PoolType.Voice, _prefab, transform);
+			_prefab.SetActive(false);
+			global::AkSoundEngine.SetOutputVolume(global::AkSoundEngine.GetIDFromString("System"), 1f);
+			uint[] volumeParamIds = new uint[] { 2371767218u, 3536968784u, 3573526590u };
+			for (int i = 0; i < _listenerRoot.childCount; i++)
+			{
+				ListenerParam listenerParam = new ListenerParam();
+				listenerParam._listener = _listenerRoot.GetChild(i).GetComponent<global::AkAudioListener>();
+				int count = global::System.Enum.GetNames(typeof(VolumeType)).Length;
+				listenerParam._volumes = new float[count];
+				for (int j = 0; j < count; j++)
+					listenerParam._volumes[j] = 1f;
+				listenerParam._isMute = false;
+				listenerParam._volumeParamId = volumeParamIds[i];
+				_listenerParams.Add(listenerParam);
+			}
+			LoadParam loadParam = default(LoadParam);
+			loadParam.bankName = _commonBankName;
+			Load(loadParam, audioData => PlayBgm());
+			yield return null;
+		}
+		private void OnSettingValueChanged(global::ConfigID configId, int value) {
+			if (configId == global::ConfigID.BgmVolume || configId == global::ConfigID.SeVolume || configId == global::ConfigID.VoiceVolume)
+			{
+				ListenerType type = configId == global::ConfigID.BgmVolume ? ListenerType.Bgm : (configId == global::ConfigID.SeVolume ? ListenerType.Se : ListenerType.Voice);
+				Instance.SetVolume(type, value / 10f, VolumeType.Config);
+				if (configId == global::ConfigID.VoiceVolume)
+					_configVoice = value;
+			}
+		}
+		public float GetVolume(global::Audio.AudioManager.ListenerType type, global::Audio.AudioManager.VolumeType volumeType = (global::Audio.AudioManager.VolumeType)(1)) {
+			return _listenerParams[(int)type]._volumes[(int)volumeType];
+		}
+		public void SetVolume(global::Audio.AudioManager.ListenerType type, float volume, global::Audio.AudioManager.VolumeType volumeType = (global::Audio.AudioManager.VolumeType)(1)) {
+			_listenerParams[(int)type]._volumes[(int)volumeType] = volume;
+			SetVolumeInternal(type);
+		}
+		private void SetVolumeInternal(global::Audio.AudioManager.ListenerType type) {
+			ListenerParam listenerParam = _listenerParams[(int)type];
+			if (type == ListenerType.Bgm)
+			{
+				global::AkSoundEngine.SetGameObjectOutputBusVolume(gameObject, listenerParam._listener.gameObject, 1f);
+			}
+			else
+			{
+				for (int i = 0; i < _audioInstances.Count; i++)
+				{
+					global::Audio.AudioInstance instance = _audioInstances[i];
+					if (instance.listenerType == type)
+						_SetInstanceVolume(instance);
+				}
+			}
+			Instance.SetRTPCValue(listenerParam._volumeParamId, global::UnityEngine.Mathf.Lerp(-48f, 12f, listenerParam.GetVolume()));
+		}
 		internal void _SetInstanceVolume(global::Audio.AudioInstance instance) {
             if (instance.listenerType == ListenerType.Voice && _configVoice > -1)
             {
@@ -41,7 +95,9 @@ namespace Audio
             ListenerParam listenerParam = _listenerParams[(int)instance.listenerType];
             AkSoundEngine.SetGameObjectOutputBusVolume(instance.akGameObj.gameObject, listenerParam._listener.gameObject, instance.GetVolume());
         }
-		public bool IsMute(global::Audio.AudioManager.ListenerType type) { /*@B 0x60029DF*/ throw null; }
+		public bool IsMute(global::Audio.AudioManager.ListenerType type) {
+			return _listenerParams[(int)type]._isMute;
+		}
 		public void EnableMute(global::Audio.AudioManager.ListenerType type, bool isMute) {
             _listenerParams[(int)type]._isMute = isMute;
             if (isMute)
@@ -49,47 +105,187 @@ namespace Audio
             else
                 PostEventInternal(type == ListenerType.Bgm ? EVENTS.UNMUTE_BGM : EVENTS.UNMUTE_SE, 0x100009, false);
         }
-		public void Load(global::Audio.AudioManager.LoadParam loadParam, global::UnityEngine.Events.UnityAction<global::Audio.AudioData> onLoaded) { /*@B 0x60029E1*/ throw null; }
-		private global::System.Collections.IEnumerator OpWaitLoad(global::Audio.AudioData audioData, global::UnityEngine.Events.UnityAction<global::Audio.AudioData> onLoaded) { /*@B 0x60029E2*/ throw null; }
-		internal static void _Unload(global::Audio.AudioData audioData) { /*@B 0x60029E3*/ throw null; }
-		public global::Audio.AudioData FindAudioData(string bankName) { /*@B 0x60029E4*/ throw null; }
-		public global::Audio.AudioData FindAudioData(uint bankId) { /*@B 0x60029E5*/ throw null; }
-		public void PlayBgm() { /*@B 0x60029E6*/ throw null; }
-		public void StopBgm() { /*@B 0x60029E7*/ throw null; }
-		public void SetBgmEvent(string eventName, bool isThroughSameEvent = false) { /*@B 0x60029E8*/ throw null; }
-		public void SetBgmEvent(uint eventId, bool isThroughSameEvent = false) { /*@B 0x60029E9*/ throw null; }
+		public void Load(global::Audio.AudioManager.LoadParam loadParam, global::UnityEngine.Events.UnityAction<global::Audio.AudioData> onLoaded) {
+			uint bankId = global::AkSoundEngine.GetIDFromString(loadParam.bankName);
+			global::Audio.AudioData audioData = FindAudioData(bankId);
+			if (audioData != null)
+			{
+				audioData.AddRef();
+				if (onLoaded != null)
+					StartCoroutine(OpWaitLoad(audioData, onLoaded));
+			}
+			else
+			{
+				audioData = new global::Audio.AudioData();
+				audioData._bankName = loadParam.bankName;
+				audioData._loadState = global::Audio.AudioData.LoadState.Loading;
+				_audioDatas.Add(audioData);
+				uint bankID;
+				global::AkSoundEngine.LoadBank(audioData._bankName, (bankId_, bankPtr, result, data) =>
+				{
+					global::Audio.AudioData loaded = (global::Audio.AudioData)data;
+					loaded._bankId = bankId_;
+					loaded._loadState = global::Audio.AudioData.LoadState.Loaded;
+					onLoaded?.Invoke(loaded);
+				}, audioData, out bankID);
+			}
+		}
+		private global::System.Collections.IEnumerator OpWaitLoad(global::Audio.AudioData audioData, global::UnityEngine.Events.UnityAction<global::Audio.AudioData> onLoaded) {
+			while (audioData._bankId == 0)
+				yield return null;
+			onLoaded.Invoke(audioData);
+		}
+		internal static void _Unload(global::Audio.AudioData audioData) {
+			if (_instance != null)
+				_instance._audioDatas.Remove(audioData);
+		}
+		public global::Audio.AudioData FindAudioData(string bankName) {
+			return FindAudioData(global::AkSoundEngine.GetIDFromString(bankName));
+		}
+		public global::Audio.AudioData FindAudioData(uint bankId) {
+			return global::System.Linq.Enumerable.FirstOrDefault(_audioDatas, x => x._bankId == bankId);
+		}
+		public void PlayBgm() {
+			SetVolume(ListenerType.Bgm, GetVolume(ListenerType.Bgm, VolumeType.Normal), VolumeType.Normal);
+			_bgmPlayId = PostEventInternal(EVENTS.PLAY_BGM, 0x100009u, false);
+		}
+		public void StopBgm() {
+			PostEventInternal(EVENTS.STOP_BGM, 0x100009u, false);
+			_bgmPlayId = 0;
+		}
+		public void SetBgmEvent(string eventName, bool isThroughSameEvent = false) {
+			PostEventInternal(global::AkSoundEngine.GetIDFromString(eventName), 0x100009u, isThroughSameEvent);
+		}
+		public void SetBgmEvent(uint eventId, bool isThroughSameEvent = false) {
+			PostEventInternal(eventId, 0x100009u, isThroughSameEvent);
+		}
 		public void SetBgmState(string stateName) { }
-		public uint GetIdByName(string name) { /*@B 0x60029EB*/ throw null; }
-		public global::Audio.AudioInstance PlaySe(uint playEventId, global::UnityEngine.Events.UnityAction<global::Audio.AudioInstance> onFinished = null) { /*@B 0x60029EC*/ throw null; }
-		public global::Audio.AudioInstance PlaySe(uint playEventId, uint stopEventId, global::UnityEngine.Events.UnityAction<global::Audio.AudioInstance> onFinished = null) { /*@B 0x60029ED*/ throw null; }
-		public global::Audio.AudioInstance CreateSe(uint playEventId, uint stopEventId = 0u) { /*@B 0x60029EE*/ throw null; }
-		public global::Audio.AudioInstance CreateSe(uint playEventId, uint stopEventId, global::UnityEngine.Vector3 position, global::UnityEngine.Quaternion rotation, global::UnityEngine.Transform attachedTransform = null) { /*@B 0x60029EF*/ throw null; }
-		public global::Audio.AudioInstance PlayVoice(uint playEventId, global::UnityEngine.Events.UnityAction<global::Audio.AudioInstance> onFinished = null) { /*@B 0x60029F0*/ throw null; }
-		public global::Audio.AudioInstance PlayVoice(uint playEventId, uint stopEventId, global::UnityEngine.Transform t, global::UnityEngine.Events.UnityAction<global::Audio.AudioInstance> onFinished = null) { /*@B 0x60029F1*/ throw null; }
-		public global::Audio.AudioInstance PlayVoice(uint playEventId, uint stopEventId, global::UnityEngine.Events.UnityAction<global::Audio.AudioInstance> onFinished = null) { /*@B 0x60029F2*/ throw null; }
-		public global::Audio.AudioInstance CreateVoice(uint playEventId, uint stopEventId = 0u) { /*@B 0x60029F3*/ throw null; }
-		public global::Audio.AudioInstance CreateVoice(uint playEventId, uint stopEventId, global::UnityEngine.Vector3 position, global::UnityEngine.Quaternion rotation, global::UnityEngine.Transform attachedTransform = null) { /*@B 0x60029F4*/ throw null; }
-		private global::Audio.AudioInstance CreateInstance(global::Audio.AudioManager.ListenerType listenerType, uint playEventId, uint stopEventId, global::UnityEngine.Vector3 position, global::UnityEngine.Quaternion rotation, global::UnityEngine.Transform attachedTransform = null) { /*@B 0x60029F5*/ throw null; }
-		public uint GetCurrentStateId(uint groupId) { /*@B 0x60029F6*/ throw null; }
-		public global::UnityEngine.Vector3 GetListenerPosition() { /*@B 0x60029F7*/ throw null; }
-		public void SetListenerPosition(global::UnityEngine.Vector3 pos) { /*@B 0x60029F8*/ throw null; }
-		public global::UnityEngine.Quaternion GetListenerRotation() { /*@B 0x60029F9*/ throw null; }
-		public void SetListenerRotation(global::UnityEngine.Quaternion rotation) { /*@B 0x60029FA*/ throw null; }
-		public float GetBgmPlayPosition() { /*@B 0x60029FB*/ throw null; }
-		internal void _RemoveInstance(global::Audio.AudioInstance instance) { /*@B 0x60029FC*/ throw null; }
-		public uint PostEvent(uint eventId, uint callbackFlags = 1048585u, bool isThroughSameEvent = false) { /*@B 0x60029FD*/ throw null; }
-		private uint PostEventInternal(uint eventId, uint callbackFlags, bool isThroughSameEvent) { /*@B 0x60029FE*/ throw null; }
-		private static void OnPostEvent(object in_cookie, global::AkCallbackType in_type, global::AkCallbackInfo in_info) { /*@B 0x60029FF*/ throw null; }
-		public uint RePostEvent(uint eventId, uint callbackFlags = 1048585u) { /*@B 0x6002A00*/ throw null; }
-		private uint RePostEventInternal(uint eventId, uint callbackFlags) { /*@B 0x6002A01*/ throw null; }
-		private void LateUpdate() { /*@B 0x6002A02*/ throw null; }
-		public void EnableUpdateListenerByMainCamera(bool enabled) { /*@B 0x6002A03*/ throw null; }
+		public uint GetIdByName(string name) {
+			return global::AkSoundEngine.GetIDFromString(name);
+		}
+		public global::Audio.AudioInstance PlaySe(uint playEventId, global::UnityEngine.Events.UnityAction<global::Audio.AudioInstance> onFinished = null) {
+			return CreateInstance(ListenerType.Se, playEventId, 0u, global::UnityEngine.Vector3.zero, global::UnityEngine.Quaternion.identity).Play(onFinished);
+		}
+		public global::Audio.AudioInstance PlaySe(uint playEventId, uint stopEventId, global::UnityEngine.Events.UnityAction<global::Audio.AudioInstance> onFinished = null) {
+			return CreateInstance(ListenerType.Se, playEventId, stopEventId, global::UnityEngine.Vector3.zero, global::UnityEngine.Quaternion.identity).Play(onFinished);
+		}
+		public global::Audio.AudioInstance CreateSe(uint playEventId, uint stopEventId = 0u) {
+			return CreateInstance(ListenerType.Se, playEventId, stopEventId, global::UnityEngine.Vector3.zero, global::UnityEngine.Quaternion.identity);
+		}
+		public global::Audio.AudioInstance CreateSe(uint playEventId, uint stopEventId, global::UnityEngine.Vector3 position, global::UnityEngine.Quaternion rotation, global::UnityEngine.Transform attachedTransform = null) {
+			return CreateInstance(ListenerType.Se, playEventId, stopEventId, position, rotation, attachedTransform);
+		}
+		public global::Audio.AudioInstance PlayVoice(uint playEventId, global::UnityEngine.Events.UnityAction<global::Audio.AudioInstance> onFinished = null) {
+			return CreateInstance(ListenerType.Voice, playEventId, 0u, global::UnityEngine.Vector3.zero, global::UnityEngine.Quaternion.identity).Play(onFinished);
+		}
+		public global::Audio.AudioInstance PlayVoice(uint playEventId, uint stopEventId, global::UnityEngine.Transform t, global::UnityEngine.Events.UnityAction<global::Audio.AudioInstance> onFinished = null) {
+			return CreateInstance(ListenerType.Voice, playEventId, stopEventId, global::UnityEngine.Vector3.zero, global::UnityEngine.Quaternion.identity, t).Play(onFinished);
+		}
+		public global::Audio.AudioInstance PlayVoice(uint playEventId, uint stopEventId, global::UnityEngine.Events.UnityAction<global::Audio.AudioInstance> onFinished = null) {
+			return CreateInstance(ListenerType.Voice, playEventId, stopEventId, global::UnityEngine.Vector3.zero, global::UnityEngine.Quaternion.identity).Play(onFinished);
+		}
+		public global::Audio.AudioInstance CreateVoice(uint playEventId, uint stopEventId = 0u) {
+			return CreateInstance(ListenerType.Voice, playEventId, stopEventId, global::UnityEngine.Vector3.zero, global::UnityEngine.Quaternion.identity);
+		}
+		public global::Audio.AudioInstance CreateVoice(uint playEventId, uint stopEventId, global::UnityEngine.Vector3 position, global::UnityEngine.Quaternion rotation, global::UnityEngine.Transform attachedTransform = null) {
+			return CreateInstance(ListenerType.Voice, playEventId, stopEventId, position, rotation, attachedTransform);
+		}
+		private global::Audio.AudioInstance CreateInstance(global::Audio.AudioManager.ListenerType listenerType, uint playEventId, uint stopEventId, global::UnityEngine.Vector3 position, global::UnityEngine.Quaternion rotation, global::UnityEngine.Transform attachedTransform = null) {
+			global::Audio.AudioInstance instance = _objectPool.Create((PoolType)listenerType, false);
+			_audioInstances.Add(instance);
+			instance._Setup(listenerType, playEventId, stopEventId, position, rotation, attachedTransform);
+			return instance;
+		}
+		public uint GetCurrentStateId(uint groupId) {
+			uint state = 0;
+			global::AkSoundEngine.GetState(groupId, out state);
+			return state;
+		}
+		public global::UnityEngine.Vector3 GetListenerPosition() {
+			return _listenerRoot.transform.position;
+		}
+		public void SetListenerPosition(global::UnityEngine.Vector3 pos) {
+			_listenerRoot.transform.position = pos;
+		}
+		public global::UnityEngine.Quaternion GetListenerRotation() {
+			return _listenerRoot.transform.rotation;
+		}
+		public void SetListenerRotation(global::UnityEngine.Quaternion rotation) {
+			_listenerRoot.transform.rotation = rotation;
+		}
+		public float GetBgmPlayPosition() {
+			int position = 0;
+			if (_bgmPlayId != 0)
+			{
+				global::AkSoundEngine.GetSourcePlayPosition(_bgmPlayId, out position);
+				return position / 1000f;
+			}
+			return 0f;
+		}
+		internal void _RemoveInstance(global::Audio.AudioInstance instance) {
+			bool isCleanup = instance._isCleanup; // TO CHECK: getter result unused in the binary (likely a stripped assert)
+			if (_audioInstances.Remove(instance))
+				_objectPool.Release((PoolType)instance.listenerType, instance, false);
+		}
+		public uint PostEvent(uint eventId, uint callbackFlags = 1048585u, bool isThroughSameEvent = false) {
+			return PostEventInternal(eventId, callbackFlags, isThroughSameEvent);
+		}
+		private uint PostEventInternal(uint eventId, uint callbackFlags, bool isThroughSameEvent) {
+			if (isThroughSameEvent && _eventId == eventId)
+				return 0;
+			_eventId = eventId;
+			return global::AkSoundEngine.PostEvent(eventId, gameObject, callbackFlags, OnPostEvent, _eventId);
+		}
+		private static void OnPostEvent(object in_cookie, global::AkCallbackType in_type, global::AkCallbackInfo in_info) {
+			if (in_type == global::AkCallbackType.AK_EndOfEvent)
+			{
+				global::AkEventCallbackInfo info = in_info as global::AkEventCallbackInfo;
+				if (Instance != null && Instance.onFinishBgm != null)
+					Instance.onFinishBgm.Invoke(info.eventID);
+			}
+			else if (in_type == global::AkCallbackType.AK_Duration)
+			{
+				Instance._duration = (in_info as global::AkDurationCallbackInfo).fEstimatedDuration / 1000f;
+			}
+		}
+		public uint RePostEvent(uint eventId, uint callbackFlags = 1048585u) {
+			return RePostEventInternal(eventId, callbackFlags);
+		}
+		private uint RePostEventInternal(uint eventId, uint callbackFlags) {
+			_eventId = eventId;
+			return global::AkSoundEngine.PostEvent(eventId, gameObject, callbackFlags, OnPostEvent, _eventId);
+		}
+		private void LateUpdate() {
+			UpdateListenerByMainCamera();
+			for (int i = 0; i < _audioInstances.Count; i++)
+				_audioInstances[i]._Update();
+		}
+		public void EnableUpdateListenerByMainCamera(bool enabled) {
+			_isUpdateListenerCamera = enabled;
+		}
 		public bool IsEnableUpdateListenerByMainCamera() { return this._isUpdateListenerCamera; }
-		private void UpdateListenerByMainCamera() { /*@B 0x6002A05*/ throw null; }
-		public float GetRTPCValue(uint gameParamId) { /*@B 0x6002A06*/ throw null; }
-		public void SetRTPCValue(uint gameParamId, float value) { /*@B 0x6002A07*/ throw null; }
+		private void UpdateListenerByMainCamera() {
+			if (_isUpdateListenerCamera)
+			{
+				global::UnityEngine.Camera camera = global::UnityEngine.Camera.main;
+				if (camera != null)
+				{
+					_listenerRoot.gameObject.transform.position = camera.gameObject.transform.position;
+					_listenerRoot.gameObject.transform.rotation = camera.gameObject.transform.rotation;
+				}
+			}
+		}
+		public float GetRTPCValue(uint gameParamId) {
+			int valueType = 1;
+			float value = 0f;
+			global::AkSoundEngine.GetRTPCValue(gameParamId, null, 0u, out value, ref valueType);
+			return value;
+		}
+		public void SetRTPCValue(uint gameParamId, float value) {
+			global::AkSoundEngine.SetRTPCValue(gameParamId, value, null);
+		}
 		public void CreateVoiceRTPCDatas() { }
-		public AudioManager() { /*@B 0x6002A09*/ throw null; }
+		public AudioManager() { }
 		public enum ListenerType
 		{
 			Bgm = 0,
@@ -107,7 +303,12 @@ namespace Audio
 			public float[] _volumes;
 			public bool _isMute;
 			public uint _volumeParamId;
-			public float GetVolume() { /*@B 0x6009ADF*/ throw null; }
+			public float GetVolume() {
+				float volume = 1f;
+				for (int i = 0; i < _volumes.Length; i++)
+					volume *= _volumes[i];
+				return volume;
+			}
 			public ListenerParam() { }
 		}
 		private enum PoolType
