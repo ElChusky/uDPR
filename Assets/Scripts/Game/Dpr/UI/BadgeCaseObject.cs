@@ -18,40 +18,40 @@ namespace Dpr.UI
 		private global::UnityEngine.Transform showBadgePositionTransform;
 		[global::UnityEngine.HeaderAttribute("ケースの色(ダイアモンド)")]
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color diamondCaseColor;
+		private global::UnityEngine.Color diamondCaseColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.HeaderAttribute("ケースの文字色(ダイアモンド)")]
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color diamondCaseTitleColor;
+		private global::UnityEngine.Color diamondCaseTitleColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.HeaderAttribute("各ジムリーダーの枠の色(ダイアモンド)")]
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color diamondGymleaderFrameColor;
+		private global::UnityEngine.Color diamondGymleaderFrameColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.HeaderAttribute("ケースのボタン枠の色(ダイアモンド)")]
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color diamondCaseButtonFrameColor;
+		private global::UnityEngine.Color diamondCaseButtonFrameColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.HeaderAttribute("ケースの色(パール)")]
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color pearlCaseColor;
+		private global::UnityEngine.Color pearlCaseColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.HeaderAttribute("ケースの文字色(パール)")]
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color pearlCaseTitleColor;
+		private global::UnityEngine.Color pearlCaseTitleColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.HeaderAttribute("各ジムリーダーの枠の色(パール)")]
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color pearlGymleaderFrameColor;
+		private global::UnityEngine.Color pearlGymleaderFrameColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.HeaderAttribute("ケースのボタン枠の色(パール)")]
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color pearlCaseButtonFrameColor;
+		private global::UnityEngine.Color pearlCaseButtonFrameColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.HeaderAttribute("バッジを磨く判定になる範囲")]
 		[global::UnityEngine.SerializeField]
-		private float polishedRange;
+		private float polishedRange = 100f;
 		[global::UnityEngine.HeaderAttribute("バッジ閲覧：タッチ操作での回転速度")]
 		[global::UnityEngine.SerializeField]
-		private float badgeTouchRotateSpeed;
+		private float badgeTouchRotateSpeed = 1f;
 		[global::UnityEngine.HeaderAttribute("バッジ閲覧：自動回転の開始時間(秒)")]
 		[global::UnityEngine.SerializeField]
-		private float badgeAutoRotateStartTime;
+		private float badgeAutoRotateStartTime = 10f;
 		[global::UnityEngine.HeaderAttribute("バッジ閲覧：自動回転の1回転の時間(秒)")]
 		[global::UnityEngine.SerializeField]
-		private float badgeAutoRotateDuration;
+		private float badgeAutoRotateDuration = 10f;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.CardAnimationController animationController;
 		[global::UnityEngine.SerializeField]
@@ -76,9 +76,9 @@ namespace Dpr.UI
 		private bool IsBadgeGet;
 		public bool IsReady { get; private set; }
 		public bool IsActive { get; private set; }
-		public bool IsOpen { get { /*@B 0x6004FB4*/ throw null; } }
+		public bool IsOpen { get { return animationController.IsOpen; } }
 		public bool IsEnd { get; private set; }
-		public bool IsAnimation { get { /*@B 0x6004FB7*/ throw null; } }
+		public bool IsAnimation { get { return animationController.IsAnimation; } }
 		public void Initialize(global::UnityEngine.Camera screenCamera, global::Dpr.UI.UIInputController input, bool isBadgeGet = false) {
 			this.screenCamera = screenCamera;
 			this.input = input;
@@ -539,6 +539,6 @@ namespace Dpr.UI
 					UIManager.SetAllObjectLayer(instance.gameObject, Layer.UIModelLayer);
 			});
 		}
-		public BadgeCaseObject() { /*@B 0x6004FCB*/ throw null; }
+		public BadgeCaseObject() { }
 	}
 }

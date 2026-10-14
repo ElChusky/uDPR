@@ -15,9 +15,9 @@ namespace Dpr.UI
 		private int _step;
 		private float _openPosX;
 		private float _closePosX;
-		private readonly float[] _boxItemScales;
-		public global::Dpr.UI.BoxListNavigate CurrentNavigates { get { /*@B 0x6004EFE*/ throw null; } }
-		public int SelectedIndex { get; private set; }
+		private readonly float[] _boxItemScales = new float[] { 0.86f, 0.86f, 0.86f, 0.78f, 0.7f };
+		public global::Dpr.UI.BoxListNavigate CurrentNavigates { get { return _naviSteps[_step]; } }
+		public int SelectedIndex { get; private set; } = -1;
 		public global::UnityEngine.CanvasGroup BoxCcanvasGroup { get { return this._canvasGroup; } }
 		public void Initialize(int boxCount, global::Dpr.UI.BoxWindow.SEARCH_DATA searchData) {
 			SelectedIndex = -1;
@@ -107,6 +107,6 @@ namespace Dpr.UI
 			XLSXContent.UIDatabase.SheetWallpaper sheet = UIManager.Instance.GetWallPaper(wallPaper > 0 ? wallPaper - 1 : 0);
 			_boxes[index].SetWallColor(index, sheet.Color);
 		}
-		public BoxListPanel() { /*@B 0x6004F0A*/ throw null; }
+		public BoxListPanel() { }
 	}
 }

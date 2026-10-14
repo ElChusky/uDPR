@@ -10,7 +10,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.UIScrollView _itemListScrollView;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.Cursor _cursor;
-		private global::System.Collections.Generic.List<global::Dpr.UI.AdventureNoteItem.Param> _itemParams;
+		private global::System.Collections.Generic.List<global::Dpr.UI.AdventureNoteItem.Param> _itemParams = new global::System.Collections.Generic.List<global::Dpr.UI.AdventureNoteItem.Param>();
 		private global::Dpr.UI.AdventureNoteItem _selectItem;
 		public override void OnCreate() {
 			base.OnCreate();
@@ -50,7 +50,14 @@ namespace Dpr.UI
 			SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
 			_input.inputEnabled = true;
 		}
-		private void SetupKeyguide() { /*@B 0x6004C00*/ throw null; }
+		private void SetupKeyguide() {
+			var keyguide = UIManager.Instance.GetKeyguide(null, true);
+			keyguide.transform.SetParent(transform, false);
+			var param = new Keyguide.Param();
+			param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.ADVENTURENOTE_FLIP });
+			param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.ADVENTURENOTE_CLOSE });
+			keyguide.Open(param);
+		}
 		public void Close(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) {
 			SmartPoint.AssetAssistant.Sequencer.Start(OpClose(onClosed_, nextWindowId));
 		}
@@ -138,6 +145,6 @@ namespace Dpr.UI
 
 			return _itemListScrollView.MoveSelect(move);
 		}
-		public AdventureNoteWindow() { /*@B 0x6004C09*/ throw null; }
+		public AdventureNoteWindow() { }
 	}
 }

@@ -58,6 +58,6 @@ namespace Dpr.UI
 		public void ShowName(bool enabled) {
 			_infoRoot.gameObject.SetActive(pokemonParam != null && enabled);
 		}
-		public BoxPartyItem() { /*@B 0x6004F2D*/ throw null; }
+		public BoxPartyItem() { }
 	}
 }

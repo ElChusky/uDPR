@@ -11,7 +11,7 @@ namespace Dpr.UI
 		private global::System.Action _onDecide;
 		private global::System.Collections.Generic.List<int> _orderPlayers;
 		private global::Dpr.Message.MessageMsgFile _msgFile;
-		private global::Dpr.UI.UIInputController _inputController;
+		private global::Dpr.UI.UIInputController _inputController = new global::Dpr.UI.UIInputController();
 		private bool _closed;
 		public void Initialize(global::System.Action onFinishState, global::System.Action<int, int> onSelect, global::System.Action onDecide) {
 			_onFinishState = onFinishState;
@@ -176,6 +176,6 @@ namespace Dpr.UI
 		private void SetKeyGuide(bool complete = false) {
 			_battleMatchingUIPtr.SetKeyGuide(true, true, false, complete);
 		}
-		public BattleMatchingSelectTeamMember() { /*@B 0x6004D2D*/ throw null; }
+		public BattleMatchingSelectTeamMember() { }
 	}
 }

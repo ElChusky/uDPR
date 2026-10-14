@@ -10,7 +10,7 @@ namespace Dpr.UI
 		[global::UnityEngine.HideInInspector]
 		public int selectIndex;
 		[global::UnityEngine.HideInInspector]
-		public bool isShow;
+		public bool isShow = true;
 		protected global::System.Action<global::Dpr.UI.AWindowItem> onItemEvent;
 		public global::UnityEngine.RectTransform CursorContent { get { return this.cursorContent; } }
 		public abstract global::Dpr.UI.ItemType ItemType { get; }
@@ -38,6 +38,6 @@ namespace Dpr.UI
 			isShow = false;
 			this.SetActive(false);
 		}
-		protected AWindowItem() { /*@B 0x6005215*/ throw null; }
+		protected AWindowItem() { }
 	}
 }

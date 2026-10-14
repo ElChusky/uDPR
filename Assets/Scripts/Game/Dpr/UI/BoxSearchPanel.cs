@@ -23,7 +23,7 @@ namespace Dpr.UI
 		public int CurrentDepth { get; private set; }
 		public int MaxDepth { get; private set; }
 		public global::Dpr.UI.BoxWindow.SEARCH_DATA SearchData { get; private set; }
-		public global::Dpr.UI.BoxWindow.SearchType SearchType { get { /*@B 0x6004F4C*/ throw null; } }
+		public global::Dpr.UI.BoxWindow.SearchType SearchType { get { return BoxWindow.SearchMsgData[CurrentIndex].type; } }
 		public int[] DepthIndexes { get; private set; }
 		public global::System.Collections.Generic.List<int> LastSelectValues { get; private set; }
 		public global::System.Collections.Generic.List<global::Dpr.UI.BoxWindow.SearchItemData> SearchItemList { get; private set; }

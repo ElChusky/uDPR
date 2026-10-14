@@ -9,6 +9,6 @@ namespace Dpr.UI
 			base.Setup(param);
 			_imageTeam.gameObject.SetActive(Dpr.Box.BoxWork.IsPokeTeam(param.scrollParam.paramIndex, param.index));
 		}
-		public BoxTrayItem() { /*@B 0x6004F8E*/ throw null; }
+		public BoxTrayItem() { }
 	}
 }

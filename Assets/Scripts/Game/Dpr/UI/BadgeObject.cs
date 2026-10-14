@@ -17,7 +17,15 @@ namespace Dpr.UI
 		private byte cleanupValue;
 		public bool IsVisible { get; private set; }
 		public bool IsAutoRotate { get; private set; }
-		public BadgeObject(int id, global::UnityEngine.GameObject gameObject, global::UnityEngine.Transform transform) { /*@B 0x6004FE1*/ throw null; }
+		public BadgeObject(int id, global::UnityEngine.GameObject gameObject, global::UnityEngine.Transform transform) {
+			this.id = id;
+			this.gameObject = gameObject;
+			nodeTransform = transform;
+			IsVisible = BadgeWork.IsGet(id);
+			if (IsVisible)
+				UpdateCondition(true);
+			this.gameObject.SetActive(IsVisible);
+		}
 		public void Dispose() {
 			if (conditionEffect != null)
 			{

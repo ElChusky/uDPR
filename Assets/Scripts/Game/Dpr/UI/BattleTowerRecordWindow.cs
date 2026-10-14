@@ -36,7 +36,13 @@ namespace Dpr.UI
             SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
             _input.inputEnabled = true;
         }
-		private void SetupKeyguide() { /*@B 0x6004DEF*/ throw null; }
+		private void SetupKeyguide() {
+			var keyguide = UIManager.Instance.GetKeyguide(null, true);
+			keyguide.transform.SetParent(transform, false);
+			var param = new Keyguide.Param();
+			param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.BATTLETOWER_RECORD_BACK });
+			keyguide.Open(param);
+		}
 		private void EnableRecordParam(global::Dpr.UI.BattleTowerRecordWindow.RecordParam recordParam, bool enabled) {
             recordParam.root.gameObject.SetActive(enabled);
             recordParam.bgRoot.gameObject.SetActive(enabled);
@@ -62,7 +68,7 @@ namespace Dpr.UI
                 Close(onClosed, _prevWindowId);
             }
         }
-		public BattleTowerRecordWindow() { /*@B 0x6004DF4*/ throw null; }
+		public BattleTowerRecordWindow() { }
 		[global::System.Serializable]
 		private class RecordParam
 		{
@@ -78,11 +84,11 @@ namespace Dpr.UI
 		public class Param
 		{
 			public global::Dpr.UI.BattleTowerRecordWindow.Param.RecordType recordType;
-			public int rank;
+			public int rank = 1;
 			public int consecutiveWins;
 			public int maxConsecutiveWins;
 			public bool isSuspended;
-			public Param() { /*@B 0x600A7E9*/ throw null; }
+			public Param() { }
 			public enum RecordType
 			{
 				Single = 0,

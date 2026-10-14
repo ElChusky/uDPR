@@ -4,7 +4,7 @@ namespace Dpr.UI
 	public class BattleMatchingSelectRule
 	{
 		private global::Dpr.UI.UIBattleMatching _battleMatchingUIPtr;
-		private global::Dpr.UI.UIInputController _inputController;
+		private global::Dpr.UI.UIInputController _inputController = new global::Dpr.UI.UIInputController();
 		private global::System.Action _onSelectMember;
 		private global::System.Action _onDecideMember;
 		private global::System.Action _onLeave;
@@ -14,7 +14,7 @@ namespace Dpr.UI
 		private bool _closed;
 		private bool _opendLeaveMsg;
 		private bool _isWaitDecideRule;
-		private float _readyWaitTime;
+		private float _readyWaitTime = 3f;
 		private float _readyProgressTime;
 		private int nowSelectPlayerIndex;
 		public void Initialize(global::System.Action onFinishState, global::System.Action onSelectMember, global::System.Action onDecideMember, global::System.Action onRule, global::System.Action onLeave) {
@@ -214,7 +214,7 @@ namespace Dpr.UI
 			_battleMatchingUIPtr.CloseMessageWindow();
 			_battleMatchingUIPtr.CloseContextMenu();
 		}
-		public BattleMatchingSelectRule() { /*@B 0x6004D1D*/ throw null; }
+		public BattleMatchingSelectRule() { }
 		private enum SelectRuleState
 		{
 			None = 0,

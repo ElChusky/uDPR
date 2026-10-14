@@ -4,8 +4,8 @@ namespace Dpr.UI
 {
 	public class BoxItem : global::UnityEngine.MonoBehaviour
 	{
-		public static readonly global::UnityEngine.Vector3 _selectIconOffset;
-		public static readonly global::UnityEngine.Vector3 _moveIconOffset;
+		public static readonly global::UnityEngine.Vector3 _selectIconOffset = new global::UnityEngine.Vector3(0f, 24f, 0f);
+		public static readonly global::UnityEngine.Vector3 _moveIconOffset = new global::UnityEngine.Vector3(0f, 56f, 0f);
 		[global::UnityEngine.SerializeField]
 		protected global::Dpr.UI.PokemonIcon _root;
 		[global::UnityEngine.SerializeField]
@@ -14,16 +14,16 @@ namespace Dpr.UI
 		protected global::UnityEngine.UI.Image _imageSelect;
 		[global::UnityEngine.SerializeField]
 		protected global::Dpr.UI.UINavigator _navigator;
-		private global::UnityEngine.Vector3 _swapRootPos;
+		private global::UnityEngine.Vector3 _swapRootPos = global::UnityEngine.Vector3.zero;
 		protected global::Dpr.UI.BoxItem.Param _param;
 		protected bool _isItemMode;
 		public global::Dpr.UI.UINavigator navigator { get { return this._navigator; } }
-		public virtual global::Pml.PokePara.PokemonParam pokemonParam { get { /*@B 0x6004EDB*/ throw null; } }
-		public virtual bool isSearchTarget { get { /*@B 0x6004EDC*/ throw null; } }
-		public virtual bool isForceHide { get { /*@B 0x6004EDD*/ throw null; } }
-		public virtual bool isForceSelect { get { /*@B 0x6004EDE*/ throw null; } }
-		public virtual bool isExSelected { get { /*@B 0x6004EDF*/ throw null; } }
-		public int Index { get { /*@B 0x6004EE0*/ throw null; } }
+		public virtual global::Pml.PokePara.PokemonParam pokemonParam { get { return _param.scrollParam.itemParams[_param.index].pokemonParam; } }
+		public virtual bool isSearchTarget { get { return _param.isSearchTarget; } }
+		public virtual bool isForceHide { get { return _param.isForceHide; } }
+		public virtual bool isForceSelect { get { return _param.isForceSelect; } }
+		public virtual bool isExSelected { get { return _param.isExSelected; } }
+		public int Index { get { return _param.index; } }
 		private void Awake() {
 			_swapRootPos = _root.transform.localPosition;
 		}
@@ -145,17 +145,17 @@ namespace Dpr.UI
 		public void SetExternalSelectIcon(bool isSelect) {
 			_imageSelect.gameObject.SetActive(isSelect);
 		}
-		public BoxItem() { /*@B 0x6004EEE*/ throw null; }
-		static BoxItem() { /*@B 0x6004EEF*/ throw null; }
+		public BoxItem() { }
+		static BoxItem() { }
 		public class Param
 		{
 			public global::Dpr.UI.BoxInfinityScrollItem.BaseParam scrollParam;
-			public bool isSearchTarget;
+			public bool isSearchTarget = true;
 			public bool isForceHide;
 			public bool isForceSelect;
 			public bool isExSelected;
-			public int index;
-			public Param() { /*@B 0x600A8AB*/ throw null; }
+			public int index = -1;
+			public Param() { }
 		}
 	}
 }

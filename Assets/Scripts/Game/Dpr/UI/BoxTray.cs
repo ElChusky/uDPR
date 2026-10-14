@@ -13,7 +13,7 @@ namespace Dpr.UI
 		private global::UnityEngine.RectTransform _contents;
 		public const int cellColumn = 6;
 		private global::Dpr.UI.BoxTray.BoxTrayParam _param;
-		private global::System.Collections.Generic.List<global::Dpr.UI.BoxTrayItem> _items;
+		private global::System.Collections.Generic.List<global::Dpr.UI.BoxTrayItem> _items = new global::System.Collections.Generic.List<global::Dpr.UI.BoxTrayItem>();
 		public global::UnityEngine.UI.Image BoxTitleImage { get { return this._boxTitleImage; } }
 		public global::UnityEngine.UI.Image BoxBgImage { get { return this._boxBgImage; } }
 		public global::Dpr.UI.BoxTray.BoxTrayParam Param { get { return this._param; } }
@@ -65,7 +65,7 @@ namespace Dpr.UI
 		public global::Dpr.UI.UINavigator GetNavigator(int posX, int posY) {
 			return _items[posX + posY * cellColumn].navigator;
 		}
-		public BoxTray() { /*@B 0x6004F8C*/ throw null; }
+		public BoxTray() { }
 		public class BoxTrayParam : global::Dpr.UI.BoxInfinityScrollItem.BaseParam
 		{
 			public global::UnityEngine.Events.UnityAction<global::Dpr.UI.BoxTray, int> setupAction;

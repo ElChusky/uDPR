@@ -11,9 +11,9 @@ namespace Dpr.UI
 		private bool _ready;
 		private bool _closed;
 		private bool _finished;
-		private float _readyWaitTime;
+		private float _readyWaitTime = 3f;
 		private float _readyProgressTime;
-		private global::Dpr.UI.UIInputController _inputController;
+		private global::Dpr.UI.UIInputController _inputController = new global::Dpr.UI.UIInputController();
 		public void Initialize(global::System.Action onFinishState, global::System.Action<bool> onSelect, global::System.Action onLeve) {
 			_onFinishState = onFinishState;
 			_onSelect = onSelect;
@@ -160,6 +160,6 @@ namespace Dpr.UI
 			_ready = true;
 			_closed = true;
 		}
-		public BattleMatchingResume() { /*@B 0x6004CEA*/ throw null; }
+		public BattleMatchingResume() { }
 	}
 }

@@ -10,8 +10,8 @@ namespace Dpr.UI
 		public const int cellColumn = 6;
 		public const int cellNum = 30;
 		private global::Dpr.UI.BoxParty.BoxPartyParam _param;
-		private global::System.Collections.Generic.List<global::Dpr.UI.BoxPartyItem> _items;
-		private static string[] _titleLabels;
+		private global::System.Collections.Generic.List<global::Dpr.UI.BoxPartyItem> _items = new global::System.Collections.Generic.List<global::Dpr.UI.BoxPartyItem>();
+		private static string[] _titleLabels = new string[] { "SS_boxname_033", "SS_boxname_034", "SS_boxname_035", "SS_boxname_036", "SS_boxname_037", "SS_boxname_038" };
 		public global::Dpr.UI.BoxParty.BoxPartyParam Param { get { return this._param; } }
 		public global::System.Collections.Generic.List<global::Dpr.UI.BoxPartyItem> Items { get { return this._items; } }
 		private void Awake() { }
@@ -101,12 +101,12 @@ namespace Dpr.UI
 		public static string GetTeamNameID(int index) {
             return _titleLabels[index];
         }
-		public BoxParty() { /*@B 0x6004F24*/ throw null; }
-		static BoxParty() { /*@B 0x6004F25*/ throw null; }
+		public BoxParty() { }
+		static BoxParty() { }
 		public class BoxPartyParam : global::Dpr.UI.BoxInfinityScrollItem.BaseParam
 		{
 			public global::Dpr.UI.BoxParty.BoxPartyParam.PartyType partyType;
-			public BoxPartyParam() { /*@B 0x600A8B7*/ throw null; }
+			public BoxPartyParam() { }
 			public enum PartyType
 			{
 				Normal = 0,

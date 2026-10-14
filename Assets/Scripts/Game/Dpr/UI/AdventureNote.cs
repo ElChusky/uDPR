@@ -41,7 +41,7 @@ namespace Dpr.UI
 
 			typeParam.detail.SetupMessage(null, GetTextLabel(data));
 		}
-		public static string GetTextLabel(global::XLSXContent.AdventureNoteData.SheetData data) { /*@B 0x6004BEE*/ throw null; }
+		public static string GetTextLabel(global::XLSXContent.AdventureNoteData.SheetData data) { return data.TextLabelPatch; }
 		public AdventureNote() { }
 		[global::System.Serializable]
 		private class TypeParam

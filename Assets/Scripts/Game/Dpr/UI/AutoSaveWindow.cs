@@ -4,12 +4,33 @@ namespace Dpr.UI
 	public class AutoSaveWindow : global::Dpr.UI.UIWindow
 	{
 		public const int SORTING_ORDER = 16484;
-		public override void OnCreate() { /*@B 0x600538A*/ throw null; }
-		public void Open(global::UIWindowID prevWindowId) { /*@B 0x600538B*/ throw null; }
-		public global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) { /*@B 0x600538C*/ throw null; }
-		public void Close(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) { /*@B 0x600538D*/ throw null; }
-		public global::System.Collections.IEnumerator OpClose(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) { /*@B 0x600538E*/ throw null; }
-		private void OnUpdate(float deltaTime) { /*@B 0x600538F*/ throw null; }
-		public AutoSaveWindow() { /*@B 0x6005390*/ throw null; }
+		public override void OnCreate() {
+			base.OnCreate();
+			_animator = GetComponentInChildren<global::UnityEngine.Animator>(true);
+		}
+		public void Open(global::UIWindowID prevWindowId) {
+			global::SmartPoint.AssetAssistant.Sequencer.Start(OpOpen(prevWindowId));
+		}
+		public global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) {
+			base.OnOpen(prevWindowId);
+			_canvas.sortingOrder = SORTING_ORDER;
+			yield return OpPlayOpenWindowAnimation(prevWindowId, null);
+			global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+			_input.inputEnabled = true;
+		}
+		public void Close(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) {
+			global::SmartPoint.AssetAssistant.Sequencer.Start(OpClose(onClosed_, nextWindowId));
+		}
+		public global::System.Collections.IEnumerator OpClose(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) {
+			global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+			yield return OpPlayCloseWindowAnimationAndWaiting(nextWindowId);
+			UIManager.Instance._ReleaseUIWindow(this);
+			onClosed_?.Invoke(this);
+		}
+		private void OnUpdate(float deltaTime) {
+			if (UIManager.Instance.GetCurrentUIWindow<UIWindow>() != this)
+				return;
+		}
+		public AutoSaveWindow() { }
 	}
 }

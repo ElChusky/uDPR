@@ -11,7 +11,7 @@ namespace Dpr.UI
 		private global::System.Collections.Generic.List<global::Dpr.UI.UINavigator> _tops;
 		[global::UnityEngine.SerializeField]
 		private global::System.Collections.Generic.List<global::Dpr.UI.UINavigator> _bottoms;
-		private global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::Dpr.UI.UINavigator>> _multiNavigates;
+		private global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::Dpr.UI.UINavigator>> _multiNavigates = new global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::Dpr.UI.UINavigator>>();
 		private bool isMultiInitialized;
 		protected override void Awake() {
 			base.Awake();
@@ -32,6 +32,6 @@ namespace Dpr.UI
 		public void SetNavigates(global::Dpr.UI.UINavigator.NavigateType type, global::System.Collections.Generic.List<global::Dpr.UI.UINavigator> naviList) {
 			_multiNavigates[(int)type] = naviList;
 		}
-		public BoxMultiNavigator() { /*@B 0x6004F17*/ throw null; }
+		public BoxMultiNavigator() { }
 	}
 }

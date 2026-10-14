@@ -5,14 +5,14 @@ namespace Dpr.UI
 	public class BattleMatchingRecruitmentMember
 	{
 		private global::Dpr.UI.UIBattleMatching _battleMatchingUIPtr;
-		private global::Dpr.UI.UIInputController _inputController;
+		private global::Dpr.UI.UIInputController _inputController = new global::Dpr.UI.UIInputController();
 		private global::System.Action _onFinishState;
 		private global::System.Action _onLeave;
 		private int _loadingModelCount;
-		private global::System.Collections.Generic.Queue<int> _waitLoadModelList;
+		private global::System.Collections.Generic.Queue<int> _waitLoadModelList = new global::System.Collections.Generic.Queue<int>();
 		private bool _ready;
 		private bool _closed;
-		private float _readyWaitTime;
+		private float _readyWaitTime = 3f;
 		private float _readyProgressTime;
 		public void Initialize(global::System.Action onFinishState, global::System.Action onLeave) {
 			_onFinishState = onFinishState;
@@ -113,6 +113,6 @@ namespace Dpr.UI
 				}
 			});
 		}
-		public BattleMatchingRecruitmentMember() { /*@B 0x6004CD6*/ throw null; }
+		public BattleMatchingRecruitmentMember() { }
 	}
 }

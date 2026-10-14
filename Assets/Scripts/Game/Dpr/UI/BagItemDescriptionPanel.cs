@@ -3,7 +3,7 @@ namespace Dpr.UI
 {
 	public class BagItemDescriptionPanel : global::Dpr.UI.ItemDescriptionPanel
 	{
-		public void SetShowContestWaza(bool isShowWazaContest) { /*@B 0x6004C2E*/ throw null; }
+		public void SetShowContestWaza(bool isShowWazaContest) { this.isShowWazaContest = isShowWazaContest; }
 		public BagItemDescriptionPanel() { }
 	}
 }

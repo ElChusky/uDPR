@@ -5,9 +5,9 @@ namespace Dpr.UI
 {
 	public class BagItemPanel : global::UnityEngine.MonoBehaviour
 	{
-		public static int SwitchItemDescriptionWazaPanelButton;
+		public static int SwitchItemDescriptionWazaPanelButton = UIManager.ButtonPlusMinus;
 		private const string BagPocketMessageFileName = "ss_bag_pocket";
-		private static readonly string[] CategoryNameMessageLabels;
+		private static readonly string[] CategoryNameMessageLabels = new string[] { "SS_bag_pocket_017", "SS_bag_pocket_018", "SS_bag_pocket_024", "SS_bag_pocket_019", "SS_bag_pocket_020", "SS_bag_pocket_021", "SS_bag_pocket_022", "", "SS_bag_pocket_023" };
 		private const int ChangeAmountValue = 1;
 		private const int ChangeLotAmountValue = 10;
 		[global::UnityEngine.SerializeField]
@@ -43,10 +43,10 @@ namespace Dpr.UI
 		private global::System.Action<int> onSelectAmountValueChangedCallback;
 		public event global::System.Action<global::Dpr.UI.BagItemButton> OnChangeSelectItem;
 		public int CurrentCategoryId { get; private set; }
-		public bool IsNoItem { get { /*@B 0x6004C32*/ throw null; } }
+		public bool IsNoItem { get { return items == null || items.Count == 0; } }
 		public global::Dpr.UI.BagItemButton SelectedItemButton { get; private set; }
-		public bool IsShowSelectAmount { get { /*@B 0x6004C35*/ throw null; } }
-		public bool CanSwitchDescriptionWazaPanel { get { /*@B 0x6004C36*/ throw null; } }
+		public bool IsShowSelectAmount { get { return selectAmount.IsShow; } }
+		public bool CanSwitchDescriptionWazaPanel { get { return SelectedItemButton != null && CurrentCategoryId == 5; } }
 		public global::Dpr.UI.UIButtonSelector CategorySelector { get { return this.categoryButtonSelector; } }
 		public void Initialize(global::Dpr.Item.ItemListMemory itemListMemory, bool isBattle = false, global::Dpr.Item.ItemInfo.CategoryType[] categoryTypes = default) {
 			this.itemListMemory = itemListMemory;
@@ -246,6 +246,6 @@ namespace Dpr.UI
 				SmartPoint.AssetAssistant.Sequencer.Stop(removeNewIconCoroutine);
 		}
 		public BagItemPanel() { }
-		static BagItemPanel() { /*@B 0x6004C56*/ throw null; }
+		static BagItemPanel() { }
 	}
 }

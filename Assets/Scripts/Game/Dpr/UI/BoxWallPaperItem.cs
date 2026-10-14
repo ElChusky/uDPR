@@ -14,8 +14,8 @@ namespace Dpr.UI
 		private global::UnityEngine.GameObject _body;
 		private int _index;
 		private global::UnityEngine.RectTransform _rectTransform;
-		private static global::UnityEngine.Vector3 _markPosition;
-		private static global::UnityEngine.Vector3 _iconPosition;
+		private static global::UnityEngine.Vector3 _markPosition = new global::UnityEngine.Vector3(0f, -2f, 0f);
+		private static global::UnityEngine.Vector3 _iconPosition = new global::UnityEngine.Vector3(116f, 6f, 0f);
 		public string ItemText { get => _enabledText.text; }
 		public void Initialize(int no) {
 			var wallPaper = UIManager.Instance.GetWallPaper(no);
@@ -84,6 +84,6 @@ namespace Dpr.UI
 			_body.SetActive(false);
 		}
 		public BoxWallPaperItem() { }
-		static BoxWallPaperItem() { /*@B 0x6004F9E*/ throw null; }
+		static BoxWallPaperItem() { }
 	}
 }
