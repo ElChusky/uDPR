@@ -4,16 +4,28 @@ namespace Dpr.Battle.Logic
 	public sealed class Adapter
 	{
 		private global::Dpr.Battle.Logic.Net.Client m_iPtrNetClient;
-		private global::Dpr.Battle.Logic.SendData m_sendData;
-		private global::Dpr.Battle.Logic.SendData m_returnData;
+		private global::Dpr.Battle.Logic.SendData m_sendData = new global::Dpr.Battle.Logic.SendData();
+		private global::Dpr.Battle.Logic.SendData m_returnData = new global::Dpr.Battle.Logic.SendData();
 		private global::Dpr.Battle.Logic.ServerRequest m_processingRequest;
 		private byte m_myClientId;
 		private global::Dpr.Battle.Logic.Adapter.State m_state;
 		private bool m_isRetDataPrepared;
 		private bool m_isCommMode;
 		private global::Dpr.Battle.Logic.RaidActionIconID m_raidActionIcon;
-		public Adapter(byte clientID, bool isCommMode, global::Dpr.Battle.Logic.Net.Client iPtrNetClient) { /*@B 0x6007566*/ throw null; }
-		public void Init() { /*@B 0x6007567*/ throw null; }
+		public Adapter(byte clientID, bool isCommMode, global::Dpr.Battle.Logic.Net.Client iPtrNetClient) {
+            m_iPtrNetClient = iPtrNetClient;
+            m_processingRequest = ServerRequest.NONE;
+            m_myClientId = clientID;
+            m_state = State.kFree;
+            m_isRetDataPrepared = false;
+            m_isCommMode = isCommMode;
+            m_raidActionIcon = RaidActionIconID.NONE;
+        }
+		public void Init() {
+            m_state = State.kFree;
+            m_processingRequest = ServerRequest.NONE;
+            m_isRetDataPrepared = false;
+        }
 		public void ChangeToNonCommMode() {
             m_isCommMode = false;
         }

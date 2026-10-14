@@ -6,7 +6,7 @@ namespace Dpr.Battle.Logic
 		private readonly global::Dpr.Battle.Logic.MainModule m_mainModule;
 		private readonly global::Dpr.Battle.Logic.BattleEnv m_pBattleEnv;
 		private global::Dpr.Battle.Logic.BTL_POKEPARAM m_poke;
-		private global::Dpr.Battle.Logic.Random m_randGenerator;
+		private global::Dpr.Battle.Logic.Random m_randGenerator = new global::Dpr.Battle.Logic.Random();
 		private global::Dpr.Battle.Logic.AiScript m_script;
 		private global::Dpr.Battle.Logic.AiScriptHandler m_scriptHandler;
 		private global::Dpr.Battle.Logic.AiScriptCommandHandler m_scriptCommandHandler;
@@ -14,7 +14,20 @@ namespace Dpr.Battle.Logic
 		private int m_score;
 		private uint m_seq;
 		private bool m_isFinished;
-		public AiItemJudge(global::Dpr.Battle.Logic.AiScript aiScript, global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv, global::Dpr.Battle.Logic.BattleSimulator pBattleSimulator, ulong randSeed, uint scriptBit, byte myClientID) : base(default(byte), default(global::Dpr.Battle.Logic.BtlAiScriptNo), default(global::Dpr.Battle.Logic.BtlAiScriptNo), default(uint)) { /*@B 0x6007D73*/ throw null; }
+		public AiItemJudge(global::Dpr.Battle.Logic.AiScript aiScript, global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv, global::Dpr.Battle.Logic.BattleSimulator pBattleSimulator, ulong randSeed, uint scriptBit, byte myClientID) : base(myClientID, global::Dpr.Battle.Logic.BtlAiScriptNo.BTL_AISCRIPT_NO_ITEM_MIN, global::Dpr.Battle.Logic.BtlAiScriptNo.BTL_AISCRIPT_NO_ITEM_MAX, scriptBit) {
+            m_mainModule = mainModule;
+            m_pBattleEnv = pBattleEnv;
+            m_poke = null;
+            m_script = aiScript;
+            m_scriptHandler = null;
+            m_scriptCommandHandler = null;
+            m_itemNo = 0;
+            m_score = 0;
+            m_isFinished = true;
+            m_randGenerator.Initialize(randSeed);
+            m_scriptHandler = new AiScriptHandler();
+            m_scriptCommandHandler = new AiScriptCommandHandler(mainModule, pBattleSimulator, pBattleEnv, randSeed);
+        }
 		public override void Dispose() {
             m_scriptHandler = null;
             if (m_scriptCommandHandler != null)
@@ -78,7 +91,9 @@ namespace Dpr.Battle.Logic
             startParam.commandParam.clientID = GetMyClientID();
             m_scriptHandler.StartScript(startParam);
         }
-		private void RegisterScriptResult() { /*@B 0x6007D78*/ throw null; }
+		private void RegisterScriptResult() {
+            m_score += m_scriptHandler.GetScriptResult().score;
+        }
 		public override bool IsJudgeFinished() { return this.m_isFinished; }
 		public int GetScore() { return this.m_score; }
 		private enum UpdateJudgeSeq

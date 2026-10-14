@@ -12,15 +12,35 @@ namespace Dpr.Battle.Logic
 		private byte m_myClientID;
 		public abstract void UpdateJudge();
 		public abstract bool IsJudgeFinished();
-		public AiJudge(byte myClientID, global::Dpr.Battle.Logic.BtlAiScriptNo minScriptNo, global::Dpr.Battle.Logic.BtlAiScriptNo maxScriptNo, uint targetScriptBit) { /*@B 0x6007D7D*/ throw null; }
+		public AiJudge(byte myClientID, global::Dpr.Battle.Logic.BtlAiScriptNo minScriptNo, global::Dpr.Battle.Logic.BtlAiScriptNo maxScriptNo, uint targetScriptBit) {
+            m_minScriptNo = minScriptNo;
+            m_maxScriptNo = maxScriptNo;
+            m_myClientID = myClientID;
+            m_currentScriptNo = BtlAiScriptNo.BTL_AISCRIPT_NO_NULL;
+            m_targetScriptBit = targetScriptBit;
+        }
 		public virtual void Dispose() { }
 		protected byte GetMyClientID() { return this.m_myClientID; }
 		public void ChangeAiBit(uint targetScriptBit) { this.m_targetScriptBit = targetScriptBit; }
 		public uint GetAiBit() { return this.m_targetScriptBit; }
 		protected global::Dpr.Battle.Logic.BtlAiScriptNo GetCurrentScriptNo() { return this.m_currentScriptNo; }
-		protected void ResetScriptNo() { /*@B 0x6007D83*/ throw null; }
-		protected void UpdateScriptNo() { /*@B 0x6007D84*/ throw null; }
-		private global::Dpr.Battle.Logic.BtlAiScriptNo GetNextScriptNo(global::Dpr.Battle.Logic.BtlAiScriptNo minScriptNo, global::Dpr.Battle.Logic.BtlAiScriptNo maxScriptNo) { /*@B 0x6007D85*/ throw null; }
-		protected bool IsAllScriptFinished() { /*@B 0x6007D86*/ throw null; }
+		protected void ResetScriptNo() {
+            m_currentScriptNo = GetNextScriptNo(m_minScriptNo, m_maxScriptNo);
+        }
+		protected void UpdateScriptNo() {
+            m_currentScriptNo++;
+            m_currentScriptNo = GetNextScriptNo(m_currentScriptNo, m_maxScriptNo);
+        }
+		private global::Dpr.Battle.Logic.BtlAiScriptNo GetNextScriptNo(global::Dpr.Battle.Logic.BtlAiScriptNo minScriptNo, global::Dpr.Battle.Logic.BtlAiScriptNo maxScriptNo) {
+            for (uint scriptNo = (uint)minScriptNo; scriptNo <= (uint)maxScriptNo; scriptNo++)
+            {
+                if ((m_targetScriptBit & (1u << (int)scriptNo)) != 0)
+                    return (BtlAiScriptNo)scriptNo;
+            }
+            return BtlAiScriptNo.BTL_AISCRIPT_NO_NULL;
+        }
+		protected bool IsAllScriptFinished() {
+            return m_maxScriptNo < m_currentScriptNo;
+        }
 	}
 }

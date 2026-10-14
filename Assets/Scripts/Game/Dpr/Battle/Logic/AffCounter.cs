@@ -4,18 +4,76 @@ namespace Dpr.Battle.Logic
 	public sealed class AffCounter
 	{
 		private const int COUNTER_MAX = 9999;
-		private global::Dpr.Battle.Logic.AffCounter.Data m_data;
-		public ushort GetVoid() { /*@B 0x6007594*/ throw null; }
-		public ushort GetAdvantage() { /*@B 0x6007595*/ throw null; }
-		public ushort GetDisadvantage() { /*@B 0x6007596*/ throw null; }
-		public ushort GetRecvVoid() { /*@B 0x6007597*/ throw null; }
-		public ushort GetRecvAdvantage() { /*@B 0x6007598*/ throw null; }
-		public ushort GetRecvDisadvantage() { /*@B 0x6007599*/ throw null; }
-		public AffCounter() { /*@B 0x600759A*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.AffCounter src) { /*@B 0x600759B*/ throw null; }
-		public void Clear() { /*@B 0x600759C*/ throw null; }
-		public void CountUp(in global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM defender, global::Pml.Battle.TypeAffinity.AffinityID affinity) { /*@B 0x600759D*/ throw null; }
-		private void CountUp_Core(ref ushort pCnt) { /*@B 0x600759E*/ throw null; }
+		private global::Dpr.Battle.Logic.AffCounter.Data m_data = new global::Dpr.Battle.Logic.AffCounter.Data();
+		public ushort GetVoid() {
+            return m_data.putVoid;
+        }
+		public ushort GetAdvantage() {
+            return m_data.putAdvantage;
+        }
+		public ushort GetDisadvantage() {
+            return m_data.putDisadvantage;
+        }
+		public ushort GetRecvVoid() {
+            return m_data.recvVoid;
+        }
+		public ushort GetRecvAdvantage() {
+            return m_data.recvAdvantage;
+        }
+		public ushort GetRecvDisadvantage() {
+            return m_data.recvDisadvantage;
+        }
+		public AffCounter() {
+            Clear();
+        }
+		public void CopyFrom(in global::Dpr.Battle.Logic.AffCounter src) {
+            m_data.CopyFrom(src.m_data);
+        }
+		public void Clear() {
+            m_data.putVoid = 0;
+            m_data.putAdvantage = 0;
+            m_data.putDisadvantage = 0;
+            m_data.recvVoid = 0;
+            m_data.recvAdvantage = 0;
+            m_data.recvDisadvantage = 0;
+        }
+		public void CountUp(in global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM defender, global::Pml.Battle.TypeAffinity.AffinityID affinity) {
+            byte atkPokeID = attacker.GetID();
+            byte defPokeID = defender.GetID();
+            byte atkClientID = MainModule.PokeIDtoClientID(atkPokeID);
+            byte defClientID = MainModule.PokeIDtoClientID(defPokeID);
+            bool isFriend = mainModule.IsFriendPokeID(atkPokeID, defPokeID);
+            if (atkClientID == 0)
+            {
+                if (isFriend)
+                    return;
+                if (affinity == Pml.Battle.TypeAffinity.AffinityID.TYPEAFF_0)
+                    CountUp_Core(ref m_data.putVoid);
+                else if (affinity < Pml.Battle.TypeAffinity.AffinityID.TYPEAFF_2)
+                {
+                    if (affinity != Pml.Battle.TypeAffinity.AffinityID.TYPEAFF_1)
+                        CountUp_Core(ref m_data.putDisadvantage);
+                }
+                else
+                    CountUp_Core(ref m_data.putAdvantage);
+            }
+            else if (defClientID == 0 && !isFriend)
+            {
+                if (affinity == Pml.Battle.TypeAffinity.AffinityID.TYPEAFF_0)
+                    CountUp_Core(ref m_data.recvVoid);
+                else if (affinity < Pml.Battle.TypeAffinity.AffinityID.TYPEAFF_2)
+                {
+                    if (affinity != Pml.Battle.TypeAffinity.AffinityID.TYPEAFF_1)
+                        CountUp_Core(ref m_data.recvDisadvantage);
+                }
+                else
+                    CountUp_Core(ref m_data.recvAdvantage);
+            }
+        }
+		private void CountUp_Core(ref ushort pCnt) {
+            if (pCnt < COUNTER_MAX)
+                pCnt++;
+        }
 		private class Data
 		{
 			public ushort putVoid;
@@ -24,7 +82,14 @@ namespace Dpr.Battle.Logic
 			public ushort recvVoid;
 			public ushort recvAdvantage;
 			public ushort recvDisadvantage;
-			public void CopyFrom(global::Dpr.Battle.Logic.AffCounter.Data src) { /*@B 0x600B6A2*/ throw null; }
+			public void CopyFrom(global::Dpr.Battle.Logic.AffCounter.Data src) {
+				putVoid = src.putVoid;
+				putAdvantage = src.putAdvantage;
+				putDisadvantage = src.putDisadvantage;
+				recvVoid = src.recvVoid;
+				recvAdvantage = src.recvAdvantage;
+				recvDisadvantage = src.recvDisadvantage;
+			}
 			public Data() { }
 		}
 	}

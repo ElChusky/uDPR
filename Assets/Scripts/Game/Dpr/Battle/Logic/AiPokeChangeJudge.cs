@@ -7,7 +7,7 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.BTL_CLIENT m_client;
 		private readonly global::Dpr.Battle.Logic.BattleEnv m_pBattleEnv;
 		private global::Dpr.Battle.Logic.BTL_POKEPARAM m_targetFrontPoke;
-		private global::Dpr.Battle.Logic.Random m_randGenerator;
+		private global::Dpr.Battle.Logic.Random m_randGenerator = new global::Dpr.Battle.Logic.Random();
 		private global::Dpr.Battle.Logic.AiScript m_script;
 		private global::Dpr.Battle.Logic.AiScriptHandler m_scriptHandler;
 		private global::Dpr.Battle.Logic.AiScriptCommandHandler m_scriptCommandHandler;
@@ -15,9 +15,21 @@ namespace Dpr.Battle.Logic
 		private bool m_isFinished;
 		private byte m_judgePokeCount;
 		private byte m_judgePokeIndex;
-		private global::Dpr.Battle.Logic.AiPokeChangeJudge.JudgePokeData[] m_judgePokeData;
-		private global::Dpr.Battle.Logic.AiPokeChangeJudge.JudgeResult m_result;
-		public AiPokeChangeJudge(global::Dpr.Battle.Logic.AiScript aiScript, global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv, global::Dpr.Battle.Logic.BattleSimulator pBattleSimulator, ulong randSeed, uint scriptBit, byte myClientID) : base(default(byte), default(global::Dpr.Battle.Logic.BtlAiScriptNo), default(global::Dpr.Battle.Logic.BtlAiScriptNo), default(uint)) { /*@B 0x6007D87*/ throw null; }
+		private global::Dpr.Battle.Logic.AiPokeChangeJudge.JudgePokeData[] m_judgePokeData = Arrays.InitializeWithDefaultInstances<global::Dpr.Battle.Logic.AiPokeChangeJudge.JudgePokeData>(6);
+		private global::Dpr.Battle.Logic.AiPokeChangeJudge.JudgeResult m_result = new global::Dpr.Battle.Logic.AiPokeChangeJudge.JudgeResult();
+		public AiPokeChangeJudge(global::Dpr.Battle.Logic.AiScript aiScript, global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv, global::Dpr.Battle.Logic.BattleSimulator pBattleSimulator, ulong randSeed, uint scriptBit, byte myClientID) : base(myClientID, global::Dpr.Battle.Logic.BtlAiScriptNo.BTL_AISCRIPT_NO_POKECHANGE_MIN, global::Dpr.Battle.Logic.BtlAiScriptNo.BTL_AISCRIPT_NO_POKECHANGE_MAX, scriptBit) {
+            m_mainModule = mainModule;
+            m_pBattleEnv = pBattleEnv;
+            m_targetFrontPoke = null;
+            m_script = aiScript;
+            m_scriptHandler = null;
+            m_scriptCommandHandler = null;
+            m_seq = 0;
+            m_isFinished = true;
+            m_randGenerator.Initialize(randSeed);
+            m_scriptHandler = new AiScriptHandler();
+            m_scriptCommandHandler = new AiScriptCommandHandler(mainModule, pBattleSimulator, pBattleEnv, randSeed);
+        }
 		public override void Dispose() {
             m_scriptHandler = null;
             if (m_scriptCommandHandler != null)
