@@ -31,21 +31,21 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Transform characterRoot;
 		[global::UnityEngine.SerializeField]
-		private string playerModelObjectName;
+		private string playerModelObjectName = "PlayerModel";
 		private global::UnityEngine.Transform currentBgParentTransform;
 		private global::UnityEngine.Transform currentBgTransform;
 		private int currentBgSiblingIndex;
 		private global::UnityEngine.GameObject playerModelObject;
 		private global::UnityEngine.Transform playerModelTransform;
 		private global::Dpr.Playables.AnimationLayer playerModelAnimationLayer;
-		private int playerModelWaitAnimationIndex;
+		private int playerModelWaitAnimationIndex = -1;
 		private string loadedAssetBundlePath;
-		public bool IsReady { get { /*@B 0x6005021*/ throw null; } }
-		public bool IsShowBadgeCase { get { /*@B 0x6005022*/ throw null; } }
-		public bool IsEndBadgeCase { get { /*@B 0x6005023*/ throw null; } }
-		public bool IsCardFront { get { /*@B 0x6005024*/ throw null; } }
-		public bool IsAnimation { get { /*@B 0x6005025*/ throw null; } }
-		public bool IsAnimationAll { get { /*@B 0x6005026*/ throw null; } }
+		public bool IsReady { get { return badgeCaseObject.IsReady; } }
+		public bool IsShowBadgeCase { get { return animationController.IsShowBadgeCase; } }
+		public bool IsEndBadgeCase { get { return badgeCaseObject.IsEnd; } }
+		public bool IsCardFront { get { return animationController.IsCardFront; } }
+		public bool IsAnimation { get { return animationController.IsAnimation; } }
+		public bool IsAnimationAll { get { return animationController.IsAnimationAll; } }
 		public void OnViewportChange(int screenWidth, int screenHeight) {
 			// Redraw iterator stub inlined
 			Sequencer.Start(Redraw());
@@ -231,6 +231,6 @@ namespace Dpr.UI
 			if (playerModelAnimationLayer != null && playerModelWaitAnimationIndex != -1)
 				playerModelAnimationLayer.Play(playerModelWaitAnimationIndex, 0f, 0f);
 		}
-		public CardModelViewController() { /*@B 0x6005039*/ throw null; }
+		public CardModelViewController() { }
 	}
 }

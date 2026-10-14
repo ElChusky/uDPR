@@ -77,7 +77,7 @@ namespace Dpr.UI
 				Close(onClosed, _prevWindowId);
 			}
 		}
-		public CertificateWindow() { /*@B 0x6005062*/ throw null; }
+		public CertificateWindow() { }
 		public class Param
 		{
 			public global::Dpr.UI.CertificateWindow.Param.CertificateType type;

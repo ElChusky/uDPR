@@ -21,7 +21,7 @@ namespace Dpr.UI
 		private bool isBeforeFadeBlurActive;
 		private bool isOpenedKeyguide;
 		private bool isFading;
-		public bool IsInitialized { get { /*@B 0x6005981*/ throw null; } }
+		public bool IsInitialized { get { return View3DController != null && View3DController.IsIntialized; } }
 		public global::Dpr.UI.Capsule2DViewController View2DController { get; private set; }
 		public global::Dpr.UI.Capsule3DViewController View3DController { get; private set; }
 		public global::System.Collections.IEnumerator Initialize() {
@@ -143,7 +143,22 @@ namespace Dpr.UI
 			if (isCallOnOpenMenu)
 				Dpr.EvScript.EvDataManager.Instanse.OnOpenMenu();
 		}
-		public void UpdatePreviewKeyGuide(global::Dpr.UI.Keyguide keyguide) { /*@B 0x600598D*/ throw null; }
+		public void UpdatePreviewKeyGuide(global::Dpr.UI.Keyguide keyguide) {
+			if (!PlayerWork.isSealPreview)
+				return;
+
+			if (isOpenedKeyguide)
+			{
+				keyguide.Close(__ => isOpenedKeyguide = false);
+				return;
+			}
+
+			Keyguide.Param param = new Keyguide.Param();
+			param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.SEAL_PREVIEW_STOP });
+			param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.SEAL_PREVIEW_BACK });
+			keyguide.Open(param);
+			isOpenedKeyguide = true;
+		}
 		public bool CheckWaitFade() {
 			if (SmartPoint.Components.Fader.isBusy)
 				isFading = true;

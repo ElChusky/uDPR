@@ -18,9 +18,22 @@ namespace Dpr.UI
 {
 	public class BoxWindow : global::Dpr.UI.UIWindow
 	{
-		private static string[] _operationLabels;
-		private static string[] _displayModeLabels;
-		public static readonly global::System.Collections.Generic.List<(global::Dpr.UI.BoxWindow.SearchType type, string textId, string nameId, string descriptionId, string subDescriptionId)> SearchMsgData;
+		private static string[] _operationLabels = new string[] { "SS_box_037", "SS_box_039", "SS_box_038" };
+		private static string[] _displayModeLabels = new string[] { "SS_box_034", "SS_box_035", "SS_box_036" };
+		public static readonly global::System.Collections.Generic.List<(global::Dpr.UI.BoxWindow.SearchType type, string textId, string nameId, string descriptionId, string subDescriptionId)> SearchMsgData = new List<(SearchType type, string textId, string nameId, string descriptionId, string subDescriptionId)>
+        {
+            (SearchType.Pokemon, "SS_box_105", "SS_box_116", "SS_box_129", "SS_box_130"),
+            (SearchType.Type1, "SS_box_106", "SS_box_117", "SS_box_131", "SS_box_144"),
+            (SearchType.Type2, "SS_box_107", "SS_box_117", "SS_box_132", "SS_box_145"),
+            (SearchType.Waza, "SS_box_108", "SS_box_118", "SS_box_133", "SS_box_134"),
+            (SearchType.Machine, "SS_box_109", "SS_box_119", "SS_box_135", ""),
+            (SearchType.Tokusei, "SS_box_110", "SS_box_120", "SS_box_136", "SS_box_137"),
+            (SearchType.Personality, "SS_box_111", "SS_box_121", "SS_box_138", "SS_box_{0}"),
+            (SearchType.Sex, "SS_box_112", "SS_box_122", "SS_box_139", ""),
+            (SearchType.Item, "SS_box_113", "SS_box_126", "SS_box_140", ""),
+            (SearchType.Mark, "SS_box_114", "", "SS_box_141", ""),
+            (SearchType.Team, "SS_box_115", "SS_box_128", "SS_box_143", ""),
+        };
 		public const string BoxMsgFileName = "ss_box";
 		public const string BoxNameFileName = "ss_boxname";
 		public const string BoxSearchFileName = "ss_initial";
@@ -45,7 +58,7 @@ namespace Dpr.UI
 		private const int LocalTradeOpenID = 15;
 		public const float PokeIconSelectAlpha = 0.5f;
 		public static readonly global::UnityEngine.Color32 DisableIconColor = new Color32(48, 48, 48, 160);
-		public static readonly global::UnityEngine.Color32 EnableIconColor;
+		public static readonly global::UnityEngine.Color32 EnableIconColor = new Color32(255, 255, 255, 255);
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image _displayTitle;
 		[global::UnityEngine.SerializeField]
@@ -148,8 +161,8 @@ namespace Dpr.UI
 		private global::UnityEngine.UI.Image _darkScreen;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Transform _effectRoot;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private readonly int _animStateIn = Animator.StringToHash("in");
+		private readonly int _animStateOut = Animator.StringToHash("out");
 		private global::Dpr.UI.BoxWindow.ControlType _controlType;
 		private global::Dpr.UI.BoxWindow.OperationType _operationType;
 		private global::Dpr.UI.BoxWindow.DisplayMode _displayMode;
@@ -166,8 +179,8 @@ namespace Dpr.UI
 		private global::Dpr.UI.UINavigator _lastNaviBoxTrayItem;
 		private global::Dpr.UI.UINavigator _fromNavigator;
 		private global::Dpr.UI.UINavigator _returnNavigator;
-		private int _fromTrayIndex;
-		private int _fromTeamIndex;
+		private int _fromTrayIndex = -1;
+		private int _fromTeamIndex = -1;
 		private global::Dpr.UI.BoxInfinityScrollItem _fromTray;
 		private global::System.Collections.Generic.List<int> _hideIconIndexes;
 		private global::System.Collections.Generic.List<int> _effectIndexes;
@@ -181,7 +194,7 @@ namespace Dpr.UI
 		private global::System.Collections.Generic.List<global::Dpr.UI.UINavigator> _fromNavigators;
 		private global::System.Collections.Generic.List<global::Dpr.UI.UINavigator> _toNavigators;
 		private global::System.Collections.Generic.HashSet<int> _existSwapIndexes;
-		private global::Dpr.UI.BoxWindow.SearchType _searchType;
+		private global::Dpr.UI.BoxWindow.SearchType _searchType = SearchType.None;
 		private global::Dpr.UI.BoxWindow.SEARCH_DATA _searchData;
 		private bool _isDuckOn;
 		private global::Dpr.UI.BoxWindow.OpenParam _param;
@@ -191,7 +204,7 @@ namespace Dpr.UI
 		private global::System.Action<global::Dpr.UI.BoxWindow> _onConfirm;
 		private global::System.Action<global::Dpr.UI.BoxWindow> _onComplete;
 		private global::System.Action<global::Dpr.UI.BoxWindow> _onCancelSelect;
-		private global::Dpr.Message.MessageEnumData.MsgLangId _targetLangId;
+		private global::Dpr.Message.MessageEnumData.MsgLangId _targetLangId = MessageEnumData.MsgLangId.JPN;
 		private global::UnityEngine.Coroutine _coOpen;
 		private global::UnityEngine.Coroutine _coClose;
 		private global::Dpr.UI.PokemonModelView _modelView;
@@ -222,10 +235,10 @@ namespace Dpr.UI
 		private float _trayCellSizeX;
 		private float _trayCellSizeY;
 		private bool _isControlEnable;
-		public static bool IsPanelTrasition;
-		public static global::XLSXContent.SearchIndexData SearchIndexData;
+		public static bool IsPanelTrasition = false;
+		public static global::XLSXContent.SearchIndexData SearchIndexData = null;
 		private bool _isForceClosing;
-		private static int _limitBoxRefCount;
+		private static int _limitBoxRefCount = 0;
 		public global::Dpr.UI.BoxWindow.NetTradePhase TradePhase { get => _tradeParam.tradePhase; }
 		public bool IsOpenRunning { get => _coOpen != null; }
 		public bool IsCloseRunning { get => _coClose != null; }
@@ -5378,8 +5391,8 @@ namespace Dpr.UI
             _searchPanel.SetSearchData(_searchDescription.SearchData, _searchSubPanel.CurrentIndex, false);
             _searchDescription.Apply(_searchDescription.SearchData, _searchPanel.CurrentIndex, _searchSubPanel.CurrentIndex);
         }
-		public BoxWindow() { /*@B 0x6004EAE*/ throw null; }
-		static BoxWindow() { /*@B 0x6004EAF*/ throw null; }
+		public BoxWindow() { }
+		static BoxWindow() { }
 		private enum ControlType
 		{
 			SelectPoke = 0,
@@ -5414,17 +5427,17 @@ namespace Dpr.UI
 			public global::Dpr.UI.BoxWindow.DisplayMode dispMode;
 			public int tray;
 			public int index;
-			public int teamIndex;
+			public int teamIndex = -1;
 			public bool isSelectParty;
-			public global::Dpr.UI.BoxWindow.OpenType openType;
-			public int selectCount;
+			public global::Dpr.UI.BoxWindow.OpenType openType = OpenType.External;
+			public int selectCount = 1;
 			public int targetLevel;
-			public bool isEnableDying;
+			public bool isEnableDying = true;
 			public bool isEnableEgg;
 			public bool isEnableTeam;
-			public bool isEnableParty;
+			public bool isEnableParty = true;
 			public bool isShowSelectCount;
-			public bool isEnableKeyboard;
+			public bool isEnableKeyboard = true;
 			public bool isOpenFromBattleTeam;
 			public bool isDisableUseful;
 			public bool isDisableDuplicate;
@@ -5436,7 +5449,7 @@ namespace Dpr.UI
 			public string tradeName;
 			public global::System.Collections.Generic.List<global::Dpr.UI.BoxWindow.SelectedPokemon> selected;
 			public global::Dpr.UI.BoxWindow.SEARCH_DATA searchData;
-			public OpenParam() { /*@B 0x600A7FA*/ throw null; }
+			public OpenParam() { }
 		}
 		public class TradeParam
 		{
@@ -5450,9 +5463,9 @@ namespace Dpr.UI
 			public global::Pml.PokePara.PokemonParam otherPokeParam;
 			public global::Dpr.UI.BoxWindow.NetTradePhase tradePhase;
 			public string messageId;
-			public global::Dpr.Message.MessageEnumData.MsgLangId langId;
-			public global::Dpr.NetworkUtils.ErrorCodeID errorId;
-			public TradeParam() { /*@B 0x600A7FB*/ throw null; }
+			public global::Dpr.Message.MessageEnumData.MsgLangId langId = MessageEnumData.MsgLangId.JPN;
+			public global::Dpr.NetworkUtils.ErrorCodeID errorId = ErrorCodeID.NUM;
+			public TradeParam() { }
 		}
 		public enum OpenType
 		{
@@ -5486,8 +5499,8 @@ namespace Dpr.UI
 		public class NaviParam
 		{
 			public global::Dpr.UI.BoxWindow.NaviParam.ItemType itemType;
-			public int index;
-			public NaviParam() { /*@B 0x600A7FD*/ throw null; }
+			public int index = -1;
+			public NaviParam() { }
 			public enum ItemType
 			{
 				Party = 0,
@@ -5547,8 +5560,38 @@ namespace Dpr.UI
 			public int team;
 			public int form;
 			public bool is_active;
-			public SEARCH_DATA() { /*@B 0x600A7FE*/ throw null; }
-			public void Clear() { /*@B 0x600A7FF*/ throw null; }
+			public SEARCH_DATA()
+            {
+                type1 = PokeType.NULL;
+                type2 = PokeType.NULL;
+                sex = Sex.NUM;
+                waza = WazaNo.NULL;
+                waza_machine = 0x7FFFFFFF;
+                tokusei = TokuseiNo.NULL;
+                seikaku = Seikaku.NUM;
+                item = SearchItem.MAX;
+                mark = 0;
+                mons = MonsNo.NULL;
+                team = BoxWork.TEAM_MAX;
+                form = 0;
+                is_active = false;
+            }
+			public void Clear()
+            {
+                type1 = PokeType.NULL;
+                type2 = PokeType.NULL;
+                waza = WazaNo.NULL;
+                waza_machine = 0x7FFFFFFF;
+                tokusei = TokuseiNo.NULL;
+                seikaku = Seikaku.NUM;
+                sex = Sex.NUM;
+                item = SearchItem.MAX;
+                mark = 0;
+                mons = MonsNo.NULL;
+                is_active = false;
+                team = BoxWork.TEAM_MAX;
+                form = 0;
+            }
 			public void SetActive() {
                 is_active = mons != MonsNo.NULL || type1 != PokeType.NULL || type2 != PokeType.NULL || waza != WazaNo.NULL || waza_machine != 0x7FFFFFFF ||
                     tokusei != TokuseiNo.NULL || seikaku != Seikaku.NUM || sex != Sex.NUM || item != SearchItem.MAX || mark != 0 || team != BoxWork.TEAM_MAX ||
@@ -5560,7 +5603,12 @@ namespace Dpr.UI
 			public string Label;
 			public global::UnityEngine.Sprite MarkSprite;
 			public bool IsEnable;
-			public SearchItemData(string label, global::UnityEngine.Sprite sprite = null) { /*@B 0x600A801*/ throw null; }
+			public SearchItemData(string label, global::UnityEngine.Sprite sprite = null)
+            {
+                Label = label;
+                MarkSprite = sprite;
+                IsEnable = true;
+            }
 		}
 	}
 }

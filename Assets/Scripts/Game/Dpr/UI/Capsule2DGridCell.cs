@@ -11,8 +11,8 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform gridRectTransform;
 		private global::UnityEngine.Vector3 sealPosition;
-		private global::UnityEngine.Color clearColor;
-		private global::UnityEngine.Color affixedSealColor;
+		private global::UnityEngine.Color clearColor = Color.clear;
+		private global::UnityEngine.Color affixedSealColor = Color.clear;
 		public global::UnityEngine.Vector2 GridPosition { get; private set; }
 		public int AffixSealId { get; private set; }
 		public int SealId { get; private set; }
@@ -66,6 +66,6 @@ namespace Dpr.UI
 		private void SetAffixedSealColor() {
 			cellImage.color = affixedSealColor;
 		}
-		public Capsule2DGridCell() { /*@B 0x6005926*/ throw null; }
+		public Capsule2DGridCell() { }
 	}
 }

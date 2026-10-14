@@ -13,11 +13,11 @@ namespace Dpr.UI
 		private global::Dpr.UI.ContestMatchingUI contestMatchingUI;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UISelectorWindow selectorWindow;
-		private global::Dpr.Contest.ContestMatchingNetwork network;
-		private global::Dpr.UI.ContestMatchingRecruitmentMember recruitmentMember;
-		private global::Dpr.UI.ContestMatchingCategoryAndRank selectCategoryAndRank;
-		private global::Dpr.UI.ContestMatchingPreparation preparation;
-		private global::Dpr.UI.ContestMatchingResume resume;
+		private global::Dpr.Contest.ContestMatchingNetwork network = new global::Dpr.Contest.ContestMatchingNetwork();
+		private global::Dpr.UI.ContestMatchingRecruitmentMember recruitmentMember = new global::Dpr.UI.ContestMatchingRecruitmentMember();
+		private global::Dpr.UI.ContestMatchingCategoryAndRank selectCategoryAndRank = new global::Dpr.UI.ContestMatchingCategoryAndRank();
+		private global::Dpr.UI.ContestMatchingPreparation preparation = new global::Dpr.UI.ContestMatchingPreparation();
+		private global::Dpr.UI.ContestMatchingResume resume = new global::Dpr.UI.ContestMatchingResume();
 		private global::XLSXContent.ContestMasterDatas contMasterData;
 		private global::XLSXContent.ContestConfigDatas contConfigData;
 		private global::Dpr.UI.ContestMatching.MatchingState currentState;
@@ -511,7 +511,7 @@ namespace Dpr.UI
 		}
 		public void ResetContestParam() { }
 		public void SetTimeCount(string minutStr, string secondStr) { }
-		public ContestMatching() { /*@B 0x6005244*/ throw null; }
+		public ContestMatching() { }
 		public enum FinishPattern
 		{
 			Success = 0,

@@ -30,9 +30,9 @@ namespace Dpr.UI
 		private global::Dpr.UI.Capsule3DViewController.DefaultPositionAndRotation editModeDefault;
 		[global::UnityEngine.HeaderAttribute("-----3Dシールオブジェクトの調整-----")]
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector3 sealScale;
+		private global::UnityEngine.Vector3 sealScale = new Vector3(0.5f, 0.5f, 0.5f);
 		[global::UnityEngine.SerializeField]
-		private float offsetPositionZ;
+		private float offsetPositionZ = 0.002f;
 		private global::UnityEngine.RenderTexture renderTexture;
 		private global::UnityEngine.Transform capsuleTransform;
 		private global::UnityEngine.Transform modelCameraTransform;
@@ -47,7 +47,7 @@ namespace Dpr.UI
 		private bool isLoadedCapsuleObject;
 		private bool isLoadedSealObject;
 		public float CapsuleRadius { get; private set; }
-		public bool IsIntialized { get { /*@B 0x6005936*/ throw null; } }
+		public bool IsIntialized { get { return isLoadedCapsuleObject && isLoadedSealObject; } }
 		public bool IsHitCapsule { get; private set; }
 		public void OnViewportChange(int screenWidth, int screenHeight) {
 			Sequencer.Start(Redraw());
@@ -297,7 +297,28 @@ namespace Dpr.UI
 			});
 			AssetManager.DispatchRequests(null);
 		}
-		private void LoadSealObjectPrefab() { /*@B 0x600594E*/ throw null; }
+		private void LoadSealObjectPrefab() {
+			AssetManager.AppendAssetBundleRequest(SealObjectAssetName, true, (type, name, asset) =>
+			{
+				switch (type)
+				{
+					case RequestEventType.Activated:
+						if (asset is GameObject sealPrefab)
+						{
+							seal3DObjectPrefab = sealPrefab;
+							UIManager.SetAllObjectLayer(seal3DObjectPrefab, Layer.UIModelLayer);
+							isLoadedSealObject = true;
+						}
+						break;
+
+					case RequestEventType.Cached:
+					case RequestEventType.Complete:
+						isLoadedSealObject = true;
+						break;
+				}
+			});
+			AssetManager.DispatchRequests(null);
+		}
 		private global::Dpr.UI.Seal3DObject GetSealObject() {
 			for (int i = 0; i < sealObjects.Count; i++)
 			{
@@ -320,34 +341,34 @@ namespace Dpr.UI
 			affixSealPoint.x = -affixSealPoint.x;
 			return affixSealPoint;
 		}
-		public Capsule3DViewController() { /*@B 0x6005952*/ throw null; }
+		public Capsule3DViewController() { }
 		[global::System.Serializable]
 		private class DefaultPositionAndRotation
 		{
 			[global::UnityEngine.SerializeField]
-			private global::UnityEngine.Vector3 capsuleObjectPosition;
+			private global::UnityEngine.Vector3 capsuleObjectPosition = Vector3.zero;
 			[global::UnityEngine.SerializeField]
-			private global::UnityEngine.Vector3 capsuleObjectRotation;
+			private global::UnityEngine.Vector3 capsuleObjectRotation = Vector3.zero;
 			[global::UnityEngine.SerializeField]
-			private global::UnityEngine.Vector3 modelCameraRootPosition;
+			private global::UnityEngine.Vector3 modelCameraRootPosition = Vector3.zero;
 			[global::UnityEngine.SerializeField]
-			private global::UnityEngine.Vector3 modelCameraRootRotation;
+			private global::UnityEngine.Vector3 modelCameraRootRotation = Vector3.zero;
 			[global::UnityEngine.SerializeField]
-			private global::UnityEngine.Vector3 modelCameraPosition;
+			private global::UnityEngine.Vector3 modelCameraPosition = Vector3.zero;
 			[global::UnityEngine.SerializeField]
-			private global::UnityEngine.Vector3 modelCameraRotation;
-			public global::UnityEngine.Vector3 CapsuleObjectPosition { get { /*@B 0x600ADC5*/ throw null; } }
+			private global::UnityEngine.Vector3 modelCameraRotation = Vector3.zero;
+			public global::UnityEngine.Vector3 CapsuleObjectPosition { get { return capsuleObjectPosition; } }
 			public global::UnityEngine.Quaternion CapsuleObjectRotation { get; private set; }
-			public global::UnityEngine.Vector3 ModelCameraRootPosition { get { /*@B 0x600ADC8*/ throw null; } }
+			public global::UnityEngine.Vector3 ModelCameraRootPosition { get { return modelCameraRootPosition; } }
 			public global::UnityEngine.Quaternion ModelCameraRootRotation { get; private set; }
-			public global::UnityEngine.Vector3 ModelCameraPosition { get { /*@B 0x600ADCB*/ throw null; } }
+			public global::UnityEngine.Vector3 ModelCameraPosition { get { return modelCameraPosition; } }
 			public global::UnityEngine.Quaternion ModelCameraRotation { get; private set; }
 			public void Initialize() {
 				CapsuleObjectRotation = Quaternion.Euler(capsuleObjectRotation);
 				ModelCameraRootRotation = Quaternion.Euler(modelCameraRootRotation);
 				ModelCameraRotation = Quaternion.Euler(modelCameraRotation);
 			}
-			public DefaultPositionAndRotation() { /*@B 0x600ADCF*/ throw null; }
+			public DefaultPositionAndRotation() { }
 		}
 	}
 }
