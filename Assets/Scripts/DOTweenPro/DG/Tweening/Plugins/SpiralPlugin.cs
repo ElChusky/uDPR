@@ -9,11 +9,7 @@ namespace DG.Tweening.Plugins
 		public override void SetFrom(global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> t, global::UnityEngine.Vector3 fromValue, bool setImmediately) { }
 		public static global::DG.Tweening.Plugins.Core.ABSTweenPlugin<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> Get()
 		{
-			// TO CHECK: PluginsManager is a DOTween internal class; the shipped code calls
-			// PluginsManager.GetCustomPlugin<SpiralPlugin, Vector3, Vector3, SpiralOptions>() directly - reached by reflection here.
-			global::System.Type pluginsManager = typeof(global::DG.Tweening.DOTween).Assembly.GetType("DG.Tweening.Plugins.Core.PluginsManager");
-			global::System.Reflection.MethodInfo getCustomPlugin = pluginsManager.GetMethod("GetCustomPlugin", global::System.Reflection.BindingFlags.Static | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic).MakeGenericMethod(typeof(global::DG.Tweening.Plugins.SpiralPlugin), typeof(global::UnityEngine.Vector3), typeof(global::UnityEngine.Vector3), typeof(global::DG.Tweening.Plugins.SpiralOptions));
-			return (global::DG.Tweening.Plugins.Core.ABSTweenPlugin<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions>)getCustomPlugin.Invoke(null, null);
+			return global::DG.Tweening.Plugins.Core.PluginsManager.GetCustomPlugin<global::DG.Tweening.Plugins.SpiralPlugin, global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions>();
 		}
 		public override global::UnityEngine.Vector3 ConvertToStartValue(global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Vector3, global::UnityEngine.Vector3, global::DG.Tweening.Plugins.SpiralOptions> t, global::UnityEngine.Vector3 value)
 		{
@@ -33,18 +29,12 @@ namespace DG.Tweening.Plugins
 		{
 			float posPerc = global::DG.Tweening.Core.Easing.EaseManager.Evaluate(t, elapsed, duration, t.easeOvershootOrAmplitude, t.easePeriod);
 			float easePerc = (options.mode == global::DG.Tweening.SpiralMode.ExpandThenContract && posPerc > 0.5f) ? 0.5f - (posPerc - 0.5f) : posPerc;
-			// TO CHECK: Tween.loopType / isComplete / completedLoops are DOTween internals; the shipped DOTweenPro assembly reads
-			// them directly, this tree (Assembly-CSharp) reaches them by reflection.
-			const global::System.Reflection.BindingFlags IF = global::System.Reflection.BindingFlags.Instance | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic;
-			global::System.Type tweenT = typeof(global::DG.Tweening.Tween);
-			if ((global::DG.Tweening.LoopType)tweenT.GetField("loopType", IF).GetValue(t) == global::DG.Tweening.LoopType.Incremental)
+			if (t.loopType == global::DG.Tweening.LoopType.Incremental)
 			{
-				int completedLoops = (int)tweenT.GetField("completedLoops", IF).GetValue(t);
-				bool isComplete = (bool)tweenT.GetField("isComplete", IF).GetValue(t);
-				int loops = isComplete ? completedLoops - 1 : completedLoops;
+				int loops = t.isComplete ? t.completedLoops - 1 : t.completedLoops;
 				if (options.mode == global::DG.Tweening.SpiralMode.ExpandThenContract)
 				{
-					int loopsFactor = isComplete ? completedLoops - 1 : completedLoops + 1;
+					int loopsFactor = t.isComplete ? t.completedLoops - 1 : t.completedLoops + 1;
 					float prevFrequency = options.frequency;
 					options.frequency /= loopsFactor;
 					options.depth *= loopsFactor;

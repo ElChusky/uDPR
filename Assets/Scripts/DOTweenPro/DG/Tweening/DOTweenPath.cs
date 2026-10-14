@@ -58,23 +58,15 @@ namespace DG.Tweening
 			{
 				return;
 			}
-			// TO CHECK: the shipped DOTweenPro assembly sees DOTween.dll internals (Utils, TweenManager, DOTween.GizmosDelegates,
-			// Path.type/wps/controlPoints/gizmoColor/AssignDecoder/Draw); this tree compiles into Assembly-CSharp, so they are reached by reflection.
-			const global::System.Reflection.BindingFlags IF = global::System.Reflection.BindingFlags.Instance | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic;
-			const global::System.Reflection.BindingFlags SF = global::System.Reflection.BindingFlags.Static | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic;
-			global::System.Type pathT = typeof(global::DG.Tweening.Plugins.Core.PathCore.Path);
-			global::System.Reflection.Assembly dotweenAsm = typeof(global::DG.Tweening.DOTween).Assembly;
 			if (_miCreateTween == null)
 			{
-				global::System.Type looseType = (global::System.Type)dotweenAsm.GetType("DG.Tweening.Core.Utils").GetMethod("GetLooseScriptType", SF).Invoke(null, new object[] { "DG.Tweening.DOTweenModuleUtils+Physics" });
-				_miCreateTween = looseType.GetMethod("CreateDOTweenPathTween", global::System.Reflection.BindingFlags.Static | global::System.Reflection.BindingFlags.Public);
+				_miCreateTween = global::DG.Tweening.Core.Utils.GetLooseScriptType("DG.Tweening.DOTweenModuleUtils+Physics").GetMethod("CreateDOTweenPathTween", global::System.Reflection.BindingFlags.Static | global::System.Reflection.BindingFlags.Public);
 			}
-			pathT.GetMethod("AssignDecoder", IF).Invoke(path, new object[] { pathT.GetField("type", IF).GetValue(path) });
-			if ((bool)dotweenAsm.GetType("DG.Tweening.Core.TweenManager").GetField("isUnityEditor", SF).GetValue(null))
+			path.AssignDecoder(path.type);
+			if (global::DG.Tweening.Core.TweenManager.isUnityEditor)
 			{
-				global::System.Collections.Generic.List<TweenCallback> gizmosDelegates = (global::System.Collections.Generic.List<TweenCallback>)typeof(global::DG.Tweening.DOTween).GetField("GizmosDelegates", SF).GetValue(null);
-				gizmosDelegates.Add((TweenCallback)global::System.Delegate.CreateDelegate(typeof(TweenCallback), path, pathT.GetMethod("Draw", IF, null, global::System.Type.EmptyTypes, null)));
-				pathT.GetField("gizmoColor", IF).SetValue(path, pathColor);
+				global::DG.Tweening.DOTween.GizmosDelegates.Add(path.Draw);
+				path.gizmoColor = pathColor;
 			}
 			if (isLocal)
 			{
@@ -82,20 +74,18 @@ namespace DG.Tweening
 				if (trans.parent != null)
 				{
 					global::UnityEngine.Vector3 parentPos = trans.parent.position;
-					global::UnityEngine.Vector3[] pathWps = (global::UnityEngine.Vector3[])pathT.GetField("wps", IF).GetValue(path);
-					int len = pathWps.Length;
+					int len = path.wps.Length;
 					for (int i = 0; i < len; i++)
 					{
-						pathWps[i] = pathWps[i] - parentPos;
+						path.wps[i] = path.wps[i] - parentPos;
 					}
-					global::DG.Tweening.Plugins.Core.PathCore.ControlPoint[] pathCps = (global::DG.Tweening.Plugins.Core.PathCore.ControlPoint[])pathT.GetField("controlPoints", IF).GetValue(path);
-					len = pathCps.Length;
+					len = path.controlPoints.Length;
 					for (int i = 0; i < len; i++)
 					{
-						global::DG.Tweening.Plugins.Core.PathCore.ControlPoint cp = pathCps[i];
+						global::DG.Tweening.Plugins.Core.PathCore.ControlPoint cp = path.controlPoints[i];
 						cp.a -= parentPos;
 						cp.b -= parentPos;
-						pathCps[i] = cp;
+						path.controlPoints[i] = cp;
 					}
 				}
 			}
@@ -301,21 +291,16 @@ namespace DG.Tweening
 		}
 		public global::UnityEngine.Vector3[] GetDrawPoints()
 		{
-			// TO CHECK: Path.wps / Path.nonLinearDrawWps are DOTween internals, reached by reflection (see Awake)
-			const global::System.Reflection.BindingFlags IF = global::System.Reflection.BindingFlags.Instance | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic;
-			global::System.Type pathT = typeof(global::DG.Tweening.Plugins.Core.PathCore.Path);
-			global::UnityEngine.Vector3[] pathWps = (global::UnityEngine.Vector3[])pathT.GetField("wps", IF).GetValue(path);
-			global::UnityEngine.Vector3[] drawWps = pathWps == null ? null : (global::UnityEngine.Vector3[])pathT.GetField("nonLinearDrawWps", IF).GetValue(path);
-			if (pathWps == null || drawWps == null)
+			if (path.wps == null || path.nonLinearDrawWps == null)
 			{
 				global::DG.Tweening.Core.Debugger.LogWarning("Draw points not ready yet. Returning NULL", null);
 				return null;
 			}
 			if (pathType == PathType.Linear)
 			{
-				return pathWps;
+				return path.wps;
 			}
-			return drawWps;
+			return path.nonLinearDrawWps;
 		}
 		internal global::UnityEngine.Vector3[] GetFullWps()
 		{
@@ -345,23 +330,18 @@ namespace DG.Tweening
 				return;
 			}
 			global::UnityEngine.Vector3 diff = pos - lastSrcPosition;
-			// TO CHECK: Path.wps / Path.controlPoints are DOTween internals, reached by reflection (see Awake)
-			const global::System.Reflection.BindingFlags IF = global::System.Reflection.BindingFlags.Instance | global::System.Reflection.BindingFlags.Public | global::System.Reflection.BindingFlags.NonPublic;
-			global::System.Type pathT = typeof(global::DG.Tweening.Plugins.Core.PathCore.Path);
-			global::UnityEngine.Vector3[] pathWps = (global::UnityEngine.Vector3[])pathT.GetField("wps", IF).GetValue(path);
-			int len = pathWps.Length;
+			int len = path.wps.Length;
 			for (int i = 0; i < len; i++)
 			{
-				pathWps[i] = pathWps[i] + diff;
+				path.wps[i] = path.wps[i] + diff;
 			}
-			global::DG.Tweening.Plugins.Core.PathCore.ControlPoint[] pathCps = (global::DG.Tweening.Plugins.Core.PathCore.ControlPoint[])pathT.GetField("controlPoints", IF).GetValue(path);
-			len = pathCps.Length;
+			len = path.controlPoints.Length;
 			for (int i = 0; i < len; i++)
 			{
-				global::DG.Tweening.Plugins.Core.PathCore.ControlPoint cp = pathCps[i];
+				global::DG.Tweening.Plugins.Core.PathCore.ControlPoint cp = path.controlPoints[i];
 				cp.a += diff;
 				cp.b += diff;
-				pathCps[i] = cp;
+				path.controlPoints[i] = cp;
 			}
 			lastSrcPosition = pos;
 		}
