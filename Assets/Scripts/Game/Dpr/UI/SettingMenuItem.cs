@@ -24,14 +24,24 @@ namespace Dpr.UI
 		private string _descMessageLabel;
 		private global::UnityEngine.RectTransform _content;
 		private int _selectIndex;
-		private global::System.Collections.Generic.List<global::Dpr.UI.UIText> _texts;
+		private global::System.Collections.Generic.List<global::Dpr.UI.UIText> _texts = new global::System.Collections.Generic.List<global::Dpr.UI.UIText>();
 		private global::UnityEngine.UI.Slider _slider;
 		private global::Dpr.UI.UIText _sliderText;
 		public global::ConfigID configId { get { return this._configId; } }
 		public string descMessageLabel { get { return this._descMessageLabel; } }
 		public int selectIndex { get { return this._selectIndex; } }
-		public int valueCount { get { /*@B 0x6005A7D*/ throw null; } }
-		public bool isSelect { get { /*@B 0x6005A7E*/ throw null; } }
+		public int valueCount { get {
+			switch (_itemType)
+			{
+				case global::Dpr.UI.SettingMenuItem.ItemType.Selector:
+					return _texts.Count;
+				case global::Dpr.UI.SettingMenuItem.ItemType.Gauge:
+					return 11;
+				default:
+					return 24;
+			}
+		} }
+		public bool isSelect { get { return _selectBg.enabled; } }
 		public global::Dpr.UI.SettingMenuItem.ItemType itemType { get { return this._itemType; } }
 		public void Setup(global::ConfigID configId, int selectIndex, string descMessageLabel, global::UnityEngine.Events.UnityAction<global::Dpr.UI.SettingMenuItem> onValueChanged) {
 			_configId = configId;
@@ -138,7 +148,7 @@ namespace Dpr.UI
 			_selectBg.enabled = enabled;
 			SetSelectIndex(_selectIndex, false, false);
 		}
-		public SettingMenuItem() { /*@B 0x6005A84*/ throw null; }
+		public SettingMenuItem() { }
 		public enum ItemType
 		{
 			Selector = 0,

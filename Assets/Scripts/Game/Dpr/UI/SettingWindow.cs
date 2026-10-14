@@ -13,11 +13,11 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.ScrollRect _scrollRect;
 		[global::UnityEngine.SerializeField]
-		private int _viewMenuItemNum;
+		private int _viewMenuItemNum = 7;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform _messageWindowRoot;
 		private int _selectIndex;
-		private global::System.Collections.Generic.List<global::Dpr.UI.SettingMenuItem> _activeItems;
+		private global::System.Collections.Generic.List<global::Dpr.UI.SettingMenuItem> _activeItems = new global::System.Collections.Generic.List<global::Dpr.UI.SettingMenuItem>();
 		private int _scrollIndex;
 		private global::DPData.CONFIG _tempConfig;
 		private global::Audio.AudioInstance _voiceInstance;
@@ -294,7 +294,11 @@ namespace Dpr.UI
 			PcPlatform.PcDisplayOptions.Accept();
 #endif
 		}
-		protected override void OpenMessageWindow(global::Dpr.MsgWindow.MsgWindowParam messageParam) { /*@B 0x6005A8F*/ throw null; }
+		protected override void OpenMessageWindow(global::Dpr.MsgWindow.MsgWindowParam messageParam) {
+			base.OpenMessageWindow(messageParam);
+			if (_messageWindowRoot != null)
+				_messageWindow.transform.position = _messageWindowRoot.position;
+		}
 		protected override void OnAddContextMenuYesNoItemParams(global::System.Collections.Generic.List<global::Dpr.UI.ContextMenuItem.Param> contextMenuItemParams) {
 			contextMenuItemParams.Add(new ContextMenuItem.Param() { menuId = ContextMenuID.OPTION_YES });
 			contextMenuItemParams.Add(new ContextMenuItem.Param() { menuId = ContextMenuID.OPTION_NO });
@@ -433,7 +437,23 @@ namespace Dpr.UI
 			SetSelectValue(selectValue);
 			return true;
 		}
-		private bool SetSelectIndex(int selectIndex, bool isInitialize = false) { /*@B 0x6005A93*/ throw null; }
+		private bool SetSelectIndex(int selectIndex, bool isInitialize = false) {
+			if (selectIndex >= _activeItems.Count)
+				return false;
+			int prevIndex = isInitialize ? selectIndex : _selectIndex;
+			if (!isInitialize && prevIndex == selectIndex)
+				return false;
+
+			_selectIndex = selectIndex;
+			_cursor.transform.SetParent(_activeItems[_selectIndex].transform, false);
+			_activeItems[prevIndex].Select(false);
+			_activeItems[_selectIndex].Select(true);
+			SetupScrollPosition();
+			if (!isInitialize)
+				OpenDescriptionMessageWindow();
+			SetDucking(_activeItems[_selectIndex].configId);
+			return true;
+		}
 		private void SetDucking(global::ConfigID configId = (global::ConfigID)(-1)) {
 			// Volume items (BgmVolume / SeVolume / VoiceVolume) lift the BGM ducking so the change can be heard
 			AudioManager.Instance.SetBgmEvent(
@@ -495,6 +515,6 @@ namespace Dpr.UI
 
 			_scrollRect.verticalNormalizedPosition = 1f - (float)_scrollIndex / (_activeItems.Count - _viewMenuItemNum);
 		}
-		public SettingWindow() { /*@B 0x6005A98*/ throw null; }
+		public SettingWindow() { }
 	}
 }

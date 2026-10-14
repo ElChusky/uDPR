@@ -3,9 +3,13 @@ namespace Dpr.UI
 {
 	public class SelectPlayerVisualItem : global::Dpr.UI.SelectOpeningItem
 	{
-		public bool sex;
+		public bool sex = true;
 		public int colorId;
-		private void Awake() { /*@B 0x60055FA*/ throw null; }
-		public SelectPlayerVisualItem() { /*@B 0x60055FB*/ throw null; }
+		private void Awake() {
+			var names = gameObject.name.Split(new char[] { '_' });
+			sex = int.Parse(names[0]) == 1;
+			colorId = int.Parse(names[1]) - 1;
+		}
+		public SelectPlayerVisualItem() { }
 	}
 }

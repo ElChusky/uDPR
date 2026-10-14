@@ -11,7 +11,11 @@ namespace Dpr.UI
 		protected global::UnityEngine.UI.Image _imageText;
 		[global::UnityEngine.SerializeField]
 		protected global::UnityEngine.Color[] _colors;
-		public virtual void Select(bool enabled) { /*@B 0x60055F8*/ throw null; }
+		public virtual void Select(bool enabled) {
+			_imageBody.sprite = _sprites[enabled ? 1 : 0];
+			if (_imageText != null)
+				_imageText.color = _colors[enabled ? 1 : 0];
+		}
 		public SelectOpeningItem() { }
 	}
 }
