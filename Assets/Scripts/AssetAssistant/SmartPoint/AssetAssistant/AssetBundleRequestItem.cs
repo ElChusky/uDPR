@@ -3,7 +3,7 @@ namespace SmartPoint.AssetAssistant
 {
 	public class AssetBundleRequestItem : global::SmartPoint.AssetAssistant.IAssetRequestItem
 	{
-		public bool isComplete { get { /*@B AssetAssistant:0x60000D3*/ throw null; } }
+		public bool isComplete { get { return this.status == RequestStatus.Complete; } }
 		public global::SmartPoint.AssetAssistant.RequestStatus status { get; set; }
 		public global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest manifest { get; set; }
 		public string uri { get; set; }
@@ -17,6 +17,12 @@ namespace SmartPoint.AssetAssistant
 		public global::SmartPoint.AssetAssistant.RequestEventCallback callback { get; set; }
 		public string error { get; set; }
 		public global::UnityEngine.CustomYieldInstruction customInstruction { get; set; }
-		public AssetBundleRequestItem(global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest _manifest, string _uri, bool _loadAllAssets = true, bool _loadDependencies = true, string[] _variants = null) { /*@B AssetAssistant:0x60000D2*/ throw null; }
+		public AssetBundleRequestItem(global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest _manifest, string _uri, bool _loadAllAssets = true, bool _loadDependencies = true, string[] _variants = null) {
+            this.manifest = _manifest;
+            this.uri = _uri;
+            this.variants = _variants;
+            this.status = _loadDependencies ? RequestStatus.ResolveDependencies : RequestStatus.LoadAssetBundle;
+            this.loadAllAssets = _loadAllAssets;
+        }
 	}
 }
