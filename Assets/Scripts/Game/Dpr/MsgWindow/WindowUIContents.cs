@@ -5,41 +5,138 @@ namespace Dpr.MsgWindow
 	{
 		private global::UnityEngine.Sprite[] windowBGSprArrayPtr;
 		private global::UnityEngine.Sprite[] windowFrameSprArrayPtr;
-		private global::Dpr.MsgWindow.UIWindowLayout uiLayout;
-		private global::Dpr.MsgWindow.UIRoadsign uiRoadsign;
-		private global::Dpr.MsgWindow.UISpeakerName uiSpeakerName;
-		private global::Dpr.MsgWindow.UIKeywaitIcon uiKeywaitIcon;
-		private global::Dpr.MsgWindow.UILoadingIcon uiLoadingIcon;
+		private global::Dpr.MsgWindow.UIWindowLayout uiLayout = new global::Dpr.MsgWindow.UIWindowLayout();
+		private global::Dpr.MsgWindow.UIRoadsign uiRoadsign = new global::Dpr.MsgWindow.UIRoadsign();
+		private global::Dpr.MsgWindow.UISpeakerName uiSpeakerName = new global::Dpr.MsgWindow.UISpeakerName();
+		private global::Dpr.MsgWindow.UIKeywaitIcon uiKeywaitIcon = new global::Dpr.MsgWindow.UIKeywaitIcon();
+		private global::Dpr.MsgWindow.UILoadingIcon uiLoadingIcon = new global::Dpr.MsgWindow.UILoadingIcon();
 		private global::UnityEngine.GameObject uiContent;
-		private global::UnityEngine.Vector2 defaultWindowAnchorPos;
+		private global::UnityEngine.Vector2 defaultWindowAnchorPos = global::UnityEngine.Vector2.zero;
 		private float defaultMessagePosX;
 		private int defaultSortingOrder;
 		private bool isPrevNetworkFlag;
 		private bool isMoveMessagePosX;
-		public int SortingOrder { get { /*@B 0x6003A87*/ throw null; } }
-		public void Initialize(global::Dpr.MsgWindow.MsgWindowDataModel dataModel, global::Dpr.MsgWindow.MsgWindowConfig config, global::Dpr.MsgWindow.MsgWindowDataContainer dataContainer) { /*@B 0x6003A84*/ throw null; }
+		public int SortingOrder { get { return uiLayout.SortingOrder; } }
+		public void Initialize(global::Dpr.MsgWindow.MsgWindowDataModel dataModel, global::Dpr.MsgWindow.MsgWindowConfig config, global::Dpr.MsgWindow.MsgWindowDataContainer dataContainer) {
+			windowBGSprArrayPtr = dataContainer.WindowBGSprArray;
+			windowFrameSprArrayPtr = dataContainer.WindowFrameSprArray;
+			global::UnityEngine.RectTransform msgTextRect = this.FindDeep("MsgTextContainer", true).GetComponent<global::UnityEngine.RectTransform>();
+			defaultMessagePosX = msgTextRect.anchoredPosition.x;
+			global::UnityEngine.Canvas canvas = this.FindDeep("Content", true).GetComponent<global::UnityEngine.Canvas>();
+			defaultSortingOrder = canvas.sortingOrder;
+			global::UnityEngine.RectTransform windowRect = GetComponent<global::UnityEngine.RectTransform>();
+			defaultWindowAnchorPos = windowRect.anchoredPosition;
+			uiLayout.Setup(msgTextRect, windowRect, canvas, this.FindDeep("Frame", true));
+			uiContent = this.FindDeep("UIContent", true);
+			uiRoadsign.Setup(uiContent.FindDeep("RoadsignContent", true));
+			uiSpeakerName.Setup(uiContent.FindDeep("SpeakerName", true), dataModel, config.speakerFrameWidthOffset, dataContainer.GetCommonSprByIndex(1));
+			uiKeywaitIcon.Setup(uiContent.FindDeep("KeywaitIcon", true), config.iconMoveDist, config.addAngleSec, dataContainer.GetCommonSprByIndex(0));
+			ChangeWndType(global::PlayerWork.config.window_type);
+		}
 		public void SetupAssetBundleResource(global::Dpr.MsgWindow.MsgWindowDataContainer dataContainer) {
             uiLoadingIcon.Setup(dataContainer.GetInstantiadedAssetByIndex(0, uiContent.FindDeep("LoadingIcon", true).transform));
         }
-		public void OnFinalize() { /*@B 0x6003A86*/ throw null; }
-		public void SetupLayout(global::System.Nullable<global::UnityEngine.Vector2> anchorPos, int sortingOrder, bool isNetwork) { /*@B 0x6003A88*/ throw null; }
-		public void ChangeFontAsset(global::TMPro.TMP_FontAsset useFontAsset) { /*@B 0x6003A89*/ throw null; }
-		private void SetWindowPosition(global::System.Nullable<global::UnityEngine.Vector2> anchorPos) { /*@B 0x6003A8A*/ throw null; }
-		private void SetSortingOrder(int sortingOrder) { /*@B 0x6003A8B*/ throw null; }
-		public void SetWindowWidth(float width) { /*@B 0x6003A8C*/ throw null; }
-		public void ChangeWndType(global::DPData.WINTYPE winType) { /*@B 0x6003A8D*/ throw null; }
-		public void ResetDefaultWndFrame() { /*@B 0x6003A8E*/ throw null; }
-		public void SetBoardWndFrame(global::Dpr.MsgWindow.MsgWindowDataModel.WindowFrameType winType) { /*@B 0x6003A8F*/ throw null; }
-		public void SetNetworkFrame() { /*@B 0x6003A90*/ throw null; }
-		public void ShowRoadsign(global::Dpr.MsgWindow.RoadsignViewData viewData, float posX) { /*@B 0x6003A91*/ throw null; }
-		private void ResetOffsetPosX() { /*@B 0x6003A92*/ throw null; }
-		public void ShowKeywaitIcon() { /*@B 0x6003A93*/ throw null; }
-		public void HideKeywaitIcon() { /*@B 0x6003A94*/ throw null; }
-		public void UpdateKeywaitIcon(float deltaTime) { /*@B 0x6003A95*/ throw null; }
-		public void ShowLoadingIcon() { /*@B 0x6003A96*/ throw null; }
-		public void HideLoadingIcon() { /*@B 0x6003A97*/ throw null; }
-		public void ShowSpeakerName(string speakerName) { /*@B 0x6003A98*/ throw null; }
-		public void HideSpeakerName() { /*@B 0x6003A99*/ throw null; }
-		public WindowUIContents() { /*@B 0x6003A9A*/ throw null; }
+		public void OnFinalize() {
+			uiLoadingIcon.OnFinalize();
+		}
+		public void SetupLayout(global::System.Nullable<global::UnityEngine.Vector2> anchorPos, int sortingOrder, bool isNetwork) {
+			ResetOffsetPosX();
+			SetWindowPosition(anchorPos);
+			SetSortingOrder(sortingOrder);
+			uiRoadsign.HideRoadsignIcon();
+			HideSpeakerName();
+			HideKeywaitIcon();
+			if (isPrevNetworkFlag)
+			{
+				if (!isNetwork)
+				{
+					ChangeWndType(global::PlayerWork.config.window_type);
+					isPrevNetworkFlag = false;
+				}
+			}
+			else if (isNetwork)
+			{
+				isPrevNetworkFlag = true;
+				SetNetworkFrame();
+			}
+		}
+		public void ChangeFontAsset(global::TMPro.TMP_FontAsset useFontAsset) {
+			uiSpeakerName.SetSpeakerNameFontAsset(useFontAsset);
+		}
+		private void SetWindowPosition(global::System.Nullable<global::UnityEngine.Vector2> anchorPos) {
+			if (anchorPos.HasValue)
+				uiLayout.SetWindowPos(anchorPos.Value);
+			else
+				uiLayout.SetWindowPos(defaultWindowAnchorPos);
+		}
+		private void SetSortingOrder(int sortingOrder) {
+			if (sortingOrder >= 0)
+			{
+				uiLayout.SetSortingOrder(sortingOrder);
+			}
+			else if (uiLayout.SortingOrder != defaultSortingOrder)
+			{
+				uiLayout.SetSortingOrder(defaultSortingOrder);
+			}
+		}
+		public void SetWindowWidth(float width) {
+			uiLayout.SetWindowWidth(width);
+		}
+		public void ChangeWndType(global::DPData.WINTYPE winType) {
+			global::Dpr.Message.MessageHelper.EmitLog(string.Format("Change WindowType : {0}", winType), global::UnityEngine.LogType.Log);
+			uiLayout.SetWindowFrameSpr(windowFrameSprArrayPtr[(int)winType]);
+		}
+		public void ResetDefaultWndFrame() {
+			uiLayout.SetCurrentSelectWindowSpr();
+		}
+		public void SetBoardWndFrame(global::Dpr.MsgWindow.MsgWindowDataModel.WindowFrameType winType) {
+			if (winType == global::Dpr.MsgWindow.MsgWindowDataModel.WindowFrameType.Default)
+				uiLayout.SetCurrentSelectWindowSpr();
+			else
+				uiLayout.SetBoardFrameSpr(windowBGSprArrayPtr[(int)winType]);
+		}
+		public void SetNetworkFrame() {
+			uiLayout.SetWindowFrameSpr(windowFrameSprArrayPtr[24]);
+		}
+		public void ShowRoadsign(global::Dpr.MsgWindow.RoadsignViewData viewData, float posX) {
+			uiRoadsign.ShowRoadsignIcon(viewData);
+			if (!isMoveMessagePosX)
+			{
+				isMoveMessagePosX = true;
+				uiLayout.SetOffsetPosX(posX);
+			}
+		}
+		private void ResetOffsetPosX() {
+			if (isMoveMessagePosX)
+			{
+				isMoveMessagePosX = false;
+				uiLayout.SetOffsetPosX(defaultMessagePosX);
+			}
+		}
+		public void ShowKeywaitIcon() {
+			uiKeywaitIcon.ResetParam();
+			uiKeywaitIcon.SetKeywaitIconActive(true);
+		}
+		public void HideKeywaitIcon() {
+			uiKeywaitIcon.SetKeywaitIconActive(false);
+		}
+		public void UpdateKeywaitIcon(float deltaTime) {
+			uiKeywaitIcon.OnUpdate(deltaTime);
+		}
+		public void ShowLoadingIcon() {
+			uiLoadingIcon.SetLoadingIconActive(true);
+			uiLoadingIcon.PlayAnim();
+		}
+		public void HideLoadingIcon() {
+			uiLoadingIcon.SetLoadingIconActive(false);
+		}
+		public void ShowSpeakerName(string speakerName) {
+			uiSpeakerName.SetSpeakerName(speakerName);
+			uiSpeakerName.SetSpeakerNameActive(true);
+		}
+		public void HideSpeakerName() {
+			uiSpeakerName.SetSpeakerNameActive(false);
+		}
+		public WindowUIContents() { }
 	}
 }

@@ -7,9 +7,16 @@ namespace Dpr.NetworkDbg
 		public global::INL1.IlcaNetSessionInitMode matchingMode;
 		public ushort gameMode;
 		public ushort playerNumMax;
-		public string password;
+		public string password = string.Empty;
 		public global::INL1.IlcaNetSessionGamingStartMode gamingStartMode;
-		public void Reset() { /*@B 0x6003135*/ throw null; }
-		public NetworkParameter() { /*@B 0x6003136*/ throw null; }
+		public void Reset() {
+			networkType = global::INL1.IlcaNetSessionNetworkType.Local;
+			matchingMode = global::INL1.IlcaNetSessionInitMode.Random;
+			gameMode = 0;
+			playerNumMax = 2;
+			password = string.Empty;
+			gamingStartMode = global::INL1.IlcaNetSessionGamingStartMode.Natural;
+		}
+		public NetworkParameter() { }
 	}
 }

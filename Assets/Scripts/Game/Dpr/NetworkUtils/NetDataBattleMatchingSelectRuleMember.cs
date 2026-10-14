@@ -5,6 +5,6 @@ namespace Dpr.NetworkUtils
 	{
 		public override byte GetDataID { get { return 53; } }
 		public static byte DataID { get { return 53; } }
-		public NetDataBattleMatchingSelectRuleMember() { /*@B 0x60039CC*/ throw null; }
+		public NetDataBattleMatchingSelectRuleMember() { }
 	}
 }

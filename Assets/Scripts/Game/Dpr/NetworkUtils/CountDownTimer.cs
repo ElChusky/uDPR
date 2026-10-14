@@ -5,7 +5,7 @@ namespace Dpr.NetworkUtils
 	{
 		private const string ZERO_MINUT = "00";
 		private const int SECOND = 60;
-		private global::System.Text.StringBuilder timeSb;
+		private global::System.Text.StringBuilder timeSb = new global::System.Text.StringBuilder();
 		private float remaingTime;
 		private int remainingCount;
 		private bool isCountDown;
@@ -56,6 +56,6 @@ namespace Dpr.NetworkUtils
 				isCountDown = false;
 			}
 		}
-		public CountDownTimer() { /*@B 0x6003935*/ throw null; }
+		public CountDownTimer() { }
 	}
 }

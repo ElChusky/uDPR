@@ -3,7 +3,7 @@ namespace Dpr.NetworkUtils
 {
 	public class ErrorAppletResult
 	{
-		public global::Dpr.NetworkUtils.ErrorLevelID errorLevel;
-		public ErrorAppletResult() { /*@B 0x600389B*/ throw null; }
+		public global::Dpr.NetworkUtils.ErrorLevelID errorLevel = global::Dpr.NetworkUtils.ErrorLevelID.None;
+		public ErrorAppletResult() { }
 	}
 }

@@ -4,12 +4,19 @@ namespace Dpr.NetworkUtils
 	public class GMSTradeResult
 	{
 		public byte[] coreDatas;
-		public global::Dpr.NetworkUtils.GMstationTradeStatusEnum tradeResult;
+		public global::Dpr.NetworkUtils.GMstationTradeStatusEnum tradeResult = global::Dpr.NetworkUtils.GMstationTradeStatusEnum.NONE;
 		public global::Dpr.GMS.TradeResult result;
 		public int pointNo;
 		public bool bNeedDelete;
 		public bool bIsSuccess;
-		public void Clear() { /*@B 0x6003899*/ throw null; }
-		public GMSTradeResult() { /*@B 0x600389A*/ throw null; }
+		public void Clear() {
+			coreDatas = null;
+			tradeResult = global::Dpr.NetworkUtils.GMstationTradeStatusEnum.NONE;
+			result = global::Dpr.GMS.TradeResult.None;
+			pointNo = -1;
+			bNeedDelete = false;
+			bIsSuccess = false;
+		}
+		public GMSTradeResult() { }
 	}
 }

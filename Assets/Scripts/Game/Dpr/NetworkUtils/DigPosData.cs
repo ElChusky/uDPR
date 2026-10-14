@@ -7,6 +7,6 @@ namespace Dpr.NetworkUtils
 		public global::UnityEngine.Vector2Int MainPos;
 		public global::DPData.DigPos digPos1;
 		public global::DPData.DigPos digPos2;
-		public bool isBothUsed { get { /*@B 0x60039EC*/ throw null; } }
+		public bool isBothUsed { get { return digPos1.IsNull && digPos2.IsNull; } }
 	}
 }
