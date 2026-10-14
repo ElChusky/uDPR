@@ -8,7 +8,7 @@ namespace Dpr.Battle.Logic
 		public const int RECORD_MAX = 400;
 		private uint m_ptr;
 		private global::Dpr.Battle.Logic.WazaRec.RECORD[] m_record = Arrays.InitializeWithDefaultInstances<RECORD>(RECORD_MAX);
-		public WazaRec() { /*@B 0x6007795*/ throw null; }
+		public WazaRec() { }
 		public void CopyFrom(in global::Dpr.Battle.Logic.WazaRec src) {
             m_ptr = src.m_ptr;
             for (int i = 0; i < m_record.Length; i++)

@@ -5,7 +5,7 @@ namespace Dpr.Battle.Logic
 {
 	public static class Setup
 	{
-		private static readonly byte[] maxFollowPokeLevelTbl;
+		private static readonly byte[] maxFollowPokeLevelTbl = new byte[] { 10, 10, 30, 30, 50, 50, 70, 70, 100 };
 		public static void BATTLE_SETUP_FIELD_SITUATION_Init(global::Dpr.Battle.Logic.BTL_FIELD_SITUATION sit) {
 			sit.bgComponent.Clear();
 			sit.weather = 0;
@@ -408,6 +408,6 @@ namespace Dpr.Battle.Logic
 					bp.btlEffComponent.SetUpBattleEffectComponentData(setupEffectId, EffectBattleID.NONE, 0, null);
 			}
 		}
-		static Setup() { /*@B 0x600674E*/ throw null; }
+		static Setup() { }
 	}
 }

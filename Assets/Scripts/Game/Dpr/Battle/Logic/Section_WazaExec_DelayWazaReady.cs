@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec_DelayWazaReady : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec_DelayWazaReady(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007247*/ throw null; }
+		public Section_WazaExec_DelayWazaReady(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_DelayWazaReady.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_DelayWazaReady.Description description) {
 			pResult.isReadyProcessed = false;
 			pResult.isWazaEnable = false;
@@ -54,7 +54,10 @@ namespace Dpr.Battle.Logic
 		{
 			public bool isReadyProcessed;
 			public bool isWazaEnable;
-			public Result() { /*@B 0x600B67E*/ throw null; }
+			public Result() {
+				isReadyProcessed = false;
+				isWazaEnable = false;
+			}
 		}
 	}
 }

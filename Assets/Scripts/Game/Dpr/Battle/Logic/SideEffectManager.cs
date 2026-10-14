@@ -3,8 +3,10 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class SideEffectManager
 	{
-		private global::Dpr.Battle.Logic.SideEffectStatus[][] m_sideEffects;
-		public SideEffectManager() { /*@B 0x6007770*/ throw null; }
+		private global::Dpr.Battle.Logic.SideEffectStatus[][] m_sideEffects = RectangularArrays.RectangularDefaultArray<SideEffectStatus>(2, (int)BtlSideEffect.BTL_SIDEEFF_MAX);
+		public SideEffectManager() {
+            CreateEffectStatusArray();
+        }
 		public void CreateEffectStatusArray() {
             for (var i = BtlSideEffect.BTL_SIDEEFF_START; i != BtlSideEffect.BTL_SIDEEFF_MAX; i++)
                 m_sideEffects[(int)BtlSide.BTL_SIDE_1ST][(int)i] = new SideEffectStatus(i);
@@ -12,8 +14,20 @@ namespace Dpr.Battle.Logic
             for (var i = BtlSideEffect.BTL_SIDEEFF_START; i != BtlSideEffect.BTL_SIDEEFF_MAX; i++)
                 m_sideEffects[(int)BtlSide.BTL_SIDE_2ND][(int)i] = new SideEffectStatus(i);
         }
-		private void DeleteEffectStatusArray() { /*@B 0x6007772*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.SideEffectManager src) { /*@B 0x6007773*/ throw null; }
+		private void DeleteEffectStatusArray() {
+            for (int i = 0; i < (int)BtlSideEffect.BTL_SIDEEFF_MAX; i++)
+                m_sideEffects[(int)BtlSide.BTL_SIDE_1ST][i] = null;
+
+            for (int i = 0; i < (int)BtlSideEffect.BTL_SIDEEFF_MAX; i++)
+                m_sideEffects[(int)BtlSide.BTL_SIDE_2ND][i] = null;
+        }
+		public void CopyFrom(in global::Dpr.Battle.Logic.SideEffectManager src) {
+            for (int i = 0; i < (int)BtlSideEffect.BTL_SIDEEFF_MAX; i++)
+                m_sideEffects[(int)BtlSide.BTL_SIDE_1ST][i].CopyFrom(src.m_sideEffects[(int)BtlSide.BTL_SIDE_1ST][i]);
+
+            for (int i = 0; i < (int)BtlSideEffect.BTL_SIDEEFF_MAX; i++)
+                m_sideEffects[(int)BtlSide.BTL_SIDE_2ND][i].CopyFrom(src.m_sideEffects[(int)BtlSide.BTL_SIDE_2ND][i]);
+        }
 		public void RemoveAllSideEffect() {
             for (var i = BtlSideEffect.BTL_SIDEEFF_START; i != BtlSideEffect.BTL_SIDEEFF_MAX; i++)
                 GetSideEffectStatusConst(BtlSide.BTL_SIDE_1ST, i).RemoveEffect();

@@ -4,7 +4,13 @@ namespace Dpr.Battle.Logic
 	public sealed class SendData : global::System.IDisposable
 	{
 		private unsafe global::Dpr.Battle.Logic.SEND_DATA_BUFFER* m_buffer;
-		public SendData(global::Unity.Collections.Allocator allocator = (global::Unity.Collections.Allocator)(4)) { /*@B 0x6007726*/ throw null; }
+		public SendData(global::Unity.Collections.Allocator allocator = (global::Unity.Collections.Allocator)(4)) {
+            unsafe
+            {
+                m_buffer = (SEND_DATA_BUFFER*)BattleUnmanagedMem.Malloc(sizeof(SEND_DATA_BUFFER), allocator);
+                SEND_DATA_BUFFER.Clear(m_buffer);
+            }
+        }
 		public void Dispose() {
             unsafe
             {
@@ -14,7 +20,12 @@ namespace Dpr.Battle.Logic
 		public unsafe global::Dpr.Battle.Logic.SEND_DATA_BUFFER* GetBuffer() {
             return m_buffer;
         }
-		public void Clear() { /*@B 0x6007729*/ throw null; }
+		public void Clear() {
+            unsafe
+            {
+                SEND_DATA_BUFFER.Clear(m_buffer);
+            }
+        }
 		public void CopyFrom(in global::Dpr.Battle.Logic.SendData src) {
             unsafe
             {

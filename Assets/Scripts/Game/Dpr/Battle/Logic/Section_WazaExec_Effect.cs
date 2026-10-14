@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec_Effect : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec_Effect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600724B*/ throw null; }
+		public Section_WazaExec_Effect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_Effect.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_Effect.Description description) {
 			WazaEffectParams wazaEffect = GetActionSharedData().wazaEffectParams;
 			if (description.isWazaValid)
@@ -51,7 +51,13 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.WazaParam pWazaParam;
 			public global::Dpr.Battle.Logic.WazaEffectReservedPos pQueReservePos;
 			public bool isWazaValid;
-			public Description() { /*@B 0x600B67F*/ throw null; }
+			public Description() {
+				pAttacker = null;
+				pActionDesc = null;
+				pWazaParam = null;
+				pQueReservePos = null;
+				isWazaValid = false;
+			}
 		}
 		public class Result
 		{

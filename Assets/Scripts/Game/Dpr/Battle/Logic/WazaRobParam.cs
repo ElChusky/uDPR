@@ -4,9 +4,9 @@ namespace Dpr.Battle.Logic
 	public sealed class WazaRobParam
 	{
 		public byte robberCount;
-		public byte[] robberPokeID;
-		public global::Dpr.Battle.Logic.BtlPokePos[] targetPos;
-		public byte[] targetPokeID;
+		public byte[] robberPokeID = new byte[5];
+		public global::Dpr.Battle.Logic.BtlPokePos[] targetPos = new BtlPokePos[5];
+		public byte[] targetPokeID = new byte[5];
 		public void Add(byte robberPokeID, byte targetPokeID, global::Dpr.Battle.Logic.BtlPokePos targetPos) {
             if (robberCount < this.robberPokeID.Length)
             {
@@ -34,6 +34,6 @@ namespace Dpr.Battle.Logic
             for (int i = 0; i < targetPokeID.Length; i++)
                 targetPokeID[i] = 0;
         }
-		public WazaRobParam() { /*@B 0x6007556*/ throw null; }
+		public WazaRobParam() { }
 	}
 }

@@ -7,7 +7,12 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.BattleEnv m_pBattleEnv;
 		private global::Dpr.Battle.Logic.ServerCommandQueue m_pQueue;
 		private global::Dpr.Battle.Logic.SectionContainer m_pSectionContainer;
-		public ServerCommandGenerator(in global::Dpr.Battle.Logic.ServerCommandGenerator.SetupParam setupParam) { /*@B 0x600734A*/ throw null; }
+		public ServerCommandGenerator(in global::Dpr.Battle.Logic.ServerCommandGenerator.SetupParam setupParam) {
+            m_pMainModule = setupParam.pMainModule;
+            m_pBattleEnv = setupParam.pBattleEnv;
+            m_pQueue = setupParam.pServerCmdQueue;
+            m_pSectionContainer = setupParam.pSectionContainer;
+        }
 		public void GenerateOperations_FirstPokeIn(global::Dpr.Battle.Logic.ServerCommandGenerator.Result pResult) {
             m_pQueue.Initialize();
             pResult.interruptCode = firstPokeIn();

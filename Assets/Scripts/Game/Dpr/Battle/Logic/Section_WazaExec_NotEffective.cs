@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec_NotEffective : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec_NotEffective(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007256*/ throw null; }
+		public Section_WazaExec_NotEffective(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_NotEffective.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_NotEffective.Description description) {
 			GetEventLauncher().Event_WazaExeEnd_Common(description.pokeID, description.wazaID, description.pActionDesc, EventID.WAZA_EXECUTE_NO_EFFECT);
 		}
@@ -12,7 +12,11 @@ namespace Dpr.Battle.Logic
 			public byte pokeID;
 			public global::Pml.WazaNo wazaID;
 			public global::Dpr.Battle.Logic.ActionDesc pActionDesc;
-			public Description() { /*@B 0x600B683*/ throw null; }
+			public Description() {
+				pActionDesc = null;
+				pokeID = PokeID.INVALID;
+				wazaID = global::Pml.WazaNo.NULL;
+			}
 		}
 		public class Result
 		{

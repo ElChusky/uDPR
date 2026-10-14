@@ -40,7 +40,9 @@ namespace Dpr.Battle.Logic
 		public static global::Pml.WazaData.SickContParam GetSickCont(global::Pml.WazaNo id) {
             return WazaDataSystem.GetSickCont(id);
         }
-		public static global::Pml.WazaData.WazaRankEffect GetRankEffect(global::Pml.WazaNo id, uint idx, out int volume) { /*@B 0x6007A05*/ throw null; }
+		public static global::Pml.WazaData.WazaRankEffect GetRankEffect(global::Pml.WazaNo id, uint idx, out int volume) {
+            return WazaDataSystem.GetRankEffect(id, idx, out volume);
+        }
 		public static byte GetRankEffectCount(global::Pml.WazaNo id) {
             return WazaDataSystem.GetRankEffectCount(id);
         }
@@ -53,8 +55,12 @@ namespace Dpr.Battle.Logic
 		public static ushort GetHitPer(global::Pml.WazaNo id) {
             return WazaDataSystem.GetHitPer(id);
         }
-		public static uint GetHitCountMax(global::Pml.WazaNo id) { /*@B 0x6007A0A*/ throw null; }
-		public static uint GetHitCountMin(global::Pml.WazaNo id) { /*@B 0x6007A0B*/ throw null; }
+		public static uint GetHitCountMax(global::Pml.WazaNo id) {
+            return WazaDataSystem.GetHitCountMax(id);
+        }
+		public static uint GetHitCountMin(global::Pml.WazaNo id) {
+            return WazaDataSystem.GetHitCountMin(id);
+        }
 		public static int GetAISeqNo(global::Pml.WazaNo id) {
             return WazaDataSystem.GetAISeqNo(id);
         }

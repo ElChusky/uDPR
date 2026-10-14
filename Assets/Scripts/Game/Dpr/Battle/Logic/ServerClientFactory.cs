@@ -105,16 +105,16 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BattleEnv battleEnvForServer;
 			public global::Dpr.Battle.Logic.BattleEnv battleEnvForClient;
 			public global::Dpr.Battle.Logic.SendDataContainer sendDataContainerForServerSend;
-			public global::Dpr.Battle.Logic.SendDataContainer[] sendDataContainerForClientSend;
-			public global::Dpr.Battle.Logic.SendDataContainer[] sendDataContainerForClientReceive;
-			public Input() { /*@B 0x600B6C6*/ throw null; }
+			public global::Dpr.Battle.Logic.SendDataContainer[] sendDataContainerForClientSend = new SendDataContainer[(int)BTL_CLIENT_ID.BTL_CLIENT_NUM];
+			public global::Dpr.Battle.Logic.SendDataContainer[] sendDataContainerForClientReceive = new SendDataContainer[(int)BTL_CLIENT_ID.BTL_CLIENT_NUM];
+			public Input() { }
 		}
 		public class Output
 		{
 			public global::Dpr.Battle.Logic.BTL_SERVER server;
-			public global::Dpr.Battle.Logic.BTL_CLIENT[] localClients;
-			public global::Dpr.Battle.Logic.BTL_CLIENT[] dummyClients;
-			public Output() { /*@B 0x600B6C7*/ throw null; }
+			public global::Dpr.Battle.Logic.BTL_CLIENT[] localClients = new BTL_CLIENT[(int)BTL_CLIENT_ID.BTL_CLIENT_NUM];
+			public global::Dpr.Battle.Logic.BTL_CLIENT[] dummyClients = new BTL_CLIENT[(int)BTL_CLIENT_ID.BTL_CLIENT_NUM];
+			public Output() { }
 		}
 	}
 }

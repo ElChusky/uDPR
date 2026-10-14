@@ -4,8 +4,11 @@ namespace Dpr.Battle.Logic
 	public sealed class TrainerMessageManager
 	{
 		private readonly global::Dpr.Battle.Logic.MainModule m_pMainModule;
-		private global::Dpr.Battle.Logic.TrainerMessageManager.ClientData[] m_clientData;
-		public TrainerMessageManager(global::Dpr.Battle.Logic.MainModule pMainModule) { /*@B 0x600778E*/ throw null; }
+		private global::Dpr.Battle.Logic.TrainerMessageManager.ClientData[] m_clientData = Arrays.InitializeWithDefaultInstances<ClientData>((int)BTL_CLIENT_ID.BTL_CLIENT_NUM);
+		public TrainerMessageManager(global::Dpr.Battle.Logic.MainModule pMainModule) {
+            m_pMainModule = pMainModule;
+            ClearClientData();
+        }
 		private void ClearClientData() {
             for (int i = 0; i < (int)BTL_CLIENT_ID.BTL_CLIENT_NUM; i++)
             {
@@ -30,8 +33,8 @@ namespace Dpr.Battle.Logic
         }
 		private sealed class ClientData
 		{
-			public bool[] isDone;
-			public ClientData() { /*@B 0x600B6CC*/ throw null; }
+			public bool[] isDone = new bool[(int)TrainerMessageID.MESSAGE_NUM];
+			public ClientData() { }
 		}
 	}
 }

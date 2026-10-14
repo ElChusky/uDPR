@@ -3,9 +3,13 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class SideEffectStatus
 	{
-		private global::Dpr.Battle.Logic.SideEffectStatus.DATA m_data;
-		public SideEffectStatus(global::Dpr.Battle.Logic.BtlSideEffect sideEffect) { /*@B 0x6007778*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.SideEffectStatus src) { /*@B 0x6007779*/ throw null; }
+		private global::Dpr.Battle.Logic.SideEffectStatus.DATA m_data = new DATA();
+		public SideEffectStatus(global::Dpr.Battle.Logic.BtlSideEffect sideEffect) {
+            m_data.sideEffect = sideEffect;
+        }
+		public void CopyFrom(in global::Dpr.Battle.Logic.SideEffectStatus src) {
+            m_data.CopyFrom(src.m_data);
+        }
 		public void SwapFrom(global::Dpr.Battle.Logic.SideEffectStatus target) {
             DATA tmp = new DATA();
             tmp.CopyFrom(target.m_data);
@@ -64,14 +68,21 @@ namespace Dpr.Battle.Logic
 		public bool IsTurnPassed() {
             return m_data.contParam.turn_count <= m_data.turn_counter;
         }
-		public global::Dpr.Battle.Logic.BTL_SICKCONT GetContParam() { /*@B 0x6007786*/ throw null; }
+		public global::Dpr.Battle.Logic.BTL_SICKCONT GetContParam() {
+            return m_data.contParam;
+        }
 		private class DATA
 		{
 			public global::Dpr.Battle.Logic.BtlSideEffect sideEffect;
 			public global::Dpr.Battle.Logic.BTL_SICKCONT contParam;
 			public uint turn_counter;
 			public uint add_counter;
-			public void CopyFrom(global::Dpr.Battle.Logic.SideEffectStatus.DATA src) { /*@B 0x600B6CA*/ throw null; }
+			public void CopyFrom(global::Dpr.Battle.Logic.SideEffectStatus.DATA src) {
+				sideEffect = src.sideEffect;
+				contParam = src.contParam;
+				turn_counter = src.turn_counter;
+				add_counter = src.add_counter;
+			}
 			public DATA() { }
 		}
 	}

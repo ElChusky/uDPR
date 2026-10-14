@@ -4,12 +4,20 @@ namespace Dpr.Battle.Logic
 	public sealed class SimpleEffectFailManager
 	{
 		private const int NUM_CAUSE_PER_WAZA = 5;
-		private global::Dpr.Battle.Logic.SimpleEffectFailManager.Cause[] m_causes;
+		private global::Dpr.Battle.Logic.SimpleEffectFailManager.Cause[] m_causes = new Cause[NUM_CAUSE_PER_WAZA];
 		private uint m_numCause;
 		private bool m_isAvailable;
-		public SimpleEffectFailManager() { /*@B 0x6007787*/ throw null; }
-		public void Start() { /*@B 0x6007788*/ throw null; }
-		public void End() { /*@B 0x6007789*/ throw null; }
+		public SimpleEffectFailManager() {
+            init();
+            m_isAvailable = false;
+        }
+		public void Start() {
+            init();
+            m_isAvailable = true;
+        }
+		public void End() {
+            m_isAvailable = false;
+        }
 		public void AddCause(global::Dpr.Battle.Logic.SimpleEffectFailManager.Cause cause) {
 			if (m_isAvailable && m_numCause < m_causes.Length)
 				m_causes[m_numCause++] = cause;
@@ -26,7 +34,11 @@ namespace Dpr.Battle.Logic
 
 			return Result.RESULT_OTHER_EFFECTS;
 		}
-		private void init() { /*@B 0x600778C*/ throw null; }
+		private void init() {
+            for (int i = 0; i < m_causes.Length; i++)
+                m_causes[i] = Cause.CAUSE_NULL;
+            m_numCause = 0;
+        }
 		private uint countFailCode(global::Dpr.Battle.Logic.SimpleEffectFailManager.Cause failCode) {
 			uint count = 0;
 			for (int i = 0; i < m_numCause; i++)

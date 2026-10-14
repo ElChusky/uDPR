@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec_CheckFail_Funjin : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec_CheckFail_Funjin(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007227*/ throw null; }
+		public Section_WazaExec_CheckFail_Funjin(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_CheckFail_Funjin.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_CheckFail_Funjin.Description description) {
 			pResult.isFailed = false;
 			// doFunjinExplode and putFunjinExplodeCommand are inlined (0217ccb8 / 0217cd3c)

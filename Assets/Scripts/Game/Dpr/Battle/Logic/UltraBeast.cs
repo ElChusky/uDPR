@@ -4,7 +4,11 @@ namespace Dpr.Battle.Logic
 	public static class UltraBeast
 	{
 		public static bool IsUltraBeast(global::Pml.MonsNo monsno) { return false; }
-		public static bool IsUltraBeast(in global::Dpr.Battle.Logic.BTL_POKEPARAM poke) { /*@B 0x6007793*/ throw null; }
-		public static bool IsUnknownNamePokemon(in global::Dpr.Battle.Logic.MainModule mainModule, global::Pml.MonsNo monsno) { /*@B 0x6007794*/ throw null; }
+		public static bool IsUltraBeast(in global::Dpr.Battle.Logic.BTL_POKEPARAM poke) {
+            return IsUltraBeast((global::Pml.MonsNo)poke.GetMonsNo());
+        }
+		public static bool IsUnknownNamePokemon(in global::Dpr.Battle.Logic.MainModule mainModule, global::Pml.MonsNo monsno) {
+            return !mainModule.IsZukanRegistered(monsno) && IsUltraBeast(monsno);
+        }
 	}
 }

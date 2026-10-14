@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaRankEffect : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaRankEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007262*/ throw null; }
+		public Section_WazaRankEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaRankEffect.Result pResult, in global::Dpr.Battle.Logic.Section_WazaRankEffect.Description description) {
 			pResult.isEffective = false;
 			BTL_POKEPARAM attacker = description.pAttacker;

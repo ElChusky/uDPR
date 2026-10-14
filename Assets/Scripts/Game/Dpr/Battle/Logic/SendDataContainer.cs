@@ -3,11 +3,21 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class SendDataContainer
 	{
-		private global::System.Collections.Generic.List<global::Dpr.Battle.Logic.SendData> m_buffer;
+		private global::System.Collections.Generic.List<global::Dpr.Battle.Logic.SendData> m_buffer = new global::System.Collections.Generic.List<global::Dpr.Battle.Logic.SendData>();
 		private uint m_bufferNum;
 		private uint m_addIndex;
-		public SendDataContainer(uint bufferNum) { /*@B 0x6007734*/ throw null; }
-		private void ClearBuffer() { /*@B 0x6007735*/ throw null; }
+		public SendDataContainer(uint bufferNum) {
+            m_bufferNum = bufferNum;
+            m_addIndex = 0;
+            for (uint i = 0; i < bufferNum; i++)
+                m_buffer.Add(new SendData());
+            ClearBuffer();
+        }
+		private void ClearBuffer() {
+            m_addIndex = 0;
+            for (int i = 0; i < m_bufferNum; i++)
+                m_buffer[i].Clear();
+        }
 		public void Dispose() {
             m_buffer.Clear();
         }

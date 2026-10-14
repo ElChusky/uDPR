@@ -5,7 +5,10 @@ namespace Dpr.Battle.Logic
 	{
 		private global::Dpr.Battle.Logic.ServerCommandQueue m_pCommandQueue;
 		private global::Dpr.Battle.Logic.ServerCommandPutter m_pCommandPutter;
-		public WazaCommandPutter(in global::Dpr.Battle.Logic.WazaCommandPutter.SetupParam param) { /*@B 0x6007547*/ throw null; }
+		public WazaCommandPutter(in global::Dpr.Battle.Logic.WazaCommandPutter.SetupParam param) {
+            m_pCommandQueue = param.pCommandQueue;
+            m_pCommandPutter = param.pCommandPutter;
+        }
 		public void ReserveMessage(global::Dpr.Battle.Logic.WazaMessageParam pMsgParam) {
             pMsgParam.reservedQueuePos = m_pCommandQueue.ReservePutPos(ServerCommand.MSG_WAZA);
         }

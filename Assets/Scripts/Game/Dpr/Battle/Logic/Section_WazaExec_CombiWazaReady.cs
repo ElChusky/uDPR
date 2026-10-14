@@ -5,8 +5,8 @@ namespace Dpr.Battle.Logic
 	public sealed class Section_WazaExec_CombiWazaReady : global::Dpr.Battle.Logic.Section
 	{
 		private const uint MAX_COMBI_POKE_NUM = 4u;
-		private static readonly global::Pml.WazaNo[] COMBI_WAZA_TABLE;
-		public Section_WazaExec_CombiWazaReady(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007241*/ throw null; }
+		private static readonly global::Pml.WazaNo[] COMBI_WAZA_TABLE = new global::Pml.WazaNo[] { global::Pml.WazaNo.HONOONOTIKAI, global::Pml.WazaNo.MIZUNOTIKAI, global::Pml.WazaNo.KUSANOTIKAI };
+		public Section_WazaExec_CombiWazaReady(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_CombiWazaReady.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_CombiWazaReady.Description description) {
 			pResult.isReadied = false;
 			BTL_POKEPARAM attacker = description.attacker;
@@ -73,7 +73,7 @@ namespace Dpr.Battle.Logic
 			}
 			return action;
 		}
-		static Section_WazaExec_CombiWazaReady() { /*@B 0x6007246*/ throw null; }
+		static Section_WazaExec_CombiWazaReady() { }
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;

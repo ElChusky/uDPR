@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec_CheckFail_3rd : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec_CheckFail_3rd(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007223*/ throw null; }
+		public Section_WazaExec_CheckFail_3rd(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_CheckFail_3rd.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_CheckFail_3rd.Description description) {
 			pResult.isFailed = false;
 			if (description.wazaParam.wazaID == Pml.WazaNo.WARUAGAKI)

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec_Category_SimpleEffect : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec_Category_SimpleEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60071FF*/ throw null; }
+		public Section_WazaExec_Category_SimpleEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_Category_SimpleEffect.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_Category_SimpleEffect.Description description) {
 			description.targets.SeekStart();
 			bool isEffective = false;
@@ -36,7 +36,12 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.PokeSet targets;
-			public Description() { /*@B 0x600B669*/ throw null; }
+			public Description() {
+				actionDesc = null;
+				wazaParam = null;
+				attacker = null;
+				targets = null;
+			}
 		}
 		public class Result
 		{
