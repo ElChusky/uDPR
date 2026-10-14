@@ -427,40 +427,367 @@ namespace Dpr.UI
 		public void InitializeAfterLangDecide(global::UnityEngine.Events.UnityAction onComplete = null) {
             Sequencer.Start(OpInitializeAfterLangDecide(onComplete));
         }
-		public global::System.Collections.IEnumerator OpInitializeAfterLangDecide(global::UnityEngine.Events.UnityAction onComplete = null) { /*@B 0x6005BE7*/ throw null; }
+		public global::System.Collections.IEnumerator OpInitializeAfterLangDecide(global::UnityEngine.Events.UnityAction onComplete = null) {
+            if ((_InitializeStateBits & (int)InitializeStateBit.EntryAterLang) == 0)
+            {
+                _InitializeStateBits |= (int)InitializeStateBit.EntryAterLang;
+                yield return global::Dpr.Battle.View.Systems.BattleViewUISystem.LoadAssetSelf(GameManager.battleObjectHolder, null);
+                yield return Instance.LoadSearchIndexData();
+                ItemWork.Create();
+                _InitializeStateBits |= (int)InitializeStateBit.LoadAterLang;
+                onComplete?.Invoke();
+            }
+        }
 		public static bool IsMaleDress(global::XLSXContent.CharacterDressData.SheetData dressData) {
             // @017bff20: `add w8, Index, #0x63 ; cmp w8, #0xc7 ; cset lo` = an unsigned range test -99 <= Index <= 99 (the base code had `Index < 100`)
             return dressData.Index > -100 && dressData.Index < 100;
         }
-		public void PlayTransition(global::TransitionID transitionId, global::Dpr.UI.UITransition.FadeType fadeType, global::UnityEngine.Events.UnityAction<global::Dpr.UI.UITransition.FadeType> onComplete = null) { /*@B 0x6005BE9*/ throw null; }
-		private global::System.Collections.IEnumerator OpLoadResidentWindows(bool isCheckFirstLoad = false) { /*@B 0x6005BEA*/ throw null; }
-		private void UnloadResidentWindows(bool isCheckFirstLoad) { /*@B 0x6005BEB*/ throw null; }
-		private void UnloadWindows(global::System.Collections.Generic.List<global::UIWindowID> windowIds) { /*@B 0x6005BEC*/ throw null; }
-		public global::System.Collections.IEnumerator OpLoadWindows(global::System.Collections.Generic.List<global::UIWindowID> windowIds, bool isVariant = true) { /*@B 0x6005BED*/ throw null; }
-		private int UnloadAssetBundle(string assetBundleName, bool isVariant, global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(-1)) { /*@B 0x6005BEE*/ throw null; }
-		private int FindWindowDataIndex(string assetName) { /*@B 0x6005BEF*/ throw null; }
-		public void UnloadWindows(global::System.Collections.Generic.List<global::UIWindowID> windowIds, bool isVariant = false) { /*@B 0x6005BF0*/ throw null; }
+		public void PlayTransition(global::TransitionID transitionId, global::Dpr.UI.UITransition.FadeType fadeType, global::UnityEngine.Events.UnityAction<global::Dpr.UI.UITransition.FadeType> onComplete = null) {
+            _transitionId = fadeType != global::Dpr.UI.UITransition.FadeType.In ? (TransitionID)(-1) : transitionId;
+            onComplete?.Invoke(fadeType);
+        }
+		private global::System.Collections.IEnumerator OpLoadResidentWindows(bool isCheckFirstLoad = false) {
+            List<UIWindowID> windowIds = new List<UIWindowID>();
+            UIDatabase.SheetUIWindow[] windows = _mdUis.UIWindow;
+            for (int i = 0; i < windows.Length; i++)
+            {
+                if (windows[i].Resident && (!isCheckFirstLoad || windows[i].Firstload))
+                    windowIds.Add((UIWindowID)i);
+            }
+            yield return OpLoadWindows(windowIds, true);
+        }
+		private void UnloadResidentWindows(bool isCheckFirstLoad) {
+            // the binary unswitches this loop on isCheckFirstLoad (@017be5f0 / @017be660)
+            UIDatabase.SheetUIWindow[] windows = _mdUis.UIWindow;
+            HashSet<string> assetBundleNames = new HashSet<string>();
+            for (int i = 0; i < windows.Length; i++)
+            {
+                if (windows[i].Resident && (!isCheckFirstLoad || windows[i].Firstload))
+                {
+                    assetBundleNames.Add(windows[i].AssetBundleName);
+                    _objectPool.Destroies((UIWindowID)i);
+                }
+            }
+            foreach (string assetBundleName in assetBundleNames)
+                UnloadAssetBundle(assetBundleName, false);
+        }
+		private void UnloadWindows(global::System.Collections.Generic.List<global::UIWindowID> windowIds) {
+            UIDatabase.SheetUIWindow[] windows = _mdUis.UIWindow;
+            HashSet<string> assetBundleNames = new HashSet<string>();
+            for (int i = 0; i < windowIds.Count; i++)
+            {
+                UIWindowID windowId = windowIds[i];
+                assetBundleNames.Add(windows[(int)windowId].AssetBundleName);
+                _objectPool.Destroies(windowId);
+            }
+            foreach (string assetBundleName in assetBundleNames)
+                UnloadAssetBundle(assetBundleName, false);
+        }
+		public global::System.Collections.IEnumerator OpLoadWindows(global::System.Collections.Generic.List<global::UIWindowID> windowIds, bool isVariant = true) {
+            UIDatabase.SheetUIWindow[] windows = _mdUis.UIWindow;
+            HashSet<string> assetBundleNames = new HashSet<string>();
+            for (int i = 0; i < windowIds.Count; i++)
+                assetBundleNames.Add(windows[(int)windowIds[i]].AssetBundleName);
+
+            foreach (string assetBundleName in assetBundleNames)
+                AssetManager.AppendAssetBundleRequest(assetBundleName, true, null, isVariant ? MessageHelper.GetLocalizeVariants() : null);
+
+            yield return AssetManager.DispatchRequests((eventType, name, asset) =>
+            {
+                if (eventType != RequestEventType.Activated)
+                    return;
+
+                GameObject prefab = asset as GameObject;
+                if (prefab != null)
+                {
+                    // FindWindowDataIndex is inlined here (@017c7ca0)
+                    UIWindowID key = (UIWindowID)FindWindowDataIndex(name);
+                    _objectPool.Destroies(key);
+                    _objectPool.Instantiates(0, key, prefab, transform);
+                }
+            });
+        }
+		private int UnloadAssetBundle(string assetBundleName, bool isVariant, global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(-1)) {
+            if (isVariant)
+            {
+                if (langId == (global::Dpr.Message.MessageEnumData.MsgLangId)(-1))
+                    assetBundleName = MessageHelper.AddVariantNameToPath(assetBundleName);
+                else
+                    assetBundleName = MessageHelper.AddVariantNameToPath(assetBundleName, MessageHelper.GetLanguageVariant(langId));
+            }
+
+            if (!AssetManager.IsExistAssetBundle(assetBundleName))
+                return 0;
+
+            // the cache lookup's result is discarded (@017bf5d4)
+            AssetBundleCache.Get(assetBundleName, false);
+            global::Dpr.AssetBundleUnloader unloader = new global::Dpr.AssetBundleUnloader();
+            unloader.assetBundleName = assetBundleName;
+            unloader.isUnloadAllLoadedObjects = true;
+            return unloader.Release();
+        }
+		private int FindWindowDataIndex(string assetName) {
+            UIDatabase.SheetUIWindow[] windows = _mdUis.UIWindow;
+            for (int i = 0; i < windows.Length; i++)
+            {
+                if (assetName == windows[i].AssetName)
+                    return i;
+            }
+            return -1;
+        }
+		public void UnloadWindows(global::System.Collections.Generic.List<global::UIWindowID> windowIds, bool isVariant = false) {
+            if (windowIds.Count < 1)
+                return;
+
+            UIDatabase.SheetUIWindow[] windows = _mdUis.UIWindow;
+            for (int i = 0; i < windowIds.Count; i++)
+            {
+                string assetName = windows[(int)windowIds[i]].AssetName;
+                if (isVariant)
+                    assetName = MessageHelper.AddVariantNameToPath(assetName);
+
+                // FindWindowDataIndex is inlined here (@017abd00 / @017abe00)
+                _objectPool.Destroies((UIWindowID)FindWindowDataIndex(assetName));
+            }
+        }
 		public T CreateUIWindow<T>(global::UIWindowID windowId) where T : global::Dpr.UI.UIWindow { /*@B 0x6005BF1*/ throw null; }
-		public void ForceCrash(global::UnityEngine.Diagnostics.ForcedCrashCategory category = (global::UnityEngine.Diagnostics.ForcedCrashCategory)(2)) { /*@B 0x6005BF2*/ throw null; }
-		public void SetTransitionWindowIds(global::UIWindowID prevWindowId, global::UIWindowID nextWindowId, bool isOpen) { /*@B 0x6005BF3*/ throw null; }
-		public void SetupSortOrder(global::Dpr.UI.UIWindow uiwindow) { /*@B 0x6005BF4*/ throw null; }
+		public void ForceCrash(global::UnityEngine.Diagnostics.ForcedCrashCategory category = (global::UnityEngine.Diagnostics.ForcedCrashCategory)(2)) {
+            global::UnityEngine.Diagnostics.Utils.ForceCrash(category);
+        }
+		public void SetTransitionWindowIds(global::UIWindowID prevWindowId, global::UIWindowID nextWindowId, bool isOpen) {
+            if (isOpen)
+            {
+                if (prevWindowId == (UIWindowID)(-1))
+                    return;
+            }
+            else if (nextWindowId == (UIWindowID)(-1))
+            {
+                return;
+            }
+
+            // one bit-mask test in the binary (@017c0318: id - 11 < 62, mask 0x2ea201103000cf05)
+            switch (isOpen ? nextWindowId : prevWindowId)
+            {
+                case UIWindowID.CONTEXTMENU:
+                case UIWindowID.KEYGUIDE:
+                case UIWindowID.CONTEST_POKEMON:
+                case UIWindowID.CONTEST_WAZA:
+                case UIWindowID.CONTEST_CAPSULE:
+                case UIWindowID.CONTEST_BOUTIQUE:
+                case UIWindowID.CONTEST_PHOTO:
+                case UIWindowID.POKETCH:
+                case UIWindowID.FIELD_FLOOR:
+                case UIWindowID.FIELD_MONEY:
+                case UIWindowID.CONTEXTMENU_SCROLL:
+                case UIWindowID.FIELD_AUTOSAVE:
+                case UIWindowID.DIALOG:
+                case UIWindowID.CONTEST_INFO:
+                case UIWindowID.BATTLE_MATCHING:
+                case UIWindowID.BATTLE_MATCHING_TEAM_SELECT:
+                case UIWindowID.BATTLE_MATCHING_POKE_SELECT:
+                case UIWindowID.BATTLE_RULE_SELECT:
+                case UIWindowID.YUNION:
+                    return;
+            }
+
+            if (isOpen)
+            {
+                if (_transitionWindowIds[1] != (UIWindowID)(-2) && (_transitionWindowIds[1] != nextWindowId || _transitionWindowIds[0] != prevWindowId))
+                    return;
+            }
+            else if (_transitionWindowIds[1] != prevWindowId)
+            {
+                return;
+            }
+
+            _transitionWindowIds[0] = prevWindowId;
+            _transitionWindowIds[1] = nextWindowId;
+        }
+		public void SetupSortOrder(global::Dpr.UI.UIWindow uiwindow) {
+            if (uiwindow.instance.windowId == UIWindowID.KEYGUIDE)
+                return;
+
+            Transform activeRoot = _activeRoot;
+            Canvas canvas = uiwindow.canvas;
+            if (canvas == null)
+            {
+                canvas = uiwindow.gameObject.AddComponent<Canvas>();
+                canvas.enabled = true;
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.overrideSorting = true;
+            }
+
+            int sortingOrder;
+            switch (uiwindow.instance.windowId)
+            {
+                case UIWindowID.CONTEXTMENU:
+                case UIWindowID.CONTEXTMENU_SCROLL:
+                    sortingOrder = _sortingOrderContextMenu;
+                    break;
+                case UIWindowID.POKETCH:
+                    sortingOrder = _sortingOrderPoketch;
+                    break;
+                case UIWindowID.FATAL_ERROR_DIALOG:
+                    sortingOrder = _sortingOrderFatalErrorDialog;
+                    break;
+                default:
+                    if (activeRoot.childCount < 2)
+                    {
+                        sortingOrder = _sortingOrderWindow;
+                    }
+                    else
+                    {
+                        int lastOrder = 0;
+                        for (int i = activeRoot.childCount - 2; i >= 0; i--)
+                        {
+                            Canvas childCanvas = activeRoot.GetChild(i).GetComponent<UIWindow>().canvas;
+                            if (childCanvas == null)
+                                continue;
+
+                            int order = childCanvas.sortingOrder;
+                            if (order < _sortingOrderIgnore)
+                            {
+                                lastOrder = order;
+                                break;
+                            }
+                        }
+                        sortingOrder = Mathf.Max(lastOrder + _sortingOrderWindowAdd, _sortingOrderWindow);
+                    }
+                    break;
+            }
+            canvas.sortingOrder = sortingOrder;
+
+            // @017c05c4: `cmn w8, #2 ; b.lo` = prevWindowId is -1 or -2; the two results below are discarded
+            // (GetUIWindowCount is inlined, init flag 0x48d; GetCurrentUIWindow<UIWindow> is the tail call)
+            if (uiwindow.prevWindowId == (UIWindowID)(-1) || uiwindow.prevWindowId == (UIWindowID)(-2))
+            {
+                int windowCount = Instance.GetUIWindowCount();
+                UIWindow currentWindow = Instance.GetCurrentUIWindow<UIWindow>();
+            }
+        }
 		public T GetCurrentUIWindow<T>() where T : global::Dpr.UI.UIWindow { /*@B 0x6005BF5*/ throw null; }
-		private global::Dpr.UI.UIWindow GetLastWindow() { /*@B 0x6005BF6*/ throw null; }
-		private global::Dpr.UI.UIWindow GetForegroundWindow() { /*@B 0x6005BF7*/ throw null; }
-		public global::Dpr.UI.UIWindow GetUIWindowByIndex(int index) { /*@B 0x6005BF8*/ throw null; }
-		public int GetUIWindowCount() { /*@B 0x6005BF9*/ throw null; }
+		private global::Dpr.UI.UIWindow GetLastWindow() {
+            for (int i = _activeRoot.childCount - 1; i >= 0; i--)
+            {
+                UIWindow window = _activeRoot.GetChild(i).GetComponent<UIWindow>();
+                if (window.instance.windowId != UIWindowID.KEYGUIDE)
+                    return window;
+            }
+            return null;
+        }
+		private global::Dpr.UI.UIWindow GetForegroundWindow() {
+            UIWindow result = null;
+            int maxSortingOrder = -1;
+            for (int i = _activeRoot.childCount - 1; i >= 0; i--)
+            {
+                UIWindow window = _activeRoot.GetChild(i).GetComponent<UIWindow>();
+                if (window.instance.windowId == UIWindowID.KEYGUIDE)
+                    continue;
+
+                if (window.canvas == null)
+                    continue;
+
+                if (maxSortingOrder < window.canvas.sortingOrder)
+                {
+                    maxSortingOrder = window.canvas.sortingOrder;
+                    result = window;
+                }
+            }
+            return result == null ? null : result;
+        }
+		public global::Dpr.UI.UIWindow GetUIWindowByIndex(int index) {
+            if (_activeRoot.childCount <= index)
+                return null;
+
+            Transform child = _activeRoot.GetChild(index);
+            if (child == null)
+                return null;
+
+            return child.GetComponent<UIWindow>();
+        }
+		public int GetUIWindowCount() {
+            if (_activeRoot != null)
+                return _activeRoot.childCount;
+
+            return 0;
+        }
 		public T GetExistWindow<T>() where T : global::Dpr.UI.UIWindow { /*@B 0x6005BFA*/ throw null; }
-		public global::Dpr.UI.UIWindow GetExistWindow(global::UIWindowID windowId) { /*@B 0x6005BFB*/ throw null; }
+		public global::Dpr.UI.UIWindow GetExistWindow(global::UIWindowID windowId) {
+            // GetUIWindowCount is inlined (init flag 0x48d)
+            for (int i = Instance.GetUIWindowCount() - 1; i >= 0; i--)
+            {
+                UIWindow window = Instance.GetUIWindowByIndex(i);
+                if (window.instance.windowId == windowId)
+                    return window;
+            }
+            return null;
+        }
 		public global::System.Collections.Generic.List<T> GetExistWindows<T>() where T : global::Dpr.UI.UIWindow { /*@B 0x6005BFC*/ throw null; }
 		public int GetExistWindowCount<T>() where T : global::Dpr.UI.UIWindow { /*@B 0x6005BFD*/ throw null; }
-		public global::Dpr.UI.UIWindow GetReduplicationWindow(global::Dpr.UI.UIWindow baseWindow) { /*@B 0x6005BFE*/ throw null; }
-		internal void _ReleaseUIWindow(global::Dpr.UI.UIWindow window) { /*@B 0x6005BFF*/ throw null; }
-		internal void _SetupKeyAssign(global::DPData.INPUTMODE inputMode) { /*@B 0x6005C00*/ throw null; }
-		private void LateUpdate() { /*@B 0x6005C01*/ throw null; }
-		public global::UnityEngine.Sprite GetSharedSprite(global::SharedSpriteID sharedSpriteId) { /*@B 0x6005C02*/ throw null; }
-		public global::UnityEngine.Sprite GetSpritePokemonSex(global::Pml.Sex sex) { /*@B 0x6005C03*/ throw null; }
-		public global::XLSXContent.UIDatabase.SheetPokemonIcon GetPokemonIconData(global::Pml.MonsNo monsNo, ushort formNo, global::Pml.Sex sex, global::Pml.PokePara.RareType rareType, bool isEgg) { /*@B 0x6005C04*/ throw null; }
-		public global::XLSXContent.UIDatabase.SheetAshiatoIcon GetAshiatoIconData(global::Pml.MonsNo monsNo, ushort formNo, global::Pml.Sex sex, global::Pml.PokePara.RareType rareType, bool isEgg) { /*@B 0x6005C05*/ throw null; }
+		public global::Dpr.UI.UIWindow GetReduplicationWindow(global::Dpr.UI.UIWindow baseWindow) {
+            // GetUIWindowCount is inlined (init flag 0x48d)
+            for (int i = Instance.GetUIWindowCount() - 1; i >= 0; i--)
+            {
+                UIWindow window = Instance.GetUIWindowByIndex(i);
+                if (window != null && window.GetType() == baseWindow.GetType() && window != baseWindow)
+                    return window;
+            }
+            return null;
+        }
+		internal void _ReleaseUIWindow(global::Dpr.UI.UIWindow window) {
+            _objectPool.Release(window.instance.windowId, window.instance, true);
+        }
+		internal void _SetupKeyAssign(global::DPData.INPUTMODE inputMode) {
+            if (inputMode == global::DPData.INPUTMODE.INPUTMODE_NORMAL)
+            {
+                StickLLeft = 0x111000;
+                StickLRight = 0x444000;
+                StickLUp = 0x222000;
+                StickLDown = 0x888000;
+                ButtonA = 0x301;
+                ButtonB = 0x2;
+                ButtonX = 0x4;
+                ButtonY = 0x8;
+            }
+            else
+            {
+                StickLLeft = 0x110000;
+                StickLRight = 0x440000;
+                StickLUp = 0x220000;
+                StickLDown = 0x880000;
+                ButtonA = 0x4301;
+                ButtonB = 0x8002;
+                ButtonX = 0x2004;
+                ButtonY = 0x1008;
+            }
+        }
+		private void LateUpdate() {
+            UpdateBlurBg();
+            _modelView._UpdateModelView();
+        }
+		public global::UnityEngine.Sprite GetSharedSprite(global::SharedSpriteID sharedSpriteId) {
+            return GetAtlasSprite(SpriteAtlasID.SHAREDUI, _mdUis.SharedSprite[(int)sharedSpriteId].SpriteName);
+        }
+		public global::UnityEngine.Sprite GetSpritePokemonSex(global::Pml.Sex sex) {
+            if (sex == Sex.UNKNOWN)
+                return null;
+
+            return GetAtlasSprite(SpriteAtlasID.SHAREDUI, _mdUis.SharedSprite[(int)sex].SpriteName);
+        }
+		public global::XLSXContent.UIDatabase.SheetPokemonIcon GetPokemonIconData(global::Pml.MonsNo monsNo, ushort formNo, global::Pml.Sex sex, global::Pml.PokePara.RareType rareType, bool isEgg) {
+            int uniqueId = DataManager.GetUniqueID(monsNo, formNo, sex, rareType, isEgg);
+            int searchResult = Array.BinarySearch(_mdUis.PokemonIcon, uniqueId, _comparerPokemonIcon);
+            if (searchResult < 0) searchResult = 0;
+
+            return _mdUis.PokemonIcon[searchResult];
+        }
+		public global::XLSXContent.UIDatabase.SheetAshiatoIcon GetAshiatoIconData(global::Pml.MonsNo monsNo, ushort formNo, global::Pml.Sex sex, global::Pml.PokePara.RareType rareType, bool isEgg) {
+            int uniqueId = DataManager.GetUniqueID(monsNo, formNo, sex, rareType, isEgg);
+            int searchResult = Array.BinarySearch(_mdUis.AshiatoIcon, uniqueId, _comparerAshiatoIcon);
+            if (searchResult < 0) searchResult = 0;
+
+            return _mdUis.AshiatoIcon[searchResult];
+        }
 		public global::XLSXContent.UIDatabase.SheetZukanDisplay GetZukanDisplayData(global::Pml.PokePara.PokemonParam pokemonParam) {
             return GetZukanDisplayData(pokemonParam.GetMonsNo(), pokemonParam.GetFormNo(), pokemonParam.GetSex(), pokemonParam.GetRareType(), pokemonParam.IsEgg(EggCheckType.BOTH_EGG));
         }
