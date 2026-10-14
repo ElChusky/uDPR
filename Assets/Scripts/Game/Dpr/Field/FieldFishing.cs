@@ -16,19 +16,141 @@ namespace Dpr.Field
 		private global::Balloon _ballon;
 		private global::UnityEngine.Vector3 _effectPosition;
 		private bool _isRideBicycle;
-		private global::Effect.EffectInstance[] _eff_Instance;
-		private global::Audio.AudioInstance[] _se_audio_instance;
+		private global::Effect.EffectInstance[] _eff_Instance = new global::Effect.EffectInstance[5];
+		private global::Audio.AudioInstance[] _se_audio_instance = new global::Audio.AudioInstance[8];
 		private bool _throw_se;
 		private float _hit_random_time;
 		private float _hit_wait_time;
-		private float FAIL_TIME;
+		private float FAIL_TIME = 5f;
 		private bool _is_feint;
 		private float _feint_down;
 		private float _feint_time;
-		public void Clear() { /*@B 0x6008947*/ throw null; }
-		private float DATA_TuriageFrameTbl(global::FishingRod rodType) { /*@B 0x6008948*/ throw null; }
-		public bool StartFishing(global::FishingRod rodType) { /*@B 0x6008949*/ throw null; }
-		private bool IsWaterGrid(ref global::UnityEngine.Vector3 forward) { /*@B 0x600894A*/ throw null; }
+		public void Clear() {
+            _ballon = null;
+            for (int i = 0; i < _eff_Instance.Length; i++)
+            {
+                if (_eff_Instance[i] != null)
+                    _eff_Instance[i].Stop(0f, false);
+                _eff_Instance[i] = null;
+            }
+            for (int i = 0; i < _se_audio_instance.Length; i++)
+            {
+                if (_se_audio_instance[i] != null)
+                    _se_audio_instance[i].Stop();
+                _se_audio_instance[i] = null;
+            }
+        }
+		private float DATA_TuriageFrameTbl(global::FishingRod rodType) {
+            switch (rodType)
+            {
+                case FishingRod.SugoiTurizao:
+                    return DataManager.GetFieldCommonParam(ParamIndx.Fishing_SugoiInput);
+                case FishingRod.IiTurizao:
+                    return DataManager.GetFieldCommonParam(ParamIndx.Fishing_IIInput);
+                case FishingRod.BoroiTurizao:
+                    return DataManager.GetFieldCommonParam(ParamIndx.Fishing_BoroInput);
+            }
+            return 1f;
+        }
+		public bool StartFishing(global::FishingRod rodType) {
+            if (ZoneWork.IsUnderGround(PlayerWork.zoneID))
+                return false;
+            if (ZoneWork.NoFishingZone(PlayerWork.zoneID))
+                return false;
+
+            Clear();
+
+            var player = EntityManager.activeFieldPlayer;
+            Vector3 position = player.worldPosition;
+
+            GameManager.GetAttribute(player.gridPosition, out int playerCode, out int playerStop, false);
+            if (AttributeID.MATR_IsBridge(playerCode))
+            {
+                if (AttributeID.MATR_IsBridgeV(playerCode))
+                    return false;
+                if (AttributeID.MATR_IsBridgeH(playerCode))
+                    return false;
+
+                var encData = GameManager.GetFieldEncountData(PlayerWork.zoneID);
+                if (encData.encRate_turi_boro == 0 && encData.encRate_turi_ii == 0 && encData.encRate_sugoi == 0)
+                    return false;
+            }
+
+            _grid = FieldObjectEntity.PositionToGrid(position + player.transform.forward);
+            _seqNo = Seq.Start;
+            _returnResult.isFishing = true;
+            _returnResult.encResult = null;
+            _returnResult.state = ResultState.Update;
+            _rodType = rodType;
+
+            GameManager.GetAttribute(_grid, out _returnResult.attriCode, out int stop, false);
+            if (stop == 128)
+                return false;
+
+            var attrTable = GameManager.GetAttributeTable(_returnResult.attriCode);
+            if (!attrTable.Water && !AttributeID.MATR_IsWater(attrTable.Code))
+                return false;
+
+            GameManager.GetAttribute(player.gridPosition, out int code, out int stop2, false);
+            if (AttributeID.MATR_IsBridgeWater(code))
+            {
+                if (GameManager.IsHighAttribute(GameManager.GetAttributeExCodeRaw(player.gridPosition), position.y))
+                    return false;
+            }
+
+            GameManager.GetAttribute(_grid, out int gridCode, out stop2, false);
+            if (AttributeID.MATR_IsBridgeWater(gridCode))
+            {
+                if (GameManager.IsHighAttribute(GameManager.GetAttributeExCodeRaw(_grid), position.y))
+                    return false;
+            }
+
+            _returnResult.attriEx = GameManager.GetAttributeEx(_grid, position.y, false).AttributeEx;
+
+            Vector2 gridPos = FieldObjectEntity.GridToPosition(_grid);
+            Vector3 forward = new Vector3(gridPos.x - position.x, 0f, gridPos.y - position.z).normalized;
+            if (!IsWaterGrid(ref forward))
+                return false;
+
+            player.SetYawAngleDirect(Quaternion.LookRotation(forward).eulerAngles.y);
+            _effectPosition = position + player.transform.forward * 1.1f;
+
+            if (!PlayerWork.IsFormSwim())
+            {
+                GameManager.GetAttribute(player.gridPosition, out int footCode, out stop, false);
+                _effectPosition.y += footCode == 23 ? 0.6f : -0.25f;
+            }
+            return true;
+        }
+		private bool IsWaterGrid(ref global::UnityEngine.Vector3 forward) {
+            var player = EntityManager.activeFieldPlayer;
+            Vector3 position = player.worldPosition;
+            float height = position.y;
+
+            Vector2Int grid = FieldObjectEntity.PositionToGrid(position + forward);
+            GameManager.GetAttribute(grid, out int gridCode, out int stop, false);
+            if (stop == 128)
+                return false;
+
+            var attrTable = GameManager.GetAttributeTable(gridCode);
+            if (!attrTable.Water || !AttributeID.MATR_IsWater(attrTable.Code))
+                return false;
+
+            GameManager.GetAttribute(player.gridPosition, out int playerCode, out int stop2, false);
+            if (AttributeID.MATR_IsBridgeWater(playerCode))
+            {
+                if (GameManager.IsHighAttribute(GameManager.GetAttributeExCodeRaw(player.gridPosition), height))
+                    return false;
+            }
+
+            GameManager.GetAttribute(grid, out int code, out stop2, false);
+            if (AttributeID.MATR_IsBridgeWater(code))
+            {
+                if (GameManager.IsHighAttribute(GameManager.GetAttributeExCodeRaw(grid), height))
+                    return false;
+            }
+            return true;
+        }
 		public global::Dpr.Field.FieldFishing.Result Update(float time) {
             var player = EntityManager.activeFieldPlayer;
 
@@ -286,9 +408,27 @@ namespace Dpr.Field
                 _hit_wait_time += time;
             }
         }
-		private void RideBicycle() { /*@B 0x600894C*/ throw null; }
-		public static int RodVaridation(global::FishingRod rod) { /*@B 0x600894D*/ throw null; }
-		public FieldFishing() { /*@B 0x600894E*/ throw null; }
+		private void RideBicycle() {
+            if (_isRideBicycle)
+            {
+                _isRideBicycle = false;
+                var player = EntityManager.activeFieldPlayer;
+                player.SetRideBicycle(null);
+                FieldManager.Instance.CallEffect(EffectFieldID.EF_F_CYCLE_RIDE, player.transform, null, null);
+            }
+        }
+		public static int RodVaridation(global::FishingRod rod) {
+            switch (rod)
+            {
+                case FishingRod.IiTurizao:
+                    return 0;
+                case FishingRod.SugoiTurizao:
+                    return 2;
+                default:
+                    return 1;
+            }
+        }
+		public FieldFishing() { }
 		private enum Seq
 		{
 			Start = 0,

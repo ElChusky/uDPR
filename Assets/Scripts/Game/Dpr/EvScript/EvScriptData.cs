@@ -7,10 +7,10 @@ namespace Dpr.EvScript
 		public int LabelIndex;
 		public int CommandIndex;
 		public int RetIndex;
-		public global::EvData.Script GetScript { get { /*@B 0x6009177*/ throw null; } }
-		public EvScriptData(global::EvData ev) { /*@B 0x6009178*/ throw null; }
-		public int FindLabelIndex(string label) { /*@B 0x6009179*/ throw null; }
-		public global::EvData.Script FindLabelScript(string label) { /*@B 0x600917A*/ throw null; }
-		public void Destroy() { /*@B 0x600917B*/ throw null; }
+		public global::EvData.Script GetScript { get { return EvData.Scripts[LabelIndex]; } }
+		public EvScriptData(global::EvData ev) { EvData = ev; }
+		public int FindLabelIndex(string label) { return EvData.Scripts.FindIndex(data => data.Label == label); }
+		public global::EvData.Script FindLabelScript(string label) { return EvData.Scripts.Find(data => data.Label == label); }
+		public void Destroy() { EvData = null; }
 	}
 }

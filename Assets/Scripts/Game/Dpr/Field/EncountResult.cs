@@ -4,19 +4,19 @@ namespace Dpr.Field
 	public class EncountResult
 	{
 		public global::Dpr.Field.EncountResult.BtlType Type;
-		public global::Pml.MonsNo[] Enemy;
-		public int[] Level;
-		public global::Pml.Sex[] FixSex;
-		public global::Pml.PokePara.Seikaku[] FixSeikaku;
+		public global::Pml.MonsNo[] Enemy = new global::Pml.MonsNo[2];
+		public int[] Level = new int[2];
+		public global::Pml.Sex[] FixSex = new global::Pml.Sex[2] { global::Pml.Sex.UNKNOWN, global::Pml.Sex.UNKNOWN };
+		public global::Pml.PokePara.Seikaku[] FixSeikaku = new global::Pml.PokePara.Seikaku[2] { global::Pml.PokePara.Seikaku.NUM, global::Pml.PokePara.Seikaku.NUM };
 		public bool IsRare;
 		public global::Dpr.Trainer.TrainerID Partner;
 		public global::Pml.TokuseiNo HatudouTokusei;
 		public global::ArenaID BattleBG;
-		public int MP_SaveIndex;
+		public int MP_SaveIndex = -1;
 		public bool IsKakure;
 		public int karanaForm;
 		public int annoForm;
-		public EncountResult() { /*@B 0x600891E*/ throw null; }
+		public EncountResult() { }
 		public enum BtlType
 		{
 			Single = 0,
