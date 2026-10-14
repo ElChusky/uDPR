@@ -3,16 +3,24 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class BattleCounter
 	{
-		private ulong[] m_uniqueCount;
-		private ulong[][] m_clientCount;
-		private ulong[][] m_sideCount;
-		private static readonly global::Dpr.Battle.Logic.BattleCounter.CounterDesc[] COUNTER_DESC_UNIQUE;
-		private static readonly global::Dpr.Battle.Logic.BattleCounter.CounterDesc[] COUNTER_DESC_CLIENT;
-		private static readonly global::Dpr.Battle.Logic.BattleCounter.CounterDesc[] COUNTER_DESC_SIDE;
-		private static ref global::Dpr.Battle.Logic.BattleCounter.CounterDesc GetCounterDesc(global::Dpr.Battle.Logic.BattleCounter.UniqueCounter counterID) { /*@B 0x6006930*/ throw null; }
-		private static ref global::Dpr.Battle.Logic.BattleCounter.CounterDesc GetCounterDesc(global::Dpr.Battle.Logic.BattleCounter.ClientCounter counterID) { /*@B 0x6006931*/ throw null; }
-		private static ref global::Dpr.Battle.Logic.BattleCounter.CounterDesc GetCounterDesc(global::Dpr.Battle.Logic.BattleCounter.SideCounter counterID) { /*@B 0x6006932*/ throw null; }
-		public BattleCounter() { /*@B 0x6006933*/ throw null; }
+		private ulong[] m_uniqueCount = Arrays.InitializeWithDefaultInstances<ulong>(5);
+		private ulong[][] m_clientCount = RectangularArrays.RectangularDefaultArray<ulong>(5, 5);
+		private ulong[][] m_sideCount = RectangularArrays.RectangularDefaultArray<ulong>(5, 2);
+		private static readonly global::Dpr.Battle.Logic.BattleCounter.CounterDesc[] COUNTER_DESC_UNIQUE = new CounterDesc[] { new CounterDesc(9999), new CounterDesc(30), new CounterDesc(12), new CounterDesc(12), new CounterDesc(99) };
+		private static readonly global::Dpr.Battle.Logic.BattleCounter.CounterDesc[] COUNTER_DESC_CLIENT = new CounterDesc[] { new CounterDesc(255) };
+		private static readonly global::Dpr.Battle.Logic.BattleCounter.CounterDesc[] COUNTER_DESC_SIDE = new CounterDesc[] { new CounterDesc(255) };
+		private static ref global::Dpr.Battle.Logic.BattleCounter.CounterDesc GetCounterDesc(global::Dpr.Battle.Logic.BattleCounter.UniqueCounter counterID) {
+            return ref COUNTER_DESC_UNIQUE[(int)counterID];
+        }
+		private static ref global::Dpr.Battle.Logic.BattleCounter.CounterDesc GetCounterDesc(global::Dpr.Battle.Logic.BattleCounter.ClientCounter counterID) {
+            return ref COUNTER_DESC_CLIENT[(int)counterID];
+        }
+		private static ref global::Dpr.Battle.Logic.BattleCounter.CounterDesc GetCounterDesc(global::Dpr.Battle.Logic.BattleCounter.SideCounter counterID) {
+            return ref COUNTER_DESC_SIDE[(int)counterID];
+        }
+		public BattleCounter() {
+            Initialize(null);
+        }
 		public void Initialize(global::Dpr.Battle.Logic.MainModule mainModule = null) {
             for (int i = 0; i < m_uniqueCount.Length; i++)
             {
@@ -119,7 +127,7 @@ namespace Dpr.Battle.Logic
 		private bool isValidCounter(global::Dpr.Battle.Logic.BattleCounter.SideCounter counterID, global::Dpr.Battle.Logic.BtlSide side) {
             return counterID < SideCounter.NUM && side < BtlSide.BTL_SIDE_NUM;
         }
-		static BattleCounter() { /*@B 0x6006940*/ throw null; }
+		static BattleCounter() { }
 		public enum UniqueCounter : byte
 		{
 			BATTLE_TURN_COUNT = 0,

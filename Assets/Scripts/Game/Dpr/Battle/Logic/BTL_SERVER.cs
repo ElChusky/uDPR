@@ -12,13 +12,31 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.BattleEnv m_pBattleEnv;
 		private global::Dpr.Battle.Logic.SendDataContainer m_pSendDataContainer;
 		private ushort m_sendDataSerialNo;
-		private global::Dpr.Battle.Logic.BTL_SERVER.ClientData[] m_clientData;
-		private global::Dpr.Battle.Logic.rec.SendTool m_recTool;
+		private global::Dpr.Battle.Logic.BTL_SERVER.ClientData[] m_clientData = Arrays.InitializeWithDefaultInstances<ClientData>(5);
+		private global::Dpr.Battle.Logic.rec.SendTool m_recTool = new global::Dpr.Battle.Logic.rec.SendTool();
 		private unsafe global::Dpr.Battle.Logic.BTL_RESULT_CONTEXT* m_btlResultContext;
-		private global::Dpr.Battle.Logic.SVCL_ACTION m_clientInstruction;
+		private global::Dpr.Battle.Logic.SVCL_ACTION m_clientInstruction = new SVCL_ACTION();
 		private global::Dpr.Battle.Logic.ServerRequestGenerator m_serverRequestGenerator;
 		private global::Dpr.Battle.Logic.BattleDriver m_battleDriver;
-		public BTL_SERVER(global::Dpr.Battle.Logic.MainModule pMainModule, ulong randSeed, global::Dpr.Battle.Logic.BattleEnv pBattleEnv, global::Dpr.Battle.Logic.SendDataContainer pSendDataContainer) { /*@B 0x6007278*/ throw null; }
+		public BTL_SERVER(global::Dpr.Battle.Logic.MainModule pMainModule, ulong randSeed, global::Dpr.Battle.Logic.BattleEnv pBattleEnv, global::Dpr.Battle.Logic.SendDataContainer pSendDataContainer) {
+            unsafe
+            {
+                m_btlResultContext = (BTL_RESULT_CONTEXT*)BattleUnmanagedMem.Malloc(sizeof(BTL_RESULT_CONTEXT));
+            }
+            m_currentSeq = ServerSequence.END;
+            m_seqStep = 0;
+            m_pMainModule = pMainModule;
+            m_pBattleEnv = pBattleEnv;
+            m_pSendDataContainer = pSendDataContainer;
+            m_serverRequestGenerator = null;
+            m_sendDataSerialNo = 1;
+            calc.ResetSys(randSeed);
+            clearClientData();
+            createBattleDriver();
+            createServerRequestGenerator();
+            m_currentSeq = ServerSequence.BATTLE_START_SETUP;
+            m_seqStep = 0;
+        }
 		public void createBattleDriver() {
             BattleDriver.SetupParam setupParam = new BattleDriver.SetupParam();
             setupParam.pMainModule = m_pMainModule;

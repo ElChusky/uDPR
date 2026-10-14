@@ -392,8 +392,8 @@ namespace Dpr.Battle.Logic
             dest.isRaidBoss = src.isRaidBoss;
             dest.raidBossParam.CopyFrom(src.raidBossParam);
         }
-		public byte GetID() { /*@B 0x6007BCC*/ throw null; }
-		public ushort GetMonsNo() { /*@B 0x6007BCD*/ throw null; }
+		public byte GetID() { return m_coreParam.myID; }
+		public ushort GetMonsNo() { return m_coreParam.monsno; }
 		public global::Pml.PokePara.Seikaku GetSeikaku() {
             return (Seikaku)m_coreParam.seikaku;
         }
@@ -546,8 +546,63 @@ namespace Dpr.Battle.Logic
 
             return m_coreParam.confrontRec[idx];
         }
-		public int GetValue(global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID vid) { /*@B 0x6007BEA*/ throw null; }
-		public int GetValue_Base(global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID vid) { /*@B 0x6007BEB*/ throw null; }
+		public int GetValue(global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID vid) {
+            vid = convertValueID(vid);
+            switch (vid)
+            {
+                case ValueID.BPP_ATTACK_RANK:     return m_varyParam.attack;
+                case ValueID.BPP_DEFENCE_RANK:    return m_varyParam.defence;
+                case ValueID.BPP_SP_ATTACK_RANK:  return m_varyParam.sp_attack;
+                case ValueID.BPP_SP_DEFENCE_RANK: return m_varyParam.sp_defence;
+                case ValueID.BPP_AGILITY_RANK:    return m_varyParam.agility;
+                case ValueID.BPP_HIT_RATIO:       return m_varyParam.hit;
+                case ValueID.BPP_AVOID_RATIO:     return m_varyParam.avoid;
+                case ValueID.BPP_ATTACK:
+                    return calc.StatusRank((ushort)GetValue_Base(ValueID.BPP_ATTACK), (byte)m_varyParam.attack);
+                case ValueID.BPP_DEFENCE:
+                    return calc.StatusRank((ushort)GetValue_Base(ValueID.BPP_DEFENCE), (byte)m_varyParam.defence);
+                case ValueID.BPP_SP_ATTACK:
+                    return calc.StatusRank((ushort)GetValue_Base(ValueID.BPP_SP_ATTACK), (byte)m_varyParam.sp_attack);
+                case ValueID.BPP_SP_DEFENCE:
+                    return calc.StatusRank((ushort)GetValue_Base(ValueID.BPP_SP_DEFENCE), (byte)m_varyParam.sp_defence);
+                case ValueID.BPP_AGILITY:
+                    return calc.StatusRank((ushort)GetValue_Base(ValueID.BPP_AGILITY), (byte)m_varyParam.agility);
+                case ValueID.BPP_HP:              return m_coreParam.hp;
+                case ValueID.BPP_HP_BEFORE_G:     return (int)getHPBeforeG();
+                case ValueID.BPP_MAX_HP:          return m_coreParam.hpMax;
+                case ValueID.BPP_MAX_HP_BEFORE_G: return (ushort)m_coreParam.ppSrc.GetPower_NotG(PowerID.HP);
+                case ValueID.BPP_LEVEL:           return m_coreParam.level;
+                case ValueID.BPP_TOKUSEI:         return m_tokusei;
+                case ValueID.BPP_TOKUSEI_EFFECTIVE:
+                    if (CheckSick(WazaSick.WAZASICK_IEKI))
+                        return 0;
+                    if (m_fldSim != null && !m_fldSim.CheckTokuseiEffectiveOnKagakuhenkaGas((TokuseiNo)m_tokusei) && m_fldSim.IsKagakuhenkaGasEffective())
+                        return 0;
+                    return m_tokusei;
+                case ValueID.BPP_SEX:             return m_baseParam.sex;
+                case ValueID.BPP_SEIKAKU:         return m_coreParam.seikaku;
+                case ValueID.BPP_PERSONAL_RAND:   return (int)m_coreParam.personalRand;
+                case ValueID.BPP_EXP:             return (int)m_coreParam.exp;
+                case ValueID.BPP_MONS_POW:        return m_coreParam.mons_pow;
+                case ValueID.BPP_MONS_AGILITY:    return m_coreParam.mons_agility;
+                default:                          return 0;
+            }
+        }
+		public int GetValue_Base(global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID vid) {
+            vid = convertValueID(vid);
+            switch (vid)
+            {
+                case ValueID.BPP_HIT_RATIO:
+                case ValueID.BPP_AVOID_RATIO:
+                    return 6;
+                case ValueID.BPP_ATTACK:     return m_baseParam.attack;
+                case ValueID.BPP_DEFENCE:    return m_baseParam.defence;
+                case ValueID.BPP_SP_ATTACK:  return m_baseParam.sp_attack;
+                case ValueID.BPP_SP_DEFENCE: return m_baseParam.sp_defence;
+                case ValueID.BPP_AGILITY:    return m_baseParam.agility;
+                default:                     return GetValue(vid);
+            }
+        }
 		public byte GetEffortValue(global::Pml.PokePara.PowerID powerID) {
             // No HP case in the binary (01fddbd0: `sub w8, w1, #1 ; cmp w8, #4 ; b.hi -> 0`): HP returns 0.
             switch (powerID)
@@ -575,7 +630,16 @@ namespace Dpr.Battle.Logic
                 default:            return 0;
             }
         }
-		private global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID convertValueID(global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID vid) { /*@B 0x6007BEF*/ throw null; }
+		private global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID convertValueID(global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID vid) {
+            if (m_fldSim != null)
+            {
+                if (vid == ValueID.BPP_SP_DEFENCE)
+                    return m_fldSim.CheckEffect(EffectType.EFF_WONDERROOM) ? ValueID.BPP_DEFENCE : ValueID.BPP_SP_DEFENCE;
+                if (vid == ValueID.BPP_DEFENCE)
+                    return m_fldSim.CheckEffect(EffectType.EFF_WONDERROOM) ? ValueID.BPP_SP_DEFENCE : ValueID.BPP_DEFENCE;
+            }
+            return vid;
+        }
 		public bool IsHPFull() {
             return GetValue(ValueID.BPP_HP) == GetValue(ValueID.BPP_MAX_HP);
         }
@@ -588,7 +652,9 @@ namespace Dpr.Battle.Logic
 
             return !IsDead();
         }
-		public bool CheckSick(global::Pml.WazaData.WazaSick sickType) { /*@B 0x6007BF3*/ throw null; }
+		public bool CheckSick(global::Pml.WazaData.WazaSick sickType) {
+            return !SICKCONT.IsNull(m_coreParam.sickCont[(int)sickType]);
+        }
 		public bool CheckNemuri(global::Dpr.Battle.Logic.BTL_POKEPARAM.NemuriCheckMode checkMode) {
             if (checkMode == NemuriCheckMode.NEMURI_CHECK_INCLUDE_ZETTAINEMURI && GetValue(ValueID.BPP_TOKUSEI_EFFECTIVE) == (int)TokuseiNo.ZETTAINEMURI)
                 return true;
@@ -1007,8 +1073,25 @@ namespace Dpr.Battle.Logic
                 pp.SetWazaPP(wazaIdx, m_waza[wazaIdx].truth.pp);
             }
         }
-		public bool WAZA_IsUsable(global::Pml.WazaNo waza) { /*@B 0x6007C25*/ throw null; }
-		public byte WAZA_SearchIdx(global::Pml.WazaNo waza) { /*@B 0x6007C26*/ throw null; }
+		public bool WAZA_IsUsable(global::Pml.WazaNo waza) {
+            for (int i = 0; i < m_waza.Length; i++)
+            {
+                if (m_waza[i].surface.number == waza)
+                    return true;
+            }
+            return false;
+        }
+		public byte WAZA_SearchIdx(global::Pml.WazaNo waza) {
+            if (waza == WazaNo.NULL)
+                return BattleDefConst.PTL_WAZA_MAX;
+
+            for (byte i = 0; i < BattleDefConst.PTL_WAZA_MAX; i++)
+            {
+                if (m_waza[i].surface.number == waza)
+                    return i;
+            }
+            return BattleDefConst.PTL_WAZA_MAX;
+        }
 		private void splitTypeCore(out byte type1, out byte type2) {
             bool isHaneyasume = CheckSick(WazaSick.WAZASICK_HANEYASUME);
 
@@ -1179,7 +1262,21 @@ namespace Dpr.Battle.Logic
 
             return hp;
         }
-		private sbyte getRankVaryStatus(global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID type, out sbyte min, out sbyte max) { /*@B 0x6007C40*/ throw null; }
+		private sbyte getRankVaryStatus(global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID type, out sbyte min, out sbyte max) {
+            min = 0;
+            max = 12;
+            switch (type)
+            {
+                case ValueID.BPP_ATTACK_RANK:     return m_varyParam.attack;
+                case ValueID.BPP_DEFENCE_RANK:    return m_varyParam.defence;
+                case ValueID.BPP_SP_ATTACK_RANK:  return m_varyParam.sp_attack;
+                case ValueID.BPP_SP_DEFENCE_RANK: return m_varyParam.sp_defence;
+                case ValueID.BPP_AGILITY_RANK:    return m_varyParam.agility;
+                case ValueID.BPP_HIT_RATIO:       return m_varyParam.hit;
+                case ValueID.BPP_AVOID_RATIO:     return m_varyParam.avoid;
+                default:                          return 0;
+            }
+        }
 		public bool IsRankEffectValid(global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID rankType, int volume) {
             sbyte value = getRankVaryStatus(rankType, out sbyte min, out sbyte max);
 
@@ -1792,7 +1889,41 @@ namespace Dpr.Battle.Logic
 
             return m_permCounter[(int)counter];
         }
-		public bool AddExp(uint exp) { /*@B 0x6007C86*/ throw null; }
+		public bool AddExp(uint exp) {
+            if (m_coreParam.level < PmlConstants.MAX_POKE_LEVEL)
+            {
+                uint newExp = m_coreParam.exp + exp;
+                global::Pml.PokePara.PokemonParam pp = m_coreParam.ppSrc;
+                if (newExp >= calc.PERSONAL_GetMinExp(m_coreParam.monsno, m_formNo, (byte)(m_coreParam.level + 1)))
+                {
+                    ushort prevMaxHP = m_coreParam.hpMax;
+                    bool fastFlag = pp.StartFastMode();
+                    bool isGMode = m_coreParam.gParam.isGMode;
+                    doryoku_PutToPP(m_doryokuParam, pp);
+                    m_coreParam.exp = newExp;
+                    pp.SetExp(m_coreParam.exp);
+                    m_coreParam.hpMax = getBasePower(PowerID.HP, isGMode);
+                    m_coreParam.level = (byte)pp.GetLevel();
+                    m_coreParam.hp = (ushort)(m_coreParam.hpMax - prevMaxHP + m_coreParam.hp);
+                    pp.SetHp(m_coreParam.hp);
+                    if (!m_coreParam.fHensin)
+                    {
+                        m_baseParam.attack = getBasePower(PowerID.ATK, isGMode);
+                        m_baseParam.defence = getBasePower(PowerID.DEF, isGMode);
+                        m_baseParam.sp_attack = getBasePower(PowerID.SPATK, isGMode);
+                        m_baseParam.sp_defence = getBasePower(PowerID.SPDEF, isGMode);
+                        m_baseParam.agility = getBasePower(PowerID.AGI, isGMode);
+                    }
+                    wazaWork_ReflectToPP();
+                    pp.EndFastMode(fastFlag);
+                    PERMFLAG_Set(PermFlag.PERMFLAG_LEVELUP);
+                    return true;
+                }
+                m_coreParam.exp = newExp;
+                pp.SetExp(m_coreParam.exp);
+            }
+            return false;
+        }
 		public uint GetExpMargin() {
             // Returns the minimum exp of level 100 as is (01fe31b8 tail call); nothing is subtracted.
             return calc.PERSONAL_GetMinExp(m_coreParam.monsno, m_formNo, PmlConstants.MAX_POKE_LEVEL);
@@ -2151,7 +2282,7 @@ namespace Dpr.Battle.Logic
             else
                 m_coreParam.ppSrc.SetItem(m_coreParam.item);
         }
-		static BTL_POKEPARAM() { /*@B 0x6007CB2*/ throw null; }
+		static BTL_POKEPARAM() { }
 		public class SetupParam
 		{
 			public global::Pml.PokePara.PokemonParam srcParam;
@@ -2159,7 +2290,7 @@ namespace Dpr.Battle.Logic
 			public byte pokeID;
 			public byte friendship;
 			public bool isForceGEnable;
-			public SetupParam() { /*@B 0x600B710*/ throw null; }
+			public SetupParam() { }
 		}
 		public enum ValueID
 		{
@@ -2311,15 +2442,15 @@ namespace Dpr.Battle.Logic
 		}
 		private class WAZA_SET
 		{
-			public global::Dpr.Battle.Logic.BTL_POKEPARAM.WAZA_CORE truth;
-			public global::Dpr.Battle.Logic.BTL_POKEPARAM.WAZA_CORE surface;
+			public global::Dpr.Battle.Logic.BTL_POKEPARAM.WAZA_CORE truth = new WAZA_CORE();
+			public global::Dpr.Battle.Logic.BTL_POKEPARAM.WAZA_CORE surface = new WAZA_CORE();
 			public bool fLinked;
 			public void CopyFrom(global::Dpr.Battle.Logic.BTL_POKEPARAM.WAZA_SET src) {
                 truth.CopyFrom(src.truth);
                 surface.CopyFrom(src.surface);
                 fLinked = src.fLinked;
             }
-			public WAZA_SET() { /*@B 0x600B717*/ throw null; }
+			public WAZA_SET() { }
 		}
 		private class GModeParam
 		{
@@ -2360,20 +2491,20 @@ namespace Dpr.Battle.Logic
 			public bool fBtlIn;
 			public bool fDontResetFormByByOut;
 			public bool fForceGEnable;
-			public global::Dpr.Battle.Logic.BTL_SICKCONT[] sickCont;
-			public byte[] wazaSickCounter;
+			public global::Dpr.Battle.Logic.BTL_SICKCONT[] sickCont = new global::Dpr.Battle.Logic.BTL_SICKCONT[45];
+			public byte[] wazaSickCounter = new byte[45];
 			public byte confrontRecCount;
-			public byte[] confrontRec;
+			public byte[] confrontRec = new byte[30];
 			public ushort totalTurnCount;
 			public byte fakeViewTargetPokeId;
-			public global::Dpr.Battle.Logic.DefaultPowerUpDesc defaultPowerUpDesc;
+			public global::Dpr.Battle.Logic.DefaultPowerUpDesc defaultPowerUpDesc = new DefaultPowerUpDesc();
 			public global::Dpr.Battle.Logic.DamageCause deadCause;
 			public byte deadCausePokeID;
 			public byte killCount;
 			public bool isRaidBoss;
 			public global::Dpr.Battle.Logic.RaidBossParam raidBossParam;
-			public global::Dpr.Battle.Logic.BTL_POKEPARAM.GModeParam gParam;
-			public CORE_PARAM() { /*@B 0x600B71A*/ throw null; }
+			public global::Dpr.Battle.Logic.BTL_POKEPARAM.GModeParam gParam = new GModeParam();
+			public CORE_PARAM() { }
 		}
 		private class BASE_PARAM
 		{

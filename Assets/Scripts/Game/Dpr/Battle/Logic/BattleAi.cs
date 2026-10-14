@@ -23,7 +23,7 @@ namespace Dpr.Battle.Logic
 		private uint m_seq;
 		private bool m_isFinished;
 		private global::Dpr.Battle.Logic.BattleAi.ActionData[] m_actionData = Arrays.InitializeWithDefaultInstances<ActionData>((int)AiAction.AIACT_NUM);
-		private static readonly global::Dpr.Battle.Logic.BattleAi.AiAction[] selectForcedActionByPriority_priorityTable;
+		private static readonly global::Dpr.Battle.Logic.BattleAi.AiAction[] selectForcedActionByPriority_priorityTable = new AiAction[] { AiAction.AIACT_WAZA, AiAction.AIACT_ESCAPE, AiAction.AIACT_ITEM, AiAction.AIACT_POKECHANGE, AiAction.AIACT_WARUAGAKI };
 		public BattleAi(in global::Dpr.Battle.Logic.BattleAi.SetupParam setupParam) {
             m_mainModule = setupParam.mainModule;
             m_pBattleEnv = setupParam.pBattleEnv;
@@ -355,7 +355,7 @@ namespace Dpr.Battle.Logic
                     break;
             }
         }
-		static BattleAi() { /*@B 0x6007DEE*/ throw null; }
+		static BattleAi() { }
 		public enum AiAction
 		{
 			AIACT_WAZA = 0,
@@ -379,10 +379,10 @@ namespace Dpr.Battle.Logic
 		public class StartParam
 		{
 			public byte pokeId;
-			public bool[] selectableWazaFlags;
+			public bool[] selectableWazaFlags = new bool[4];
 			public ushort itemId;
 			public bool isGoingToStartG;
-			public StartParam() { /*@B 0x600B743*/ throw null; }
+			public StartParam() { }
 		}
 		public class Result
 		{

@@ -17,8 +17,51 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.SectionContainer m_sectionContainer;
 		private global::Dpr.Battle.Logic.PokeChangeRequest m_pokeChangeRequest;
 		private global::Dpr.Battle.Logic.CaptureInfo m_captureInfo;
-		public BattleDriver(in global::Dpr.Battle.Logic.BattleDriver.SetupParam setupParam) { /*@B 0x6006941*/ throw null; }
-		public void Dispose() { /*@B 0x6006942*/ throw null; }
+		public BattleDriver(in global::Dpr.Battle.Logic.BattleDriver.SetupParam setupParam) {
+            m_pMainModule = setupParam.pMainModule;
+            m_pBattleEnv = setupParam.pBattleEnv;
+            m_serverCmdQueue = null;
+            m_serverCmdGenerator = null;
+            m_serverCmdPutter = null;
+            m_wazaCmdPutter = null;
+            m_serverCmdExecutor = null;
+            m_eventSystem = null;
+            m_eventLauncher = null;
+            m_pokeActionContainer = null;
+            m_sectionSharedData = null;
+            m_sectionContainer = null;
+            m_pokeChangeRequest = null;
+            m_captureInfo = null;
+            m_captureInfo = new CaptureInfo();
+            m_pokeChangeRequest = new PokeChangeRequest(setupParam.pMainModule);
+            m_serverCmdQueue = new ServerCommandQueue();
+            m_pokeActionContainer = new PokeActionContainer();
+            m_sectionContainer = new SectionContainer();
+            createSectionSharedData();
+            createEventSystem();
+            createEventLauncher();
+            createServerCommandExecutor();
+            createServerCommandPutter();
+            createWazaMessagePutter();
+            createSections();
+            createServerCommandGenerator();
+        }
+		public void Dispose() {
+            m_pMainModule = null;
+            m_pBattleEnv = null;
+            m_serverCmdQueue = null;
+            m_serverCmdGenerator = null;
+            m_serverCmdPutter = null;
+            m_wazaCmdPutter = null;
+            m_serverCmdExecutor = null;
+            m_eventSystem = null;
+            m_eventLauncher = null;
+            m_pokeActionContainer = null;
+            m_sectionSharedData = null;
+            m_sectionContainer = null;
+            m_pokeChangeRequest = null;
+            m_captureInfo = null;
+        }
 		private void createSectionSharedData() {
             var param = new SectionSharedData.SetupParam();
             m_sectionSharedData = new SectionSharedData(param);
