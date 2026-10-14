@@ -5,7 +5,7 @@ namespace Dpr.SecretBase
 {
 	public class StateStatueWindow : global::Dpr.SecretBase.StateBase<global::Dpr.SecretBase.StatuePlacementEditController.State, global::Dpr.SecretBase.StatuePlacementEditController>
 	{
-		public StateStatueWindow() : base(default(global::Dpr.SecretBase.StatuePlacementEditController.State)) { /*@B 0x600359C*/ throw null; }
+		public StateStatueWindow() : base(global::Dpr.SecretBase.StatuePlacementEditController.State.StatueWindow) { }
 		public override void Enter(global::Dpr.SecretBase.StatuePlacementEditController owner) {
 			owner.StatueSelectWindow.Show();
 			owner.StatueSelectWindow.SetCursorActive(true);

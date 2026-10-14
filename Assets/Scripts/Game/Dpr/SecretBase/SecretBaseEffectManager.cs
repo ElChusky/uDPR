@@ -49,6 +49,6 @@ namespace Dpr.SecretBase
 				pair.Value.Release();
 			effectData.Clear();
 		}
-		public SecretBaseEffectManager() { /*@B 0x600353B*/ throw null; }
+		public SecretBaseEffectManager() { }
 	}
 }

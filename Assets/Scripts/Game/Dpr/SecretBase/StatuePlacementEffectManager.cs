@@ -44,7 +44,7 @@ namespace Dpr.SecretBase
 				item.Value.Release();
 			effectData.Clear();
 		}
-		public StatuePlacementEffectManager() { /*@B 0x600361E*/ throw null; }
+		public StatuePlacementEffectManager() { }
 		public enum EffectID
 		{
 			PlacementStatueS = 0,

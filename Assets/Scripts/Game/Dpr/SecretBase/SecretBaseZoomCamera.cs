@@ -91,6 +91,6 @@ namespace Dpr.SecretBase
 			facial = facial + 1 > 4 ? 0 : facial + 1;
 			EntityManager.activeFieldPlayer.SetEyePattern(facial);
 		}
-		public SecretBaseZoomCamera() { /*@B 0x6003522*/ throw null; }
+		public SecretBaseZoomCamera() { }
 	}
 }

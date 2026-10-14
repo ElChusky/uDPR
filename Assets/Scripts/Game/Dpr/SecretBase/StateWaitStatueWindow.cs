@@ -6,7 +6,7 @@ namespace Dpr.SecretBase
 		private global::Dpr.SecretBase.StateWaitStatueWindow.LocalState state;
 		private float timer;
 		private global::Dpr.SecretBase.PlacementData placement;
-		public StateWaitStatueWindow() : base(default(global::Dpr.SecretBase.StatuePlacementEditController.State)) { /*@B 0x60035A3*/ throw null; }
+		public StateWaitStatueWindow() : base(global::Dpr.SecretBase.StatuePlacementEditController.State.WaitStatueWindow) { }
 		public void Enter_WaitStatueWindow(global::Dpr.SecretBase.PlacementData statue) {
 			placement = statue;
 		}

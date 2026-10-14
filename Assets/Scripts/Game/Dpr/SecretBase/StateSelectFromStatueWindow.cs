@@ -6,7 +6,7 @@ namespace Dpr.SecretBase
 	{
 		private global::Dpr.SecretBase.PlacementData placement;
 		private int selectIndex;
-		public StateSelectFromStatueWindow() : base(default(global::Dpr.SecretBase.StatuePlacementEditController.State)) { /*@B 0x6003595*/ throw null; }
+		public StateSelectFromStatueWindow() : base(global::Dpr.SecretBase.StatuePlacementEditController.State.SelectFromStatueWindow) { }
 		public void Enter_SelectFromStatueWindow(global::Dpr.SecretBase.PlacementData data) {
 			placement = data;
 		}

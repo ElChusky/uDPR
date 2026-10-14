@@ -5,6 +5,9 @@ namespace Dpr.SequenceEditor
 	public class CameraAnimationScale : global::Dpr.SequenceEditor.Macro
 	{
 		public global::UnityEngine.Vector3 pos;
-		public CameraAnimationScale(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004983*/ throw null; }
+		public CameraAnimationScale(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			pos = ParseVector3(macro.GetValue("pos"), 1f, 1f, 1f);
+		}
 	}
 }

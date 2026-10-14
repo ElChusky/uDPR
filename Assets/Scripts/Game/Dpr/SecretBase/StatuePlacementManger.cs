@@ -27,12 +27,12 @@ namespace Dpr.SecretBase
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.SecretBase.SecretBaseAudioManager audioManager;
 		private global::Dpr.SecretBase.FieldCursor currentCursor;
-		private global::UnityEngine.Vector2Int gridPosition;
+		private global::UnityEngine.Vector2Int gridPosition = new global::UnityEngine.Vector2Int(0, 0);
 		private global::Dpr.SecretBase.StatuePlacementManger.CursorMode cursorMode;
 		public global::Dpr.SecretBase.FieldCursor FieldCursor { get { return this.fieldCursor; } }
 		public global::Dpr.SecretBase.FieldCursor PlacementCursor { get { return this.placementCursor; } }
 		public global::UnityEngine.Transform StatueRoot { get { return this.statueRoot; } }
-		public global::UnityEngine.Vector2Int GridPosition { get { /*@B 0x6003625*/ throw null; } }
+		public global::UnityEngine.Vector2Int GridPosition { get { return gridPosition; } }
 		public global::System.Collections.IEnumerator Load() {
 			// <Load>d__23 @01e38ce0 (this +0x20); StatuePlacementEffectManager.Load's iterator stub inlined (its flag 0x4cbec0f).
 			// The stub of THIS iterator (@01e33800, flag 0x4cbec28) is inlined in StatuePlacementEditController.<Load>d__55.
@@ -277,7 +277,7 @@ namespace Dpr.SecretBase
 				crystal.UpdateCrystalColor();
 			}
 		}
-		public StatuePlacementManger() { /*@B 0x6003639*/ throw null; }
+		public StatuePlacementManger() { }
 		public enum CursorMode
 		{
 			Field = 0,

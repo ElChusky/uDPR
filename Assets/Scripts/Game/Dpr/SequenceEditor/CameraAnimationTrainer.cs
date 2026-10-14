@@ -15,6 +15,19 @@ namespace Dpr.SequenceEditor
 		public bool isRot;
 		public bool forceUpdate;
 		public bool isLoseCam;
-		public CameraAnimationTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600497E*/ throw null; }
+		public CameraAnimationTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			camType = Parse_SEQ_DEF_TR_CAM(macro.GetValue("camType"));
+			camFile = ParseString(macro.GetValue("camFile"));
+			anmFile = ParseString(macro.GetValue("anmFile"));
+			trg = Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			node = ParseString(macro.GetValue("node"));
+			pos = ParseVector3(macro.GetValue("pos"));
+			isFlip = ParseBool(macro.GetValue("isFlip"), 1);
+			isScale = ParseBool(macro.GetValue("isScale"), 0);
+			isRot = ParseBool(macro.GetValue("isRot"), 0);
+			forceUpdate = ParseBool(macro.GetValue("forceUpdate"), 0);
+			isLoseCam = ParseBool(macro.GetValue("isLoseCam"), 0);
+		}
 	}
 }

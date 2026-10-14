@@ -87,6 +87,6 @@ namespace Dpr.SecretBase
 				Vibration.GetDeviceInfo(ref vibrationDeviceInfos[i], vibrationDeviceHandles[i]);
 			}
 		}
-		public StatueVibration() { /*@B 0x6003643*/ throw null; }
+		public StatueVibration() { }
 	}
 }

@@ -5,6 +5,9 @@ namespace Dpr.SequenceEditor
 	public class BallBarDisp : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
-		public BallBarDisp(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049FB*/ throw null; }
+		public BallBarDisp(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			trg = Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+		}
 	}
 }

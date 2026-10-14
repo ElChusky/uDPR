@@ -3,6 +3,6 @@ namespace Dpr.SecretBase
 {
 	public class StateNone : global::Dpr.SecretBase.StateBase<global::Dpr.SecretBase.StatuePlacementEditController.State, global::Dpr.SecretBase.StatuePlacementEditController>
 	{
-		public StateNone() : base(default(global::Dpr.SecretBase.StatuePlacementEditController.State)) { /*@B 0x6003582*/ throw null; }
+		public StateNone() : base(global::Dpr.SecretBase.StatuePlacementEditController.State.None) { }
 	}
 }

@@ -37,6 +37,6 @@ namespace Dpr.SecretBase
 		public global::UnityEngine.Vector2Int GetRoomSize() {
 			return new Vector2Int(secretbase[SecretBaseSaveDataWork.RoomGrade].Width, secretbase[SecretBaseSaveDataWork.RoomGrade].Height);
 		}
-		public SecretBaseMasterDataManager() { /*@B 0x6003544*/ throw null; }
+		public SecretBaseMasterDataManager() { }
 	}
 }

@@ -34,7 +34,7 @@ namespace Dpr.SecretBase
 				subText.SetupMessage(MESSAGE_FILE_NAME, message.sub);
 			}
 		}
-		public StatuePlacementFilterInfo() { /*@B 0x60036A1*/ throw null; }
-		static StatuePlacementFilterInfo() { /*@B 0x60036A2*/ throw null; }
+		public StatuePlacementFilterInfo() { }
+		static StatuePlacementFilterInfo() { }
 	}
 }

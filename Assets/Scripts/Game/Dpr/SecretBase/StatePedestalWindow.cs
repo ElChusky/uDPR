@@ -12,7 +12,7 @@ namespace Dpr.SecretBase
 		private bool isPedestalInstalled;
 		private global::DG.Tweening.Tweener windowAnimationhandler;
 		private global::UnityEngine.Vector3 baseWindowPos;
-		public StatePedestalWindow() : base(default(global::Dpr.SecretBase.StatuePlacementEditController.State)) { /*@B 0x6003583*/ throw null; }
+		public StatePedestalWindow() : base(global::Dpr.SecretBase.StatuePlacementEditController.State.PedestalWindow) { }
 		public void Enter_PedestalWindow(global::Dpr.SecretBase.PlacementData placement) {
 			this.placement = placement;
 			prevPedestal = placement.pedestal;

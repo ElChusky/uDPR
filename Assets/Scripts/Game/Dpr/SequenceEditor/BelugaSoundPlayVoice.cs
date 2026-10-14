@@ -7,6 +7,11 @@ namespace Dpr.SequenceEditor
 		public int player;
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public global::Dpr.SequenceEditor.VOICE_TYPE type;
-		public BelugaSoundPlayVoice(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A71*/ throw null; }
+		public BelugaSoundPlayVoice(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			player = ParseInt(macro.GetValue("player"), 1);
+			trg = Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			type = Parse_VOICE_TYPE(macro.GetValue("type"));
+		}
 	}
 }

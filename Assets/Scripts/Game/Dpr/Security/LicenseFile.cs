@@ -68,7 +68,7 @@ namespace Dpr.Security
 				key = key.Substring(0, 16);
 			return key.PadRight(16);
 		}
-		public LicenseFile() { /*@B 0x6003840*/ throw null; }
-		static LicenseFile() { /*@B 0x6003841*/ throw null; }
+		public LicenseFile() { }
+		static LicenseFile() { }
 	}
 }

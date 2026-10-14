@@ -5,7 +5,7 @@ namespace Dpr.SecretBase
 	public class StateField : global::Dpr.SecretBase.StateBase<global::Dpr.SecretBase.StatuePlacementEditController.State, global::Dpr.SecretBase.StatuePlacementEditController>
 	{
 		private global::Dpr.SecretBase.PlacementData prev;
-		public StateField() : base(default(global::Dpr.SecretBase.StatuePlacementEditController.State)) { /*@B 0x6003578*/ throw null; }
+		public StateField() : base(global::Dpr.SecretBase.StatuePlacementEditController.State.Field) { }
 		public override void Enter(global::Dpr.SecretBase.StatuePlacementEditController owner) {
 			owner.PlacementManager.SetCursorMode(StatuePlacementManger.CursorMode.Field);
 			owner.StatueSelectWindow.Close();

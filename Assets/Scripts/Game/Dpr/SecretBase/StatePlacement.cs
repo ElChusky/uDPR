@@ -10,7 +10,7 @@ namespace Dpr.SecretBase
 		private int dir_backup;
 		private global::Dpr.SecretBase.PlacementData placement;
 		private bool bIsPrevField;
-		public StatePlacement() : base(default(global::Dpr.SecretBase.StatuePlacementEditController.State)) { /*@B 0x600358A*/ throw null; }
+		public StatePlacement() : base(global::Dpr.SecretBase.StatuePlacementEditController.State.Placement) { }
 		public void Enter_Placement(global::Dpr.SecretBase.PlacementData statue, bool isField) {
 			placement_dir = statue.data.dir;
 			placement = statue;

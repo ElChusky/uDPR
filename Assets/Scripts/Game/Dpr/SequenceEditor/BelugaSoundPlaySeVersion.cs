@@ -7,6 +7,11 @@ namespace Dpr.SequenceEditor
 		public string pikaEvent;
 		public string eeveEvent;
 		public bool is3d;
-		public BelugaSoundPlaySeVersion(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A6E*/ throw null; }
+		public BelugaSoundPlaySeVersion(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			pikaEvent = ParseString(macro.GetValue("pikaEvent"));
+			eeveEvent = ParseString(macro.GetValue("eeveEvent"));
+			is3d = ParseBool(macro.GetValue("is3d"), 1);
+		}
 	}
 }
