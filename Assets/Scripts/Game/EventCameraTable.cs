@@ -4,6 +4,6 @@ public class EventCameraTable : global::UnityEngine.ScriptableObject
 {
 	public global::EventCameraCurveTable curve;
 	public global::EventCameraData[] table;
-	public global::EventCameraData this[int index] { get { /*@B 0x6000098*/ throw null; } }
+	public global::EventCameraData this[int index] { get { return table[index]; } }
 	public EventCameraTable() { }
 }
