@@ -4,11 +4,11 @@ namespace Dpr.UI
 {
 	public class TrainingItemBase : global::UnityEngine.MonoBehaviour
 	{
-		protected static readonly int animState0Normal;
-		protected static readonly int animState0Select;
-		protected static readonly int animState1Enable;
-		protected static readonly int animState1Disable;
-		public int index;
+		protected static readonly int animState0Normal = global::UnityEngine.Animator.StringToHash("Normal");
+		protected static readonly int animState0Select = global::UnityEngine.Animator.StringToHash("Select");
+		protected static readonly int animState1Enable = global::UnityEngine.Animator.StringToHash("Enable");
+		protected static readonly int animState1Disable = global::UnityEngine.Animator.StringToHash("Disable");
+		public int index = -1;
 		protected global::UnityEngine.Animator _animator;
 		protected bool _isEnabled;
 		protected bool _isSelected;
@@ -28,7 +28,7 @@ namespace Dpr.UI
 			_isEnabled = enabled;
 			_animator.Play(enabled ? animState1Enable : animState1Disable, 1);
 		}
-		public TrainingItemBase() { /*@B 0x6005B6A*/ throw null; }
-		static TrainingItemBase() { /*@B 0x6005B6B*/ throw null; }
+		public TrainingItemBase() { }
+		static TrainingItemBase() { }
 	}
 }

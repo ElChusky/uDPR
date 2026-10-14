@@ -3,17 +3,61 @@ namespace Dpr.UI
 {
 	public class UIInputController
 	{
-		private bool _inputEnabled;
+		private bool _inputEnabled = true;
 		private int _autoPushButton;
-		public bool inputEnabled { get { return this._inputEnabled; } set { /*@B 0x6005BAD*/ throw null; } }
-		public bool IsPushButton(int button, bool isForce = false) { /*@B 0x6005BAE*/ throw null; }
-		public bool IsReleaseButton(int button, bool isForce = false) { /*@B 0x6005BAF*/ throw null; }
-		public bool IsRepeatButton(int button, bool isForce = false) { /*@B 0x6005BB0*/ throw null; }
-		public bool IsOnButton(int button, bool isForce = false) { /*@B 0x6005BB1*/ throw null; }
-		public bool IsPushOrRepeatButton(int button, bool isForce = false) { /*@B 0x6005BB2*/ throw null; }
-		public bool IsAccelButton(int button, bool isForce = false) { /*@B 0x6005BB3*/ throw null; }
+		public bool inputEnabled { get { return this._inputEnabled; } set { this._inputEnabled = value; } }
+		public bool IsPushButton(int button, bool isForce = false) {
+			// CheckAutoButton inlined (flag-less)
+			if (CheckAutoButton(button))
+				return true;
+			if (!isForce && !_inputEnabled)
+				button = 0;
+			return (GameController.push & button) != 0;
+		}
+		public bool IsReleaseButton(int button, bool isForce = false) {
+			if (CheckAutoButton(button))
+				return true;
+			if (!isForce && !_inputEnabled)
+				button = 0;
+			return (GameController.release & button) != 0;
+		}
+		public bool IsRepeatButton(int button, bool isForce = false) {
+			if (CheckAutoButton(button))
+				return true;
+			if (!isForce && !_inputEnabled)
+				button = 0;
+			return (GameController.repeat & button) != 0;
+		}
+		public bool IsOnButton(int button, bool isForce = false) {
+			if (CheckAutoButton(button))
+				return true;
+			if (!isForce && !_inputEnabled)
+				button = 0;
+			return (GameController.on & button) != 0;
+		}
+		public bool IsPushOrRepeatButton(int button, bool isForce = false) {
+			if (CheckAutoButton(button))
+				return true;
+			if (!isForce && !_inputEnabled)
+				button = 0;
+			return (GameController.push & button) != 0 || (GameController.repeat & button) != 0;
+		}
+		public bool IsAccelButton(int button, bool isForce = false) {
+			if (CheckAutoButton(button))
+				return true;
+			if (!isForce && !_inputEnabled)
+				button = 0;
+			return (GameController.accel & button) != 0;
+		}
 		public void SetAutoButton(int button) { this._autoPushButton = button; }
-		public bool CheckAutoButton(int button) { /*@B 0x6005BB5*/ throw null; }
-		public UIInputController() { /*@B 0x6005BB6*/ throw null; }
+		public bool CheckAutoButton(int button) {
+			if ((_autoPushButton & button) != 0)
+			{
+				_autoPushButton = 0;
+				return true;
+			}
+			return false;
+		}
+		public UIInputController() { }
 	}
 }

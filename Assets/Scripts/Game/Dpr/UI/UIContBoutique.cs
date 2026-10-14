@@ -13,13 +13,13 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.CharacterModelView _modelView;
 		[global::UnityEngine.SerializeField]
-		private float modelOffsetZ;
-		private global::System.Collections.Generic.List<global::Dpr.UI.ShopBoutiqueItemItem.Param> _itemParams;
+		private float modelOffsetZ = 4.2f;
+		private global::System.Collections.Generic.List<global::Dpr.UI.ShopBoutiqueItemItem.Param> _itemParams = new global::System.Collections.Generic.List<global::Dpr.UI.ShopBoutiqueItemItem.Param>();
 		private global::Dpr.UI.ShopBoutiqueItemItem _selectShopItem;
-		private global::Dpr.UI.KeyGuideCreater keyguide;
+		private global::Dpr.UI.KeyGuideCreater keyguide = new global::Dpr.UI.KeyGuideCreater();
 		private global::System.Action onFinish;
 		private global::Dpr.UI.ShopBoutique.BoutiqueType _boutiqueType;
-		private global::Dpr.Contest.ContestMenuEventID _resultEventID;
+		private global::Dpr.Contest.ContestMenuEventID _resultEventID = global::Dpr.Contest.ContestMenuEventID.None;
 		private int _selectIndex;
 		private bool _bIsSelected;
 		private bool _bIsOpen;
@@ -50,7 +50,27 @@ namespace Dpr.UI
 			_bIsOpening = true;
 			SmartPoint.AssetAssistant.Sequencer.Start(OpOpen(prevWindowID));
 		}
-		private global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) { /*@B 0x60051D4*/ throw null; }
+		private global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) {
+			// states 0 and 1 share one entry (`uVar1 < 2`)
+			while (Dpr.MsgWindow.MsgWindowManager.IsOpen)
+				yield return null;
+			keyguide.Open(SubContentsPatternID.ContBoutique, transform, false);
+			_itemListScrollView.Initialize(OnRequiredItemData, OnSelectItemScrollViewItem, OnUnSelectItemScrollViewItem);
+			_selectIndex = 0;
+			// direct `bl UIWindow.OnOpen` @017ac1c8
+			base.OnOpen(prevWindowId);
+			_cursor.transform.SetParent(transform, false);
+			_cursor.SetActive(false);
+			_selectIndex = ShopBoutiqueChange.SetupBoutiqueItemParams(_itemParams);
+			InsertSecondContestDress(PlayerWork.playerSex);
+			_selectIndex = FindStartIndex();
+			_itemListScrollView.Setup(_itemParams.Count, _selectIndex, 0f, false);
+			yield return OpPlayOpenWindowAnimation(_prevWindowId, null);
+			_input.inputEnabled = true;
+			_bIsOpening = false;
+			SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+			_cursor.SetActive(true);
+		}
 		private void InsertSecondContestDress(bool isMale) {
 			XLSXContent.CharacterDressData.SheetData dressData = Array.Find(DataManager.CharacterDressData.Data,
 				x => x.Index == ContestDataConstants.CONTEST_DRESS_ID_ARRAY[isMale ? 0 : 1]);
@@ -76,7 +96,21 @@ namespace Dpr.UI
 			}
 			return index;
 		}
-		protected void OnUpdate(float deltaTime) { /*@B 0x60051D9*/ throw null; }
+		protected void OnUpdate(float deltaTime) {
+			if (UIManager.Instance.GetCurrentUIWindow<UIWindow>() != this)
+				return;
+			_modelView.OnUpdate(deltaTime, _input);
+			if (_bIsSelected)
+				return;
+			if (IsActiveMessageWindow())
+				return;
+			if (IsPushButton(UIManager.ButtonA, false))
+			{
+				OnDecidedSelectItem();
+				return;
+			}
+			UpdateSelect(deltaTime);
+		}
 		protected bool UpdateSelect(float deltaTime) {
 			// hand-written (not ShopBase.MoveSelectScrollView: the SE here is not gated on MoveSelect's result)
 			if (IsPushButton(UIManager.StickLDown, false) || IsRepeatButton(UIManager.StickLDown, false))
@@ -119,7 +153,15 @@ namespace Dpr.UI
 			_cursor.transform.SetParent(item.transform, false);
 			SetupModelView();
 		}
-		private void SetupModelView() { /*@B 0x60051DD*/ throw null; }
+		private void SetupModelView() {
+			global::Dpr.UI.CharacterModelView.Param param = new global::Dpr.UI.CharacterModelView.Param();
+			param.type = UIModelViewController.ModelViewType.Boutique;
+			param.characterDressData = _selectShopItem.characterDressData;
+			param.canvas = _canvas;
+			param.modelType = global::Dpr.UI.CharacterModelView.Param.ModelType.Battle;
+			param.offsetZ = modelOffsetZ;
+			_modelView.Setup(param, param_ => _modelView.PlayAnimation("stand_b", false));
+		}
 		private void OnUnSelectItemScrollViewItem(global::Dpr.UI.IUIButton button) {
 			button.UnSelect();
 		}
@@ -183,6 +225,6 @@ namespace Dpr.UI
 		public void SetTimeCount(string minutStr, string secondStr) {
 			_header.SetTime(minutStr, secondStr);
 		}
-		public UIContBoutique() { /*@B 0x60051E4*/ throw null; }
+		public UIContBoutique() { }
 	}
 }

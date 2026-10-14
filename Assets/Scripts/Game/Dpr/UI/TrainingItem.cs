@@ -3,8 +3,8 @@ namespace Dpr.UI
 {
 	public class TrainingItem : global::Dpr.UI.TrainingItemBase
 	{
-		protected static readonly int animState2CheckOff;
-		protected static readonly int animState2CheckOn;
+		protected static readonly int animState2CheckOff = global::UnityEngine.Animator.StringToHash("CheckMark_Off");
+		protected static readonly int animState2CheckOn = global::UnityEngine.Animator.StringToHash("CheckMark_On");
 		private bool _isChecked;
 		public override void Setup() {
 			base.Setup();
@@ -17,7 +17,7 @@ namespace Dpr.UI
 		public bool IsCheck() {
 			return _isChecked;
 		}
-		public TrainingItem() { /*@B 0x6005B63*/ throw null; }
-		static TrainingItem() { /*@B 0x6005B64*/ throw null; }
+		public TrainingItem() { }
+		static TrainingItem() { }
 	}
 }

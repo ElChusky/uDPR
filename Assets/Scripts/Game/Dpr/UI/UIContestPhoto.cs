@@ -19,7 +19,7 @@ namespace Dpr.UI
 		private static global::Dpr.UI.UIContestPhoto.StageModel _stageModel;
 		private static bool _haveCache;
 		private const string CNT_PHOTO_FRAME_PATH = "contestphoto/cnt_photo_frame_";
-		private readonly string GRAPHIC_TEXT_NAME;
+		private readonly string GRAPHIC_TEXT_NAME = "cnt_photo_best";
 		[global::UnityEngine.SerializeField]
 		private global::EnvironmentController _envController;
 		[global::UnityEngine.SerializeField]
@@ -32,8 +32,8 @@ namespace Dpr.UI
 		private global::DPData.CON_PHOTO_EXT_DATA _extData;
 		private global::XLSXContent.ContestMasterDatas.SheetContestData useContestData;
 		private global::XLSXContent.ContestMasterDatas.SheetRankData useRankData;
-		private global::Dpr.Contest.StageEffect _stageFx;
-		private global::Dpr.Battle.View.Systems.BattleSequenceSystem _iPtrSequenceSystem;
+		private global::Dpr.Contest.StageEffect _stageFx = new global::Dpr.Contest.StageEffect();
+		private global::Dpr.Battle.View.Systems.BattleSequenceSystem _iPtrSequenceSystem = new global::Dpr.Battle.View.Systems.BattleSequenceSystem(null);
 		private global::EnvironmentSettings _currentRenderSettings;
 		private global::Dpr.Contest.ContestSettings _settingData;
 		private global::UnityEngine.Coroutine colSetupMotion;
@@ -56,7 +56,7 @@ namespace Dpr.UI
 
                 return false;
             } }
-		private bool IsMigawari { get { /*@B 0x600560F*/ throw null; } }
+		private bool IsMigawari { get { return _photoData.wazaNo == 164; } }
 		public static void ReleasePhotoResources() {
             if (!_haveCache)
                 return;
@@ -385,7 +385,15 @@ namespace Dpr.UI
             titleSprite = UIManager.Instance.GetSpriteAtlas(SpriteAtlasID.COMMON_LANG).GetSprite(GRAPHIC_TEXT_NAME);
             photoTitleImage.sprite = titleSprite;
         }
-		private void SetupLight() { /*@B 0x6005620*/ throw null; }
+		private void SetupLight() {
+			if (EnvironmentController.global != null)
+				EnvironmentController.global.gameObject.SetActive(false);
+			// flag-less throughGlobal setter inlined (raw _throughGlobal store)
+			_envController.throughGlobal = true;
+			_envController.SetActive(true);
+			_envController.SetLight(_currentRenderSettings, PeriodOfDay.Daytime, 0f, 0f);
+			ActivateCamera();
+		}
 		private void ActivateCamera() {
             _boCamera.Initialize(Dpr.SequenceEditor.SequenceCameraSystem.CameraStateType.Main);
             Transform cameraTransform = _boCamera.transform;
@@ -481,7 +489,32 @@ namespace Dpr.UI
             // OpClose inlined (its flag 0x4cbb462 @017b5ccc)
             SmartPoint.AssetAssistant.Sequencer.Start(OpClose());
         }
-		private global::System.Collections.IEnumerator OpClose() { /*@B 0x6005629*/ throw null; }
+		private global::System.Collections.IEnumerator OpClose() {
+			SmartPoint.Components.Fader.FadeOut();
+			while (SmartPoint.Components.Fader.isBusy)
+				yield return null;
+			if (_iPtrSequenceSystem != null)
+			{
+				_iPtrSequenceSystem.Dispose();
+				_iPtrSequenceSystem = null;
+			}
+			HideCachedObject();
+			ReleaseCamera();
+			// Release inlined (its flag 0x4cbb463 @017b7364)
+			Release();
+			yield return null;
+			UnloadResource();
+			yield return null;
+			if (EnvironmentController.global != null)
+				EnvironmentController.global.gameObject.SetActive(true);
+			if (GameManager.fieldCamera != null)
+				GameManager.fieldCamera.SetActive(true);
+			// UIManager._ReleaseUIWindow inlined (its flag 0x4cbb490 @017b7628)
+			UIManager.Instance._ReleaseUIWindow(this);
+			global::System.GC.Collect();
+			SmartPoint.Components.Fader.FadeIn();
+			onClosed?.Invoke(this);
+		}
 		private void HideCachedObject() {
             if (_photoData.seqType == 1 && _wazaEffectsTable != null)
             {
@@ -529,7 +562,7 @@ namespace Dpr.UI
                 photoFrameSpr = null;
             }
         }
-		public UIContestPhoto() { /*@B 0x600562E*/ throw null; }
+		public UIContestPhoto() { }
 		static UIContestPhoto() { }
 		private class StageModel
 		{
@@ -555,7 +588,7 @@ namespace Dpr.UI
 			public global::BattlePokemonEntity pokeEntity;
 			public global::UnityEngine.GameObject migawariObj;
 			public string photoTargetModelPath;
-			private bool IsMigawari { get { /*@B 0x600AC2E*/ throw null; } }
+			private bool IsMigawari { get { return migawariObj != null; } }
 			public void Show(global::UnityEngine.Transform parentTransform) {
                 // IsMigawari inlined (its flag 0x4cbb466), then a second null test (@017b8240)
                 if (IsMigawari)

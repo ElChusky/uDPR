@@ -83,7 +83,7 @@ namespace Dpr.UI
 			UIManager.Instance._ReleaseUIWindow(this);
 			onClosed?.Invoke(this);
 		}
-		public UIContestInfo() { /*@B 0x600520A*/ throw null; }
+		public UIContestInfo() { }
 		[global::System.Serializable]
 		public struct InfoItem
 		{

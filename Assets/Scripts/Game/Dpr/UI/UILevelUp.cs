@@ -15,10 +15,10 @@ namespace Dpr.UI
 		private const string QuestionSwapWazaMessageLabel = "SS_level_up_02_04";
 		private const string ResultSwapWazaMessageLabel = "SS_level_up_02_05";
 		private const string ResultNotLearnWazaMessageLabel = "SS_level_up_02_06";
-		private static readonly string[] QuestionSwapWazaContextMenuMessageLabels;
-		private static readonly string[] QuestionSwapWazaContextMenuMessageLabels_Evolve;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private static readonly string[] QuestionSwapWazaContextMenuMessageLabels = new string[] { "SS_level_up_03_01", "SS_level_up_03_02" };
+		private static readonly string[] QuestionSwapWazaContextMenuMessageLabels_Evolve = new string[] { "SS_shinka_demo_10_01", "SS_shinka_demo_10_02" };
+		private readonly int _animStateIn = Animator.StringToHash("in");
+		private readonly int _animStateOut = Animator.StringToHash("out");
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.LevelUpPokemonPanel[] levelUpPokemonPanels;
 		[global::UnityEngine.SerializeField]
@@ -270,8 +270,8 @@ namespace Dpr.UI
 				});
 			});
 		}
-		public UILevelUp() { /*@B 0x600552D*/ throw null; }
-		static UILevelUp() { /*@B 0x600552E*/ throw null; }
+		public UILevelUp() { }
+		static UILevelUp() { }
 		public struct PokemonStatus
 		{
 			public uint Level;
@@ -282,7 +282,16 @@ namespace Dpr.UI
 			public uint SpecialAttack;
 			public uint SpecialDeffence;
 			public uint Agility;
-			public PokemonStatus(global::Pml.PokePara.CoreParam coreParam) { /*@B 0x600AB95*/ throw null; }
+			public PokemonStatus(global::Pml.PokePara.CoreParam coreParam) {
+			Level = coreParam.GetLevel();
+			Exp = coreParam.GetExp();
+			Hp = coreParam.GetPower(PowerID.HP);
+			Attack = coreParam.GetPower(PowerID.ATK);
+			Deffence = coreParam.GetPower(PowerID.DEF);
+			SpecialAttack = coreParam.GetPower(PowerID.SPATK);
+			SpecialDeffence = coreParam.GetPower(PowerID.SPDEF);
+			Agility = coreParam.GetPower(PowerID.AGI);
+		}
 		}
 		public struct Param
 		{
@@ -291,7 +300,13 @@ namespace Dpr.UI
 			public int LevelUpCount;
 			public global::Pml.PokeParty PokeParty;
 			public global::Dpr.Battle.Logic.BattleViewBase.ExpGetResult BattleExpGetResult;
-			public void Clear() { /*@B 0x600AB96*/ throw null; }
+			public void Clear() {
+			AddExpValues = null;
+			TargetIndex = -1;
+			LevelUpCount = 0;
+			PokeParty = null;
+			BattleExpGetResult = null;
+		}
 		}
 	}
 }

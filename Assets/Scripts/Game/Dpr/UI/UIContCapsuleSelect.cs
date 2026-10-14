@@ -28,9 +28,9 @@ namespace Dpr.UI
 		private int[] _attachPositions;
 		private global::Dpr.UI.CapsuleItemButton _selectedCapsuleItemButton;
 		private global::Audio.AudioManager audioManagerPtr;
-		private global::Dpr.UI.KeyGuideCreater _keyGuide;
+		private global::Dpr.UI.KeyGuideCreater _keyGuide = new global::Dpr.UI.KeyGuideCreater();
 		private global::Dpr.EvScript.EvWork.WORK_INDEX _resultWorkIndex;
-		private global::Dpr.Contest.ContestMenuEventID _resultEventID;
+		private global::Dpr.Contest.ContestMenuEventID _resultEventID = global::Dpr.Contest.ContestMenuEventID.None;
 		private float _currentScrollPosition;
 		private int _currentSelectIndex;
 		private int _startSelectIndex;
@@ -245,6 +245,6 @@ namespace Dpr.UI
 		private void ResetContestParam() {
 			ContestWork.selectCapsuleNumber = _startSelectIndex;
 		}
-		public UIContCapsuleSelect() { /*@B 0x60051FC*/ throw null; }
+		public UIContCapsuleSelect() { }
 	}
 }

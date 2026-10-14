@@ -19,7 +19,7 @@ namespace Dpr.UI
 		private global::UnityEngine.GameObject _objTeam;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIBattleMatchingPokemonSlot[] _pokemonSlots;
-		private static string[] _titleLabels;
+		private static string[] _titleLabels = new string[] { "SS_boxname_033", "SS_boxname_034", "SS_boxname_035", "SS_boxname_036", "SS_boxname_037", "SS_boxname_038" };
 		public void Setup(global::Pml.PokePara.PokemonParam[] pokemonParams, bool[] regurations, global::Dpr.UI.UIBattleMatchingPokemonSlot.SlotType type = (global::Dpr.UI.UIBattleMatchingPokemonSlot.SlotType)(0), int teamIndex = -1, bool isMine = false) {
 			_imageFrame.sprite = _spriteFrames[(int)type];
 
@@ -76,6 +76,6 @@ namespace Dpr.UI
 			image.color = active ? Color.white : new Color(1f, 1f, 1f, 0.5f);
 		}
 		public UIBattleMatchingTeamPlate() { }
-		static UIBattleMatchingTeamPlate() { /*@B 0x6004DAB*/ throw null; }
+		static UIBattleMatchingTeamPlate() { }
 	}
 }

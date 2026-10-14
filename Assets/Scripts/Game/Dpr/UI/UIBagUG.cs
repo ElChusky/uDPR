@@ -90,7 +90,13 @@ namespace Dpr.UI
 				scrollView.ResumeMoveSelect();
 			}
 		}
-		private void UpdateKeyGuide() { /*@B 0x6004CBD*/ throw null; }
+		private void UpdateKeyGuide() {
+			global::Dpr.UI.Keyguide.Param param = new global::Dpr.UI.Keyguide.Param();
+			param.itemParams.Add(new KeyguideItem.Param { keyguideId = KeyguideID.BAG_ITEMLIST_BACK });
+			global::Dpr.UI.Keyguide keyguide = UIManager.Instance.GetKeyguide(null, true);
+			keyguide.transform.SetParent(transform, false);
+			keyguide.Open(param);
+		}
 		private void OnSelectCategoryButton(global::Dpr.UI.IUIButton button) {
 			if (!button.GetActive())
 				return;
@@ -181,6 +187,6 @@ namespace Dpr.UI
 			}
 			return false;
 		}
-		public UIBagUG() { /*@B 0x6004CCB*/ throw null; }
+		public UIBagUG() { }
 	}
 }

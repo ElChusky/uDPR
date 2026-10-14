@@ -15,7 +15,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.UIText _itemNum;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform _contentRoot;
-		private global::System.Collections.Generic.List<global::Dpr.UI.TrainingItemBase> _items;
+		private global::System.Collections.Generic.List<global::Dpr.UI.TrainingItemBase> _items = new global::System.Collections.Generic.List<global::Dpr.UI.TrainingItemBase>();
 		private int _itemCount;
 		private int _itemRemainCount;
 		private int _selectIndex;
@@ -171,7 +171,25 @@ namespace Dpr.UI
 			_isDoneTraining = true;
 			Close(onClosed, _prevWindowId);
 		}
-		private bool UpdateSelect(float deltaTime) { /*@B 0x6005B7C*/ throw null; }
+		private bool UpdateSelect(float deltaTime) {
+			int count = _items.Count;
+			if (count == 0)
+				return false;
+			bool isChanged;
+			if (_input.IsPushButton(UIManager.StickLDown, false))
+				isChanged = SetSelectIndex((_selectIndex + 1) % count, false);
+			else if (_input.IsRepeatButton(UIManager.StickLDown, false))
+				isChanged = SetSelectIndex(Mathf.Min(_selectIndex + 1, count - 1), false);
+			else if (_input.IsPushButton(UIManager.StickLUp, false))
+				isChanged = SetSelectIndex((count - 1 + _selectIndex) % count, false);
+			else if (_input.IsRepeatButton(UIManager.StickLUp, false))
+				isChanged = SetSelectIndex(Mathf.Max(_selectIndex - 1, 0), false);
+			else
+				return false;
+			if (isChanged)
+				Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_SELECT, null);
+			return true;
+		}
 		private bool SetSelectIndex(int selectIndex, bool isInitialize = false) {
 			if (selectIndex >= _items.Count)
 				return false;
@@ -189,7 +207,7 @@ namespace Dpr.UI
 			_items[selectIndex].Select(true);
 			return true;
 		}
-		public TrainingWindow() { /*@B 0x6005B7E*/ throw null; }
+		public TrainingWindow() { }
 		private enum ItemType
 		{
 			HP = 0,
@@ -203,8 +221,8 @@ namespace Dpr.UI
 		public class Param
 		{
 			public global::Pml.PokePara.PokemonParam pokemonParam;
-			public global::Pml.ItemNo itemNo;
-			public Param() { /*@B 0x600AF19*/ throw null; }
+			public global::Pml.ItemNo itemNo = global::Pml.ItemNo.GINNOOUKAN;
+			public Param() { }
 		}
 	}
 }

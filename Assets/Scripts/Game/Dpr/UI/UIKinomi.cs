@@ -27,12 +27,12 @@ namespace Dpr.UI
 		private global::Dpr.UI.UIText descriptionText;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.RaderChart raderChart;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private readonly int _animStateIn = Animator.StringToHash("in");
+		private readonly int _animStateOut = Animator.StringToHash("out");
 		private global::Dpr.UI.UIMsgWindowController msgWindowController;
 		private global::System.Collections.Generic.List<global::Dpr.UI.KinomiInfo> kinomiInfos;
 		private global::Dpr.UI.IndexSelector indexSelector;
-		public int SelectedKinomiItemId { get { /*@B 0x60054DD*/ throw null; } }
+		public int SelectedKinomiItemId { get { return kinomiInfos[indexSelector.CurrentIndex].ItemId; } }
 		public override void OnCreate() {
 			base.OnCreate();
 			_animator = GetComponentInChildren<Animator>();
@@ -112,7 +112,14 @@ namespace Dpr.UI
 			if (IsPushButton(UIManager.ButtonB))
 				Close(onClosed);
 		}
-		private void UpdateKeyGuide() { /*@B 0x60054E5*/ throw null; }
+		private void UpdateKeyGuide() {
+			global::Dpr.UI.Keyguide.Param param = new global::Dpr.UI.Keyguide.Param();
+			param.itemParams.Add(new KeyguideItem.Param { keyguideId = KeyguideID.BAG_ITEMLIST_BACK });
+			global::Dpr.UI.Keyguide keyguide = UIManager.Instance.GetKeyguide(null, true);
+			keyguide.transform.SetParent(transform, false);
+			keyguide.gameObject.SetActive(true);
+			keyguide.Open(param);
+		}
 		private void UpdateKinomiInfo() {
 			KinomiInfo info = kinomiInfos[indexSelector.CurrentIndex];
 			numberText.SetFormattedText(() => MessageWordSetHelper.SetDigitWord(0, info.Id.ToString("00")), null, null);
@@ -123,6 +130,6 @@ namespace Dpr.UI
 			descriptionText.text = info.DescriptionText;
 			raderChart.Setup(new RaderChart.Param() { values = info.GetRaderChartValues() });
 		}
-		public UIKinomi() { /*@B 0x60054E7*/ throw null; }
+		public UIKinomi() { }
 	}
 }

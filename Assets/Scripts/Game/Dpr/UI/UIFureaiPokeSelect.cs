@@ -16,9 +16,9 @@ namespace Dpr.UI
 		private global::Dpr.UI.PokemonModelView _modelView;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.PokemonParty _uiPokeParty;
-		private global::Dpr.UI.KeyGuideCreater _keyGuide;
-		private global::Dpr.Contest.ContestMenuEventID _resultEventID;
-		private global::Dpr.MsgWindow.MsgWindowParam msgWindowParam;
+		private global::Dpr.UI.KeyGuideCreater _keyGuide = new global::Dpr.UI.KeyGuideCreater();
+		private global::Dpr.Contest.ContestMenuEventID _resultEventID = global::Dpr.Contest.ContestMenuEventID.None;
+		private global::Dpr.MsgWindow.MsgWindowParam msgWindowParam = new global::Dpr.MsgWindow.MsgWindowParam();
 		private global::Dpr.MsgWindow.MsgWindow msgWindowPtr;
 		private bool _bInputed;
 		private bool _showModel;
@@ -193,6 +193,6 @@ namespace Dpr.UI
 			_uiPokeParty.onSelectChanged = null;
 			_keyGuide.Release();
 		}
-		public UIFureaiPokeSelect() { /*@B 0x6005425*/ throw null; }
+		public UIFureaiPokeSelect() { }
 	}
 }
