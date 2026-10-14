@@ -3,9 +3,9 @@ namespace Dpr.Field.Walking
 {
 	public class FieldWalkingTest : global::UnityEngine.MonoBehaviour
 	{
-		private global::Dpr.Field.Walking.WalkingAIManager manager;
+		private global::Dpr.Field.Walking.WalkingAIManager manager = new global::Dpr.Field.Walking.WalkingAIManager();
 		private void Start() { }
 		private void OnDestroy() { }
-		public FieldWalkingTest() { /*@B 0x6008B2D*/ throw null; }
+		public FieldWalkingTest() { }
 	}
 }
