@@ -4,11 +4,11 @@ namespace Dpr.Battle.Logic
 	public sealed class PokeSelResult
 	{
 		private global::Dpr.Battle.Logic.BTL_CLIENT_ID m_myClientID;
-		private global::Dpr.Battle.Logic.BTL_CLIENT_ID[] m_selClientID;
-		public byte[] m_selIdx;
-		public byte[] m_outPokeIdx;
-		private ushort[] m_useItem;
-		private byte[] m_wazaIdx;
+		private global::Dpr.Battle.Logic.BTL_CLIENT_ID[] m_selClientID = new BTL_CLIENT_ID[5];
+		public byte[] m_selIdx = new byte[5];
+		public byte[] m_outPokeIdx = new byte[5];
+		private ushort[] m_useItem = new ushort[5];
+		private byte[] m_wazaIdx = new byte[5];
 		public byte m_cnt;
 		private byte m_max;
 		private bool m_fCancel;
@@ -78,7 +78,25 @@ namespace Dpr.Battle.Logic
             m_wazaIdx[m_cnt] = wazaIdx;
             m_cnt++;
         }
-		public bool IsItemUse(out global::Dpr.Battle.Logic.BTL_CLIENT_ID clientID, out byte pokeIdx, out ushort itemNo, out byte wazaIdx) { /*@B 0x6007CC7*/ throw null; }
-		public PokeSelResult() { /*@B 0x6007CC8*/ throw null; }
+		public bool IsItemUse(out global::Dpr.Battle.Logic.BTL_CLIENT_ID clientID, out byte pokeIdx, out ushort itemNo, out byte wazaIdx) {
+            if (m_cnt != 0)
+            {
+                int idx = m_cnt - 1;
+                if (m_useItem[idx] != 0)
+                {
+                    clientID = m_selClientID[idx];
+                    pokeIdx = m_selIdx[idx];
+                    wazaIdx = m_wazaIdx[idx];
+                    itemNo = m_useItem[idx];
+                    return true;
+                }
+            }
+            clientID = BTL_CLIENT_ID.BTL_CLIENT_NULL;
+            pokeIdx = 0;
+            wazaIdx = 0;
+            itemNo = 0;
+            return false;
+        }
+		public PokeSelResult() { }
 	}
 }

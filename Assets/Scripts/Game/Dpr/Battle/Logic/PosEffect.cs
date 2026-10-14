@@ -20,7 +20,7 @@ namespace Dpr.Battle.Logic
             return ParamTypeTable[(int)posEffect];
         }
 		public PosEffect() { }
-		static PosEffect() { /*@B 0x60076C1*/ throw null; }
+		static PosEffect() { }
 		public enum EffectParamType
 		{
 			PARAM_TYPE_NONE = 0,

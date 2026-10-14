@@ -7,7 +7,12 @@ namespace Dpr.Battle.Logic
 		public ushort criticalCount;
 		public ushort totalDamageRecieved;
 		public ushort deadCount;
-		public void Clear() { /*@B 0x6006759*/ throw null; }
+		public void Clear() {
+            totalTurnCount = 0;
+            criticalCount = 0;
+            totalDamageRecieved = 0;
+            deadCount = 0;
+        }
 		public PokeResult() { }
 	}
 }

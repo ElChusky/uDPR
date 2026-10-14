@@ -3,10 +3,14 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class SVCL_ACTION
 	{
-		public global::Dpr.Battle.Logic.BTL_ACTION_PARAM[][] param;
-		public byte[] count;
-		public static byte GetNumAction(global::Dpr.Battle.Logic.SVCL_ACTION clientAction, byte clientID) { /*@B 0x6007711*/ throw null; }
-		public static ref global::Dpr.Battle.Logic.BTL_ACTION_PARAM Get(global::Dpr.Battle.Logic.SVCL_ACTION clientAction, byte clientID, byte posIdx) { /*@B 0x6007712*/ throw null; }
-		public SVCL_ACTION() { /*@B 0x6007713*/ throw null; }
+		public global::Dpr.Battle.Logic.BTL_ACTION_PARAM[][] param = RectangularArrays.RectangularBTL_ACTION_PARAMArray((int)BTL_CLIENT_ID.BTL_CLIENT_NUM, 6);
+		public byte[] count = new byte[(int)BTL_CLIENT_ID.BTL_CLIENT_NUM];
+		public static byte GetNumAction(global::Dpr.Battle.Logic.SVCL_ACTION clientAction, byte clientID) {
+            return clientAction.count[clientID];
+        }
+		public static ref global::Dpr.Battle.Logic.BTL_ACTION_PARAM Get(global::Dpr.Battle.Logic.SVCL_ACTION clientAction, byte clientID, byte posIdx) {
+            return ref clientAction.param[clientID][posIdx];
+        }
+		public SVCL_ACTION() { }
 	}
 }

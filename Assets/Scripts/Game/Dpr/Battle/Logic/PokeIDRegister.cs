@@ -4,10 +4,20 @@ namespace Dpr.Battle.Logic
 	public class PokeIDRegister
 	{
 		private byte m_count;
-		private byte[] m_pokeID;
-		public byte this[uint index] { get { /*@B 0x6006C14*/ throw null; } set { /*@B 0x6006C15*/ throw null; } }
-		public PokeIDRegister() { /*@B 0x6006C10*/ throw null; }
-		public void Clear() { /*@B 0x6006C11*/ throw null; }
+		private byte[] m_pokeID = new byte[PokeID.NUM];
+		public byte this[uint index] { get {
+            if (index < m_count)
+                return m_pokeID[index];
+            return m_pokeID[0];
+        } set {
+            m_pokeID[index] = value;
+        } }
+		public PokeIDRegister() {
+            m_count = 0;
+        }
+		public void Clear() {
+            m_count = 0;
+        }
 		public byte GetCount() {
 			return m_count;
 		}

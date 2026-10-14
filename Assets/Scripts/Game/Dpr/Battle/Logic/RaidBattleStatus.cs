@@ -4,11 +4,23 @@ namespace Dpr.Battle.Logic
 	public sealed class RaidBattleStatus
 	{
 		private byte m_allDeadCount;
-		private ushort[] m_turnCountAfterAllDead;
+		private ushort[] m_turnCountAfterAllDead = new ushort[(int)BTL_CLIENT_ID.BTL_CLIENT_NUM];
 		private bool m_isPlayBtlEffectKill;
-		public RaidBattleStatus() { /*@B 0x60076E8*/ throw null; }
-		public void Initialize() { /*@B 0x60076E9*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.RaidBattleStatus src) { /*@B 0x60076EA*/ throw null; }
+		public RaidBattleStatus() {
+            Initialize();
+        }
+		public void Initialize() {
+            m_allDeadCount = 0;
+            for (int i = 0; i < m_turnCountAfterAllDead.Length; i++)
+                m_turnCountAfterAllDead[i] = 0;
+            m_isPlayBtlEffectKill = false;
+        }
+		public void CopyFrom(in global::Dpr.Battle.Logic.RaidBattleStatus src) {
+            m_allDeadCount = src.m_allDeadCount;
+            for (int i = 0; i < m_turnCountAfterAllDead.Length; i++)
+                m_turnCountAfterAllDead[i] = src.m_turnCountAfterAllDead[i];
+            m_isPlayBtlEffectKill = src.m_isPlayBtlEffectKill;
+        }
 		public byte GetAllDeadCount() { return this.m_allDeadCount; }
 		public void IncAllDeadCount() {
             if (m_allDeadCount < RaidBattle.MAX_ALLDEAD_COUNT)

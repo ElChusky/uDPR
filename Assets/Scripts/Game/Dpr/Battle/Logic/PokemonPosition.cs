@@ -9,14 +9,14 @@ namespace Dpr.Battle.Logic
 		public const byte BTL_POS_RAID_NUM = 5;
 		public const byte BTL_POS_RAID_NUM_PLAYERS = 4;
 		public const byte BTL_POS_RAID_NUM_BOSS = 1;
-		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Single_POS_COVER_CLIENT_SINGLE;
-		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Double_POS_COVER_CLIENT_DOUBLE;
-		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Double_POS_COVER_CLIENT_DOUBLE_MULTI;
-		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Double_POS_COVER_CLIENT_DOUBLE_AI_TAG;
-		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Double_POS_COVER_CLIENT_DOUBLE_PA_A;
-		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Double_POS_COVER_CLIENT_DOUBLE_PA_A2;
-		private static readonly global::Dpr.Battle.Logic.BtlSide[] GetClientSide_Single_SIDE_TABLE;
-		private static readonly global::Dpr.Battle.Logic.BtlSide[] GetClientSide_Double_SIDE_TABLE;
+		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Single_POS_COVER_CLIENT_SINGLE = new BTL_CLIENT_ID[] { BTL_CLIENT_ID.BTL_CLIENT_PLAYER, BTL_CLIENT_ID.BTL_CLIENT_ENEMY1, BTL_CLIENT_ID.BTL_CLIENT_NULL, BTL_CLIENT_ID.BTL_CLIENT_NULL, BTL_CLIENT_ID.BTL_CLIENT_NULL };
+		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Double_POS_COVER_CLIENT_DOUBLE = new BTL_CLIENT_ID[] { BTL_CLIENT_ID.BTL_CLIENT_PLAYER, BTL_CLIENT_ID.BTL_CLIENT_ENEMY1, BTL_CLIENT_ID.BTL_CLIENT_PLAYER, BTL_CLIENT_ID.BTL_CLIENT_ENEMY1, BTL_CLIENT_ID.BTL_CLIENT_NULL };
+		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Double_POS_COVER_CLIENT_DOUBLE_MULTI = new BTL_CLIENT_ID[] { BTL_CLIENT_ID.BTL_CLIENT_PLAYER, BTL_CLIENT_ID.BTL_CLIENT_ENEMY1, BTL_CLIENT_ID.BTL_CLIENT_PARTNER, BTL_CLIENT_ID.BTL_CLIENT_ENEMY2, BTL_CLIENT_ID.BTL_CLIENT_NULL };
+		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Double_POS_COVER_CLIENT_DOUBLE_AI_TAG = new BTL_CLIENT_ID[] { BTL_CLIENT_ID.BTL_CLIENT_PLAYER, BTL_CLIENT_ID.BTL_CLIENT_ENEMY1, BTL_CLIENT_ID.BTL_CLIENT_PLAYER, BTL_CLIENT_ID.BTL_CLIENT_ENEMY2, BTL_CLIENT_ID.BTL_CLIENT_NULL };
+		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Double_POS_COVER_CLIENT_DOUBLE_PA_A = new BTL_CLIENT_ID[] { BTL_CLIENT_ID.BTL_CLIENT_PLAYER, BTL_CLIENT_ID.BTL_CLIENT_ENEMY1, BTL_CLIENT_ID.BTL_CLIENT_PARTNER, BTL_CLIENT_ID.BTL_CLIENT_NULL, BTL_CLIENT_ID.BTL_CLIENT_NULL };
+		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT_ID[] GetPosCoverClientId_Double_POS_COVER_CLIENT_DOUBLE_PA_A2 = new BTL_CLIENT_ID[] { BTL_CLIENT_ID.BTL_CLIENT_PLAYER, BTL_CLIENT_ID.BTL_CLIENT_ENEMY1, BTL_CLIENT_ID.BTL_CLIENT_PARTNER, BTL_CLIENT_ID.BTL_CLIENT_ENEMY1, BTL_CLIENT_ID.BTL_CLIENT_NULL };
+		private static readonly global::Dpr.Battle.Logic.BtlSide[] GetClientSide_Single_SIDE_TABLE = new BtlSide[] { BtlSide.BTL_SIDE_1ST, BtlSide.BTL_SIDE_2ND, BtlSide.BTL_SIDE_NUM, BtlSide.BTL_SIDE_NUM, BtlSide.BTL_SIDE_NUM };
+		private static readonly global::Dpr.Battle.Logic.BtlSide[] GetClientSide_Double_SIDE_TABLE = new BtlSide[] { BtlSide.BTL_SIDE_1ST, BtlSide.BTL_SIDE_2ND, BtlSide.BTL_SIDE_1ST, BtlSide.BTL_SIDE_2ND, BtlSide.BTL_SIDE_NUM };
 		public static uint GetClientCoverPosNum(global::Dpr.Battle.Logic.BtlRule rule, global::Dpr.Battle.Logic.BtlMultiMode multiMode, global::Dpr.Battle.Logic.BTL_CLIENT_ID clientId) {
             uint num = 0;
             for (int pos = 0; pos < BTL_POS_NUM; pos++)
@@ -402,6 +402,6 @@ namespace Dpr.Battle.Logic
             byte opponentPosIndex = (byte)(PosToSidePosIndex(BtlRule.BTL_RULE_DOUBLE, pos) ^ 1);
             return GetOpponentPokePos(BtlRule.BTL_RULE_DOUBLE, multiMode, pos, opponentPosIndex);
         }
-		static PokemonPosition() { /*@B 0x60076BE*/ throw null; }
+		static PokemonPosition() { }
 	}
 }

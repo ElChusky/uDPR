@@ -5,14 +5,50 @@ namespace Dpr.Battle.Logic
 	{
 		public const byte NUM = 30;
 		public const byte INVALID = 31;
-		private static readonly byte[] ClientBasePokeID;
-		public static byte GetClientBasePokeId(global::Dpr.Battle.Logic.BTL_CLIENT_ID clientID) { /*@B 0x600768A*/ throw null; }
-		public static bool IsClientsPokeID(global::Dpr.Battle.Logic.BTL_CLIENT_ID clientID, byte pokeID) { /*@B 0x600768B*/ throw null; }
-		public static byte GetClientPokeId(global::Dpr.Battle.Logic.BTL_CLIENT_ID clientID, byte pokeIndex) { /*@B 0x600768C*/ throw null; }
-		public static byte PokeIdToStartMemberIndex(byte pokeID) { /*@B 0x600768D*/ throw null; }
-		public static global::Dpr.Battle.Logic.BTL_CLIENT_ID PokeIdToClientId(byte pokeID) { /*@B 0x600768E*/ throw null; }
-		public static byte PokeIdToShortId(byte pokeID) { /*@B 0x600768F*/ throw null; }
-		public static byte ShortIdToPokeId(global::Dpr.Battle.Logic.BTL_CLIENT_ID clientID, byte shortID) { /*@B 0x6007690*/ throw null; }
-		static PokeID() { /*@B 0x6007691*/ throw null; }
+		private static readonly byte[] ClientBasePokeID = new byte[] { 0, 12, 6, 18, 24 };
+		public static byte GetClientBasePokeId(global::Dpr.Battle.Logic.BTL_CLIENT_ID clientID) {
+            return ClientBasePokeID[(int)clientID];
+        }
+		public static bool IsClientsPokeID(global::Dpr.Battle.Logic.BTL_CLIENT_ID clientID, byte pokeID) {
+            byte basePokeID = ClientBasePokeID[(int)clientID];
+            return basePokeID <= pokeID && pokeID <= basePokeID + 5;
+        }
+		public static byte GetClientPokeId(global::Dpr.Battle.Logic.BTL_CLIENT_ID clientID, byte pokeIndex) {
+            if (pokeIndex > 5)
+                pokeIndex = 0;
+            return (byte)(ClientBasePokeID[(int)clientID] + pokeIndex);
+        }
+		public static byte PokeIdToStartMemberIndex(byte pokeID) {
+            BTL_CLIENT_ID clientID = PokeIdToClientId(pokeID);
+            byte basePokeID = ClientBasePokeID[(int)clientID];
+            if (pokeID < basePokeID)
+                return 0;
+            if (pokeID < basePokeID + 6)
+                return (byte)(pokeID - basePokeID);
+            return 0;
+        }
+		public static global::Dpr.Battle.Logic.BTL_CLIENT_ID PokeIdToClientId(byte pokeID) {
+            for (int i = 0; i < ClientBasePokeID.Length; i++)
+            {
+                if (IsClientsPokeID((BTL_CLIENT_ID)i, pokeID))
+                    return (BTL_CLIENT_ID)i;
+            }
+            return BTL_CLIENT_ID.BTL_CLIENT_PLAYER;
+        }
+		public static byte PokeIdToShortId(byte pokeID) {
+            BTL_CLIENT_ID clientID = PokeIdToClientId(pokeID);
+            int shortID = pokeID - ClientBasePokeID[(int)clientID];
+            if (shortID < 0)
+                return 0;
+            if (shortID > 5)
+                shortID = 0;
+            return (byte)shortID;
+        }
+		public static byte ShortIdToPokeId(global::Dpr.Battle.Logic.BTL_CLIENT_ID clientID, byte shortID) {
+            if (shortID <= 5 && (int)clientID < ClientBasePokeID.Length)
+                return (byte)(ClientBasePokeID[(int)clientID] + shortID);
+            return INVALID;
+        }
+		static PokeID() { }
 	}
 }

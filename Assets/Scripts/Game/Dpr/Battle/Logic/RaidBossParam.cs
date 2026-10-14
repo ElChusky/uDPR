@@ -6,13 +6,21 @@ namespace Dpr.Battle.Logic
 	public class RaidBossParam
 	{
 		private global::Dpr.Battle.Logic.GWall m_gWall;
-		private global::Dpr.Battle.Logic.RaidBossDesc m_desc;
+		private global::Dpr.Battle.Logic.RaidBossDesc m_desc = new RaidBossDesc();
 		private byte m_grade;
 		private byte m_reinforceTurn;
 		private byte m_angryLevel;
 		private byte m_gWazaUseTurn;
 		private bool m_gWazaUsed;
-		public RaidBossParam() { /*@B 0x60076F3*/ throw null; }
+		public RaidBossParam() {
+            m_gWall = null;
+            m_gWazaUsed = false;
+            m_grade = 0;
+            m_reinforceTurn = 0;
+            m_angryLevel = 0;
+            m_gWazaUseTurn = 0;
+            m_gWall = new GWall();
+        }
 		public void CopyFrom(in global::Dpr.Battle.Logic.RaidBossParam src) {
             m_desc.CopyFrom(src.m_desc);
             m_gWall.CopyFrom(src.m_gWall);

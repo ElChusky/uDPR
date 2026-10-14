@@ -3,9 +3,15 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class PosEffectStatus
 	{
-		private global::Dpr.Battle.Logic.PosEffectStatus.Data m_data;
-		public PosEffectStatus(global::Dpr.Battle.Logic.BtlPokePos pos, global::Dpr.Battle.Logic.BtlPosEffect posEffect) { /*@B 0x60076C9*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.PosEffectStatus src) { /*@B 0x60076CA*/ throw null; }
+		private global::Dpr.Battle.Logic.PosEffectStatus.Data m_data = new Data();
+		public PosEffectStatus(global::Dpr.Battle.Logic.BtlPokePos pos, global::Dpr.Battle.Logic.BtlPosEffect posEffect) {
+            m_data.pos = pos;
+            m_data.posEffect = posEffect;
+            m_data.isEffective = false;
+        }
+		public void CopyFrom(in global::Dpr.Battle.Logic.PosEffectStatus src) {
+            m_data.CopyFrom(src.m_data);
+        }
 		public bool SetEffect(in global::Dpr.Battle.Logic.PosEffect.EffectParam effectParam) {
             if (m_data.isEffective)
                 return false;
@@ -38,7 +44,12 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BtlPosEffect posEffect;
 			public bool isEffective;
 			public global::Dpr.Battle.Logic.PosEffect.EffectParam effectParam;
-			public void CopyFrom(global::Dpr.Battle.Logic.PosEffectStatus.Data src) { /*@B 0x600B6C1*/ throw null; }
+			public void CopyFrom(global::Dpr.Battle.Logic.PosEffectStatus.Data src) {
+                pos = src.pos;
+                posEffect = src.posEffect;
+                isEffective = src.isEffective;
+                effectParam = src.effectParam;
+            }
 			public Data() { }
 		}
 	}

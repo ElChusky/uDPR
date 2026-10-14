@@ -15,7 +15,20 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.PokeChangeRequest m_pPokeChangeRequest;
 		private global::Dpr.Battle.Logic.CaptureInfo m_pCaptureInfo;
 		private global::Dpr.Battle.Logic.SectionContainer m_pSectionContainer;
-		public Section(in global::Dpr.Battle.Logic.Section.CommonParam param) { /*@B 0x6006C19*/ throw null; }
+		public Section(in global::Dpr.Battle.Logic.Section.CommonParam param) {
+            m_pMainModule = param.pMainModule;
+            m_pBattleEnv = param.pBattleEnv;
+            m_pServerCmdQueue = param.pServerCmdQueue;
+            m_pServerCmdPutter = param.pServerCmdPutter;
+            m_pWazaCmdPutter = param.pWazaCmdPutter;
+            m_pEventSystem = param.pEventSystem;
+            m_pEventLauncher = param.pEventLauncher;
+            m_pSharedData = param.pSharedData;
+            m_pPokemonActionContainer = param.pPokemonActionContainer;
+            m_pPokeChangeRequest = param.pPokeChangeRequest;
+            m_pCaptureInfo = param.pCaptureInfo;
+            m_pSectionContainer = param.pSectionContainer;
+        }
 		protected global::Dpr.Battle.Logic.MainModule GetMainModule() {
 			return m_pMainModule;
 		}

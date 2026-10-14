@@ -9,7 +9,12 @@ namespace Dpr.Battle.Logic
 		internal const ushort SEND_DATA_SERIAL_NUMBER_MIN = 1;
 		public global::Dpr.Battle.Logic.SEND_DATA_BUFFER.Header header;
 		public fixed byte data[10004];
-		public static unsafe void Clear(global::Dpr.Battle.Logic.SEND_DATA_BUFFER* buf) { /*@B 0x600771B*/ throw null; }
+		public static unsafe void Clear(global::Dpr.Battle.Logic.SEND_DATA_BUFFER* buf) {
+            buf->header.serialNumber = SEND_DATA_SERIAL_NUMBER_NULL;
+            buf->header.serverReq = 0;
+            buf->header.size = 0;
+            buf->header.serverSeq = 51;
+        }
 		public static unsafe void Copy(global::Dpr.Battle.Logic.SEND_DATA_BUFFER* dest, in global::Dpr.Battle.Logic.SEND_DATA_BUFFER* src) {
             Store(dest, GetSerialNumber(src), GetServerSequence(src), GetServerRequest(src), GetData(src), GetDataSize(src));
         }

@@ -3,8 +3,10 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class PosEffectManager
 	{
-		private global::Dpr.Battle.Logic.PosEffectStatus[][] m_posEffects;
-		public PosEffectManager() { /*@B 0x60076C2*/ throw null; }
+		private global::Dpr.Battle.Logic.PosEffectStatus[][] m_posEffects = RectangularArrays.RectangularDefaultArray<PosEffectStatus>(PokemonPosition.BTL_EXIST_POS_MAX, (int)BtlPosEffect.BTL_POSEFF_MAX);
+		public PosEffectManager() {
+            CreateEffectStatusArray();
+        }
 		public void CreateEffectStatusArray() {
             for (int pos = 0; pos < PokemonPosition.BTL_EXIST_POS_MAX; pos++)
             {
@@ -12,7 +14,13 @@ namespace Dpr.Battle.Logic
                     m_posEffects[pos][effect] = new PosEffectStatus((BtlPokePos)pos, (BtlPosEffect)effect);
             }
         }
-		private void DeleteEffectStatusArray() { /*@B 0x60076C4*/ throw null; }
+		private void DeleteEffectStatusArray() {
+            for (int pos = 0; pos < PokemonPosition.BTL_EXIST_POS_MAX; pos++)
+            {
+                for (int effect = 0; effect < (int)BtlPosEffect.BTL_POSEFF_MAX; effect++)
+                    m_posEffects[pos][effect] = null;
+            }
+        }
 		public void CopyFrom(in global::Dpr.Battle.Logic.PosEffectManager src) {
             for (int pos = 0; pos < PokemonPosition.BTL_EXIST_POS_MAX; pos++)
             {

@@ -7,7 +7,9 @@ namespace Dpr.Battle.Logic
 		private const byte MAX_ACT_ORDER_NUM = 30;
 		private global::Dpr.Battle.Logic.PokeAction[] m_actions = Arrays.InitializeWithDefaultInstances<PokeAction>(MAX_ACT_ORDER_NUM);
 		private byte m_count;
-		public PokeActionContainer() { /*@B 0x6006BF0*/ throw null; }
+		public PokeActionContainer() {
+            m_count = 0;
+        }
 		public void Clear() {
             m_count = 0;
         }

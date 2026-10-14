@@ -216,6 +216,8 @@ namespace Dpr.Battle.Logic
 			high = (uint)(cont.raw >> 32);
 			low = (uint)cont.raw;
 		}
-		public static void Unite32bit(out global::Dpr.Battle.Logic.BTL_SICKCONT cont, uint high, uint low) { /*@B 0x6007D3C*/ throw null; }
+		public static void Unite32bit(out global::Dpr.Battle.Logic.BTL_SICKCONT cont, uint high, uint low) {
+            cont.raw = (long)(((ulong)high << 32) | low);
+        }
 	}
 }

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_AddSick : global::Dpr.Battle.Logic.Section
 	{
-		public Section_AddSick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D58*/ throw null; }
+		public Section_AddSick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_AddSick.Result result, in global::Dpr.Battle.Logic.Section_AddSick.Description description) {
 			result.isSuccessed = false;
 
@@ -72,8 +72,21 @@ namespace Dpr.Battle.Logic
 			public bool isStandardMessageDisable;
 			public bool isItemReactionDisable;
 			public bool isEffectiveToDeadPoke;
-			public global::Dpr.Battle.Logic.StrParam specialMessage;
-			public Description() { /*@B 0x600B4A1*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam specialMessage = new StrParam();
+			public Description() {
+                pokeID = PokeID.INVALID;
+                targetPokeID = PokeID.INVALID;
+                sickID = global::Pml.WazaData.WazaSick.WAZASICK_NONE;
+                sickCont.raw = 0;
+                sickCause = SickCause.OTHER;
+                overWriteMode = SickOverWriteMode.CANT;
+                isDisplayTokuseiWindow = false;
+                isFailResultDisplay = false;
+                isEffectDisplay = true;
+                isStandardMessageDisable = false;
+                isItemReactionDisable = false;
+                isEffectiveToDeadPoke = false;
+            }
 		}
 		public class Result
 		{

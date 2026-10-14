@@ -9,9 +9,9 @@ namespace Dpr.Battle.Logic
 		public byte gWallGaugeMax;
 		public byte gWallGaugeInit;
 		public byte gWallRepairTurn;
-		public byte[] angryHPThreshold;
-		public global::Pml.WazaNo[] angryWazaNo;
-		public global::Pml.Personal.RaidBossAngryWazaTiming[] angryWazaTimming;
+		public byte[] angryHPThreshold = new byte[2];
+		public global::Pml.WazaNo[] angryWazaNo = Arrays.InitializeWithDefaultInstances<global::Pml.WazaNo>(2);
+		public global::Pml.Personal.RaidBossAngryWazaTiming[] angryWazaTimming = new global::Pml.Personal.RaidBossAngryWazaTiming[2];
 		public void CopyFrom(global::Dpr.Battle.Logic.RaidBossDesc src) {
             hpCoef = src.hpCoef;
             gWazaFrequency = src.gWallGaugeInit; // shipped quirk: copies gWallGaugeInit, not gWazaFrequency (ldrb [x1,#0x17] -> strb [x0,#0x14] @020d2840)
@@ -35,6 +35,6 @@ namespace Dpr.Battle.Logic
 		public static void SetDefault(global::Dpr.Battle.Logic.RaidBossDesc pDesc, global::Pml.MonsNo monsno, ushort formno, byte grade) {
             // Empty in the shipped binary (020d3a80 = ret).
         }
-		public RaidBossDesc() { /*@B 0x6006762*/ throw null; }
+		public RaidBossDesc() { }
 	}
 }

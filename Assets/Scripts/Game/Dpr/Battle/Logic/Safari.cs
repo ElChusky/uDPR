@@ -64,6 +64,6 @@ namespace Dpr.Battle.Logic
 		public static bool IsCritDoroEsa(global::Dpr.Battle.Logic.MainModule mainModule) {
             return calc.GetRand(SAFARI_ATARI) == 0;
         }
-		static Safari() { /*@B 0x600771A*/ throw null; }
+		static Safari() { }
 	}
 }
