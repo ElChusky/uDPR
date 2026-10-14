@@ -8,7 +8,7 @@ namespace Dpr.SubContents
 		public global::Dpr.SubContents.TimeLineText.Mode mode;
 		private global::Dpr.UI.UIText text;
 		private const string fileName = "dlp_halloffame_demo";
-		private static readonly string[] Labels;
+		private static readonly string[] Labels = new string[] { "DLP_halloffame_demo_015", "DLP_halloffame_demo_014", "DLP_halloffame_demo_013" };
 		private void OnEnable() {
 			text.rectTransform.SetSiblingIndex(100);
 		}
@@ -36,7 +36,7 @@ namespace Dpr.SubContents
 			text.text = msgFile.GetFormattedMessage(label);
 		}
 		public TimeLineText() { }
-		static TimeLineText() { /*@B 0x6003387*/ throw null; }
+		static TimeLineText() { }
 		public enum Mode
 		{
 			Level = 0,

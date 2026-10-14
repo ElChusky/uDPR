@@ -7,7 +7,12 @@ namespace Dpr.SubContents
 	{
 		private global::Effect.EffectData _effectData;
 		private global::Effect.EffectInstance _effectInstance;
-		public void SetEffect(global::Effect.EffectData effectData, global::Dpr.SubContents.BindModelEffect bindModel) { /*@B 0x6003374*/ throw null; }
+		public void SetEffect(global::Effect.EffectData effectData, global::Dpr.SubContents.BindModelEffect bindModel) {
+			_effectData = effectData;
+			_effectInstance = null;
+			if (bindModel.StartActive)
+				OnEnable();
+		}
 		private void LateUpdate() {
 			if (_effectInstance != null)
 			{

@@ -6,7 +6,7 @@ namespace Dpr.SubContents
 		public global::Dpr.SubContents.TimeLineMarker.Mode mode;
 		public int value;
 		public float frame;
-		public global::UnityEngine.PropertyName id { get { /*@B 0x6003338*/ throw null; } }
+		public global::UnityEngine.PropertyName id { get { return new global::UnityEngine.PropertyName("method"); } }
 		public TimeLineMarker() { }
 		public enum Mode
 		{
