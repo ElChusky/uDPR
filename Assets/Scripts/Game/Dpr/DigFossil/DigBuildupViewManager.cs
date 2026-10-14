@@ -193,8 +193,35 @@ namespace Dpr.DigFossil
 			return durability >= BUILDUP_DURABILITY_BOUNDARY;
 		}
 		public DigBuildupViewManager() { }
-		void global::Dpr.DigFossil.IDigBuildupViewManager.Initialize(in int[,] map) { /*@B 0x6003717*/ throw null; }
-		void global::Dpr.DigFossil.IDigBuildupViewManager.ApplyDurability(in int[,] map) { /*@B 0x6003718*/ throw null; }
+		void global::Dpr.DigFossil.IDigBuildupViewManager.Initialize(in int[,] map) {
+			// inlined copy of the public Initialize(in int[,])
+			Sprite main, top, under, topCorner, underCorner;
+			foreach (Transform child in transform)
+				Destroy(child.gameObject);
+			buildups = new IDigBuildup[map.GetLength(0), map.GetLength(1)];
+			for (int y = 0; y < map.GetLength(0); y++)
+			{
+				for (int x = 0; x < map.GetLength(1); x++)
+				{
+					IDigBuildup buildup = Instantiate(buildupPrefab, transform).GetComponent<DigBuildup>();
+					GetTexture(map, x, y, out main, out top, out under, out topCorner, out underCorner);
+					buildup.SetSprite(main, top, under, topCorner, underCorner);
+					buildups[y, x] = buildup;
+				}
+			}
+		}
+		void global::Dpr.DigFossil.IDigBuildupViewManager.ApplyDurability(in int[,] map) {
+			// inlined copy of the public ApplyDurability(in int[,])
+			Sprite main, top, under, topCorner, underCorner;
+			for (int y = 0; y < map.GetLength(0); y++)
+			{
+				for (int x = 0; x < map.GetLength(1); x++)
+				{
+					GetTexture(map, x, y, out main, out top, out under, out topCorner, out underCorner);
+					buildups[y, x].SetSprite(main, top, under, topCorner, underCorner);
+				}
+			}
+		}
 		private static class Bit
 		{
 			private const int BUILDUP_TOP_BIT = 1;

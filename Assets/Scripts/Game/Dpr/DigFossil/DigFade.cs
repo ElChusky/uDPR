@@ -8,7 +8,7 @@ namespace Dpr.DigFossil
 		private global::UnityEngine.UI.RawImage overUIImage;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.RawImage overEffectImage;
-		private global::UnityEngine.Color endColor;
+		private global::UnityEngine.Color endColor = global::UnityEngine.Color.black;
 		private global::System.Action onEndCallback;
 		private global::UnityEngine.UI.RawImage currentImage;
 		private void Start() {
@@ -43,7 +43,7 @@ namespace Dpr.DigFossil
 			currentImage.color = endColor;
 			onEndCallback?.Invoke();
 		}
-		public DigFade() { /*@B 0x600375F*/ throw null; }
+		public DigFade() { }
 		public enum Type
 		{
 			OverUI = 0,

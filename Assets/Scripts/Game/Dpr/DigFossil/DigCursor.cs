@@ -5,7 +5,7 @@ namespace Dpr.DigFossil
 	public class DigCursor : global::UnityEngine.MonoBehaviour, global::Dpr.DigFossil.IDigCursor
 	{
 		[global::UnityEngine.SerializeField]
-		private float speed;
+		private float speed = 40f;
 		[global::UnityEngine.SerializeField]
 		private global::System.Collections.Generic.List<global::UnityEngine.Sprite> toolSprites;
 		[global::UnityEngine.SerializeField]
@@ -22,14 +22,14 @@ namespace Dpr.DigFossil
 		private global::UnityEngine.UI.Text debugText;
 		private global::UnityEngine.Coroutine animationWaitCoroutine;
 		private global::DG.Tweening.Core.TweenerCore<global::UnityEngine.Quaternion, global::UnityEngine.Quaternion, global::DG.Tweening.Plugins.Options.NoOptions> tweenHandler;
-		private global::UnityEngine.Vector2 cursorPos;
+		private global::UnityEngine.Vector2 cursorPos = new global::UnityEngine.Vector2(0f, 0f);
 		private global::UnityEngine.Vector2 fieldSize;
 		private global::UnityEngine.Quaternion toolDefaultRotation;
-		private bool bIsTouchMode;
+		private bool bIsTouchMode = true;
 		public global::Dpr.DigFossil.DigCursor.OnClicked onClicked { get; set; }
 		public bool IsOnTouchModeChanged { get; private set; }
 		public bool IsUse { get; set; }
-		public global::UnityEngine.Transform effectRoot { get { /*@B 0x6003731*/ throw null; } }
+		public global::UnityEngine.Transform effectRoot { get { return root.transform; } }
 		public void OnUpdate() {
 			if (Input.GetMouseButtonDown(0))
 			{
@@ -197,7 +197,7 @@ namespace Dpr.DigFossil
 				tool.gameObject.SetActive(true);
 			}
 		}
-		public DigCursor() { /*@B 0x600373D*/ throw null; }
+		public DigCursor() { }
 		public delegate void OnClicked(in global::UnityEngine.Vector2 inPos);
 		private enum SpriteIndex
 		{

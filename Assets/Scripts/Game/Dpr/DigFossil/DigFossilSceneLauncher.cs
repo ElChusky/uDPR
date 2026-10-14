@@ -6,7 +6,22 @@ namespace Dpr.DigFossil
 	{
 		private global::Dpr.DigFossil.DigFossilController scene;
 		[global::SmartPoint.AssetAssistant.SceneBeforeActivateOperationMethodAttribute]
-		public global::System.Collections.IEnumerator ActivateOperation(global::UnityEngine.Transform cluster) { /*@B 0x6003788*/ throw null; }
+		public global::System.Collections.IEnumerator ActivateOperation(global::UnityEngine.Transform cluster) {
+			bool isLoadCompleted = false;
+			AssetManager.AppendAssetBundleRequest("dig/digfossilcontroller", true, null, null);
+			yield return AssetManager.DispatchRequests((eventType, name, asset) =>
+			{
+				if (eventType == RequestEventType.Complete)
+				{
+					isLoadCompleted = true;
+					return;
+				}
+				if (eventType == RequestEventType.Activated && asset is global::UnityEngine.GameObject)
+					scene = ((global::UnityEngine.GameObject)Instantiate(asset, cluster, false)).GetComponent<global::Dpr.DigFossil.DigFossilController>();
+			});
+			yield return new global::UnityEngine.WaitWhile(() => !isLoadCompleted);
+			yield return scene.ActivateOperation();
+		}
 		private void Start() {
 			Sequencer.update -= OnUpdate;
 			Sequencer.update += OnUpdate;

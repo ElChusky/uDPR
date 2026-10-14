@@ -18,11 +18,15 @@ namespace Dpr.DigFossil
 		private global::UnityEngine.Transform pos_crack_start;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Transform pos_crack_end;
-		private readonly global::System.Collections.Generic.List<global::EffectFieldID> effectIds;
-		private readonly global::System.Collections.Generic.Dictionary<int, global::Effect.EffectData> effectData;
-		private readonly global::System.Collections.Generic.List<global::Effect.EffectInstance> effectInstances;
-		private global::System.Collections.Generic.List<int> playedCrumblingEffectPosIndices;
-		private global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Transform> cursorPosDic;
+		private readonly global::System.Collections.Generic.List<global::EffectFieldID> effectIds = new global::System.Collections.Generic.List<global::EffectFieldID> {
+			global::EffectFieldID.EF_SU_FUSSIL_HUMMER, global::EffectFieldID.EF_SU_FUSSIL_PIKKERU, global::EffectFieldID.EF_SU_FUSSIL_ROCK_HIT,
+			global::EffectFieldID.EF_SU_FUSSIL_BLACKROCK_HIT, global::EffectFieldID.EF_SU_FUSSIL_GET, global::EffectFieldID.EF_SU_FUSSIL_RARE_GET,
+			global::EffectFieldID.EF_SU_FUSSIL_DAMAGE, global::EffectFieldID.EF_SU_FOSSIL_END2, global::EffectFieldID.EF_SU_FUSSIL_ROCK_HIT_02,
+			global::EffectFieldID.EF_SU_FOSSIL_OPENBOX, global::EffectFieldID.EF_SU_FOSSIL_COMPLETED, global::EffectFieldID.EF_SU_FOSSIL_CRACK_ROCK_01 };
+		private readonly global::System.Collections.Generic.Dictionary<int, global::Effect.EffectData> effectData = new global::System.Collections.Generic.Dictionary<int, global::Effect.EffectData>();
+		private readonly global::System.Collections.Generic.List<global::Effect.EffectInstance> effectInstances = new global::System.Collections.Generic.List<global::Effect.EffectInstance>();
+		private global::System.Collections.Generic.List<int> playedCrumblingEffectPosIndices = new global::System.Collections.Generic.List<int>();
+		private global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Transform> cursorPosDic = new global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Transform>();
 		private static float CrackCosTotal = 37.699112f;
 		private void Start() {
 			AddCursor(-1, pos_cursor);
@@ -125,8 +129,8 @@ namespace Dpr.DigFossil
 			effectData.Clear();
 			effectInstances.Clear();
 		}
-		public DigEffectManager() { /*@B 0x6003756*/ throw null; }
-		static DigEffectManager() { /*@B 0x6003757*/ throw null; }
+		public DigEffectManager() { }
+		static DigEffectManager() { }
 		public enum EffectId
 		{
 			KnockWithHummer = 0,

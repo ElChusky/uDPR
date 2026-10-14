@@ -7,11 +7,11 @@ namespace Dpr.DigFossil
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform curtain;
 		[global::UnityEngine.SerializeField]
-		private float fallSpeed;
+		private float fallSpeed = 20f;
 		private global::System.Action onFinishDirection;
 		private global::UnityEngine.Vector3 defaultRootPos;
-		private global::UnityEngine.Vector3 velocity;
-		private bool isCompleted;
+		private global::UnityEngine.Vector3 velocity = global::UnityEngine.Vector3.zero;
+		private bool isCompleted = true;
 		public void Initialize() {
 			isCompleted = true;
 			velocity.y = -fallSpeed;
@@ -47,6 +47,6 @@ namespace Dpr.DigFossil
 		private void Start() {
 			defaultRootPos = curtain.localPosition;
 		}
-		public DigFallBoardDirection() { /*@B 0x6003766*/ throw null; }
+		public DigFallBoardDirection() { }
 	}
 }

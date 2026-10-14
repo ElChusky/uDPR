@@ -9,7 +9,7 @@ namespace Dpr.DigFossil
 		private global::UnityEngine.Transform targetCamera;
 		private global::UnityEngine.Vector3 defaultPosition;
 		private global::DG.Tweening.Tweener tweenHandler;
-		public bool IsEnable { get; set; }
+		public bool IsEnable { get; set; } = true;
 		public void DoShake(float strength, float period) {
 			if (tweenHandler != null)
 				tweenHandler.Kill(false);
@@ -32,6 +32,6 @@ namespace Dpr.DigFossil
 		private void Start() {
 			defaultPosition = targetCamera.localPosition;
 		}
-		public DigCameraShaker() { /*@B 0x6003723*/ throw null; }
+		public DigCameraShaker() { }
 	}
 }

@@ -13,7 +13,7 @@ namespace Dpr.DigFossil
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Animator animator;
 		private global::Dpr.DigFossil.DigEffectManager effectManager;
-		global::UnityEngine.GameObject global::Dpr.DigFossil.IDigDeposit.gameObject { get { /*@B 0x6003744*/ throw null; } }
+		global::UnityEngine.GameObject global::Dpr.DigFossil.IDigDeposit.gameObject { get { return gameObject; } }
 		public void Initialize(global::Dpr.DigFossil.DigMasterDataManager.IDeposit depositData, global::UnityEngine.Vector3 pos, global::UnityEngine.Vector2 size, int turn, global::UnityEngine.Sprite sprite, global::UnityEngine.Material material, global::Dpr.DigFossil.DigEffectManager effectManager) {
 			this.effectManager = effectManager;
 			this.depositData = depositData;

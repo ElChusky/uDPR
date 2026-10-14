@@ -34,6 +34,12 @@ namespace Dpr.DigFossil
 			}
 		}
 		public DigBuildup() { }
-		void global::Dpr.DigFossil.IDigBuildup.SetSprite(in global::UnityEngine.Sprite inMain, in global::UnityEngine.Sprite inTop, in global::UnityEngine.Sprite inUnder, in global::UnityEngine.Sprite inTopCorner, in global::UnityEngine.Sprite inUnderCorner) { /*@B 0x600370C*/ throw null; }
+		void global::Dpr.DigFossil.IDigBuildup.SetSprite(in global::UnityEngine.Sprite inMain, in global::UnityEngine.Sprite inTop, in global::UnityEngine.Sprite inUnder, in global::UnityEngine.Sprite inTopCorner, in global::UnityEngine.Sprite inUnderCorner) {
+			SetTexture(ref main, inMain);
+			SetTexture(ref top, inTop);
+			SetTexture(ref under, inUnder);
+			SetTexture(ref topCorner, inTopCorner);
+			SetTexture(ref underCorner, inUnderCorner);
+		}
 	}
 }

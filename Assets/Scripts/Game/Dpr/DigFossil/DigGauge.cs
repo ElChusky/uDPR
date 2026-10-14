@@ -7,7 +7,7 @@ namespace Dpr.DigFossil
 		private global::UnityEngine.Animator animator;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Text debugGaugeValue;
-		private float gaugeMax;
+		private float gaugeMax = 1f;
 		private int stateNameHash;
 		public void Initialize(float gaugeMax) {
 			this.gaugeMax = gaugeMax;
@@ -20,6 +20,6 @@ namespace Dpr.DigFossil
 			animator.Play(stateNameHash, 0, 1f - gaugeValue / gaugeMax);
 			debugGaugeValue.text = gaugeValue.ToString();
 		}
-		public DigGauge() { /*@B 0x6003791*/ throw null; }
+		public DigGauge() { }
 	}
 }
