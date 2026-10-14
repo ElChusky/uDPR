@@ -7,7 +7,11 @@ public class RecodeJoinStateModel : global::NetStateModel
 	public int sexId { get; set; }
 	public global::OnlinePlayerCharacter opcCharacter { get; set; }
 	public global::UnionRecodeContextMenu contextMenu { get; set; }
-	public RecodeJoinStateModel() { /*@B 0x60011C6*/ throw null; }
+	public RecodeJoinStateModel() {
+		contextMenu = new UnionRecodeContextMenu();
+		contextMenu.recodeJoinStateModel = this;
+		contextMenu.SetTransitionType();
+	}
 	protected override void Start() {
 		base.Start();
 		contextMenu = new UnionRecodeContextMenu();

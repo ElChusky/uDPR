@@ -69,7 +69,19 @@ public static class RecordWork
 	public static uint MaxValue(global::DPData.RECORD_ID index, out int recordindex) {
         return MaxValue((int)index, out recordindex);
     }
-	public static uint MaxValue(int index, out int recordindex) { /*@B 0x6000CD7*/ throw null; }
+	public static uint MaxValue(int index, out int recordindex) {
+		recordindex = 0;
+		uint max = 0;
+		for (int i = 0; i < PlayerWork.record.records.Length; i++)
+		{
+			if (max < PlayerWork.record.records[i].record[index])
+			{
+				max = PlayerWork.record.records[i].record[index];
+				recordindex = i;
+			}
+		}
+		return max;
+	}
 	public static int CheckHeadData(ref global::DPData.RECORD_HEAD recodeHeadData) {
         RECORD_HEAD[] head = PlayerWork.recordAddData.head;
         for (int i = (int)RANDOMGROUP.RANDOMGROUP_DATA0; i < head.Length; i++)

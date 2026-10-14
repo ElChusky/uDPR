@@ -10,8 +10,8 @@ public class PokemonPlayable : global::UnityEngine.MonoBehaviour
 	public global::UnityEngine.Animations.AnimationPlayableOutput _output;
 	private global::UnityEngine.Animator _animator;
 	public global::UnityEngine.AvatarMask _avatarMask;
-	public global::System.Collections.Generic.List<global::UnityEngine.AnimationClip> _clips;
-	private global::System.Collections.Generic.List<global::UnityEngine.Animations.AnimationClipPlayable> _playables;
+	public global::System.Collections.Generic.List<global::UnityEngine.AnimationClip> _clips = new global::System.Collections.Generic.List<global::UnityEngine.AnimationClip>();
+	private global::System.Collections.Generic.List<global::UnityEngine.Animations.AnimationClipPlayable> _playables = new global::System.Collections.Generic.List<global::UnityEngine.Animations.AnimationClipPlayable>();
 	private float _increase;
 	private float _weight;
 	private int _activePort;
@@ -32,10 +32,106 @@ public class PokemonPlayable : global::UnityEngine.MonoBehaviour
 	private void OnEnable() {
 		Sequencer.update += OnUpdate;
 	}
-	private void OnDisable() { /*@B 0x600085A*/ throw null; }
-	public void PlayAnimation(int index, float startTime = 0f) { /*@B 0x600085B*/ throw null; }
-	public void ChangeAnimation(int index, float duration = 0f, float startTime = 0f) { /*@B 0x600085C*/ throw null; }
-	private void OnUpdate(float deltaTime) { /*@B 0x600085D*/ throw null; }
+	private void OnDisable() {
+		Sequencer.update -= OnUpdate;
+		for (int i = 0; i < _playables.Count; i++)
+			_playables[i].Destroy();
+		_clips.Clear();
+		_playables.Clear();
+		_mixer.Destroy();
+		_graph.Destroy();
+		if (_animator != null)
+			_animator.runtimeAnimatorController = _savedAnimatorController;
+	}
+	public void PlayAnimation(int index, float startTime = 0f) {
+		if (!_mixer.IsValid())
+			return;
+
+		animationIndex = index;
+		if (_mixer.GetInput(_activePort).IsValid())
+			_mixer.DisconnectInput(_activePort);
+		_playables[index].SetTime(startTime);
+		_mixer.ConnectInput(_activePort, _playables[index], 0, 1.0f);
+		_mixer.SetInputWeight(_activePort ^ 1, 0.0f);
+		_mixer.SetInputWeight(_activePort, 1.0f);
+		_increase = 0.0f;
+	}
+	public void ChangeAnimation(int index, float duration = 0f, float startTime = 0f) {
+		if (!_mixer.IsValid())
+			return;
+
+		animationIndex = index;
+		AnimationClipPlayable current = (AnimationClipPlayable)_mixer.GetInput(_activePort);
+		if (current.IsValid() && current.GetAnimationClip() == _clips[index])
+			return;
+
+		if (duration == 0.0f)
+		{
+			if (_mixer.GetInput(_activePort).IsValid())
+				_mixer.DisconnectInput(_activePort);
+			_playables[index].SetTime(startTime);
+			_mixer.ConnectInput(_activePort, _playables[index], 0, 1.0f);
+			_mixer.SetInputWeight(_activePort ^ 1, 0.0f);
+			_mixer.SetInputWeight(_activePort, 1.0f);
+			_increase = 0.0f;
+		}
+		else
+		{
+			_activePort ^= 1;
+			if (_mixer.GetInput(_activePort).IsValid())
+			{
+				float weight = _mixer.GetInputWeight(_activePort);
+				if (weight <= 0.95f)
+				{
+					AnimationClipPlayable prev = (AnimationClipPlayable)_mixer.GetInput(_activePort);
+					if (prev.IsValid() && prev.GetAnimationClip() == _clips[index])
+					{
+						_weight = 1.0f - weight;
+						_increase = 1.0f / duration;
+						return;
+					}
+				}
+				_mixer.DisconnectInput(_activePort);
+			}
+			_playables[index].SetTime(startTime);
+			_mixer.ConnectInput(_activePort, _playables[index], 0, 0.0f);
+			_mixer.SetInputWeight(_activePort ^ 1, 1.0f);
+			_increase = 1.0f / duration;
+			_weight = 0.0f;
+		}
+	}
+	private void OnUpdate(float deltaTime) {
+		if (!_graph.IsValid())
+		{
+			CreatePlayables();
+			return;
+		}
+
+		if (_increase != 0.0f)
+		{
+			_weight = _increase * deltaTime + _weight;
+			if (_weight < 1.0f)
+			{
+				_mixer.SetInputWeight(_activePort, _weight);
+				_mixer.SetInputWeight(_activePort ^ 1, 1.0f - _weight);
+			}
+			else
+			{
+				_mixer.SetInputWeight(_activePort, 1.0f);
+				_mixer.SetInputWeight(_activePort ^ 1, 0.0f);
+				if (_mixer.GetInput(_activePort ^ 1).IsValid())
+					_mixer.DisconnectInput(_activePort ^ 1);
+				_increase = 0.0f;
+			}
+		}
+
+		if (forceLoop)
+		{
+			AnimationClipPlayable playable = (AnimationClipPlayable)_mixer.GetInput(_activePort);
+			if (playable.IsValid() && !(playable.GetTime() < playable.GetAnimationClip().length))
+				playable.SetTime(playable.GetTime() - playable.GetAnimationClip().length);
+		}
+	}
 	public void CreatePlayables() {
 		if (!_graph.IsValid())
 		{
@@ -73,5 +169,6 @@ public class PokemonPlayable : global::UnityEngine.MonoBehaviour
 			_playables.Add(AnimationClipPlayable.Create(_graph, clip));
 		PlayAnimation(0);
 	}
-	public PokemonPlayable() { /*@B 0x600085F*/ throw null; }
+	public PokemonPlayable() {
+	}
 }

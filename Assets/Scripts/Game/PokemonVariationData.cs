@@ -8,7 +8,8 @@ public class PokemonVariationData
 	public class MaterialParam
 	{
 		public string variation;
-		public bool createFlag;
-		public MaterialParam() { /*@B 0x6009694*/ throw null; }
+		public bool createFlag = true;
+		public MaterialParam() {
+		}
 	}
 }

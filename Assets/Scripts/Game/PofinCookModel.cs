@@ -13,11 +13,11 @@ public class PofinCookModel
 	public const int POFIN_ID_MAZUI = 27;
 	public const int POFIN_ID_MAROYAKA = 28;
 	public const int POFIN_ID_CHYOUMAROYAKA = 29;
-	public static readonly string MESSAGE_NAME;
-	public static readonly string LABEL_NAME;
+	public static readonly string MESSAGE_NAME = "dp_poffin_main";
+	public static readonly string LABEL_NAME = "DP_poffin_main_";
 	private global::Dpr.Item.ItemInfo[] kinomiInfo;
-	public global::System.Collections.Generic.List<global::XLSXContent.KinomiData.SheetData> kinomiData;
-	private byte[] AjiParam;
+	public global::System.Collections.Generic.List<global::XLSXContent.KinomiData.SheetData> kinomiData = new global::System.Collections.Generic.List<global::XLSXContent.KinomiData.SheetData>();
+	private byte[] AjiParam = new byte[5];
 	private byte Taste;
 	public float CookedTime;
 	public int SearCount;
@@ -26,7 +26,23 @@ public class PofinCookModel
 	private int MinusCount;
 	private int PlusCount;
 	private int SameKinomiCount;
-	public PofinCookModel(float time, int sear, int spill, int teamHosei, params global::Dpr.Item.ItemInfo[] kinomi) { /*@B 0x6000E8A*/ throw null; }
+	public PofinCookModel(float time, int sear, int spill, int teamHosei, params global::Dpr.Item.ItemInfo[] kinomi) {
+		kinomiInfo = kinomi;
+		Init();
+		CookedTime = time;
+		SearCount = sear;
+		SpillCount = spill;
+		TeamHosei = teamHosei;
+		// @0205b0ac: an empty loop over kinomi survives (bounds checks only)
+		for (int i = 0; i < kinomi.Length; i++)
+		{
+			ItemInfo k = kinomi[i];
+		}
+		CalcParam();
+		KeyValuePair<PoffinData, int> result = GetPofinData();
+		var res = global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.SubContents.PoffinCookingSceneManager>.Instance.PofinData.Find(x => x.MstID == result.Key.MstID);
+		global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.Message.MessageManager>.Instance.GetMsgFile("dlp_poffin_name").GetNameStr(res.LabelName);
+	}
 	private void Init() {
 		// @0205b200: a null ItemInfo ends the scan (return, not continue)
 		for (int i = 0; i < kinomiInfo.Length; i++)
@@ -161,7 +177,8 @@ public class PofinCookModel
 
 		return result;
 	}
-	static PofinCookModel() { /*@B 0x6000E90*/ throw null; }
+	static PofinCookModel() {
+	}
 	private enum Aji
 	{
 		Spicy = 0,

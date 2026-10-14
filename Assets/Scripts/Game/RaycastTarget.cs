@@ -30,5 +30,6 @@ public class RaycastTarget : global::UnityEngine.UI.Graphic
 
 		vertexHelper.AddUIVertexQuad(verts);
 	}
-	public RaycastTarget() { /*@B 0x60003B6*/ throw null; }
+	public RaycastTarget() {
+	}
 }

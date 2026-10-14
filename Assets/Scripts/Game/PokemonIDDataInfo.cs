@@ -7,11 +7,11 @@ using UnityEngine;
 public class PokemonIDDataInfo : global::UnityEngine.MonoBehaviour
 {
 	[global::UnityEngine.SerializeField]
-	private global::System.Collections.Generic.List<string> LabelList;
+	private global::System.Collections.Generic.List<string> LabelList = new global::System.Collections.Generic.List<string>();
 	[global::UnityEngine.SerializeField]
-	private global::System.Collections.Generic.List<global::UnityEngine.Texture> TextureList;
+	private global::System.Collections.Generic.List<global::UnityEngine.Texture> TextureList = new global::System.Collections.Generic.List<global::UnityEngine.Texture>();
 	[global::UnityEngine.SerializeField]
-	private global::System.Collections.Generic.List<global::PokemonIDDataInfo.PantoneList> PantoneIndexList;
+	private global::System.Collections.Generic.List<global::PokemonIDDataInfo.PantoneList> PantoneIndexList = new global::System.Collections.Generic.List<global::PokemonIDDataInfo.PantoneList>();
 	private global::UnityEngine.Color StringToColor(string colorStr) {
 		try
 		{
@@ -66,7 +66,8 @@ public class PokemonIDDataInfo : global::UnityEngine.MonoBehaviour
 		}
 		return (string.Empty, Color.clear);
 	}
-	public PokemonIDDataInfo() { /*@B 0x6000E0C*/ throw null; }
+	public PokemonIDDataInfo() {
+	}
 	[global::System.Serializable]
 	public class Pantone
 	{
@@ -78,7 +79,9 @@ public class PokemonIDDataInfo : global::UnityEngine.MonoBehaviour
 	[global::System.Serializable]
 	public class PantoneList
 	{
-		public global::System.Collections.Generic.List<global::PokemonIDDataInfo.Pantone> List;
-		public PantoneList(global::System.Collections.Generic.List<global::PokemonIDDataInfo.Pantone> list) { /*@B 0x6009683*/ throw null; }
+		public global::System.Collections.Generic.List<global::PokemonIDDataInfo.Pantone> List = new global::System.Collections.Generic.List<global::PokemonIDDataInfo.Pantone>();
+		public PantoneList(global::System.Collections.Generic.List<global::PokemonIDDataInfo.Pantone> list) {
+			List = list;
+		}
 	}
 }

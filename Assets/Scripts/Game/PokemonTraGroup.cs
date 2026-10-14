@@ -8,7 +8,7 @@ using UnityEngine;
 public class PokemonTraGroup : global::UnityEngine.MonoBehaviour
 {
 	[global::UnityEngine.SerializeField]
-	private int baseRenderQueue;
+	private int baseRenderQueue = 3000;
 	[global::UnityEngine.SerializeField]
 	private global::PokemonTraGroup.TraGrope[] traGropes;
 	[global::UnityEngine.SerializeField]
@@ -97,7 +97,8 @@ public class PokemonTraGroup : global::UnityEngine.MonoBehaviour
 			}
 		}
 	}
-	public PokemonTraGroup() { /*@B 0x6000E20*/ throw null; }
+	public PokemonTraGroup() {
+	}
 	[global::System.Serializable]
 	public class TraGrope
 	{

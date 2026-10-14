@@ -5,7 +5,7 @@ public class PokemonVariation : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.SerializeField]
 	private global::PokemonVariation.PokeType pokeType;
 	public string[] variations;
-	public string variation;
+	public string variation = "00";
 	[global::UnityEngine.HeaderAttribute("Visibility")]
 	public global::PokemonVariation.VisibilityParam[] mVisibilitys;
 	[global::UnityEngine.HeaderAttribute("Material")]
@@ -17,9 +17,13 @@ public class PokemonVariation : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.HeaderAttribute("Scale")]
 	public float[] mVariationScale;
 	[global::UnityEngine.HeaderAttribute("Debug")]
-	public bool debugKey;
+	public bool debugKey = true;
 	public global::PokemonVariation.PokeType Type { get { return this.pokeType; } set { this.pokeType = value; } }
-	public float ScaleVariation { get { /*@B 0x6000E24*/ throw null; } }
+	public float ScaleVariation { get {
+		if (mVariationScale == null || mVariationScale.Length == 0)
+			return 1.0f;
+		return mVariationScale[global::System.Array.IndexOf(variations, variation)];
+	} }
 	private void Start() {
         if (!string.IsNullOrEmpty(variation))
             ChangeVariation(variation);
@@ -101,7 +105,8 @@ public class PokemonVariation : global::UnityEngine.MonoBehaviour
         pokeType = type;
         UpdateVariation();
     }
-	public PokemonVariation() { /*@B 0x6000E2C*/ throw null; }
+	public PokemonVariation() {
+	}
 	public enum PokeType
 	{
 		NORMAL = 0,
@@ -119,7 +124,9 @@ public class PokemonVariation : global::UnityEngine.MonoBehaviour
 	public class MaterialArray
 	{
 		public global::UnityEngine.Material[] materials;
-		public MaterialArray(int num) { /*@B 0x6009696*/ throw null; }
+		public MaterialArray(int num) {
+			materials = new global::UnityEngine.Material[num];
+		}
 	}
 	[global::System.Serializable]
 	public class MaterialVariation
@@ -127,7 +134,11 @@ public class PokemonVariation : global::UnityEngine.MonoBehaviour
 		public global::PokemonVariation.MaterialArray[] materialArrays;
 		public global::UnityEngine.Material[] materials_default;
 		public global::UnityEngine.Material[] materials_rare;
-		public global::UnityEngine.Material[] GetMaterials(global::PokemonVariation.PokeType pt) { /*@B 0x6009697*/ throw null; }
+		public global::UnityEngine.Material[] GetMaterials(global::PokemonVariation.PokeType pt) {
+			if (materialArrays != null && (int)pt < materialArrays.Length)
+				return materialArrays[(int)pt].materials;
+			return null;
+		}
 		public MaterialVariation() { }
 	}
 	[global::System.Serializable]
@@ -136,7 +147,10 @@ public class PokemonVariation : global::UnityEngine.MonoBehaviour
 		public string variation;
 		public global::PokemonVariation.MaterialVariation materialVariation;
 		public MaterialParam() { }
-		public MaterialParam(global::PokemonVariation.MaterialParam source) { /*@B 0x600969A*/ throw null; }
+		public MaterialParam(global::PokemonVariation.MaterialParam source) {
+			variation = source.variation;
+			materialVariation = source.materialVariation;
+		}
 	}
 	[global::System.Serializable]
 	public class RendererMaterial

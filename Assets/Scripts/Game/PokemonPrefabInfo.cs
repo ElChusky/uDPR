@@ -8,12 +8,31 @@ public class PokemonPrefabInfo : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.SerializeField]
 	private float mModelHeight;
 	public global::PokemonPrefabInfo.AABBData[] mAABBArray;
-	public global::UnityEngine.Vector3 StartPoint { get { /*@B 0x6000E0D*/ throw null; } }
-	public global::UnityEngine.Vector3 EndPoint { get { /*@B 0x6000E0E*/ throw null; } }
+	public global::UnityEngine.Vector3 StartPoint { get { return mStartPoint; } }
+	public global::UnityEngine.Vector3 EndPoint { get { return mEndPoint; } }
 	public float ModelHeight { get { return this.mModelHeight; } }
 	private void Start() { }
-	public global::PokemonPrefabInfo.AABBData GetAABB(string motionName) { /*@B 0x6000E11*/ throw null; }
-	public global::PokemonPrefabInfo.AABBData GetCurrentAABB() { /*@B 0x6000E12*/ throw null; }
+	public global::PokemonPrefabInfo.AABBData GetAABB(string motionName) {
+		foreach (AABBData data in mAABBArray)
+		{
+			if (motionName == data.motionName)
+				return data;
+		}
+		return null;
+	}
+	public global::PokemonPrefabInfo.AABBData GetCurrentAABB() {
+		global::UnityEngine.AnimatorClipInfo[] clipInfos = GetComponentInChildren<global::UnityEngine.Animator>().GetCurrentAnimatorClipInfo(0);
+		if (clipInfos != null && clipInfos.Length != 0)
+		{
+			string name = clipInfos[0].clip.name;
+			foreach (AABBData data in mAABBArray)
+			{
+				if (name == data.motionName)
+					return data;
+			}
+		}
+		return null;
+	}
 	private void Update() { }
 	public PokemonPrefabInfo() { }
 	[global::System.Serializable]
