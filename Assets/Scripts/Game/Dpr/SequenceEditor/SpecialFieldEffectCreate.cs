@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_FWAZA_TYPE type;
 		public global::UnityEngine.Vector3 ofs;
-		public SpecialFieldEffectCreate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A4D*/ throw null; }
+		public SpecialFieldEffectCreate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			type = Macro.Parse_SEQ_DEF_FWAZA_TYPE(macro.GetValue("type"));
+			ofs = Macro.ParseVector3(macro.GetValue("ofs"));
+		}
 	}
 }

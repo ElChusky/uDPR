@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_NODE node;
 		public global::UnityEngine.Vector3 ofs;
-		public SoundBelugaFollowPoke(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A75*/ throw null; }
+		public SoundBelugaFollowPoke(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), 1);
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			node = Macro.Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			ofs = Macro.ParseVector3(macro.GetValue("ofs"));
+		}
 	}
 }

@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public string envfile;
 		public string motfile;
-		public SpecialDeleteCamera(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A4E*/ throw null; }
+		public SpecialDeleteCamera(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			envfile = Macro.ParseString(macro.GetValue("envfile"));
+			motfile = Macro.ParseString(macro.GetValue("motfile"));
+		}
 	}
 }

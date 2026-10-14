@@ -4,6 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(1823170747), "purple", "one_frame", "")]
 	public class SpecialSyncDemoFade : global::Dpr.SequenceEditor.Macro
 	{
-		public SpecialSyncDemoFade(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A44*/ throw null; }
+		public SpecialSyncDemoFade(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+		}
 	}
 }

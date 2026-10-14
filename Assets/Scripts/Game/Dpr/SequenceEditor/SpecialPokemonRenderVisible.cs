@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trgPoke;
 		public bool model;
 		public bool shadow;
-		public SpecialPokemonRenderVisible(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A5D*/ throw null; }
+		public SpecialPokemonRenderVisible(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trgRender = Macro.Parse_SEQ_DEF_RENDERER_TYPE(macro.GetValue("trgRender"));
+			trgPoke = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trgPoke"));
+			model = Macro.ParseBool(macro.GetValue("model"), 0);
+			shadow = Macro.ParseBool(macro.GetValue("shadow"), 0);
+		}
 	}
 }

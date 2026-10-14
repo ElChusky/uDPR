@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public string rtpc;
 		public float value;
 		public int intr;
-		public SoundSetRTPC(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AE2*/ throw null; }
+		public SoundSetRTPC(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			rtpc = Macro.ParseString(macro.GetValue("rtpc"));
+			value = Macro.ParseFloat(macro.GetValue("value"));
+			intr = Macro.ParseInt(macro.GetValue("intr"), 0);
+		}
 	}
 }

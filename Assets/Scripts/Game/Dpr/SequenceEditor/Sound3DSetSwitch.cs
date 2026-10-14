@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public string group;
 		public string name;
-		public Sound3DSetSwitch(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AEB*/ throw null; }
+		public Sound3DSetSwitch(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			group = Macro.ParseString(macro.GetValue("group"));
+			name = Macro.ParseString(macro.GetValue("name"));
+		}
 	}
 }

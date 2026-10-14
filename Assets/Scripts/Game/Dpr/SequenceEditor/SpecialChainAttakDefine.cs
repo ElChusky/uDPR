@@ -16,6 +16,19 @@ namespace Dpr.SequenceEditor
 		public int end5;
 		public int start6;
 		public int end6;
-		public SpecialChainAttakDefine(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A4A*/ throw null; }
+		public SpecialChainAttakDefine(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			start1 = Macro.ParseInt(macro.GetValue("start1"));
+			end1 = Macro.ParseInt(macro.GetValue("end1"));
+			start2 = Macro.ParseInt(macro.GetValue("start2"));
+			end2 = Macro.ParseInt(macro.GetValue("end2"));
+			start3 = Macro.ParseInt(macro.GetValue("start3"));
+			end3 = Macro.ParseInt(macro.GetValue("end3"));
+			start4 = Macro.ParseInt(macro.GetValue("start4"));
+			end4 = Macro.ParseInt(macro.GetValue("end4"));
+			start5 = Macro.ParseInt(macro.GetValue("start5"));
+			end5 = Macro.ParseInt(macro.GetValue("end5"));
+			start6 = Macro.ParseInt(macro.GetValue("start6"));
+			end6 = Macro.ParseInt(macro.GetValue("end6"));
+		}
 	}
 }

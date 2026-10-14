@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SpecialAutoPilotTrigger : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_INPUT button;
-		public SpecialAutoPilotTrigger(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A58*/ throw null; }
+		public SpecialAutoPilotTrigger(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			button = Macro.Parse_SEQ_DEF_INPUT(macro.GetValue("button"));
+		}
 	}
 }

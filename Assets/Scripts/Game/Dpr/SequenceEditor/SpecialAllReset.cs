@@ -4,6 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(1102530678), "purple", "one_frame", "")]
 	public class SpecialAllReset : global::Dpr.SequenceEditor.Macro
 	{
-		public SpecialAllReset(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A3B*/ throw null; }
+		public SpecialAllReset(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+		}
 	}
 }

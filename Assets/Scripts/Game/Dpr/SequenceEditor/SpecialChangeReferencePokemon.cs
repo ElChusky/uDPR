@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS @ref;
 		public bool noLoad;
-		public SpecialChangeReferencePokemon(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A4B*/ throw null; }
+		public SpecialChangeReferencePokemon(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			@ref = Macro.Parse_SEQ_DEF_POS(macro.GetValue("ref"));
+			noLoad = Macro.ParseBool(macro.GetValue("noLoad"));
+		}
 	}
 }

@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SpecialDeleteModelAnime : global::Dpr.SequenceEditor.Macro
 	{
 		public string file;
-		public SpecialDeleteModelAnime(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A51*/ throw null; }
+		public SpecialDeleteModelAnime(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			file = Macro.ParseString(macro.GetValue("file"));
+		}
 	}
 }

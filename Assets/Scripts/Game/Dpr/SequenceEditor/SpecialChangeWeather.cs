@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SpecialChangeWeather : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_WEATHER type;
-		public SpecialChangeWeather(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A45*/ throw null; }
+		public SpecialChangeWeather(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			type = Macro.Parse_SEQ_DEF_WEATHER(macro.GetValue("type"));
+		}
 	}
 }

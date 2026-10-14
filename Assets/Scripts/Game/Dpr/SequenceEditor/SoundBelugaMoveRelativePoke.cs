@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 pos;
 		public int rate;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public SoundBelugaMoveRelativePoke(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A73*/ throw null; }
+		public SoundBelugaMoveRelativePoke(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			node = Macro.Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			rate = Macro.ParseInt(macro.GetValue("rate"), 100);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

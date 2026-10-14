@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SpecialDeleteTrainer : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER trg;
-		public SpecialDeleteTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A56*/ throw null; }
+		public SpecialDeleteTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+		}
 	}
 }

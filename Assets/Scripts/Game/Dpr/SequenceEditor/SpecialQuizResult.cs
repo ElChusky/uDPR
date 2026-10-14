@@ -10,6 +10,13 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_FAIRY_QUIZ_RESULT result2;
 		public global::Dpr.SequenceEditor.SEQ_DEF_FAIRY_QUIZ_TYPE type3;
 		public global::Dpr.SequenceEditor.SEQ_DEF_FAIRY_QUIZ_RESULT result3;
-		public SpecialQuizResult(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A42*/ throw null; }
+		public SpecialQuizResult(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			type1 = Macro.Parse_SEQ_DEF_FAIRY_QUIZ_TYPE(macro.GetValue("type1"));
+			result1 = Macro.Parse_SEQ_DEF_FAIRY_QUIZ_RESULT(macro.GetValue("result1"));
+			type2 = Macro.Parse_SEQ_DEF_FAIRY_QUIZ_TYPE(macro.GetValue("type2"));
+			result2 = Macro.Parse_SEQ_DEF_FAIRY_QUIZ_RESULT(macro.GetValue("result2"));
+			type3 = Macro.Parse_SEQ_DEF_FAIRY_QUIZ_TYPE(macro.GetValue("type3"));
+			result3 = Macro.Parse_SEQ_DEF_FAIRY_QUIZ_RESULT(macro.GetValue("result3"));
+		}
 	}
 }

@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public bool relative;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool[] enableElem;
-		public Sound3DMovePosition(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AED*/ throw null; }
+		public Sound3DMovePosition(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			enableElem = Macro.ParseBoolArray(macro.GetValue("enableElem"), 1, 1, 1);
+		}
 	}
 }

@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public bool shadowPath;
 		public bool yedis;
 		public bool zprePath;
-		public SpecialRenderPathVisible(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A5C*/ throw null; }
+		public SpecialRenderPathVisible(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trgRender = Macro.Parse_SEQ_DEF_RENDERER_TYPE(macro.GetValue("trgRender"));
+			shadowPath = Macro.ParseBool(macro.GetValue("shadowPath"), 0);
+			yedis = Macro.ParseBool(macro.GetValue("yedis"), 0);
+			zprePath = Macro.ParseBool(macro.GetValue("zprePath"), 0);
+		}
 	}
 }

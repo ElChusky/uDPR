@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SpecialAutoPilotSetEnable : global::Dpr.SequenceEditor.Macro
 	{
 		public bool visible;
-		public SpecialAutoPilotSetEnable(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A57*/ throw null; }
+		public SpecialAutoPilotSetEnable(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			visible = Macro.ParseBool(macro.GetValue("visible"), 0);
+		}
 	}
 }

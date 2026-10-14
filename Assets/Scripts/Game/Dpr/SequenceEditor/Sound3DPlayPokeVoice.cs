@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public string voiceName;
 		public bool IsPinch;
 		public bool isGPoke;
-		public Sound3DPlayPokeVoice(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AF5*/ throw null; }
+		public Sound3DPlayPokeVoice(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			playType = Macro.Parse_VOICE_TYPE(macro.GetValue("playType"));
+			voiceName = Macro.ParseString(macro.GetValue("voiceName"));
+			IsPinch = Macro.ParseBool(macro.GetValue("IsPinch"), 0);
+			isGPoke = Macro.ParseBool(macro.GetValue("isGPoke"), 0);
+		}
 	}
 }

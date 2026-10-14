@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public int Monsno;
 		public int Form;
 		public global::Dpr.SequenceEditor.SEQ_DEF_POKE_G gType;
-		public SpecialChangePokemonFromSimpleParam(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A4C*/ throw null; }
+		public SpecialChangePokemonFromSimpleParam(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			Monsno = Macro.ParseInt(macro.GetValue("Monsno"));
+			Form = Macro.ParseInt(macro.GetValue("Form"));
+			gType = Macro.Parse_SEQ_DEF_POKE_G(macro.GetValue("gType"));
+		}
 	}
 }

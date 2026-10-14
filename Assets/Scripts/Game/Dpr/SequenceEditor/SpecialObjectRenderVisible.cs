@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public bool background;
 		public bool fieldEff;
 		public bool groundEff;
-		public SpecialObjectRenderVisible(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A5F*/ throw null; }
+		public SpecialObjectRenderVisible(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trgRender = Macro.Parse_SEQ_DEF_RENDERER_TYPE(macro.GetValue("trgRender"));
+			background = Macro.ParseBool(macro.GetValue("background"), 0);
+			fieldEff = Macro.ParseBool(macro.GetValue("fieldEff"), 0);
+			groundEff = Macro.ParseBool(macro.GetValue("groundEff"), 0);
+		}
 	}
 }
