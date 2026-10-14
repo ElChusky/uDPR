@@ -3,6 +3,6 @@
 public class UgDigFossilePosZoneData
 {
 	public global::ZoneID zoneID;
-	public global::System.Collections.Generic.List<global::UgDigFossilePosGroup> list;
-	public UgDigFossilePosZoneData() { /*@B 0x6000F32*/ throw null; }
+	public global::System.Collections.Generic.List<global::UgDigFossilePosGroup> list = new global::System.Collections.Generic.List<global::UgDigFossilePosGroup>();
+	public UgDigFossilePosZoneData() { }
 }

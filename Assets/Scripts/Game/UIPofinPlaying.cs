@@ -25,9 +25,9 @@ public class UIPofinPlaying : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.SerializeField]
 	private global::Dpr.UI.UIText MessageText;
 	[global::UnityEngine.SerializeField]
-	private global::UnityEngine.UI.Image[] KinomiImages;
+	private global::UnityEngine.UI.Image[] KinomiImages = new global::UnityEngine.UI.Image[4];
 	public bool isStart;
-	private static readonly string[] textLabels;
+	private static readonly string[] textLabels = new string[] { "DP_poffin_main_154", "DP_poffin_main_155", "DP_poffin_main_156", "DP_poffin_main_157", "DP_poffin_main_158" };
 	[global::Dpr.SubContents.ButtonAttribute("PlayStart", "PlayStart", new object[] {  })]
 	public int Button0;
 	private global::DG.Tweening.Sequence seq;
@@ -233,8 +233,8 @@ public class UIPofinPlaying : global::UnityEngine.MonoBehaviour
 		tw_fade = MessageFrame.DOFade(0f, 0.2f);
 		tw_scale = MessageFrame.transform.DOScale(0.8f, 0.2f).SetEase(Ease.OutQuart).OnComplete(() => nowMessage = MessageType._None);
 	}
-	public UIPofinPlaying() { /*@B 0x6000BD1*/ throw null; }
-	static UIPofinPlaying() { /*@B 0x6000BD2*/ throw null; }
+	public UIPofinPlaying() { }
+	static UIPofinPlaying() { }
 	public enum MessageType
 	{
 		TooSlow = 0,

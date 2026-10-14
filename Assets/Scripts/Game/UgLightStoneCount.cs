@@ -6,7 +6,7 @@ public class UgLightStoneCount : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.SerializeField]
 	private global::System.Collections.Generic.List<global::UnityEngine.Sprite> numResource;
 	[global::UnityEngine.SerializeField]
-	private int digit;
+	private int digit = 2;
 	[global::UnityEngine.HeaderAttribute("分子")]
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.UI.Image numeratorLeft;
@@ -73,5 +73,5 @@ public class UgLightStoneCount : global::UnityEngine.MonoBehaviour
 		}
 		return nums;
 	}
-	public UgLightStoneCount() { /*@B 0x6000F97*/ throw null; }
+	public UgLightStoneCount() { }
 }

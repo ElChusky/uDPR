@@ -32,18 +32,18 @@ public class UgMiniMapComponent : global::UnityEngine.MonoBehaviour
 	private global::UnityEngine.UI.Image OtherSecretBaseIcon;
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.Vector2 Offset;
-	private global::ZoneID _nowZone;
+	private global::ZoneID _nowZone = global::ZoneID.UNKNOWN;
 	[global::UnityEngine.SerializeField]
 	private bool _isPlayerPos;
-	private static readonly global::UnityEngine.Vector2 MapMiniSize;
+	private static readonly global::UnityEngine.Vector2 MapMiniSize = new global::UnityEngine.Vector2(132f, -100f);
 	private bool prevMode;
 	private global::UnityEngine.UI.Image[] _randMarkIcon;
 	private global::UnityEngine.UI.Image _nowRandMarkIcon;
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.UI.Image[] _mapIamges;
 	private global::UnityEngine.Material[] _mapMaterial;
-	private global::UgMiniMapComponent.OtherPlayers[] _otherPlayers;
-	private static readonly global::UnityEngine.Vector2 OverAllOffset;
+	private global::UgMiniMapComponent.OtherPlayers[] _otherPlayers = new global::UgMiniMapComponent.OtherPlayers[8];
+	private static readonly global::UnityEngine.Vector2 OverAllOffset = new global::UnityEngine.Vector2(105f, 30f);
 	private global::UnityEngine.UI.Image PanelEffect;
 	private uint OpenLandMarkNum;
 	private uint CloseLandMarkNum;
@@ -52,7 +52,7 @@ public class UgMiniMapComponent : global::UnityEngine.MonoBehaviour
 	private global::UnityEngine.RectTransform rectTra_ugLightStoneGauge;
 	private global::UnityEngine.CanvasGroup canvasGroup;
 	private global::DG.Tweening.Tweener tw;
-	public global::UnityEngine.Vector2 hosei;
+	public global::UnityEngine.Vector2 hosei = new global::UnityEngine.Vector2(1f, -1f);
 	public bool isOverAllMode { get; private set; }
 	public bool isLargeMode { get; private set; }
 	private void Awake() {
@@ -614,8 +614,8 @@ public class UgMiniMapComponent : global::UnityEngine.MonoBehaviour
         // @018dae50
         ugLightStoneGauge.UpdateBonusState();
     }
-	public UgMiniMapComponent() { /*@B 0x6000FBC*/ throw null; }
-	static UgMiniMapComponent() { /*@B 0x6000FBD*/ throw null; }
+	public UgMiniMapComponent() { }
+	static UgMiniMapComponent() { }
 	private class OtherPlayers
 	{
 		public global::UnityEngine.UI.Image image;

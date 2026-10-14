@@ -3,6 +3,6 @@
 public class UgDigFossilePosGroup
 {
 	public int ID;
-	public global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> Grids;
-	public UgDigFossilePosGroup() { /*@B 0x6000F33*/ throw null; }
+	public global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> Grids = new global::System.Collections.Generic.List<global::UnityEngine.Vector2Int>();
+	public UgDigFossilePosGroup() { }
 }

@@ -3,7 +3,7 @@
 public class UgDrillUsablePosition
 {
 	public global::ZoneID zoneID;
-	public global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> AllGrids;
-	public global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> UseGrids;
-	public UgDrillUsablePosition() { /*@B 0x6000F35*/ throw null; }
+	public global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> AllGrids = new global::System.Collections.Generic.List<global::UnityEngine.Vector2Int>();
+	public global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> UseGrids = new global::System.Collections.Generic.List<global::UnityEngine.Vector2Int>();
+	public UgDrillUsablePosition() { }
 }

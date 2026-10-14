@@ -10,10 +10,59 @@ public sealed class UVConnection : global::UnityEngine.MonoBehaviour
 	private global::UVConnection.Property Property02;
 	[global::UnityEngine.SerializeField]
 	private global::UVConnection.Property Property03;
-	public global::UVConnection.Property this[int index] { get { /*@B 0x6000568*/ throw null; } set { /*@B 0x6000569*/ throw null; } }
-	private void OnEnable() { /*@B 0x600056A*/ throw null; }
-	private void OnDisable() { /*@B 0x600056B*/ throw null; }
-	private void OnUpdate(float deltaTime) { /*@B 0x600056C*/ throw null; }
+	public global::UVConnection.Property this[int index]
+	{
+		get
+		{
+			switch (index)
+			{
+				case 0: return Property00;
+				case 1: return Property01;
+				case 2: return Property02;
+				case 3: return Property03;
+				default: throw new global::System.IndexOutOfRangeException();
+			}
+		}
+		set
+		{
+			switch (index)
+			{
+				case 0: Property00 = value; break;
+				case 1: Property01 = value; break;
+				case 2: Property02 = value; break;
+				case 3: Property03 = value; break;
+			}
+		}
+	}
+	private void OnEnable()
+	{
+		propertyBlock = new global::UnityEngine.MaterialPropertyBlock();
+		global::SmartPoint.AssetAssistant.Sequencer.earlyLateUpdate -= OnUpdate;
+		global::SmartPoint.AssetAssistant.Sequencer.earlyLateUpdate += OnUpdate;
+		Property00.Reset();
+		Property01.Reset();
+		Property02.Reset();
+		Property03.Reset();
+	}
+	private void OnDisable()
+	{
+		global::SmartPoint.AssetAssistant.Sequencer.earlyLateUpdate -= OnUpdate;
+		Property00.Clear();
+		Property01.Clear();
+		Property02.Clear();
+		Property03.Clear();
+		propertyBlock = null;
+	}
+	private void OnUpdate(float deltaTime)
+	{
+		if (enabled)
+		{
+			Property00.Update(propertyBlock);
+			Property01.Update(propertyBlock);
+			Property02.Update(propertyBlock);
+			Property03.Update(propertyBlock);
+		}
+	}
 	public UVConnection() { }
 	[global::System.Serializable]
 	public struct Property
@@ -29,8 +78,23 @@ public sealed class UVConnection : global::UnityEngine.MonoBehaviour
 		[global::UnityEngine.SerializeField]
 		public string propertyName;
 		private int propertyID;
-		public void Reset() { /*@B 0x6009520*/ throw null; }
-		public void Update(global::UnityEngine.MaterialPropertyBlock propertyBlock) { /*@B 0x6009521*/ throw null; }
-		public void Clear() { /*@B 0x6009522*/ throw null; }
+		public void Reset()
+		{
+			if (renderer != null)
+				propertyID = global::UnityEngine.Shader.PropertyToID(propertyName);
+		}
+		public void Update(global::UnityEngine.MaterialPropertyBlock propertyBlock)
+		{
+			if (renderer == null || propertyBlock == null || propertyID == 0)
+				return;
+			renderer.GetPropertyBlock(propertyBlock, materialIndex);
+			propertyBlock.SetVector(propertyID, -(baseUV + offsetUV));
+			renderer.SetPropertyBlock(propertyBlock, materialIndex);
+		}
+		public void Clear()
+		{
+			if (renderer != null)
+				renderer.SetPropertyBlock(null, materialIndex);
+		}
 	}
 }

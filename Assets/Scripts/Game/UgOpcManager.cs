@@ -5,10 +5,10 @@ using UnityEngine;
 public class UgOpcManager : global::OpcManager
 {
 	public global::OpcState.OnlineState MyState;
-	private global::System.Collections.Generic.List<int> CreatingOpcList;
+	private global::System.Collections.Generic.List<int> CreatingOpcList = new global::System.Collections.Generic.List<int>();
 	public global::System.Action<int> OnCreateOpc;
-	private global::System.Collections.Generic.List<global::OpcController> allOpcControllers;
-	private global::System.Collections.Generic.List<global::UgOpcManager.ObjParam> _objParams;
+	private global::System.Collections.Generic.List<global::OpcController> allOpcControllers = new global::System.Collections.Generic.List<global::OpcController>();
+	private global::System.Collections.Generic.List<global::UgOpcManager.ObjParam> _objParams = new global::System.Collections.Generic.List<global::UgOpcManager.ObjParam>();
 	public override void SetNetData(global::Dpr.NetworkUtils.INetData netData) {
 		// @01b17760
 		base.SetNetData(netData);
@@ -174,12 +174,12 @@ public class UgOpcManager : global::OpcManager
 				RemoveCharacter(opc.stationIndex, true);
 		}
 	}
-	public UgOpcManager() { /*@B 0x6000FE8*/ throw null; }
+	public UgOpcManager() { }
 	private class ObjParam
 	{
-		public int stationIndex;
+		public int stationIndex = -1;
 		public global::FieldObjectEntity entity;
 		public global::UnityEngine.GameObject gameObj;
-		public ObjParam() { /*@B 0x600973B*/ throw null; }
+		public ObjParam() { }
 	}
 }

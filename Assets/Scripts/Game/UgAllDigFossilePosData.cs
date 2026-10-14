@@ -3,6 +3,6 @@
 public class UgAllDigFossilePosData
 {
 	public global::ZoneID zoneID;
-	public global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> Grids;
-	public UgAllDigFossilePosData() { /*@B 0x6000F30*/ throw null; }
+	public global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> Grids = new global::System.Collections.Generic.List<global::UnityEngine.Vector2Int>();
+	public UgAllDigFossilePosData() { }
 }
