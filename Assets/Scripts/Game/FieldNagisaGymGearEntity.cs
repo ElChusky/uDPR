@@ -5,21 +5,96 @@ public class FieldNagisaGymGearEntity : global::FieldEventEntity
 	[global::UnityEngine.RangeAttribute(0f, 1f)]
 	public int GearGroupNo;
 	public global::FieldNagisaGymGearEntity.GearRotateDegType GearRotateButton;
-	public global::FieldNagisaGymGearEntity.GearRotateAxisType GearRotateAxis;
-	public string GearRotateEventLabel;
-	private global::Dpr.FieldFloatMove DegMove;
+	public global::FieldNagisaGymGearEntity.GearRotateAxisType GearRotateAxis = global::FieldNagisaGymGearEntity.GearRotateAxisType.Y;
+	public string GearRotateEventLabel = string.Empty;
+	private global::Dpr.FieldFloatMove DegMove = new global::Dpr.FieldFloatMove();
 	private global::UnityEngine.Vector3 originalLocalEulerAngles;
 	private bool IsSetuped;
 	private global::FieldNagisaGymGearEntity.InitSequenceType InitSequence;
-	protected override void Awake() { /*@B 0x60006BB*/ throw null; }
-	protected override void OnUpdate(float deltaTime) { /*@B 0x60006BC*/ throw null; }
-	public void Setup(global::AreaID areaId) { /*@B 0x60006BD*/ throw null; }
-	public void SceneStart() { /*@B 0x60006BE*/ throw null; }
-	public static float GetDegRotateType(global::FieldNagisaGymGearEntity.GearRotateDegType rotateType) { /*@B 0x60006BF*/ throw null; }
-	public void Rotate(global::FieldNagisaGymGearEntity.GearRotateDegType rotateType, int triggerGroupNo) { /*@B 0x60006C0*/ throw null; }
-	public bool IsRotating() { /*@B 0x60006C1*/ throw null; }
-	private void SetRotate(float angle) { /*@B 0x60006C2*/ throw null; }
-	public FieldNagisaGymGearEntity() { /*@B 0x60006C3*/ throw null; }
+	protected override void Awake() {
+        base.Awake();
+        isLanding = false;
+        if (IsSetuped)
+            return;
+        originalLocalEulerAngles = transform.localEulerAngles;
+        DegMove.SetValue(0.0f);
+    }
+	protected override void OnUpdate(float deltaTime) {
+        base.OnUpdate(deltaTime);
+        if (!enabled)
+            return;
+
+        switch (InitSequence)
+        {
+            case InitSequenceType.Wait:
+                InitSequence = InitSequenceType.TempShift;
+                break;
+            case InitSequenceType.TempShift:
+                SetRotate(DegMove.CurrentValue + 0.01f);
+                InitSequence = InitSequenceType.Fix;
+                break;
+            case InitSequenceType.Fix:
+                SetRotate(DegMove.CurrentValue);
+                InitSequence = InitSequenceType.None;
+                break;
+        }
+
+        if (DegMove.IsBusy)
+        {
+            DegMove.Update(deltaTime);
+            SetRotate(DegMove.CurrentValue);
+        }
+    }
+	public void Setup(global::AreaID areaId) {
+        if (IsSetuped)
+            return;
+        int rotate = GimmickWork.GetGearRotate(areaId);
+        if (GearGroupNo != 0)
+            rotate = -rotate;
+        SetRotate(rotate);
+        DegMove.SetValue(rotate);
+        IsSetuped = true;
+    }
+	public void SceneStart() {
+        InitSequence = InitSequenceType.Wait;
+    }
+	public static float GetDegRotateType(global::FieldNagisaGymGearEntity.GearRotateDegType rotateType) {
+        switch (rotateType)
+        {
+            case GearRotateDegType.Plus90: return 90.0f;
+            case GearRotateDegType.Minus90: return -90.0f;
+            case GearRotateDegType.Plus180: return 180.0f;
+            case GearRotateDegType.Minus180: return -180.0f;
+            default: return 0.0f;
+        }
+    }
+	public void Rotate(global::FieldNagisaGymGearEntity.GearRotateDegType rotateType, int triggerGroupNo) {
+        float deg = GetDegRotateType(rotateType);
+        if (GearGroupNo != triggerGroupNo)
+            deg = -deg;
+
+        float time;
+        if (rotateType == GearRotateDegType.Plus180 || rotateType == GearRotateDegType.Minus180)
+            time = GameData.DataManager.FieldCommonParam[(int)FieldCommon.ParamIndx.NagisaGearRot180Time].param;
+        else
+            time = GameData.DataManager.FieldCommonParam[(int)FieldCommon.ParamIndx.NagisaGearRot90Time].param;
+
+        float target = UnityEngine.Mathf.Repeat(DegMove.CurrentValue + deg, 360.0f);
+        DegMove.SetValue(target - deg);
+        DegMove.MoveTime(target, time);
+    }
+	public bool IsRotating() {
+        return DegMove.IsBusy;
+    }
+	private void SetRotate(float angle) {
+        var euler = originalLocalEulerAngles;
+        if (GearRotateAxis == GearRotateAxisType.X)
+            euler.x += angle;
+        else
+            euler.y += angle;
+        transform.localEulerAngles = euler;
+    }
+	public FieldNagisaGymGearEntity() { }
 	public enum GearRotateDegType
 	{
 		None = 0,

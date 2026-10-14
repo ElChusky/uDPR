@@ -6,18 +6,67 @@ public class FieldNomoseGymWaterEntity : global::FieldObjectEntity
 	[global::System.NonSerialized]
 	public int WaterLevel;
 	[global::System.NonSerialized]
-	public global::Dpr.FieldFloatMove HeightMove;
+	public global::Dpr.FieldFloatMove HeightMove = new global::Dpr.FieldFloatMove();
 	private global::FieldNomoseGymWaterEntity.MovePhase Phase;
 	private float SwayTime;
-	public bool IsBusy() { /*@B 0x60006CD*/ throw null; }
-	protected override void Awake() { /*@B 0x60006CE*/ throw null; }
-	protected override void OnUpdate(float deltaTime) { /*@B 0x60006CF*/ throw null; }
-	public void Setup() { /*@B 0x60006D0*/ throw null; }
-	public void ApplySaveData(in global::DPData.FIELD_OBJ_SAVE_DATA saveData) { /*@B 0x60006D1*/ throw null; }
-	public void CreateSaveData(ref global::DPData.FIELD_OBJ_SAVE_DATA saveData) { /*@B 0x60006D2*/ throw null; }
-	public void MoveHeight(int level) { /*@B 0x60006D3*/ throw null; }
-	private void SetHeight(float height) { /*@B 0x60006D4*/ throw null; }
-	public FieldNomoseGymWaterEntity() { /*@B 0x60006D5*/ throw null; }
+	public bool IsBusy() {
+        return Phase != MovePhase.None;
+    }
+	protected override void Awake() {
+        base.Awake();
+        HeightMove.EaseFunc = global::Dpr.FieldFloatMove.EaseInOutSin;
+        isLanding = false;
+        WaterLevel = WaterHeightDefaultLevel;
+    }
+	protected override void OnUpdate(float deltaTime) {
+        base.OnUpdate(deltaTime);
+        if (!enabled)
+            return;
+
+        if (Phase == MovePhase.Move2nd)
+        {
+            if (!HeightMove.IsBusy)
+                Phase = MovePhase.None;
+        }
+        else if (Phase == MovePhase.Move1st && !HeightMove.IsBusy)
+        {
+            HeightMove.MoveTime(WaterHeightLevel[WaterLevel], SwayTime);
+            Phase = MovePhase.Move2nd;
+        }
+
+        if (HeightMove.IsBusy)
+        {
+            HeightMove.Update(deltaTime);
+            SetHeight(HeightMove.CurrentValue);
+        }
+    }
+	public void Setup() {
+        HeightMove.SetValue(WaterHeightLevel[WaterLevel]);
+        SetHeight(HeightMove.CurrentValue);
+    }
+	public void ApplySaveData(in global::DPData.FIELD_OBJ_SAVE_DATA saveData) {
+        WaterLevel = saveData.height;
+    }
+	public void CreateSaveData(ref global::DPData.FIELD_OBJ_SAVE_DATA saveData) {
+        saveData.height = WaterLevel;
+    }
+	public void MoveHeight(int level) {
+        int diff = global::UnityEngine.Mathf.Abs(level - WaterLevel);
+        WaterLevel = level;
+        float target = WaterHeightLevel[level];
+        float ofs = (target - HeightMove.CurrentValue) * GameData.DataManager.FieldCommonParam[(int)FieldCommon.ParamIndx.NomoseWaterSwayOfsRate].param;
+        float time = GameData.DataManager.FieldCommonParam[diff > 1 ? (int)FieldCommon.ParamIndx.NomoseWaterTime2Lv : (int)FieldCommon.ParamIndx.NomoseWaterTime1Lv].param;
+        float swayRate = GameData.DataManager.FieldCommonParam[(int)FieldCommon.ParamIndx.NomoseWaterSwayTimeRate].param;
+        Phase = ofs != 0.0f ? MovePhase.Move1st : MovePhase.Move2nd;
+        if (ofs != 0.0f)
+            target += ofs;
+        SwayTime = time * swayRate;
+        HeightMove.MoveTime(target, time);
+    }
+	private void SetHeight(float height) {
+        SetPositionDirect(new global::UnityEngine.Vector3(worldPosition.x, height, worldPosition.z));
+    }
+	public FieldNomoseGymWaterEntity() { }
 	private enum MovePhase
 	{
 		None = 0,
