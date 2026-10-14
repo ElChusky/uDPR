@@ -12004,7 +12004,24 @@ namespace Dpr.EvScript
             }
             return true;
         }
-		private bool EvCmdAzukariyaGetStoredSex() { /*@B 0x6009014*/ throw null; }
+		private bool EvCmdAzukariyaGetStoredSex() {
+            PokemonParam param = AzukariyaWork.Get(GetArgInt(_evArg[2]));
+            int sex;
+            if (param.IsNull())
+            {
+                sex = 0;
+            }
+            else
+            {
+                MonsNo monsNo = param.GetMonsNo();
+                if ((monsNo == MonsNo.NIDORAN_M || monsNo == MonsNo.NIDORAN_F) && !param.HaveNickName())
+                    sex = 2;
+                else
+                    sex = (int)param.GetSex();
+            }
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, sex);
+            return true;
+        }
 		private bool EvCmdAzukariyOldmanInit() {
             FieldObjectEntity oldman = AzukariyaWork.GetOldman();
             if (oldman != null)
@@ -12043,7 +12060,11 @@ namespace Dpr.EvScript
             ItemWork.AddItem((int)itemNo, -1);
             return true;
         }
-		private bool EvCmd_GET_PLAYER_CAP() { /*@B 0x600901A*/ throw null; }
+		private bool EvCmd_GET_PLAYER_CAP() {
+            FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_GET_CAP, true);
+            EntityManager.activeFieldPlayer.hatVariation = 1;
+            return true;
+        }
 		private bool EvCmdCameraShake() {
             float x = GetArgInt(_evArg[1]) * 0.01f;
             float y = GetArgInt(_evArg[2]) * 0.01f;
@@ -12095,16 +12116,79 @@ namespace Dpr.EvScript
                 entity.SetActive(visible != 0);
             return true;
         }
-		private bool EvCmd_FACE_INDEX() { /*@B 0x6009020*/ throw null; }
-		private bool EvCmd_GROUP_EXIST_CHECK() { /*@B 0x6009021*/ throw null; }
+		private bool EvCmd_FACE_INDEX() {
+            string id = GetArgString(_evData, _evArg[1]);
+            int pattern = GetArgInt(_evArg[2]);
+            FieldCharacterEntity chara = GetFieldCharacterEntity(id);
+            if (chara != null)
+                chara.SetEyePattern(pattern);
+            return true;
+        }
+		private bool EvCmd_GROUP_EXIST_CHECK() {
+            bool isNull = RandomGroupWork.RandomGroup_IsNullData((RANDOMGROUP)GetArgInt(_evArg[1]));
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[2].data, !isNull ? 1 : 0);
+            return true;
+        }
 		private bool EvCmd_GROUP_ENTRY_CHECK() {
             bool isEntry = RandomGroupWork.EntryCheck((RANDOMGROUP)GetArgInt(_evArg[1]));
             FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[2].data, isEntry ? 1 : 0);
             return true;
         }
-		private bool EvCmd_GROUP_NAME() { /*@B 0x6009023*/ throw null; }
-		private bool EvCmd_GROUP_LEADER_NAME() { /*@B 0x6009024*/ throw null; }
-		private bool EvCmd_GROUP_NAME_IN() { /*@B 0x6009025*/ throw null; }
+		private bool EvCmd_GROUP_NAME() {
+            RANDOMGROUP groupNo = (RANDOMGROUP)GetArgInt(_evArg[1]);
+            int tagIndex = GetArgInt(_evArg[2]);
+            string name = RandomGroupWork.GetNamePtr(groupNo, RANDOMGROUP_NAME.RANDOMGROUP_NAME_GROUP);
+            MessageEnumData.MsgLangId langId = (MessageEnumData.MsgLangId)RandomGroupWork.GetRegionCode(groupNo);
+            name = Utils.CheckNGGroupName(ref name, langId, PlayerWork.cassetVersion);
+            MessageWordSetHelper.SetStringWord(tagIndex, name, langId);
+            return true;
+        }
+		private bool EvCmd_GROUP_LEADER_NAME() {
+            RANDOMGROUP groupNo = (RANDOMGROUP)GetArgInt(_evArg[1]);
+            int tagIndex = GetArgInt(_evArg[2]);
+            string name = RandomGroupWork.GetNamePtr(groupNo, RANDOMGROUP_NAME.RANDOMGROUP_NAME_LEADER);
+            MessageEnumData.MsgLangId langId = (MessageEnumData.MsgLangId)RandomGroupWork.GetRegionCode(groupNo);
+            name = Utils.CheckNGTrainerName(ref name, langId, PlayerWork.cassetVersion);
+            MessageWordSetHelper.SetStringWord(tagIndex, name, langId);
+            return true;
+        }
+		private bool EvCmd_GROUP_NAME_IN() {
+            if (_softwareKeyboardSubState == 2)
+                return true;
+            if (_softwareKeyboardSubState == 0)
+            {
+                _softwareKeyboardSubState = 1;
+                string text = RandomGroupWork.GetNamePtr(RANDOMGROUP.RANDOMGROUP_MINE, RANDOMGROUP_NAME.RANDOMGROUP_NAME_GROUP);
+                string headerText = SoftwareKeyboard.GetMessageText("SS_strinput_043");
+                SoftwareKeyboard.Param param = new SoftwareKeyboard.Param();
+                param.text = text;
+                param.textMinLength = 1;
+                param.textMaxLength = SoftwareKeyboard.LanguageMaxLength(5);
+                param.headerText = headerText;
+                param.invalidCharFlag = SoftwareKeyboard.InvalidChar.AtMark;
+                SoftwareKeyboard.Open(param, (resultText, errorState) => SoftwareKeyboard.InputCheck(resultText, errorState), (isSuccess, resultText) =>
+                {
+                    if (isSuccess)
+                    {
+                        if (!RandomGroupWork.IsEqualName(resultText))
+                        {
+                            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, 1);
+                            RandomGroupWork.SetName(RANDOMGROUP.RANDOMGROUP_MINE, RANDOMGROUP_NAME.RANDOMGROUP_NAME_GROUP, resultText);
+                        }
+                        else
+                        {
+                            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, 2);
+                        }
+                    }
+                    else
+                    {
+                        FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, 0);
+                    }
+                    _softwareKeyboardSubState = 2;
+                });
+            }
+            return false;
+        }
 		private bool EvCmd_GROUP_ENTRY() {
             RANDOMGROUP groupNo = (RANDOMGROUP)GetArgInt(_evArg[1]);
             bool isChangeName = false;
@@ -12140,7 +12224,34 @@ namespace Dpr.EvScript
 		private bool EvCmdTemotiBallLoadWait() {
             return PokemonCenter.IsLoadedTemotiBall();
         }
-		private bool EvCmdPokecenPutBall() { /*@B 0x600902A*/ throw null; }
+		private bool EvCmdPokecenPutBall() {
+            int index = GetArgInt(_evArg[1]);
+            if (EntityManager.fieldPokemonCenter.Length == 0)
+                return true;
+            FieldPokemonCenterEntity pokemonCenter = EntityManager.fieldPokemonCenter[0];
+            uint memberCount = PlayerWork.playerParty.GetMemberCount();
+            BallId ballId = BallId.MAX;
+            int pokemonIndex = index;
+            int count = 0;
+            for (int i = 0; i < memberCount; i++)
+            {
+                PokemonParam param = PlayerWork.playerParty.GetMemberPointer((uint)i);
+                if (param.IsEgg(EggCheckType.BOTH_EGG))
+                    continue;
+                if (index == count)
+                {
+                    ballId = (BallId)param.GetGetBall();
+                    pokemonIndex = i;
+                    break;
+                }
+                count++;
+            }
+            pokemonCenter.PutBall(index, ballId);
+            if (EntityManager.fieldPokemonCenterMonitor.Length == 0)
+                return true;
+            EntityManager.fieldPokemonCenterMonitor[0].DisplayIcon(index, pokemonIndex);
+            return true;
+        }
 		private bool EvCmdPokecenClearBall() {
             if (EntityManager.fieldPokemonCenter.Length != 0)
                 EntityManager.fieldPokemonCenter[0].DestroyAllBall();
@@ -12165,7 +12276,22 @@ namespace Dpr.EvScript
             chara.EvEntityCmd.ReleaseEventNeck();
             return true;
         }
-		private bool EvCmd_TALK_OBJ_START_LOOK_NONE() { /*@B 0x600902E*/ throw null; }
+		private bool EvCmd_TALK_OBJ_START_LOOK_NONE() {
+            switch (_procCmd)
+            {
+                case EvCmdID.NAME._OBJ_PAUSE_ALL:
+                    Cmd_ObjPauseAll();
+                    _procCmd = EvCmdID.NAME._NONE_USE_NUMBER;
+                    return true;
+                case EvCmdID.NAME._SE_PLAY:
+                    PlaySe("UI_common_decide");
+                    _procCmd = EvCmdID.NAME._OBJ_PAUSE_ALL;
+                    return false;
+                default:
+                    _procCmd = EvCmdID.NAME._SE_PLAY;
+                    return false;
+            }
+        }
 		private bool EvCmdBoukennootoTipsOpen() {
             _boukennootoTipsOpen = true;
             int category = GetArgInt(_evArg[1]);
@@ -12177,8 +12303,60 @@ namespace Dpr.EvScript
 		private bool EvCmdBoukennootoTipsOpenWait() {
             return !_boukennootoTipsOpen;
         }
-		private bool EvCmdOpenSpecialWinLabel() { /*@B 0x6009031*/ throw null; }
-		private bool EvCmdWaitSpecialWinLabel() { /*@B 0x6009032*/ throw null; }
+		private bool EvCmdOpenSpecialWinLabel() {
+            _isOpenSpecialWin = true;
+            _openSpecialWinLabelSelected = -1;
+            int type = GetArgInt(_evArg[1]);
+            ContextMenuScrolledWindow window = UIManager.Instance.CreateUIWindow<ContextMenuScrolledWindow>(UIWindowID.CONTEXTMENU_SCROLL);
+            window.onSelectChanged = menuItem => { };
+            window.onClicked = menuItem =>
+            {
+                _openSpecialWinLabelSelected = (int)menuItem.param.menuId;
+                return true;
+            };
+            window.onClosed = __ => _isOpenSpecialWin = false;
+            List<ContextMenuItem.Param> itemParams = new List<ContextMenuItem.Param>();
+            string[] labels;
+            if (type == 0)
+            {
+                labels = new string[] {
+                    "109-msg_tv_interview_type01", "109-msg_tv_interview_type02", "109-msg_tv_interview_type03",
+                    "109-msg_tv_interview_type04", "109-msg_tv_interview_type05", "109-msg_tv_interview_type06",
+                    "109-msg_tv_interview_type07", "109-msg_tv_interview_type08", "109-msg_tv_interview_type09",
+                    "109-msg_tv_interview_type10", "109-msg_tv_interview_type11", "109-msg_tv_interview_type12",
+                    "109-msg_tv_interview_type13", "109-msg_tv_interview_type14", "109-msg_tv_interview_type15",
+                    "109-msg_tv_interview_type16", "109-msg_tv_interview_type17", "109-msg_tv_interview_type18",
+                };
+            }
+            else
+            {
+                labels = new string[] {
+                    "109-msg_tv_interview_deco01", "109-msg_tv_interview_deco02", "109-msg_tv_interview_deco03",
+                    "109-msg_tv_interview_deco04", "109-msg_tv_interview_deco05", "109-msg_tv_interview_deco06",
+                    "109-msg_tv_interview_deco07", "109-msg_tv_interview_deco08", "109-msg_tv_interview_deco09",
+                    "109-msg_tv_interview_deco10", "109-msg_tv_interview_deco11", "109-msg_tv_interview_deco12",
+                    "109-msg_tv_interview_deco13",
+                };
+            }
+            for (int i = 0; i < labels.Length; i++)
+            {
+                ContextMenuItem.Param item = new ContextMenuItem.Param();
+                item.menuId = (ContextMenuID)i;
+                item.messageFile = "dp_tvshow";
+                item.messageLabel = labels[i];
+                itemParams.Add(item);
+            }
+            ContextMenuScrolledWindow.Param param = new ContextMenuScrolledWindow.Param();
+            param.itemParams = itemParams.ToArray();
+            window.Open(param);
+            return true;
+        }
+		private bool EvCmdWaitSpecialWinLabel() {
+            if (_isOpenSpecialWin)
+                return false;
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, _openSpecialWinLabelSelected);
+            return true;
+        }
 		private bool EvCmdHidenEffWait() {
             return _hidenEffectWait;
         }
@@ -12190,7 +12368,76 @@ namespace Dpr.EvScript
             Dpr.BallDeco.BallDecoWork.AddCapsuleCount(GetArgInt(_evArg[1]));
             return true;
         }
-		private bool EvCmd_CHANGE_FASHION_REQ() { /*@B 0x6009036*/ throw null; }
+		private bool EvCmd_CHANGE_FASHION_REQ() {
+            switch (_fashionLoadSeq)
+            {
+                case 0:
+                    {
+                        _oldfashionAssetReqUri = "";
+                        if (_fashionAssetReqOp != null)
+                            _oldfashionAssetReqUri = _fashionAssetReqOp.assetBundleRequest.uri;
+                        _fashionLoadSeq = 999;
+                        CharacterDressData.SheetData[] dressData = DataManager.CharacterDressData.Data;
+                        for (int i = 0; i < dressData.Length; i++)
+                        {
+                            CharacterDressData.SheetData data = dressData[i];
+                            if (data.Index == PlayerWork.playerFashion)
+                            {
+                                _fashionAssetReqOp = AssetManager.AppendAssetBundleRequest("persons/field/" + data.FieldGraphic, true, null, null);
+                                AssetManager.DispatchRequests(null);
+                                _fashionLoadSeq = 1;
+                                return false;
+                            }
+                        }
+                    }
+                    return false;
+                case 1:
+                    {
+                        if (_fashionAssetReqOp.assetBundleRequest.status != RequestStatus.Complete)
+                            return false;
+                        FieldPlayerEntity oldPlayer = EntityManager.activeFieldPlayer;
+                        _fashionYawAngle = oldPlayer.yawAngle;
+                        _fashionWorldpos = oldPlayer.worldPosition;
+                        UnityEngine.Object.Destroy(EntityManager.activeFieldPlayer.gameObject);
+                        EntityManager.activeFieldPlayer = null;
+                        UnityEngine.Object[] loadedAssets = _fashionAssetReqOp.assetBundleRequest.cache.loadedAssets;
+                        for (int i = 0; i < loadedAssets.Length; i++)
+                        {
+                            if (loadedAssets[i] is GameObject prefab)
+                            {
+                                UnityEngine.Object.Instantiate<GameObject>(prefab, GameManager.fieldObjectHolder).GetComponent<BaseEntity>().Register();
+                                break;
+                            }
+                        }
+                        if (_oldfashionAssetReqUri != "")
+                        {
+                            AssetManager.UnloadAssetBundle(_oldfashionAssetReqUri);
+                            _oldfashionAssetReqUri = "";
+                        }
+                        _fashionLoadSeq = 2;
+                    }
+                    return false;
+                case 2:
+                    {
+                        FieldPlayerEntity player = EntityManager.activeFieldPlayer;
+                        player.yawAngle = _fashionYawAngle;
+                        player.worldPosition = _fashionWorldpos;
+                        player.FashionTableID = PlayerWork.playerFashion;
+                        player.WorkApplyVisibility();
+                        ColorVariation colorVariation = player.GetComponent<ColorVariation>();
+                        if (colorVariation != null)
+                            colorVariation.ColorIndex = PlayerWork.colorID;
+                        GameManager.fieldCamera.Target = EntityManager.activeFieldPlayer.transform;
+                        int index = PlayerWork.playerSex ? 0 : 4;
+                        player.SetAnimationEvents(DataManager.CharacterGraphics.Data[index].animTbl);
+                        PlayReportManager.SaveReportLog_Custome();
+                        _fashionLoadSeq = 0;
+                    }
+                    return true;
+                default:
+                    return false;
+            }
+        }
 		private bool EvCmdWarpPanelStart() {
             FieldPlayerEntity player = EntityManager.activeFieldPlayer;
             _fieldObjectMove.Update(_deltatime);
@@ -12283,8 +12530,23 @@ namespace Dpr.EvScript
             }
             return _warpSequence < 0;
         }
-		private bool EvCmdOpenPasswordSWKeyboard() { /*@B 0x6009039*/ throw null; }
-		private bool EvCmdSetMatchingGroup() { /*@B 0x600903A*/ throw null; }
+		private bool EvCmdOpenPasswordSWKeyboard() {
+            int workIndex = _evArg[1].data;
+            matchingPassword.Clear();
+            Utils.OpenPasswordSoftwareKeyboard((isSuccess, resultText) =>
+            {
+                if (isSuccess)
+                    matchingPassword.Append(resultText);
+                SetWork(workIndex, isSuccess ? 1 : 0);
+            });
+            return true;
+        }
+		private bool EvCmdSetMatchingGroup() {
+            string groupName = PlayerWork.RandomGroup.group[(int)RANDOMGROUP.RANDOMGROUP_MYUSE].group_name;
+            matchingPassword.Clear();
+            matchingPassword.Append(groupName);
+            return true;
+        }
 		private bool EvCmdCheckOnlineAccount() {
             _isWaitCheckOnlineAccount = false;
             int resultWorkIndex = _evArg[1].data;
@@ -12301,14 +12563,70 @@ namespace Dpr.EvScript
             });
             return true;
         }
-		private bool EvCmdCheckGMSOnlineAccount() { /*@B 0x600903C*/ throw null; }
+		private bool EvCmdCheckGMSOnlineAccount() {
+            _isWaitCheckOnlineAccount = false;
+            int workIndex = _evArg[1].data;
+            if (_evArg.Length >= 3)
+            {
+                int isFirstConnect = Dpr.NetworkUtils.NetworkHelper.IsFirstConnectInternet() ? 1 : 0;
+                Dpr.NetworkUtils.NetworkHelper.EmitNetworkLog(string.Format("First Connect Internet : [{0}]", isFirstConnect));
+                FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[2].data, isFirstConnect);
+            }
+            Dpr.NetworkUtils.NetworkManager.SetAutoLogoutControl(false);
+            Dpr.NetworkUtils.NetworkHelper.CheckOnlineAccountAsync(success =>
+            {
+                _isWaitCheckOnlineAccount = true;
+                SetWork(workIndex, success ? 1 : 0);
+            });
+            return true;
+        }
 		private bool EvCmdWaitCheckOnlineAccount() {
             return _isWaitCheckOnlineAccount;
         }
-		private bool EvCmdGMSEnd() { /*@B 0x600903E*/ throw null; }
-		private bool EvCmd_DENDOU_NUM_SET() { /*@B 0x600903F*/ throw null; }
-		private bool EvCmdTemotiBoxPokeChk() { /*@B 0x6009040*/ throw null; }
-		private bool EvCmdTemotiBoxMonsNo() { /*@B 0x6009041*/ throw null; }
+		private bool EvCmdGMSEnd() {
+            Dpr.NetworkUtils.NetworkManager.SetAutoLogoutControl(true);
+            return true;
+        }
+		private bool EvCmd_DENDOU_NUM_SET() {
+            int num = GetArgInt(_evArg[1]);
+            if (num > 9999)
+                num = 9999;
+            if (num < 0)
+                num = 0;
+            RecordWork.Set(RECORD_ID.RECID_DENDOU_CNT, (uint)num);
+            return true;
+        }
+		private bool EvCmdTemotiBoxPokeChk() {
+            int no = GetArgInt(_evArg[2]);
+            bool find = false;
+            PokeParty party = PlayerWork.playerParty;
+            int memberCount = (int)party.GetMemberCount();
+            for (int i = 0; i < memberCount; i++)
+            {
+                if (CheckMonsNo(party.GetMemberPointer((uint)i), no))
+                {
+                    find = true;
+                    break;
+                }
+            }
+            if (!find)
+                BoxScan(param => find |= CheckMonsNo(param, no));
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, find ? 1 : 0);
+            return true;
+
+            bool CheckMonsNo(PokemonParam param, int monsNo)
+            {
+                return CheckValidPokemonParam(param) && (int)param.GetMonsNo() == monsNo;
+            }
+        }
+		private bool EvCmdTemotiBoxMonsNo() {
+            int index = GetArgInt(_evArg[1]);
+            int trayIndex = GetArgInt(_evArg[2]);
+            PokemonParam param = GetPokemonParam(trayIndex, index);
+            int monsNo = CheckValidPokemonParam(param) ? (int)param.GetMonsNo() : 0;
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[3].data, monsNo);
+            return true;
+        }
 		private global::Pml.PokePara.PokemonParam GetPokemonParam(int trayIndex, int index) {
             if (trayIndex >= 0)
             {
@@ -12382,8 +12700,27 @@ namespace Dpr.EvScript
             else
                 param.AddWazaIfEmptyExist(learnWazaNo);
         }
-		private bool EvCmdCheckWazaOshie() { /*@B 0x6009048*/ throw null; }
-		private bool EvCmdCheckWazaOshieAll() { /*@B 0x6009049*/ throw null; }
+		private bool EvCmdCheckWazaOshie() {
+            int trayIndex = GetArgInt(_evArg[3]);
+            int index = GetArgInt(_evArg[2]);
+            PokemonParam param = GetPokemonParam(trayIndex, index);
+            WazaNo wazaNo = (WazaNo)GetArgInt(_evArg[4]);
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, (int)CheckWazaOshie(param, wazaNo));
+            return true;
+        }
+		private bool EvCmdCheckWazaOshieAll() {
+            WazaNo oshieWazaNo = (WazaNo)GetArgInt(_evArg[2]);
+            bool enable = false;
+            TemotiBoxScan((param, tray, index) =>
+            {
+                if (CheckWazaOshie(param, oshieWazaNo) != WazaOshieResult.OK)
+                    return true;
+                enable = true;
+                return false;
+            });
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, enable ? 1 : 0);
+            return true;
+        }
 		private global::Dpr.EvScript.EvDataManager.WazaOshieResult CheckWazaOshie(global::Pml.PokePara.PokemonParam param, global::Pml.WazaNo oshieWazaNo) {
             string nickName = param.GetNickName();
             if (!CheckValidPokemonParam(param))
@@ -12394,16 +12731,58 @@ namespace Dpr.EvScript
                 return WazaOshieResult.Learned;
             return WazaOshieResult.OK;
         }
-		private bool EvCmdTemotiBoxPokemonName() { /*@B 0x600904B*/ throw null; }
+		private bool EvCmdTemotiBoxPokemonName() {
+            int tagIndex = GetArgInt(_evArg[1]);
+            int trayIndex = GetArgInt(_evArg[3]);
+            int index = GetArgInt(_evArg[2]);
+            MessageWordSetHelper.SetMonsNameWord(tagIndex, GetPokemonParam(trayIndex, index));
+            return true;
+        }
 		private bool EvCmd_BTWR_TOOL_CHK_ENTRY_POKE_NUM() { return true; }
-		private bool EvCmd_BTWR_TOOL_CLEAR_PLAY_DATA() { /*@B 0x600904D*/ throw null; }
-		private bool EvCmd_BTWR_TOOL_PUSH_NOW_LOCATION() { /*@B 0x600904E*/ throw null; }
-		private bool EvCmd_BTWR_TOOL_POP_NOW_LOCATION() { /*@B 0x600904F*/ throw null; }
+		private bool EvCmd_BTWR_TOOL_CLEAR_PLAY_DATA() {
+            BtlTowerWork.Clear();
+            return true;
+        }
+		private bool EvCmd_BTWR_TOOL_PUSH_NOW_LOCATION() {
+            FieldPlayerEntity player = EntityManager.activeFieldPlayer;
+            PLAYER_SAVE_DATA saveData = PlayerWork.PlayerSaveData;
+            saveData.isTokushuLocation = true;
+            saveData.TokushuLocation.posX = player.gridPosition.x;
+            saveData.TokushuLocation.posY = player.Height;
+            saveData.TokushuLocation.posZ = player.gridPosition.y;
+            saveData.TokushuLocation.zoneID = (int)PlayerWork.zoneID;
+            saveData.TokushuLocation.dir = (int)player.GetDir();
+            PlayerWork.PlayerSaveData = saveData;
+            return true;
+        }
+		private bool EvCmd_BTWR_TOOL_POP_NOW_LOCATION() {
+            PLAYER_SAVE_DATA saveData = PlayerWork.PlayerSaveData;
+            PlayerWork.transitionLocation = saveData.TokushuLocation;
+            PlayerWork.SetTransitionZone((ZoneID)PlayerWork.transitionLocation.Value.zoneID, 0);
+            // Shipped: the flag is written true again here (02c934cc), not cleared.
+            saveData.isTokushuLocation = true;
+            PlayerWork.PlayerSaveData = saveData;
+            return true;
+        }
 		private bool EvCmd_BTWR_TOOL_GET_WIFI_RANK() { return true; }
-		private bool EvCmd_BTWR_TOOL_SET_PLAY_MODE() { /*@B 0x6009051*/ throw null; }
-		private bool EvCmd_BTWR_TOOL_SET_NOW_WIN() { /*@B 0x6009052*/ throw null; }
-		private bool EvCmd_BTWR_TOOL_SET_RANK() { /*@B 0x6009053*/ throw null; }
-		private bool EvCmd_BTWR_SUB_GET_RANK() { /*@B 0x6009054*/ throw null; }
+		private bool EvCmd_BTWR_TOOL_SET_PLAY_MODE() {
+            BtlTowerWork.SetMode(GetArgInt(_evArg[1]));
+            return true;
+        }
+		private bool EvCmd_BTWR_TOOL_SET_NOW_WIN() {
+            int mode = BtlTowerWork.GetMode();
+            BtlTowerWork.SetRound(mode, GetArgInt(_evArg[1]));
+            return true;
+        }
+		private bool EvCmd_BTWR_TOOL_SET_RANK() {
+            int mode = GetArgInt(_evArg[1]);
+            BtlTowerWork.SetRank(mode, (byte)GetArgInt(_evArg[2]));
+            return true;
+        }
+		private bool EvCmd_BTWR_SUB_GET_RANK() {
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[2].data, BtlTowerWork.GetRank(GetArgInt(_evArg[1])));
+            return true;
+        }
 		private bool EvCmd_BTWR_SUB_RANK_DOWN_LOSE() {
             FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[2].data, (int)BtlTowerWork.GetRankDownLose(GetArgInt(_evArg[1])));
             return true;
@@ -12412,11 +12791,33 @@ namespace Dpr.EvScript
             BtlTowerWork.ReseRankDownLose(GetArgInt(_evArg[1]));
             return true;
         }
-		private bool EvCmd_BTWR_SUB_ADD_LOSE() { /*@B 0x6009057*/ throw null; }
+		private bool EvCmd_BTWR_SUB_ADD_LOSE() {
+            int mode = GetArgInt(_evArg[1]);
+            BtlTowerWork.AddLose(mode);
+            int renshou = (int)BtlTowerWork.GetRenshou(mode);
+            if (renshou > 5)
+                InterviewWork.SetTopicRecordBattleTower(renshou + 1, false);
+            BtlTowerWork.ResetRenshou(mode);
+            return true;
+        }
 		private bool EvCmd_BTWR_SUB_CHK_ENTRY_POKE() { return true; }
-		private bool EvCmd_BTWR_SUB_GET_NOW_ROUND() { /*@B 0x6009059*/ throw null; }
-		private bool EvCmd_BTWR_SUB_INC_ROUND() { /*@B 0x600905A*/ throw null; }
-		private bool EvCmd_BTWR_SUB_IS_CLEAR() { /*@B 0x600905B*/ throw null; }
+		private bool EvCmd_BTWR_SUB_GET_NOW_ROUND() {
+            int mode = BtlTowerWork.GetMode();
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, BtlTowerWork.GetRound(mode));
+            return true;
+        }
+		private bool EvCmd_BTWR_SUB_INC_ROUND() {
+            int mode = BtlTowerWork.GetMode();
+            BtlTowerWork.RoundAdd(mode);
+            if (BtlTowerWork.GetRound(mode) > 6)
+                InterviewWork.SetTopicRecordBattleTower((int)BtlTowerWork.GetRenshou(mode), true);
+            return true;
+        }
+		private bool EvCmd_BTWR_SUB_IS_CLEAR() {
+            int mode = BtlTowerWork.GetMode();
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, BtlTowerWork.GameClear(mode) ? 1 : 0);
+            return true;
+        }
 		private bool EvCmd_BTWR_SUB_GET_RENSHOU_CNT() { /*@B 0x600905C*/ throw null; }
 		private bool EvCmd_BTWR_SUB_SET_SCORE() { /*@B 0x600905D*/ throw null; }
 		private bool EvCmd_BTWR_SUB_CHOICE_BTL_PARTNER() { return true; }
