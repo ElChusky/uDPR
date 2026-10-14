@@ -8,7 +8,13 @@ namespace Dpr.UI
 		private float longTouchTime;
 		public global::Dpr.UI.UITouchInputController.TouchInfo[] Touches { get; private set; }
 		public int TouchCount { get; private set; }
-		public UITouchInputController(float longTouchTime = 1f) { /*@B 0x60051B1*/ throw null; }
+		public UITouchInputController(float longTouchTime = 1f) {
+			this.longTouchTime = longTouchTime;
+			TouchCount = 0;
+			Touches = new TouchInfo[MaxTouchCount];
+			for (int i = 0; i < Touches.Length; i++)
+				Touches[i] = new TouchInfo();
+		}
 		public void OnUpdate(float deltaTime) {
 			TouchCount = Input.touchCount;
 

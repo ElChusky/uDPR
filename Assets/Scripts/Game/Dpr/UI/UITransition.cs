@@ -3,16 +3,38 @@ namespace Dpr.UI
 {
 	public class UITransition : global::UnityEngine.MonoBehaviour
 	{
-		protected readonly int _animStateIn;
-		protected readonly int _animStateOut;
+		protected readonly int _animStateIn = global::UnityEngine.Animator.StringToHash("in_01");
+		protected readonly int _animStateOut = global::UnityEngine.Animator.StringToHash("out_01");
 		protected global::UnityEngine.Animator _animator;
 		protected global::UnityEngine.Coroutine _coroutine;
 		protected global::UnityEngine.Events.UnityAction<global::Dpr.UI.UITransition.FadeType> _onComplete;
-		protected global::Dpr.UI.UITransition.FadeType _fadeType;
-		protected void Awake() { /*@B 0x6005B80*/ throw null; }
-		public virtual void PlayFade(global::Dpr.UI.UITransition.FadeType fadeType, global::UnityEngine.Events.UnityAction<global::Dpr.UI.UITransition.FadeType> onComplete) { /*@B 0x6005B81*/ throw null; }
-		protected virtual global::System.Collections.IEnumerator OpPlayFade() { /*@B 0x6005B82*/ throw null; }
-		public UITransition() { /*@B 0x6005B83*/ throw null; }
+		protected global::Dpr.UI.UITransition.FadeType _fadeType = FadeType.None;
+		protected void Awake() {
+			_animator = GetComponent<global::UnityEngine.Animator>();
+		}
+		public virtual void PlayFade(global::Dpr.UI.UITransition.FadeType fadeType, global::UnityEngine.Events.UnityAction<global::Dpr.UI.UITransition.FadeType> onComplete) {
+			if (_coroutine != null)
+			{
+				StopCoroutine(_coroutine);
+				_onComplete?.Invoke(_fadeType);
+			}
+			_fadeType = fadeType;
+			_onComplete = onComplete;
+			_coroutine = global::SmartPoint.AssetAssistant.Sequencer.Start(OpPlayFade());
+		}
+		protected virtual global::System.Collections.IEnumerator OpPlayFade() {
+			int animState = _fadeType == FadeType.Out ? _animStateOut : _animStateIn;
+			_animator.Play(animState, 0, 0f);
+			while (_animator.GetCurrentAnimatorStateInfo(0).shortNameHash != animState)
+				yield return null;
+			while (_animator.GetCurrentAnimatorStateInfo(0).shortNameHash == animState)
+				yield return null;
+			_onComplete?.Invoke(_fadeType);
+			_coroutine = null;
+			_fadeType = FadeType.None;
+			_onComplete = null;
+		}
+		public UITransition() { }
 		public enum FadeType
 		{
 			None = -1,
