@@ -3,8 +3,8 @@ namespace Dpr.Battle.View
 {
 	public static class BattleJobSystem
 	{
-		private static global::System.Collections.Generic.HashSet<global::Dpr.Battle.View.ITranslationObject> _translationObjects;
-		static BattleJobSystem() { /*@B 0x600607A*/ throw null; }
+		private static global::System.Collections.Generic.HashSet<global::Dpr.Battle.View.ITranslationObject> _translationObjects = new global::System.Collections.Generic.HashSet<global::Dpr.Battle.View.ITranslationObject>();
+		static BattleJobSystem() { }
 		public static bool Add(global::Dpr.Battle.View.ITranslationObject item) {
 			return _translationObjects.Add(item);
 		}

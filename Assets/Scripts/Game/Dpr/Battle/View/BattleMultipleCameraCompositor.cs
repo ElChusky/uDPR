@@ -35,8 +35,78 @@ namespace Dpr.Battle.View
 			// 01f7ca90: tail branch
 			OnReset();
 		}
-		private void OnDisable() { /*@B 0x600606A*/ throw null; }
-		private void OnReset() { /*@B 0x600606B*/ throw null; }
+		private void OnDisable() {
+			if (_colorBufferTexture != null)
+			{
+				Object.Destroy(_colorBufferTexture);
+				Object.Destroy(_depthBufferTexture);
+				Object.Destroy(_copyDepthBufferTexture);
+			}
+			if (_mainCamera == null)
+				return;
+			_mainCamera.SetTargetBuffers(Graphics.activeColorBuffer, Graphics.activeDepthBuffer);
+			for (int i = 0; i < _layerCameras.Length; i++)
+			{
+				Camera cam = _layerCameras[i];
+				if (cam != null)
+					cam.SetTargetBuffers(Graphics.activeColorBuffer, Graphics.activeDepthBuffer);
+			}
+			if (_fieldDepthBuffer != null)
+			{
+				_mainCamera.RemoveCommandBuffer(global::UnityEngine.Rendering.CameraEvent.BeforeForwardAlpha, _fieldDepthBuffer);
+				_fieldDepthBuffer.Clear();
+				_fieldDepthBuffer = null;
+			}
+			if (_resolveColorCB != null)
+			{
+				_camera.RemoveCommandBuffer(global::UnityEngine.Rendering.CameraEvent.BeforeForwardOpaque, _resolveColorCB);
+				_resolveColorCB.Clear();
+				_resolveColorCB = null;
+			}
+			if (_resolveDepthCB != null)
+			{
+				_layerCameras[1].RemoveCommandBuffer(global::UnityEngine.Rendering.CameraEvent.BeforeForwardAlpha, _resolveDepthCB);
+				_resolveDepthCB.Clear();
+				_resolveDepthCB = null;
+			}
+		}
+		private void OnReset() {
+			OnDisable();
+			if (_mainCamera == null)
+				return;
+			Vector2Int size = new Vector2Int(global::SmartPoint.AssetAssistant.Sequencer.screenWidth, global::SmartPoint.AssetAssistant.Sequencer.screenHeight);
+			this.GetComponentThis(ref _camera);
+			_colorBufferTexture = new RenderTexture(size.x, size.y, 0, RenderTextureFormat.RGB111110Float);
+			_colorBufferTexture.Create();
+			_depthBufferTexture = new RenderTexture(size.x, size.y, 24, RenderTextureFormat.Depth);
+			_depthBufferTexture.Create();
+			_copyDepthBufferTexture = new RenderTexture(size.x, size.y, 24, RenderTextureFormat.Depth);
+			_copyDepthBufferTexture.Create();
+			_camera.forceIntoRenderTexture = true;
+			_mainCamera.SetTargetBuffers(_colorBufferTexture.colorBuffer, _depthBufferTexture.depthBuffer);
+			_mainCamera.forceIntoRenderTexture = true;
+			for (int i = 0; i < _layerCameras.Length; i++)
+			{
+				Camera cam = _layerCameras[i];
+				if (cam != null)
+				{
+					cam.clearFlags = CameraClearFlags.Nothing;
+					cam.forceIntoRenderTexture = true;
+					cam.SetTargetBuffers(_colorBufferTexture.colorBuffer, _depthBufferTexture.depthBuffer);
+				}
+			}
+			_fieldDepthBuffer = new global::UnityEngine.Rendering.CommandBuffer();
+			_fieldDepthBuffer.SetGlobalTexture(global::MultipleCameraCompositor.OPAQUE_DEPTHTEX_ID, global::UnityEngine.Rendering.BuiltinRenderTextureType.Depth);
+			_mainCamera.AddCommandBuffer(global::UnityEngine.Rendering.CameraEvent.BeforeForwardAlpha, _fieldDepthBuffer);
+			_resolveColorCB = new global::UnityEngine.Rendering.CommandBuffer();
+			_resolveColorCB.SetGlobalTexture(global::MultipleCameraCompositor.GLOBAL_DEPTHTEX_ID, _depthBufferTexture);
+			_resolveColorCB.Blit(_colorBufferTexture, global::UnityEngine.Rendering.BuiltinRenderTextureType.CameraTarget);
+			_camera.AddCommandBuffer(global::UnityEngine.Rendering.CameraEvent.BeforeForwardOpaque, _resolveColorCB);
+			_resolveDepthCB = new global::UnityEngine.Rendering.CommandBuffer();
+			_resolveDepthCB.CopyTexture(_depthBufferTexture, _copyDepthBufferTexture);
+			_resolveDepthCB.SetGlobalTexture(global::MultipleCameraCompositor.OPAQUE_DEPTHTEX_ID, _copyDepthBufferTexture);
+			_layerCameras[1].AddCommandBuffer(global::UnityEngine.Rendering.CameraEvent.BeforeForwardAlpha, _resolveDepthCB);
+		}
 		public void OnLateUpdate(float deltaTime) {
 			float nearClipPlane = _mainCamera.nearClipPlane;
 			float farClipPlane = _mainCamera.farClipPlane;
