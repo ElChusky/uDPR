@@ -14,6 +14,17 @@ namespace Dpr.SequenceEditor
 		public float OffsetY;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool subCamera;
-		public EffLensDistortionSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A80*/ throw null; }
+		public EffLensDistortionSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			mode = Macro.Parse_SEQ_DEF_MODETYPE(macro.GetValue("mode"));
+			power = Macro.ParseFloat(macro.GetValue("power"), 1f);
+			Ufov = Macro.ParseFloat(macro.GetValue("Ufov"), 30f);
+			Afov = Macro.ParseFloat(macro.GetValue("Afov"), 20f);
+			ScaleW = Macro.ParseFloat(macro.GetValue("ScaleW"), 1f);
+			ScaleH = Macro.ParseFloat(macro.GetValue("ScaleH"), 1f);
+			OffsetX = Macro.ParseFloat(macro.GetValue("OffsetX"));
+			OffsetY = Macro.ParseFloat(macro.GetValue("OffsetY"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

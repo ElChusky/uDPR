@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.LIGHT_TYPE type;
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public global::UnityEngine.Vector3 dir;
-		public EffPokeLightDirection(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A0B*/ throw null; }
+		public EffPokeLightDirection(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			type = Macro.Parse_LIGHT_TYPE(macro.GetValue("type"));
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			dir = Macro.ParseVector3(macro.GetValue("dir"));
+		}
 	}
 }

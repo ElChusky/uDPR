@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public bool isDisp;
 		public bool maskLink;
-		public EffDispBg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A00*/ throw null; }
+		public EffDispBg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isDisp = Macro.ParseBool(macro.GetValue("isDisp"));
+			maskLink = Macro.ParseBool(macro.GetValue("maskLink"), 1);
+		}
 	}
 }

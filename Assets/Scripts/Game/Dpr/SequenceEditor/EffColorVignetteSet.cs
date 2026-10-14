@@ -15,6 +15,18 @@ namespace Dpr.SequenceEditor
 		public float penumbraFov;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool subCamera;
-		public EffColorVignetteSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A8D*/ throw null; }
+		public EffColorVignetteSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			viType = Macro.Parse_SEQ_DEF_VIGNETTE_TYPE(macro.GetValue("viType"));
+			viOffset = Macro.ParseFloat(macro.GetValue("viOffset"));
+			viFovDepe = Macro.ParseFloat(macro.GetValue("viFovDepe"), 0.05f);
+			viScale = Macro.ParseFloat(macro.GetValue("viScale"), 1f);
+			viColor = Macro.ParseVector3(macro.GetValue("viColor"), 1f, 1f, 1f);
+			imageCircle = Macro.ParseFloat(macro.GetValue("imageCircle"));
+			imageCircleFov = Macro.ParseFloat(macro.GetValue("imageCircleFov"), 0.05f);
+			widthScale = Macro.ParseFloat(macro.GetValue("widthScale"), 1f);
+			penumbraFov = Macro.ParseFloat(macro.GetValue("penumbraFov"), 0.05f);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

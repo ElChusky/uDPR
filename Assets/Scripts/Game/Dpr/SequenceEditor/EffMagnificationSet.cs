@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public float disperY;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool subCamera;
-		public EffMagnificationSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A8B*/ throw null; }
+		public EffMagnificationSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			disperX = Macro.ParseFloat(macro.GetValue("disperX"));
+			disperY = Macro.ParseFloat(macro.GetValue("disperY"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

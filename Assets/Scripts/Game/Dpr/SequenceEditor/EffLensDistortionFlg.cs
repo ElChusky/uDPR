@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public bool enable;
 		public bool subCamera;
-		public EffLensDistortionFlg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A7F*/ throw null; }
+		public EffLensDistortionFlg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			enable = Macro.ParseBool(macro.GetValue("enable"), 1);
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

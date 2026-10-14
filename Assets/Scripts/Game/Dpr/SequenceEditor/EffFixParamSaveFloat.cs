@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public bool trgTra;
 		public string name;
 		public bool dataresto;
-		public EffFixParamSaveFloat(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A97*/ throw null; }
+		public EffFixParamSaveFloat(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			trgPoke = Macro.ParseBool(macro.GetValue("trgPoke"), 1);
+			trgTra = Macro.ParseBool(macro.GetValue("trgTra"), 0);
+			name = Macro.ParseString(macro.GetValue("name"));
+			dataresto = Macro.ParseBool(macro.GetValue("dataresto"), 0);
+		}
 	}
 }

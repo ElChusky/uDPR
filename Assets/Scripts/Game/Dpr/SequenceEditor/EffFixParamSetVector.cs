@@ -12,6 +12,15 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 endVec;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public global::Dpr.SequenceEditor.SEQ_DEF_FIXPARAM_CALC calc;
-		public EffFixParamSetVector(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A90*/ throw null; }
+		public EffFixParamSetVector(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			trgPoke = Macro.ParseBool(macro.GetValue("trgPoke"), 1);
+			trgTra = Macro.ParseBool(macro.GetValue("trgTra"), 0);
+			name = Macro.ParseString(macro.GetValue("name"));
+			startVec = Macro.ParseVector3(macro.GetValue("startVec"));
+			endVec = Macro.ParseVector3(macro.GetValue("endVec"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			calc = Macro.Parse_SEQ_DEF_FIXPARAM_CALC(macro.GetValue("calc"));
+		}
 	}
 }

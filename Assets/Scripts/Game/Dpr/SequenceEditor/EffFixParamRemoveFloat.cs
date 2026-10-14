@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public bool trgPoke;
 		public bool trgTra;
 		public string name;
-		public EffFixParamRemoveFloat(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A93*/ throw null; }
+		public EffFixParamRemoveFloat(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			trgPoke = Macro.ParseBool(macro.GetValue("trgPoke"), 1);
+			trgTra = Macro.ParseBool(macro.GetValue("trgTra"), 0);
+			name = Macro.ParseString(macro.GetValue("name"));
+		}
 	}
 }

@@ -13,6 +13,16 @@ namespace Dpr.SequenceEditor
 		public float Contrast;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool subCamera;
-		public EffFeedbackEffectSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A7E*/ throw null; }
+		public EffFeedbackEffectSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			weight = Macro.ParseFloat(macro.GetValue("weight"));
+			Rotation = Macro.ParseFloat(macro.GetValue("Rotation"));
+			Scale = Macro.ParseFloat(macro.GetValue("Scale"));
+			Hue = Macro.ParseFloat(macro.GetValue("Hue"));
+			Saturation = Macro.ParseFloat(macro.GetValue("Saturation"));
+			Brightness = Macro.ParseFloat(macro.GetValue("Brightness"));
+			Contrast = Macro.ParseFloat(macro.GetValue("Contrast"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

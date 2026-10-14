@@ -11,6 +11,14 @@ namespace Dpr.SequenceEditor
 		public int NumSamples;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool subCamera;
-		public EffRadialBlurSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A7C*/ throw null; }
+		public EffRadialBlurSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			posx = Macro.ParseFloat(macro.GetValue("posx"));
+			posy = Macro.ParseFloat(macro.GetValue("posy"));
+			Scale = Macro.ParseFloat(macro.GetValue("Scale"));
+			Intensity = Macro.ParseFloat(macro.GetValue("Intensity"));
+			NumSamples = Macro.ParseInt(macro.GetValue("NumSamples"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

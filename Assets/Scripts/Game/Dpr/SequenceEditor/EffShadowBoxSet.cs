@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public bool subCamera;
 		public bool isReset;
 		public bool rerative;
-		public EffShadowBoxSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AA0*/ throw null; }
+		public EffShadowBoxSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			minVec = Macro.ParseVector3(macro.GetValue("minVec"), -5000f, -1000f, -5000f);
+			maxVec = Macro.ParseVector3(macro.GetValue("maxVec"), 5000f, 1000f, 5000f);
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+			isReset = Macro.ParseBool(macro.GetValue("isReset"), 0);
+			rerative = Macro.ParseBool(macro.GetValue("rerative"), 0);
+		}
 	}
 }
