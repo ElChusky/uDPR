@@ -13,14 +13,14 @@ public static class TrainerWork
             PlayerWork.tr_battleData[i] = data;
         }
     }
-	public static void SetWinFlag(global::Dpr.Trainer.TrainerID id) { /*@B 0x6000CF6*/ throw null; }
+	public static void SetWinFlag(global::Dpr.Trainer.TrainerID id) => SetWinFlag((int)id);
 	public static void SetWinFlag(int index) {
         // @018c1670: element copy (ldrh), second getter call, whole-struct write-back (strh)
         var data = PlayerWork.tr_battleData[index];
         data.IsWin = true;
         PlayerWork.tr_battleData[index] = data;
     }
-	public static void ResetWinFlag(global::Dpr.Trainer.TrainerID id) { /*@B 0x6000CF8*/ throw null; }
+	public static void ResetWinFlag(global::Dpr.Trainer.TrainerID id) => ResetWinFlag((int)id);
 	public static void ResetWinFlag(int index) {
         // @018c1740: element copy, second getter call, whole-struct write-back
         var data = PlayerWork.tr_battleData[index];
@@ -37,14 +37,14 @@ public static class TrainerWork
 	public static bool GetWinFlag(int index) {
         return PlayerWork.tr_battleData[index].IsWin;
     }
-	public static void SetBattleSaercher(global::Dpr.Trainer.TrainerID id) { /*@B 0x6000CFC*/ throw null; }
+	public static void SetBattleSaercher(global::Dpr.Trainer.TrainerID id) => SetBattleSaercher((int)id);
 	public static void SetBattleSaercher(int index) {
         // @018c1940: element copy, second getter call, whole-struct write-back
         var data = PlayerWork.tr_battleData[index];
         data.IsBattleSearcher = true;
         PlayerWork.tr_battleData[index] = data;
     }
-	public static void ReSetBattleSaercher(global::Dpr.Trainer.TrainerID id) { /*@B 0x6000CFE*/ throw null; }
+	public static void ReSetBattleSaercher(global::Dpr.Trainer.TrainerID id) => ReSetBattleSaercher((int)id);
 	public static void ReSetBattleSaercher(int index) {
         // @018c1a10: element copy, second getter call, whole-struct write-back
         var data = PlayerWork.tr_battleData[index];
@@ -136,7 +136,22 @@ public static class TrainerWork
                trainer == TrainerType.GINGALEADER2 || trainer == TrainerType.GINGAW ||
                trainer == TrainerType.GINGALEADER3 || trainer == TrainerType.GINGALBOSS;
     }
-	public static bool IsTagTranier(global::Dpr.Trainer.TrainerID trainer, out global::Dpr.Trainer.TrainerID tag) { /*@B 0x6000D06*/ throw null; }
+	public static bool IsTagTranier(global::Dpr.Trainer.TrainerID trainer, out global::Dpr.Trainer.TrainerID tag) {
+        // @018c2050: loop fully unrolled; GetTagTrainer(i +/- 1) inlined as two lookup tables
+        tag = TrainerID.NONE;
+        for (int i = 0; i < 26; i++)
+        {
+            if (GetTagTrainer(i) == trainer)
+            {
+                if (i % 2 == 0)
+                    tag = GetTagTrainer(i + 1);
+                else
+                    tag = GetTagTrainer(i - 1);
+                return true;
+            }
+        }
+        return false;
+    }
 	public static global::Dpr.Trainer.TrainerID GetTagTrainer(int index) {
         // @018c22c0: switch lowered to the lookup table @03d491f4 (indices 0–24) + a csel for 25
         switch (index)
