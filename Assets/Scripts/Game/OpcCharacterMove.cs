@@ -7,7 +7,7 @@ public class OpcCharacterMove
 	private float _Speed;
 	private float _RotSpeed;
 	[global::UnityEngine.SerializeField]
-	private float _DurationSpeed;
+	private float _DurationSpeed = 1f;
 	public void SetEntity(global::FieldObjectEntity entity) {
 		_MoveEntity = entity;
 	}
@@ -37,5 +37,5 @@ public class OpcCharacterMove
 	public void SetRotY(float rotY) {
 		_MoveEntity.transform.eulerAngles = Vector3.up * rotY;
 	}
-	public OpcCharacterMove() { /*@B 0x600110F*/ throw null; }
+	public OpcCharacterMove() { }
 }

@@ -137,7 +137,38 @@ public static class MysteryGiftWork
 		}
 		return recvData;
 	}
-	public static global::DPData.MysteryGift.ConvertResult ConvertMysteryGiftData(byte[] dataBytes, out global::DPData.MysteryGiftData mysteryGiftData) { /*@B 0x6000C96*/ throw null; }
+	public static global::DPData.MysteryGift.ConvertResult ConvertMysteryGiftData(byte[] dataBytes, out global::DPData.MysteryGiftData mysteryGiftData)
+	{
+		mysteryGiftData = default(global::DPData.MysteryGiftData);
+		if (dataBytes.Length != global::DPData.MysteryGiftData.DataSize)
+			return global::DPData.MysteryGift.ConvertResult.INVALID_ARGUMENT;
+		mysteryGiftData.commonData = ConvertData<global::DPData.MysteryGiftCommonData>(dataBytes, 0);
+		int start = Marshal.SizeOf<global::DPData.MysteryGiftCommonData>();
+		switch ((global::DPData.MysteryGift.DataType)mysteryGiftData.commonData.dataType)
+		{
+			case global::DPData.MysteryGift.DataType.Monster:
+				mysteryGiftData.pokemonData = ConvertData<global::DPData.MysteryGiftPokemonData>(dataBytes, start);
+				break;
+			case global::DPData.MysteryGift.DataType.Items:
+				mysteryGiftData.itemData = ConvertData<global::DPData.MysteryGiftItemData>(dataBytes, start);
+				break;
+			case global::DPData.MysteryGift.DataType.DressUp:
+				mysteryGiftData.dressUpData = ConvertData<global::DPData.MysteryGiftDressUpData>(dataBytes, start);
+				break;
+			case global::DPData.MysteryGift.DataType.Money:
+				mysteryGiftData.moneyData = ConvertData<uint>(dataBytes, start);
+				break;
+			case global::DPData.MysteryGift.DataType.UnderGroundItem:
+				mysteryGiftData.underGroundItemData = ConvertData<global::DPData.MysteryGiftUnderGroundItemData>(dataBytes, start);
+				break;
+			default:
+				return global::DPData.MysteryGift.ConvertResult.INVALID_ARGUMENT;
+		}
+		mysteryGiftData.crc = ConvertData<ushort>(dataBytes, global::DPData.MysteryGiftData.CrcIndex);
+		if (!CheckCrc(dataBytes, mysteryGiftData.crc))
+			return global::DPData.MysteryGift.ConvertResult.CRC_ERROR;
+		return global::DPData.MysteryGift.ConvertResult.SUCCESS;
+	}
 	public static global::Pml.PokePara.PokemonParam CreatePokemonParam(global::DPData.MysteryGiftPokemonData pokemonData) {
 		byte isEgg = pokemonData.isEgg;
 		MyStatus myStatus = new MyStatus();
@@ -342,8 +373,48 @@ public static class MysteryGiftWork
 		Marshal.FreeHGlobal(ptr);
 		return result;
 	}
-	private static void GetPokemonNameAndLanguage(global::DPData.MysteryGiftPokemonData pokemonData, global::Dpr.Battle.Logic.MyStatus myStatus, out string nickName, out string parentName, out byte nickNameLang) { /*@B 0x6000CA0*/ throw null; }
-	private static void ConvertRecvPokemonData(global::DPData.MysteryGiftPokemonData pokemonData, out global::DPData.MysteryGift.MonsData monsData) { /*@B 0x6000CA1*/ throw null; }
+	private static void GetPokemonNameAndLanguage(global::DPData.MysteryGiftPokemonData pokemonData, global::Dpr.Battle.Logic.MyStatus myStatus, out string nickName, out string parentName, out byte nickNameLang)
+	{
+		nickName = null;
+		parentName = null;
+		nickNameLang = 0;
+		int index;
+		switch (myStatus.lang)
+		{
+			case global::Dpr.Message.MessageEnumData.MsgLangId.JPN: index = 0; break;
+			case global::Dpr.Message.MessageEnumData.MsgLangId.USA: index = 1; break;
+			case global::Dpr.Message.MessageEnumData.MsgLangId.FRA: index = 2; break;
+			case global::Dpr.Message.MessageEnumData.MsgLangId.ITA: index = 3; break;
+			case global::Dpr.Message.MessageEnumData.MsgLangId.DEU: index = 4; break;
+			case global::Dpr.Message.MessageEnumData.MsgLangId.ESP: index = 5; break;
+			case global::Dpr.Message.MessageEnumData.MsgLangId.KOR: index = 6; break;
+			case global::Dpr.Message.MessageEnumData.MsgLangId.SCH: index = 7; break;
+			case global::Dpr.Message.MessageEnumData.MsgLangId.TCH: index = 8; break;
+			default: return;
+		}
+		parentName = pokemonData.parentNames[index].name;
+		nickName = pokemonData.nickNames[index].name;
+		nickNameLang = pokemonData.nickNames[index].languageId;
+	}
+	private static void ConvertRecvPokemonData(global::DPData.MysteryGiftPokemonData pokemonData, out global::DPData.MysteryGift.MonsData monsData)
+	{
+		monsData = default(global::DPData.MysteryGift.MonsData);
+		monsData.Clear();
+		global::Dpr.Battle.Logic.MyStatus myStatus = new global::Dpr.Battle.Logic.MyStatus();
+		myStatus.Deserialize(PlayerWork.playerStatus);
+		GetPokemonNameAndLanguage(pokemonData, myStatus, out string nickName, out string parentName, out byte nickNameLang);
+		monsData.no = pokemonData.monsNo;
+		monsData.form = pokemonData.formNo;
+		monsData.sex = pokemonData.sex;
+		monsData.twoRibbonId = pokemonData.twoRibbonIds[0];
+		monsData.itemId = pokemonData.itemId;
+		monsData.isEgg = pokemonData.isEgg;
+		monsData.parentName = string.IsNullOrEmpty(parentName) ? myStatus.name : parentName;
+		monsData.parentSex = pokemonData.parentSex < 2 ? pokemonData.parentSex : (byte)(myStatus.sex ? 0 : 1);
+		monsData.pokemonLangId = nickNameLang != 0 ? nickNameLang : (byte)myStatus.lang;
+		for (int i = 0; i < pokemonData.skillIDs.Length; i++)
+			monsData.wazaNos[i] = pokemonData.skillIDs[i];
+	}
 	private static bool CheckCrc(byte[] data, ushort crc) {
 		for (int i = MysteryGiftData.CrcIndex; i < data.Length; i++)
 			data[i] = 0;

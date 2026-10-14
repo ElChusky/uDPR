@@ -7,6 +7,6 @@ public class OpcFactry : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.SerializeField]
 	private global::XLSXContent.UnionCharacterTable.SheetSheet1[] _DataTable;
 	[global::UnityEngine.SerializeField]
-	private int _CreateMaxCharacterCount;
-	public OpcFactry() { /*@B 0x6001124*/ throw null; }
+	private int _CreateMaxCharacterCount = 16;
+	public OpcFactry() { }
 }

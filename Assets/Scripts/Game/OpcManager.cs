@@ -13,7 +13,7 @@ public abstract class OpcManager
 	[global::UnityEngine.HeaderAttribute("DEBUG_PARAMATER")]
 	[global::UnityEngine.SpaceAttribute(30f)]
 	[global::UnityEngine.SerializeField]
-	private int _CreateMaxCharacterCount;
+	private int _CreateMaxCharacterCount = 16;
 	public global::XLSXContent.UnionCharacterTable.SheetSheet1[] _DataTable { get; set; }
 	public global::XLSXContent.UnionNpcColorTable.SheetSheet1[] _ColorDataTable { get; set; }
 	public int characterCreateCount { get; set; }
@@ -139,7 +139,11 @@ public abstract class OpcManager
 		}
 		return 0;
 	}
-	protected global::System.Collections.IEnumerator OpLoadCharacter(string path, global::SmartPoint.AssetAssistant.RequestEventCallback callback) { /*@B 0x6000F07*/ throw null; }
+	protected global::System.Collections.IEnumerator OpLoadCharacter(string path, global::SmartPoint.AssetAssistant.RequestEventCallback callback)
+	{
+		global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(path, true);
+		yield return global::SmartPoint.AssetAssistant.AssetManager.DispatchRequests(callback);
+	}
 	public abstract void CreateCharacter(global::Dpr.NetworkUtils.INetData data);
 	public virtual void RemoveCharacter(int stationIndex, bool isGameObjectDestroy = true) {
 		OpcController opc = GetOpc(stationIndex);
@@ -213,7 +217,7 @@ public abstract class OpcManager
 		}
 		return avaterId != 16 ? 1 : 0;
 	}
-	protected OpcManager() { /*@B 0x6000F11*/ throw null; }
+	protected OpcManager() { }
 	[global::System.Serializable]
 	public struct CharaData
 	{

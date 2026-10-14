@@ -9,8 +9,8 @@ public abstract class OpcController : global::OnlinePlayerCharacter
 	protected const int ANIM_INDEX_RUN = 2;
 	protected const float MOVE_THRESHOLD = 0.1f;
 	protected global::FieldObjectEntity _Entity;
-	protected global::System.Collections.Generic.List<global::UnityEngine.Vector2> _PosList;
-	protected global::System.Collections.Generic.List<float> _RotList;
+	protected global::System.Collections.Generic.List<global::UnityEngine.Vector2> _PosList = new global::System.Collections.Generic.List<global::UnityEngine.Vector2>(20);
+	protected global::System.Collections.Generic.List<float> _RotList = new global::System.Collections.Generic.List<float>(20);
 	protected global::OpcCharacterMove _CharacterMove;
 	protected global::AnimationPlayer _AnimationPlayer;
 	protected float _RotY;
@@ -24,21 +24,21 @@ public abstract class OpcController : global::OnlinePlayerCharacter
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.Vector2 _ContactSize;
 	[global::UnityEngine.SerializeField]
-	private float _Speed;
+	private float _Speed = 4f;
 	[global::UnityEngine.SerializeField]
-	private float _RotSpeed;
+	private float _RotSpeed = 10f;
 	[global::UnityEngine.SerializeField]
-	private float _TargetDistance;
+	private float _TargetDistance = 1.5f;
 	[global::UnityEngine.SerializeField]
 	private float _MinSpeed;
 	[global::UnityEngine.SerializeField]
-	private float _MaxSpeed;
+	private float _MaxSpeed = 4f;
 	[global::UnityEngine.SerializeField]
-	private float _AddSpeedRate;
+	private float _AddSpeedRate = 0.125f;
 	private float _CurrentSpeed;
 	private float _CurrentDistance;
-	private float _IdleTransutuonTime;
-	public float moveThreshold { get { return this._moveThreshold; } set { /*@B 0x6001111*/ throw null; } }
+	private float _IdleTransutuonTime = 0.1f;
+	public float moveThreshold { get { return this._moveThreshold; } set { this._moveThreshold = value; } }
 	protected override void Start() {
 		if (_isInitialized)
 		{
@@ -170,5 +170,5 @@ public abstract class OpcController : global::OnlinePlayerCharacter
 		}
 		_CharacterMove._MoveAnimationPlayer.Play(isUseDashAnimation ? ANIM_INDEX_RUN : ANIM_INDEX_WALK, 0.0f, 0.0f);
 	}
-	protected OpcController() { /*@B 0x6001120*/ throw null; }
+	protected OpcController() { }
 }
