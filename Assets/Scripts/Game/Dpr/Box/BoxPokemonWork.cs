@@ -33,12 +33,59 @@ namespace Dpr.Box
 		public static bool CheckPokemon(int tray, int pos, bool is_egg = true) {
             return CheckPokemon(tray, pos, new PokemonParam(), is_egg);
         }
-		public static bool GetPokemonNullPos(int tray, out int pos, global::Pml.PokePara.PokemonParam tmp_pp) { /*@B 0x60040FB*/ throw null; }
-		public static bool PutPokemonEmptyTrayAll(global::Pml.PokePara.PokemonParam pp, global::Pml.PokePara.PokemonParam tmp_pp, ref int tray, out int pos) { /*@B 0x60040FC*/ throw null; }
+		public static bool GetPokemonNullPos(int tray, out int pos, global::Pml.PokePara.PokemonParam tmp_pp) {
+            for (int i = 0; i < TRAY_POKE_MAX; i++)
+            {
+                GetPokemon(tmp_pp, tray, i);
+                if (tmp_pp.IsNull())
+                {
+                    pos = i;
+                    return true;
+                }
+            }
+            pos = -1;
+            return false;
+        }
+		public static bool PutPokemonEmptyTrayAll(global::Pml.PokePara.PokemonParam pp, global::Pml.PokePara.PokemonParam tmp_pp, ref int tray, out int pos) {
+            int trayMax = PlayerWork.GetBoxData().trayMax;
+            int t = tray;
+            for (int i = 0; i < trayMax; i++)
+            {
+                if (t >= trayMax)
+                    t = 0;
+                if (PutPokemonEmptyTray(pp, tmp_pp, t, out pos))
+                {
+                    tray = t;
+                    return true;
+                }
+                t++;
+            }
+            for (int i = trayMax; i < TRAY_MAX; i++)
+            {
+                if (PutPokemonEmptyTray(pp, tmp_pp, i, out pos))
+                {
+                    tray = i;
+                    return true;
+                }
+            }
+            pos = -1;
+            return false;
+        }
 		public static bool PutPokemonEmptyTrayAll(global::Pml.PokePara.PokemonParam pp, ref int tray, out int pos) {
             return PutPokemonEmptyTrayAll(pp, new PokemonParam(), ref tray, out pos);
         }
-		public static bool PutPokemonEmptyTray(global::Pml.PokePara.PokemonParam pp, global::Pml.PokePara.PokemonParam tmp_pp, int tray, out int pos) { /*@B 0x60040FE*/ throw null; }
+		public static bool PutPokemonEmptyTray(global::Pml.PokePara.PokemonParam pp, global::Pml.PokePara.PokemonParam tmp_pp, int tray, out int pos) {
+            pos = -1;
+            for (int i = 0; i < TRAY_POKE_MAX; i++)
+            {
+                if (PutPokemonImpl(pp, tmp_pp, tray, i))
+                {
+                    pos = i;
+                    return true;
+                }
+            }
+            return false;
+        }
 		public static bool PutPokemonEmptyTray(global::Pml.PokePara.PokemonParam pp, int tray, out int pos) {
             return PutPokemonEmptyTray(pp, new PokemonParam(), tray, out pos);
         }
@@ -48,7 +95,15 @@ namespace Dpr.Box
 		public static bool PutPokemon(global::Pml.PokePara.PokemonParam pp, int tray, int pos) {
             return PutPokemonImpl(pp, new PokemonParam(), tray, pos);
         }
-		private static bool PutPokemonImpl(global::Pml.PokePara.PokemonParam pp, global::Pml.PokePara.PokemonParam tmp_pp, int tray, int pos, bool isLogError = false) { /*@B 0x6004102*/ throw null; }
+		private static bool PutPokemonImpl(global::Pml.PokePara.PokemonParam pp, global::Pml.PokePara.PokemonParam tmp_pp, int tray, int pos, bool isLogError = false) {
+            GetPokemon(tmp_pp, tray, pos);
+            if (tmp_pp.IsNull())
+            {
+                SerializedPokemonExtensions.Serialize_Full(pp, ref PlayerWork.GetBoxTray(tray).pokemonParam[pos]);
+                return true;
+            }
+            return false;
+        }
 		public static void SwapPokemon(int tray1, int pos1, int tray2, int pos2) {
             if (tray1 >= TRAY_MAX || pos1 >= TRAY_POKE_MAX || tray2 >= TRAY_MAX || pos2 >= TRAY_POKE_MAX)
             {
