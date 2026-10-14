@@ -4,8 +4,8 @@ namespace SmartPoint.AssetAssistant
 	public class RefCounted
 	{
 		public int referencedCount;
-		public RefCounted() { /*@B AssetAssistant:0x60000AB*/ throw null; }
-		public virtual int AddRef() { /*@B AssetAssistant:0x60000AC*/ throw null; }
-		public virtual int Release() { /*@B AssetAssistant:0x60000AD*/ throw null; }
+		public RefCounted() { referencedCount = 1; }
+		public virtual int AddRef() { return ++referencedCount; }
+		public virtual int Release() { return --referencedCount; }
 	}
 }

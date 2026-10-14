@@ -10,9 +10,17 @@ namespace SmartPoint.AssetAssistant
 		public uint u1;
 		public uint u2;
 		public uint u3;
-		public bool isValid { get { /*@B AssetAssistant:0x6000057*/ throw null; } }
-		public RecordedHash(uint u0, uint u1, uint u2, uint u3) { /*@B AssetAssistant:0x6000054*/ throw null; }
-		private static uint SwapEndian(uint x) { /*@B AssetAssistant:0x6000055*/ throw null; }
+		public bool isValid { get { return u0 != 0 || u1 != 0 || u2 != 0 || u3 != 0; } }
+		public RecordedHash(uint u0, uint u1, uint u2, uint u3) {
+			this.u0 = u0;
+			this.u1 = u1;
+			this.u2 = u2;
+			this.u3 = u3;
+		}
+		private static uint SwapEndian(uint x) {
+			x = (x & 0xff00ff00u) >> 8 | (x & 0x00ff00ffu) << 8;
+			return x >> 16 | x << 16;
+		}
 		public static global::SmartPoint.AssetAssistant.RecordedHash Parse(string hashString) {
             // @022d9f20: empty → zero struct (@022d9f78); else `new uint[4]` (@022d9f8c), a fully unrolled 4-trip loop
             // (Substring(i * 8, Min(8, remaining)) → ToUInt32(, 16) → `rev` → array[i]), then the 4-uint ctor from the
@@ -31,10 +39,24 @@ namespace SmartPoint.AssetAssistant
 
             return new RecordedHash(array[0], array[1], array[2], array[3]);
         }
-		public override string ToString() { /*@B AssetAssistant:0x6000058*/ throw null; }
-		public override int GetHashCode() { /*@B AssetAssistant:0x6000059*/ throw null; }
-		public override bool Equals(object reference) { /*@B AssetAssistant:0x600005A*/ throw null; }
-		public static bool operator ==(global::SmartPoint.AssetAssistant.RecordedHash lhs, global::SmartPoint.AssetAssistant.RecordedHash rhs) { /*@B AssetAssistant:0x600005B*/ throw null; }
-		public static bool operator !=(global::SmartPoint.AssetAssistant.RecordedHash lhs, global::SmartPoint.AssetAssistant.RecordedHash rhs) { /*@B AssetAssistant:0x600005C*/ throw null; }
+		public override string ToString() {
+			return string.Format("{0:X4}", u0) + string.Format("{0:X4}", u1) + string.Format("{0:X4}", u2) + string.Format("{0:X4}", u3);
+		}
+		public override int GetHashCode() {
+			return u0.GetHashCode() ^ u1.GetHashCode() ^ u2.GetHashCode() ^ u3.GetHashCode();
+		}
+		public override bool Equals(object reference) {
+			// Shipped quirk: tests for a boxed Hash128, then unboxes it as RecordedHash (InvalidCastException at runtime).
+			if (reference == null || !(reference is Hash128))
+				return false;
+			RecordedHash other = (RecordedHash)reference;
+			return u0 == other.u0 && u1 == other.u1 && u2 == other.u2 && u3 == other.u3;
+		}
+		public static bool operator ==(global::SmartPoint.AssetAssistant.RecordedHash lhs, global::SmartPoint.AssetAssistant.RecordedHash rhs) {
+			return lhs.u0 == rhs.u0 && lhs.u1 == rhs.u1 && lhs.u2 == rhs.u2 && lhs.u3 == rhs.u3;
+		}
+		public static bool operator !=(global::SmartPoint.AssetAssistant.RecordedHash lhs, global::SmartPoint.AssetAssistant.RecordedHash rhs) {
+			return !(lhs.u0 == rhs.u0 && lhs.u1 == rhs.u1 && lhs.u2 == rhs.u2 && lhs.u3 == rhs.u3);
+		}
 	}
 }

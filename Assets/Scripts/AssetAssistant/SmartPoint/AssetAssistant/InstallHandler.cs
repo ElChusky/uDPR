@@ -6,17 +6,53 @@ namespace SmartPoint.AssetAssistant
 		private ulong _contentLength;
 		private global::System.IO.FileStream _fileStream;
 		private int _offsetInBytes;
-		private string _installFileName;
-		private static string _installPath;
-		public static string installPath { get { /*@B AssetAssistant:0x6000109*/ throw null; } set { /*@B AssetAssistant:0x600010A*/ throw null; } }
-		public InstallHandler(string fileName, byte[] preallocatedBuffer) { /*@B AssetAssistant:0x600010B*/ throw null; }
-		public InstallHandler(string fileName, int cacheSize) { /*@B AssetAssistant:0x600010C*/ throw null; }
-		public InstallHandler(string fileName) { /*@B AssetAssistant:0x600010D*/ throw null; }
-		protected override bool ReceiveData(byte[] data, int bytesToRead) { /*@B AssetAssistant:0x600010E*/ throw null; }
+		private string _installFileName = string.Empty;
+		private static string _installPath = string.Empty;
+		public static string installPath { get { return _installPath; } set { _installPath = value; } }
+		public InstallHandler(string fileName, byte[] preallocatedBuffer) : base(preallocatedBuffer) {
+			_installFileName = fileName;
+		}
+		public InstallHandler(string fileName, int cacheSize) : base(new byte[cacheSize]) {
+			_installFileName = fileName;
+		}
+		public InstallHandler(string fileName) {
+			_installFileName = fileName;
+		}
+		protected override bool ReceiveData(byte[] data, int bytesToRead) {
+			if (_fileStream == null)
+			{
+				string path = global::System.IO.Path.Combine(_installPath, _installFileName).Replace('\\', '/');
+				string directory = global::System.IO.Path.GetDirectoryName(path);
+				if (!global::System.IO.Directory.Exists(directory))
+					global::System.IO.Directory.CreateDirectory(directory);
+				_fileStream = new global::System.IO.FileStream(path, global::System.IO.FileMode.Create, global::System.IO.FileAccess.Write, global::System.IO.FileShare.None);
+			}
+			_fileStream.Write(data, 0, bytesToRead);
+			_offsetInBytes += bytesToRead;
+			return true;
+		}
 		protected override void ReceiveContentLengthHeader(ulong contentLength) { this._contentLength = contentLength; }
-		protected override void CompleteContent() { /*@B AssetAssistant:0x6000110*/ throw null; }
-		private void CloseStream() { /*@B AssetAssistant:0x6000111*/ throw null; }
-		protected override float GetProgress() { /*@B AssetAssistant:0x6000112*/ throw null; }
-		static InstallHandler() { /*@B AssetAssistant:0x6000113*/ throw null; }
+		protected override void CompleteContent() {
+			if (_fileStream != null)
+			{
+				_fileStream.Flush();
+				_fileStream.Close();
+			}
+			_fileStream = null;
+		}
+		private void CloseStream() {
+			if (_fileStream != null)
+			{
+				_fileStream.Flush();
+				_fileStream.Close();
+			}
+			_fileStream = null;
+		}
+		protected override float GetProgress() {
+			if (_contentLength != 0)
+				return (float)_offsetInBytes / (float)_contentLength;
+			return 0f;
+		}
+		static InstallHandler() { }
 	}
 }

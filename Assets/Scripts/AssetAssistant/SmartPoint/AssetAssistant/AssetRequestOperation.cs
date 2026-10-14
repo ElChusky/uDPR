@@ -5,14 +5,32 @@ namespace SmartPoint.AssetAssistant
 	{
 		private global::SmartPoint.AssetAssistant.IAssetRequestItem[] _requests;
 		public global::SmartPoint.AssetAssistant.IAssetRequestItem[] requests { get { return this._requests; } }
-		public global::SmartPoint.AssetAssistant.IAssetRequestItem request { get { /*@B AssetAssistant:0x6000100*/ throw null; } }
-		public global::SmartPoint.AssetAssistant.AssetRequestItem assetRequest { get { /*@B AssetAssistant:0x6000101*/ throw null; } }
-		public global::SmartPoint.AssetAssistant.AssetRequestItem[] assetRequests { get { /*@B AssetAssistant:0x6000102*/ throw null; } }
-		public global::SmartPoint.AssetAssistant.AssetBundleRequestItem assetBundleRequest { get { /*@B AssetAssistant:0x6000103*/ throw null; } }
-		public global::SmartPoint.AssetAssistant.AssetBundleRequestItem[] assetBundleRequests { get { /*@B AssetAssistant:0x6000104*/ throw null; } }
-		public override bool keepWaiting { get { /*@B AssetAssistant:0x6000108*/ throw null; } }
-		public AssetRequestOperation(global::SmartPoint.AssetAssistant.IAssetRequestItem requestItem) { /*@B AssetAssistant:0x6000105*/ throw null; }
-		public AssetRequestOperation(global::SmartPoint.AssetAssistant.IAssetRequestItem[] requestItems) { /*@B AssetAssistant:0x6000106*/ throw null; }
-		public AssetRequestOperation(global::System.Collections.Generic.List<global::SmartPoint.AssetAssistant.IAssetRequestItem> requestItems) { /*@B AssetAssistant:0x6000107*/ throw null; }
+		public global::SmartPoint.AssetAssistant.IAssetRequestItem request { get { return _requests[0]; } }
+		public global::SmartPoint.AssetAssistant.AssetRequestItem assetRequest { get { return _requests[0] as global::SmartPoint.AssetAssistant.AssetRequestItem; } }
+		public global::SmartPoint.AssetAssistant.AssetRequestItem[] assetRequests { get { return _requests as global::SmartPoint.AssetAssistant.AssetRequestItem[]; } }
+		public global::SmartPoint.AssetAssistant.AssetBundleRequestItem assetBundleRequest { get { return _requests[0] as global::SmartPoint.AssetAssistant.AssetBundleRequestItem; } }
+		public global::SmartPoint.AssetAssistant.AssetBundleRequestItem[] assetBundleRequests { get { return _requests as global::SmartPoint.AssetAssistant.AssetBundleRequestItem[]; } }
+		public override bool keepWaiting { get {
+			for (int i = 0; i < _requests.Length; i++)
+			{
+				global::SmartPoint.AssetAssistant.IAssetRequestItem item = _requests[i];
+				if (!item.isComplete && string.IsNullOrEmpty(item.error))
+					return true;
+			}
+			return false;
+		} }
+		public AssetRequestOperation(global::SmartPoint.AssetAssistant.IAssetRequestItem requestItem) {
+			_requests = new global::SmartPoint.AssetAssistant.IAssetRequestItem[] { requestItem };
+		}
+		public AssetRequestOperation(global::SmartPoint.AssetAssistant.IAssetRequestItem[] requestItems) {
+			_requests = new global::SmartPoint.AssetAssistant.IAssetRequestItem[requestItems.Length];
+			for (int i = 0; i < requestItems.Length; i++)
+				_requests[i] = requestItems[i];
+		}
+		public AssetRequestOperation(global::System.Collections.Generic.List<global::SmartPoint.AssetAssistant.IAssetRequestItem> requestItems) {
+			_requests = new global::SmartPoint.AssetAssistant.IAssetRequestItem[requestItems.Count];
+			for (int i = 0; i < requestItems.Count; i++)
+				_requests[i] = requestItems[i];
+		}
 	}
 }

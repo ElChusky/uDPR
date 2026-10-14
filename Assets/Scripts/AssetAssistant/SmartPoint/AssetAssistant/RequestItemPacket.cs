@@ -5,7 +5,12 @@ namespace SmartPoint.AssetAssistant
 	{
 		public global::System.Collections.Generic.List<global::SmartPoint.AssetAssistant.IAssetRequestItem> packet;
 		public global::SmartPoint.AssetAssistant.RequestEventCallback callback;
-		public RequestItemPacket() { /*@B AssetAssistant:0x60000B2*/ throw null; }
-		public void Clear() { /*@B AssetAssistant:0x60000B3*/ throw null; }
+		public RequestItemPacket() {
+			packet = new global::System.Collections.Generic.List<global::SmartPoint.AssetAssistant.IAssetRequestItem>();
+		}
+		public void Clear() {
+			packet.Clear();
+			callback = null;
+		}
 	}
 }
