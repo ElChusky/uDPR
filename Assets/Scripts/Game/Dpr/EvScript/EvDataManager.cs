@@ -16250,15 +16250,119 @@ namespace Dpr.EvScript
             }
             _loadObjectList.Sort((a, b) => a.Distance - b.Distance);
         }
-		public global::System.Collections.IEnumerator StartUpCreate() { /*@B 0x6009117*/ throw null; }
-		public void UpdateCreate() { /*@B 0x6009118*/ throw null; }
+		public global::System.Collections.IEnumerator StartUpCreate() {
+            while (!IsLoadAssetBundle())
+                yield return null;
+            if (_dummyPlayer == null)
+            {
+                UnityEngine.GameObject dummy = new UnityEngine.GameObject();
+                dummy.name = "ev_dummy";
+                _dummyPlayer = dummy.AddComponent<global::FieldObjectEntity>();
+            }
+            DailyEventWork.UpdateEvent();
+            PokeWork.CheckTimeChangeLandformSheimi();
+            if (FieldWazaCutIn != null)
+                FieldWazaCutIn.Initialize();
+            HoneyWork.UpdateTime();
+            for (_loadObjectIndex = 0; _loadObjectIndex < _loadObjectList.Count; _loadObjectIndex++)
+            {
+                if (_loadObjectList[_loadObjectIndex].IsCreated)
+                    continue;
+                if (_loadObjectList[_loadObjectIndex].Distance != 0)
+                    break;
+                LoadObjectData lod = _loadObjectList[_loadObjectIndex];
+                lod.IsCreated = true;
+                LoadObjectCreate(lod);
+            }
+            KinomiWork.UpdateGrowTime();
+            global::XLSXContent.KinomiPlaceData.SheetSheet1[] kinomiPlaces = KinomiWork.GetPlaceDataByAreaId(_areaID);
+            for (int i = 0; i < kinomiPlaces.Length; i++)
+                LoadObjectCreate_KinomiGrow(kinomiPlaces[i]);
+            if (_stopRoot == null)
+            {
+                _stopRoot = new UnityEngine.GameObject();
+                _stopRoot.name = "stop_root";
+            }
+            for (int i = 0; i < _stopRoot.transform.childCount; i++)
+                UnityEngine.Object.Destroy(_stopRoot.transform.GetChild(i).gameObject);
+            if (_entityParamList == null)
+                _entityParamList = new EntityParam[50];
+            for (int i = 0; i < _entityParamList.Length; i++)
+                _entityParamList[i] = null;
+            string key = string.Format("StopData_{0}", _areaID);
+            if (DataManager.StopData.ContainsKey(key))
+            {
+                global::XLSXContent.StopData stopData = DataManager.StopData[key];
+                int count = stopData.Data.Length;
+                _entityParamList = new EntityParam[count];
+                for (int i = 0; i < count; i++)
+                {
+                    global::XLSXContent.StopData.SheetData sd = stopData.Data[i];
+                    if (sd == null)
+                        continue;
+                    UnityEngine.Vector3 position = new UnityEngine.Vector3(-sd.Position.x, sd.HeightLayer, sd.Position.y);
+                    UnityEngine.Vector2Int grid = new UnityEngine.Vector2Int((int)sd.Position.x, (int)sd.Position.y);
+                    EntityParam param = new EntityParam();
+                    param.ContactLabel = sd.ContactLabel;
+                    param.IsContact = false;
+                    param.WorkIndex = sd.Work;
+                    param.WorkValue = sd.Param;
+                    param.StopGridArea = new UnityEngine.RectInt(grid.x, grid.y, (int)sd.Size.x - 1, (int)sd.Size.y - 1);
+                    _entityParamList[i] = param;
+                }
+            }
+        }
+		public void UpdateCreate() {
+            if (_loadObjectList.Count > _loadObjectIndex && !_nowInstantiate)
+            {
+                if (!_loadObjectList[_loadObjectIndex].IsCreated)
+                {
+                    LoadObjectData lod = _loadObjectList[_loadObjectIndex];
+                    lod.IsCreated = true;
+                    _nowInstantiate = true;
+                    if (lod.AssetReqIndex == -1)
+                        LoadObjectCreate_BOX(lod);
+                    else
+                        LoadObjectCreate_Asset(lod);
+                }
+                _loadObjectIndex++;
+                EntityManager.BuildFieldEntities();
+            }
+        }
 		public void Init_PokemonCenter() {
             PokemonCenter.ReleaseAll();
         }
 		public void Init_FieldShip() {
             FieldShip.Terminate();
         }
-		public bool RefCountZeroUnload() { /*@B 0x600911B*/ throw null; }
+		public bool RefCountZeroUnload() {
+            if (_nowInstantiate)
+                return false;
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+            {
+                if (_AssetReqOpeList[i] != null && !_AssetReqOpeList[i].isEnd)
+                    return false;
+            }
+            string log = "fieldasset unload\n";
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+            {
+                if (_AssetReqOpeList[i] != null && _AssetReqOpeList[i].RefCount <= 0)
+                {
+                    AssetManager.UnloadAssetBundle(_AssetReqOpeList[i].ReqOpe.assetBundleRequest.uri);
+                    log += string.Format("[{0}]{1}  [{2}]\n", i, _AssetReqOpeList[i].isEnd, _AssetReqOpeList[i].ReqOpe.assetBundleRequest.uri);
+                    _AssetReqOpeList[i] = null;
+                }
+            }
+            log = "fieldasset cache \n";
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+            {
+                if (_AssetReqOpeList[i] == null)
+                    log += string.Format("[{0}] null\n", i);
+                else
+                    log += string.Format("[{0}]{1}  [{2}]\n", i, _AssetReqOpeList[i].isEnd, _AssetReqOpeList[i].ReqOpe.assetBundleRequest.uri);
+            }
+            return true;
+        }
 		public bool ForceUnload() { /*@B 0x600911C*/ throw null; }
 		public bool IsLoadAssetBundle() { /*@B 0x600911D*/ throw null; }
 		private void LoadObjectCreate(global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) { /*@B 0x600911E*/ throw null; }
