@@ -209,17 +209,212 @@ namespace Dpr.UI
                 return true;
             });
         }
-		public global::System.Collections.IEnumerator OpLoadCharacterModel(int uniqueId, string assetBundleName, bool isDontClear = false, global::UnityEngine.Events.UnityAction<int> onSetup = null, global::Dpr.Trainer.TrainerType trainerType = (global::Dpr.Trainer.TrainerType)(-1)) { /*@B 0x60055C0*/ throw null; }
-		public void EnableMainCameraByUiMode(bool enabled) { /*@B 0x60055C1*/ throw null; }
-		private void SetupCharacterModel(global::Dpr.Trainer.TrainerType trainerType) { /*@B 0x60055C2*/ throw null; }
-		public global::System.Collections.IEnumerator OpLoadPokemonModel(global::Pml.PokePara.PokemonParam pokemonParam, bool isApplyOffset = true, bool isDontClear = false, global::UnityEngine.Events.UnityAction<global::Pml.PokePara.PokemonParam> onSetup = null) { /*@B 0x60055C3*/ throw null; }
-		private void ModelAttachTransforms(global::Dpr.UI.UIModelViewController.ModelParam modelParam) { /*@B 0x60055C4*/ throw null; }
-		private void SetupPokemonModel(global::Pml.PokePara.PokemonParam pokemonParam, bool isApplyOffset) { /*@B 0x60055C5*/ throw null; }
-		internal void _SetupPokemonModel(global::Pml.PokePara.PokemonParam pokemonParam, bool isApplyOffset, global::UnityEngine.Vector3 modelOffset, global::UnityEngine.Vector3 modelRotation, float modelScale, global::UnityEngine.Vector3 modelAttachOffset) { /*@B 0x60055C6*/ throw null; }
-		public global::UnityEngine.BoundingSphere ComputeBoundingSphereByPokemon(global::UnityEngine.GameObject pokemonObj) { /*@B 0x60055C7*/ throw null; }
-		public void PlayAnimation(int anim, bool forceLoop = false) { /*@B 0x60055C8*/ throw null; }
-		public void StopAnimation() { /*@B 0x60055C9*/ throw null; }
-		public float GetCurrentRemaingTime() { /*@B 0x60055CA*/ throw null; }
+		public global::System.Collections.IEnumerator OpLoadCharacterModel(int uniqueId, string assetBundleName, bool isDontClear = false, global::UnityEngine.Events.UnityAction<int> onSetup = null, global::Dpr.Trainer.TrainerType trainerType = (global::Dpr.Trainer.TrainerType)(-1)) {
+            yield return OpLoadModel(_modelViewType, uniqueId, assetBundleName, isDontClear, modelParam => { }, () =>
+            {
+                SetupCharacterModel(trainerType);
+                onSetup?.Invoke(uniqueId);
+            });
+        }
+		public void EnableMainCameraByUiMode(bool enabled) {
+            var camera = _saveCameraParam.camera;
+            if (enabled)
+            {
+                if (camera == null)
+                {
+                    _saveCameraParam.camera = global::UnityEngine.Camera.main;
+                    camera = _saveCameraParam.camera;
+                    if (camera != null)
+                    {
+                        var cameras = camera.GetComponentsInChildren<global::UnityEngine.Camera>();
+                        _saveCameraParam.subCameraParams.Clear();
+                        for (int i = 1; i < cameras.Length; i++)
+                        {
+                            var subParam = new SaveCameraParam();
+                            subParam.camera = cameras[i];
+                            subParam.actived = cameras[i].enabled;
+                            _saveCameraParam.subCameraParams.Add(subParam);
+                            cameras[i].enabled = false;
+                        }
+                        _saveCameraParam.cullMask = camera.cullingMask;
+                        camera.cullingMask = global::Layer.UI;
+                    }
+                }
+            }
+            else if (camera != null)
+            {
+                _saveCameraParam.camera = null;
+                for (int i = 0; i < _saveCameraParam.subCameraParams.Count; i++)
+                {
+                    var subParam = _saveCameraParam.subCameraParams[i];
+                    subParam.camera.enabled = subParam.actived;
+                }
+                camera.gameObject.SetActive(false);
+                camera.gameObject.SetActive(true);
+                camera.cullingMask = _saveCameraParam.cullMask;
+            }
+        }
+		private void SetupCharacterModel(global::Dpr.Trainer.TrainerType trainerType) {
+            if (trainerType == (global::Dpr.Trainer.TrainerType)(-1))
+                trainerType = (global::Dpr.Trainer.TrainerType)(global::PlayerWork.playerSex ? 0 : 1);
+            SetupModelViewCameras(true);
+            _modelRoot.localPosition = global::UnityEngine.Vector3.zero;
+            _modelRoot.localRotation = global::UnityEngine.Quaternion.identity;
+            _modelRoot.localScale = global::UnityEngine.Vector3.one;
+            var gameObject = _modelParam.gameObject;
+            _modelParam.attachPosY = float.NegativeInfinity;
+            gameObject.transform.localRotation = global::UnityEngine.Quaternion.Euler(new global::UnityEngine.Vector3(0f, 180f, 0f));
+            var battleEntity = gameObject.GetComponent<global::BattleCharacterEntity>();
+            if (battleEntity != null)
+            {
+                int colorID = global::PlayerWork.colorID;
+                var trainerTypeData = global::TrainerSystem.GetTrainerType(trainerType);
+                var eyeBlink = global::Dpr.Battle.View.Extensions.GetAgeEyeBlinkData(global::Dpr.Battle.Logic.BattleDataTableManager.Instance.BattleDataTable, trainerTypeData.Age);
+                var param = new global::Dpr.Battle.View.TrainerSimpleParam();
+                param.colorID = colorID;
+                param.trainerAge = trainerTypeData.Age;
+                param.blinkIntervalMin = eyeBlink.min;
+                param.blinkIntervalMax = eyeBlink.max;
+                param.blinkTwiceRate = eyeBlink.twiceRate;
+                battleEntity.Initialize(param, true);
+            }
+            else
+            {
+                var colorVariation = gameObject.GetComponent<global::FieldCharacterEntity>().GetComponent<global::ColorVariation>();
+                if (colorVariation != null)
+                    colorVariation.ColorIndex = global::PlayerWork.colorID;
+            }
+            EnableModelLight(true, _modelViewType);
+        }
+		public global::System.Collections.IEnumerator OpLoadPokemonModel(global::Pml.PokePara.PokemonParam pokemonParam, bool isApplyOffset = true, bool isDontClear = false, global::UnityEngine.Events.UnityAction<global::Pml.PokePara.PokemonParam> onSetup = null) {
+            if (pokemonParam == null)
+            {
+                _loadRequestModelId = 0;
+                SetupModelViewCameras(false);
+                yield break;
+            }
+            int uniqueId = global::GameData.DataManager.GetUniqueID(pokemonParam.GetMonsNo(), pokemonParam.GetFormNo(), pokemonParam.GetSex(), pokemonParam.GetRareType(), pokemonParam.IsEgg(global::Pml.PokePara.EggCheckType.BOTH_EGG));
+            string assetBundleName = global::Dpr.UI.UIManager.GetPokemonAssetbundleName(uniqueId);
+            yield return OpLoadModel(_modelViewType, uniqueId, assetBundleName, isDontClear, modelParam => { }, () =>
+            {
+                var parameters = GetModelViewParameters(_modelViewType, pokemonParam);
+                _SetupPokemonModel(pokemonParam, isApplyOffset, parameters.Item1, parameters.Item2, parameters.Item3, parameters.Item4);
+                onSetup?.Invoke(pokemonParam);
+            });
+        }
+		private void ModelAttachTransforms(global::Dpr.UI.UIModelViewController.ModelParam modelParam) {
+            string attachTransName = "Waist";
+            modelParam.attachFrom = global::System.Linq.Enumerable.FirstOrDefault(modelParam.gameObject.GetComponentsInChildren<global::UnityEngine.Transform>(true), x => x.name == attachTransName);
+        }
+		private void SetupPokemonModel(global::Pml.PokePara.PokemonParam pokemonParam, bool isApplyOffset) {
+            var parameters = GetModelViewParameters(_modelViewType, pokemonParam);
+            _SetupPokemonModel(pokemonParam, isApplyOffset, parameters.Item1, parameters.Item2, parameters.Item3, parameters.Item4);
+        }
+		internal void _SetupPokemonModel(global::Pml.PokePara.PokemonParam pokemonParam, bool isApplyOffset, global::UnityEngine.Vector3 modelOffset, global::UnityEngine.Vector3 modelRotation, float modelScale, global::UnityEngine.Vector3 modelAttachOffset) {
+            _modelRoot.localPosition = global::UnityEngine.Vector3.zero;
+            _modelRoot.localRotation = global::UnityEngine.Quaternion.identity;
+            _modelRoot.localScale = global::UnityEngine.Vector3.one;
+            SetupModelViewCameras(true);
+            _modelParam.gameObject.transform.localRotation = global::UnityEngine.Quaternion.Euler(0f, 180f, 0f);
+            if (isApplyOffset)
+            {
+                _modelRotation.Set(modelRotation.x, modelRotation.y, modelRotation.z);
+                _modelOffset = modelOffset;
+                _modelScale = modelScale;
+            }
+            else
+            {
+                _modelRotation = global::UnityEngine.Vector3.zero;
+                _modelOffset = global::UnityEngine.Vector3.zero;
+                _modelScale = 1f;
+                modelAttachOffset = global::UnityEngine.Vector3.zero;
+            }
+            _modelAttachOffset = modelAttachOffset;
+            _modelParam.attachPosY = float.NegativeInfinity;
+            EnableModelLight(true, _modelViewType);
+            var fieldPokemon = _modelParam.baseEntity as global::FieldPokemonEntity;
+            if (fieldPokemon != null)
+                fieldPokemon.EnablePlayInitialIdleAnimation(false);
+            var patcheel = _modelParam.gameObject.GetComponent<global::Dpr.PatcheelPattern>();
+            bool hasPatcheel = patcheel != null;
+            if (pokemonParam != null && hasPatcheel)
+                patcheel.SetPattern(pokemonParam.GetPersonalRnd());
+        }
+		public global::UnityEngine.BoundingSphere ComputeBoundingSphereByPokemon(global::UnityEngine.GameObject pokemonObj) {
+            var prefabInfo = pokemonObj.GetComponent<global::PokemonPrefabInfo>();
+            if (prefabInfo != null)
+            {
+                var anime = pokemonObj.GetComponent<global::PokemonAnime>();
+                global::PokemonPrefabInfo.AABBData aabb;
+                if (anime != null)
+                {
+                    string motionName = anime.mStates[0];
+                    aabb = global::System.Linq.Enumerable.FirstOrDefault(prefabInfo.mAABBArray, __ => __.motionName.IndexOf(motionName) >= 0);
+                }
+                else
+                {
+                    aabb = prefabInfo.mAABBArray[0];
+                }
+                var center = new global::UnityEngine.Vector3(-aabb.center.x, aabb.center.y, -aabb.center.z);
+                float scale = 0.5f;
+                float radius = global::UnityEngine.Mathf.Sqrt(aabb.size.sqrMagnitude * scale);
+                return new global::UnityEngine.BoundingSphere(center * scale, radius * scale);
+            }
+            var bounds = pokemonObj.GetComponentInChildren<global::UnityEngine.SkinnedMeshRenderer>(true).bounds;
+            return new global::UnityEngine.BoundingSphere(bounds.center, bounds.extents.magnitude);
+        }
+		public void PlayAnimation(int anim, bool forceLoop = false) {
+            if (_modelParam == null)
+                return;
+            var animationPlayer = _modelParam.baseEntity.GetAnimationPlayer();
+            if (!(animationPlayer is null))
+            {
+                if (!animationPlayer.IsValidCurrentPlayable)
+                    return;
+                animationPlayer.cullingMode = global::UnityEngine.AnimatorCullingMode.AlwaysAnimate;
+                animationPlayer.forceLoop = forceLoop;
+                animationPlayer.Play(anim, 0f, 0f);
+                return;
+            }
+            var battleEntity = _modelParam.baseEntity as global::BattleCharacterEntity;
+            if (battleEntity == null)
+                return;
+            var layer = battleEntity.GetAnimationPlayer().GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer);
+            layer.IsForceLoop = forceLoop;
+            layer.Play(anim, 0f, 0f);
+        }
+		public void StopAnimation() {
+            if (_modelParam == null)
+                return;
+            var animationPlayer = _modelParam.baseEntity.GetAnimationPlayer();
+            if (!(animationPlayer is null))
+            {
+                if (!animationPlayer.IsValidCurrentPlayable)
+                    return;
+                animationPlayer.Stop();
+                return;
+            }
+            var battleEntity = _modelParam.baseEntity as global::BattleCharacterEntity;
+            if (battleEntity == null)
+                return;
+            // @01a10a84: tail call of GetAnimationLayer, result discarded (shipped)
+            battleEntity.GetAnimationPlayer().GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer);
+        }
+		public float GetCurrentRemaingTime() {
+            if (_modelParam == null)
+                return 0f;
+            var animationPlayer = _modelParam.baseEntity.GetAnimationPlayer();
+            if (!(animationPlayer is null))
+            {
+                if (!animationPlayer.IsValidCurrentPlayable)
+                    return 0f;
+                return animationPlayer.currentRemaingTime;
+            }
+            var battleEntity = _modelParam.baseEntity as global::BattleCharacterEntity;
+            if (battleEntity == null)
+                return 0f;
+            return battleEntity.GetAnimationPlayer().GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).CurrentRemaingTime;
+        }
 		public int GetAnimationIndexByClipName(string clipName) { /*@B 0x60055CB*/ throw null; }
 		public bool IsPlayAnimation() { /*@B 0x60055CC*/ throw null; }
 		public void PauseAnimation(bool paused) { /*@B 0x60055CD*/ throw null; }
