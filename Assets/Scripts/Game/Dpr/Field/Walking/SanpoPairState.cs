@@ -3,8 +3,36 @@ namespace Dpr.Field.Walking
 {
 	public class SanpoPairState : global::Dpr.Field.Walking.SanpoStateBase
 	{
-		public SanpoPairState(global::Dpr.Field.Walking.AIFureaiModel model) : base(default(global::Dpr.Field.Walking.AIFureaiModel)) { /*@B 0x6008A3E*/ throw null; }
-		public override void CommonUpdate() { /*@B 0x6008A3F*/ throw null; }
+		public SanpoPairState(global::Dpr.Field.Walking.AIFureaiModel model) : base(model)
+		{
+			ActionProbability = 1f;
+			ActionLotteryInterval = 3f;
+			AddAction(new global::Dpr.Field.Walking.SanpoPairDotuki());
+			AddAction(new global::Dpr.Field.Walking.SanpoPairEngi());
+			AddAction(new global::Dpr.Field.Walking.SanpoPairHoe());
+		}
+		public override void CommonUpdate()
+		{
+			global::Dpr.FureaiHiroba.PokeSanpoPairModel pair = sanpoModel.PairModel;
+			if (pair == null)
+			{
+				corSys.Cancel();
+				model.AI.ChangeState(typeof(global::Dpr.Field.Walking.SanpoState));
+				return;
+			}
+			global::UnityEngine.Transform player = global::EntityManager.activeFieldPlayer.transform;
+			sanpoModel.Update(deltaTime, player, model.transform);
+			if (!CheckAddWalking() && !LookPlayer())
+			{
+				model.walkData.nowSpeed = 0f;
+				model.walkData.LookAtTarget(pair.pair.transform.position, deltaTime, 3f);
+				model.walkData.totalMoveDistance = 0f;
+				if (pair.isMaster && corSys != null && corSys.isFinished)
+				{
+					base.CommonUpdate();
+				}
+			}
+		}
 		public override void Exit() { }
 		protected override void StateUpdate() { }
 	}

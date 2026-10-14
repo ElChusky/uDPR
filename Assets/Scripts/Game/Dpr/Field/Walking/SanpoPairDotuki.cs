@@ -4,6 +4,10 @@ namespace Dpr.Field.Walking
 	public class SanpoPairDotuki : global::Dpr.Field.Walking.ActionModel
 	{
 		public SanpoPairDotuki() { }
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008AA5*/ throw null; }
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) 
+		{
+			global::Dpr.Field.Walking.CorSystem sub = model.walkData.actionModel.corSystem.AddSub("");
+			yield return sub.Play(new global::Dpr.Field.Walking.SanpoPairActionCommon(6, 6, false).DoAction(model));
+		}
 	}
 }

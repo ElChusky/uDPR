@@ -4,6 +4,47 @@ namespace Dpr.Field.Walking
 	public class SanpoSleep : global::Dpr.Field.Walking.ActionModel
 	{
 		public SanpoSleep() { }
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel m) { /*@B 0x6008A9A*/ throw null; }
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel m) 
+		{
+			global::Dpr.Field.Walking.AIFureaiModel model = (global::Dpr.Field.Walking.AIFureaiModel)m;
+			model.walkData.nowSpeed = 0f;
+			model.corSys.OnCancel(() => model.charaModel.SleepLevel = 0);
+			int WaitTime1 = global::UnityEngine.Random.Range(2, 5);
+			float WaitTime2 = global::UnityEngine.Random.Range(6, 20);
+			global::Pml.MonsNo monsNo = model.fureaiModel.monsNo;
+			bool isPikaV = global::Dpr.SubContents.Utils.IsPikaV(monsNo);
+			global::Dpr.SubContents.VoicePlayerAmbient voicePlayer = model.charaModel.controller.voicePlayer;
+			yield return new global::Dpr.Field.Walking.MyWaitForSeconds(WaitTime1);
+			model.charaModel.SleepLevel = 1;
+			if (isPikaV)
+			{
+				global::Dpr.SubContents.Utils.PlayVoicePikaBui_Drowse(monsNo, 0, voicePlayer);
+			}
+			yield return new global::Dpr.Field.Walking.MyWaitForSeconds(1f);
+			model.charaModel.SleepLevel = 2;
+			float elapsedTime = 0f;
+			while (WaitTime2 > 0f)
+			{
+				elapsedTime += global::SmartPoint.AssetAssistant.Sequencer.elapsedTime;
+				WaitTime2 -= global::SmartPoint.AssetAssistant.Sequencer.elapsedTime;
+				if (WaitTime2 > 4f && elapsedTime > 4f)
+				{
+					elapsedTime = 0f;
+					if (isPikaV)
+					{
+						global::Dpr.SubContents.Utils.PlayVoicePikaBui_Drowse(monsNo, 1, voicePlayer);
+					}
+				}
+				yield return null;
+			}
+			model.charaModel.SleepLevel = 3;
+			if (isPikaV)
+			{
+				global::Dpr.SubContents.Utils.PlayVoicePikaBui_Drowse(monsNo, 2, voicePlayer);
+			}
+			yield return new global::Dpr.Field.Walking.MyWaitForSeconds(2f);
+			model.charaModel.SleepLevel = 0;
+			yield return null;
+		}
 	}
 }

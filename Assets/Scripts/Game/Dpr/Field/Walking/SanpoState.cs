@@ -3,8 +3,26 @@ namespace Dpr.Field.Walking
 {
 	public class SanpoState : global::Dpr.Field.Walking.SanpoStateBase
 	{
-		public SanpoState(global::Dpr.Field.Walking.AIFureaiModel model) : base(default(global::Dpr.Field.Walking.AIFureaiModel)) { /*@B 0x6008A3B*/ throw null; }
-		public override void CommonUpdate() { /*@B 0x6008A3C*/ throw null; }
+		public SanpoState(global::Dpr.Field.Walking.AIFureaiModel model) : base(model)
+		{
+			ActionProbability = 1f;
+			ActionLotteryInterval = 0.2f;
+			AddAction(new global::Dpr.Field.Walking.SanpoWait()).lotteryWeight = 40f;
+			AddAction(new global::Dpr.Field.Walking.SanpoRun()).lotteryWeight = 5f;
+			AddAction(new global::Dpr.Field.Walking.SanpoUroUro()).lotteryWeight = 60f;
+			AddAction(new global::Dpr.Field.Walking.SanpoSleep()).lotteryWeight = 5f;
+			global::UnityEngine.Transform player = global::EntityManager.activeFieldPlayer.transform;
+		}
+		public override void CommonUpdate()
+		{
+			global::UnityEngine.Transform player = global::EntityManager.activeFieldPlayer.transform;
+			sanpoModel.Update(deltaTime, player, model.transform);
+			if (!CheckAddWalking() && !LookPlayer())
+			{
+				base.CommonUpdate();
+				model.walkData.totalMoveDistance = 0f;
+			}
+		}
 		protected override void StateUpdate() { }
 	}
 }
