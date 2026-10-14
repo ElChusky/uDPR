@@ -5,15 +5,15 @@ namespace SmartPoint.AssetAssistant
 {
 	public class AssetBundleCache : global::SmartPoint.AssetAssistant.RefCounted
 	{
-		private static global::System.Collections.Generic.Dictionary<string, global::SmartPoint.AssetAssistant.AssetBundleCache> _container;
+		private static global::System.Collections.Generic.Dictionary<string, global::SmartPoint.AssetAssistant.AssetBundleCache> _container = new global::System.Collections.Generic.Dictionary<string, global::SmartPoint.AssetAssistant.AssetBundleCache>();
 		private global::SmartPoint.AssetAssistant.AssetBundleRecord _record;
 		private global::UnityEngine.AssetBundle _assetBundle;
 		private bool _isLoaded;
 		private string[] _variants;
-		private global::UnityEngine.Object[] _loadedAssets;
+		private global::UnityEngine.Object[] _loadedAssets = ArrayHelper.Empty<Object>();
 		private bool _unloadAllLoadedObjects;
 		private string[] _remapDependencies;
-		public global::UnityEngine.Object loadedFirstAsset { get { /*@B AssetAssistant:0x600003D*/ throw null; } }
+		public global::UnityEngine.Object loadedFirstAsset { get { return _loadedAssets[0]; } }
 		public global::UnityEngine.Object[] loadedAssets { get => _loadedAssets; set {
                 // b272 (@022d69a0, and the identical inlined copies in AssetManager.LoadAssetBundle @022dfe94–022dfeb8 / ProcessRequestItem):
                 // a null value stores Empty and then falls through to the plain store (`cbnz x19 → d6a00 ; … ; d6a00 str x19`) — the field
@@ -33,26 +33,140 @@ namespace SmartPoint.AssetAssistant
                 }
                 return true;
             } }
-		public global::SmartPoint.AssetAssistant.AssetBundleRecord record { get { return this._record; } set { /*@B AssetAssistant:0x6000045*/ throw null; } }
+		public global::SmartPoint.AssetAssistant.AssetBundleRecord record { get { return this._record; } set {
+                if (_record != value)
+                {
+                    if (_record != null)
+                    {
+                        for (int i = 0; i < _loadedAssets.Length; i++)
+                            _loadedAssets[i] = null;
+                        _container.Remove(_record.assetBundleName);
+                    }
+                    if (value == null)
+                    {
+                        _loadedAssets = ArrayHelper.Empty<Object>();
+                    }
+                    else
+                    {
+                        _container.Add(value.assetBundleName, this);
+                        _loadedAssets = new Object[value.assetPaths.Length];
+                    }
+                }
+                _record = value;
+            } }
 		public global::UnityEngine.AssetBundle assetBundle { get { return this._assetBundle; } set { this._assetBundle = value; } }
-		public bool isLoaded { get { return this._isLoaded; } set { /*@B AssetAssistant:0x6000049*/ throw null; } }
-		public bool canLoadAsset { get { /*@B AssetAssistant:0x600004A*/ throw null; } }
+		public bool isLoaded { get { return this._isLoaded; } set { _isLoaded = value; } }
+		public bool canLoadAsset { get {
+                if (!_isLoaded)
+                    return false;
+                for (int i = 0; i < _remapDependencies.Length; i++)
+                {
+                    string dependency = _remapDependencies[i];
+                    AssetBundleCache cache = null;
+                    if (string.IsNullOrEmpty(dependency))
+                        return false;
+                    if (!_container.TryGetValue(dependency, out cache) || cache == null || !cache._isLoaded)
+                        return false;
+                }
+                return true;
+            } }
 		public T FindFirstAsset<T>() where T : global::UnityEngine.Object { /*@B AssetAssistant:0x600003E*/ throw null; }
-		private AssetBundleCache() { /*@B AssetAssistant:0x600004B*/ throw null; }
-		public override int Release() { /*@B AssetAssistant:0x600004C*/ throw null; }
+		private AssetBundleCache() {
+            // RefCounted() (referencedCount = 1) is inlined after the _loadedAssets initialiser.
+        }
+		public override int Release() {
+            referencedCount--;
+            if (referencedCount > 0)
+            {
+                _unloadAllLoadedObjects = false;
+                return referencedCount;
+            }
+            Debug.Log("Unload asset-bundle: " + _record.assetBundleName);
+            record = null;
+            if (referencedCount < 0)
+            {
+                // Shipped quirk: _record is null here (record = null above), so this read throws.
+                Debug.LogWarning(string.Concat(new object[] { "Release AssetBundle Error: ", _record.assetBundleName, "(", referencedCount, ")" }));
+                referencedCount = 0;
+                return 0;
+            }
+            if (_assetBundle != null)
+            {
+                _assetBundle.Unload(_unloadAllLoadedObjects);
+                _assetBundle = null;
+            }
+            return referencedCount;
+        }
 		public static bool Contains(string assetBundleName, bool includeNotLoaded = false) {
             // b272 (@022d7350): the inlined Get(assetBundleName) (flag 0x4cc1555 @022d73a8) — `includeNotLoaded` is never read (w1 unused),
             // so Get's default false is folded in; then `cache != null` (`cmp x8, #0 ; cset ne` @022d742c).
             return Get(assetBundleName) != null;
         }
-		public static global::SmartPoint.AssetAssistant.AssetBundleCache Add(global::SmartPoint.AssetAssistant.AssetBundleRecord record, bool isLoaded = false, string[] variants = null) { /*@B AssetAssistant:0x600004E*/ throw null; }
-		public static global::SmartPoint.AssetAssistant.AssetBundleCache Get(string assetBundleName, bool includeNotLoaded = false) { /*@B AssetAssistant:0x600004F*/ throw null; }
-		public static int ReleaseFromAssetBundleChache(global::SmartPoint.AssetAssistant.AssetBundleCache cache, bool unloadAllLoadedObjects = false) { /*@B AssetAssistant:0x6000050*/ throw null; }
+		public static global::SmartPoint.AssetAssistant.AssetBundleCache Add(global::SmartPoint.AssetAssistant.AssetBundleRecord record, bool isLoaded = false, string[] variants = null) {
+            if (record == null)
+                Debug.LogError("Record is null!");
+            var cache = new AssetBundleCache();
+            cache._isLoaded = isLoaded;
+            cache.record = record;
+            cache._variants = variants;
+            if (variants == null || variants.Length == 0)
+            {
+                cache._remapDependencies = record.allDependencies;
+            }
+            else
+            {
+                int length = record.allDependencies.Length;
+                cache._remapDependencies = new string[length];
+                for (int i = 0; i < length; i++)
+                    cache._remapDependencies[i] = AssetManager.RemapVariantName(record.allDependencies[i], variants);
+            }
+            return cache;
+        }
+		public static global::SmartPoint.AssetAssistant.AssetBundleCache Get(string assetBundleName, bool includeNotLoaded = false) {
+            AssetBundleCache cache = null;
+            if (string.IsNullOrEmpty(assetBundleName))
+                return null;
+            if (!_container.TryGetValue(assetBundleName, out cache))
+                return null;
+            if (cache != null && !includeNotLoaded && !cache._isLoaded)
+                return null;
+            return cache;
+        }
+		public static int ReleaseFromAssetBundleChache(global::SmartPoint.AssetAssistant.AssetBundleCache cache, bool unloadAllLoadedObjects = false) {
+            if (cache == null)
+                return 0;
+            for (int i = 0; i < cache._remapDependencies.Length; i++)
+            {
+                string dependency = cache._remapDependencies[i];
+                AssetBundleCache dependencyCache = null;
+                if (!string.IsNullOrEmpty(dependency))
+                {
+                    if (_container.TryGetValue(dependency, out dependencyCache) && dependencyCache != null && dependencyCache._isLoaded)
+                    {
+                        dependencyCache._unloadAllLoadedObjects = unloadAllLoadedObjects;
+                        dependencyCache.Release();
+                    }
+                }
+            }
+            cache._unloadAllLoadedObjects = unloadAllLoadedObjects;
+            return cache.Release();
+        }
 		public static int ReleaseFromAssetBundleName(string assetBundleName, bool unloadAllLoadedObjects = false) {
             // b272 (@022d79d0): the inlined Get(assetBundleName) (flag 0x4cc1555 @022d7a30) feeding one ReleaseFromAssetBundleChache call (@022d7ac4).
             return ReleaseFromAssetBundleChache(Get(assetBundleName), unloadAllLoadedObjects);
         }
-		public static void Destroy() { /*@B AssetAssistant:0x6000052*/ throw null; }
-		static AssetBundleCache() { /*@B AssetAssistant:0x6000053*/ throw null; }
+		public static void Destroy() {
+            string text = string.Empty;
+            int total = 0;
+            foreach (var pair in _container)
+            {
+                total += pair.Value.referencedCount;
+                text = string.Concat(new object[] { text, pair.Key, ": ", pair.Value.referencedCount, "\n" });
+            }
+            if (total != 0)
+                Debug.LogWarning(string.Concat(new object[] { "Asset-bundle leaks: object ", _container.Count, " reference ", total, "\n", text }));
+        }
+		static AssetBundleCache() {
+        }
 	}
 }

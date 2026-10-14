@@ -5,6 +5,6 @@ namespace SmartPoint.AssetAssistant
 	public class AssetAssistantInitializeMethodAttribute : global::System.Attribute
 	{
 		public int order;
-		public AssetAssistantInitializeMethodAttribute(int order = 0) { /*@B AssetAssistant:0x6000033*/ throw null; }
+		public AssetAssistantInitializeMethodAttribute(int order = 0) { this.order = order; }
 	}
 }
