@@ -12,19 +12,19 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.BTL_POKEPARAM m_procPoke;
 		private byte m_actCountSum;
 		private int m_procActionIndex;
-		private global::Dpr.Battle.Logic.BTL_ACTION_PARAM_OBJ m_procActionUIRet;
+		private global::Dpr.Battle.Logic.BTL_ACTION_PARAM_OBJ m_procActionUIRet = new BTL_ACTION_PARAM_OBJ();
 		private int m_currentActionIndex;
 		private global::Dpr.Battle.Logic.rec.Data m_recData;
 		private global::Dpr.Battle.Logic.rec.Reader m_btlRecReader;
-		private global::Dpr.Battle.Logic.BTL_CLIENT.RECPLAYER_CONTROL m_recPlayer;
+		private global::Dpr.Battle.Logic.BTL_CLIENT.RECPLAYER_CONTROL m_recPlayer = new RECPLAYER_CONTROL();
 		private global::Dpr.Battle.Logic.BTL_CLIENT.ClientMainProc m_mainProc;
 		private global::Dpr.Battle.Logic.FieldStatus m_fldSim;
 		private ulong m_randContext;
 		private global::Dpr.Battle.Logic.Adapter m_adapter;
 		private global::Dpr.Battle.Logic.SendDataContainer m_sendDataContainer;
 		private global::Dpr.Battle.Logic.SendDataContainer m_receiveDataContainer;
-		private global::Dpr.Battle.Logic.Random m_random;
-		private global::Dpr.Battle.Logic.Random m_AIRand;
+		private global::Dpr.Battle.Logic.Random m_random = new Random();
+		private global::Dpr.Battle.Logic.Random m_AIRand = new Random();
 		private global::Dpr.Battle.Logic.TrainerMessageManager m_trainerMessageManager;
 		private global::Dpr.Battle.Logic.ClientSeq_TrainerMessage m_seq_TrainerMessage;
 		private global::Dpr.Battle.Logic.ClientSeq_WinWild m_seq_WinWild;
@@ -37,7 +37,7 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.ServerSendData.RAIDBOSS_CAPTURE_RESULT m_raidBossCaptureResult;
 		private uint m_turnCount;
 		private ushort m_EnemyPokeHPBase;
-		private global::Dpr.Battle.Logic.BTL_CLIENT.SEL_ITEM_WORK[] m_selItemWork;
+		private global::Dpr.Battle.Logic.BTL_CLIENT.SEL_ITEM_WORK[] m_selItemWork = Arrays.InitializeWithDefaultInstances<SEL_ITEM_WORK>(5);
 		private byte m_myID;
 		private byte m_myType;
 		private byte m_myState;
@@ -46,7 +46,7 @@ namespace Dpr.Battle.Logic
 		private unsafe byte* m_change_escape_code;
 		private bool m_fForceQuitSelAct;
 		private byte m_cmdCheckTimingCode;
-		private byte[] m_actionCountWork;
+		private byte[] m_actionCountWork = new byte[5];
 		private byte m_wazaInfoPokeIdx;
 		private byte m_wazaInfoWazaIdx;
 		private bool m_fAITrainerBGMChanged;
@@ -61,7 +61,7 @@ namespace Dpr.Battle.Logic
 		private bool m_isFirstActionSelectDone;
 		private byte m_myChangePokeCnt;
 		private byte m_myPuttablePokeCnt;
-		private global::Dpr.Battle.Logic.BtlPokePos[] m_myChangePokePos;
+		private global::Dpr.Battle.Logic.BtlPokePos[] m_myChangePokePos = new BtlPokePos[5];
 		private ushort m_returnDataSerialNumber;
 		private global::Dpr.Battle.Logic.ServerSequence m_returnDataServerSeq;
 		private global::Dpr.Battle.Logic.ServerRequest m_returnDataServerRequest;
@@ -83,56 +83,179 @@ namespace Dpr.Battle.Logic
 		private bool m_b1stReadyMsgDisped;
 		private global::Dpr.Battle.Logic.BTL_SERVER m_cmdCheckServer;
 		private global::Dpr.Battle.Logic.BattleViewBase _m_viewCore;
-		private global::Dpr.Battle.Logic.BattleViewBase.ExpGetDesc m_viewExpGetDesc;
-		private global::Dpr.Battle.Logic.BattleViewBase.ExpGetResult m_viewExpGetResult;
-		private global::Dpr.Battle.Logic.BTL_ACTION_PARAM[] m_actionParam;
-		private int[] m_cmdArgs;
-		private global::Dpr.Battle.Logic.BTL_CLIENT.VariableArgs m_stdVariableArgs;
+		private global::Dpr.Battle.Logic.BattleViewBase.ExpGetDesc m_viewExpGetDesc = new BattleViewBase.ExpGetDesc();
+		private global::Dpr.Battle.Logic.BattleViewBase.ExpGetResult m_viewExpGetResult = new BattleViewBase.ExpGetResult();
+		private global::Dpr.Battle.Logic.BTL_ACTION_PARAM[] m_actionParam = new BTL_ACTION_PARAM[10];
+		private int[] m_cmdArgs = new int[16];
+		private global::Dpr.Battle.Logic.BTL_CLIENT.VariableArgs m_stdVariableArgs = new VariableArgs();
 		private global::Dpr.Battle.Logic.BTL_CLIENT.VariableArgs m_tmpVariableArgs;
 		private global::Dpr.Battle.Logic.BattleAi m_ai;
-		private ushort[] m_AIItem;
+		private ushort[] m_AIItem = new ushort[4];
 		private sbyte[] m_AIChangeIndex = new sbyte[PokeParty.MAX_MEMBERS];
-		private bool[] m_AITrainerMsgCheckedFlag;
+		private bool[] m_AITrainerMsgCheckedFlag = new bool[4];
 		private global::Dpr.Battle.Logic.BTL_CLIENT.ClientSubProc m_subProc;
 		private int m_subSeq;
 		private global::Dpr.Battle.Logic.BTL_CLIENT.ClientSubProc m_selActProc;
 		private int m_selActSeq;
-		private global::Dpr.Battle.Logic.BTLV_STRPARAM m_strParam;
-		private global::Dpr.Battle.Logic.BTLV_STRPARAM m_strParamSub;
-		private global::Dpr.Battle.Logic.PokeSelParam m_pokeSelParam;
-		private global::Dpr.Battle.Logic.PokeSelResult m_pokeSelResult;
+		private global::Dpr.Battle.Logic.BTLV_STRPARAM m_strParam = new BTLV_STRPARAM();
+		private global::Dpr.Battle.Logic.BTLV_STRPARAM m_strParamSub = new BTLV_STRPARAM();
+		private global::Dpr.Battle.Logic.PokeSelParam m_pokeSelParam = new PokeSelParam();
+		private global::Dpr.Battle.Logic.PokeSelResult m_pokeSelResult = new PokeSelResult();
 		private global::Dpr.Battle.Logic.BTL_CLIENT.ServerCmdProc m_scProc;
 		private global::Dpr.Battle.Logic.ServerCommand m_serverCmd;
 		private int m_scSeq;
-		private global::Dpr.Battle.Logic.BtlPokePos[] m_deadPokePos;
+		private global::Dpr.Battle.Logic.BtlPokePos[] m_deadPokePos = new BtlPokePos[5];
 		private bool m_isLiveRecSeedSetup;
 		private uint m_liveRecWaitCameraSeq;
 		private uint m_liveRecSizeSave;
-		private global::Dpr.Battle.Logic.BTL_CLIENT.WAZAEFF_SYNCDAMAGE_CMD_WORK m_wazaEffDmgSyncWork;
+		private global::Dpr.Battle.Logic.BTL_CLIENT.WAZAEFF_SYNCDAMAGE_CMD_WORK m_wazaEffDmgSyncWork = new WAZAEFF_SYNCDAMAGE_CMD_WORK();
 		private bool m_bWazaEffectDone;
 		private bool m_bSyncEffectDone;
-		private global::Dpr.Battle.Logic.BTL_CLIENT.FriendshipEffectProc m_frEffectProc;
+		private global::Dpr.Battle.Logic.BTL_CLIENT.FriendshipEffectProc m_frEffectProc = new FriendshipEffectProc();
 		private uint m_JK3Joker_PrevTurnAttackToLegends;
 		private uint m_JK3Legend_PrevTurnUseKyozyuuzan;
 		private const int CHAPTER_CTRL_FRAMES = 45;
-		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT.check_status_up_item_check_tbl_elem[] check_status_up_item_check_tbl;
-		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT.check_cure_sick_item_tbl_elem[] check_cure_sick_item_check_tbl;
+		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT.check_status_up_item_check_tbl_elem[] check_status_up_item_check_tbl = new check_status_up_item_check_tbl_elem[]
+        {
+            new check_status_up_item_check_tbl_elem(Pml.Item.ItemData.PrmID.ATTACK_UP, BTL_POKEPARAM.ValueID.BPP_ATTACK_RANK),
+            new check_status_up_item_check_tbl_elem(Pml.Item.ItemData.PrmID.DEFENCE_UP, BTL_POKEPARAM.ValueID.BPP_DEFENCE_RANK),
+            new check_status_up_item_check_tbl_elem(Pml.Item.ItemData.PrmID.SP_ATTACK_UP, BTL_POKEPARAM.ValueID.BPP_SP_ATTACK_RANK),
+            new check_status_up_item_check_tbl_elem(Pml.Item.ItemData.PrmID.SP_DEFENCE_UP, BTL_POKEPARAM.ValueID.BPP_SP_DEFENCE_RANK),
+            new check_status_up_item_check_tbl_elem(Pml.Item.ItemData.PrmID.AGILITY_UP, BTL_POKEPARAM.ValueID.BPP_AGILITY_RANK),
+            new check_status_up_item_check_tbl_elem(Pml.Item.ItemData.PrmID.HIT_UP, BTL_POKEPARAM.ValueID.BPP_HIT_RATIO),
+        };
+		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT.check_cure_sick_item_tbl_elem[] check_cure_sick_item_check_tbl = new check_cure_sick_item_tbl_elem[]
+        {
+            new check_cure_sick_item_tbl_elem(Pml.Item.ItemData.PrmID.SLEEP_RCV, WazaSick.WAZASICK_NEMURI),
+            new check_cure_sick_item_tbl_elem(Pml.Item.ItemData.PrmID.POISON_RCV, WazaSick.WAZASICK_DOKU),
+            new check_cure_sick_item_tbl_elem(Pml.Item.ItemData.PrmID.BURN_RCV, WazaSick.WAZASICK_YAKEDO),
+            new check_cure_sick_item_tbl_elem(Pml.Item.ItemData.PrmID.ICE_RCV, WazaSick.WAZASICK_KOORI),
+            new check_cure_sick_item_tbl_elem(Pml.Item.ItemData.PrmID.PARALYZE_RCV, WazaSick.WAZASICK_MAHI),
+            new check_cure_sick_item_tbl_elem(Pml.Item.ItemData.PrmID.PANIC_RCV, WazaSick.WAZASICK_KONRAN),
+            new check_cure_sick_item_tbl_elem(Pml.Item.ItemData.PrmID.MEROMERO_RCV, WazaSick.WAZASICK_MEROMERO),
+        };
 		private static sbyte SubProc_UI_SelectAction_trainerMessage_clientID;
 		private static global::Dpr.Battle.Logic.TrainerMessageID SubProc_UI_SelectAction_trainerMessage_messageID;
 		private int scProc_MSG_StdSE_subSeq;
 		private int scProc_MSG_SetSE_subSeq;
-		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT.getWeatherStartMessageTableElem[] getWeatherStartMessageParamTable;
+		private static readonly global::Dpr.Battle.Logic.BTL_CLIENT.getWeatherStartMessageTableElem[] getWeatherStartMessageParamTable = new getWeatherStartMessageTableElem[]
+        {
+            new getWeatherStartMessageTableElem(BtlWeather.BTL_WEATHER_NONE, 98, -1),
+            new getWeatherStartMessageTableElem(BtlWeather.BTL_WEATHER_SHINE, 98, 503),
+            new getWeatherStartMessageTableElem(BtlWeather.BTL_WEATHER_RAIN, 99, 504),
+            new getWeatherStartMessageTableElem(BtlWeather.BTL_WEATHER_SNOW, 101, 506),
+            new getWeatherStartMessageTableElem(BtlWeather.BTL_WEATHER_SAND, 100, 505),
+            new getWeatherStartMessageTableElem(BtlWeather.BTL_WEATHER_STORM, 285, -1),
+            new getWeatherStartMessageTableElem(BtlWeather.BTL_WEATHER_DAY, 287, -1),
+            new getWeatherStartMessageTableElem(BtlWeather.BTL_WEATHER_TURBULENCE, 289, -1),
+        };
 		private uint scProc_ACT_KinomiPrevWaza_procIdx;
 		private int scProc_ACT_FriendshipEffectMsg_effSeq;
 		private int scProc_ACT_FriendshipEffectMsg_msgSeq;
 		private uint scProc_ACTOP_SwapTokusei_timer;
-		private ref global::Dpr.Battle.Logic.BTL_ACTION_PARAM m_procAction { get { /*@B 0x6007832*/ throw null; } }
-		private byte m_currentActionCount { get { /*@B 0x6007833*/ throw null; } set { /*@B 0x6007834*/ throw null; } }
-		private global::Dpr.Battle.Logic.BattleViewBase m_viewCore { get { return this._m_viewCore; } set { /*@B 0x6007836*/ throw null; } }
+		private ref global::Dpr.Battle.Logic.BTL_ACTION_PARAM m_procAction { get { return ref m_actionParam[m_procActionIndex]; } }
+		private byte m_currentActionCount { get { return m_actionCountWork[m_currentActionIndex]; } set { m_actionCountWork[m_currentActionIndex] = value; } }
+		private global::Dpr.Battle.Logic.BattleViewBase m_viewCore { get { return this._m_viewCore; } set { this._m_viewCore = value; } }
 		private void m_viewCore_CMD_EFFECT_DrawEnableTimer(global::Dpr.Battle.Logic.GameTimer.TimerType type, bool enable) {
             m_viewCore.CMD_EFFECT_DrawEnableTimer(type, enable);
         }
-		public BTL_CLIENT(global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv, global::Dpr.Battle.Logic.Adapter adapter, global::Dpr.Battle.Logic.SendDataContainer sendDataContainer, global::Dpr.Battle.Logic.SendDataContainer receiveDataContainer, byte commMode, ushort clientID, byte clientType, global::Dpr.Battle.Logic.BtlBagMode bagMode, bool fRecPlayMode, ulong randSeed) { /*@B 0x6007838*/ throw null; }
+		public BTL_CLIENT(global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv, global::Dpr.Battle.Logic.Adapter adapter, global::Dpr.Battle.Logic.SendDataContainer sendDataContainer, global::Dpr.Battle.Logic.SendDataContainer receiveDataContainer, byte commMode, ushort clientID, byte clientType, global::Dpr.Battle.Logic.BtlBagMode bagMode, bool fRecPlayMode, ulong randSeed) {
+            unsafe
+            {
+                m_dummyReturnData = (uint*)BattleUnmanagedMem.Malloc(sizeof(uint));
+                m_returnData_ActionSelect = (ClientSendData.ACTION_SELECT*)BattleUnmanagedMem.Malloc(sizeof(ClientSendData.ACTION_SELECT));
+                m_returnData_ClientLimitTime = (ClientSendData.CLIENT_LIMIT_TIME*)BattleUnmanagedMem.Malloc(sizeof(ClientSendData.CLIENT_LIMIT_TIME));
+                m_returnData_RaidBallSelect = (ClientSendData.RAID_BALL_SELECT*)BattleUnmanagedMem.Malloc(sizeof(ClientSendData.RAID_BALL_SELECT));
+                m_change_escape_code = (byte*)BattleUnmanagedMem.Malloc(sizeof(byte));
+            }
+
+            m_pBattleEnv = pBattleEnv;
+            POKECON pokeCon = pBattleEnv.GetPokeCon();
+            m_myID = (byte)clientID;
+            m_myType = clientType;
+            m_mainModule = mainModule;
+            m_procPokeIdx = 0;
+            m_viewCore = null;
+            m_EnemyPokeHPBase = 0;
+            m_b1stReadyMsgDisped = false;
+            m_isFirstActionSelectDone = false;
+            m_tmpVariableArgs = null;
+            m_adapter = adapter;
+            m_sendDataContainer = sendDataContainer;
+            m_receiveDataContainer = receiveDataContainer;
+            m_myParty = pokeCon.GetPartyDataConst(clientID);
+            m_serverCmdQueue = new ServerCommandQueue();
+            createSimulator();
+            createBattleDriver();
+            m_gameTimer = new GameTimer();
+            m_gameTimer.Initialize();
+            m_cmdLimitTime = (ushort)m_mainModule.GetCommandLimitTime();
+            m_gameLimitTime = (ushort)m_mainModule.GetGameLimitTime();
+            m_clientLimitTime = (ushort)m_mainModule.GetClientLimitTime();
+            unsafe
+            {
+                for (int i = 0; i < 5; i++)
+                    m_syncClientTime.limitTime[i] = m_clientLimitTime;
+            }
+
+            changeMainProc(main_Normal);
+            m_cmdCheckServer = null;
+            m_commWaitInfoOn = false;
+            m_fForceQuitSelAct = false;
+            m_cmdCheckTimingCode = 0;
+            m_fAITrainerBGMChanged = false;
+            m_fCommError = false;
+            m_fStdMsgChanged = false;
+            m_fCmdCheckEnable = false;
+            m_fRecPlayEndTimeOver = false;
+            m_fRecPlayEndBufOver = false;
+            m_bRecPlayFadeStarted = false;
+            m_isWaitingAdapterCommand = false;
+            m_random.Initialize();
+            m_AIRand.Initialize(randSeed);
+            m_fldSim = pBattleEnv.GetFieldStatus();
+            m_bagMode = (byte)bagMode;
+            RecPlayer_Init(m_recPlayer);
+            AIItem_Setup();
+
+            if (m_myType == (byte)BtlClientType.BTL_CLIENT_TYPE_AI && !fRecPlayMode)
+            {
+                BattleAi.SetupParam setupParam = new BattleAi.SetupParam();
+                setupParam.mainModule = m_mainModule;
+                setupParam.pBattleEnv = pBattleEnv;
+                setupParam.pBattleSimulator = m_battleSimulator;
+                setupParam.scriptNoBit = m_mainModule.GetClientAIBit(m_myID);
+                setupParam.randSeed = randSeed;
+                setupParam.myClientID = (byte)clientID;
+                m_ai = new BattleAi(setupParam);
+            }
+            else
+            {
+                m_ai = null;
+            }
+
+            for (int i = 0; i < m_AITrainerMsgCheckedFlag.Length; i++)
+                m_AITrainerMsgCheckedFlag[i] = false;
+
+            if (m_myType == (byte)BtlClientType.BTL_CLIENT_TYPE_UI && m_mainModule.IsRecordEnable())
+                m_recData = new rec.Data();
+            else
+                m_recData = null;
+
+            if (m_mainModule.IsPlayerSide(m_mainModule.GetClientSide(m_myID)))
+                m_mainModule.SetTvNaviData_FrontPoke(m_myParty.GetMemberDataConst(0), m_myParty.GetMemberDataConst(1));
+
+            m_trainerMessageManager = new TrainerMessageManager(m_mainModule);
+            m_seq_TrainerMessage = new ClientSeq_TrainerMessage();
+            m_seq_WinWild = new ClientSeq_WinWild();
+            m_seq_Capture = new ClientSeq_Capture();
+            m_viewExpGetDesc.iPtrParty = new PokeParty();
+            m_isLiveRecSeedSetup = false;
+            m_liveRecWaitCameraSeq = 0;
+            m_liveRecSizeSave = 0;
+            m_JK3Joker_PrevTurnAttackToLegends = 0;
+            m_JK3Legend_PrevTurnUseKyozyuuzan = 0;
+        }
 		private void createSimulator() {
             var setupParam = new BattleSimulator.SetupParam();
             setupParam.pMainModule = m_mainModule;
@@ -333,7 +456,80 @@ namespace Dpr.Battle.Logic
 
             return false;
         }
-		private bool main_ChapterSkip() { /*@B 0x6007842*/ throw null; }
+		private bool main_ChapterSkip() {
+            bool fRecCtrlLock = false;
+            RecPlayerCtrl_Main(m_recPlayer);
+
+            switch ((main_ChapterSkipSeq)m_myState)
+            {
+                case main_ChapterSkipSeq.SEQ_RECPLAY_START:
+                    m_myState = (byte)main_ChapterSkipSeq.SEQ_RECPLAY_READ_ACMD;
+                    goto case main_ChapterSkipSeq.SEQ_RECPLAY_READ_ACMD;
+
+                case main_ChapterSkipSeq.SEQ_RECPLAY_READ_ACMD:
+                    if (RecPlayer_IsActive(m_recPlayer))
+                    {
+                        if (RecPlayer_CheckChapterSkipEnd(m_recPlayer))
+                        {
+                            if (m_viewCore != null)
+                            {
+                                m_viewCore.CMD_RecPlayFadeIn_Start();
+                                m_viewCore.CMD_FadeInBGM(30);
+                            }
+
+                            m_myState = (byte)main_ChapterSkipSeq.SEQ_RECPLAY_FADEIN;
+                            return false;
+                        }
+
+                        m_adapter.RecvCmd(ref m_returnDataServerRequest, ref m_returnDataSerialNumber, ref m_returnDataServerSeq);
+                        if (m_returnDataServerRequest == ServerRequest.NONE)
+                            return false;
+
+                        if (setSubProc(m_returnDataServerRequest, out fRecCtrlLock))
+                        {
+                            m_myState = (byte)main_ChapterSkipSeq.SEQ_RECPLAY_EXEC_CMD;
+                            return false;
+                        }
+                    }
+
+                    setDummyReturnData();
+                    m_myState = (byte)main_ChapterSkipSeq.SEQ_RECPLAY_RETURN_TO_SV;
+                    return false;
+
+                case main_ChapterSkipSeq.SEQ_RECPLAY_EXEC_CMD:
+                    if (!callSubProc())
+                        return false;
+
+                    m_subSeq = 0;
+                    m_myState = (byte)main_ChapterSkipSeq.SEQ_RECPLAY_RETURN_TO_SV;
+                    return false;
+
+                case main_ChapterSkipSeq.SEQ_RECPLAY_RETURN_TO_SV:
+                    if (returnToServer())
+                        m_myState = (byte)main_ChapterSkipSeq.SEQ_RECPLAY_READ_ACMD;
+                    return false;
+
+                case main_ChapterSkipSeq.SEQ_RECPLAY_FADEIN:
+                    if (m_viewCore == null)
+                        return true;
+
+                    if (!m_viewCore.CMD_RecPlayFadeIn_Wait())
+                        return false;
+
+                    if (m_viewCore.CMD_CheckFadeOnBGM())
+                        return false;
+
+                    m_viewCore.CMD_UpdateRecPlayerInput(m_recPlayer.nextTurnCount, m_recPlayer.nextTurnCount);
+                    m_mainModule.NotifyChapterSkipEnd();
+                    return false;
+
+                case main_ChapterSkipSeq.SEQ_RECPLAY_QUIT:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
 		public unsafe void registerReceivedData(ushort serialNumber, global::Dpr.Battle.Logic.ServerSequence serverSeq, global::Dpr.Battle.Logic.ServerRequest serverReq, in void* data, uint dataSize) {
             if (serialNumber == 0 || m_receiveDataContainer.IsDataExist(serialNumber))
                 return;
@@ -344,8 +540,38 @@ namespace Dpr.Battle.Logic
                 m_receiveDataContainer.AddData(receivedData);
             }
         }
-		private bool returnToServer() { /*@B 0x6007844*/ throw null; }
-		private void RecPlayer_Init(global::Dpr.Battle.Logic.BTL_CLIENT.RECPLAYER_CONTROL ctrl) { /*@B 0x6007845*/ throw null; }
+		private bool returnToServer() {
+            using (var sendData = new SendData(Unity.Collections.Allocator.Temp))
+            {
+                unsafe
+                {
+                    sendData.Store(m_returnDataSerialNumber, m_returnDataServerSeq, m_returnDataServerRequest, m_returnDataPtr, m_returnDataSize);
+                }
+
+                if (!m_adapter.ReturnCmd(sendData))
+                    return false;
+
+                if (m_returnDataSerialNumber != 0 && !m_sendDataContainer.IsDataExist(m_returnDataSerialNumber))
+                    m_sendDataContainer.AddData(sendData);
+
+                return true;
+            }
+        }
+		private void RecPlayer_Init(global::Dpr.Battle.Logic.BTL_CLIENT.RECPLAYER_CONTROL ctrl) {
+            ctrl.skipTurnCount = 0;
+            ctrl.seq = 0;
+            ctrl.ctrlCode = 0;
+            ctrl.fChapterSkip = false;
+            ctrl.fFadeOutStart = false;
+            ctrl.fFadeOutDone = false;
+            ctrl.fTurnIncrement = false;
+            ctrl.fLock = false;
+            ctrl.fQuit = false;
+            ctrl.handlingTimer = 0;
+            ctrl.turnCount = 0;
+            ctrl.nextTurnCount = 0;
+            ctrl.maxTurnCount = 0;
+        }
 		private void RecPlayer_Setup(global::Dpr.Battle.Logic.BTL_CLIENT.RECPLAYER_CONTROL ctrl, uint turnCnt) {
             ctrl.maxTurnCount = (ushort)turnCnt;
         }
@@ -358,7 +584,13 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.BTL_CLIENT.RecCtrlCode RecPlayer_GetCtrlCode(global::Dpr.Battle.Logic.BTL_CLIENT.RECPLAYER_CONTROL ctrl) {
             return (RecCtrlCode)ctrl.ctrlCode;
         }
-		private void RecPlayer_ChapterSkipOn(global::Dpr.Battle.Logic.BTL_CLIENT.RECPLAYER_CONTROL ctrl, uint nextTurnNum) { /*@B 0x600784A*/ throw null; }
+		private void RecPlayer_ChapterSkipOn(global::Dpr.Battle.Logic.BTL_CLIENT.RECPLAYER_CONTROL ctrl, uint nextTurnNum) {
+            ctrl.fChapterSkip = true;
+            ctrl.fFadeOutStart = false;
+            ctrl.skipTurnCount = 0;
+            ctrl.nextTurnCount = (ushort)nextTurnNum;
+            ctrl.fFadeOutDone = false;
+        }
 		private void RecPlayer_ChapterSkipOff(global::Dpr.Battle.Logic.BTL_CLIENT.RECPLAYER_CONTROL ctrl) {
             ctrl.seq = 0;
             ctrl.fChapterSkip = false;
@@ -562,7 +794,16 @@ namespace Dpr.Battle.Logic
 
             return calc.ITEM_GetParam(itemID, Pml.Item.ItemData.PrmID.ABILITY_GUARD) != 0;
         }
-		private bool check_cure_sick_item(ushort itemID, global::Dpr.Battle.Logic.BTL_POKEPARAM bpp) { /*@B 0x6007856*/ throw null; }
+		private bool check_cure_sick_item(ushort itemID, global::Dpr.Battle.Logic.BTL_POKEPARAM bpp) {
+            for (int i = 0; i < check_cure_sick_item_check_tbl.Length; i++)
+            {
+                if (calc.ITEM_GetParam(itemID, check_cure_sick_item_check_tbl[i].itemParamID) != 0 &&
+                    bpp.CheckSick(check_cure_sick_item_check_tbl[i].sickID))
+                    return true;
+            }
+
+            return false;
+        }
 		public void SetRecordPlayerMode(global::Dpr.Battle.Logic.rec.Reader recReader) {
             m_btlRecReader = recReader;
             m_myType = (byte)BtlClientType.BTL_CLIENT_TYPE_RECPLAY;
@@ -584,7 +825,10 @@ namespace Dpr.Battle.Logic
             m_cmdCheckServer = server;
             m_fCmdCheckEnable = true;
         }
-		public void DetachCmdCheckServer() { /*@B 0x600785C*/ throw null; }
+		public void DetachCmdCheckServer() {
+            m_cmdCheckServer = null;
+            m_fCmdCheckEnable = false;
+        }
 		public global::Dpr.Battle.Logic.Adapter GetAdapter() {
             return m_adapter;
         }
@@ -606,7 +850,14 @@ namespace Dpr.Battle.Logic
 		public void NotifyFadeoutStartForRecPlay() {
             m_bRecPlayFadeStarted = true;
         }
-		public void SetChapterSkip(uint nextTurnNum) { /*@B 0x6007863*/ throw null; }
+		public void SetChapterSkip(uint nextTurnNum) {
+            m_bRecPlayFadeStarted = false;
+            m_isWaitingAdapterCommand = false;
+            m_btlRecReader.Reset();
+            m_adapter.ResetRecvBuffer();
+            RecPlayer_ChapterSkipOn(m_recPlayer, nextTurnNum);
+            changeMainProc(main_ChapterSkip);
+        }
 		public void StopChapterSkip() {
             RecPlayer_ChapterSkipOff(m_recPlayer);
             changeMainProc(main_Normal);
@@ -628,20 +879,279 @@ namespace Dpr.Battle.Logic
                 m_returnDataSize = sizeof(uint);
             }
         }
-		private bool setSubProc(global::Dpr.Battle.Logic.ServerRequest serverReq, out bool fRecCtrlLock) { /*@B 0x6007869*/ throw null; }
+		private bool setSubProc(global::Dpr.Battle.Logic.ServerRequest serverReq, out bool fRecCtrlLock) {
+            ClientSubProc procUI;
+            ClientSubProc procAI;
+            ClientSubProc procREC;
+            bool fLock;
+
+            switch (serverReq)
+            {
+                case ServerRequest.SETUP:
+                    procUI = SubProc_UI_Setup;
+                    procAI = SubProc_AI_Setup;
+                    procREC = SubProc_REC_Setup;
+                    fLock = true;
+                    break;
+
+                case ServerRequest.SELECT_ACTION:
+                    procUI = SubProc_UI_SelectAction;
+                    procAI = SubProc_AI_SelectAction;
+                    procREC = SubProc_REC_SelectAction;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.SELECT_CHANGE_OR_ESCAPE:
+                    procUI = SubProc_UI_SelectChangeOrEscape;
+                    procAI = null;
+                    procREC = null;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.SELECT_COVER_POKE:
+                    procUI = SubProc_UI_SelectPokemonForCover;
+                    procAI = SubProc_AI_SelectPokemon;
+                    procREC = SubProc_REC_SelectPokemon;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.SELECT_CHANGE_POKE:
+                    procUI = SubProc_UI_SelectPokemonForChange;
+                    procAI = SubProc_AI_SelectPokemon;
+                    procREC = SubProc_REC_SelectPokemon;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.CONFIRM_COUNTER_POKECHANGE:
+                    procUI = SubProc_UI_ConfirmIrekae;
+                    procAI = null;
+                    procREC = SubProc_REC_SelectPokemon;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.SERVER_COMMAND_FIRST_BATTLE_IN:
+                case ServerRequest.SERVER_COMMAND_POKECHANGE_AFTERFIRSTPOKEIN:
+                case ServerRequest.SERVER_COMMAND_AFTER_ACTION_SELECT:
+                case ServerRequest.SERVER_COMMAND_AFTER_COVER_POKE_SELECT:
+                case ServerRequest.SERVER_COMMAND_AFTER_INTERRUPT_POKECHANGE:
+                case ServerRequest.SERVER_COMMAND_ESCAPE_BY_CHANGE_OR_ESCAPE:
+                    procUI = SubProc_UI_ServerCmd;
+                    procAI = SubProc_AI_ServerCmd;
+                    procREC = SubProc_REC_ServerCmd;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.RECORD_BATTLE_START_TIMING:
+                case ServerRequest.RECORD_BATTLE_START_CHAPTER:
+                case ServerRequest.RECORD_POKECHANGE_AFTERFIRSTPOKEIN:
+                case ServerRequest.RECORD_ACTION:
+                case ServerRequest.RECORD_COVER_POKE:
+                case ServerRequest.RECORD_INTERRUPT_POKECHANGE:
+                case ServerRequest.RECORD_TIMEUP_CHAPTER:
+                    procUI = SubProc_UI_RecordData;
+                    procAI = null;
+                    procREC = null;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.NOTIFY_TIMEUP:
+                    procUI = SubProc_UI_NotifyTimeUp;
+                    procAI = null;
+                    procREC = null;
+                    fLock = true;
+                    break;
+
+                case ServerRequest.EXIT_WILD_WIN:
+                    procUI = SubProc_UI_WinWild;
+                    procAI = null;
+                    procREC = null;
+                    fLock = true;
+                    break;
+
+                case ServerRequest.EXIT_WILD_LOSE:
+                    procUI = SubProc_UI_LoseWild;
+                    procAI = null;
+                    procREC = null;
+                    fLock = true;
+                    break;
+
+                case ServerRequest.EXIT_WILD_CAPTURE:
+                    procUI = SubProc_UI_CaptureWild;
+                    procAI = null;
+                    procREC = null;
+                    fLock = true;
+                    break;
+
+                case ServerRequest.EXIT_WILD_FORCE:
+                    procUI = SubProc_UI_ForceQuitWild;
+                    procAI = null;
+                    procREC = null;
+                    fLock = true;
+                    break;
+
+                case ServerRequest.EXIT_COMM:
+                    procUI = SubProc_UI_ExitCommTrainer;
+                    procAI = null;
+                    procREC = SubProc_REC_ExitCommTrainer;
+                    fLock = true;
+                    break;
+
+                case ServerRequest.EXIT_NPC:
+                    procUI = SubProc_UI_ExitForNPC;
+                    procAI = null;
+                    procREC = SubProc_REC_ExitForNPC;
+                    fLock = true;
+                    break;
+
+                case ServerRequest.EXIT_BATTLE_SPOT_TRAINER:
+                    procUI = SubProc_UI_ExitForSubwayTrainer;
+                    procAI = null;
+                    procREC = SubProc_REC_ExitForSubwayTrainer;
+                    fLock = true;
+                    break;
+
+                case ServerRequest.EXIT_FADEOUT:
+                    procUI = SubProc_UI_FadeOut;
+                    procAI = null;
+                    procREC = SubProc_REC_FadeOut;
+                    fLock = true;
+                    break;
+
+                case ServerRequest.SEND_LATEST_REPLY:
+                    procUI = SubProc_UI_SendLastDataAgain;
+                    procAI = SubProc_UI_SendLastDataAgain;
+                    procREC = SubProc_UI_SendLastDataAgain;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.SEND_CLIENT_LIMIT_TIME:
+                    procUI = SubProc_UI_SendClientLimitTime;
+                    procAI = SubProc_UI_SendClientLimitTime;
+                    procREC = null;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.SYNC_CLIENT_LIMIT_TIME:
+                    procUI = SubProc_UI_SyncClientLimitTime;
+                    procAI = null;
+                    procREC = null;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.RAID_CAPTURE_START:
+                    procUI = SubProc_UI_RaidBossCapture_Start;
+                    procAI = null;
+                    procREC = null;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.RAID_CAPTURE_SELECT_BALL:
+                    procUI = SubProc_UI_RaidBossCapture_SelectBall;
+                    procAI = null;
+                    procREC = null;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.RAID_CAPTURE_RESULT:
+                    procUI = SubProc_UI_RaidBossCapture_Result;
+                    procAI = null;
+                    procREC = null;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.RAID_SCMD_RESULT:
+                    procUI = SubProc_UI_ServerCmd;
+                    procAI = null;
+                    procREC = SubProc_REC_ServerCmd;
+                    fLock = false;
+                    break;
+
+                case ServerRequest.RAID_EXIT_LOSE:
+                    procUI = SubProc_UI_LoseRaid;
+                    procAI = null;
+                    procREC = null;
+                    fLock = true;
+                    break;
+
+                default:
+                    fRecCtrlLock = false;
+                    return false;
+            }
+
+            ClientSubProc proc;
+            switch ((BtlClientType)m_myType)
+            {
+                case BtlClientType.BTL_CLIENT_TYPE_RECPLAY:
+                    proc = procREC;
+                    break;
+                case BtlClientType.BTL_CLIENT_TYPE_AI:
+                    proc = procAI;
+                    break;
+                case BtlClientType.BTL_CLIENT_TYPE_UI:
+                    proc = procUI;
+                    break;
+                default:
+                    proc = null;
+                    break;
+            }
+
+            fRecCtrlLock = fLock;
+            m_subProc = proc;
+            m_subSeq = 0;
+            return true;
+        }
 		private bool callSubProc() {
             if (m_subProc != null)
                 return m_subProc(ref m_subSeq);
 
             return true;
         }
-		public bool IsGameTimeOver() { /*@B 0x600786B*/ throw null; }
+		public bool IsGameTimeOver() {
+            if (m_myType == (byte)BtlClientType.BTL_CLIENT_TYPE_RECPLAY)
+                return m_fRecPlayEndTimeOver;
+
+            if (m_gameLimitTime != 0)
+                return m_gameTimer.IsFinish(GameTimer.TimerType.GAME);
+
+            return false;
+        }
 		public bool IsRecPlayBufOver() {
             return m_fRecPlayEndBufOver;
         }
 		private bool SubProc_UI_Setup(ref int seq) { /*@B 0x600786D*/ throw null; }
-		private bool SubProc_AI_Setup(ref int seq) { /*@B 0x600786E*/ throw null; }
-		private bool SubProc_REC_Setup(ref int seq) { /*@B 0x600786F*/ throw null; }
+		private bool SubProc_AI_Setup(ref int seq) {
+            m_cmdLimitTime = (ushort)m_mainModule.GetCommandLimitTime();
+            m_gameLimitTime = (ushort)m_mainModule.GetGameLimitTime();
+            m_clientLimitTime = (ushort)m_mainModule.GetClientLimitTime();
+            return true;
+        }
+		private bool SubProc_REC_Setup(ref int seq) {
+            if (m_mainModule.IsWatchMember())
+            {
+                if (m_mainModule.GetBattleSetupParam().recRandSeed == 0)
+                    return false;
+
+                if (!m_isLiveRecSeedSetup)
+                {
+                    m_isLiveRecSeedSetup = true;
+                    calc.ResetSys(m_mainModule.GetBattleSetupParam().recRandSeed);
+                }
+            }
+
+            if (m_viewCore == null)
+            {
+                m_btlRecReader.CheckBtlInCmd(m_myID);
+                return true;
+            }
+
+            if (!SubProc_UI_Setup(ref seq))
+                return false;
+
+            if (m_btlRecReader.CheckBtlInCmd(m_myID))
+                RecPlayer_TurnIncReq(m_recPlayer);
+
+            return true;
+        }
 		private void enemyPokeHPBase_Update() {
             BTL_POKEPARAM targetPoke = enemyPokeHPBase_GetTargetPoke();
             if (targetPoke != null)
@@ -697,8 +1207,29 @@ namespace Dpr.Battle.Logic
                 m_viewCore_CMD_EFFECT_DrawEnableTimer(GameTimer.TimerType.CLIENT, true);
             }
         }
-		private bool cmdLimit_CheckOver() { /*@B 0x6007875*/ throw null; }
-		private bool checkSelactForceQuit(global::Dpr.Battle.Logic.BTL_CLIENT.ClientSubProc nextProc) { /*@B 0x6007876*/ throw null; }
+		private bool cmdLimit_CheckOver() {
+            if (m_cmdLimitTime == 0)
+                return false;
+
+            if (m_fForceQuitSelAct)
+                return true;
+
+            if (m_gameTimer.IsFinish(GameTimer.TimerType.COMMAND))
+                m_fForceQuitSelAct = true;
+
+            return m_fForceQuitSelAct;
+        }
+		private bool checkSelactForceQuit(global::Dpr.Battle.Logic.BTL_CLIENT.ClientSubProc nextProc) {
+            if (cmdLimit_CheckOver() || cmdComm_checkError())
+            {
+                if (nextProc != null)
+                    selActSubProc_Set(nextProc);
+
+                return true;
+            }
+
+            return false;
+        }
 		private void cmdLimit_End() {
             if (m_cmdLimitTime != 0)
             {
@@ -6696,7 +7227,7 @@ namespace Dpr.Battle.Logic
 
             return srcParam.GetMonsNo() != lastMember.GetMonsNo();
         }
-		static BTL_CLIENT() { /*@B 0x60079E9*/ throw null; }
+		static BTL_CLIENT() { }
 		public enum PrintCallbackArg
 		{
 			PRINTCB_RUN = 0,
@@ -6754,11 +7285,17 @@ namespace Dpr.Battle.Logic
 		}
 		private sealed class VariableArgs
 		{
-			private int[] m_args;
+			private int[] m_args = new int[16];
 			private byte m_cnt;
 			public void Dispose() { }
-			public VariableArgs() { /*@B 0x600B6E1*/ throw null; }
-			public void Clear() { /*@B 0x600B6E2*/ throw null; }
+			public VariableArgs() {
+                Clear();
+            }
+			public void Clear() {
+                m_cnt = 0;
+                for (int i = 0; i < m_args.Length; i++)
+                    m_args[i] = 0;
+            }
 			public void Setup(int[] cmd_args) {
                 m_cnt = (byte)cmd_args[0];
                 if (m_cnt < m_args.Length && m_cnt != 0)
@@ -6780,17 +7317,17 @@ namespace Dpr.Battle.Logic
 		private sealed class WAZAEFF_SYNCDAMAGE_CMD_WORK
 		{
 			public uint cmdCount;
-			public global::Dpr.Battle.Logic.BTL_CLIENT.WAZAEFF_SYNCDAMAGE_CMD_WORK.StoreElem[] store;
-			public WAZAEFF_SYNCDAMAGE_CMD_WORK() { /*@B 0x600B6E6*/ throw null; }
+			public global::Dpr.Battle.Logic.BTL_CLIENT.WAZAEFF_SYNCDAMAGE_CMD_WORK.StoreElem[] store = Arrays.InitializeWithDefaultInstances<StoreElem>(16);
+			public WAZAEFF_SYNCDAMAGE_CMD_WORK() { }
 			public sealed class StoreElem
 			{
 				public global::Dpr.Battle.Logic.BTL_CLIENT.ServerCmdProc cmdProc;
 				public global::Dpr.Battle.Logic.ServerCommand cmd;
-				public int[] cmdArgs;
+				public int[] cmdArgs = new int[16];
 				public int seq;
 				public bool bDone;
-				public global::Dpr.Battle.Logic.BTL_CLIENT.VariableArgs variableArgs;
-				public StoreElem() { /*@B 0x600BBD4*/ throw null; }
+				public global::Dpr.Battle.Logic.BTL_CLIENT.VariableArgs variableArgs = new VariableArgs();
+				public StoreElem() { }
 			}
 		}
 		private enum SelActRootSeq
@@ -6815,7 +7352,15 @@ namespace Dpr.Battle.Logic
 			private byte m_numCoverPos;
 			private byte m_searchIdx;
 			private int m_step;
-			public FriendshipEffectProc() { /*@B 0x600B6E7*/ throw null; }
+			public FriendshipEffectProc() {
+                m_mainModule = null;
+                m_pokeCon = null;
+                m_viewCore = null;
+                m_myID = 5;
+                m_numCoverPos = 0;
+                m_searchIdx = 0;
+                m_step = -1;
+            }
 			public void Dispose() { }
 			public void Start(global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.Logic.POKECON pokeCon, global::Dpr.Battle.Logic.BattleViewBase viewCore, byte myID, byte numCoverPos) {
                 m_mainModule = mainModule;
@@ -6925,13 +7470,19 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Pml.Item.ItemData.PrmID itemParamID;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID rankID;
-			public check_status_up_item_check_tbl_elem(global::Pml.Item.ItemData.PrmID itemParamID, global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID rankID) { /*@B 0x600B6ED*/ throw null; }
+			public check_status_up_item_check_tbl_elem(global::Pml.Item.ItemData.PrmID itemParamID, global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID rankID) {
+                this.itemParamID = itemParamID;
+                this.rankID = rankID;
+            }
 		}
 		private struct check_cure_sick_item_tbl_elem
 		{
 			public global::Pml.Item.ItemData.PrmID itemParamID;
 			public global::Pml.WazaData.WazaSick sickID;
-			public check_cure_sick_item_tbl_elem(global::Pml.Item.ItemData.PrmID itemParamID, global::Pml.WazaData.WazaSick sickID) { /*@B 0x600B6EE*/ throw null; }
+			public check_cure_sick_item_tbl_elem(global::Pml.Item.ItemData.PrmID itemParamID, global::Pml.WazaData.WazaSick sickID) {
+                this.itemParamID = itemParamID;
+                this.sickID = sickID;
+            }
 		}
 		private enum SeqSubProc_UI_SelectAction
 		{
@@ -7097,7 +7648,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BtlWeather weather;
 			public int strID_others;
 			public int strID_onBattleStart;
-			public getWeatherStartMessageTableElem(global::Dpr.Battle.Logic.BtlWeather weather, int strID_others, int strID_onBattleStart) { /*@B 0x600B6EF*/ throw null; }
+			public getWeatherStartMessageTableElem(global::Dpr.Battle.Logic.BtlWeather weather, int strID_others, int strID_onBattleStart) {
+                this.weather = weather;
+                this.strID_others = strID_others;
+                this.strID_onBattleStart = strID_onBattleStart;
+            }
 		}
 		private enum SeqscProc_ACT_BallThrow
 		{
