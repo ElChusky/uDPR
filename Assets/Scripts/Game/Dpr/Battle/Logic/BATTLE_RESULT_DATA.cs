@@ -9,8 +9,8 @@ namespace Dpr.Battle.Logic
 		public uint turnNum;
 		public byte sakasaPoint;
 		public byte sakasaSpFlag;
-		public global::Dpr.Battle.Logic.BATTLE_TVNAVI_DATA tvNaviData;
+		public global::Dpr.Battle.Logic.BATTLE_TVNAVI_DATA tvNaviData = new BATTLE_TVNAVI_DATA();
 		public ushort captureMonsNo;
-		public BATTLE_RESULT_DATA() { /*@B 0x60067DE*/ throw null; }
+		public BATTLE_RESULT_DATA() { }
 	}
 }

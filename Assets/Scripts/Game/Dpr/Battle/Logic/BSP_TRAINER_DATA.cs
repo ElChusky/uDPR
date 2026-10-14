@@ -6,7 +6,7 @@ namespace Dpr.Battle.Logic
 	public class BSP_TRAINER_DATA
 	{
 		public const int USE_ITEM_MAX = 4;
-		private global::Dpr.Battle.Logic.BSP_TRAINER_DATA.CORE_DATA mCore;
+		private global::Dpr.Battle.Logic.BSP_TRAINER_DATA.CORE_DATA mCore = new CORE_DATA();
 		public global::Dpr.Trainer.TrainerID GetTrainerID() {
             return mCore.tr_id;
         }
@@ -114,7 +114,7 @@ namespace Dpr.Battle.Logic
 		public void SetTrTypeNameLabel(string trtype_name_label) {
             mCore.trtype_name_label = trtype_name_label;
         }
-		public BSP_TRAINER_DATA() { /*@B 0x60067FB*/ throw null; }
+		public BSP_TRAINER_DATA() { }
 		private class CORE_DATA
 		{
 			public global::Dpr.Trainer.TrainerID tr_id;
@@ -129,10 +129,10 @@ namespace Dpr.Battle.Logic
 			public int color_id;
 			public uint ai_bit;
 			public byte gold;
-			public ushort[] use_item;
+			public ushort[] use_item = new ushort[4];
 			public string trtype_name_label;
 			public string name_label;
-			public CORE_DATA() { /*@B 0x600B461*/ throw null; }
+			public CORE_DATA() { }
 		}
 	}
 }

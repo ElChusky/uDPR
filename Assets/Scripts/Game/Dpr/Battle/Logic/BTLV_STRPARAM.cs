@@ -7,10 +7,20 @@ namespace Dpr.Battle.Logic
 		public byte wait;
 		public byte strType;
 		public byte argCnt;
-		public int[] args;
-		public static void Setup(global::Dpr.Battle.Logic.BTLV_STRPARAM sp, global::Dpr.Battle.Logic.BtlStrType strType, ushort strID) { /*@B 0x6006921*/ throw null; }
-		public static void AddArg(global::Dpr.Battle.Logic.BTLV_STRPARAM sp, int arg) { /*@B 0x6006922*/ throw null; }
-		public static void SetWait(global::Dpr.Battle.Logic.BTLV_STRPARAM sp, byte wait) { /*@B 0x6006923*/ throw null; }
-		public BTLV_STRPARAM() { /*@B 0x6006924*/ throw null; }
+		public int[] args = new int[8];
+		public static void Setup(global::Dpr.Battle.Logic.BTLV_STRPARAM sp, global::Dpr.Battle.Logic.BtlStrType strType, ushort strID) {
+			for (int i = 0; i < sp.args.Length; i++)
+				sp.args[i] = 0;
+			sp.argCnt = 0;
+			sp.strID = strID;
+			sp.strType = (byte)strType;
+			sp.wait = 0;
+		}
+		public static void AddArg(global::Dpr.Battle.Logic.BTLV_STRPARAM sp, int arg) {
+			if (sp.argCnt < sp.args.Length)
+				sp.args[sp.argCnt++] = arg;
+		}
+		public static void SetWait(global::Dpr.Battle.Logic.BTLV_STRPARAM sp, byte wait) { sp.wait = wait; }
+		public BTLV_STRPARAM() { }
 	}
 }

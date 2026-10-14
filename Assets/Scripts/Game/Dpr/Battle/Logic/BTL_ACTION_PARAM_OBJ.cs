@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 	public class BTL_ACTION_PARAM_OBJ
 	{
 		public global::Dpr.Battle.Logic.BTL_ACTION_PARAM value;
-		public BTL_ACTION_PARAM_OBJ() { /*@B 0x600779D*/ throw null; }
-		public BTL_ACTION_PARAM_OBJ(global::Dpr.Battle.Logic.BTL_ACTION_PARAM value) { /*@B 0x600779E*/ throw null; }
+		public BTL_ACTION_PARAM_OBJ() { this.value.raw = 0; }
+		public BTL_ACTION_PARAM_OBJ(global::Dpr.Battle.Logic.BTL_ACTION_PARAM value) { this.value = value; }
 	}
 }

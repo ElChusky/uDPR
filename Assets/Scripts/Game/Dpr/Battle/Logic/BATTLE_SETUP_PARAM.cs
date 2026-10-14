@@ -5,30 +5,30 @@ namespace Dpr.Battle.Logic
 	{
 		public global::Dpr.Battle.Logic.BtlCompetitor competitor;
 		public global::Dpr.Battle.Logic.BtlRule rule;
-		public global::Dpr.Battle.Logic.RaidBattleParam raidBattleParam;
-		public global::Dpr.Battle.Logic.BTL_FIELD_SITUATION fieldSituation;
-		public global::Dpr.Battle.Logic.BattleEffectComponentData btlEffComponent;
-		public global::Pml.PokePara.EvolveSituation evolveSituation;
+		public global::Dpr.Battle.Logic.RaidBattleParam raidBattleParam = new global::Dpr.Battle.Logic.RaidBattleParam();
+		public global::Dpr.Battle.Logic.BTL_FIELD_SITUATION fieldSituation = new global::Dpr.Battle.Logic.BTL_FIELD_SITUATION();
+		public global::Dpr.Battle.Logic.BattleEffectComponentData btlEffComponent = new global::Dpr.Battle.Logic.BattleEffectComponentData();
+		public global::Pml.PokePara.EvolveSituation evolveSituation = new global::Pml.PokePara.EvolveSituation();
 		public global::Dpr.Battle.Logic.BtlCommMode commMode;
 		public global::Dpr.Battle.Logic.BtlMultiMode multiMode;
 		public byte commPos;
 		public global::Dpr.Battle.Logic.BtlRecordDataMode recordDataMode;
-		public global::Dpr.Battle.Logic.MiseaiData[] miseaiData;
-		public int[] stations;
+		public global::Dpr.Battle.Logic.MiseaiData[] miseaiData = Arrays.InitializeWithDefaultInstances<global::Dpr.Battle.Logic.MiseaiData>(5);
+		public int[] stations = new int[5];
 		public bool isPlayerRatingDisplay;
 		public bool isLiveRecSendEnable;
-		public global::Pml.PokeParty[] party;
-		public global::Dpr.Battle.Logic.PartyDesc[] partyDesc;
-		public global::Dpr.Battle.Logic.MyStatus[] playerStatus;
-		public ushort[] playerRating;
-		public global::Dpr.BallDeco.CapsuleData[][] ballDecoDesc;
-		public global::Dpr.Battle.Logic.BSP_TRAINER_DATA[] tr_data;
+		public global::Pml.PokeParty[] party = new global::Pml.PokeParty[5];
+		public global::Dpr.Battle.Logic.PartyDesc[] partyDesc = Arrays.InitializeWithDefaultInstances<global::Dpr.Battle.Logic.PartyDesc>(5);
+		public global::Dpr.Battle.Logic.MyStatus[] playerStatus = new global::Dpr.Battle.Logic.MyStatus[5];
+		public ushort[] playerRating = new ushort[5];
+		public global::Dpr.BallDeco.CapsuleData[][] ballDecoDesc = RectangularArrays.RectangularDefaultArray<global::Dpr.BallDeco.CapsuleData>(5, 6);
+		public global::Dpr.Battle.Logic.BSP_TRAINER_DATA[] tr_data = new global::Dpr.Battle.Logic.BSP_TRAINER_DATA[5];
 		public bool bGakusyuSouti;
 		public ushort LimitTimeGame;
 		public ushort LimitTimeClient;
 		public ushort LimitTimeCommand;
 		public bool bEnableTimeStop;
-		public global::Dpr.Battle.Logic.SHOOTER_ITEM_BIT_WORK shooterBitWork;
+		public global::Dpr.Battle.Logic.SHOOTER_ITEM_BIT_WORK shooterBitWork = new global::Dpr.Battle.Logic.SHOOTER_ITEM_BIT_WORK();
 		public bool reduceHighLevelCaptureRate;
 		public byte maxFollowPokeLevel;
 		public byte captureLevelCap;
@@ -44,7 +44,7 @@ namespace Dpr.Battle.Logic
 		public bool bNoGainBattle;
 		public int safariBallNum;
 		public bool bVoiceChat;
-		public global::Dpr.Battle.Logic.BATTLE_CONVENTION_INFO[] conventionInfo;
+		public global::Dpr.Battle.Logic.BATTLE_CONVENTION_INFO[] conventionInfo = Arrays.InitializeWithDefaultInstances<global::Dpr.Battle.Logic.BATTLE_CONVENTION_INFO>(2);
 		public int getMoney;
 		public global::Dpr.Battle.Logic.BtlResult result;
 		public byte fairyGymResult;
@@ -57,21 +57,21 @@ namespace Dpr.Battle.Logic
 		public unsafe byte* recBuffer;
 		public uint recDataSize;
 		public ulong recRandSeed;
-		public global::Dpr.Battle.Logic.BattleRecordHeader recHeader;
-		public global::Dpr.Battle.Logic.BATTLE_KENTEI_RESULT kenteiResult;
+		public global::Dpr.Battle.Logic.BattleRecordHeader recHeader = new global::Dpr.Battle.Logic.BattleRecordHeader();
+		public global::Dpr.Battle.Logic.BATTLE_KENTEI_RESULT kenteiResult = new global::Dpr.Battle.Logic.BATTLE_KENTEI_RESULT();
 		public bool cmdIllegalFlag;
 		public bool recPlayCompleteFlag;
 		public bool WifiBadNameFlag;
 		public bool isDisconnectOccur;
 		public bool isWatchMember;
-		public bool[] fightPokeIndex;
-		public bool[] turnedLvUpPokeIndex;
-		public global::Dpr.Battle.Logic.PokeResult[] pokeResult;
-		public byte[][] party_state;
-		public uint[] restHPRatio;
+		public bool[] fightPokeIndex = new bool[6];
+		public bool[] turnedLvUpPokeIndex = new bool[6];
+		public global::Dpr.Battle.Logic.PokeResult[] pokeResult = Arrays.InitializeWithDefaultInstances<global::Dpr.Battle.Logic.PokeResult>(6);
+		public byte[][] party_state = RectangularArrays.RectangularDefaultArray<byte>(5, 6);
+		public uint[] restHPRatio = new uint[5];
 		public global::Dpr.Battle.Logic.BATTLE_PGL_RECORD_SET PGL_Record = new BATTLE_PGL_RECORD_SET();
 		public global::Dpr.Battle.Logic.BATTLE_TVNAVI_DATA tvNaviData = new BATTLE_TVNAVI_DATA();
-		public global::Dpr.Battle.Logic.PokeMemoryResult pokeMemoryResult;
+		public global::Dpr.Battle.Logic.PokeMemoryResult pokeMemoryResult = new global::Dpr.Battle.Logic.PokeMemoryResult();
 		public int throwBallNum { get; set; }
 		public void Clear() {
             competitor = 0;
@@ -163,6 +163,6 @@ namespace Dpr.Battle.Logic
                     ballDecoDesc[i][j].Clear();
             }
         }
-		public BATTLE_SETUP_PARAM() { /*@B 0x6006781*/ throw null; }
+		public BATTLE_SETUP_PARAM() { }
 	}
 }
