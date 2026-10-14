@@ -6,7 +6,15 @@ namespace Audio
 		public string _bankName;
 		public uint _bankId;
 		public global::Audio.AudioData.LoadState _loadState;
-		public override int Release() { /*@B 0x60029B6*/ throw null; }
+		public override int Release() {
+            int count = base.Release();
+            if (count == 0)
+            {
+                _loadState = LoadState.Unloading;
+                AkSoundEngine.UnloadBank(_bankId, global::System.IntPtr.Zero, (bankId_, bankPtr, result, data) => global::Audio.AudioManager._Unload(this), this);
+            }
+            return count;
+        }
 		public AudioData() { }
 		public enum LoadState
 		{

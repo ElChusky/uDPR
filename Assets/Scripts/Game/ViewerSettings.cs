@@ -3,31 +3,31 @@
 public class ViewerSettings : global::SmartPoint.Components.PlayerPrefsProvider<global::ViewerSettings>
 {
 	[global::UnityEngine.SerializeField]
-	private float _cameraFov;
+	private float _cameraFov = 45f;
 	[global::UnityEngine.SerializeField]
-	private float _focalLength;
+	private float _focalLength = 1f;
 	[global::UnityEngine.SerializeField]
-	private float _farDepth;
+	private float _farDepth = 30f;
 	[global::UnityEngine.SerializeField]
-	private float _blurry;
+	private float _blurry = 1f;
 	[global::UnityEngine.SerializeField]
-	private global::UnityEngine.Color _clearColor;
+	private global::UnityEngine.Color _clearColor = new global::UnityEngine.Color(0.1f, 0.1f, 0.2f);
 	[global::UnityEngine.SerializeField]
 	private bool _autoRotate;
 	[global::UnityEngine.SerializeField]
-	private bool _effectEnable;
+	private bool _effectEnable = true;
 	[global::UnityEngine.SerializeField]
 	private bool _saveField;
 	[global::UnityEngine.SerializeField]
-	private bool _appendOpenMode;
+	private bool _appendOpenMode = true;
 	[global::UnityEngine.SerializeField]
-	private string _fieldAssetBundleName;
+	private string _fieldAssetBundleName = string.Empty;
 	[global::UnityEngine.SerializeField]
 	private int _timeZone;
 	[global::UnityEngine.SerializeField]
 	private bool _hideBoundingBox;
 	[global::UnityEngine.SerializeField]
-	private bool _autoFit;
+	private bool _autoFit = true;
 	[global::UnityEngine.SerializeField]
 	private bool _sequentialShooting;
 	[global::UnityEngine.SerializeField]
@@ -37,31 +37,46 @@ public class ViewerSettings : global::SmartPoint.Components.PlayerPrefsProvider<
 	[global::UnityEngine.SerializeField]
 	private bool _trackShadowAdjust;
 	[global::UnityEngine.SerializeField]
-	private float _sensorScale;
+	private float _sensorScale = 1f;
 	private global::UnityEngine.Camera _camera;
 	private global::SmartPoint.Rendering.DepthOfField _dof;
-	private string _lastSelectionName;
-	protected override string key { get { /*@B 0x6001578*/ throw null; } }
-	public static global::UnityEngine.Camera camera { set { /*@B 0x6001579*/ throw null; } }
-	public static float fieldOfView { get { /*@B 0x600157A*/ throw null; } set { /*@B 0x600157B*/ throw null; } }
-	public static global::UnityEngine.Transform cameraTarget { get { /*@B 0x600157C*/ throw null; } set { /*@B 0x600157D*/ throw null; } }
-	public static float farDepth { get { /*@B 0x600157E*/ throw null; } set { /*@B 0x600157F*/ throw null; } }
-	public static bool sequentialShooting { get { /*@B 0x6001580*/ throw null; } set { /*@B 0x6001581*/ throw null; } }
-	public static bool avatarTakeover { get { /*@B 0x6001582*/ throw null; } set { /*@B 0x6001583*/ throw null; } }
-	public static int trackColorVariation { get { /*@B 0x6001584*/ throw null; } set { /*@B 0x6001585*/ throw null; } }
-	public static bool trackShadowAdjust { get { /*@B 0x6001586*/ throw null; } set { /*@B 0x6001587*/ throw null; } }
-	public static float clearColorR { get { /*@B 0x6001588*/ throw null; } set { /*@B 0x6001589*/ throw null; } }
-	public static float clearColorG { get { /*@B 0x600158A*/ throw null; } set { /*@B 0x600158B*/ throw null; } }
-	public static float clearColorB { get { /*@B 0x600158C*/ throw null; } set { /*@B 0x600158D*/ throw null; } }
-	public static float sensorScale { get { /*@B 0x600158E*/ throw null; } set { /*@B 0x600158F*/ throw null; } }
-	public static bool autoRotate { get { /*@B 0x6001590*/ throw null; } set { /*@B 0x6001591*/ throw null; } }
-	public static bool effectEnable { get { /*@B 0x6001592*/ throw null; } set { /*@B 0x6001593*/ throw null; } }
-	public static bool saveField { get { /*@B 0x6001594*/ throw null; } set { /*@B 0x6001595*/ throw null; } }
-	public static int timeZone { get { /*@B 0x6001596*/ throw null; } set { /*@B 0x6001597*/ throw null; } }
-	public static bool appendOpenMode { get { /*@B 0x6001598*/ throw null; } set { /*@B 0x6001599*/ throw null; } }
-	public static bool hideBoundingBox { get { /*@B 0x600159A*/ throw null; } set { /*@B 0x600159B*/ throw null; } }
-	public static bool autoFit { get { /*@B 0x600159C*/ throw null; } set { /*@B 0x600159D*/ throw null; } }
-	public static string fieldAssetBundleName { get { /*@B 0x600159E*/ throw null; } set { /*@B 0x600159F*/ throw null; } }
-	public static string lastSelectionName { get { /*@B 0x60015A0*/ throw null; } set { /*@B 0x60015A1*/ throw null; } }
-	public ViewerSettings() { /*@B 0x60015A2*/ throw null; }
+	private string _lastSelectionName = string.Empty;
+	protected override string key { get { return "ViewerSettings"; } }
+	public static global::UnityEngine.Camera camera { set
+	{
+		instance._camera = value;
+		global::SmartPoint.Rendering.DepthOfField dof = global::SmartPoint.Rendering.DepthOfField.instance;
+		if (value != null)
+		{
+			value.fieldOfView = instance._cameraFov;
+			value.backgroundColor = instance._clearColor;
+			if (dof != null)
+			{
+				dof.farDepth = instance._farDepth;
+				dof.focalLength = instance._focalLength;
+			}
+		}
+		instance._dof = dof;
+	} }
+	public static float fieldOfView { get { return instance._cameraFov; } set { instance._camera.fieldOfView = value; instance._cameraFov = value; } }
+	public static global::UnityEngine.Transform cameraTarget { get { return instance._dof.target; } set { instance._dof.target = value; } }
+	public static float farDepth { get { return instance._farDepth; } set { instance._dof.farDepth = value; instance._farDepth = value; } }
+	public static bool sequentialShooting { get { return instance._sequentialShooting; } set { instance._sequentialShooting = value; } }
+	public static bool avatarTakeover { get { return instance._avatarTakeover; } set { instance._avatarTakeover = value; } }
+	public static int trackColorVariation { get { return instance._trackColorVariation; } set { instance._trackColorVariation = value; } }
+	public static bool trackShadowAdjust { get { return instance._trackShadowAdjust; } set { instance._trackShadowAdjust = value; } }
+	public static float clearColorR { get { return instance._clearColor.r; } set { instance._clearColor.r = value; instance._camera.backgroundColor = instance._clearColor; } }
+	public static float clearColorG { get { return instance._clearColor.g; } set { instance._clearColor.g = value; instance._camera.backgroundColor = instance._clearColor; } }
+	public static float clearColorB { get { return instance._clearColor.b; } set { instance._clearColor.b = value; instance._camera.backgroundColor = instance._clearColor; } }
+	public static float sensorScale { get { return instance._sensorScale; } set { instance._sensorScale = value; } }
+	public static bool autoRotate { get { return instance._autoRotate; } set { instance._autoRotate = value; } }
+	public static bool effectEnable { get { return instance._effectEnable; } set { instance._effectEnable = value; } }
+	public static bool saveField { get { return instance._saveField; } set { instance._saveField = value; } }
+	public static int timeZone { get { return instance._timeZone; } set { instance._timeZone = value; } }
+	public static bool appendOpenMode { get { return instance._appendOpenMode; } set { instance._appendOpenMode = value; } }
+	public static bool hideBoundingBox { get { return instance._hideBoundingBox; } set { instance._hideBoundingBox = value; } }
+	public static bool autoFit { get { return instance._autoFit; } set { instance._autoFit = value; } }
+	public static string fieldAssetBundleName { get { return instance._fieldAssetBundleName; } set { instance._fieldAssetBundleName = value; } }
+	public static string lastSelectionName { get { return instance._lastSelectionName; } set { instance._lastSelectionName = value; } }
+	public ViewerSettings() { }
 }
