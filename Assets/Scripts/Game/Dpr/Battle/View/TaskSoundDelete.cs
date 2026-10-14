@@ -5,9 +5,18 @@ namespace Dpr.Battle.View
 	{
 		private global::Audio.AudioInstance _audioInstance;
 		private global::Dpr.Battle.View.Objects.BtlvSound _sound;
-		protected override bool IsFinishCondition { get { /*@B 0x6006005*/ throw null; } }
-		public TaskSoundDelete(global::Dpr.Battle.View.Objects.BtlvSound instance, int lifeTime, int frame = 0) { /*@B 0x6006006*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006007*/ throw null; }
-		protected override void OnFinishTask() { /*@B 0x6006008*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime < _frame; } }
+		public TaskSoundDelete(global::Dpr.Battle.View.Objects.BtlvSound instance, int lifeTime, int frame = 0) {
+			_sound = instance;
+			_lifeTime = lifeTime;
+			_frame = frame;
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _audioInstance);
+		}
+		protected override void OnFinishTask() {
+			if (_audioInstance != null)
+				_audioInstance.Stop();
+		}
 	}
 }

@@ -25,7 +25,7 @@ namespace Dpr.Battle.View.Objects
 		private bool m_isPlayPinchSound;
 		private global::Dpr.ObjectEntity _iPtrMigawariObject;
 		private global::Dpr.ObjectEntity _iPtrDigudaStone;
-		public global::BattlePokemonEntity Entity { get { /*@B 0x60065FE*/ throw null; } }
+		public global::BattlePokemonEntity Entity { get { return this.GetComponentThis(ref _entity); } }
 		public global::Pml.PokePara.PokemonParam Param { get { return this._param; } }
 		public bool IsEnableFloat { get; private set; }
 		public bool IsVisibleDigudaStone { get; set; }
@@ -34,12 +34,49 @@ namespace Dpr.Battle.View.Objects
 		public global::Dpr.ObjectEntity MigawariObject { get { return this._iPtrMigawariObject; } }
 		public bool IsVisibleTame { get; set; }
 		public global::Pml.PokePara.GState IsGChange { get { return (global::Pml.PokePara.GState)(0); } }
-		public bool IsDisp { get { /*@B 0x600660C*/ throw null; } }
-		public global::BattlePokemonEntity.AnimationState CurrentAnimationState { get { /*@B 0x6006621*/ throw null; } }
-		public float CurrentRemaingTime { get { /*@B 0x6006622*/ throw null; } }
-		public void Initialize(global::Dpr.Battle.Logic.BtlvPos vPos, global::Pml.PokePara.PokemonParam param) { /*@B 0x600660D*/ throw null; }
-		private static int GetUniqueID(global::Pml.MonsNo monsNo, int formNo) { /*@B 0x600660E*/ throw null; }
-		private void SetupAdjustHeight() { /*@B 0x600660F*/ throw null; }
+		public bool IsDisp { get { return m_isVisible && IsVisibleTame; } }
+		public global::BattlePokemonEntity.AnimationState CurrentAnimationState { get { return Entity.CurrentAnimationState; } }
+		public float CurrentRemaingTime { get { return Entity.GetAnimationPlayer().currentRemaingTime; } }
+		public void Initialize(global::Dpr.Battle.Logic.BtlvPos vPos, global::Pml.PokePara.PokemonParam param) {
+			InitializeMember();
+			_param = param;
+			_isEnableWaitB = false;
+			m_vPos = vPos;
+			m_type = ModelType.Pokemon;
+			_isSickSpeedSuspend = false;
+			IsVisibleMigawari = false;
+			IsVisibleTame = true;
+			_iPtrMigawariObject = null;
+			_lastPlayAnimationState = BattlePokemonEntity.AnimationState.Max;
+
+			var timingData = BattleDataTableManager.Instance.BattleDataTable.GetMotionTimingData(param.GetMonsNo(), param.GetFormNo(), param.GetSex());
+			_motionTimingData = timingData != null ? new MotionTimingData(timingData) : MotionTimingData.Factory();
+
+			// GetDisableBlinkPokemon / GetPokemonMotionBlendTime / GetMotionReplaceData are inlined loops in 01e51cb0
+			if (BattleDataTableManager.Instance.BattleDataTable.GetDisableBlinkPokemon(param.GetMonsNo()) != null)
+				Entity.GetAutomaticBlinkProcess().IsConstantBlink = false;
+
+			Entity.PokemonMotionBlendTimeData = BattleDataTableManager.Instance.BattleDataTable.GetPokemonMotionBlendTime(param.GetMonsNo());
+
+			int uniqueId = GetUniqueID(_param.GetMonsNo(), _param.GetFormNo());
+			_motionReplaceData = BattleDataTableManager.Instance.BattleDataTable.GetMotionReplaceData(uniqueId);
+
+			Entity.SetPatcheelPattern(param.GetPersonalRnd());
+			Entity.isZIBAKOIRU = param.GetMonsNo() == MonsNo.ZIBAKOIRU;
+			SetupAdjustHeight();
+		}
+		private static int GetUniqueID(global::Pml.MonsNo monsNo, int formNo) { return (int)monsNo * 100 + formNo; }
+		private void SetupAdjustHeight() {
+			if (Entity != null)
+			{
+				m_adjustHeight = m_cameraAdjustHeight = ((float)Entity.GetSimpleParam().adjustHeight * 0.01f - 1.0f) * 0.5f + 1.0f;
+			}
+			else
+			{
+				m_adjustHeight = DEFAULT_ADJUST_HEIGHT;
+				m_cameraAdjustHeight = DEFAULT_ADJUST_HEIGHT;
+			}
+		}
 		public override void StartDelete() {
 			if (IsLoadedMigawari())
 			{
@@ -112,11 +149,11 @@ namespace Dpr.Battle.View.Objects
 			if (IsLoadedMigawari())
 				_iPtrMigawariObject.SetActive(isVisibleMigawari);
 		}
-		public global::Pml.PokePara.Size GetSize() { /*@B 0x6006613*/ throw null; }
-		public global::Dpr.Battle.View.Objects.LandingType GetPokeLandingType() { /*@B 0x6006614*/ throw null; }
-		public global::Dpr.Battle.View.Objects.LandingType GetPokeLandingEXType() { /*@B 0x6006615*/ throw null; }
-		public global::Dpr.Battle.View.Objects.MotionTimingData GetMotionTimingData() { /*@B 0x6006616*/ throw null; }
-		public void SetMotionTimingData(global::Dpr.Battle.View.Objects.MotionTimingData data) { /*@B 0x6006617*/ throw null; }
+		public global::Pml.PokePara.Size GetSize() { return Entity.Size; }
+		public global::Dpr.Battle.View.Objects.LandingType GetPokeLandingType() { return Entity.LandingType; }
+		public global::Dpr.Battle.View.Objects.LandingType GetPokeLandingEXType() { return Entity.LandingType; }
+		public global::Dpr.Battle.View.Objects.MotionTimingData GetMotionTimingData() { return _motionTimingData; }
+		public void SetMotionTimingData(global::Dpr.Battle.View.Objects.MotionTimingData data) { _motionTimingData = data; }
 		public float GetCamAdjustHeight() { return this.m_cameraAdjustHeight; }
 		public float GetAdjustHeight() { return this.m_adjustHeight; }
 		public global::Dpr.Battle.View.Objects.PokeEffWeight CheckPokemonEffectWeight() {
@@ -657,6 +694,6 @@ namespace Dpr.Battle.View.Objects
 		public override void SetVisibleShadow(bool value) {
 			Entity.ShadowCastSystem.IsDraw = value;
 		}
-		public BOPokemon() { /*@B 0x6006637*/ throw null; }
+		public BOPokemon() { }
 	}
 }

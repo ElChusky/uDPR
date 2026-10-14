@@ -9,7 +9,7 @@ namespace Dpr.Battle.View.Playables
 	{
 		[global::UnityEngine.HeaderAttribute("[CameraData(待機カメラの場合は無視されます)]")]
 		[global::UnityEngine.SerializeField]
-		private global::Dpr.Battle.View.Playables.CameraData _cameraData;
+		private global::Dpr.Battle.View.Playables.CameraData _cameraData = global::Dpr.Battle.View.Playables.CameraData.Factory();
 		[global::UnityEngine.HeaderAttribute("[Animation Params]")]
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Animation _animation;
@@ -19,7 +19,7 @@ namespace Dpr.Battle.View.Playables
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Transform _shakeNode;
 		[global::UnityEngine.SerializeField]
-		private global::Dpr.Battle.View.Playables.ShakeParam _shakeParam;
+		private global::Dpr.Battle.View.Playables.ShakeParam _shakeParam = global::Dpr.Battle.View.Playables.ShakeParam.Factory();
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.Battle.View.Playables.CameraCommander _waitCameraCommander;
 		[global::UnityEngine.SerializeField]
@@ -31,8 +31,8 @@ namespace Dpr.Battle.View.Playables
 		private bool _isFlip;
 		private global::Dpr.SequenceEditor.ISequenceViewSystem _viewSystem;
 		private global::XLSXContent.BattleWaitCameraData.SheetWaitCameraData _waitCameraData;
-		public override bool IsPlaying { get { /*@B 0x60065E4*/ throw null; } }
-		public global::UnityEngine.Animation Animation { get { /*@B 0x60065E5*/ throw null; } }
+		public override bool IsPlaying { get { return this.GetComponentThis(ref _animation).isPlaying; } }
+		public global::UnityEngine.Animation Animation { get { return this.GetComponentThis(ref _animation); } }
 		public global::Dpr.Battle.View.Playables.CameraCommander Commander { get { return this._waitCameraCommander; } }
 		private void OnDestroy() {
 			Mem.Del(ref _onComplete);
@@ -215,7 +215,7 @@ namespace Dpr.Battle.View.Playables
 		public void SetCameraAnimationScale(global::UnityEngine.Vector3 scale) {
 			transform.localScale = scale;
 		}
-		public CameraFilePlayable() { /*@B 0x60065F9*/ throw null; }
+		public CameraFilePlayable() { }
 		public enum PlayMode
 		{
 			WaitCamera = 0,

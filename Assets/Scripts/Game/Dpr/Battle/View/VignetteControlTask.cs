@@ -3,6 +3,6 @@ namespace Dpr.Battle.View
 {
 	public sealed class VignetteControlTask : global::Dpr.Battle.View.TaskPostEffectCotrol
 	{
-		public VignetteControlTask(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject) : base(default(global::Dpr.SequenceEditor.SequenceCameraObject)) { /*@B 0x600604D*/ throw null; }
+		public VignetteControlTask(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject) : base(cameraObject) { }
 	}
 }

@@ -3,8 +3,11 @@ namespace Dpr.Battle.View
 {
 	public sealed class TaskVector4Control : global::Dpr.Battle.View.TaskValueControl<global::UnityEngine.Vector4>
 	{
-		protected override bool IsFinishCondition { get { /*@B 0x6005FF3*/ throw null; } }
-		public TaskVector4Control(global::UnityEngine.Vector4 from, global::UnityEngine.Vector4 to, global::DG.Tweening.Ease easingType, int lifeTime, global::System.Action<global::UnityEngine.Vector4> onUpdate) : base(default(global::UnityEngine.Vector4), default(global::UnityEngine.Vector4), default(global::System.Action<global::UnityEngine.Vector4>)) { /*@B 0x6005FF4*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskVector4Control(global::UnityEngine.Vector4 from, global::UnityEngine.Vector4 to, global::DG.Tweening.Ease easingType, int lifeTime, global::System.Action<global::UnityEngine.Vector4> onUpdate) : base(from, to, onUpdate) {
+			_lifeTime = lifeTime;
+			_easingType = easingType;
+		}
 		protected override void OnUpdate(int frame, float raito) {
 			// @01e8b624–01e8b6b8: _from / _to loaded first, `_easingType` loaded ONCE (@01e8b63c) before the four
 			// DOVirtual.EasedValue calls + Vector4 ctor = the inlined Mathe.Easing.EasedValue(Vector4) (b076 lesson 1).

@@ -11,7 +11,7 @@ namespace Dpr.Battle.View.Playables
 		public float fStop;
 		[global::UnityEngine.HeaderAttribute("ぼかしスケール(DepthOfField=farDepth)")]
 		public float focusRegionScale;
-		public static global::Dpr.Battle.View.Playables.DofParam Factory() { /*@B 0x60065E0*/ throw null; }
+		public static global::Dpr.Battle.View.Playables.DofParam Factory() { return default(DofParam); }
 		public static global::Dpr.Battle.View.Playables.DofParam Factory(global::Dpr.SequenceEditor.EffDepthOfFieldSet other) {
 			return new DofParam
 			{

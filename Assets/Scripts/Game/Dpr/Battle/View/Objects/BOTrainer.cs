@@ -10,12 +10,19 @@ namespace Dpr.Battle.View.Objects
 	public sealed class BOTrainer : global::Dpr.Battle.View.Objects.BattleViewCharacter
 	{
 		private const string SEQUENCE_BALL_NODE_NAME = "loc_ob_ball";
-		public static readonly global::System.Tuple<string, int>[] CONVERT_ANIMATON_NAME_TO_SEQUENCE_ID;
-		public static readonly global::System.Tuple<string, global::Dpr.Battle.View.JointName>[] CONVERT_ATTACH_JOINT_TO_JOINT_NAME;
+		public static readonly global::System.Tuple<string, int>[] CONVERT_ANIMATON_NAME_TO_SEQUENCE_ID = new global::System.Tuple<string, int>[]
+		{
+			new global::System.Tuple<string, int>("ba_advent01", global::BattleCharacterEntity.SequenceID.Advent),
+			new global::System.Tuple<string, int>("ba_order01", global::BattleCharacterEntity.SequenceID.Order),
+		};
+		public static readonly global::System.Tuple<string, global::Dpr.Battle.View.JointName>[] CONVERT_ATTACH_JOINT_TO_JOINT_NAME = new global::System.Tuple<string, global::Dpr.Battle.View.JointName>[]
+		{
+			new global::System.Tuple<string, global::Dpr.Battle.View.JointName>(SEQUENCE_BALL_NODE_NAME, global::Dpr.Battle.View.JointName.LItem1),
+		};
 		private global::Dpr.Battle.Logic.TRAINER_DATA _trainerData;
 		private global::BattleCharacterEntity _battlePlayerEntity;
 		public bool IsPlayer { get => (object)Entity != null; }
-		public global::BattleCharacterEntity Entity { get { /*@B 0x6006639*/ throw null; } }
+		public global::BattleCharacterEntity Entity { get { return this.GetComponentThis(ref _battlePlayerEntity); } }
 		public void Initialize(global::Dpr.Battle.Logic.BtlvPos vPos, global::Dpr.Battle.Logic.TRAINER_DATA data) {
 			base.Initialize(vPos);
 			_trainerData = data;
@@ -156,7 +163,7 @@ namespace Dpr.Battle.View.Objects
 		public override void SetVisibleShadow(bool value) {
 			Entity.ShadowCastSystem.IsDraw = value;
 		}
-		public BOTrainer() { /*@B 0x600664B*/ throw null; }
-		static BOTrainer() { /*@B 0x600664C*/ throw null; }
+		public BOTrainer() { }
+		static BOTrainer() { }
 	}
 }

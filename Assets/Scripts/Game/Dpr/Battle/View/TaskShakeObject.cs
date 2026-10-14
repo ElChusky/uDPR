@@ -13,9 +13,23 @@ namespace Dpr.Battle.View
 		private global::Dpr.Battle.View.TaskShakeObject.VectorSetFunc _setFunc;
 		private global::Dpr.Battle.View.TaskShakeObject.VectorGetFunc _vectorGetFunc;
 		private global::Dpr.Battle.View.TaskShakeObject.RotateGetFunc _rotateGetFunc;
-		protected override bool IsFinishCondition { get { /*@B 0x6005FFA*/ throw null; } }
-		public TaskShakeObject(global::Dpr.Battle.View.TaskShakeObject.VectorSetFunc setFunc, global::Dpr.Battle.View.TaskShakeObject.VectorGetFunc getFunc, global::Dpr.Battle.View.TaskShakeObject.RotateGetFunc rotGetFunc, float startRate, float endRate, float startDec, float endDec, int lifeTime, global::Dpr.SequenceEditor.SEQ_DEF_AXIS axis) { /*@B 0x6005FFB*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6005FFC*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskShakeObject(global::Dpr.Battle.View.TaskShakeObject.VectorSetFunc setFunc, global::Dpr.Battle.View.TaskShakeObject.VectorGetFunc getFunc, global::Dpr.Battle.View.TaskShakeObject.RotateGetFunc rotGetFunc, float startRate, float endRate, float startDec, float endDec, int lifeTime, global::Dpr.SequenceEditor.SEQ_DEF_AXIS axis) {
+			_setFunc = setFunc;
+			_vectorGetFunc = getFunc;
+			_rotateGetFunc = rotGetFunc;
+			_startRate = startRate * 0.01f;
+			_startDec = startDec * 360.0f;
+			_endRate = endRate * 0.01f;
+			_lifeTime = lifeTime;
+			_axis = axis;
+			_endDec = endDec * 360.0f;
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _setFunc);
+			Mem.Del(ref _vectorGetFunc);
+			Mem.Del(ref _rotateGetFunc);
+		}
 		protected override void OnUpdate(int frame, float raito) {
 			float rate = Mathe.Easing.EasedValue(_startRate, _endRate, raito, DG.Tweening.Ease.Linear);
 			float dec = Mathe.Easing.EasedValue(_startDec, _endDec, raito, DG.Tweening.Ease.Linear);

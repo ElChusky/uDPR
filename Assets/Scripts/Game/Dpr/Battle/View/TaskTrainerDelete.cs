@@ -6,7 +6,11 @@ namespace Dpr.Battle.View
 		private global::Dpr.SequenceEditor.ISequenceViewSystem _iPtrBtlvSystem;
 		private global::Dpr.Battle.Logic.BtlvPos _vPos;
 		private global::Dpr.Battle.View.TaskTrainerDelete.Sequence _seq;
-		public TaskTrainerDelete(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem, global::Dpr.Battle.Logic.BtlvPos vPos) { /*@B 0x6006032*/ throw null; }
+		public TaskTrainerDelete(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem, global::Dpr.Battle.Logic.BtlvPos vPos) {
+			_iPtrBtlvSystem = pBtlvSystem;
+			_vPos = vPos;
+			_seq = Sequence.START_DELETE;
+		}
 		public override void Update(float deltaTime, float currentSequenceTime, int step) {
 			Objects.BOTrainer trainer = _iPtrBtlvSystem.GetTrainerModel(_vPos) as Objects.BOTrainer;
 			switch (_seq)

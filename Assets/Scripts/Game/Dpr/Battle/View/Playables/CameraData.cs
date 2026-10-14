@@ -18,6 +18,21 @@ namespace Dpr.Battle.View.Playables
 		public global::Dpr.Battle.View.Playables.DofParam dofParam;
 		[global::UnityEngine.HeaderAttribute("カメラのねじれ(Z軸)")]
 		public float twist;
-		public static global::Dpr.Battle.View.Playables.CameraData Factory() { /*@B 0x60065E2*/ throw null; }
+		public static global::Dpr.Battle.View.Playables.CameraData Factory() {
+			return new CameraData
+			{
+				name = null,
+				type = ControlType.Srt,
+				nearLength = 0.0f,
+				farLength = 0.0f,
+				fovy = 0.0f,
+				rotation = UnityEngine.Vector3.zero,
+				translate = UnityEngine.Vector3.zero,
+				upVector = UnityEngine.Vector3.up,
+				aimPos = UnityEngine.Vector3.zero,
+				dofParam = default(DofParam),
+				twist = 0.0f,
+			};
+		}
 	}
 }

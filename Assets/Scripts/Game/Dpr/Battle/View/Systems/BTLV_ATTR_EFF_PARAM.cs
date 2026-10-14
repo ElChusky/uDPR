@@ -5,7 +5,28 @@ namespace Dpr.Battle.View.Systems
 	{
 		public global::EffectBattleID attrEffectID;
 		public global::EffectBattleID streamLineEffectID;
-		public void SetStreamLineEffectID(global::PeriodOfDay day, global::EffectBattleID[] ids) { /*@B 0x600651C*/ throw null; }
-		public static global::Dpr.Battle.View.Systems.BTLV_ATTR_EFF_PARAM Factory() { /*@B 0x600651D*/ throw null; }
+		public void SetStreamLineEffectID(global::PeriodOfDay day, global::EffectBattleID[] ids) {
+			switch (day)
+			{
+				case global::PeriodOfDay.Morning:
+				case global::PeriodOfDay.Daytime:
+					streamLineEffectID = ids[0];
+					break;
+				case global::PeriodOfDay.Evening:
+					streamLineEffectID = ids[1];
+					break;
+				case global::PeriodOfDay.Night:
+				case global::PeriodOfDay.Midnight:
+					streamLineEffectID = ids[2];
+					break;
+			}
+		}
+		public static global::Dpr.Battle.View.Systems.BTLV_ATTR_EFF_PARAM Factory() {
+			return new BTLV_ATTR_EFF_PARAM
+			{
+				attrEffectID = global::EffectBattleID.NONE,
+				streamLineEffectID = global::EffectBattleID.NONE,
+			};
+		}
 	}
 }

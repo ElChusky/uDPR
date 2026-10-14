@@ -3,8 +3,12 @@ namespace Dpr.Battle.View
 {
 	public sealed class TaskVectorControl : global::Dpr.Battle.View.TaskValueControl<global::UnityEngine.Vector3>
 	{
-		protected override bool IsFinishCondition { get { /*@B 0x6005FF0*/ throw null; } }
-		public TaskVectorControl(global::UnityEngine.Vector3 from, global::UnityEngine.Vector3 to, global::DG.Tweening.Ease easingType, int lifeTime, global::System.Action<global::UnityEngine.Vector3> onUpdate) : base(default(global::UnityEngine.Vector3), default(global::UnityEngine.Vector3), default(global::System.Action<global::UnityEngine.Vector3>)) { /*@B 0x6005FF1*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskVectorControl(global::UnityEngine.Vector3 from, global::UnityEngine.Vector3 to, global::DG.Tweening.Ease easingType, int lifeTime, global::System.Action<global::UnityEngine.Vector3> onUpdate) : base(from, to, onUpdate) {
+			_lifeTime = lifeTime;
+			_easingType = easingType;
+			_elapsedTime = 0.0f;
+		}
 		protected override void OnUpdate(int frame, float raito) {
 			_onUpdate?.Invoke(Mathe.Easing.EasedValue(_from, _to, raito, _easingType));
 		}

@@ -6,11 +6,28 @@ namespace Dpr.Battle.View.Systems
 	{
 		private float _cursorWait;
 		private float _executeWait;
-		private global::Dpr.Battle.View.Systems.BUIAutoPilot.AutoPilotCommand[] _autoPilotData;
+		private global::Dpr.Battle.View.Systems.BUIAutoPilot.AutoPilotCommand[] _autoPilotData = new global::Dpr.Battle.View.Systems.BUIAutoPilot.AutoPilotCommand[]
+		{
+			AutoPilotCommand.SetDumyBag,
+			AutoPilotCommand.WaitForStandbyAction,
+			AutoPilotCommand.ExecuteActionButton,
+			AutoPilotCommand.WaitForStandbyWaza,
+			AutoPilotCommand.ExecuteWazaButton,
+			AutoPilotCommand.WaitForStandbyAction,
+			AutoPilotCommand.SelectActionBag,
+			AutoPilotCommand.ExecuteActionButton,
+			AutoPilotCommand.WaitForOpenBag,
+			AutoPilotCommand.SelectBagBallTab,
+			AutoPilotCommand.ExecuteBagSelectItem,
+			AutoPilotCommand.WaitForOpenContextMenu,
+			AutoPilotCommand.ExecuteContextMenuDecision,
+			AutoPilotCommand.WaitForCloseBag,
+			AutoPilotCommand.ResetDumyBag,
+		};
 		private static global::Dpr.Battle.View.Systems.BUIAutoPilot.AutoPilotMode _mode;
 		private global::Dpr.Battle.View.Systems.BattleViewUISystem _uiSystem;
 		public global::Dpr.Battle.View.Systems.BUIAutoPilot.AutoPilotState State { get; private set; }
-		public bool IsRunning { get { /*@B 0x60065CD*/ throw null; } }
+		public bool IsRunning { get { return State == AutoPilotState.Running; } }
 		public void BeginAutoPilot(global::Dpr.Battle.View.Systems.BUIAutoPilot.AutoPilotMode mode, float cursorWait, float executeWait) {
 			State = AutoPilotState.Running;
 			_mode = mode;
@@ -103,7 +120,7 @@ namespace Dpr.Battle.View.Systems
 			uiWindow.InputController.SetAutoButton(button);
 			yield return new UnityEngine.WaitForSeconds(wait);
 		}
-		public BUIAutoPilot() { /*@B 0x60065D3*/ throw null; }
+		public BUIAutoPilot() { }
 		static BUIAutoPilot() { }
 		public enum AutoPilotMode
 		{

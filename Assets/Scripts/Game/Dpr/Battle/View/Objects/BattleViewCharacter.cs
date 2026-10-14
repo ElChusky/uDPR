@@ -5,7 +5,7 @@ namespace Dpr.Battle.View.Objects
 	public class BattleViewCharacter : global::Dpr.Battle.View.Objects.BattleObject
 	{
 		protected const float DEFAULT_ADJUST_HEIGHT = 1f;
-		protected global::Dpr.Battle.Logic.BtlvPos m_vPos;
+		protected global::Dpr.Battle.Logic.BtlvPos m_vPos = global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_ERROR;
 		protected global::Dpr.Battle.View.Objects.BattleObject.ModelType m_type;
 		protected bool _isSickSpeedSuspend;
 		protected float m_adjustHeight;
@@ -14,10 +14,17 @@ namespace Dpr.Battle.View.Objects
 		protected bool _isEnableWaitB;
 		protected int _waitBCheckCnt;
 		public bool IsGJoker { get { return false; } }
-		public bool IsVisible { get { /*@B 0x600668B*/ throw null; } set { /*@B 0x600668C*/ throw null; } }
-		public bool IsFinishDelete { get { /*@B 0x600669F*/ throw null; } }
-		public virtual void Initialize(global::Dpr.Battle.Logic.BtlvPos vPos) { /*@B 0x600668D*/ throw null; }
-		protected override void InitializeMember() { /*@B 0x600668E*/ throw null; }
+		public bool IsVisible { get { return gameObject.activeSelf; } set { gameObject.SetActive(value); } }
+		public bool IsFinishDelete { get { return gameObject == null; } }
+		public virtual void Initialize(global::Dpr.Battle.Logic.BtlvPos vPos) {
+			InitializeMember();
+			m_vPos = vPos;
+			_isEnableWaitB = false;
+		}
+		protected override void InitializeMember() {
+			m_adjustHeight = DEFAULT_ADJUST_HEIGHT;
+			m_cameraAdjustHeight = DEFAULT_ADJUST_HEIGHT;
+		}
 		public virtual void SetRenderActive(bool isActive) { }
 		public void SetVisible(bool value) {
 			if (!IsEnable)
@@ -102,7 +109,7 @@ namespace Dpr.Battle.View.Objects
 			UpdateWaitB();
 			UpdateSTR();
 		}
-		public BattleViewCharacter() { /*@B 0x60066A3*/ throw null; }
+		public BattleViewCharacter() { }
 		public enum HappyType
 		{
 			NONE = 0,

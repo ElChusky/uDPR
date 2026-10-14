@@ -19,7 +19,7 @@ namespace Dpr.Battle.View.Systems
 		private bool _isFirstWaitCamera;
 		private bool _isStatedWaitCamera;
 		private int _waitCameraCnt;
-		private int _playWaitCameraIndex;
+		private int _playWaitCameraIndex = -1;
 		private global::XLSXContent.BattleWaitCameraData.SheetWaitCameraData[] _useWaitCameraDatas;
 		private global::System.Collections.Generic.HashSet<global::XLSXContent.BattleWaitCameraData.SheetWaitCameraData> _lotteryPlayWaitCameraDatas;
 		private global::UnityEngine.Vector3 _position;
@@ -30,13 +30,51 @@ namespace Dpr.Battle.View.Systems
 		private float _animFar;
 		private float _animFov;
 		private float _animTwist;
-		private global::Dpr.Battle.Logic.BtlvPos _waitCameraTargetPoke;
-		private global::Dpr.Battle.Logic.BtlvPos _waitCameraTargetTrainer;
+		private global::Dpr.Battle.Logic.BtlvPos _waitCameraTargetPoke = global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_ERROR;
+		private global::Dpr.Battle.Logic.BtlvPos _waitCameraTargetTrainer = global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_ERROR;
 		private global::UnityEngine.Coroutine _waitCameraDispose;
 		public global::Dpr.SequenceEditor.SequenceCameraSystem.WaitCameraStateType WaitCameraState { get; private set; }
-		public bool IsPlayWaitCamera { get { /*@B 0x600619E*/ throw null; } }
-		public bool IsPlayedWaitCameraOnce { get { /*@B 0x600619F*/ throw null; } }
-		public BattleCameraSystem(global::Dpr.Battle.View.Systems.BattleViewSystem pViewSystem, global::UnityEngine.Camera camera) : base(default(global::Dpr.SequenceEditor.ISequenceViewSystem)) { /*@B 0x60061A0*/ throw null; }
+		public bool IsPlayWaitCamera { get { return WaitCameraState != WaitCameraStateType.None; } }
+		public bool IsPlayedWaitCameraOnce { get { return !_isFirstWaitCamera; } }
+		public BattleCameraSystem(global::Dpr.Battle.View.Systems.BattleViewSystem pViewSystem, global::UnityEngine.Camera camera) : base(pViewSystem) {
+			var placementData = BattleDataTableManager.Instance.BattleDefaultPlacementData.GetDefaultCameraPlacementData(BtlRule.BTL_RULE_SINGLE, Pml.PokePara.Size.S, Pml.PokePara.Size.S);
+			Transform cluster = BattleProc.Instance.Cluster;
+			Array values = Enum.GetValues(typeof(CameraStateType));
+			Cameras = new Objects.BOCamera[values.Length];
+			foreach (CameraStateType type in values)
+			{
+				if (type == CameraStateType.Sub)
+					continue;
+
+				var boCamera = camera.AddComponentIfNecessary<Objects.BOCamera>();
+				boCamera.Initialize(type);
+				boCamera.IsAudioListener = true;
+				SmartPoint.Rendering.DepthOfField.instance.target = boCamera.GetTargetTransform();
+				SmartPoint.Rendering.DepthOfField.instance.sensorScale = pViewSystem.GetTimeZoneSensorScale();
+				boCamera.transform.parent = cluster;
+				if (placementData != null)
+				{
+					boCamera.transform.position = type == CameraStateType.Main ? placementData.MainCamPos : placementData.SubCamPos;
+					boCamera.transform.rotation = Quaternion.Euler(type == CameraStateType.Main ? placementData.MainCamRot : placementData.SubCamRot);
+					boCamera.Camera.nearClipPlane = type == CameraStateType.Main ? placementData.MainCamNear : placementData.SubCamNear;
+					boCamera.Camera.farClipPlane = type == CameraStateType.Main ? placementData.MainCamFar : placementData.SubCamFar;
+					boCamera.Camera.fieldOfView = type == CameraStateType.Main ? placementData.MainCamFov : placementData.SubCamFov;
+				}
+				else
+				{
+					boCamera.transform.SetOrigin();
+					boCamera.Camera.nearClipPlane = 16.0f;
+					boCamera.Camera.farClipPlane = 200000.0f;
+					boCamera.Camera.fieldOfView = 30.0f;
+				}
+				Audio.AudioManager.Instance.SetListenerPosition(boCamera.transform.position);
+				Audio.AudioManager.Instance.SetListenerRotation(boCamera.transform.rotation);
+				Cameras[(int)type] = boCamera;
+			}
+			InitializeWaitCamera();
+			CameraState = CameraStateType.Main;
+			WaitCameraState = WaitCameraStateType.None;
+		}
 		public override void OnLateUpdate(float deltaTime) {
 			if (Cameras != null)
 				base.OnLateUpdate(deltaTime);

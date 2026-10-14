@@ -17,7 +17,14 @@ namespace Dpr.Battle.View.Systems
 		private global::UnityEngine.Vector3 _cameraEffectOffset;
 		private global::UnityEngine.Coroutine _changeGroundCol;
 		private global::System.Action<global::Dpr.Battle.Logic.BtlGround, global::Dpr.Battle.Logic.BtlGround> _onChanged;
-		public BattleGroundEffectSystem(global::Dpr.Battle.View.Systems.BattleViewSystem pViewSystem) { /*@B 0x60061C0*/ throw null; }
+		public BattleGroundEffectSystem(global::Dpr.Battle.View.Systems.BattleViewSystem pViewSystem) {
+			_currentGroundType = BtlGround.BTL_GROUND_NONE;
+			_pViewSystem = pViewSystem;
+			_groundDatas = new BattleGroundData();
+			BtlGround groundType = (BtlGround)_pViewSystem.GetMainModule().GetDefaultGround();
+			LoadData(groundType);
+			_changeGroundCol = Sequencer.Start(ChangeBattleGround(groundType));
+		}
 		public void Request(global::Dpr.Battle.Logic.BtlGround ground, global::UnityEngine.Vector3 offset, global::System.Action<global::Dpr.Battle.Logic.BtlGround, global::Dpr.Battle.Logic.BtlGround> onChanged = null) {
 			_onChanged = onChanged;
 			_cameraEffectOffset = offset;

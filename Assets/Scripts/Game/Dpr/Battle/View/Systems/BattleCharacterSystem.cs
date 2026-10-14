@@ -14,7 +14,11 @@ namespace Dpr.Battle.View.Systems
 		private global::Dpr.Battle.View.Objects.BOPokemon[] _pokemons;
 		public global::Dpr.Battle.View.Objects.BOTrainer[] Trainers { get { return this._trainers; } private set { this._trainers = value; } }
 		public global::Dpr.Battle.View.Objects.BOPokemon[] Pokemons { get { return this._pokemons; } private set { this._pokemons = value; } }
-		public BattleCharacterSystem(global::Dpr.Battle.View.Systems.BattleViewSystem pViewSystem) { /*@B 0x60061B2*/ throw null; }
+		public BattleCharacterSystem(global::Dpr.Battle.View.Systems.BattleViewSystem pViewSystem) {
+			_viewSystem = pViewSystem;
+			_trainers = new BOTrainer[7];
+			_pokemons = new BOPokemon[7];
+		}
 		public void Dispose() {
 			Mem.Del(ref _viewSystem);
 			Mem.DelAry(ref _trainers);
