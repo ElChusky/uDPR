@@ -14,9 +14,9 @@ namespace Dpr.DigFossil
 		private global::XLSXContent.StatueEffectRawData statueEffectData;
 		public const short ITEM_ID_STONE_BOX = -10;
 		public const short ITEM_ID_HARD_STONE = -100;
-		public global::System.Collections.Generic.List<global::Dpr.DigFossil.DigMasterDataManager.StoneBoxData> StoneBoxDatas { get; }
-		public global::System.Collections.Generic.List<global::Dpr.DigFossil.DigMasterDataManager.DepositItemData> DepositItemDatas { get; }
-		public global::System.Collections.Generic.List<global::Dpr.DigFossil.DigMasterDataManager.HardStoneData> HardStoneDatas { get; }
+		public global::System.Collections.Generic.List<global::Dpr.DigFossil.DigMasterDataManager.StoneBoxData> StoneBoxDatas { get; } = new global::System.Collections.Generic.List<global::Dpr.DigFossil.DigMasterDataManager.StoneBoxData>();
+		public global::System.Collections.Generic.List<global::Dpr.DigFossil.DigMasterDataManager.DepositItemData> DepositItemDatas { get; } = new global::System.Collections.Generic.List<global::Dpr.DigFossil.DigMasterDataManager.DepositItemData>();
+		public global::System.Collections.Generic.List<global::Dpr.DigFossil.DigMasterDataManager.HardStoneData> HardStoneDatas { get; } = new global::System.Collections.Generic.List<global::Dpr.DigFossil.DigMasterDataManager.HardStoneData>();
 		public global::System.Collections.Generic.List<global::XLSXContent.StatueEffectRawData.Sheettable> StatueEffectData { get; private set; }
 		public void Initialize() {
 			StoneBoxDatas.Clear();
@@ -84,7 +84,7 @@ namespace Dpr.DigFossil
 			}
 			return result;
 		}
-		public DigMasterDataManager() { /*@B 0x6003800*/ throw null; }
+		public DigMasterDataManager() { }
 		public enum RatioId
 		{
 			Diamond = 0,
@@ -132,10 +132,25 @@ namespace Dpr.DigFossil
 			public short OffsetY { get; }
 			public global::XLSXContent.StoneBoxRawData.SheetBox RawData { get; }
 			public string BoxModelName { get; }
-			public short PokeType { get { /*@B 0x600A2A4*/ throw null; } }
-			public short Reality { get { /*@B 0x600A2A5*/ throw null; } }
-			public int GetRatio(global::Dpr.DigFossil.DigMasterDataManager.RatioId id) { /*@B 0x600A2A6*/ throw null; }
-			public StoneBoxData(in global::XLSXContent.StoneBoxRawData.SheetBox inRawData) { /*@B 0x600A2A7*/ throw null; }
+			public short PokeType { get { return RawData.type; } }
+			public short Reality { get { return RawData.boxId; } }
+			public int GetRatio(global::Dpr.DigFossil.DigMasterDataManager.RatioId id) {
+				if (id == RatioId.Diamond_Dialga)
+					return RawData.ratio2;
+				if (id == RatioId.Diamond)
+					return RawData.ratio1;
+				return 0;
+			}
+			public StoneBoxData(in global::XLSXContent.StoneBoxRawData.SheetBox inRawData) {
+				RawData = inRawData;
+				Shape = ToShape(inRawData.shape);
+				Width = Shape.GetLength(1);
+				Height = Shape.GetLength(0);
+				NormalWidth = Width;
+				NormalHeight = Height;
+				TextureName = string.Format("dig_dep_box_{0:D2}_{1:D2}", inRawData.type, inRawData.boxId);
+				BoxModelName = string.Format("objects/ob20{0:D2}_{1:D2}", inRawData.boxId, inRawData.type);
+			}
 		}
 		public class DepositItemData : global::Dpr.DigFossil.DigMasterDataManager.IDeposit
 		{
@@ -143,23 +158,56 @@ namespace Dpr.DigFossil
 			public char[,] Shape { get; }
 			public int Width { get; }
 			public int Height { get; }
-			public short ItemId { get { /*@B 0x600A2AB*/ throw null; } }
+			public short ItemId { get { return rawData.itemId; } }
 			public string TextureName { get; }
 			public int NormalWidth { get; }
 			public int NormalHeight { get; }
 			public int Turn { get; }
 			public bool IsDeposit { get { return true; } }
 			public bool IsStoneBox { get { return false; } }
-			public bool IsOnly { get { /*@B 0x600A2B2*/ throw null; } }
-			public bool bIsRare { get { /*@B 0x600A2B3*/ throw null; } }
+			public bool IsOnly { get { return rawData.bIsOnly; } }
+			public bool bIsRare { get { return rawData.bIsRare; } }
 			public string ResultTextureName { get; }
-			public short OffsetSize { get { /*@B 0x600A2B5*/ throw null; } }
-			public short OffsetX { get { /*@B 0x600A2B6*/ throw null; } }
-			public short OffsetY { get { /*@B 0x600A2B7*/ throw null; } }
-			public int LabelId { get { /*@B 0x600A2B8*/ throw null; } }
-			public int GetRatio(global::Dpr.DigFossil.DigMasterDataManager.RatioId id) { /*@B 0x600A2B9*/ throw null; }
-			public DepositItemData(in global::XLSXContent.DepositItemRawData.SheetDeposit inRawData) { /*@B 0x600A2BA*/ throw null; }
-			public DepositItemData(in global::Dpr.DigFossil.DigMasterDataManager.DepositItemData inDst, int turn) { /*@B 0x600A2BB*/ throw null; }
+			public short OffsetSize { get { return rawData.offsetSize; } }
+			public short OffsetX { get { return rawData.offsetX; } }
+			public short OffsetY { get { return rawData.offsetY; } }
+			public int LabelId { get { return rawData.MSLabelId; } }
+			public int GetRatio(global::Dpr.DigFossil.DigMasterDataManager.RatioId id) {
+				int ratio;
+				switch (id)
+				{
+					case RatioId.Diamond: ratio = rawData.ratio1; break;
+					case RatioId.Diamond_Dialga: ratio = rawData.ratio2; break;
+					case RatioId.Diamond_Zenkoku: ratio = rawData.ratio3; break;
+					case RatioId.Pearl: ratio = rawData.ratio4; break;
+					case RatioId.Pearl_Palkia: ratio = rawData.ratio5; break;
+					case RatioId.Pearl_Zenkoku: ratio = rawData.ratio6; break;
+					default: return 0;
+				}
+				return ratio / (rawData.turn + 1);
+			}
+			public DepositItemData(in global::XLSXContent.DepositItemRawData.SheetDeposit inRawData) {
+				rawData = inRawData;
+				Shape = ToShape(inRawData.shape);
+				Width = Shape.GetLength(1);
+				Height = Shape.GetLength(0);
+				NormalWidth = Width;
+				NormalHeight = Height;
+				Turn = 0;
+				TextureName = string.Format("dig_dep_{0:D3}_{1:D1}", inRawData.itemId, Turn);
+				ResultTextureName = string.Format("dig_item_{0:D3}", inRawData.itemId);
+			}
+			public DepositItemData(in global::Dpr.DigFossil.DigMasterDataManager.DepositItemData inDst, int turn) {
+				rawData = inDst.rawData;
+				Shape = ShapeRotationRight(inDst.Shape, turn);
+				Width = Shape.GetLength(1);
+				Height = Shape.GetLength(0);
+				NormalWidth = inDst.NormalWidth;
+				NormalHeight = inDst.NormalHeight;
+				Turn = turn;
+				TextureName = string.Format("dig_dep_{0:D3}_{1:D1}", rawData.itemId, Turn);
+				ResultTextureName = inDst.ResultTextureName;
+			}
 		}
 		public class HardStoneData : global::Dpr.DigFossil.DigMasterDataManager.IDeposit
 		{
@@ -180,8 +228,26 @@ namespace Dpr.DigFossil
 			public short OffsetX { get; }
 			public short OffsetY { get; }
 			public int GetRatio(global::Dpr.DigFossil.DigMasterDataManager.RatioId id) { return 0; }
-			public HardStoneData(in global::XLSXContent.HardStoneRawData.SheetHardStone inRawData) { /*@B 0x600A2CC*/ throw null; }
-			public HardStoneData(in global::Dpr.DigFossil.DigMasterDataManager.HardStoneData inDst, int turn) { /*@B 0x600A2CD*/ throw null; }
+			public HardStoneData(in global::XLSXContent.HardStoneRawData.SheetHardStone inRawData) {
+				rawData = inRawData;
+				Shape = ToShape(inRawData.shape);
+				Width = Shape.GetLength(1);
+				Height = Shape.GetLength(0);
+				Turn = 0;
+				NormalWidth = Width;
+				NormalHeight = Height;
+				TextureName = rawData.textureName + "_" + Turn.ToString();
+			}
+			public HardStoneData(in global::Dpr.DigFossil.DigMasterDataManager.HardStoneData inDst, int turn) {
+				rawData = inDst.rawData;
+				Shape = ShapeRotationRight(inDst.Shape, turn);
+				Width = Shape.GetLength(1);
+				Height = Shape.GetLength(0);
+				NormalWidth = inDst.NormalWidth;
+				NormalHeight = inDst.NormalHeight;
+				Turn = turn;
+				TextureName = rawData.textureName + "_" + Turn.ToString();
+			}
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace Dpr.DigFossil
 		private global::DG.Tweening.Tween tweenHandler;
 		public int LabelID { get; private set; }
 		public int UgItemId { get; private set; }
-		global::UnityEngine.GameObject global::Dpr.DigFossil.IDigResultItem.gameObject { get { /*@B 0x60037C4*/ throw null; } }
+		global::UnityEngine.GameObject global::Dpr.DigFossil.IDigResultItem.gameObject { get { return gameObject; } }
 		public void Initialize(global::UnityEngine.Sprite sprite, global::Dpr.DigFossil.DigMasterDataManager.DepositItemData data) {
 			LabelID = data.LabelId;
 			UgItemId = data.ItemId;
