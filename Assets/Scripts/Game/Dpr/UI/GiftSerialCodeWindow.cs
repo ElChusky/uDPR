@@ -79,6 +79,6 @@ namespace Dpr.UI
 				}
 			});
 		}
-		public GiftSerialCodeWindow() { /*@B 0x600548E*/ throw null; }
+		public GiftSerialCodeWindow() { }
 	}
 }

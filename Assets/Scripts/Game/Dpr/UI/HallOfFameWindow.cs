@@ -17,11 +17,11 @@ namespace Dpr.UI
 		private global::UnityEngine.RectTransform contentRoot;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image _cursor;
-		private global::System.Collections.Generic.List<global::Dpr.UI.HallOfFameWindow.HallOfFameParam> _params;
+		private global::System.Collections.Generic.List<global::Dpr.UI.HallOfFameWindow.HallOfFameParam> _params = new global::System.Collections.Generic.List<global::Dpr.UI.HallOfFameWindow.HallOfFameParam>();
 		private int _paramIndex;
 		private int _selectIndex;
 		private const int _delayFrameNum = 4;
-		private int _delayFrameCount;
+		private int _delayFrameCount = -1;
 		private const int _columnMax = 3;
 		private int _infoType;
 		private global::Audio.AudioInstance _voiceInstance;
@@ -76,7 +76,14 @@ namespace Dpr.UI
 			_cursor.enabled = true;
 			SetSelectIndex(0, true);
 		}
-		private void SetupKeyguide() { /*@B 0x60054BE*/ throw null; }
+		private void SetupKeyguide() {
+			var keyguide = global::Dpr.UI.UIManager.Instance.GetKeyguide(null, true);
+			keyguide.transform.SetParent(transform, false);
+			var param = new global::Dpr.UI.Keyguide.Param();
+			param.itemParams.Add(new global::KeyguideItem.Param() { keyguideId = global::KeyguideID.HALLOFFAME_CHANGE });
+			param.itemParams.Add(new global::KeyguideItem.Param() { keyguideId = global::KeyguideID.HALLOFFAME_BACK });
+			keyguide.Open(param);
+		}
 		private void UpdateItems() {
 #if PC_UNLOCKED_FPS
 			if (_delayFrameCount >= 0 && PcPlatform.PcFrameClock.Ticks > 0 && (_delayFrameCount -= PcPlatform.PcFrameClock.Ticks) < 0) // PC (s37): 4-frame delay counted in 30 Hz ticks
@@ -353,15 +360,15 @@ namespace Dpr.UI
 
 			return null;
 		}
-		public HallOfFameWindow() { /*@B 0x60054CD*/ throw null; }
+		public HallOfFameWindow() { }
 		private class HallOfFameParam
 		{
-			public int number;
+			public int number = -1;
 			public global::DPData.DENDOU_RECORD record;
 			public global::RE_DENDOU_RECORD rename_record;
 			public global::DPData.DENDOU_SAVE_ADD_POKE_MEMBER add_record;
-			public global::System.Collections.Generic.List<global::Dpr.UI.HallOfFameItem> items;
-			public HallOfFameParam() { /*@B 0x600AB60*/ throw null; }
+			public global::System.Collections.Generic.List<global::Dpr.UI.HallOfFameItem> items = new global::System.Collections.Generic.List<global::Dpr.UI.HallOfFameItem>();
+			public HallOfFameParam() { }
 		}
 		public class Param
 		{

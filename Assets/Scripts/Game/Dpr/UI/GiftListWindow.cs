@@ -5,7 +5,7 @@ namespace Dpr.UI
 {
 	public class GiftListWindow : global::Dpr.UI.GiftSubWindow
 	{
-		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos;
+		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos = new global::UnityEngine.Vector2(0f, 100f);
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIScrollView scrollView;
 		[global::UnityEngine.SerializeField]
@@ -372,7 +372,7 @@ namespace Dpr.UI
 			}
 			completeWindow.SetInputEnable(true);
 		}
-		public GiftListWindow() { /*@B 0x6005469*/ throw null; }
-		static GiftListWindow() { /*@B 0x600546A*/ throw null; }
+		public GiftListWindow() { }
+		static GiftListWindow() { }
 	}
 }

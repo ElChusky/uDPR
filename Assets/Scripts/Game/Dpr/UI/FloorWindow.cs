@@ -37,6 +37,6 @@ namespace Dpr.UI
 			if (UIManager.Instance.GetCurrentUIWindow<UIWindow>() != this)
 				return;
 		}
-		public FloorWindow() { /*@B 0x6005398*/ throw null; }
+		public FloorWindow() { }
 	}
 }

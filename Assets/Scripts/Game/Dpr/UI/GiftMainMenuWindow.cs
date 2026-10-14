@@ -76,7 +76,7 @@ namespace Dpr.UI
 			menuItems[currentIndex].Select();
 			SetupKeyguide(new KeyguideID[] { KeyguideID.GIFT_DECIDE, KeyguideID.GIFT_CANCEL });
 		}
-		public GiftMainMenuWindow() { /*@B 0x6005473*/ throw null; }
+		public GiftMainMenuWindow() { }
 		public enum MenuType
 		{
 			None = -1,

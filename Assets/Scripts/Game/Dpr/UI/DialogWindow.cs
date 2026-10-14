@@ -7,15 +7,46 @@ namespace Dpr.UI
 		private global::Dpr.UI.UIText dialogText;
 		[global::UnityEngine.HeaderAttribute("入力受付までの待ち時間")]
 		[global::UnityEngine.SerializeField]
-		private float inputEnableWaitTime;
+		private float inputEnableWaitTime = 1.5f;
 		private int addSortingOrder;
 		private bool isCancelSE;
-		public override void OnCreate() { /*@B 0x600537D*/ throw null; }
-		public void Open(global::System.Action<global::Dpr.UI.UIText> setDialogText, int addSortingOrder = 0, global::UIWindowID prevWindowId = (global::UIWindowID)(-2), bool cancelSE = false) { /*@B 0x600537E*/ throw null; }
-		public global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) { /*@B 0x600537F*/ throw null; }
-		public void Close(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) { /*@B 0x6005380*/ throw null; }
-		public global::System.Collections.IEnumerator OpClose(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) { /*@B 0x6005381*/ throw null; }
-		private void OnUpdate(float deltaTime) { /*@B 0x6005382*/ throw null; }
-		public DialogWindow() { /*@B 0x6005383*/ throw null; }
+		public override void OnCreate() {
+			base.OnCreate();
+			_animator = GetComponentInChildren<global::UnityEngine.Animator>(true);
+		}
+		public void Open(global::System.Action<global::Dpr.UI.UIText> setDialogText, int addSortingOrder = 0, global::UIWindowID prevWindowId = (global::UIWindowID)(-2), bool cancelSE = false) {
+			this.addSortingOrder = addSortingOrder;
+			isCancelSE = cancelSE;
+			dialogText.text = null;
+			if (setDialogText != null)
+				setDialogText.Invoke(dialogText);
+			global::SmartPoint.AssetAssistant.Sequencer.Start(OpOpen(prevWindowId));
+		}
+		public global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) {
+			base.OnOpen(prevWindowId);
+			_canvas.sortingOrder = addSortingOrder + 16385;
+			yield return OpPlayOpenWindowAnimation(prevWindowId, null);
+			global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+			yield return new global::UnityEngine.WaitForSeconds(inputEnableWaitTime);
+			_input.inputEnabled = true;
+		}
+		public void Close(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) {
+			global::SmartPoint.AssetAssistant.Sequencer.Start(OpClose(onClosed_, nextWindowId));
+		}
+		public global::System.Collections.IEnumerator OpClose(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) {
+			global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+			yield return OpPlayCloseWindowAnimationAndWaiting(nextWindowId);
+			global::Dpr.UI.UIManager.Instance._ReleaseUIWindow(this);
+			onClosed_?.Invoke(this);
+		}
+		private void OnUpdate(float deltaTime) {
+			if (global::Dpr.UI.UIManager.Instance.GetCurrentUIWindow<global::Dpr.UI.UIWindow>() != this)
+				return;
+			if (!IsPushButton(global::Dpr.UI.UIManager.ButtonA, false) && !IsPushButton(global::Dpr.UI.UIManager.ButtonB, false))
+				return;
+			global::Audio.AudioManager.Instance.PlaySe(isCancelSE ? global::AK.EVENTS.UI_COMMON_CANCEL : global::AK.EVENTS.UI_COMMON_DECIDE, null);
+			Close(onClosed, _prevWindowId);
+		}
+		public DialogWindow() { }
 	}
 }
