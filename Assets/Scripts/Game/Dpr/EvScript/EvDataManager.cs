@@ -13491,11 +13491,52 @@ namespace Dpr.EvScript
             MessageWordSetHelper.SetParkItemNameWord(GetArgInt(_evArg[1]), GetArgInt(_evArg[2]), GetArgInt(_evArg[3]));
             return true;
         }
-		private bool EvCmd_LOAD_UMA_ANIME() { /*@B 0x60090A3*/ throw null; }
-		private global::System.Collections.IEnumerator LoadUMAAsset() { /*@B 0x60090A4*/ throw null; }
-		private bool EvCmd_RELEASE_UMA_ANIME() { /*@B 0x60090A5*/ throw null; }
-		private bool EvCmd_LOAD_UMA_ANIME_WAIT() { /*@B 0x60090A6*/ throw null; }
-		private bool EvCmd_UMA_ANIME_PLAY() { /*@B 0x60090A7*/ throw null; }
+		private bool EvCmd_LOAD_UMA_ANIME() {
+            if (_umaAnimatorCtr == null)
+                _umaAnimatorCtr = new FieldAnimatorController[3];
+            Sequencer.Start(LoadUMAAsset());
+            return true;
+        }
+		private global::System.Collections.IEnumerator LoadUMAAsset() {
+            AssetManager.AppendAssetBundleRequest("field/animeobj/chapter111", true, null, null);
+            yield return AssetManager.DispatchRequests((eventType, name, asset) =>
+            {
+                if (asset is GameObject)
+                {
+                    for (int i = 0; i < _umaAnimatorCtr.Length; i++)
+                    {
+                        GameObject obj = UnityEngine.Object.Instantiate(asset) as GameObject;
+                        _umaAnimatorCtr[i] = obj.GetComponent<FieldAnimatorController>();
+                    }
+                }
+            });
+        }
+		private bool EvCmd_RELEASE_UMA_ANIME() {
+            for (int i = 0; i < _umaAnimatorCtr.Length; i++)
+            {
+                _umaAnimatorCtr[i].transform.GetChild(0).SetParent(_umaAnimatorCtr[i].GetReturnParent());
+                UnityEngine.Object.Destroy(_umaAnimatorCtr[i].gameObject);
+                _umaAnimatorCtr[i] = null;
+            }
+            AssetManager.UnloadAssetBundle("field/animeobj/chapter111");
+            return true;
+        }
+		private bool EvCmd_LOAD_UMA_ANIME_WAIT() {
+            for (int i = 0; i < _umaAnimatorCtr.Length; i++)
+            {
+                if (_umaAnimatorCtr[i] == null)
+                    return false;
+                if (!_umaAnimatorCtr[i].Ready())
+                    return false;
+            }
+            return true;
+        }
+		private bool EvCmd_UMA_ANIME_PLAY() {
+            int index = GetArgInt(_evArg[1]);
+            string stateName = GetArgString(_evData, _evArg[2]);
+            _umaAnimatorCtr[index].Play(stateName);
+            return true;
+        }
 		private bool EvCmd_UMA_ANIME_ATTACH() { /*@B 0x60090A8*/ throw null; }
 		private bool EvCmd_UMA_PLAY_WAIT() { /*@B 0x60090A9*/ throw null; }
 		private bool EvCmd_OBJ_ANIME_SPEED() { /*@B 0x60090AA*/ throw null; }
