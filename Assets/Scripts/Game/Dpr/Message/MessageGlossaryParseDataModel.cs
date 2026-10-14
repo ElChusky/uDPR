@@ -3,24 +3,80 @@ namespace Dpr.Message
 {
 	public class MessageGlossaryParseDataModel
 	{
-		private global::System.Collections.Generic.List<global::Dpr.Message.MessageTagDataModel> tagDataList;
-		private global::Dpr.Message.SetupTagReference setupTagRef;
-		private global::Dpr.Message.MessageFormatter msgFormatter;
+		private global::System.Collections.Generic.List<global::Dpr.Message.MessageTagDataModel> tagDataList = new global::System.Collections.Generic.List<global::Dpr.Message.MessageTagDataModel>();
+		private global::Dpr.Message.SetupTagReference setupTagRef = new global::Dpr.Message.SetupTagReference();
+		private global::Dpr.Message.MessageFormatter msgFormatter = new global::Dpr.Message.MessageFormatter();
 		private global::Dpr.Message.LabelData labelData;
 		private global::Dpr.Message.MessageEnumData.MsgLangId langID;
-		private global::System.Text.StringBuilder textSb;
+		private global::System.Text.StringBuilder textSb = new global::System.Text.StringBuilder(64);
 		private global::Dpr.Message.AttributeInfo attributeInfo;
 		private float strWidth;
 		private float fontSize;
 		public global::System.Collections.Generic.List<global::Dpr.Message.MessageTagDataModel> TagDataList { get { return this.tagDataList; } }
 		public global::Dpr.Message.AttributeInfo AttributeDataModel { get { return this.attributeInfo; } }
-		public global::Dpr.Message.WordData[] WordDataArray { get { /*@B 0x6003C87*/ throw null; } }
+		public global::Dpr.Message.WordData[] WordDataArray { get {
+				if (labelData != null)
+					return labelData.wordDataArray;
+				return null;
+			} }
 		public float FontSize { get { return this.fontSize; } }
 		public float StrWidth { get { return this.strWidth; } }
-		public void Dispose() { /*@B 0x6003C83*/ throw null; }
-		public void SetLabelData(global::Dpr.Message.LabelData labelData, global::Dpr.Message.MessageEnumData.MsgLangId langID) { /*@B 0x6003C84*/ throw null; }
-		public void SetTagWord(int setTargetIndex, string word, float strWidth) { /*@B 0x6003C8A*/ throw null; }
-		public string GetName() { /*@B 0x6003C8B*/ throw null; }
-		public MessageGlossaryParseDataModel() { /*@B 0x6003C8C*/ throw null; }
+		public void Dispose() {
+            msgFormatter.Dispose();
+        }
+		public void SetLabelData(global::Dpr.Message.LabelData labelData, global::Dpr.Message.MessageEnumData.MsgLangId langID) {
+            this.labelData = labelData;
+            this.langID = langID;
+            if (labelData == null)
+            {
+                // stripped log (MessageHelper class-init only)
+                return;
+            }
+            if (string.IsNullOrEmpty(labelData.labelName))
+            {
+                MessageHelper.EmitLog(string.Format("{0} : LabelName not found!!", labelData.labelIndex));
+                return;
+            }
+            attributeInfo = new AttributeInfo(labelData.attributeValueArray);
+            fontSize = labelData.styleInfo.fontSize;
+            var wordDataArray = labelData.wordDataArray;
+            for (int i = 0; i < wordDataArray.Length; i++)
+            {
+                float width = wordDataArray[i].strWidth;
+                if (width < 0f)
+                {
+                    strWidth = -1f;
+                    break;
+                }
+                strWidth += width;
+            }
+            // MessageFormatter.Initialize inlined
+            msgFormatter.Initialize();
+            var tagDataArray = labelData.tagDataArray;
+            for (int i = 0; i < tagDataArray.Length; i++)
+            {
+                var tagDataModel = new MessageTagDataModel();
+                tagDataModel.SetTagData(tagDataArray[i]);
+                tagDataList.Add(tagDataModel);
+            }
+        }
+		public void SetTagWord(int setTargetIndex, string word, float strWidth) {
+            if (setTargetIndex < tagDataList.Count)
+            {
+                tagDataList[setTargetIndex].strValue = word;
+                tagDataList[setTargetIndex].strWidth = strWidth;
+            }
+        }
+		public string GetName() {
+            if (textSb.Length < 1)
+            {
+                setupTagRef.SetTagReference(tagDataList);
+                textSb.Append(msgFormatter.FormatGlossary(this, langID));
+                msgFormatter.Dispose();
+            }
+            return textSb.ToString();
+        }
+		public MessageGlossaryParseDataModel() {
+        }
 	}
 }
