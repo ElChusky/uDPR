@@ -2,7 +2,7 @@
 using UnityEngine;
 public class FieldCameraShake
 {
-	private global::Dpr.FieldFloatMove Time;
+	private global::Dpr.FieldFloatMove Time = new global::Dpr.FieldFloatMove();
 	private global::UnityEngine.Vector3 DefaultShakeOffset;
 	private float Cycle;
 	public global::UnityEngine.Vector3 ShakeOffset { get; private set; }
@@ -17,6 +17,14 @@ public class FieldCameraShake
         else
             ShakeOffset = Vector3.zero;
     }
-	public void Shake(global::UnityEngine.Vector3 shakeOfs, float time, float cycle) { /*@B 0x60000A0*/ throw null; }
-	public FieldCameraShake() { /*@B 0x60000A1*/ throw null; }
+	public void Shake(global::UnityEngine.Vector3 shakeOfs, float time, float cycle) {
+		DefaultShakeOffset = shakeOfs;
+		ShakeOffset = shakeOfs;
+		Time.SetValue(0f);
+		Time.MoveTime(1f, time);
+		Cycle = cycle;
+	}
+	public FieldCameraShake() {
+		ShakeOffset = Vector3.zero;
+	}
 }

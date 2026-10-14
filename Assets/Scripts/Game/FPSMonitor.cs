@@ -7,7 +7,7 @@ public class FPSMonitor : global::UnityEngine.MonoBehaviour
 	private global::TMPro.TextMeshProUGUI _textMeshUGUI;
 	private float _prevTime;
 	private int _count;
-	private global::UnityEngine.Vector3 sssl;
+	private global::UnityEngine.Vector3 sssl = Vector3.one;
 	private void OnEnable() {
 		_textMeshUGUI = GetComponent<TextMeshProUGUI>();
 		if (_textMeshUGUI != null)
@@ -36,5 +36,5 @@ public class FPSMonitor : global::UnityEngine.MonoBehaviour
 			_count++;
 		}
 	}
-	public FPSMonitor() { /*@B 0x600039A*/ throw null; }
+	public FPSMonitor() { }
 }
