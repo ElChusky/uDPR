@@ -29,13 +29,13 @@ public class ColiseumRoomManager : global::Dpr.SubContents.NetUseManager<global:
 	private global::Dpr.NetworkUtils.NetPosData netPosData;
 	private global::Dpr.NetworkUtils.NetRequestData requestData;
 	private global::Dpr.NetworkUtils.NetDataColiseumReadyPointJoinData readyPointJoinData;
-	private readonly string FRONT_DESK_CONTROLLER;
-	private readonly string WARP_OBJ_NAME;
-	private readonly string NPC_OBJ_NAME;
+	private readonly string FRONT_DESK_CONTROLLER = "FdController";
+	private readonly string WARP_OBJ_NAME = "StartPoint";
+	private readonly string NPC_OBJ_NAME = "UNION_UNION";
 	private const float FADE_OUT_DURATION = 0.3f;
 	private const int NPC_TALK_BIT = 15;
 	private const int LEAVED_COLISEUM_WORK_VAL = 2;
-	private static readonly global::ZoneID[] enableZones;
+	private static readonly global::ZoneID[] enableZones = new global::ZoneID[] { global::ZoneID.UNION03 };
 	private global::ColiseumRoomManager.ColiseumState coliseumState;
 	private global::ZoneID returnZoneID;
 	private global::UnityEngine.GameObject fdControllerObject;
@@ -44,7 +44,7 @@ public class ColiseumRoomManager : global::Dpr.SubContents.NetUseManager<global:
 	private global::UnityEngine.GameObject startPointObject;
 	private global::UnionStartPointCollision pointCollision;
 	private global::Dpr.SubContents.ShowMessageWindow showMsgWindow;
-	private global::System.Collections.Generic.List<global::BattleReadyPoint> battleReadyPoints;
+	private global::System.Collections.Generic.List<global::BattleReadyPoint> battleReadyPoints = new global::System.Collections.Generic.List<global::BattleReadyPoint>();
 	private int reserveReadyPointIndex;
 	private int fixedReadyPointIndex;
 	private global::Dpr.SubContents.ColiseumPlayerMove playerMove;
@@ -52,11 +52,11 @@ public class ColiseumRoomManager : global::Dpr.SubContents.NetUseManager<global:
 	private global::Dpr.NetworkUtils.BattleModeID battleModeID;
 	private bool isEnableInput;
 	private bool isCalledFadeOut;
-	private readonly global::EffectFieldID[] LOAD_EFFECT_IDS;
-	private global::System.Collections.Generic.Dictionary<int, global::Effect.EffectData> effectDataTable;
+	private readonly global::EffectFieldID[] LOAD_EFFECT_IDS = new global::EffectFieldID[] { global::EffectFieldID.EF_F_MARK_SQUARE_BLUE_01, global::EffectFieldID.EF_F_MARK_SQUARE_BLUE_02, global::EffectFieldID.EF_F_MARK_SQUARE_RED_01, global::EffectFieldID.EF_F_MARK_SQUARE_RED_02 }; // TO CHECK: InitializeArray blob not readable; only this order of 240..243 exists as a 16-byte run in main_flat.bin
+	private global::System.Collections.Generic.Dictionary<int, global::Effect.EffectData> effectDataTable = new global::System.Collections.Generic.Dictionary<int, global::Effect.EffectData>();
 	private global::BattleMatchingManager battleMatchingManager;
 	private bool isNetworkError;
-	private global::FieldPlayerEntity player { get { /*@B 0x6001048*/ throw null; } }
+	private global::FieldPlayerEntity player { get => EntityManager.activeFieldPlayer; }
 	public bool isBattle { get => battleMatchingManager != null && battleMatchingManager.IsStateBattle; }
 	private void InitNetData() {
         networkManager = NetworkManager.Instance;
@@ -965,7 +965,11 @@ public class ColiseumRoomManager : global::Dpr.SubContents.NetUseManager<global:
         EvDataManager.Instanse.SetWork((int)EvWork.WORK_INDEX.UNION_TEMP0, LEAVED_COLISEUM_WORK_VAL);
         ChangeState(ColiseumState.END);
     }
-	private bool CanLeave() { /*@B 0x6001064*/ throw null; }
+	private bool CanLeave() {
+        if (NetworkManager.IsConnect || NetworkManager.IsShowApplicationErrorDialog() || showMsgWindow.IsOpen)
+            return false;
+        return true;
+    }
 	private void UpdateControlPlayer(float deltaTime) {
         if (playerMove == null || playerMove.IsStateNone)
             return;
@@ -1160,8 +1164,8 @@ public class ColiseumRoomManager : global::Dpr.SubContents.NetUseManager<global:
 	public static void EmitLog(string log, global::UnityEngine.LogType logType = (global::UnityEngine.LogType)(3)) {
         // Empty in the binary (018e5200): every call site's string work is still evaluated.
     }
-	public ColiseumRoomManager() { /*@B 0x6001070*/ throw null; }
-	static ColiseumRoomManager() { /*@B 0x6001071*/ throw null; }
+	public ColiseumRoomManager() { }
+	static ColiseumRoomManager() { }
 	public enum ColiseumState
 	{
 		INIT = 0,

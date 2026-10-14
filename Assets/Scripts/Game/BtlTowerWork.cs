@@ -26,17 +26,75 @@ public static class BtlTowerWork
 
         PlayerWork.btlTowerSave = data;
     }
-	public static void SetBP(int value) { /*@B 0x6000BFB*/ throw null; }
-	public static int GetBP() { /*@B 0x6000BFC*/ throw null; }
-	public static int GetRank(int mode) { /*@B 0x6000BFD*/ throw null; }
-	public static void SetRank(int mode, byte value) { /*@B 0x6000BFE*/ throw null; }
+	public static void SetBP(int value) {
+        var data = PlayerWork.btlTowerSave;
+        if (value > 9999)
+            value = 9999;
+        data.btl_point = (uint)value;
+        PlayerWork.btlTowerSave = data;
+    }
+	public static int GetBP() {
+        return (int)PlayerWork.btlTowerSave.btl_point;
+    }
+	public static int GetRank(int mode) {
+        return (int)PlayerWork.btlTowerSave.class_data[mode].rank;
+    }
+	public static void SetRank(int mode, byte value) {
+        var data = PlayerWork.btlTowerSave;
+        var classData = PlayerWork.btlTowerSave.class_data[mode];
+        uint rank;
+        if (value > 10)
+            rank = 10;
+        else if (value == 0)
+            rank = 1;
+        else
+            rank = value;
+        classData.rank = rank;
+        PlayerWork.btlTowerSave.class_data[mode] = classData;
+        PlayerWork.btlTowerSave = data;
+    }
 	public static uint DayFixRand(uint seed) {
         return seed * 0x7FFFFFFFu + 1u;
     }
-	public static void DayUpdate() { /*@B 0x6000C00*/ throw null; }
-	public static void DebugLot(uint btlclass) { /*@B 0x6000C01*/ throw null; }
-	public static void Start() { /*@B 0x6000C02*/ throw null; }
-	public static void Restart(int btlclass) { /*@B 0x6000C03*/ throw null; }
+	public static void DayUpdate() {
+        var data = PlayerWork.btlTowerSave;
+        data.day_challeng_cnt = 0;
+        PlayerWork.btlTowerSave = data;
+    }
+	public static void DebugLot(uint btlclass) {
+        var data = PlayerWork.btlTowerSave;
+        var classData = data.class_data[btlclass];
+        BattleTowerLot.LotTrainer(RandomGroupWork.GetDefaultRandom(), data.day_challeng_cnt, btlclass, classData.rank, ref classData.trainer_random);
+        data.class_data[btlclass] = classData;
+        PlayerWork.btlTowerSave = data;
+    }
+	public static void Start() {
+        var data = PlayerWork.btlTowerSave;
+        int mode = data.play_mode;
+        if (mode == 2 || mode == 3)
+        {
+            uint cnt = data.challenge_cnt + 1;
+            if (cnt > 999999)
+                cnt = 999999;
+            data.challenge_cnt = cnt;
+        }
+        data.day_challeng_cnt++;
+        var classData = data.class_data[mode];
+        classData.suspension_flag = true;
+        classData.btl_play_rand_seed = RandomGroupWork.GetDefaultRandom();
+        BattleTowerLot.LotTrainer(classData.btl_play_rand_seed, data.day_challeng_cnt, (uint)mode, classData.rank, ref classData.trainer_random);
+        data.class_data[mode] = classData;
+        PlayerWork.btlTowerSave = data;
+        _contRound = 0;
+    }
+	public static void Restart(int btlclass) {
+        var data = PlayerWork.btlTowerSave;
+        var classData = data.class_data[btlclass];
+        classData.suspension_flag = true;
+        data.play_mode = (byte)btlclass;
+        data.class_data[data.play_mode] = classData;
+        PlayerWork.btlTowerSave = data;
+    }
 	public static void Clear() {
         var data = PlayerWork.btlTowerSave;
         var classData = data.class_data[data.play_mode];
@@ -134,7 +192,16 @@ public static class BtlTowerWork
 
         FlagWork.SetFlag(EvWork.FLAG_INDEX.FE_BTLTW_CLEAR_ALL_SUB, false);
     }
-	public static void AddLose(int mode) { /*@B 0x6000C06*/ throw null; }
+	public static void AddLose(int mode) {
+        var data = PlayerWork.btlTowerSave;
+        var classData = data.class_data[mode];
+        classData.rank_down_lose++;
+        classData.total_lose++;
+        if (classData.total_lose > 9999)
+            classData.total_lose = 9999;
+        data.class_data[data.play_mode] = classData;
+        PlayerWork.btlTowerSave = data;
+    }
 	public static void ResetRenshou(int mode) {
         UpdateRenshou(mode, GetRenshou(mode));
 
@@ -145,13 +212,39 @@ public static class BtlTowerWork
         data.class_data[data.play_mode] = classData;
         PlayerWork.btlTowerSave = data;
     }
-	public static uint GetRankDownLose(int mode) { /*@B 0x6000C08*/ throw null; }
-	public static void ReseRankDownLose(int mode) { /*@B 0x6000C09*/ throw null; }
-	public static void SetMode(int mode) { /*@B 0x6000C0A*/ throw null; }
-	public static int GetMode() { /*@B 0x6000C0B*/ throw null; }
-	public static int GetOldMode() { /*@B 0x6000C0C*/ throw null; }
-	public static int GetRound(int mode) { /*@B 0x6000C0D*/ throw null; }
-	public static void SetRound(int mode, int value) { /*@B 0x6000C0E*/ throw null; }
+	public static uint GetRankDownLose(int mode) {
+        return PlayerWork.btlTowerSave.class_data[mode].rank_down_lose;
+    }
+	public static void ReseRankDownLose(int mode) {
+        var data = PlayerWork.btlTowerSave;
+        var classData = data.class_data[mode];
+        classData.rank_down_lose = 0;
+        data.class_data[data.play_mode] = classData;
+        PlayerWork.btlTowerSave = data;
+    }
+	public static void SetMode(int mode) {
+        var data = PlayerWork.btlTowerSave;
+        data.play_mode = mode;
+        data.old_playmode = mode;
+        PlayerWork.btlTowerSave = data;
+    }
+	public static int GetMode() {
+        return PlayerWork.btlTowerSave.play_mode;
+    }
+	public static int GetOldMode() {
+        return PlayerWork.btlTowerSave.old_playmode;
+    }
+	public static int GetRound(int mode) {
+        return PlayerWork.btlTowerSave.class_data[mode].tower_round;
+    }
+	public static void SetRound(int mode, int value) {
+        var data = PlayerWork.btlTowerSave;
+        data.class_data[mode].tower_round = value;
+        PlayerWork.btlTowerSave = data;
+        _contRound = value - 1;
+        if (_contRound < 0)
+            _contRound = 0;
+    }
 	public static void RoundAdd(int mode) {
         var data = PlayerWork.btlTowerSave;
         var classData = data.class_data[mode];
@@ -167,18 +260,77 @@ public static class BtlTowerWork
         var classData = PlayerWork.btlTowerSave.class_data[mode];
         return classData.clear_flag == 1 || classData.tower_round > 6;
     }
-	public static uint GetRenshou(int mode) { /*@B 0x6000C11*/ throw null; }
-	public static uint GetOldRenshou(int mode) { /*@B 0x6000C12*/ throw null; }
-	public static uint GetLastRenshou(int mode) { /*@B 0x6000C13*/ throw null; }
-	public static void LotTrainer(int mode) { /*@B 0x6000C14*/ throw null; }
-	public static void UpdatePlayScore() { /*@B 0x6000C15*/ throw null; }
-	public static void ChangeModeEnum(int mode, out global::TowerLotRule rule, out global::TowerLotCls cls) { /*@B 0x6000C16*/ throw null; }
+	public static uint GetRenshou(int mode) {
+        return PlayerWork.btlTowerSave.class_data[mode].renshou_cnt;
+    }
+	public static uint GetOldRenshou(int mode) {
+        return PlayerWork.btlTowerSave.class_data[mode].old_renshou_cnt;
+    }
+	public static uint GetLastRenshou(int mode) {
+        uint renshou = PlayerWork.btlTowerSave.class_data[mode].renshou_cnt;
+        if (renshou == 0)
+            renshou = PlayerWork.btlTowerSave.class_data[mode].old_renshou_cnt;
+        return renshou;
+    }
+	public static void LotTrainer(int mode) {
+        var data = PlayerWork.btlTowerSave;
+        var classData = data.class_data[mode];
+        BattleTowerLot.LotTrainer(RandomGroupWork.GetDefaultRandom(), data.day_challeng_cnt, (uint)mode, classData.rank, ref classData.trainer_random);
+        data.class_data[mode] = classData;
+        PlayerWork.btlTowerSave = data;
+    }
+	public static void UpdatePlayScore() {
+        var data = PlayerWork.btlTowerSave;
+        UpdateRenshou(data.play_mode, data.class_data[data.play_mode].renshou_cnt);
+        PlayerWork.btlTowerSave = data;
+    }
+	public static void ChangeModeEnum(int mode, out global::TowerLotRule rule, out global::TowerLotCls cls) {
+        rule = global::TowerLotRule.Invalid;
+        cls = global::TowerLotCls.Invalid;
+        switch (mode)
+        {
+            case 0:
+                rule = global::TowerLotRule.Single;
+                cls = global::TowerLotCls.Normal;
+                break;
+            case 1:
+                rule = global::TowerLotRule.Double;
+                cls = global::TowerLotCls.Normal;
+                break;
+            case 2:
+                rule = global::TowerLotRule.Single;
+                cls = global::TowerLotCls.Master;
+                break;
+            case 3:
+                rule = global::TowerLotRule.Double;
+                cls = global::TowerLotCls.Master;
+                break;
+        }
+    }
 	public static void GetNowModeEnum(out global::TowerLotRule rule, out global::TowerLotCls cls) {
         ChangeModeEnum(PlayerWork.btlTowerSave.play_mode, out rule, out cls);
     }
-	public static ulong GetTrainerRand(int round) { /*@B 0x6000C18*/ throw null; }
-	public static void AddChallengeCount() { /*@B 0x6000C19*/ throw null; }
-	public static void ResetBtlAve() { /*@B 0x6000C1A*/ throw null; }
+	public static ulong GetTrainerRand(int round) {
+        return PlayerWork.btlTowerSave.class_data[PlayerWork.btlTowerSave.play_mode].trainer_random[round];
+    }
+	public static void AddChallengeCount() {
+        var data = PlayerWork.btlTowerSave;
+        if (data.play_mode == 2 || data.play_mode == 3)
+        {
+            uint cnt = data.challenge_cnt + 1;
+            if (cnt >= 999999)
+                cnt = 999999;
+            data.challenge_cnt = cnt;
+        }
+        PlayerWork.btlTowerSave = data;
+    }
+	public static void ResetBtlAve() {
+        var data = PlayerWork.btlTowerSave;
+        data.class_data[2].total_wins = 0;
+        data.class_data[3].total_wins = 0;
+        PlayerWork.btlTowerSave = data;
+        RecordWork.ResetBtlAve();
+    }
 	public static void ContinueRound() {
         var data = PlayerWork.btlTowerSave;
         _contRound = data.class_data[data.play_mode].tower_round - 1;

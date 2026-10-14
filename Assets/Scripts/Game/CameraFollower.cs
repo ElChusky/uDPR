@@ -6,8 +6,30 @@ public class CameraFollower : global::UnityEngine.MonoBehaviour
 	private global::UnityEngine.Camera _camera;
 	private global::UnityEngine.Transform _cameraTransform;
 	private global::UnityEngine.Transform _targetTransform;
-	private void OnEnable() { /*@B 0x60008E9*/ throw null; }
-	public bool SetCamera(global::UnityEngine.Camera camera) { /*@B 0x60008EA*/ throw null; }
-	private void LateUpdate() { /*@B 0x60008EB*/ throw null; }
+	private void OnEnable() {
+        var camera = _camera;
+        if (camera == null)
+            camera = GetComponent<global::UnityEngine.Camera>();
+        SetCamera(camera);
+        if (_targetTransform == null)
+            _targetTransform = transform;
+    }
+	public bool SetCamera(global::UnityEngine.Camera camera) {
+        if (camera == null)
+            return false;
+        _cameraTransform = camera.transform;
+        return true;
+    }
+	private void LateUpdate() {
+        if (_targetTransform == null)
+        {
+            OnEnable();
+            return;
+        }
+        var cameraAngles = _cameraTransform.rotation.eulerAngles;
+        var targetAngles = _targetTransform.eulerAngles;
+        _targetTransform.position = _cameraTransform.position;
+        _targetTransform.rotation = global::UnityEngine.Quaternion.Euler(new global::UnityEngine.Vector3(targetAngles.x, cameraAngles.y, cameraAngles.z));
+    }
 	public CameraFollower() { }
 }
