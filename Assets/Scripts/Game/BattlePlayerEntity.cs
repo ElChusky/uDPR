@@ -7,17 +7,92 @@ public sealed class BattlePlayerEntity : global::BattleCharacterEntity
 	private global::UnityEngine.Renderer[] _hatRenderers;
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.Renderer[] _shoesRenderers;
-	public int HatVariationParam;
-	public int ShoesVariationParam;
+	public int HatVariationParam = -1;
+	public int ShoesVariationParam = -1;
 	private bool isCaputureDemo;
-	public global::ColorVariation ColorVariation { get { /*@B 0x60005B3*/ throw null; } }
-	public override string entityType { get { /*@B 0x60005B4*/ throw null; } }
-	public bool watchVisibility { get { /*@B 0x60005B5*/ throw null; } set { /*@B 0x60005B6*/ throw null; } }
-	public int HatVariation { get { /*@B 0x60005B7*/ throw null; } set { /*@B 0x60005B8*/ throw null; } }
-	public int ShoesVariation { get { /*@B 0x60005B9*/ throw null; } set { /*@B 0x60005BA*/ throw null; } }
-	public override void Initialize(global::Dpr.Battle.View.TrainerSimpleParam param, bool isContest = false) { /*@B 0x60005BB*/ throw null; }
-	public override void SetCaputureDemo() { /*@B 0x60005BC*/ throw null; }
-	public override void SetRenderActive(bool isActive) { /*@B 0x60005BD*/ throw null; }
-	protected override void Awake() { /*@B 0x60005BE*/ throw null; }
-	public BattlePlayerEntity() { /*@B 0x60005BF*/ throw null; }
+	public global::ColorVariation ColorVariation { get {
+		return this.GetComponentThis(ref _colorVariation);
+	} }
+	public override string entityType { get {
+		return "BattlePlayer";
+	} }
+	public bool watchVisibility { get {
+		if (_watchRenderer == null)
+			return true;
+
+		return _watchRenderer.enabled;
+	} set {
+		if (_watchRenderer == null)
+			return;
+
+		_watchRenderer.enabled = value;
+	} }
+	public int HatVariation { get {
+		if (!_hatRenderers.IsNullOrEmpty())
+		{
+			for (int i = 0; i < _hatRenderers.Length; i++)
+			{
+				if (_hatRenderers[i] != null && _hatRenderers[i].enabled)
+					return i;
+			}
+		}
+		return -1;
+	} set {
+		if (_hatRenderers.IsNullOrEmpty())
+			return;
+
+		for (int i = 0; i < _hatRenderers.Length; i++)
+		{
+			if (_hatRenderers[i] != null)
+				_hatRenderers[i].enabled = value == i;
+		}
+	} }
+	public int ShoesVariation { get {
+		if (!_shoesRenderers.IsNullOrEmpty())
+		{
+			for (int i = 0; i < _shoesRenderers.Length; i++)
+			{
+				if (_shoesRenderers[i] != null && _shoesRenderers[i].enabled)
+					return i;
+			}
+		}
+		return -1;
+	} set {
+		if (_shoesRenderers.IsNullOrEmpty())
+			return;
+
+		for (int i = 0; i < _shoesRenderers.Length; i++)
+		{
+			if (_shoesRenderers[i] != null)
+				_shoesRenderers[i].enabled = value == i;
+		}
+	} }
+	public override void Initialize(global::Dpr.Battle.View.TrainerSimpleParam param, bool isContest = false) {
+		base.Initialize(param, isContest);
+		HatVariation = param.hatVariation;
+		HatVariationParam = param.hatVariation;
+		ShoesVariation = param.shoesVariation;
+		ShoesVariationParam = param.shoesVariation;
+	}
+	public override void SetCaputureDemo() {
+		isCaputureDemo = true;
+		watchVisibility = true;
+	}
+	public override void SetRenderActive(bool isActive) {
+		base.SetRenderActive(isActive);
+		if (!isActive)
+			return;
+
+		HatVariation = HatVariationParam;
+		ShoesVariation = ShoesVariationParam;
+		if (isCaputureDemo)
+			watchVisibility = true;
+		else
+			watchVisibility = global::FlagWork.GetFlag(global::Dpr.EvScript.EvWork.FLAG_INDEX.FE_POKETCH_GET);
+	}
+	protected override void Awake() {
+		base.Awake();
+		watchVisibility = global::FlagWork.GetFlag(global::Dpr.EvScript.EvWork.FLAG_INDEX.FE_POKETCH_GET);
+	}
+	public BattlePlayerEntity() { }
 }

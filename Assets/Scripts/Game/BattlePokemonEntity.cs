@@ -12,38 +12,41 @@ public sealed class BattlePokemonEntity : global::BattleObjectEntity
 	public const float DEFAULT_MOTION_START_TIME = 0f;
 	private const float DEFAULT_MOTION_BLEND_TIME = 0.14f;
 	[global::UnityEngine.SerializeField]
-	private global::AnimationPlayer _animationPlayer;
+	private global::AnimationPlayer _animationPlayer = new AnimationPlayer();
 	[global::UnityEngine.SerializeField]
 	private global::Pml.PokePara.Size _size;
 	[global::UnityEngine.SerializeField]
-	private float _scale;
+	private float _scale = 1f;
 	[global::UnityEngine.SerializeField]
 	private global::Dpr.Battle.View.Objects.LandingType _landingType;
 	[global::UnityEngine.SerializeField]
-	private global::BattlePokemonEntity.AnimationState _animationState;
+	private global::BattlePokemonEntity.AnimationState _animationState = AnimationState.Max;
 	[global::UnityEngine.SerializeField]
-	private global::BattlePokemonEntity.RenderingParam _renderingParam;
+	private global::BattlePokemonEntity.RenderingParam _renderingParam = RenderingParam.Factory();
 	[global::UnityEngine.SerializeField]
 	private global::SmartPoint.Components.SkinnedMeshRendererCluster[] _rendererClusters;
 	[global::UnityEngine.SerializeField]
-	private global::Dpr.PokeAnimSound _pokeAnimSound;
+	private global::Dpr.PokeAnimSound _pokeAnimSound = new PokeAnimSound();
 	private global::UnityEngine.MaterialPropertyBlock _propertyBlock;
-	private global::UnityEngine.Color _fixMultiplierColor;
+	private global::UnityEngine.Color _fixMultiplierColor = Color.white;
 	private global::Dpr.Battle.View.SimpleParam _simpleParam;
-	private global::UnityEngine.Vector3 _adjustScale;
+	private global::UnityEngine.Vector3 _adjustScale = Vector3.one;
 	private global::UnityEngine.Transform _origin;
-	private global::System.Collections.Generic.Dictionary<int, int> _renderObjectMasks;
-	private float _motionBlendTime;
+	private global::System.Collections.Generic.Dictionary<int, int> _renderObjectMasks = new global::System.Collections.Generic.Dictionary<int, int>();
+	private float _motionBlendTime = 0.14f;
 	public bool isAnimationWaitAWhenDisable;
 	private int waitALoopCount;
-	private bool _isPokeAnimSoundEnable;
+	private bool _isPokeAnimSoundEnable = true;
 	public bool isZIBAKOIRU;
 	public global::XLSXContent.BattleDataTable.SheetPokemonMotionBlendTime PokemonMotionBlendTimeData { get; set; }
-	public override string entityType { get { /*@B 0x60005C2*/ throw null; } }
+	public override string entityType { get { return "BattlePokemon"; } }
 	public global::Pml.PokePara.Size Size { get { return this._size; } }
 	public global::Dpr.Battle.View.Objects.LandingType LandingType { get { return this._landingType; } }
 	public global::BattlePokemonEntity.AnimationState CurrentAnimationState { get { return this._animationState; } private set { this._animationState = value; } }
-	public bool PokeAnimSoundEnable { get { return this._isPokeAnimSoundEnable; } set { /*@B 0x60005C8*/ throw null; } }
+	public bool PokeAnimSoundEnable { get { return this._isPokeAnimSoundEnable; } set {
+		_isPokeAnimSoundEnable = value;
+		_pokeAnimSound.Enable = value;
+	} }
 	public global::UnityEngine.Color FixMultiplierColor { get => _fixMultiplierColor; set {
             _fixMultiplierColor = value;
             UpdateFixMultiplyColor();
@@ -53,11 +56,70 @@ public sealed class BattlePokemonEntity : global::BattleObjectEntity
 	private global::PokemonAnime PokemonAnime { get; set; }
 	private global::PokemonPrefabInfo PokemonPrefabInfo { get; set; }
 	private global::Dpr.PatcheelPattern patcheelPattern { get; set; }
-	protected override void Awake() { /*@B 0x60005D5*/ throw null; }
-	protected override void OnDestroy() { /*@B 0x60005D6*/ throw null; }
-	protected override void OnEnable() { /*@B 0x60005D7*/ throw null; }
-	protected override void OnDisable() { /*@B 0x60005D8*/ throw null; }
-	protected override void OnUpdate(float deltaTime) { /*@B 0x60005D9*/ throw null; }
+	protected override void Awake() {
+		base.Awake();
+		_animator = GetComponent<Animator>();
+		_animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+		_animationPlayer.InitializePlayables(_animator);
+		_propertyBlock = new MaterialPropertyBlock();
+		PokemonVariation = GetComponent<PokemonVariation>();
+		PokemonCustomNodeAnim = GetComponent<PokemonCustomNodeAnim>();
+		PokemonAnime = GetComponent<PokemonAnime>();
+		PokemonPrefabInfo = GetComponent<PokemonPrefabInfo>();
+		patcheelPattern = GetComponent<PatcheelPattern>();
+		InitializeRendererInfos();
+		_pokeAnimSound.Init(_animationPlayer);
+		PokeAnimSoundEnable = true;
+		if (_renderObjectMasks == null)
+			_renderObjectMasks = new global::System.Collections.Generic.Dictionary<int, int>();
+
+		_renderObjectMasks.Clear();
+		for (int i = 0; i < _renderers.Length; i++)
+		{
+			Renderer renderer = _renderers[i];
+			if (_renderObjectMasks.ContainsKey(renderer.gameObject.GetInstanceID()))
+				_renderObjectMasks[renderer.gameObject.GetInstanceID()] = renderer.gameObject.layer;
+			else
+				_renderObjectMasks.Add(renderer.gameObject.GetInstanceID(), renderer.gameObject.layer);
+		}
+		PokemonMaskController.Register(this);
+	}
+	protected override void OnDestroy() {
+		_animator = null;
+		_animationPlayer.Destroy();
+		_animationPlayer = null;
+		_propertyBlock = null;
+		PokemonMaskController.Unregister(this);
+		if (!_renderers.IsNullOrEmpty())
+		{
+			for (int i = 0; i < _renderers.Length; i++)
+			{
+				Material[] materials = _renderers[i].materials;
+				for (int j = 0; j < materials.Length; j++)
+					Object.DestroyImmediate(materials[j]);
+			}
+		}
+		_renderers = null;
+		base.OnDestroy();
+	}
+	protected override void OnEnable() {
+		base.OnEnable();
+		global::SmartPoint.Components.RenderPriorityController.Register(transform, _rendererClusters);
+		Sequencer.earlyLateUpdate += OnEarlyLateUpdate;
+	}
+	protected override void OnDisable() {
+		global::SmartPoint.Components.RenderPriorityController.Unregister(transform);
+		Sequencer.earlyLateUpdate -= OnEarlyLateUpdate;
+		base.OnDisable();
+	}
+	protected override void OnUpdate(float deltaTime) {
+		base.OnUpdate(deltaTime);
+		if (enabled)
+		{
+			_animationPlayer.AdvanaceTime(deltaTime);
+			_pokeAnimSound.Update(transform);
+		}
+	}
 	protected override void OnEarlyLateUpdate(float deltatime) {
         AdjustModel();
     }
@@ -86,7 +148,82 @@ public sealed class BattlePokemonEntity : global::BattleObjectEntity
         if (_blinkProcess != null && _blinkProcess.IsBlinkEnabled() && PokemonCustomNodeAnim.isAutoUpdate && PokemonCustomNodeAnim != null)
             PokemonCustomNodeAnim.UpdateCusAnimNode();
     }
-	protected override void ProcessSequence(float deltaTime) { /*@B 0x60005DD*/ throw null; }
+	protected override void ProcessSequence(float deltaTime) {
+		GetAnimationPlayer().SetAnimSpeed(_animationSpeed);
+		switch (currentSequence)
+		{
+			case SequenceID.Initialize:
+				if (_animationPlayer.forceLoop)
+				{
+					nextSequence = SequenceID.Active;
+					break;
+				}
+				if (isZIBAKOIRU && _animationPlayer.layerClipPlayable.IsValid())
+					_animationPlayer.layerClipPlayable.SetTime(0.0);
+
+				_animationPlayer.Play((int)AnimationState.WaitA01, 0f, 0f);
+				_animationState = AnimationState.WaitA01;
+				nextSequence = SequenceID.Active;
+				break;
+			case SequenceID.Animation:
+				if (_animationPlayer.currentRemaingTime > 0f)
+					break;
+
+				nextSequence = SequenceID.Initialize;
+				break;
+			case SequenceID.ToLandState:
+				if (_animationState == AnimationState.LandC01)
+				{
+					if (_animationPlayer.currentRemaingTime > 0f)
+						break;
+
+					_animationPlayer.Play((int)AnimationState.WaitA01, 0f, 0f);
+					_animationState = AnimationState.WaitA01;
+					nextSequence = SequenceID.Active;
+				}
+				else if (_animationState == AnimationState.LandA01)
+				{
+					if (_animationPlayer.currentRemaingTime > 0f)
+						break;
+
+					AnimationState state = _landingType == global::Dpr.Battle.View.Objects.LandingType.NORMAL ? AnimationState.LandB01 : AnimationState.WaitA01;
+					if (isZIBAKOIRU && _landingType != global::Dpr.Battle.View.Objects.LandingType.NORMAL)
+						_animationPlayer.layerClipPlayable.SetTime(0.0);
+
+					RequestAnimationState(state, 0f, 0f);
+				}
+				break;
+			case SequenceID.ToBlend:
+				if (_animationPlayer.currentRemaingTime > _motionBlendTime)
+					break;
+
+				if (isZIBAKOIRU && _animationPlayer.layerClipPlayable.IsValid())
+					_animationPlayer.layerClipPlayable.SetTime(0.0);
+
+				_animationPlayer.Play((int)AnimationState.WaitA01, _motionBlendTime, 0f);
+				_animationState = AnimationState.WaitA01;
+				nextSequence = SequenceID.Active;
+				break;
+			case SequenceID.ToWaitB:
+				if (_animationPlayer.currentPlayable.GetAnimationClip().length * waitALoopCount - _animationPlayer.currentPlayingTime > _motionBlendTime)
+					break;
+
+				_animationPlayer.Play((int)AnimationState.WaitB01, _motionBlendTime, 0f);
+				nextSequence = SequenceID.ToBlend;
+				_animationState = AnimationState.WaitB01;
+				_motionBlendTime = 0.05f;
+				break;
+			case SequenceID.ToWaitC:
+				if (_animationPlayer.currentPlayable.GetAnimationClip().length * waitALoopCount - _animationPlayer.currentPlayingTime > _motionBlendTime)
+					break;
+
+				_animationPlayer.Play((int)AnimationState.WaitC01, _motionBlendTime, 0f);
+				nextSequence = SequenceID.ToBlend;
+				_animationState = AnimationState.WaitC01;
+				_motionBlendTime = 0.05f;
+				break;
+		}
+	}
 	public void Initialize(global::XLSXContent.PokemonInfo.SheetCatalog catalog, bool isContest = false) {
         _simpleParam = new SimpleParam(catalog, isContest);
         _origin = GetJoint(JointName.Origin);
@@ -94,9 +231,27 @@ public sealed class BattlePokemonEntity : global::BattleObjectEntity
         _modelEntityType = isContest ? ModelEntityType.Contest : ModelEntityType.Battle;
         CreateShadowCastSystem();
     }
-	private void CreateShadowCastSystem() { /*@B 0x60005DF*/ throw null; }
-	public global::Dpr.Battle.View.SimpleParam GetSimpleParam() { /*@B 0x60005E0*/ throw null; }
-	public void ResetAnimation() { /*@B 0x60005E1*/ throw null; }
+	private void CreateShadowCastSystem() {
+		if (_shadowCastSystem != null)
+			return;
+
+		_shadowCastSystem = new global::Dpr.Battle.View.Systems.BattleShadowCastSystem();
+		_shadowCastSystem.Register(global::Dpr.Battle.View.Systems.ShadowCastObject.Factory(transform, _renderers));
+	}
+	public global::Dpr.Battle.View.SimpleParam GetSimpleParam() {
+		return _simpleParam;
+	}
+	public void ResetAnimation() {
+		if (!isAnimationWaitAWhenDisable || _animationPlayer.IsPlayingEnd || _animationState == AnimationState.WaitA01)
+			return;
+
+		if (isZIBAKOIRU && _animationPlayer.layerClipPlayable.IsValid())
+			_animationPlayer.layerClipPlayable.SetTime(0.0);
+
+		_animationPlayer.Play((int)AnimationState.WaitA01, 0f, 0f);
+		_animationState = AnimationState.WaitA01;
+		nextSequence = SequenceID.Active;
+	}
 	public override global::AnimationPlayer GetAnimationPlayer() { return this._animationPlayer; }
 	public void RequestAnimationState(global::BattlePokemonEntity.AnimationState state, float duration = 0f, float startTime = 0f) {
         switch (state)
@@ -205,7 +360,10 @@ public sealed class BattlePokemonEntity : global::BattleObjectEntity
 	public float GetAnimationSpeed() {
         return _animationSpeed;
     }
-	public void SetBlinkEnabled(bool value) { /*@B 0x60005E6*/ throw null; }
+	public void SetBlinkEnabled(bool value) {
+		if (_blinkProcess != null)
+			_blinkProcess.SetBlinkEnabled(value);
+	}
 	public void SetBlinkIntParameter(global::BattleObjectEntity.CharaAutomaticBlinkProcess.BlinkIntParameter param) {
         _blinkProcess?.SetBlinkTriggerParam(param);
     }
@@ -289,7 +447,7 @@ public sealed class BattlePokemonEntity : global::BattleObjectEntity
         if (patcheelPattern != null)
             patcheelPattern.SetPattern(rand);
     }
-	public BattlePokemonEntity() { /*@B 0x60005F9*/ throw null; }
+	public BattlePokemonEntity() { }
 	public class SequenceID : global::BaseEntity.SequenceID
 	{
 		public const int Active = 4096;

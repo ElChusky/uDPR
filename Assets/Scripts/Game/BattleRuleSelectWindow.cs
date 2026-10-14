@@ -14,10 +14,10 @@ public class BattleRuleSelectWindow : global::Dpr.UI.UIWindow
 	private global::System.Action _onCancel;
 	private global::System.Collections.Generic.List<global::Dpr.NetworkUtils.BattleModeID> battleModeIDList;
 	private bool _decideSE;
-	private int _currentIndex;
-	private global::Dpr.MsgWindow.WaitTimer waitTimer;
-	private static readonly string[] BATTLE_RULE;
-	private static readonly string[] BATTLE_RULE_NAIYOU;
+	private int _currentIndex = -1;
+	private global::Dpr.MsgWindow.WaitTimer waitTimer = new global::Dpr.MsgWindow.WaitTimer();
+	private static readonly string[] BATTLE_RULE = new string[] { "DP_options_006", "DP_options_007", "DP_options_009" };
+	private static readonly string[] BATTLE_RULE_NAIYOU = new string[] { "SS_net_live_comm_133", "SS_net_live_comm_134", "SS_net_live_comm_135" };
 	public void Open(global::System.Collections.Generic.List<global::Dpr.NetworkUtils.BattleModeID> battleMode, global::System.Action<global::Dpr.NetworkUtils.BattleModeID> onDecide, global::System.Action onCancel, bool decideSE = false, global::UIWindowID prevWindowId = (global::UIWindowID)(-2)) {
 		_onDecide = onDecide;
 		_onCancel = onCancel;
@@ -121,6 +121,6 @@ public class BattleRuleSelectWindow : global::Dpr.UI.UIWindow
 	private string[] GetMsbtFileLabel(string label) {
 		return label.Split(new char[] { '%' });
 	}
-	public BattleRuleSelectWindow() { /*@B 0x6001472*/ throw null; }
-	static BattleRuleSelectWindow() { /*@B 0x6001473*/ throw null; }
+	public BattleRuleSelectWindow() { }
+	static BattleRuleSelectWindow() { }
 }

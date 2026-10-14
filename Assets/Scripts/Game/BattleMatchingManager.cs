@@ -30,7 +30,7 @@ public class BattleMatchingManager
 	private bool _dispedLeaveOtherMsg;
 	private global::BattleMatchingManager.MatchingState _currentState;
 	public bool IsError { get => _isError; }
-	public int ColiseumLeavePoint { get; set; }
+	public int ColiseumLeavePoint { get; set; } = -1;
 	public bool IsStateNone { get => _currentState == MatchingState.None; }
 	public bool IsStateBattle { get => _currentState == MatchingState.GoBattle; }
 	public bool IsStateClosing { get => _currentState == MatchingState.Closing; }
@@ -1251,7 +1251,7 @@ public class BattleMatchingManager
 			ReceiveData(netData);
 		}
 	}
-	public BattleMatchingManager() { /*@B 0x6000BBD*/ throw null; }
+	public BattleMatchingManager() { }
 	public enum FinishPattern
 	{
 		Success = 0,
