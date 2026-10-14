@@ -52,9 +52,9 @@ public class Viewer : global::UnityEngine.MonoBehaviour
 	private global::SmartPoint.Components.DebugMenu.MenuInstance _instanceMenu;
 	private global::SmartPoint.Components.DebugMenu.MenuInstance _animationMenu;
 	private global::SmartPoint.Components.DebugMenu.MenuInstance _settingMenu;
-	private global::System.Collections.Generic.List<global::Viewer.PokemonInfo> _pokemonInfos;
-	private global::System.Collections.Generic.Dictionary<global::UnityEngine.GameObject, global::SmartPoint.Components.LayoutScrollView.Cell> _instancePlayableLookup;
-	private global::System.Collections.Generic.Dictionary<global::UnityEngine.GameObject, global::SmartPoint.Components.LayoutScrollView.Cell> _instanceSettingLookup;
+	private global::System.Collections.Generic.List<global::Viewer.PokemonInfo> _pokemonInfos = new global::System.Collections.Generic.List<global::Viewer.PokemonInfo>();
+	private global::System.Collections.Generic.Dictionary<global::UnityEngine.GameObject, global::SmartPoint.Components.LayoutScrollView.Cell> _instancePlayableLookup = new global::System.Collections.Generic.Dictionary<global::UnityEngine.GameObject, global::SmartPoint.Components.LayoutScrollView.Cell>();
+	private global::System.Collections.Generic.Dictionary<global::UnityEngine.GameObject, global::SmartPoint.Components.LayoutScrollView.Cell> _instanceSettingLookup = new global::System.Collections.Generic.Dictionary<global::UnityEngine.GameObject, global::SmartPoint.Components.LayoutScrollView.Cell>();
 	private global::SmartPoint.Components.LayoutScrollView.Cell _effectMenuAdd;
 	private global::SmartPoint.Components.LayoutScrollView.Cell _effectMenuBoot;
 	private string _savedInputAxisH;
@@ -67,20 +67,70 @@ public class Viewer : global::UnityEngine.MonoBehaviour
 	private global::SimpleCamera _simpleCamera;
 	private global::UnityEngine.Camera _camera;
 	private global::Dpr.Battle.View.Systems.BtlvWeather _weather;
-	private global::System.Collections.Generic.List<global::Effect.EffectInstance> _effecctInstances;
+	private global::System.Collections.Generic.List<global::Effect.EffectInstance> _effecctInstances = new global::System.Collections.Generic.List<global::Effect.EffectInstance>();
 	private global::SmartPoint.Components.DebugMenu.MenuInstance _effectStopMenu;
-	private global::System.Collections.Generic.List<global::Audio.AudioInstance> _seInstances;
+	private global::System.Collections.Generic.List<global::Audio.AudioInstance> _seInstances = new global::System.Collections.Generic.List<global::Audio.AudioInstance>();
 	private global::SmartPoint.Components.DebugMenu.MenuInstance _seStopMenu;
-	private global::System.Collections.Generic.Dictionary<string, global::SmartPoint.Components.DebugMenu.MenuInstance> _audioGroupDict;
+	private global::System.Collections.Generic.Dictionary<string, global::SmartPoint.Components.DebugMenu.MenuInstance> _audioGroupDict = new global::System.Collections.Generic.Dictionary<string, global::SmartPoint.Components.DebugMenu.MenuInstance>();
 	private global::UnityEngine.Mesh _boxMesh;
 	private global::UnityEngine.Material _boxMat;
 	[global::SmartPoint.AssetAssistant.SceneBeforeActivateOperationMethodAttribute]
-	private global::System.Collections.IEnumerator OnInitialize(global::UnityEngine.Transform cluster) { /*@B 0x6001531*/ throw null; }
-	private void OnEnable() { /*@B 0x6001532*/ throw null; }
-	private void OnDisable() { /*@B 0x6001533*/ throw null; }
+	private global::System.Collections.IEnumerator OnInitialize(global::UnityEngine.Transform cluster) {
+		ViewerSettings.Load(false, false);
+		yield return null;
+	}
+	private void OnEnable() {
+		if (UnityEngine.EventSystems.EventSystem.current == null)
+			return;
+
+		var inputModule = UnityEngine.EventSystems.EventSystem.current.currentInputModule as UnityEngine.EventSystems.StandaloneInputModule;
+		if (inputModule != null)
+		{
+			_savedInputAxisH = inputModule.horizontalAxis;
+			_savedInputAxisV = inputModule.verticalAxis;
+			inputModule.horizontalAxis = "DPadH";
+			inputModule.verticalAxis = "DPadV";
+		}
+
+		Sequencer.update -= OnUpdate;
+		Sequencer.update += OnUpdate;
+	}
+	private void OnDisable() {
+		var inputModule = UnityEngine.EventSystems.EventSystem.current?.currentInputModule as UnityEngine.EventSystems.StandaloneInputModule;
+		if (inputModule != null)
+		{
+			inputModule.horizontalAxis = _savedInputAxisH;
+			inputModule.verticalAxis = _savedInputAxisV;
+		}
+
+		Sequencer.update -= OnUpdate;
+	}
 	private void Awake() { }
-	private void SetTimeZone(int index) { /*@B 0x6001535*/ throw null; }
-	private void SetWeather(global::Dpr.Battle.View.Systems.BtlvWeather weather) { /*@B 0x6001536*/ throw null; }
+	private void SetTimeZone(int index) {
+		ViewerSettings.timeZone = index;
+
+		long offset;
+		switch (index)
+		{
+			case 0:
+				GameManager.tickOffset = 0;
+				return;
+			case 1: offset = 28 * TimeSpan.TicksPerHour + TimeSpan.TicksPerSecond; break;
+			case 2: offset = 34 * TimeSpan.TicksPerHour + TimeSpan.TicksPerSecond; break;
+			case 3: offset = 41 * TimeSpan.TicksPerHour + TimeSpan.TicksPerSecond; break;
+			case 4: offset = 44 * TimeSpan.TicksPerHour + TimeSpan.TicksPerSecond; break;
+			case 5: offset = 26 * TimeSpan.TicksPerHour + TimeSpan.TicksPerSecond; break;
+			default: offset = 24 * TimeSpan.TicksPerHour + TimeSpan.TicksPerSecond; break;
+		}
+
+		var ticks = GameManager.nowTime.Ticks;
+		GameManager.tickOffset = offset + (ticks / GameManager.ticksPerDay * GameManager.ticksPerDay - ticks);
+	}
+	private void SetWeather(global::Dpr.Battle.View.Systems.BtlvWeather weather) {
+		_weather = weather;
+		if (_skyColorSettings != null)
+			_skyColorSettings.SetWeather(_weather, GameManager.currentPeriodOfDay, 1.0f);
+	}
 	private global::System.Collections.IEnumerator Start() {
 		string fieldAssetBundleName;
 
@@ -463,8 +513,21 @@ public class Viewer : global::UnityEngine.MonoBehaviour
 		_effectStopMenu = DebugMenu.Create("停止", effectMenu);
 		effectMenu.AddItem("全停止", reference => EffectManager.Instance.RemoveInstances(true), (string.Empty, (GameObject)null));
 	}
-	private void SetupEffectStopMenu() { /*@B 0x600153C*/ throw null; }
-	private void AddEffectStopInstance(global::Effect.EffectInstance effectInstance) { /*@B 0x600153D*/ throw null; }
+	private void SetupEffectStopMenu() {
+		for (int i = _effectStopMenu.cells.Count - 1; i >= 0; i--)
+			_effectStopMenu.Remove(_effectStopMenu.cells[i], true);
+
+		for (int i = 0; i < _effecctInstances.Count; i++)
+			AddEffectStopInstance(_effecctInstances[i]);
+	}
+	private void AddEffectStopInstance(global::Effect.EffectInstance effectInstance) {
+		_effectStopMenu.AddItem(effectInstance.name, stopReference =>
+		{
+			effectInstance.Stop(0.0f, false);
+			var menu = _effectStopMenu;
+			menu.Remove(menu.GetCurrentCell(), true);
+		}, null, null);
+	}
 	private void CreateAudioMenu(global::SmartPoint.Components.DebugMenu.MenuInstance parentMenu) {
 		var audioMenu = DebugMenu.Create("オーディオ", parentMenu);
 
@@ -530,10 +593,41 @@ public class Viewer : global::UnityEngine.MonoBehaviour
 		volumeMenu.AddSlider("SE", () => AudioManager.Instance.GetVolume(AudioManager.ListenerType.Se), volume => AudioManager.Instance.SetVolume(AudioManager.ListenerType.Se, volume), 0.0f, 1.0f);
 		volumeMenu.AddSlider("VOICE", () => AudioManager.Instance.GetVolume(AudioManager.ListenerType.Voice), volume => AudioManager.Instance.SetVolume(AudioManager.ListenerType.Voice, volume), 0.0f, 1.0f);
 	}
-	private void PlaySe(uint playEventId, uint stopEventId) { /*@B 0x600153F*/ throw null; }
-	private void PlayVoice(uint playEventId, uint stopEventId) { /*@B 0x6001540*/ throw null; }
-	private void SetupAudioStopMenu() { /*@B 0x6001541*/ throw null; }
-	private void AddAudioStopInstance(global::Audio.AudioInstance audioInstance) { /*@B 0x6001542*/ throw null; }
+	private void PlaySe(uint playEventId, uint stopEventId) {
+		var audioInstance = AudioManager.Instance.CreateSe(playEventId, stopEventId);
+		audioInstance.Play(instance =>
+		{
+			_seInstances.Remove(instance);
+			SetupAudioStopMenu();
+		}, false);
+		_seInstances.Add(audioInstance);
+		AddAudioStopInstance(audioInstance);
+	}
+	private void PlayVoice(uint playEventId, uint stopEventId) {
+		var audioInstance = AudioManager.Instance.CreateVoice(playEventId, stopEventId);
+		audioInstance.Play(instance =>
+		{
+			_seInstances.Remove(instance);
+			SetupAudioStopMenu();
+		}, false);
+		_seInstances.Add(audioInstance);
+		AddAudioStopInstance(audioInstance);
+	}
+	private void SetupAudioStopMenu() {
+		for (int i = _seStopMenu.cells.Count - 1; i >= 0; i--)
+			_seStopMenu.Remove(_seStopMenu.cells[i], true);
+
+		for (int i = 0; i < _seInstances.Count; i++)
+			AddAudioStopInstance(_seInstances[i]);
+	}
+	private void AddAudioStopInstance(global::Audio.AudioInstance audioInstance) {
+		_seStopMenu.AddItem(audioInstance.playEventId.ToString(), stopReference =>
+		{
+			audioInstance.Stop();
+			var menu = _seStopMenu;
+			menu.Remove(menu.GetCurrentCell(), true);
+		}, null, null);
+	}
 	// @017f2330 (12.4 KB, no packet C) — written from the rv2 listing; display classes 62_0 … 62_9 = the closure scopes below
 	private void AddInstanceItem(string label, global::UnityEngine.GameObject instance) {
 		_animationMenu.ownerCell.hide = false;
@@ -776,8 +870,33 @@ public class Viewer : global::UnityEngine.MonoBehaviour
 				_simpleCamera.FitBox();
 		}
 	}
-	private void OnRequestCharacter(object reference) { /*@B 0x6001544*/ throw null; }
-	private void OnSelectModel(object reference) { /*@B 0x6001545*/ throw null; }
+	private void OnRequestCharacter(object reference) {
+		if (_loadingCoroutine != null)
+			return;
+
+		var tuple = ((string, string))reference;
+		var label = tuple.Item1;
+		var assetBundleName = tuple.Item2;
+
+		Sequencer.Start(AssetBundleLoadingOperation(assetBundleName, asset =>
+		{
+			if (!(asset is GameObject))
+				return;
+
+			if (!ViewerSettings.appendOpenMode)
+				ClearInstanceItems();
+
+			var instance = Instantiate(asset) as GameObject;
+			instance.name = asset.name;
+
+			var data = GameData.DataManager.CharacterGraphics.Data.FirstOrDefault(x => assetBundleName.IndexOf(x.FieldGraphic) >= 0);
+			if (data != null)
+				instance.transform.localScale.Set(data.Scale, data.Scale, data.Scale); // shipped: Set on the returned copy (no effect)
+
+			AddInstanceItem(label, instance);
+		}));
+	}
+	private void OnSelectModel(object reference) => OnSelectModel(reference, true);
 	private void OnSelectModel(object reference, bool fit) {
 		var tuple = ((string, GameObject))reference;
 		var label = tuple.Item1;
@@ -987,20 +1106,298 @@ public class Viewer : global::UnityEngine.MonoBehaviour
 
 		EnvironmentController.global.cloudShadowTex = _battleCloudTex;
 	}
-	private void OnSelectPokemonChanged(int index, int category) { /*@B 0x600154D*/ throw null; }
-	private void OnSelectVariationChanged(int index, int category) { /*@B 0x600154E*/ throw null; }
-	private void OnShinyColorChanged(int selected, int category) { /*@B 0x600154F*/ throw null; }
-	private void OnRequestFieldPokemon(object reference) { /*@B 0x6001550*/ throw null; }
-	private void OnRequestBattlePokemon(object reference) { /*@B 0x6001551*/ throw null; }
-	private void OnRequestPokemon(int category) { /*@B 0x6001552*/ throw null; }
-	private void OnRequestStatue(object reference) { /*@B 0x6001553*/ throw null; }
-	private void CreateBoxMesh() { /*@B 0x6001554*/ throw null; }
-	private void DrawBox() { /*@B 0x6001555*/ throw null; }
-	private global::System.Collections.IEnumerator AssetBundleLoadingOperation(string assetBundleName, global::UnityEngine.Events.UnityAction<global::UnityEngine.Object> callback) { /*@B 0x6001556*/ throw null; }
-	private void OnUpdate(float deltaTime) { /*@B 0x6001557*/ throw null; }
-	private void SetCell(global::UnityEngine.GameObject instance) { /*@B 0x6001558*/ throw null; }
-	private void OnDestroy() { /*@B 0x6001559*/ throw null; }
-	public Viewer() { /*@B 0x600155A*/ throw null; }
+	private void OnSelectPokemonChanged(int index, int category) {
+		_currentPokemonIndex = index;
+
+		DebugMenu.MenuInstance menu = null;
+		if (category == 1)
+			menu = _battlePokemonMenu;
+		else if (category == 0)
+			menu = _fieldPokemonMenu;
+		menu?.Reload();
+
+		if (HasPokemonInstance() && !ViewerSettings.appendOpenMode)
+			OnRequestPokemon(category);
+	}
+	private void OnSelectVariationChanged(int index, int category) {
+		if (_pokemonInfos[_currentPokemonIndex].currentVariation != index)
+		{
+			_pokemonInfos[_currentPokemonIndex].currentVariation = index;
+			if (HasPokemonInstance() && !ViewerSettings.appendOpenMode)
+				OnRequestPokemon(category);
+		}
+	}
+	private void OnShinyColorChanged(int selected, int category) {
+		_pokemonInfos[_currentPokemonIndex].shinyColor = selected == 1;
+		if (HasPokemonInstance() && !ViewerSettings.appendOpenMode)
+			OnRequestPokemon(category);
+	}
+	private void OnRequestFieldPokemon(object reference) => OnRequestPokemon(0);
+	private void OnRequestBattlePokemon(object reference) => OnRequestPokemon(1);
+	private void OnRequestPokemon(int category) {
+		if (_loadingCoroutine != null)
+			return;
+
+		var info = _pokemonInfos[_currentPokemonIndex];
+		var va = info.variations[info.currentVariation];
+		var assetBundleName = info.variations[info.currentVariation].AssetBundleName;
+		var pokemonData = GameData.DataManager.PokemonInfo.Catalog.FirstOrDefault(x => x.AssetBundleName == assetBundleName);
+
+		assetBundleName = category != 0 ? "battle/" : "field/";
+		assetBundleName = assetBundleName + string.Format("pm{0,0:D4}_{1}_{2,0:D2}", info.index + 1, va.Variation.Substring(0, 2), info.shinyColor ? 1 : 0);
+
+		Sequencer.Start(AssetBundleLoadingOperation("pokemons/" + assetBundleName, asset =>
+		{
+			if (!(asset is GameObject))
+				return;
+
+			if (!ViewerSettings.appendOpenMode)
+				ClearInstanceItems();
+
+			var instance = Instantiate(asset) as GameObject;
+			var animationPlayer = instance.GetComponent<BaseEntity>()?.GetAnimationPlayer();
+			instance.name = asset.name;
+
+			Transform scaleTarget;
+			float scale;
+			if (info.petrify == 0)
+			{
+				if (pokemonData == null)
+					goto Shadows;
+				scaleTarget = instance.transform;
+				scale = pokemonData.BattleScale;
+			}
+			else
+			{
+				var updater = instance.AddComponent<PetrifyUpdater>();
+				var materialData = petrifyData.materialDatas[info.petrify - 1];
+				updater.materialData = materialData;
+
+				foreach (var renderer in instance.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+				{
+					foreach (var material in renderer.sharedMaterials)
+					{
+						if (material.shader == null)
+							continue;
+
+						var shaderName = material.shader.name;
+						if (shaderName.IndexOf("Mask") >= 0 || shaderName.IndexOf("DepthOnly") >= 0)
+							continue;
+
+						var renderQueue = material.renderQueue;
+						material.shader = shaderName.IndexOf("Fire") >= 0 ? petrifyFireShader : (shaderName.IndexOf("Smoke") >= 0 ? petrifySmokeShader : petrifyShader);
+						material.renderQueue = renderQueue;
+						updater.materials.Add(material);
+					}
+				}
+
+				if (materialData.forceSoftEdge)
+				{
+					foreach (var renderer in instance.GetComponentsInChildren<SkinnedMeshRenderer>())
+						MeshNormalSmoother.Add(renderer.sharedMesh);
+					MeshNormalSmoother.Bake();
+				}
+
+				if (pokemonData == null)
+					goto Shadows;
+				scaleTarget = instance.transform;
+				scale = pokemonData.FieldChikaScale;
+			}
+			scaleTarget.localScale = new Vector3(scale, scale, scale);
+
+		Shadows:
+			foreach (var renderer in instance.GetComponentsInChildren<Renderer>())
+				renderer.receiveShadows = false;
+
+			AddInstanceItem(va.Name, instance);
+
+			if (animationPlayer != null && info.petrify != 0)
+			{
+				var entity = instance.GetComponent<FieldPokemonEntity>();
+				if (entity != null)
+					entity.autoBlinkEnable = false;
+				animationPlayer.SetSpeed(0.0f);
+			}
+		}));
+	}
+	private void OnRequestStatue(object reference) {
+		if (_loadingCoroutine != null)
+			return;
+
+		var index = _currentStatueIndex;
+		Sequencer.Start(AssetBundleLoadingOperation(string.Format("pokemons/statue/{0}", _statueData.table[index].statueId), asset =>
+		{
+			if (!(asset is GameObject))
+				return;
+
+			if (!ViewerSettings.appendOpenMode)
+				ClearInstanceItems();
+
+			var instance = Instantiate(asset) as GameObject;
+			AddInstanceItem(string.Format("statue{0}", index), instance);
+		}));
+	}
+	private void CreateBoxMesh() {
+		if (_boxMesh != null)
+			return;
+
+		_boxMat = new Material(Shader.Find("Unlit/Color"));
+		_boxMat.color = new Color(1.0f, 0.0f, 0.0f);
+		_boxMesh = new Mesh();
+
+		var vertices = new Vector3[]
+		{
+			new Vector3(-1.0f, -1.0f, -1.0f),
+			new Vector3(1.0f, -1.0f, -1.0f),
+			new Vector3(1.0f, -1.0f, 1.0f),
+			new Vector3(-1.0f, -1.0f, 1.0f),
+			new Vector3(-1.0f, 1.0f, -1.0f),
+			new Vector3(1.0f, 1.0f, -1.0f),
+			new Vector3(1.0f, 1.0f, 1.0f),
+			new Vector3(-1.0f, 1.0f, 1.0f),
+		};
+		var indices = new int[] { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 };
+
+		_boxMesh.vertices = vertices;
+		_boxMesh.SetIndices(indices, MeshTopology.Lines, 0);
+		_boxMesh.UploadMeshData(true);
+	}
+	private void DrawBox() {
+		if (ViewerSettings.hideBoundingBox)
+			return;
+
+		if (_simpleCamera.cameraTarget != null)
+		{
+			CreateBoxMesh();
+
+			var matrix = _simpleCamera.cameraTarget.localToWorldMatrix;
+			var bounds = _simpleCamera.bounds;
+
+			var center = bounds.center;
+			var m03 = matrix.m00 * center.x + matrix.m01 * center.y + matrix.m02 * center.z + matrix.m03;
+			var m13 = matrix.m10 * center.x + matrix.m11 * center.y + matrix.m12 * center.z + matrix.m13;
+			var m23 = matrix.m20 * center.x + matrix.m21 * center.y + matrix.m22 * center.z + matrix.m23;
+
+			var size = bounds.size;
+			matrix.m00 *= size.x; matrix.m10 *= size.x; matrix.m20 *= size.x; matrix.m30 *= size.x;
+			matrix.m01 *= size.y; matrix.m11 *= size.y; matrix.m21 *= size.y; matrix.m31 *= size.y;
+			matrix.m02 *= size.z; matrix.m12 *= size.z; matrix.m22 *= size.z; matrix.m32 *= size.z;
+			matrix.m03 = m03; matrix.m13 = m13; matrix.m23 = m23;
+
+			Graphics.DrawMesh(_boxMesh, matrix, _boxMat, LayerMask.NameToLayer("Debug"));
+		}
+	}
+	private global::System.Collections.IEnumerator AssetBundleLoadingOperation(string assetBundleName, global::UnityEngine.Events.UnityAction<global::UnityEngine.Object> callback) {
+		if (callback != null)
+		{
+			AssetManager.AppendAssetBundleRequest(assetBundleName, true, null, null);
+			yield return AssetManager.DispatchRequests((eventType, name, asset) =>
+			{
+				if (eventType == RequestEventType.Complete)
+					_loadingCoroutine = null;
+				else if (eventType == RequestEventType.Cached)
+					AssetManager.UnloadAssetBundle(name);
+				else if (eventType == RequestEventType.Activated)
+					callback.Invoke(asset);
+			});
+		}
+	}
+	private void OnUpdate(float deltaTime) {
+		GameManager.nowTime = DateTime.Now;
+
+		if (_simpleCamera == null)
+			return;
+
+		if (GameManager.pause)
+			return;
+
+		DrawBox();
+
+		if (ViewerSettings.autoRotate)
+		{
+			foreach (var cell in _instanceMenu.cells)
+			{
+				var instance = (((string, GameObject))(cell.value as DebugMenuCell.Item).reference).Item2;
+				if (instance != null)
+				{
+					var rotation = new Quaternion();
+					rotation.eulerAngles = new Vector3(0.0f, deltaTime * 90.0f, 0.0f);
+					instance.gameObject.transform.rotation = instance.gameObject.transform.rotation * rotation;
+				}
+			}
+		}
+
+		if (Input.GetButtonDown("Previous"))
+		{
+			_instanceMenu.Previous();
+			var item = _instanceMenu.GetCurrentItem();
+			if (item != null)
+				OnSelectModel(item.reference, true);
+		}
+
+		if (Input.GetButtonDown("Next"))
+		{
+			_instanceMenu.Next();
+			var item = _instanceMenu.GetCurrentItem();
+			if (item != null)
+				OnSelectModel(item.reference, true);
+		}
+
+		if (Input.GetKeyDown(KeyCode.F))
+			_simpleCamera.FitBox();
+
+		if (!DebugMenu.visible)
+		{
+			if (Input.GetButtonDown("Submit"))
+				_simpleCamera.FitBox();
+
+			if (Input.GetButtonDown("Cancel") || Input.GetKeyDown(KeyCode.Escape))
+			{
+				_instanceMenu.SetCurrentIndex(0);
+				var item = _instanceMenu.GetCurrentItem();
+				if (item != null)
+					OnSelectModel(item.reference, true);
+			}
+		}
+
+		if (!Sequencer.IntersectGUI(Input.mousePosition) && Input.GetMouseButtonDown(0))
+		{
+			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			RaycastHit hit;
+			if (Physics.Raycast(ray, out hit, 100.0f, 1 << LayerMask.NameToLayer("Clickable")))
+			{
+				SetCell(hit.collider.gameObject);
+			}
+			else if (!Input.GetKey(KeyCode.LeftAlt))
+			{
+				_instanceMenu.SetCurrentIndex(0);
+				var item = _instanceMenu.GetCurrentItem();
+				if (item != null)
+					OnSelectModel(item.reference, true);
+			}
+		}
+
+		EnvironmentController.global.SetLight(_renderSettings, GameManager.currentPeriodOfDay, 0.0f, 0.0f);
+		_simpleCamera.controllable = !DebugMenu.visible;
+	}
+	private void SetCell(global::UnityEngine.GameObject instance) {
+		foreach (var cell in _instanceMenu.cells)
+		{
+			var tuple = ((string, GameObject))(cell.value as DebugMenuCell.Item).reference;
+			if (tuple.Item2 != instance)
+				continue;
+
+			_instanceMenu.SetCurrentCell(cell);
+			OnSelectModel((tuple.Item1, tuple.Item2), false);
+			_simpleCamera.dragTarget = instance?.transform;
+			break;
+		}
+	}
+	private void OnDestroy() {
+		DebugMenu.SetRoot(null);
+	}
+	public Viewer() {
+	}
 	public class PokemonInfo
 	{
 		public static readonly string[] Locations;
@@ -1010,9 +1407,24 @@ public class Viewer : global::UnityEngine.MonoBehaviour
 		public bool shinyColor;
 		public int petrify;
 		public global::System.Collections.Generic.List<global::ScriptableObjectFormat.PokemonData.ModelData> variations;
-		public static int GetLocation(int index) { /*@B 0x60097F6*/ throw null; }
-		public string[] GetVariationNames() { /*@B 0x60097F7*/ throw null; }
+		public static int GetLocation(int index) {
+			for (int i = 0; i < LocationRanges.Length; i++)
+			{
+				if (index <= LocationRanges[i].end - 1)
+					return i;
+			}
+			return 0;
+		}
+		public string[] GetVariationNames() {
+			var names = variations.Select(x => x.Variation).ToArray();
+			if (names.Length == 1)
+				names = new string[] { "なし" };
+			return names;
+		}
 		public PokemonInfo() { }
-		static PokemonInfo() { /*@B 0x60097F9*/ throw null; }
+		static PokemonInfo() {
+			Locations = new string[] { "カント―(RG)", "ホウエン(GS)", "ジョウト(RS)", "シンオウ(DP)" };
+			LocationRanges = new RangeInt[] { new RangeInt(1, 151), new RangeInt(152, 100), new RangeInt(252, 135), new RangeInt(387, 107) };
+		}
 	}
 }
