@@ -5,29 +5,124 @@ namespace Dpr.Field.Walking
 	{
 		private global::Dpr.Field.Walking.CorSystem corSys;
 		private global::Dpr.Field.Walking.CorSystem TimeCorSys;
-		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.CorSystem> SubList;
+		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.CorSystem> SubList = new global::System.Collections.Generic.List<global::Dpr.Field.Walking.CorSystem>();
 		public int nowSubNo;
 		public float duration;
 		public float elapsedTime;
 		private global::UnityEngine.UI.Text text;
 		private int count;
-		public bool isFinished { get { /*@B 0x6008995*/ throw null; } }
-		public bool isPlaying { get { /*@B 0x6008996*/ throw null; } }
-		public float Rate { get { /*@B 0x6008997*/ throw null; } }
-		public CorSystemContainer(string name = "") { /*@B 0x6008998*/ throw null; }
-		public void Cancel() { /*@B 0x6008999*/ throw null; }
-		public void SubCancel(string s) { /*@B 0x600899A*/ throw null; }
-		public void SubCancel(global::Dpr.Field.Walking.CorSystem corSys) { /*@B 0x600899B*/ throw null; }
-		public void SubCancel(int no) { /*@B 0x600899C*/ throw null; }
-		public void Pause() { /*@B 0x600899D*/ throw null; }
-		public global::UnityEngine.Coroutine Restart() { /*@B 0x600899E*/ throw null; }
-		public global::Dpr.Field.Walking.CorSystem AddSub(float duration, global::Dpr.Field.Walking.CorSystemContainer.corDelegate ienum, string name = "") { /*@B 0x600899F*/ throw null; }
-		public global::Dpr.Field.Walking.CorSystem AddSub(float duration, global::System.Collections.IEnumerator ienum, string name = "") { /*@B 0x60089A0*/ throw null; }
-		private void AddSubList(global::Dpr.Field.Walking.CorSystem sub, global::System.Collections.IEnumerator ienum) { /*@B 0x60089A1*/ throw null; }
-		public global::Dpr.Field.Walking.CorSystem AddWait(float duration, global::System.Action<global::Dpr.Field.Walking.CorSystem> OnUpdate, string Name) { /*@B 0x60089A2*/ throw null; }
-		public void Play() { /*@B 0x60089A3*/ throw null; }
-		private global::System.Collections.IEnumerator TimeCount() { /*@B 0x60089A4*/ throw null; }
-		private global::System.Collections.IEnumerator Main() { /*@B 0x60089A5*/ throw null; }
+		public bool isFinished { get { return corSys.isFinished; } }
+		public bool isPlaying { get { return corSys.isPlaying; } }
+		public float Rate { get { return elapsedTime / duration; } }
+		public CorSystemContainer(string name = "")
+		{
+			corSys = new global::Dpr.Field.Walking.CorSystem(name);
+			text = global::Dpr.FureaiHiroba.DebugManager.CreateText("", 0f);
+		}
+		public void Cancel() { corSys.Cancel(); }
+		public void SubCancel(string s)
+		{
+			int index = SubList.FindIndex((global::Dpr.Field.Walking.CorSystem x) => x.CorName == s);
+			if (index > SubList.Count)
+				return;
+			global::Dpr.Field.Walking.CorSystem sub = SubList[index];
+			if (sub.isPlaying)
+				sub.Cancel();
+			else
+				sub.PrePlayCancel();
+			SubList.RemoveAt(index);
+		}
+		public void SubCancel(global::Dpr.Field.Walking.CorSystem corSys)
+		{
+			int index = SubList.FindIndex((global::Dpr.Field.Walking.CorSystem x) => corSys == x);
+			if (index > SubList.Count)
+				return;
+			global::Dpr.Field.Walking.CorSystem sub = SubList[index];
+			if (sub.isPlaying)
+				sub.Cancel();
+			else
+				sub.PrePlayCancel();
+			SubList.RemoveAt(index);
+		}
+		public void SubCancel(int no)
+		{
+			if (no > SubList.Count)
+				return;
+			global::Dpr.Field.Walking.CorSystem sub = SubList[no];
+			if (sub.isPlaying)
+				sub.Cancel();
+			else
+				sub.PrePlayCancel();
+			SubList.RemoveAt(no);
+		}
+		public void Pause() { corSys.Pause(); }
+		public global::UnityEngine.Coroutine Restart()
+		{
+			if (corSys.isPause)
+				return corSys.Restart();
+			return null;
+		}
+		public global::Dpr.Field.Walking.CorSystem AddSub(float duration, global::Dpr.Field.Walking.CorSystemContainer.corDelegate ienum, string name = "")
+		{
+			this.duration += duration;
+			global::Dpr.Field.Walking.CorSystem sub = corSys.AddSub(name);
+			sub.duration = duration;
+			SubList.Add(sub);
+			AddSubList(sub, ienum(sub));
+			return sub;
+		}
+		public global::Dpr.Field.Walking.CorSystem AddSub(float duration, global::System.Collections.IEnumerator ienum, string name = "")
+		{
+			this.duration += duration;
+			global::Dpr.Field.Walking.CorSystem sub = corSys.AddSub(name);
+			AddSubList(sub, ienum);
+			return sub;
+		}
+		private void AddSubList(global::Dpr.Field.Walking.CorSystem sub, global::System.Collections.IEnumerator ienum) { SubList.Add(sub); }
+		public global::Dpr.Field.Walking.CorSystem AddWait(float duration, global::System.Action<global::Dpr.Field.Walking.CorSystem> OnUpdate, string Name)
+		{
+			count++;
+			global::Dpr.Field.Walking.CorSystem sub = corSys.AddSub(Name);
+			sub.duration = duration;
+			this.duration += duration;
+			sub.SetIEnum(sub.Wait(OnUpdate));
+			SubList.Add(sub);
+			return sub;
+		}
+		public void Play()
+		{
+			elapsedTime = 0f;
+			duration = global::System.Linq.Enumerable.Sum(SubList, (global::Dpr.Field.Walking.CorSystem x) => x.duration);
+			corSys.onPauseStart += () => { TimeCorSys.Pause(); };
+			corSys.onPauseEnd += () => { TimeCorSys.Restart(); };
+			corSys.onFinished += () => { SubList.Clear(); };
+			corSys.Play(Main());
+		}
+		private global::System.Collections.IEnumerator TimeCount()
+		{
+			while (elapsedTime < duration)
+			{
+				elapsedTime += global::Dpr.Field.Walking.DeltaTime.deltaTime;
+				yield return null;
+			}
+		}
+		private global::System.Collections.IEnumerator Main()
+		{
+			nowSubNo = 0;
+			while (SubList.Count > 0)
+			{
+				bool isfinish;
+				text.text = nowSubNo.ToString();
+				global::Dpr.Field.Walking.CorSystem sub = SubList[0];
+				sub.Play();
+				isfinish = false;
+				sub.onFinished += () => { isfinish = true; };
+				while (!isfinish)
+					yield return new global::UnityEngine.WaitForEndOfFrame();
+				nowSubNo++;
+				SubList.RemoveAll((global::Dpr.Field.Walking.CorSystem x) => x.isFinished);
+			}
+		}
 		public delegate global::System.Collections.IEnumerator corDelegate(global::Dpr.Field.Walking.CorSystem corSystem);
 	}
 }
