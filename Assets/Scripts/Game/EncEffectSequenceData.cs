@@ -4,8 +4,10 @@ public class EncEffectSequenceData : global::UnityEngine.ScriptableObject
 	public global::EncEffectSeqDataTable table;
 	public global::EffectFieldID EffectFieldID;
 	public global::EncEffectSequenceData.eSpecialType SpecialType;
-	public global::System.Collections.Generic.List<global::EncEffectSequenceData.KeyData> keyData;
-	public EncEffectSequenceData() { /*@B 0x6000064*/ throw null; }
+	public global::System.Collections.Generic.List<global::EncEffectSequenceData.KeyData> keyData = new global::System.Collections.Generic.List<global::EncEffectSequenceData.KeyData>();
+	public EncEffectSequenceData()
+	{
+	}
 	public enum eSpecialType
 	{
 		Normal = 0,
@@ -44,23 +46,25 @@ public class EncEffectSequenceData : global::UnityEngine.ScriptableObject
 	[global::System.Serializable]
 	public class KeyData
 	{
-		public global::EncEffectSequenceData.Command command;
+		public global::EncEffectSequenceData.Command command = global::EncEffectSequenceData.Command.End;
 		public float startTime;
 		public float endTime;
-		public string path;
-		public global::UnityEngine.Color minColor;
-		public global::UnityEngine.Color maxColor;
+		public string path = "";
+		public global::UnityEngine.Color minColor = global::UnityEngine.Color.white;
+		public global::UnityEngine.Color maxColor = global::UnityEngine.Color.white;
 		public float duration;
 		public global::SmartPoint.Components.Fader.FadeMode fademode;
 		public bool useSystemColor;
 		public int fadeTexIndex;
-		public string seEventName;
-		public global::UnityEngine.Vector3 cameraOffset;
+		public string seEventName = "";
+		public global::UnityEngine.Vector3 cameraOffset = global::UnityEngine.Vector3.zero;
 		public bool saveCameraOffset;
 		public float AfterImageAngle;
-		public float AfterImageScale;
+		public float AfterImageScale = 1f;
 		[global::UnityEngine.HideInInspector]
 		public global::EncEffectSequenceData.State state;
-		public KeyData() { /*@B 0x60092B0*/ throw null; }
+		public KeyData()
+		{
+		}
 	}
 }

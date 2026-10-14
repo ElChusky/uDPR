@@ -4,7 +4,11 @@ public class EnterCollisionStartPoint : global::EnterCollision
 {
 	public bool isExit;
 	public bool isLandStartPoint;
-	private EnterCollisionStartPoint() { /*@B 0x6000EDB*/ throw null; }
+	private EnterCollisionStartPoint()
+	{
+		this.isExit = false;
+		this.isLandStartPoint = false;
+	}
 	public void Init() {
 		isExit = false;
 		isLandStartPoint = false;

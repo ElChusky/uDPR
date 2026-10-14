@@ -4,6 +4,6 @@ public class EncountFadeTextures : global::UnityEngine.ScriptableObject
 {
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.Texture[] _textures;
-	public global::UnityEngine.Texture this[int index] { get { /*@B 0x6000065*/ throw null; } }
+	public global::UnityEngine.Texture this[int index] { get { return this._textures[index]; } }
 	public EncountFadeTextures() { }
 }

@@ -4,8 +4,12 @@ public class EffectPosData
 {
 	public int MstID;
 	public string Name;
-	public global::System.Collections.Generic.List<string> Path;
-	public global::System.Collections.Generic.List<global::UnityEngine.Vector3> Position;
-	public global::System.Collections.Generic.List<global::UnityEngine.Vector3> Angles;
-	public EffectPosData(int mstID) { /*@B 0x6000E7E*/ throw null; }
+	public global::System.Collections.Generic.List<string> Path = new global::System.Collections.Generic.List<string>();
+	public global::System.Collections.Generic.List<global::UnityEngine.Vector3> Position = new global::System.Collections.Generic.List<global::UnityEngine.Vector3>();
+	public global::System.Collections.Generic.List<global::UnityEngine.Vector3> Angles = new global::System.Collections.Generic.List<global::UnityEngine.Vector3>();
+	public EffectPosData(int mstID)
+	{
+		this.MstID = mstID;
+		this.Name = global::Dpr.Message.MessageManager.Instance.GetNameMessage("ss_monsname", this.MstID);
+	}
 }

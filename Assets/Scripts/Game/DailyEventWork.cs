@@ -5,8 +5,26 @@ using Dpr.NX;
 using System;
 public static class DailyEventWork
 {
-	public static int PenaltyMin;
-	private static global::DailyEventWork.Status UpdateDateCheck(out int diffdays) { /*@B 0x600003F*/ throw null; }
+	public static int PenaltyMin = 1440;
+	private static global::DailyEventWork.Status UpdateDateCheck(out int diffdays)
+	{
+		diffdays = 0;
+		bool penalty = PenaltyCheck();
+		GMTIME last = SystemTimeWork.GetDailyEventLastTime();
+		if (last.timestmp == 0)
+			return Status.NO_DAILY;
+		DateTime lastDate = DateTime.FromFileTime(last.timestmp).Date;
+		TimeSpan span = GameManager.nowTime.Date - lastDate;
+		diffdays = span.Days;
+		if (diffdays >= 1)
+			return penalty ? Status.PENALTY : Status.DAIRY;
+		if (diffdays != 0 && !penalty)
+		{
+			diffdays = 1;
+			return Status.DAIRY;
+		}
+		return Status.NO_DAILY;
+	}
 	public static bool UpdateEvent() {
         Status status = UpdateDateCheck(out int diffdays);
         if (status == Status.NO_DAILY || status == Status.PENALTY || SystemTimeWork.IsPenalty())
@@ -31,9 +49,59 @@ public static class DailyEventWork
         SystemTimeWork.SetDailyEventLastTime();
         return true;
     }
-	private static void PokerusUpdate(int diffday) { /*@B 0x6000041*/ throw null; }
-	private static void ResetScriptFlag() { /*@B 0x6000042*/ throw null; }
-	public static void SysWorkUpdatePokeLevelNo() { /*@B 0x6000043*/ throw null; }
+	private static void PokerusUpdate(int diffday)
+	{
+		if (PlayerWork.playerParty.CheckPokerusExist())
+			PlayerWork.playerParty.DecreasePokerusDayCount(diffday);
+	}
+	private static void ResetScriptFlag()
+	{
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_SEED_PRESENT, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_T05PC0101_ITEM_GET, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_URANIWA_ENCOUNT, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C06R0201_SEED_PRESENT, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C08R0201_RIBBON_GET, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_T07R0101_ESTHTIQUE, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C08R0201_WEEK_TALK, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C08R0201_FIRST_DAY, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_D02_FUUSEN, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_KUJI_DAY, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_T03R0101_SEED_PRESENT, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_L02R0101_INIT, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C07R0801_DRESSING, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C09R0201_NANKAI, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_R221R0201_ITEM_GET, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C01R0201_BATTLE_END, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_D25R0106_SPPOKE_END, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_T04R0301_NEWS_END, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C11_RIVAL_BTL, false);
+		FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_USE_TODAY_IWAKUDAKI, false);
+		FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_USE_TODAY_IAIGIRI, false);
+		FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_USE_TODAY_SORAWOTOBU, false);
+		FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_USE_TODAY_KIRIBARAI, false);
+		FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_USE_TODAY_NAMINORI, false);
+		FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_USE_TODAY_KAIRIKI, false);
+		FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_USE_TODAY_ROKKUKURAIMU, false);
+		FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_USE_TODAY_TAKINOBORI, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C01R0203_PRODUCER, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C02_GYM_RETRUN_MATCH, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C03_GYM_RETRUN_MATCH, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C04_GYM_RETRUN_MATCH, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C05_GYM_RETRUN_MATCH, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C06_GYM_RETRUN_MATCH, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C07_GYM_RETRUN_MATCH, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C08_GYM_RETRUN_MATCH, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_C09_GYM_RETRUN_MATCH, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_T04R0301_NEWS_ONEDAY, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_T02_SUP_RETRUN_MATCH, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_POKE_TUREARUI_PEMALTY, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_4_POKE_TUREARUI_ITEM, false);
+		FlagWork.SetFlag(EvWork.FLAG_INDEX.TMFLG_R213_POOL, false);
+	}
+	public static void SysWorkUpdatePokeLevelNo()
+	{
+		FlagWork.SetWork(EvWork.WORK_INDEX.SYS_WORK_POKE_LEVEL_NO, RandomGroupWork.RandomRange(2, 100));
+	}
 	private static void UpdateSafari() {
         ENC_SV_DATA encSvData = PlayerWork.Enc_SV_Data;
         encSvData.SafariRandSeed = (int)(RandomGroupWork.GetDefaultRandom() % int.MaxValue);
@@ -79,7 +147,9 @@ public static class DailyEventWork
             UpdatePenalty();
         return SystemTimeWork.IsPenalty();
     }
-	static DailyEventWork() { /*@B 0x6000047*/ throw null; }
+	static DailyEventWork()
+	{
+	}
 	private enum Status
 	{
 		NO_DAILY = 0,

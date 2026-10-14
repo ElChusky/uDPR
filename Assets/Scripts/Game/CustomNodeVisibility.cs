@@ -4,6 +4,9 @@ public class CustomNodeVisibility
 {
 	public global::UnityEngine.GameObject bone;
 	public global::UnityEngine.Renderer skin;
-	public void Update() { /*@B 0x6000E00*/ throw null; }
+	public void Update() {
+		if (this.skin != null)
+			this.skin.enabled = !(global::UnityEngine.Mathf.Abs(this.bone.transform.localPosition.x) < 0.005f);
+	}
 	public CustomNodeVisibility() { }
 }
