@@ -2,6 +2,15 @@
 public class EncEffectSeqDataTable : global::UnityEngine.ScriptableObject
 {
 	[global::UnityEngine.TooltipAttribute("[0] Morning\n[1] Daytime\n[2] Evening\n[3] Night\n[4] Midnight")]
-	public global::UnityEngine.Color[] DayColor;
-	public EncEffectSeqDataTable() { /*@B 0x6000050*/ throw null; }
+	public global::UnityEngine.Color[] DayColor = new global::UnityEngine.Color[5]
+	{
+		global::UnityEngine.Color.white,
+		global::UnityEngine.Color.white,
+		global::UnityEngine.Color.white,
+		global::UnityEngine.Color.white,
+		global::UnityEngine.Color.white,
+	};
+	public EncEffectSeqDataTable()
+	{
+	}
 }

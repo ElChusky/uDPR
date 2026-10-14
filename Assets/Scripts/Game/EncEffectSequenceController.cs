@@ -11,10 +11,18 @@ public class EncEffectSequenceController
 	private float _updateTime;
 	private global::Effect.EffectInstance _effectInstance;
 	private global::FieldManager _field;
-	private global::UnityEngine.Vector3 _cameraPositionOffset;
-	private global::UnityEngine.Vector3 _cameraRotationOffset;
+	private global::UnityEngine.Vector3 _cameraPositionOffset = global::UnityEngine.Vector3.zero;
+	private global::UnityEngine.Vector3 _cameraRotationOffset = global::UnityEngine.Vector3.zero;
 	public global::EncEffectSequenceController.ePlayState PlayState { get; private set; }
-	public EncEffectSequenceController(string assetname, global::FieldManager field) { /*@B 0x6000053*/ throw null; }
+	public EncEffectSequenceController(string assetname, global::FieldManager field)
+	{
+		this._sequence = null;
+		this._updateTime = 0f;
+		this._effectInstance = null;
+		this._field = field;
+		this.PlayState = ePlayState.Loading;
+		Sequencer.Start(this.EffectLoad(assetname));
+	}
 	private global::System.Collections.IEnumerator EffectLoad(string assetname) {
         AssetManager.AppendAssetBundleRequest(assetname, true, null, null);
         yield return AssetManager.DispatchRequests((eventType, name, asset) =>

@@ -2,8 +2,8 @@
 [global::System.Serializable]
 public class CustomNodeMaterial
 {
-	private static readonly int _FixMultiplierColor;
-	private static readonly int _BillboardScale;
+	private static readonly int _FixMultiplierColor = global::UnityEngine.Shader.PropertyToID("_FixMultiplierColor");
+	private static readonly int _BillboardScale = global::UnityEngine.Shader.PropertyToID("_BillboardScale");
 	private const bool useMaterialBlock = true;
 	private static global::UnityEngine.MaterialPropertyBlock materialPropertyBlock;
 	public global::MaterialParam mp;
@@ -13,9 +13,53 @@ public class CustomNodeMaterial
 	[global::UnityEngine.ColorUsageAttribute(false, true)]
 	public global::UnityEngine.Color fixMultiplyColor;
 	public global::CustomNodeProperty[] CnProperties { set { this.cnProperties = value; } }
-	public CustomNodeMaterial(global::UnityEngine.Material mat) { /*@B 0x6000DFB*/ throw null; }
-	public void SetUp(global::UnityEngine.Renderer[] renderers) { /*@B 0x6000DFC*/ throw null; }
-	public void Start() { /*@B 0x6000DFD*/ throw null; }
-	public void Update(float lossyScale) { /*@B 0x6000DFE*/ throw null; }
-	static CustomNodeMaterial() { /*@B 0x6000DFF*/ throw null; }
+	public CustomNodeMaterial(global::UnityEngine.Material mat)
+	{
+		this.shaderName = mat.shader.name;
+		this.mp = new global::MaterialParam();
+		this.mp.mat = mat;
+		this.cnProperties = null;
+	}
+	public void SetUp(global::UnityEngine.Renderer[] renderers)
+	{
+		this.mp.SetUpUsing(renderers);
+	}
+	public void Start()
+	{
+		if (materialPropertyBlock == null)
+			materialPropertyBlock = new global::UnityEngine.MaterialPropertyBlock();
+		if (this.cnProperties != null)
+		{
+			for (int i = 0; i < this.cnProperties.Length; i++)
+				this.cnProperties[i].SetUp();
+		}
+		this.fixMultiplyColor = global::UnityEngine.Color.white;
+	}
+	public void Update(float lossyScale)
+	{
+		if (this.mp.mat != null && materialPropertyBlock != null)
+		{
+			materialPropertyBlock.Clear();
+			for (int i = 0; i < this.cnProperties.Length; i++)
+			{
+				global::CustomNodeProperty p = this.cnProperties[i];
+				if (this.shaderName == "Mitake/SmokeMask1st" || this.shaderName == "Mitake/SmokeMask_MT")
+					p.UpdatePropertyBlockSmokeMask(materialPropertyBlock);
+				else
+					p.UpdatePropertyBlock(materialPropertyBlock);
+			}
+			materialPropertyBlock.SetColor(_FixMultiplierColor, this.fixMultiplyColor);
+			materialPropertyBlock.SetFloat(_BillboardScale, lossyScale);
+			global::MaterialUsing[] usings = this.mp.usings;
+			for (int i = 0; i < usings.Length; i++)
+			{
+				global::MaterialUsing u = usings[i];
+				if (u.renderer != null)
+					u.renderer.SetPropertyBlock(materialPropertyBlock, u.index);
+			}
+		}
+	}
+	static CustomNodeMaterial()
+	{
+	}
 }

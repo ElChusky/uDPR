@@ -4,10 +4,10 @@ using UnityEngine;
 public class DemoPokeHeightAutoAdjuster : global::UnityEngine.MonoBehaviour
 {
 	private global::FieldPokemonEntity pokeEntity;
-	private global::System.Collections.Generic.List<float> heightList;
+	private global::System.Collections.Generic.List<float> heightList = new global::System.Collections.Generic.List<float>();
 	public global::UnityEngine.Transform Head;
-	public global::UnityEngine.Vector3 defaultPos;
-	public float heightLimit;
+	public global::UnityEngine.Vector3 defaultPos = global::UnityEngine.Vector3.zero;
+	public float heightLimit = 0.5f;
 	public void Awake() {
 		pokeEntity = transform.GetComponent<FieldPokemonEntity>();
 		GameObject head = pokeEntity.transform.FindDeep("Jaw", false);
@@ -41,5 +41,7 @@ public class DemoPokeHeightAutoAdjuster : global::UnityEngine.MonoBehaviour
 			pokeEntity.GetPokeAnimSound().Enable = false;
 		}
 	}
-	public DemoPokeHeightAutoAdjuster() { /*@B 0x6000ED4*/ throw null; }
+	public DemoPokeHeightAutoAdjuster()
+	{
+	}
 }

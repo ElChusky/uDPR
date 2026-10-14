@@ -15,11 +15,232 @@ public class CustomNodeProperty
 	protected float GetAttributeFloat(global::System.Collections.Generic.IDictionary<string, object> dictAttr, string attrName) {
         return (float)(double)(dictAttr[attrName] as IDictionary<string, object>)["Value"];
     }
-	public void SetUp() { /*@B 0x6000DF4*/ throw null; }
-	public void Update(global::UnityEngine.Material mat) { /*@B 0x6000DF5*/ throw null; }
-	public void UpdateSmokeMask(global::UnityEngine.Material mat) { /*@B 0x6000DF6*/ throw null; }
-	public void UpdatePropertyBlock(global::UnityEngine.MaterialPropertyBlock mpb) { /*@B 0x6000DF7*/ throw null; }
-	public void UpdatePropertyBlockSmokeMask(global::UnityEngine.MaterialPropertyBlock mpb) { /*@B 0x6000DF8*/ throw null; }
+	public void SetUp()
+	{
+		if (this.pType == PropertyType.UV)
+		{
+			this.propertyName_U = "_" + this.propertyName + "U";
+			this.propertyName_V = "_" + this.propertyName + "V";
+		}
+	}
+	public void Update(global::UnityEngine.Material mat)
+	{
+		switch (this.pType)
+		{
+			case PropertyType.FLOAT:
+			{
+				float v = this.bone.transform.localPosition.x * -100f;
+				mat.SetFloat("_" + this.propertyName, v);
+				break;
+			}
+			case PropertyType.UV:
+			{
+				float u = this.bone.transform.localPosition.x * -100f;
+				float v = this.bone.transform.localPosition.y * 100f;
+				mat.SetFloat("_" + this.propertyName + "U", u);
+				mat.SetFloat("_" + this.propertyName + "V", v);
+				break;
+			}
+			case PropertyType.UV_POKEDEFAULT_COL0TEX:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				mat.SetTextureOffset("_Col0Tex", new global::UnityEngine.Vector2(x * 100f * this.baseScale.x, this.baseScale.y * (y * -100f)));
+				break;
+			}
+			case PropertyType.UV_POKEDEFAULT_LAYERTEX:
+			case PropertyType.UV_POKEDEFAULT_LAYERTEX_NOT_ROUND:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				mat.SetTextureOffset("_L1Col0Tex", new global::UnityEngine.Vector2(x * 100f * this.baseScale.x, this.baseScale.y * (y * -100f)));
+				break;
+			}
+			case PropertyType.UVSL_POKEDEFAULT_COL0TEX:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				float u = global::UnityEngine.Mathf.Repeat(x * 100f, 1f);
+				float v = global::UnityEngine.Mathf.Repeat(y * -100f, 1f);
+				this.baseScale = new global::UnityEngine.Vector2(this.bone.transform.localScale.x, this.bone.transform.localScale.y);
+				mat.SetTextureOffset("_Col0Tex", new global::UnityEngine.Vector2(u * this.baseScale.x, v * this.baseScale.y));
+				break;
+			}
+			case PropertyType.SUV_POKEDEFAULT_COL0TEX:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.boneSub.transform.localPosition.y;
+				mat.SetTextureOffset("_Col0Tex", new global::UnityEngine.Vector2(x * 100f * this.baseScale.x, this.baseScale.y * (y * 100f)));
+				break;
+			}
+			case PropertyType.UV_GROUNDEFFECT_GROUNDEffECTMASKTEX:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				mat.SetTextureOffset("_GourndEffectMaskTex", new global::UnityEngine.Vector2(x * 100f, y * -100f));
+				break;
+			}
+			case PropertyType.UVSL_POKEDEFAULT_LAYERTEX:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				float u = global::UnityEngine.Mathf.Repeat(x * 100f, 1f);
+				float v = global::UnityEngine.Mathf.Repeat(y * -100f, 1f);
+				this.baseScale = new global::UnityEngine.Vector2(this.bone.transform.localScale.x, this.bone.transform.localScale.y);
+				mat.SetTextureOffset("_L1Col0Tex", new global::UnityEngine.Vector2(u * this.baseScale.x, v * this.baseScale.y));
+				break;
+			}
+		}
+	}
+	public void UpdateSmokeMask(global::UnityEngine.Material mat)
+	{
+		switch (this.pType)
+		{
+			case PropertyType.FLOAT:
+			{
+				float v = this.bone.transform.localPosition.x * -100f;
+				mat.SetFloat("_" + this.propertyName, v);
+				break;
+			}
+			case PropertyType.UV:
+				mat.SetFloat("_Mask0UVTranslateU", this.bone.transform.localPosition.x * -100f);
+				break;
+			case PropertyType.UV_POKEDEFAULT_COL0TEX:
+			case PropertyType.UV_POKEDEFAULT_LAYERTEX:
+			case PropertyType.UV_POKEDEFAULT_LAYERTEX_NOT_ROUND:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				mat.SetTextureOffset("_Col0Tex", new global::UnityEngine.Vector2(global::UnityEngine.Mathf.Repeat(x * 100f, 1f) * this.baseScale.x, y * -100f * this.baseScale.y));
+				break;
+			}
+		}
+	}
+	public void UpdatePropertyBlock(global::UnityEngine.MaterialPropertyBlock mpb)
+	{
+		switch (this.pType)
+		{
+			case PropertyType.FLOAT:
+			{
+				float v = this.bone.transform.localPosition.x * -100f;
+				mpb.SetFloat("_" + this.propertyName, v);
+				break;
+			}
+			case PropertyType.UV:
+			{
+				float u = this.bone.transform.localPosition.x * -100f;
+				float v = this.bone.transform.localPosition.y * 100f;
+				mpb.SetFloat(this.propertyName_U, u);
+				mpb.SetFloat(this.propertyName_V, v);
+				break;
+			}
+			case PropertyType.UV_POKEDEFAULT_COL0TEX:
+			{
+				float x = this.bone.transform.localPosition.x * 100f;
+				float y = this.bone.transform.localPosition.y * -100f;
+				float u = global::UnityEngine.Mathf.Round(x * 2f) * 0.5f;
+				float v = global::UnityEngine.Mathf.Round(y * 4f) * 0.25f;
+				mpb.SetVector("_Col0Tex_ST", new global::UnityEngine.Vector4(this.baseScale.x, this.baseScale.y, u * this.baseScale.x, v * this.baseScale.y));
+				break;
+			}
+			case PropertyType.UV_POKEDEFAULT_LAYERTEX:
+			{
+				float x = this.bone.transform.localPosition.x * 100f;
+				float y = this.bone.transform.localPosition.y * -100f;
+				float u = global::UnityEngine.Mathf.Round(x * 2f) * 0.5f;
+				float v = global::UnityEngine.Mathf.Round(y * 4f) * 0.25f;
+				mpb.SetVector("_L1Col0Tex_ST", new global::UnityEngine.Vector4(this.baseScale.x, this.baseScale.y, u * this.baseScale.x, v * this.baseScale.y));
+				break;
+			}
+			case PropertyType.UVSL_POKEDEFAULT_COL0TEX:
+			{
+				float x = this.bone.transform.localPosition.x * 100f;
+				float y = this.bone.transform.localPosition.y * -100f;
+				this.baseScale = new global::UnityEngine.Vector2(this.bone.transform.localScale.x, this.bone.transform.localScale.y);
+				mpb.SetVector("_Col0Tex_ST", new global::UnityEngine.Vector4(this.baseScale.x, this.baseScale.y, x * this.baseScale.x, y * this.baseScale.y));
+				break;
+			}
+			case PropertyType.SUV_POKEDEFAULT_COL0TEX:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.boneSub.transform.localPosition.y;
+				mpb.SetVector("_Col0Tex_ST", new global::UnityEngine.Vector4(this.baseScale.x, this.baseScale.y, x * 100f * this.baseScale.x, this.baseScale.y * (y * 100f)));
+				break;
+			}
+			case PropertyType.UV_GROUNDEFFECT_GROUNDEffECTMASKTEX:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				mpb.SetVector("_GourndEffectMaskTex_ST", new global::UnityEngine.Vector4(this.baseScale.x, this.baseScale.y, x * 100f, y * -100f));
+				break;
+			}
+			case PropertyType.UVSL_POKEDEFAULT_LAYERTEX:
+			{
+				float x = this.bone.transform.localPosition.x * 100f;
+				float y = this.bone.transform.localPosition.y * -100f;
+				this.baseScale = new global::UnityEngine.Vector2(this.bone.transform.localScale.x, this.bone.transform.localScale.y);
+				mpb.SetVector("_L1Col0Tex_ST", new global::UnityEngine.Vector4(this.baseScale.x, this.baseScale.y, x * this.baseScale.x, y * this.baseScale.y));
+				break;
+			}
+			case PropertyType.UV_POKEDEFAULT_LAYERTEX_NOT_ROUND:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				mpb.SetVector("_L1Col0Tex_ST", new global::UnityEngine.Vector4(this.baseScale.x, this.baseScale.y, x * 100f * this.baseScale.x, this.baseScale.y * (y * -100f)));
+				break;
+			}
+		}
+	}
+	public void UpdatePropertyBlockSmokeMask(global::UnityEngine.MaterialPropertyBlock mpb)
+	{
+		switch (this.pType)
+		{
+			case PropertyType.FLOAT:
+			{
+				float v = this.bone.transform.localPosition.x * -100f;
+				mpb.SetFloat("_" + this.propertyName, v);
+				break;
+			}
+			case PropertyType.UV:
+				mpb.SetFloat("_Mask0UVTranslateU", this.bone.transform.localPosition.x * -100f);
+				break;
+			case PropertyType.UV_POKEDEFAULT_COL0TEX:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				mpb.SetVector("_Col0Tex_ST", new global::UnityEngine.Vector4(this.baseScale.x, this.baseScale.y, global::UnityEngine.Mathf.Repeat(x * 100f, 1f) * this.baseScale.x, y * -100f * this.baseScale.y));
+				break;
+			}
+			case PropertyType.UV_POKEDEFAULT_LAYERTEX:
+			case PropertyType.UV_POKEDEFAULT_LAYERTEX_NOT_ROUND:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				mpb.SetVector("_L1Col0Tex_ST", new global::UnityEngine.Vector4(this.baseScale.x, this.baseScale.y, global::UnityEngine.Mathf.Repeat(x * 100f, 1f) * this.baseScale.x, y * -100f * this.baseScale.y));
+				break;
+			}
+			case PropertyType.UVSL_POKEDEFAULT_COL0TEX:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				float u = global::UnityEngine.Mathf.Repeat(x * 100f, 1f);
+				float v = y * -100f;
+				this.baseScale = new global::UnityEngine.Vector2(this.bone.transform.localScale.x, this.bone.transform.localScale.y);
+				mpb.SetVector("_Col0Tex_ST", new global::UnityEngine.Vector4(this.baseScale.x, this.baseScale.y, u * this.baseScale.x, v * this.baseScale.y));
+				break;
+			}
+			case PropertyType.UVSL_POKEDEFAULT_LAYERTEX:
+			{
+				float x = this.bone.transform.localPosition.x;
+				float y = this.bone.transform.localPosition.y;
+				float u = global::UnityEngine.Mathf.Repeat(x * 100f, 1f);
+				float v = y * -100f;
+				this.baseScale = new global::UnityEngine.Vector2(this.bone.transform.localScale.x, this.bone.transform.localScale.y);
+				mpb.SetVector("_L1Col0Tex_ST", new global::UnityEngine.Vector4(this.baseScale.x, this.baseScale.y, u * this.baseScale.x, v * this.baseScale.y));
+				break;
+			}
+		}
+	}
 	public CustomNodeProperty() { }
 	public enum PropertyType
 	{

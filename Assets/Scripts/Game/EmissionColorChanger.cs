@@ -2,8 +2,8 @@
 using UnityEngine;
 public sealed class EmissionColorChanger : global::UnityEngine.MonoBehaviour
 {
-	private static readonly int _EmissionColorID;
-	private static readonly int _EmissionIntensityID;
+	private static readonly int _EmissionColorID = global::UnityEngine.Shader.PropertyToID("_EmissionColor");
+	private static readonly int _EmissionIntensityID = global::UnityEngine.Shader.PropertyToID("_EmissionColorIntensity");
 	[global::UnityEngine.SerializeField]
 	public int _materialIndex;
 	private global::UnityEngine.Renderer _renderer;
@@ -18,7 +18,31 @@ public sealed class EmissionColorChanger : global::UnityEngine.MonoBehaviour
 	private global::EmissionColorChanger.Property _nightProp;
 	[global::UnityEngine.SerializeField]
 	private global::EmissionColorChanger.Property _midnightProp;
-	public global::EmissionColorChanger.Property this[global::PeriodOfDay periodOfDay] { get { /*@B 0x6000561*/ throw null; } set { /*@B 0x6000562*/ throw null; } }
+	public global::EmissionColorChanger.Property this[global::PeriodOfDay periodOfDay] {
+		get
+		{
+			switch (periodOfDay)
+			{
+				case global::PeriodOfDay.Morning: return this._morningProp;
+				case global::PeriodOfDay.Daytime: return this._daytimeProp;
+				case global::PeriodOfDay.Evening: return this._eveningProp;
+				case global::PeriodOfDay.Night: return this._nightProp;
+				case global::PeriodOfDay.Midnight: return this._midnightProp;
+				default: throw new global::System.IndexOutOfRangeException();
+			}
+		}
+		set
+		{
+			switch (periodOfDay)
+			{
+				case global::PeriodOfDay.Morning: this._morningProp = value; break;
+				case global::PeriodOfDay.Daytime: this._daytimeProp = value; break;
+				case global::PeriodOfDay.Evening: this._eveningProp = value; break;
+				case global::PeriodOfDay.Night: this._nightProp = value; break;
+				case global::PeriodOfDay.Midnight: this._midnightProp = value; break;
+			}
+		}
+	}
 	private void OnEnable() {
         _renderer = GetComponent<Renderer>();
         propertyBlock = new MaterialPropertyBlock();
@@ -37,7 +61,9 @@ public sealed class EmissionColorChanger : global::UnityEngine.MonoBehaviour
         propertyBlock = null;
     }
 	public EmissionColorChanger() { }
-	static EmissionColorChanger() { /*@B 0x6000567*/ throw null; }
+	static EmissionColorChanger()
+	{
+	}
 	[global::System.Serializable]
 	public struct Property
 	{

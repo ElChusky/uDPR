@@ -6,8 +6,16 @@ public class DebugFreeCamera
 	private static global::UnityEngine.Transform _cameraTransform;
 	private static global::UnityEngine.Vector3 _position;
 	private static global::UnityEngine.Vector3 _angles;
-	public static void BeginCapture() { /*@B 0x6000923*/ throw null; }
-	public static void EndCapture() { /*@B 0x6000924*/ throw null; }
+	public static void BeginCapture()
+	{
+		Sequencer.postLateUpdate -= OnUpdateCamera;
+		Sequencer.postLateUpdate += OnUpdateCamera;
+	}
+	public static void EndCapture()
+	{
+		Sequencer.postLateUpdate -= OnUpdateCamera;
+		_cameraTransform = null;
+	}
 	private static void OnUpdateCamera(float deltaTime) {
 		if (Camera.main == null)
 			return;

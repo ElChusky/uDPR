@@ -3,7 +3,7 @@ public class DisplayMessage : global::UnityEngine.MonoBehaviour
 {
 	[global::UnityEngine.SerializeField]
 	private int materialIndex;
-	private readonly string DEFAULT_USE_MSBT_NAME;
+	private readonly string DEFAULT_USE_MSBT_NAME = "dp_scenario1";
 	private global::TMPro.TextMeshProUGUI messageText;
 	private global::Dpr.Message.MessageMsgFile useMsgFile;
 	private global::UnityEngine.RectTransform messageRect;
@@ -14,25 +14,167 @@ public class DisplayMessage : global::UnityEngine.MonoBehaviour
 	private float blinkWidth;
 	private global::UnityEngine.Color fromColor;
 	private global::UnityEngine.Color toColor;
-	public void Initialize() { /*@B 0x6000280*/ throw null; }
-	private void InitTextSetting() { /*@B 0x6000281*/ throw null; }
-	private void OnDestroy() { /*@B 0x6000282*/ throw null; }
-	private void SetMessageEnabled(bool enabled) { /*@B 0x6000283*/ throw null; }
-	private void ChangeUseMsgFile(string newMsbtName) { /*@B 0x6000284*/ throw null; }
-	private bool IsUseSameMsbt(string newMsbtName) { /*@B 0x6000285*/ throw null; }
-	public void ShowMessage(string labelName, string msbtName = "", bool bIsUseTag = false) { /*@B 0x6000286*/ throw null; }
-	public void ChangeMessage(string message) { /*@B 0x6000287*/ throw null; }
-	public void HideMessage() { /*@B 0x6000288*/ throw null; }
-	private void InitializeFont(global::Dpr.Message.MessageTextParseDataModel textDataModel = null) { /*@B 0x6000289*/ throw null; }
-	private void SetMessageWidth(float width) { /*@B 0x600028A*/ throw null; }
-	private void SetFontSize(float fontSize) { /*@B 0x600028B*/ throw null; }
-	private void SetFontAutoSize(bool auto) { /*@B 0x600028C*/ throw null; }
-	private void SetFontColor(global::UnityEngine.Color color) { /*@B 0x600028D*/ throw null; }
-	private void SetFontBold(bool bold) { /*@B 0x600028E*/ throw null; }
-	private void SetFontLineSpace(float space) { /*@B 0x600028F*/ throw null; }
-	private void SetFontSoftness(float softness) { /*@B 0x6000290*/ throw null; }
-	private void SetFontDilate(float dilate) { /*@B 0x6000291*/ throw null; }
-	public void RedGyaradosMessage(bool flag) { /*@B 0x6000292*/ throw null; }
-	private void Update() { /*@B 0x6000293*/ throw null; }
-	public DisplayMessage() { /*@B 0x6000294*/ throw null; }
+	public void Initialize()
+	{
+		this.messageText = this.FindDeep("Message", false).GetComponent<global::TMPro.TextMeshProUGUI>();
+		this.messageRect = this.messageText.GetComponent<global::UnityEngine.RectTransform>();
+		this.noiseImage = this.FindDeep("Noise", false);
+		if (this.noiseImage != null)
+			this.noiseImage.SetActive(false);
+		this.InitTextSetting();
+		this.messageRect.localScale = global::Dpr.Message.MessageDataConstants.ASPECT_SCALE;
+		this.ChangeUseMsgFile(this.DEFAULT_USE_MSBT_NAME);
+		this.SetMessageEnabled(false);
+	}
+	private void InitTextSetting()
+	{
+		this.messageText.text = string.Empty;
+		global::Dpr.Message.FontManager fontManager = global::Dpr.Message.FontManager.Instance;
+		this.messageText.font = fontManager.GetFontAsset();
+		fontManager.ChangeFontMaterial(this.messageText, this.materialIndex);
+	}
+	private void OnDestroy()
+	{
+		this.useMsgFile = null;
+	}
+	private void SetMessageEnabled(bool enabled)
+	{
+		if (this.messageText.enabled != enabled)
+		{
+			this.gameObject.SetActive(enabled);
+			this.messageText.enabled = enabled;
+		}
+	}
+	private void ChangeUseMsgFile(string newMsbtName)
+	{
+		if (!this.IsUseSameMsbt(newMsbtName))
+		{
+			this.useMsgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile(newMsbtName);
+			this.useLabelHash = newMsbtName.GetHashCode();
+		}
+	}
+	private bool IsUseSameMsbt(string newMsbtName)
+	{
+		if (this.useLabelHash == 0)
+			return false;
+		return this.useLabelHash == newMsbtName.GetHashCode();
+	}
+	public void ShowMessage(string labelName, string msbtName = "", bool bIsUseTag = false)
+	{
+		if (!string.IsNullOrEmpty(msbtName))
+			this.ChangeUseMsgFile(msbtName);
+		if (this.useMsgFile == null)
+			return;
+		global::Dpr.Message.MessageTextParseDataModel textDataModel = this.useMsgFile.GetTextDataModel(labelName);
+		if (textDataModel == null)
+			return;
+		this.InitializeFont(textDataModel);
+		string text;
+		if (bIsUseTag)
+		{
+			textDataModel.ApplyFormat();
+			text = textDataModel.GetAllText();
+		}
+		else
+		{
+			text = this.useMsgFile.GetNameStr(labelName);
+		}
+		this.messageText.text = text;
+		this.SetMessageEnabled(true);
+	}
+	public void ChangeMessage(string message)
+	{
+		this.transform.SetActive(true);
+		this.messageText.paragraphSpacing = -50f;
+		this.messageText.enabled = true;
+		this.messageText.text = message;
+	}
+	public void HideMessage()
+	{
+		this.isRedGyarados = false;
+		if (this.noiseImage != null)
+			this.noiseImage.SetActive(false);
+		this.InitializeFont(null);
+		this.SetMessageEnabled(false);
+	}
+	private void InitializeFont(global::Dpr.Message.MessageTextParseDataModel textDataModel = null)
+	{
+		this.messageText.color = this.isRedGyarados ? this.toColor : global::UnityEngine.Color.white;
+	}
+	private void SetMessageWidth(float width)
+	{
+		this.messageRect.sizeDelta = new global::UnityEngine.Vector2(width, this.messageRect.sizeDelta.y);
+	}
+	private void SetFontSize(float fontSize)
+	{
+		this.messageText.fontSize = fontSize;
+	}
+	private void SetFontAutoSize(bool auto)
+	{
+		this.messageText.enableAutoSizing = auto;
+	}
+	private void SetFontColor(global::UnityEngine.Color color)
+	{
+		this.messageText.color = color;
+	}
+	private void SetFontBold(bool bold)
+	{
+		if (bold)
+			this.messageText.fontStyle = global::TMPro.FontStyles.Bold;
+		else
+			this.messageText.fontStyle ^= global::TMPro.FontStyles.Bold;
+	}
+	private void SetFontLineSpace(float space)
+	{
+		this.messageText.lineSpacing = space;
+	}
+	private void SetFontSoftness(float softness)
+	{
+		if (this.messageText.fontSharedMaterial.HasProperty("_OutlineSoftness"))
+			this.messageText.fontSharedMaterial.SetFloat("_OutlineSoftness", softness);
+	}
+	private void SetFontDilate(float dilate)
+	{
+		if (this.messageText.fontSharedMaterial.HasProperty("_FaceDilate"))
+			this.messageText.fontSharedMaterial.SetFloat("_FaceDilate", dilate);
+	}
+	public void RedGyaradosMessage(bool flag)
+	{
+		this.isRedGyarados = flag;
+		if (this.noiseImage != null)
+			this.noiseImage.SetActive(this.isRedGyarados);
+		if (flag)
+		{
+			this.fromColor = global::UnityEngine.Color.black;
+			this.toColor = this.messageText.color;
+			global::FieldTvRedGyaradosEntity entity = global::FieldTvRedGyaradosEntity.GetTvRedGyarados();
+			if (entity != null)
+			{
+				global::UnityEngine.Material material = entity.gameObject.GetComponent<global::UnityEngine.MeshRenderer>().material;
+				if (material != null)
+				{
+					if (material.HasProperty("_BlinkCycle"))
+						this.blinkCycle = material.GetFloat("_BlinkCycle");
+					if (material.HasProperty("_BlinkWidth"))
+						this.blinkWidth = material.GetFloat("_BlinkWidth");
+				}
+			}
+		}
+	}
+	private void Update()
+	{
+		if (this.isRedGyarados)
+		{
+			float t = global::UnityEngine.Time.time / this.blinkCycle;
+			t = t - global::UnityEngine.Mathf.FloorToInt(t);
+			float rate = global::UnityEngine.Mathf.Cos(t * global::UnityEngine.Mathf.PI * 2f) * this.blinkWidth + 0.9f;
+			this.messageText.color = new global::UnityEngine.Color(
+				global::UnityEngine.Mathf.Lerp(this.fromColor.r, this.toColor.r, rate),
+				global::UnityEngine.Mathf.Lerp(this.fromColor.g, this.toColor.g, rate),
+				global::UnityEngine.Mathf.Lerp(this.fromColor.b, this.toColor.b, rate));
+		}
+	}
+	public DisplayMessage()
+	{
+	}
 }

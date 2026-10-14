@@ -43,5 +43,7 @@ public class EnterCollision : global::SmartPoint.AssetAssistant.SingletonMonoBeh
 	protected void PlaySE(uint playSEId) {
 		AudioManager.Instance.PlaySe(playSEId, null);
 	}
-	public EnterCollision() { /*@B 0x6000EDA*/ throw null; }
+	public EnterCollision()
+	{
+	}
 }
