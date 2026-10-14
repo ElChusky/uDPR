@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public bool enable;
 		public bool check;
 		public bool loseCheck;
-		public TrainerSetEyeBlinkFlg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A39*/ throw null; }
+		public TrainerSetEyeBlinkFlg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER_ADD(macro.GetValue("trg"));
+			enable = Macro.ParseBool(macro.GetValue("enable"), 1);
+			check = Macro.ParseBool(macro.GetValue("check"));
+			loseCheck = Macro.ParseBool(macro.GetValue("loseCheck"));
+		}
 	}
 }

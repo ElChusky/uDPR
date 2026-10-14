@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public bool visible;
 		public int value;
-		public TrainerNameUI(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049FD*/ throw null; }
+		public TrainerNameUI(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			visible = Macro.ParseBool(macro.GetValue("visible"), 1);
+			value = Macro.ParseInt(macro.GetValue("value"), 0);
+		}
 	}
 }

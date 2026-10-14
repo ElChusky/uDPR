@@ -19,7 +19,7 @@ namespace Dpr.SubContents
 		public global::UnityEngine.Object uiPofinPlaying;
 		public global::UnityEngine.Object Cook_Pot;
 		public global::UnityEngine.Object Cook_Pofin;
-		private global::System.Collections.Generic.List<global::UnityEngine.GameObject> PofinNonActives;
+		private global::System.Collections.Generic.List<global::UnityEngine.GameObject> PofinNonActives = new global::System.Collections.Generic.List<global::UnityEngine.GameObject>();
 		private global::UnityEngine.Vector3 playerPos;
 		public global::System.Collections.Generic.List<global::XLSXContent.PoffinResult.SheetSheet1> PofinData { get; private set; }
 		public global::System.Collections.Generic.List<global::XLSXContent.PoffinNakayoshiScoreHosei.SheetSheet1> PofinNakayoshiScoreHoseiData { get; private set; }
@@ -151,6 +151,6 @@ namespace Dpr.SubContents
             PofinNonActives.Add(GameObject.Find("Connector/BG Objects/C05R1001(Clone)/P_RO_048_Machine_01"));
             PofinNonActives.AddRange(EntityManager.fieldCharacters.Select(x => x.gameObject));
         }
-		public PoffinCookingSceneManager() { /*@B 0x6003289*/ throw null; }
+		public PoffinCookingSceneManager() { }
 	}
 }

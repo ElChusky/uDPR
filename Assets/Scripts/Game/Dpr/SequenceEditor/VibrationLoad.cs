@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class VibrationLoad : global::Dpr.SequenceEditor.Macro
 	{
 		public string hash;
-		public VibrationLoad(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A23*/ throw null; }
+		public VibrationLoad(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			hash = Macro.ParseString(macro.GetValue("hash"));
+		}
 	}
 }

@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER_ADD trg;
 		public bool origin;
-		public TrainerMoveReset(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A28*/ throw null; }
+		public TrainerMoveReset(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER_ADD(macro.GetValue("trg"));
+			origin = Macro.ParseBool(macro.GetValue("origin"));
+		}
 	}
 }

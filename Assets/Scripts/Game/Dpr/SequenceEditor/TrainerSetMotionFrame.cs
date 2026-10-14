@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER trg;
 		public float frame;
-		public TrainerSetMotionFrame(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A35*/ throw null; }
+		public TrainerSetMotionFrame(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			frame = Macro.ParseFloat(macro.GetValue("frame"));
+		}
 	}
 }

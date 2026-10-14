@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class TrainerMoveResetAll : global::Dpr.SequenceEditor.Macro
 	{
 		public bool origin;
-		public TrainerMoveResetAll(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A29*/ throw null; }
+		public TrainerMoveResetAll(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			origin = Macro.ParseBool(macro.GetValue("origin"));
+		}
 	}
 }

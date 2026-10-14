@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class TrainerRevertAnimationConfige : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER_ADD trg;
-		public TrainerRevertAnimationConfige(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A38*/ throw null; }
+		public TrainerRevertAnimationConfige(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER_ADD(macro.GetValue("trg"));
+		}
 	}
 }
