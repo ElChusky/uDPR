@@ -11,29 +11,118 @@ namespace Dpr.MsgWindow
 		private global::Dpr.MsgWindow.WindowMsgText sizeTagText;
 		[global::UnityEngine.SerializeField]
 		private global::TMPro.TMP_FontAsset emptyFont;
-		private global::Dpr.MsgWindow.WaitTimer msgTimer;
+		private global::Dpr.MsgWindow.WaitTimer msgTimer = new global::Dpr.MsgWindow.WaitTimer();
 		private global::UnityEngine.Vector2 startPosition;
 		private float textHight;
 		private float scrollTextDuration;
 		private float textLinePaddingOffset;
 		private int topTextObjIndex;
 		private int defaultTextNum;
-		public float FontSize { get { /*@B 0x6003A24*/ throw null; } }
-		private int LastTextIndex { get { /*@B 0x6003A2C*/ throw null; } }
-		public void Initialize(float scrollTextDuration, float textLinePaddingOffset) { /*@B 0x6003A1F*/ throw null; }
-		public void ResetUIText() { /*@B 0x6003A20*/ throw null; }
-		public void Clear() { /*@B 0x6003A21*/ throw null; }
-		public void ResetTextColor() { /*@B 0x6003A22*/ throw null; }
-		public void OnFinalize() { /*@B 0x6003A23*/ throw null; }
-		public void SetTextEnabled(bool hasSizetag) { /*@B 0x6003A25*/ throw null; }
-		public void SetUseFontAsset(global::TMPro.TMP_FontAsset useFontAsset) { /*@B 0x6003A26*/ throw null; }
-		public void ChangeUnknownFont() { /*@B 0x6003A27*/ throw null; }
-		public void SetTextParam(float fontSize, float width) { /*@B 0x6003A28*/ throw null; }
-		public void SetFontSize(float fontSize) { /*@B 0x6003A29*/ throw null; }
-		public void SetTextColor(global::UnityEngine.Color newColor) { /*@B 0x6003A2A*/ throw null; }
-		public void SetMessage(int textIndex, string message, bool hasSizetag) { /*@B 0x6003A2B*/ throw null; }
-		public void StartMovePositionY() { /*@B 0x6003A2D*/ throw null; }
-		public bool MovingPosition(float deltaTime) { /*@B 0x6003A2E*/ throw null; }
-		public MsgTextContainer() { /*@B 0x6003A2F*/ throw null; }
+		public float FontSize { get { return uiTextArray[0].FontSize; } }
+		private int LastTextIndex { get { return topTextObjIndex + uiTextArray.Length; } }
+		public void Initialize(float scrollTextDuration, float textLinePaddingOffset) {
+			this.scrollTextDuration = scrollTextDuration;
+			this.textLinePaddingOffset = textLinePaddingOffset;
+			global::UnityEngine.Vector2 aspectScale = global::Dpr.Message.MessageDataConstants.ASPECT_SCALE;
+			global::UnityEngine.Vector3 localScale = contentRect.localScale;
+			global::UnityEngine.Vector3 scale = new global::UnityEngine.Vector3(aspectScale.x * localScale.x, aspectScale.y * localScale.y, localScale.z);
+			contentRect.localScale = scale;
+			this.FindDeep("SizeTagMessage", true).GetComponent<global::UnityEngine.RectTransform>().localScale = scale;
+			topTextObjIndex = 0;
+			defaultTextNum = uiTextArray.Length;
+			msgTimer.SetLimitTime(this.scrollTextDuration);
+			if (defaultTextNum < 1)
+			{
+				global::Dpr.Message.MessageHelper.EmitLog("defaultTextNum is 0. Please confirm inspector : [uiTextArray]", global::UnityEngine.LogType.Log);
+				return;
+			}
+			for (int i = 0; i < uiTextArray.Length; i++)
+			{
+				global::Dpr.MsgWindow.WindowMsgText text = uiTextArray[i];
+				text.Initialize();
+				text.SetPositionYByIndex(i, textLinePaddingOffset);
+			}
+			sizeTagText.Initialize();
+			textHight = aspectScale.y * uiTextArray[topTextObjIndex].TextHeight;
+		}
+		public void ResetUIText() {
+			topTextObjIndex = 0;
+			contentRect.anchoredPosition = global::UnityEngine.Vector2.zero;
+			for (int i = 0; i < uiTextArray.Length; i++)
+			{
+				global::Dpr.MsgWindow.WindowMsgText text = uiTextArray[i];
+				text.ResetText();
+				text.SetPositionYByIndex(i, textLinePaddingOffset);
+			}
+			sizeTagText.ResetText();
+		}
+		public void Clear() {
+			topTextObjIndex = 0;
+			contentRect.anchoredPosition = global::UnityEngine.Vector2.zero;
+			for (int i = 0; i < uiTextArray.Length; i++)
+				uiTextArray[i].ResetText();
+			sizeTagText.ResetText();
+		}
+		public void ResetTextColor() {
+			for (int i = 0; i < uiTextArray.Length; i++)
+				uiTextArray[i].ResetColor();
+		}
+		public void OnFinalize() {
+			Clear();
+		}
+		public void SetTextEnabled(bool hasSizetag) {
+			sizeTagText.SetTextEnable(hasSizetag);
+			for (int i = 0; i < uiTextArray.Length; i++)
+				uiTextArray[i].SetTextEnable(!hasSizetag);
+		}
+		public void SetUseFontAsset(global::TMPro.TMP_FontAsset useFontAsset) {
+			for (int i = 0; i < uiTextArray.Length; i++)
+				uiTextArray[i].SetFontAsset(useFontAsset, global::TMPro.VerticalAlignmentOptions.Capline);
+			sizeTagText.SetFontAsset(useFontAsset, global::TMPro.VerticalAlignmentOptions.Middle);
+		}
+		public void ChangeUnknownFont() {
+			for (int i = 0; i < uiTextArray.Length; i++)
+				uiTextArray[i].SetFontAsset(emptyFont, global::TMPro.VerticalAlignmentOptions.Geometry);
+		}
+		public void SetTextParam(float fontSize, float width) {
+			for (int i = 0; i < uiTextArray.Length; i++)
+			{
+				global::Dpr.MsgWindow.WindowMsgText text = uiTextArray[i];
+				text.SetTextWidth(width);
+				text.SetFontSize(fontSize);
+			}
+			sizeTagText.SetTextWidth(width);
+			sizeTagText.SetFontSize(fontSize);
+		}
+		public void SetFontSize(float fontSize) {
+			for (int i = 0; i < uiTextArray.Length; i++)
+				uiTextArray[i].SetFontSize(fontSize);
+			sizeTagText.SetFontSize(fontSize);
+		}
+		public void SetTextColor(global::UnityEngine.Color newColor) {
+			for (int i = 0; i < uiTextArray.Length; i++)
+				uiTextArray[i].SetTextColor(newColor);
+		}
+		public void SetMessage(int textIndex, string message, bool hasSizetag) {
+			global::Dpr.MsgWindow.WindowMsgText text = hasSizetag ? sizeTagText : uiTextArray[textIndex % uiTextArray.Length];
+			text.SetText(message);
+		}
+		public void StartMovePositionY() {
+			msgTimer.ResetTimer();
+			startPosition = contentRect.anchoredPosition;
+		}
+		public bool MovingPosition(float deltaTime) {
+			bool isFinish = msgTimer.IsFinishWait(deltaTime);
+			float ratio = msgTimer.Ratio;
+			contentRect.anchoredPosition = startPosition + new global::UnityEngine.Vector2(0f, ratio * textHight);
+			if (isFinish)
+			{
+				uiTextArray[topTextObjIndex % uiTextArray.Length].SetPositionYByIndex(LastTextIndex, textLinePaddingOffset);
+				topTextObjIndex++;
+				return false;
+			}
+			return true;
+		}
+		public MsgTextContainer() { }
 	}
 }

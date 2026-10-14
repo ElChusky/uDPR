@@ -24,16 +24,16 @@ namespace Dpr.Movie
 		private bool _isDisplayTitleUI;
 		private float _pushMessageTimeCounter;
 		private const float _pushMessageBlinkTime = 2f;
-		private bool _diaVersion;
-		private global::Dpr.Message.MessageEnumData.MsgLangId _lang;
+		private bool _diaVersion = true;
+		private global::Dpr.Message.MessageEnumData.MsgLangId _lang = global::Dpr.Message.MessageEnumData.MsgLangId.JPN;
 		private bool _isLoadedAssets;
 		private global::Dpr.Movie.MoviePlayer _moviePlayer;
-		private string[] _moviePath;
-		private string[] _logoPath;
-		private string[] _pushTextPath;
-		private global::UnityEngine.WaitForSeconds _wait02sec;
-		private global::UnityEngine.WaitForSeconds _wait1sec;
-		private global::UnityEngine.WaitForSeconds _wait2sec;
+		private string[] _moviePath = new string[2];
+		private string[] _logoPath = new string[2];
+		private string[] _pushTextPath = new string[2];
+		private global::UnityEngine.WaitForSeconds _wait02sec = new global::UnityEngine.WaitForSeconds(0.2f);
+		private global::UnityEngine.WaitForSeconds _wait1sec = new global::UnityEngine.WaitForSeconds(1f);
+		private global::UnityEngine.WaitForSeconds _wait2sec = new global::UnityEngine.WaitForSeconds(2f);
 		public void Initialize(global::Dpr.Movie.MoviePlayer moviePlayer, bool diaVersion, global::Dpr.Message.MessageEnumData.MsgLangId lang, global::UnityEngine.UI.RawImage fadeImage, global::System.Action<int> endCallback) {
             if (_isLoadedAssets)
             {
@@ -253,14 +253,64 @@ namespace Dpr.Movie
 		private void PlaySE() {
             Audio.AudioManager.Instance.PlaySe(AK.EVENTS.M_FI016, null);
         }
-		private string GetOpeningMoviePath() { /*@B 0x60047E6*/ throw null; }
+		private string GetOpeningMoviePath() {
+            string version = _diaVersion ? "dia" : "pea";
+            string lang;
+            switch (_lang)
+            {
+                case global::Dpr.Message.MessageEnumData.MsgLangId.USA: lang = "en"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.FRA: lang = "fr"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.ITA: lang = "it"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.DEU: lang = "ge"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.ESP: lang = "sp"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.KOR: lang = "ko"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.SCH: lang = "si"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.TCH: lang = "tr"; break;
+                default: lang = "jp"; break;
+            }
+            return "Movie/" + version + "/Opening/movie_" + version + "_" + lang + "_op";
+        }
 		private string GetTitleMoviePath() {
             string version = _diaVersion ? "dia" : "pea";
             return "Movie/" + version + "/Opening/movie_" + version + "_op_loop";
         }
-		private void GetLogoPath(out string path, out string name) { /*@B 0x60047E8*/ throw null; }
-		private void GetPushTextImagePath(out string path, out string name) { /*@B 0x60047E9*/ throw null; }
-		public TitlePlayer() { /*@B 0x60047EA*/ throw null; }
+		private void GetLogoPath(out string path, out string name) {
+            string version = _diaVersion ? "dia" : "pea";
+            string lang = "jp";
+            switch (_lang)
+            {
+                case global::Dpr.Message.MessageEnumData.MsgLangId.JPN: _settingIndex = 0; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.USA: _settingIndex = 1; lang = "en"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.FRA: _settingIndex = 2; lang = "fr"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.ITA: _settingIndex = 3; lang = "it"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.DEU: _settingIndex = 4; lang = "ge"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.ESP: _settingIndex = 5; lang = "sp"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.KOR: _settingIndex = 6; lang = "ko"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.SCH: _settingIndex = 7; lang = "si"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.TCH: _settingIndex = 8; lang = "tr"; break;
+            }
+            path = "movie/" + version + "/logo/";
+            name = "logo_" + version + "_" + lang;
+        }
+		private void GetPushTextImagePath(out string path, out string name) {
+            string version = _diaVersion ? "dia" : "pea";
+            string lang;
+            switch (_lang)
+            {
+                case global::Dpr.Message.MessageEnumData.MsgLangId.USA: lang = "en"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.FRA: lang = "fr"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.ITA: lang = "it"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.DEU: lang = "ge"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.ESP: lang = "sp"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.KOR: lang = "ko"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.SCH: lang = "si"; break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.TCH: lang = "tr"; break;
+                default: lang = "jp"; break;
+            }
+            path = "movie/" + version + "/text/";
+            name = "text_" + version + "_" + lang + "_op_pushbutton";
+        }
+		public TitlePlayer() { }
 		private enum TitleState
 		{
 			None = 0,
