@@ -1103,13 +1103,90 @@ namespace Dpr.EvScript
 
             _eventListIndex = idx;
         }
-		private void CloudScaleReset() { /*@B 0x6008B8E*/ throw null; }
-		private void SetCloudScaleStart() { /*@B 0x6008B8F*/ throw null; }
-		private void SetCloudScaleEnd() { /*@B 0x6008B90*/ throw null; }
-		private void EnvironmentControllerCallBack(global::EnvironmentController controller, float deltaTime) { /*@B 0x6008B91*/ throw null; }
-		public bool JumpLabel(string label, global::Dpr.EvScript.EvDataManager.EventEndDelegate callback = null) { /*@B 0x6008B92*/ throw null; }
-		public bool CallLabel(string label) { /*@B 0x6008B93*/ throw null; }
-		public bool ReturnEvData() { /*@B 0x6008B94*/ throw null; }
+		private void CloudScaleReset() {
+            _cloudTime = _const_cloudTime;
+            EnvironmentController.global.callback -= EnvironmentControllerCallBack;
+        }
+		private void SetCloudScaleStart() {
+            if (EnvironmentController.global == null)
+                return;
+
+            _cloudSpeed = -1.0f;
+            EnvironmentController.global.callback -= EnvironmentControllerCallBack;
+            EnvironmentController.global.callback += EnvironmentControllerCallBack;
+        }
+		private void SetCloudScaleEnd() {
+            if (EnvironmentController.global == null)
+                return;
+
+            _cloudSpeed = 1.0f;
+            EnvironmentController.global.callback -= EnvironmentControllerCallBack;
+            EnvironmentController.global.callback += EnvironmentControllerCallBack;
+        }
+		private void EnvironmentControllerCallBack(global::EnvironmentController controller, float deltaTime) {
+            _cloudTime += _cloudSpeed * deltaTime;
+
+            float rate;
+            if (_cloudTime <= 0.0f)
+            {
+                _cloudTime = 0.0f;
+                rate = 0.0f;
+            }
+            else if (_cloudTime >= _const_cloudTime)
+            {
+                _cloudTime = _const_cloudTime;
+                EnvironmentController.global.callback -= EnvironmentControllerCallBack;
+                rate = 1.0f;
+            }
+            else
+            {
+                rate = _cloudTime / _const_cloudTime;
+            }
+
+            controller._CloudShadowScale = rate * controller.latestParameters.CloudShadowScale;
+        }
+		public bool JumpLabel(string label, global::Dpr.EvScript.EvDataManager.EventEndDelegate callback = null) {
+            if (string.IsNullOrEmpty(label) || !_findAllLabel.ContainsKey(label))
+                return false;
+
+            SetEventListIndex(_findAllLabel[label][0]);
+            _eventList[_eventListIndex].LabelIndex = _findAllLabel[label][1];
+            _eventList[_eventListIndex].CommandIndex = 0;
+
+            XMenuTop.CloseForce();
+            BoxWindow.CloseForce();
+
+            if (callback != null)
+                _eventEndDelegate += callback;
+
+            return true;
+        }
+		public bool CallLabel(string label) {
+            if (string.IsNullOrEmpty(label) || !_findAllLabel.ContainsKey(label))
+                return false;
+
+            _callQueue.Push(new EvCallData
+            {
+                EventListIndex = _eventListIndex,
+                LabelIndex = _eventList[_eventListIndex].LabelIndex,
+                CommandIndex = _eventList[_eventListIndex].CommandIndex + 1,
+            });
+
+            SetEventListIndex(_findAllLabel[label][0]);
+            _eventList[_eventListIndex].LabelIndex = _findAllLabel[label][1];
+            _eventList[_eventListIndex].CommandIndex = 0;
+            return true;
+        }
+		public bool ReturnEvData() {
+            if (_callQueue.Count <= 0)
+                return false;
+
+            EvCallData data = _callQueue.Pop();
+            SetEventListIndex(data.EventListIndex);
+            _eventList[data.EventListIndex].LabelIndex = data.LabelIndex;
+            _eventList[_eventListIndex].CommandIndex = data.CommandIndex;
+            return true;
+        }
 		private global::FieldCharacterEntity GetFieldCharacterEntity(string id) {
             if (id == "HERO")
                 return EntityManager.activeFieldPlayer;
@@ -1125,7 +1202,21 @@ namespace Dpr.EvScript
 
             return null;
         }
-		private global::FieldObjectEntity Find_fieldObjectEntity(string id) { /*@B 0x6008B96*/ throw null; }
+		private global::FieldObjectEntity Find_fieldObjectEntity(string id) {
+            if (id == "HERO")
+                return EntityManager.activeFieldPlayer;
+
+            foreach (FieldObjectEntity entity in _fieldObjectEntity)
+            {
+                if (entity == null)
+                    continue;
+
+                if (entity.gameObject.name == id)
+                    return entity;
+            }
+
+            return null;
+        }
 		public global::FieldObjectEntity GetFieldObject(string id) {
             if (id == "HERO")
                 return EntityManager.activeFieldPlayer;
@@ -1168,9 +1259,14 @@ namespace Dpr.EvScript
             position.z += Mathf.Cos(rad) * 0.5f;
             return position;
         }
-		public bool CanContact(global::FieldObjectEntity obj, global::UnityEngine.Vector3 playerpos) { /*@B 0x6008B9D*/ throw null; }
+		public bool CanContact(global::FieldObjectEntity obj, global::UnityEngine.Vector3 playerpos) {
+            // Tail jump in the binary (b CanContact2 @02c4b850).
+            return CanContact2(obj, playerpos);
+        }
 		public bool CanContact2(global::FieldObjectEntity obj, global::UnityEngine.Vector3 playerpos) { /*@B 0x6008B9E*/ throw null; }
-		public void ClearPlayerMoveVector() { /*@B 0x6008B9F*/ throw null; }
+		public void ClearPlayerMoveVector() {
+            EntityManager.activeFieldPlayer.moveVector = Vector3.zero;
+        }
 		public bool RunObjectEvent(int idx, global::FieldObjectEntity obj, string label) {
             if (string.IsNullOrEmpty(label))
                 return false;
@@ -1248,15 +1344,40 @@ namespace Dpr.EvScript
                     return false;
             }
         }
-		private bool IsHit(global::UnityEngine.Vector3 traA, global::UnityEngine.Vector3 traB, global::UnityEngine.Vector2 rangB, bool center) { /*@B 0x6008BA2*/ throw null; }
+		private bool IsHit(global::UnityEngine.Vector3 traA, global::UnityEngine.Vector3 traB, global::UnityEngine.Vector2 rangB, bool center) {
+            if (center)
+                return Math.Abs(traA.x - traB.x) < rangB.x && Math.Abs(traA.z - traB.z) < rangB.y;
+
+            Rect rect = new Rect(Math.Abs(traB.x) - 0.5f, Math.Abs(traB.z) - 0.5f, rangB.x, rangB.y);
+            return rect.Contains(new Vector2(Math.Abs(traA.x), Math.Abs(traA.z)));
+        }
 		private float PlayerDiffAngle(ref global::UnityEngine.Vector2 diff) {
             var forward = new Vector2(EntityManager.activeFieldPlayer.transform.forward.x, EntityManager.activeFieldPlayer.transform.forward.z);
             return Vector2.Angle(forward, diff);
         }
-		private bool IsCircleHit(ref global::UnityEngine.Vector2 v1, ref global::UnityEngine.Vector2 v2, float range, out float outAngle) { /*@B 0x6008BA4*/ throw null; }
-		private bool IsCircleHit(ref global::UnityEngine.Vector2 v1, ref global::UnityEngine.Vector2 v2, float range) { /*@B 0x6008BA5*/ throw null; }
+		private bool IsCircleHit(ref global::UnityEngine.Vector2 v1, ref global::UnityEngine.Vector2 v2, float range, out float outAngle) {
+            Vector2 diff = new Vector2(v2.x - v1.x, v2.y - v1.y);
+            outAngle = PlayerDiffAngle(ref diff);
+            if (outAngle > DataManager.FieldCommonParam[(int)ParamIndx.TalkAngleLimit].param)
+                return false;
+
+            return new Vector2(v2.x - v1.x, v2.y - v1.y).sqrMagnitude <= range * range;
+        }
+		private bool IsCircleHit(ref global::UnityEngine.Vector2 v1, ref global::UnityEngine.Vector2 v2, float range) {
+            return new Vector2(v2.x - v1.x, v2.y - v1.y).sqrMagnitude <= range * range;
+        }
 		private bool WarpListCheck() { /*@B 0x6008BA6*/ throw null; }
-		private void EvCmdCmpMain(global::Dpr.EvScript.EvWork.WORK_INDEX r1, global::Dpr.EvScript.EvWork.WORK_INDEX r2) { /*@B 0x6008BA7*/ throw null; }
+		private void EvCmdCmpMain(global::Dpr.EvScript.EvWork.WORK_INDEX r1, global::Dpr.EvScript.EvWork.WORK_INDEX r2) {
+            int a = FlagWork.GetWork(r1);
+            int b = FlagWork.GetWork(r2);
+            if (a < b)
+                _cmp_flag = CmpResult.MINUS;
+            else if (a == b)
+                _cmp_flag = CmpResult.EQUAL;
+
+            // Shipped quirk: the unconditional store below always wins (str w8=2 @02c4cce4).
+            _cmp_flag = CmpResult.PLUS;
+        }
 		public void OnEventEnter(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x6008BA8*/ throw null; }
 		public void OnEventStay(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x6008BA9*/ throw null; }
 		public void OnEventLeave(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x6008BAA*/ throw null; }
