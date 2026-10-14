@@ -291,5 +291,7 @@ public class BallDecoMatching : global::Dpr.UI.UIWindow
 			_receiveData = null;
 		}
 	}
-	public BallDecoMatching() { /*@B 0x6001463*/ throw null; }
+	public BallDecoMatching() {
+		
+	}
 }

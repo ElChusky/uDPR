@@ -2,9 +2,11 @@
 using Audio;
 public static class AudioAmbientManager
 {
-	private static global::System.Collections.Generic.HashSet<global::Audio.AudioInstance> _audioInstanceHash;
-	private static bool _enabled;
-	public static bool isEnabled { get { /*@B 0x60008E3*/ throw null; } }
+	private static global::System.Collections.Generic.HashSet<global::Audio.AudioInstance> _audioInstanceHash = new global::System.Collections.Generic.HashSet<global::Audio.AudioInstance>();
+	private static bool _enabled = false;
+	public static bool isEnabled { get {
+		return _enabled;
+	} }
 	public static void SetEnabled(bool enabled) {
         _enabled = enabled;
         if (!enabled)
@@ -21,5 +23,7 @@ public static class AudioAmbientManager
 	internal static void _Remove(global::Audio.AudioInstance audioInstance) {
         _audioInstanceHash.Remove(audioInstance);
     }
-	static AudioAmbientManager() { /*@B 0x60008E7*/ throw null; }
+	static AudioAmbientManager() {
+		
+	}
 }

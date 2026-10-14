@@ -4,32 +4,202 @@ public class BattleCharacterEntity : global::BattleObjectEntity
 {
 	private const float LOSE_LOOP_START_TIME = 2f;
 	[global::UnityEngine.SerializeField]
-	protected global::Dpr.Playables.BattleAnimationPlayer _animationPlayer;
+	protected global::Dpr.Playables.BattleAnimationPlayer _animationPlayer = new global::Dpr.Playables.BattleAnimationPlayer();
 	[global::UnityEngine.SerializeField]
 	protected global::ColorVariation _colorVariation;
 	[global::UnityEngine.SerializeField]
-	protected float _motionBlendTime;
+	protected float _motionBlendTime = 0.15f;
 	protected bool _isEnableAnimationPlayer;
 	private float _speakStartTime;
-	public override string entityType { get { /*@B 0x600058C*/ throw null; } }
+	public override string entityType { get {
+		return "BattleCharacter";
+	} }
 	public global::Dpr.Battle.View.TrainerSimpleParam TrainerSimpleParam { get; protected set; }
-	protected override void Awake() { /*@B 0x600058F*/ throw null; }
-	protected override void OnDestroy() { /*@B 0x6000590*/ throw null; }
-	protected override void OnEnable() { /*@B 0x6000591*/ throw null; }
-	protected override void OnDisable() { /*@B 0x6000592*/ throw null; }
-	public virtual void Initialize(global::Dpr.Battle.View.TrainerSimpleParam param, bool isContest = false) { /*@B 0x6000593*/ throw null; }
-	protected void SetSkinColor(int colorId) { /*@B 0x6000594*/ throw null; }
-	public int GetSkinColor() { /*@B 0x6000595*/ throw null; }
-	private void CreateShadowCastSystem() { /*@B 0x6000596*/ throw null; }
+	protected override void Awake() {
+		base.Awake();
+		InitializeRendererInfos();
+	}
+	protected override void OnDestroy() {
+		_animationPlayer = null;
+		_locators = null;
+		_animator = null;
+		base.OnDestroy();
+	}
+	protected override void OnEnable() {
+		base.OnEnable();
+		_animationPlayer.Initialize(Animator);
+		_animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).Play((int)AnimationState.Wait_B, 0f, 0f);
+		nextSequence = SequenceID.None;
+	}
+	protected override void OnDisable() {
+		_animationPlayer.Destroy();
+		base.OnDisable();
+	}
+	public virtual void Initialize(global::Dpr.Battle.View.TrainerSimpleParam param, bool isContest = false) {
+		TrainerSimpleParam = param;
+		_blinkProcess.blinkIntervalTimeMin = param.blinkIntervalMin;
+		_blinkProcess.blinkIntervalTimeMax = param.blinkIntervalMax;
+		_blinkProcess.blinkTwiceRate = param.blinkTwiceRate;
+		_blinkProcess.trainerAge = param.trainerAge;
+		CreateShadowCastSystem();
+		SetSkinColor(TrainerSimpleParam.colorID);
+	}
+	protected void SetSkinColor(int colorId) {
+		if (_colorVariation == null) {
+			_colorVariation = GetComponent<global::ColorVariation>();
+		}
+		if (_colorVariation == null) {
+			return;
+		}
+		_colorVariation.ColorIndex = colorId;
+	}
+	public int GetSkinColor() {
+		if (_colorVariation != null) {
+			return _colorVariation.ColorIndex;
+		}
+		return -1;
+	}
+	private void CreateShadowCastSystem() {
+		if (_shadowCastSystem != null) {
+			return;
+		}
+		_shadowCastSystem = new global::Dpr.Battle.View.Systems.BattleShadowCastSystem();
+		_shadowCastSystem.Register(global::Dpr.Battle.View.Systems.ShadowCastObject.Factory(transform, _renderers));
+	}
 	public virtual void SetCaputureDemo() { }
-	protected override void OnUpdate(float deltaTime) { /*@B 0x6000598*/ throw null; }
-	protected override void ProcessSequence(float deltaTime) { /*@B 0x6000599*/ throw null; }
-	public virtual void RequestSequence(int sequenceID) { /*@B 0x600059A*/ throw null; }
-	public void RequestAnimationState(global::BattleCharacterEntity.AnimationState state, float duration = 0.15f, float startTime = 0f, bool isLoop = false) { /*@B 0x600059B*/ throw null; }
+	protected override void OnUpdate(float deltaTime) {
+		base.OnUpdate(deltaTime);
+		if (!enabled) {
+			return;
+		}
+		if (_blinkProcess != null && _blinkProcess.trainerAge != global::Dpr.Trainer.TrainerAge.NONE) {
+			_blinkProcess.OnUpdate(deltaTime);
+		}
+		_animationPlayer.AdvanaceTime(deltaTime);
+	}
+	protected override void ProcessSequence(float deltaTime) {
+		if (!isActiveAndEnabled) {
+			return;
+		}
+		switch (currentSequence) {
+			case SequenceID.Initialize:
+				_animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).Play((int)AnimationState.Advent02_B, 0f, 0f);
+				nextSequence = SequenceID.None;
+				break;
+			case SequenceID.Advent:
+				if (_animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).CurrentRemaingTime <= 0.015f) {
+					_animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).Play((int)AnimationState.Wait_B, 0f, 0f);
+					if (_blinkProcess != null) {
+						_blinkProcess.SetBlinkEnabled(true);
+					}
+					nextSequence = SequenceID.None;
+					SwitchToNext();
+				}
+				break;
+			case SequenceID.ToWait:
+				if (_animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).CurrentRemaingTime < 0f) {
+					if (_blinkProcess != null) {
+						_blinkProcess.SetBlinkEnabled(true);
+					}
+					_animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).Play((int)AnimationState.Wait_B, 0f, 0f);
+					nextSequence = SequenceID.None;
+				}
+				break;
+			case SequenceID.ToLose:
+				if (_animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).CurrentRemaingTime < 0f) {
+					global::UnityEngine.Playables.PlayableExtensions.SetTime(_animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).CurrentPlayable, (double)TrainerSimpleParam.loseLoopTime);
+				}
+				break;
+			case SequenceID.ToSpeak: {
+				global::Dpr.Playables.AnimationLayer layer = _animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer);
+				float length = layer.CurrentPlayable.GetAnimationClip().length;
+				if (layer.CurrentPlayingTime - _speakStartTime > length) {
+					float startTime = layer.CurrentPlayingTime - length;
+					if (_blinkProcess != null) {
+						_blinkProcess.SetBlinkEnabled(true);
+					}
+					_animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).Play((int)AnimationState.Wait_B, 0f, startTime);
+					nextSequence = SequenceID.None;
+				}
+				break;
+			}
+		}
+	}
+	public virtual void RequestSequence(int sequenceID) {
+		nextSequence = sequenceID;
+		SwitchToNext();
+	}
+	public void RequestAnimationState(global::BattleCharacterEntity.AnimationState state, float duration = 0.15f, float startTime = 0f, bool isLoop = false) {
+		if (state == AnimationState.Speak01_B) {
+			global::Dpr.Playables.AnimationLayer layer = _animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer);
+			float length = layer.CurrentPlayable.GetAnimationClip().length;
+			startTime = layer.CurrentPlayingTime;
+			if (startTime >= length) {
+				startTime %= length;
+			}
+			duration = 0f;
+			_speakStartTime = startTime;
+		}
+		_animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).Play((int)state, duration, startTime);
+		_animationPlayer.GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).IsForceLoop = isLoop;
+		switch (state) {
+			case AnimationState.Advent02_B:
+				if (_blinkProcess != null) {
+					_blinkProcess.SetBlinkEnabled(false);
+				}
+				nextSequence = SequenceID.None;
+				break;
+			case AnimationState.Advent_B:
+				if (_blinkProcess != null) {
+					_blinkProcess.SetBlinkEnabled(false);
+				}
+				nextSequence = SequenceID.Advent;
+				break;
+			case AnimationState.Wait02_B:
+			case AnimationState.Order_B:
+			case AnimationState.Win01_B:
+			case AnimationState.Speak02_B:
+			case AnimationState.Advent03_B:
+			case AnimationState.Advent04_B:
+			case AnimationState.Advent05_B:
+				if (_blinkProcess != null) {
+					_blinkProcess.SetBlinkEnabled(false);
+				}
+				nextSequence = SequenceID.ToWait;
+				break;
+			case AnimationState.Lose01_B:
+				if (_blinkProcess != null) {
+					_blinkProcess.SetBlinkEnabled(false);
+				}
+				nextSequence = SequenceID.ToLose;
+				break;
+			case AnimationState.Speak01_B:
+				if (_blinkProcess != null) {
+					_blinkProcess.SetBlinkEnabled(true);
+				}
+				nextSequence = SequenceID.ToSpeak;
+				break;
+			default:
+				if (_blinkProcess != null) {
+					_blinkProcess.SetBlinkEnabled(true);
+				}
+				nextSequence = SequenceID.ToWait;
+				break;
+		}
+		SwitchToNext();
+	}
 	public global::Dpr.Playables.BattleAnimationPlayer GetAnimationPlayer() { return this._animationPlayer; }
-	public void SetAnimationSpeed(float animationSpeed) { /*@B 0x600059D*/ throw null; }
-	public virtual void SetRenderActive(bool isActive) { /*@B 0x600059E*/ throw null; }
-	public BattleCharacterEntity() { /*@B 0x600059F*/ throw null; }
+	public void SetAnimationSpeed(float animationSpeed) {
+		_animationPlayer.SetAnimSpeed(animationSpeed);
+	}
+	public virtual void SetRenderActive(bool isActive) {
+		for (int i = 0; i < _renderers.Length; i++) {
+			_renderers[i].enabled = isActive;
+		}
+	}
+	public BattleCharacterEntity() {
+		
+	}
 	public class SequenceID : global::BaseEntity.SequenceID
 	{
 		public const int Active = 4096;
@@ -41,7 +211,8 @@ public class BattleCharacterEntity : global::BattleObjectEntity
 		public const int ToWait = 28672;
 		public const int ToLose = 32768;
 		public const int ToSpeak = 36864;
-		public SequenceID() { /*@B 0x6009524*/ throw null; }
+		public SequenceID() {
+		}
 	}
 	public enum AnimationState
 	{

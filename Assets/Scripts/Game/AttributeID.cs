@@ -131,7 +131,9 @@ public class AttributeID
 	public const int MATTR_SHOPRACK_03 = 236;
 	public const int MATTR_NO_ATTR = 255;
 	public const int MATTER_TENKAI = 170;
-	public static bool MATR_IsGrass(int matr_code) { /*@B 0x6000886*/ throw null; }
+	public static bool MATR_IsGrass(int matr_code) {
+		return (matr_code >= 0 && matr_code <= 7 && ((1 << matr_code) & 0xF4) != 0) || matr_code == 169 || matr_code == MATTR_E_KUSA_7 || matr_code == MATTR_E_KUSA_8;
+	}
 	public static bool MATR_IsLongGrass(int matr_code) { return matr_code == 3; }
 	public static bool MATR_IsCounter(int matr_code) { return matr_code == 128; }
 	public static bool MATR_IsDoor(int matr_code) { return matr_code == 105; }
@@ -143,7 +145,9 @@ public class AttributeID
 	public static bool MATR_IsLeftNoArrowMat(int matr_code) { return matr_code == 109; }
 	public static bool MATR_IsUpNoArrowMat(int matr_code) { return matr_code == 110; }
 	public static bool MATR_IsDownNoArrowMat(int matr_code) { return matr_code == 111; }
-	public static bool MATR_IsWater(int matr_code) { /*@B 0x6000892*/ throw null; }
+	public static bool MATR_IsWater(int matr_code) {
+		return global::GameManager.GetAttributeTable(matr_code).Water;
+	}
 	public static bool MATR_IsSand(int matr_code) { return matr_code == 33; }
 	public static bool MATR_IsShoal(int matr_code) { return matr_code == 23; }
 	public static bool MATR_IsJumpUp(int matr_code) { return matr_code == 58; }
@@ -173,16 +177,24 @@ public class AttributeID
 	public static bool MATR_IsShopBookRack02(int matr_code) { return matr_code == 235; }
 	public static bool MATR_IsShopBookRack03(int matr_code) { return matr_code == 236; }
 	public static bool MATR_IsBluePrint(int matr_code) { return matr_code == 230; }
-	public static bool MATR_IsSwamp(int matr_code) { /*@B 0x60008B0*/ throw null; }
+	public static bool MATR_IsSwamp(int matr_code) {
+		return matr_code == MATTR_SWAMP_01 || matr_code == MATTR_SWAMP_02;
+	}
 	public static bool MATR_IsSwampDeep(int matr_code) { return matr_code == 165; }
-	public static bool MATR_IsSwampGrass(int matr_code) { /*@B 0x60008B2*/ throw null; }
+	public static bool MATR_IsSwampGrass(int matr_code) {
+		return matr_code == MATTR_SWAMPGRASS_01 || matr_code == MATTR_SWAMPGRASS_02;
+	}
 	public static bool MATR_IsSwampGrassDeep(int matr_code) { return matr_code == 167; }
-	public static bool MATR_IsSnow(int matr_code) { /*@B 0x60008B4*/ throw null; }
+	public static bool MATR_IsSnow(int matr_code) {
+		return matr_code == MATTR_SNOW_01 || matr_code == MATTR_SNOW_02 || matr_code == MATTR_SNOW_03 || matr_code == MATTR_SNOW_04;
+	}
 	public static bool MATR_IsMostShallowSnow(int matr_code) { return matr_code == 168; }
 	public static bool MATR_IsShallowSnow(int matr_code) { return matr_code == 161; }
 	public static bool MATR_IsSnowDeep(int matr_code) { return matr_code == 162; }
 	public static bool MATR_IsSnowDeepMost(int matr_code) { return matr_code == 163; }
-	public static bool MATR_IsShiftingSand(int matr_code) { /*@B 0x60008B9*/ throw null; }
+	public static bool MATR_IsShiftingSand(int matr_code) {
+		return matr_code == MATTR_SLOPE_01 || matr_code == MATTR_SLOPE_02;
+	}
 	public static bool MATR_IsShiftingSandUpper(int matr_code) { return matr_code == 217; }
 	public static bool MATR_IsShiftingSandLower(int matr_code) { return matr_code == 218; }
 	public static bool MATR_IsTakeOffLeft(int matr_code) { return matr_code == 215; }
@@ -190,30 +202,76 @@ public class AttributeID
 	public static bool MATR_IsDunFloor(int matr_code) { return matr_code == 8; }
 	public static bool MATR_IsWaterFall(int matr_code) { return matr_code == 19; }
 	public static bool MATR_IsBumpPost(int matr_code) { return matr_code == 219; }
-	public static bool MATR_IsBadMoveUpCheck(int matr_code) { /*@B 0x60008C1*/ throw null; }
-	public static bool MATR_IsBadMoveDownCheck(int matr_code) { /*@B 0x60008C2*/ throw null; }
-	public static bool MATR_IsBadMoveLeftCheck(int matr_code) { /*@B 0x60008C3*/ throw null; }
-	public static bool MATR_IsBadMoveRightCheck(int matr_code) { /*@B 0x60008C4*/ throw null; }
+	public static bool MATR_IsBadMoveUpCheck(int matr_code) {
+		return matr_code == MATTR_IDOHUKA_03 || matr_code == MATTR_IDOHUKA_05 || matr_code == MATTR_IDOHUKA_06 || matr_code == MATTR_IDOHUKA_09;
+	}
+	public static bool MATR_IsBadMoveDownCheck(int matr_code) {
+		return matr_code == MATTR_IDOHUKA_04 || matr_code == MATTR_IDOHUKA_07 || matr_code == MATTR_IDOHUKA_08 || matr_code == MATTR_IDOHUKA_09;
+	}
+	public static bool MATR_IsBadMoveLeftCheck(int matr_code) {
+		return matr_code == MATTR_IDOHUKA_02 || matr_code == MATTR_IDOHUKA_06 || matr_code == MATTR_IDOHUKA_08 || matr_code == MATTR_IDOHUKA_10;
+	}
+	public static bool MATR_IsBadMoveRightCheck(int matr_code) {
+		return matr_code == MATTR_IDOHUKA_01 || matr_code == MATTR_IDOHUKA_05 || matr_code == MATTR_IDOHUKA_07 || matr_code == MATTR_IDOHUKA_10;
+	}
 	public static bool MATR_IsPoolCheck(int matr_code) { return matr_code == 22; }
-	public static bool MATR_IsEncount(int matr_code) { /*@B 0x60008C6*/ throw null; }
+	public static bool MATR_IsEncount(int matr_code) {
+		return global::GameManager.GetAttributeTable(matr_code).Encount;
+	}
 	public static bool MATR_IsTV(int matr_code) { return matr_code == 134; }
-	public static bool MATR_IsReflect(int matr_code) { /*@B 0x60008C8*/ throw null; }
+	public static bool MATR_IsReflect(int matr_code) {
+		return matr_code == MATTR_POOL_01 || matr_code == MATTR_POOL_02;
+	}
 	public static bool MATR_IsForceMoveRight(int matr_code) { return matr_code == 64; }
 	public static bool MATR_IsForceMoveLeft(int matr_code) { return matr_code == 65; }
 	public static bool MATR_IsForceMoveUp(int matr_code) { return matr_code == 66; }
 	public static bool MATR_IsForceMoveDown(int matr_code) { return matr_code == 67; }
 	public static bool MATR_IsWarpPoint(int matr_code) { return matr_code == 103; }
 	public static bool MATR_IsBridgeFlag(int matr_code) { return matr_code == 112; }
-	public static bool MATR_IsBridge(int matr_code) { /*@B 0x60008CF*/ throw null; }
-	public static bool MATR_IsBridgeGround(int matr_code) { /*@B 0x60008D0*/ throw null; }
-	public static bool MATR_IsBridgeWater(int matr_code) { /*@B 0x60008D1*/ throw null; }
-	public static bool MATR_IsBridgeSand(int matr_code) { /*@B 0x60008D2*/ throw null; }
+	public static bool MATR_IsBridge(int matr_code) {
+		return (matr_code >= MATTR_BRIDGE_GROUND && matr_code <= MATTR_BRIDGEH_GROUND_E) || matr_code == MATTR_BRIDGEH_WATER || matr_code == MATTR_BRIDGEH_SAND;
+	}
+	public static bool MATR_IsBridgeGround(int matr_code) {
+		return matr_code == MATTR_BRIDGE_GROUND || matr_code == MATTR_BRIDGE_GROUND_E || matr_code == MATTR_BRIDGEV_GROUND || matr_code == MATTR_BRIDGEV_GROUND_E || matr_code == MATTR_BRIDGEH_GROUND || matr_code == MATTR_BRIDGEH_GROUND_E;
+	}
+	public static bool MATR_IsBridgeWater(int matr_code) {
+		return matr_code == MATTR_BRIDGE_WATER || matr_code == MATTR_BRIDGEV_WATER || matr_code == MATTR_BRIDGEH_WATER;
+	}
+	public static bool MATR_IsBridgeSand(int matr_code) {
+		return matr_code == MATTR_BRIDGE_SAND || matr_code == MATTR_BRIDGEV_SAND || matr_code == MATTR_BRIDGEH_SAND;
+	}
 	public static bool MATR_IsBridgeSnowShallow(int matr_code) { return matr_code == 117; }
-	public static bool MATR_IsBridgeV(int matr_code) { /*@B 0x60008D4*/ throw null; }
-	public static bool MATR_IsBridgeH(int matr_code) { /*@B 0x60008D5*/ throw null; }
+	public static bool MATR_IsBridgeV(int matr_code) {
+		return matr_code == MATTR_BRIDGEV_GROUND || matr_code == MATTR_BRIDGEV_GROUND_E || matr_code == MATTR_BRIDGEV_WATER || matr_code == MATTR_BRIDGEV_SAND;
+	}
+	public static bool MATR_IsBridgeH(int matr_code) {
+		return matr_code == MATTR_BRIDGEH_GROUND || matr_code == MATTR_BRIDGEH_GROUND_E || matr_code == MATTR_BRIDGEH_WATER || matr_code == MATTR_BRIDGEH_SAND;
+	}
 	public static bool MATR_IsNotAttr(int matr_code) { return matr_code == 255; }
-	public static bool EX_IsTairyouGrass(global::AttributeData.MapAttributeEx ex) { /*@B 0x60008D7*/ throw null; }
-	public static bool IsBicycleNoEntory(global::XLSXContent.MapAttributeTable.SheetData attri) { /*@B 0x60008D8*/ throw null; }
-	public static bool IsUseBicycle(global::UnityEngine.Vector2Int grid, float height) { /*@B 0x60008D9*/ throw null; }
+	public static bool EX_IsTairyouGrass(global::AttributeData.MapAttributeEx ex) {
+		int code = (int)ex;
+		return (code >= 108 && code <= 110) || code == 10 || code == 111 || code == 15;
+	}
+	public static bool IsBicycleNoEntory(global::XLSXContent.MapAttributeTable.SheetData attri) {
+		int code = (int)attri.Attribute;
+		return (code >= MATTR_SNOW_01 && code <= MATTR_SWAMPGRASS_01) || code == MATTR_E_KUSA_2 || code == MATTR_SNOW_04 || code == MATTR_SWAMPGRASS_02;
+	}
+	public static bool IsUseBicycle(global::UnityEngine.Vector2Int grid, float height) {
+		int code = 0;
+		int stop = 0;
+		global::GameManager.GetAttribute(grid, out code, out stop, false);
+		global::XLSXContent.MapAttributeTable.SheetData attri = global::GameManager.GetAttributeTable(code);
+		int attr = (int)attri.Attribute;
+		if ((attr >= MATTR_SNOW_01 && attr <= MATTR_SNOW_04) || attr == MATTR_E_KUSA_2) {
+			return false;
+		}
+		if (attr >= MATTR_BRIDGE_GROUND && attr <= MATTR_BRIDGEH_SAND) {
+			if (global::GameManager.IsHighAttribute(global::GameManager.GetAttributeExCodeRaw(grid), height) && (int)attri.Attribute >= MATTR_BRIDGEV_GROUND && (int)attri.Attribute <= MATTR_BRIDGEH_SAND && global::PlayerWork.IsFormBicycle()) {
+				return false;
+			}
+			return true;
+		}
+		return !attri.Water;
+	}
 	public AttributeID() { }
 }

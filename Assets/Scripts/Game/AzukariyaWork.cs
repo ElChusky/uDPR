@@ -17,7 +17,7 @@ public static class AzukariyaWork
 	private const int LoveLv_Good_Ex = 88;
 	private const int LoveLv_Normal_Ex = 80;
 	private const int LoveLv_Bad_Ex = 40;
-	private static readonly int[,] EggPercentRate;
+	private static readonly int[,] EggPercentRate = new int[4, 2] { { LoveLv_Good, LoveLv_Good_Ex }, { LoveLv_Normal, LoveLv_Normal_Ex }, { LoveLv_Bad, LoveLv_Bad_Ex }, { LoveLv_Worst, LoveLv_Worst } }; // TO CHECK: InitializeArray blob @global-metadata 0x667D93 (32 bytes) not readable in this clean room; values inferred from the LoveLv_* constants
 	private const int EggCheckInterval = 180;
 	public static void StoreFromTemoti(int temotiIndex) {
         int index = GetUnusedIndex();
@@ -217,5 +217,6 @@ public static class AzukariyaWork
 
         return null;
     }
-	static AzukariyaWork() { /*@B 0x600003E*/ throw null; }
+	static AzukariyaWork() {
+	}
 }

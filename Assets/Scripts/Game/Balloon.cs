@@ -25,13 +25,13 @@ public class Balloon
 	public float changeSpriteFlameCount;
 	private int updateFrame;
 	private global::System.Collections.Generic.List<global::DG.Tweening.Tween> tweens;
-	private static readonly string[] IconName;
-	private static readonly string[] FukidashiName;
-	private readonly string[] UNION_HOST_ICON_NAME;
-	private global::UnityEngine.Sprite[] CacheUnionHostIconNotice;
-	private global::UnityEngine.Color fukidasiImgColorWhite;
-	private global::UnityEngine.Color fukidasiImgColorYellow;
-	private static readonly global::UnityEngine.Vector3[] path;
+	private static readonly string[] IconName = new string[] { "fld_txt_exclamation_01", "fld_txt_exclamation_02", "fld_txt_heart_01", "fld_txt_note_02", "fld_txt_note_03", "fld_txt_notice_01", "fld_txt_panic_01", "fld_txt_question_01", "fld_txt_sad_01", "fld_txt_silent_anim_01", "fld_txt_sleepy_anim_01", "fld_txt_sparkle_anim_01", "fld_txt_stress_anim_01", "fld_txt_note_02", "fld_txt_note_03", "fld_txt_battle_01", "fld_txt_switch_01", "fld_txt_switch_02", "fld_txt_deco_01", "fld_txt_circle_01", "fld_txt_cross_01", "fld_txt_greet_01", "fld_txt_local_01", "fld_txt_net_01", "fld_txt_pickel_01", "fld_txt_get_01", "fld_txt_exit_01", "fld_txt_together_01", "fld_txt_likes_01", "fld_txt_exclamation_03" };
+	private static readonly string[] FukidashiName = new string[] { "fld_wd_balloon_01", "fld_wd_balloon_01", "fld_wd_balloon_02", "fld_wd_balloon_03", "fld_wd_balloon_04" };
+	private readonly string[] UNION_HOST_ICON_NAME = new string[] { "fld_txt_notice_02_0", "fld_txt_notice_02_1", "fld_txt_notice_02_2", "fld_txt_notice_02_3" };
+	private global::UnityEngine.Sprite[] CacheUnionHostIconNotice = new global::UnityEngine.Sprite[4];
+	private global::UnityEngine.Color fukidasiImgColorWhite = new global::UnityEngine.Color(1f, 1f, 1f);
+	private global::UnityEngine.Color fukidasiImgColorYellow = new global::UnityEngine.Color(1f, 0.85f, 0f);
+	private static readonly global::UnityEngine.Vector3[] path = new global::UnityEngine.Vector3[] { global::UnityEngine.Vector3.up * 60f + global::UnityEngine.Vector3.right * 30f, global::UnityEngine.Vector3.up * 30f + global::UnityEngine.Vector3.right * 60f, global::UnityEngine.Vector3.up * 80f + global::UnityEngine.Vector3.right * 100f };
 	public void PlayAnimation(int type, global::UnityEngine.U2D.SpriteAtlas atlas) {
         this.type = type;
         Sprite sprite = atlas.GetSprite(IconName[type]);
@@ -305,6 +305,8 @@ public class Balloon
         MarkImg.DOFade(0.0f, 0.4f).SetDelay(0.6f);
         return MarkImg.rectTransform.DOLocalPath(path, 1.0f, PathType.CatmullRom, PathMode.Full3D, 10, null);
     }
-	public Balloon() { /*@B 0x600027C*/ throw null; }
-	static Balloon() { /*@B 0x600027D*/ throw null; }
+	public Balloon() {
+	}
+	static Balloon() {
+	}
 }
