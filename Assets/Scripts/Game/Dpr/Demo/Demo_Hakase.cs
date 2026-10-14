@@ -46,7 +46,54 @@ namespace Dpr.Demo
 			EndExitFadeDuration = 1f;
 			FadeColor = global::UnityEngine.Color.black;
 		}
-		public override global::System.Collections.IEnumerator Enter() { /*@B 0x6004852*/ throw null; }
+		public override global::System.Collections.IEnumerator Enter() {
+			global::DG.Tweening.DOTweenModuleUI.DOFade(manager.Fade, 1f, 0f);
+			manager.UICanvas.sortingOrder = 99;
+			manager.MyEnvironmentController.SetLight(cameraController.environmentSettings[1], global::GameManager.currentPeriodOfDay, 0f, 0f);
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_01", true));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_02_1", false));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_06", true));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_09_1", false));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_09_2", false));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_36", true));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_15", false));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_16_1", true));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_16_2", false));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_17", true));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_18", true));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_19_1", false));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_19_2", false));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "7-msg_opening_19_3", true));
+			bgType = global::Dpr.Demo.DemoBase.BGType.HakaseBlue;
+			yield return LoadBackGround(bg => {
+				bg.transform.localPosition = new global::UnityEngine.Vector3(0f, 0f, 0f);
+			}, true);
+			yield return LoadPokeAsset(global::Pml.MonsNo.GONBE, 0, global::Pml.Sex.MALE, false, false, false, true);
+			yield return global::Dpr.SubContents.Utils.LoadAsset(HAKASE_ASSET_PATH, asset => {
+				if (asset.name == "tr2003_01") {
+					global::UnityEngine.GameObject go = global::UnityEngine.Object.Instantiate(asset, parent) as global::UnityEngine.GameObject;
+					go.transform.localPosition = new global::UnityEngine.Vector3(0f, 0f, 0f);
+					hakaseEntity = go.GetComponent<global::BattleCharacterEntity>();
+					hakaseEntity.Initialize(default(global::Dpr.Battle.View.TrainerSimpleParam), false);
+				}
+			}, false, true, 0);
+			yield return global::Dpr.SubContents.Utils.LoadAsset(RIVAL_ASSET_PATH, asset => {
+				if (asset.name == "tr0002_00")
+					Rival3DModel = asset;
+			}, false, true, 0);
+			yield return global::Dpr.SubContents.Utils.LoadAsset("field/camera/chapter001", asset => {
+				if (asset.name == "chapter001_controller") {
+					animController = (global::UnityEngine.RuntimeAnimatorController)asset;
+					cameraController.SetAnimatorController(animController);
+				}
+			}, false, true, 0);
+			global::Effect.EffectManager.LoadParam bgParam = global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Effect.EffectManager>.Instance.dbEffects.FieldEffectData[180];
+			yield return global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Effect.EffectManager>.Instance.OpLoad(new global::Effect.EffectManager.LoadParam[] { bgParam }, (effect, isAllLoaded) => {
+				bgEffect = global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Effect.EffectManager>.Instance.Play(effect, hakaseEntity.transform.position + new global::UnityEngine.Vector3(0f, 0f, 1.46f), global::UnityEngine.Quaternion.identity, null, null);
+				bgEffectData = effect;
+			});
+			nowMessageNo = -1;
+		}
 		public override global::System.Collections.IEnumerator Main() { /*@B 0x6004853*/ throw null; }
 		private global::System.Collections.IEnumerator PlayerSelect(global::UnityEngine.GameObject gonbe, global::UnityEngine.UI.Image bgImage) { /*@B 0x6004854*/ throw null; }
 		private global::System.Collections.IEnumerator RivalSelect() { /*@B 0x6004855*/ throw null; }
@@ -54,7 +101,15 @@ namespace Dpr.Demo
             // FIX (b236): @01ad2750 — no base call: environmentSettings[1] (indexer-checked, no Count guard) with PeriodOfDay 1
             manager.MyEnvironmentController.SetLight(cameraController.environmentSettings[1], PeriodOfDay.Daytime, 0.0f, 0.0f);
         }
-		public override global::System.Collections.IEnumerator Exit() { /*@B 0x6004857*/ throw null; }
+		public override global::System.Collections.IEnumerator Exit() {
+			bgEffectData.Release();
+			global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Effect.EffectManager>.Instance.RemoveInstances(true);
+			if (openingController != null)
+				global::PlayerWork.SetTransitionZone(global::ZoneID.T01R0202, 0);
+			else
+				manager.FadeExit(1f);
+			yield return null;
+		}
 		static Demo_Hakase() { }
 	}
 }
