@@ -4,46 +4,149 @@ namespace Dpr.Message
 	public static class MessageWordSetHelper
 	{
 		public static global::Dpr.Message.MessageManager manager;
-		public static void SetRivalNickNameWord(int tagIndex) { /*@B 0x6003D6F*/ throw null; }
-		public static void SetSupporterName(int tagIndex) { /*@B 0x6003D70*/ throw null; }
-		public static void SetPlayerNickNameWord(int tagIndex) { /*@B 0x6003D71*/ throw null; }
-		public static void SetPlayerNickNameWord(int tagIndex, global::Dpr.Message.PlayerNameData playerData) { /*@B 0x6003D72*/ throw null; }
-		public static void SetPlayerNickNameWord(int tagIndex, global::Dpr.Battle.Logic.MyStatus status) { /*@B 0x6003D73*/ throw null; }
-		public static void SetSpeakersNameWord(int tagIndex, int speakerId) { /*@B 0x6003D74*/ throw null; }
-		public static void SetPokemonNickNameWord(int tagIndex, global::Pml.PokePara.CoreParam pp, bool isShowNickName = true) { /*@B 0x6003D75*/ throw null; }
-		public static void SetPokemonNickNameWord(int tagIndex, global::Dpr.Message.MonsNameData monsNameData) { /*@B 0x6003D76*/ throw null; }
-		public static void SetMonsNameWord(int tagIndex, global::Pml.MonsNo monsNo) { /*@B 0x6003D77*/ throw null; }
+		public static void SetRivalNickNameWord(int tagIndex) {
+            // TagWordBuffer.SetRivalNameWordParam inlined
+            manager.TagWordBuffer.SetRivalNameWordParam(tagIndex, manager.GetRivalName(), 1);
+        }
+		public static void SetSupporterName(int tagIndex) {
+            string label = global::PlayerWork.playerData.mystatus.sex ? MessageDataConstants.WOMAN_SUPPORTER_NAME_LABEL : MessageDataConstants.MAN_SUPPORTER_NAME_LABEL;
+            var dataModel = GetWordDataModel(MessageDataConstants.CHARACTER_NAME_MSBT_FILE, label);
+            manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, dataModel);
+        }
+		public static void SetPlayerNickNameWord(int tagIndex) {
+            bool sex = global::PlayerWork.playerData.mystatus.sex;
+            manager.TagWordBuffer.SetUserNickNameWordParam(tagIndex, global::PlayerWork.userName, sex ? 0 : 1, manager.UserLanguageID);
+        }
+		public static void SetPlayerNickNameWord(int tagIndex, global::Dpr.Message.PlayerNameData playerData) {
+            manager.TagWordBuffer.SetUserNickNameWordParam(tagIndex, playerData.nickName, playerData.genderid, playerData.lanugageId);
+        }
+		public static void SetPlayerNickNameWord(int tagIndex, global::Dpr.Battle.Logic.MyStatus status) {
+            manager.TagWordBuffer.SetUserNickNameWordParam(tagIndex, status.name, status.sex ? 0 : 1, status.lang);
+        }
+		public static void SetSpeakersNameWord(int tagIndex, int speakerId) {
+            manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, GetWordDataModel(MessageDataConstants.SPEAKER_NAME_FILE_NAME, speakerId));
+        }
+		public static void SetPokemonNickNameWord(int tagIndex, global::Pml.PokePara.CoreParam pp, bool isShowNickName = true) {
+            bool isEgg = pp.IsEgg(global::Pml.PokePara.EggCheckType.BOTH_EGG);
+            int sex = (int)pp.GetSex();
+            var langId = (global::Dpr.Message.MessageEnumData.MsgLangId)pp.GetLangId();
+            int monsNo = (int)pp.GetMonsNo();
+            if (monsNo >= (int)global::Pml.MonsNo.TAMAGO)
+                monsNo = 0;
+            string name;
+            if (isShowNickName) {
+                name = pp.GetNickName();
+                if (pp.HaveNickName()) {
+                    manager.TagWordBuffer.SetUserPokemonWordParam(tagIndex, name, sex, isEgg, langId, 0);
+                    return;
+                }
+            }
+            else {
+                name = global::Pml.Personal.PersonalSystem.GetMonsName((global::Pml.MonsNo)monsNo, langId);
+            }
+            var dataModel = GetWordDataModel(MessageDataConstants.MONSNAME_FILE_NAME, monsNo);
+            manager.TagWordBuffer.SetUserPokemonWordParam(tagIndex, name, sex, isEgg, langId, dataModel.AttributeDataModel.initialSound);
+        }
+		public static void SetPokemonNickNameWord(int tagIndex, global::Dpr.Message.MonsNameData monsNameData) {
+            manager.TagWordBuffer.SetUserPokemonWordParam(tagIndex, monsNameData.nickName, monsNameData.genderid, monsNameData.isEgg, monsNameData.languageId, 0);
+        }
+		public static void SetMonsNameWord(int tagIndex, global::Pml.MonsNo monsNo) {
+            SetMonsNameWord(tagIndex, (int)monsNo);
+        }
 		public static void SetMonsNameWord(int tagIndex, int monsNo) {
             var dataModel = GetWordDataModel(MessageDataConstants.MONSNAME_FILE_NAME, monsNo);
             manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, dataModel);
         }
-		public static void SetMonsNameWord(int tagIndex, global::Pml.PokePara.CoreParam pp) { /*@B 0x6003D79*/ throw null; }
-		public static void SetParentNameWord(int tagIndex, global::Pml.PokePara.CoreParam pp) { /*@B 0x6003D7A*/ throw null; }
-		public static void SetContestDescriptionWord(int contestWazaIndex) { /*@B 0x6003D7B*/ throw null; }
-		public static void SetContestDescriptionWord(global::XLSXContent.ContestWazaInfo.SheetContestWazaData wazaData) { /*@B 0x6003D7C*/ throw null; }
-		public static void SetWazaNameWord(int tagIndex, global::Pml.WazaNo wazaNo) { /*@B 0x6003D7D*/ throw null; }
-		public static void SetWazaTypeWord(int tagIndex, global::Pml.PokeType pokeTypeNo) { /*@B 0x6003D7E*/ throw null; }
-		public static void SetItemWord(int tagIndex, global::Pml.ItemNo itemNo, int itemCount) { /*@B 0x6003D7F*/ throw null; }
-		public static void SetItemWord(int tagIndex, int itemNo, int itemCount) { /*@B 0x6003D80*/ throw null; }
-		public static void SetPocketNameWord(int tagIndex, global::Pml.ItemNo itemNo) { /*@B 0x6003D81*/ throw null; }
-		public static void SetPocketNameWord(int tagIndex, int wordIndex) { /*@B 0x6003D82*/ throw null; }
-		public static void SetSealNameWord(int tagIndex, global::SealID sealID) { /*@B 0x6003D83*/ throw null; }
-		public static void SetSealNameWord(int tagIndex, global::SealID sealID, int itemCount) { /*@B 0x6003D84*/ throw null; }
-		public static void SetUgItemNameWord(int tagIndex, int ugItemId) { /*@B 0x6003D85*/ throw null; }
-		public static void SetUgItemNameWord(int tagIndex, int ugItemId, int itemCount) { /*@B 0x6003D86*/ throw null; }
-		public static void SetParkItemNameWord(int tagIndex, int parkItemId) { /*@B 0x6003D87*/ throw null; }
-		public static void SetParkItemNameWord(int tagIndex, int parkItemId, int itemCount) { /*@B 0x6003D88*/ throw null; }
-		public static void SetKinomiNameWord(int tagIndex, int kinomiNo) { /*@B 0x6003D89*/ throw null; }
-		public static void SetKinomiNameWord(int tagIndex, int kinomiNo, int itemCount) { /*@B 0x6003D8A*/ throw null; }
-		public static void SetRibbonNameWord(int tagIndex, int ribbonNo) { /*@B 0x6003D8B*/ throw null; }
-		public static void SetRibbonNameWord(int tagIndex, int ribbonNo, int itemCount) { /*@B 0x6003D8C*/ throw null; }
-		public static void SetDressupItemNameWord(int tagIndex, string label) { /*@B 0x6003D8D*/ throw null; }
-		public static void SetPoffinNameWord(int tagIndex, string poffinLabelName) { /*@B 0x6003D8E*/ throw null; }
-		public static void SetPoffinNameWord(int tagIndex, string poffinLabelName, int itemCount) { /*@B 0x6003D8F*/ throw null; }
-		public static void SetPoffinNameWord(int tagIndex, int labelIndex) { /*@B 0x6003D90*/ throw null; }
-		public static void SetPoffinNameWord(int tagIndex, int labelIndex, int itemCount) { /*@B 0x6003D91*/ throw null; }
-		public static void SetTokuseiWord(int tagIndex, global::Pml.TokuseiNo tokuseiNo) { /*@B 0x6003D92*/ throw null; }
-		public static void SetSeikakuWord(int tagIndex, global::Pml.PokePara.Seikaku seikakuNo) { /*@B 0x6003D93*/ throw null; }
+		public static void SetMonsNameWord(int tagIndex, global::Pml.PokePara.CoreParam pp) {
+            var dataModel = GetWordDataModel(MessageDataConstants.MONSNAME_FILE_NAME, (int)pp.GetMonsNo());
+            manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, dataModel);
+        }
+		public static void SetParentNameWord(int tagIndex, global::Pml.PokePara.CoreParam pp) {
+            manager.TagWordBuffer.SetUserNickNameWordParam(tagIndex, pp.GetParentName(), (int)pp.GetParentSex(), (global::Dpr.Message.MessageEnumData.MsgLangId)pp.GetLangId());
+        }
+		public static void SetContestDescriptionWord(int contestWazaIndex) {
+            SetContestDescriptionWord(global::GameData.DataManager.ContestWazaInfo[contestWazaIndex]);
+        }
+		public static void SetContestDescriptionWord(global::XLSXContent.ContestWazaInfo.SheetContestWazaData wazaData) {
+            if (wazaData.wazaType == 1 || wazaData.wazaType == 7)
+                return;
+            MessageManager.Instance.ClearTagWordParams();
+            SetDigitWord(0, wazaData.value1);
+        }
+		public static void SetWazaNameWord(int tagIndex, global::Pml.WazaNo wazaNo) {
+            manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, GetWordDataModel(MessageDataConstants.WAZA_FILE_NAME, (int)wazaNo));
+        }
+		public static void SetWazaTypeWord(int tagIndex, global::Pml.PokeType pokeTypeNo) {
+            manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, GetWordDataModel(MessageDataConstants.POKETYPE_FILE_NAME, (int)pokeTypeNo));
+        }
+		public static void SetItemWord(int tagIndex, global::Pml.ItemNo itemNo, int itemCount) {
+            SetItemWord(tagIndex, (int)itemNo, itemCount);
+        }
+		public static void SetItemWord(int tagIndex, int itemNo, int itemCount) {
+            manager.TagWordBuffer.SetItemWordParam(tagIndex, itemNo, itemCount);
+        }
+		public static void SetPocketNameWord(int tagIndex, global::Pml.ItemNo itemNo) {
+            SetPocketNameWord(tagIndex, (int)global::ItemWork.GetItemInfo((int)itemNo).Category);
+        }
+		public static void SetPocketNameWord(int tagIndex, int wordIndex) {
+            string label = MessageDataConstants.POCKET_NAME_LABEL_TABLE[wordIndex];
+            string name = GetWordStr(MessageDataConstants.BAG_POCKET_FILE_NAME, label);
+            int iconCode = MessageDataConstants.POCKET_ICON_CODE_TABLE[wordIndex];
+            string icon = MessageHelper.ConvertUnicodeToChar(iconCode).ToString();
+            manager.TagWordBuffer.SetStrWordParam(tagIndex, icon + name);
+        }
+		public static void SetSealNameWord(int tagIndex, global::SealID sealID) {
+            SetSealNameWord(tagIndex, sealID, 1);
+        }
+		public static void SetSealNameWord(int tagIndex, global::SealID sealID, int itemCount) {
+            manager.TagWordBuffer.SetItemWordParam(tagIndex, (int)sealID, itemCount);
+        }
+		public static void SetUgItemNameWord(int tagIndex, int ugItemId) {
+            SetUgItemNameWord(tagIndex, ugItemId, 1);
+        }
+		public static void SetUgItemNameWord(int tagIndex, int ugItemId, int itemCount) {
+            manager.TagWordBuffer.SetItemWordParam(tagIndex, ugItemId, itemCount);
+        }
+		public static void SetParkItemNameWord(int tagIndex, int parkItemId) {
+            SetParkItemNameWord(tagIndex, parkItemId, 1);
+        }
+		public static void SetParkItemNameWord(int tagIndex, int parkItemId, int itemCount) {
+            manager.TagWordBuffer.SetItemWordParam(tagIndex, parkItemId, itemCount);
+        }
+		public static void SetKinomiNameWord(int tagIndex, int kinomiNo) {
+            SetKinomiNameWord(tagIndex, kinomiNo, 1);
+        }
+		public static void SetKinomiNameWord(int tagIndex, int kinomiNo, int itemCount) {
+            manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, GetWordDataModel(MessageDataConstants.KINOMI_FILE_NAME, kinomiNo), itemCount);
+        }
+		public static void SetRibbonNameWord(int tagIndex, int ribbonNo) {
+            SetRibbonNameWord(tagIndex, ribbonNo, 1);
+        }
+		public static void SetRibbonNameWord(int tagIndex, int ribbonNo, int itemCount) {
+            manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, GetWordDataModel(MessageDataConstants.RIBBON_NAME_FILE_NAME, ribbonNo), itemCount);
+        }
+		public static void SetDressupItemNameWord(int tagIndex, string label) {
+            manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, GetWordDataModel(MessageDataConstants.STYLE_NAME_MSBT_FILE, label));
+        }
+		public static void SetPoffinNameWord(int tagIndex, string poffinLabelName) {
+            SetPoffinNameWord(tagIndex, poffinLabelName, 1);
+        }
+		public static void SetPoffinNameWord(int tagIndex, string poffinLabelName, int itemCount) {
+            int labelIndex = GetLabelIndexByLabelName(MessageDataConstants.POFFIN_NAME_MSBT_FILE, poffinLabelName);
+            SetPoffinNameWord(tagIndex, labelIndex, itemCount);
+        }
+		public static void SetPoffinNameWord(int tagIndex, int labelIndex) {
+            SetPoffinNameWord(tagIndex, labelIndex, 1);
+        }
+		public static void SetPoffinNameWord(int tagIndex, int labelIndex, int itemCount) {
+            manager.TagWordBuffer.SetItemWordParam(tagIndex, labelIndex, itemCount);
+        }
+		public static void SetTokuseiWord(int tagIndex, global::Pml.TokuseiNo tokuseiNo) {
+            manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, GetWordDataModel(MessageDataConstants.TOKUSEI_FILE_NAME, (int)tokuseiNo));
+        }
+		public static void SetSeikakuWord(int tagIndex, global::Pml.PokePara.Seikaku seikakuNo) {
+            manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, GetWordDataModel(MessageDataConstants.SEIKAKU_FILE_NAME, (int)seikakuNo));
+        }
 		public static void SetTrainerNameWord(int tagIndex, string labelName) {
             var dataModel = GetWordDataModel(MessageDataConstants.TRAINER_NAME_FILE_NAME, labelName);
             manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, dataModel);
@@ -52,25 +155,68 @@ namespace Dpr.Message
             var dataModel = GetWordDataModel(MessageDataConstants.TRAINER_TYPE_FILE_NAME, labelName);
             manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, dataModel);
         }
-		public static void SetAreanameWord(int tagIndex, string labelName) { /*@B 0x6003D96*/ throw null; }
-		public static void SetAreanameWord(int tagIndex, int labelIndex) { /*@B 0x6003D97*/ throw null; }
-		public static void SetAreanameIndirectWord(int tagIndex, string labelName) { /*@B 0x6003D98*/ throw null; }
-		public static void SetAreanameIndirectWord(int tagIndex, int labelIndex) { /*@B 0x6003D99*/ throw null; }
-		public static void SetAreanameDisplayWord(int tagIndex, int labelIndex) { /*@B 0x6003D9A*/ throw null; }
-		public static void SetAreanameDisplayWord(int tagIndex, string labelName) { /*@B 0x6003D9B*/ throw null; }
-		public static void SetAreanameTownmapWord(int tagIndex, string labelName) { /*@B 0x6003D9C*/ throw null; }
-		public static void SetAreanameTownmapWord(int tagIndex, int labelIndex) { /*@B 0x6003D9D*/ throw null; }
+		public static void SetAreanameWord(int tagIndex, string labelName) {
+            SetGlossaryWord(tagIndex, MessageDataConstants.AREANAME_FILE_NAME, labelName, 1);
+        }
+		public static void SetAreanameWord(int tagIndex, int labelIndex) {
+            SetGlossaryWord(tagIndex, MessageDataConstants.AREANAME_FILE_NAME, labelIndex, 1);
+        }
+		public static void SetAreanameIndirectWord(int tagIndex, string labelName) {
+            SetGlossaryWord(tagIndex, MessageDataConstants.AREANAME_INDIRECT_FILE_NAME, labelName, 1);
+        }
+		public static void SetAreanameIndirectWord(int tagIndex, int labelIndex) {
+            if (CheckEnableIndex(MessageDataConstants.AREANAME_INDIRECT_FILE_NAME, labelIndex))
+                SetGlossaryWord(tagIndex, MessageDataConstants.AREANAME_INDIRECT_FILE_NAME, labelIndex, 1);
+        }
+		public static void SetAreanameDisplayWord(int tagIndex, int labelIndex) {
+            if (CheckEnableIndex(MessageDataConstants.AREANAME_DISPLAY_FILE_NAME, labelIndex))
+                SetGlossaryWord(tagIndex, MessageDataConstants.AREANAME_DISPLAY_FILE_NAME, labelIndex, 1);
+        }
+		public static void SetAreanameDisplayWord(int tagIndex, string labelName) {
+            SetGlossaryWord(tagIndex, MessageDataConstants.AREANAME_DISPLAY_FILE_NAME, labelName, 1);
+        }
+		public static void SetAreanameTownmapWord(int tagIndex, string labelName) {
+            SetGlossaryWord(tagIndex, MessageDataConstants.AREANAME_TOWNMAP_FILE_NAME, labelName, 1);
+        }
+		public static void SetAreanameTownmapWord(int tagIndex, int labelIndex) {
+            SetGlossaryWord(tagIndex, MessageDataConstants.AREANAME_TOWNMAP_FILE_NAME, labelIndex, 1);
+        }
 		public static void SetPlaceNameWord(int tagIndex, int placeID) {
             SetPlaceNameWord(tagIndex, GetLabelNameByIndex(MessageDataConstants.AREANAME_FILE_NAME, placeID));
         }
-		public static void SetPlaceNameWord(int tagIndex, string labelName) { /*@B 0x6003D9F*/ throw null; }
-		public static void SetStatusNameWord(int tagIndex, global::Pml.PokePara.PowerID powerId, uint totalValue) { /*@B 0x6003DA0*/ throw null; }
-		public static void SetDigitWord(int tagIndex, int number) { /*@B 0x6003DA1*/ throw null; }
-		public static void SetDigitWord(int tagIndex, string numberStr) { /*@B 0x6003DA2*/ throw null; }
-		public static void SetCentiSizeUnitWord(float centimeterSize, int integerTagIndex, int decimalTagIndex) { /*@B 0x6003DA3*/ throw null; }
-		public static void SetStringWord(int tagIndex, string str) { /*@B 0x6003DA4*/ throw null; }
-		public static void SetStringWord(int tagIndex, string str, global::Dpr.Message.MessageEnumData.MsgLangId langId) { /*@B 0x6003DA5*/ throw null; }
-		public static void SetRivalTypeAndNameWord(int tagIndex, string typeLabel) { /*@B 0x6003DA6*/ throw null; }
+		public static void SetPlaceNameWord(int tagIndex, string labelName) {
+            manager.TagWordBuffer.SetPlaceWordParam(tagIndex, labelName);
+        }
+		public static void SetStatusNameWord(int tagIndex, global::Pml.PokePara.PowerID powerId, uint totalValue) {
+            var table = MessageDataConstants.POKE_POWER_NAME_LABEL_ARRAY;
+            if (table.ContainsKey((int)powerId)) {
+                SetGlossaryWord(tagIndex, MessageDataConstants.BAG_FILE_NAME, table[(int)powerId], (int)totalValue);
+                return;
+            }
+            MessageHelper.EmitLog(string.Format("Not found ID in POKE_POWER_NAME_LABEL_ARRAY: {0}", powerId), global::UnityEngine.LogType.Error);
+        }
+		public static void SetDigitWord(int tagIndex, int number) {
+            manager.TagWordBuffer.SetDigitWordParam(tagIndex, number);
+        }
+		public static void SetDigitWord(int tagIndex, string numberStr) {
+            manager.TagWordBuffer.SetDigitStrWordParam(tagIndex, numberStr);
+        }
+		public static void SetCentiSizeUnitWord(float centimeterSize, int integerTagIndex, int decimalTagIndex) {
+            int integerValue = 0;
+            int decimalValue = 0;
+            var forceGrmId = MessageHelper.CreateNotationValue(centimeterSize, ref integerValue, ref decimalValue);
+            manager.TagWordBuffer.SetDigitWordParam(integerTagIndex, integerValue, forceGrmId);
+            manager.TagWordBuffer.SetDigitWordParam(decimalTagIndex, decimalValue);
+        }
+		public static void SetStringWord(int tagIndex, string str) {
+            manager.TagWordBuffer.SetStrWordParam(tagIndex, str);
+        }
+		public static void SetStringWord(int tagIndex, string str, global::Dpr.Message.MessageEnumData.MsgLangId langId) {
+            manager.TagWordBuffer.SetStrWordParam(tagIndex, str, langId);
+        }
+		public static void SetRivalTypeAndNameWord(int tagIndex, string typeLabel) {
+            manager.TagWordBuffer.SetSingleTrTypeAndNameWordParam(tagIndex, CreateRivalTrTypeAndNameData(typeLabel));
+        }
 		public static void SetSingleTrainerTypeAndNameWord(int tagIndex, string typeLabel, string nameLabel) {
             var data = CreateTrTypeAndNameDataFromLabelName(typeLabel, nameLabel);
             manager.TagWordBuffer.SetSingleTrTypeAndNameWordParam(tagIndex, data);
@@ -79,35 +225,176 @@ namespace Dpr.Message
             var data = CreateTrTypeAndNameDataFromLabelIndex(typeLabelIndex, nameLabelIndex);
             manager.TagWordBuffer.SetSingleTrTypeAndNameWordParam(tagIndex, data);
         }
-		public static void SetRivalTagTrainerTypeAndNameWord(int rivalTagIndex, string rivalTypeLabel, int pairTagIndex, string pairTagTypeLabel, string pairTagNameLabel) { /*@B 0x6003DA9*/ throw null; }
-		public static void SetRivalTagTrainerTypeAndNameWord(int rivalTagIndex, string rivalTypeLabel, int pairTagIndex, int pairTagTypeLabelIndex, int pairTagNameLabelIndex) { /*@B 0x6003DAA*/ throw null; }
-		public static void SetSameTagTrainerTypeAndNameWord(int tagIndex1, string typeLabel, string nameLabel1, int tagIndex2, string nameLabel2) { /*@B 0x6003DAB*/ throw null; }
-		public static void SetSameTagTrainerTypeAndNameWord(int tagIndex1, int typeLabelIndex, int nameLabelIndex1, int tagIndex2, int nameLabelIndex2) { /*@B 0x6003DAC*/ throw null; }
-		public static void SetDiffTagTrainerTypeAndNameWord(int tagIndex1, string typeLabel1, string nameLabel1, int tagIndex2, string typeLabel2, string nameLabel2) { /*@B 0x6003DAD*/ throw null; }
-		public static void SetDiffTagTrainerTypeAndNameWord(int tagIndex1, int typeLabelIndex1, int nameLabelIndex1, int tagIndex2, int typeLabelIndex2, int nameLabelIndex2) { /*@B 0x6003DAE*/ throw null; }
-		private static global::Dpr.Message.TrTypeAndNameData CreateTrTypeAndNameDataFromLabelName(string typeLabel, string nameLabel) { /*@B 0x6003DAF*/ throw null; }
-		private static global::Dpr.Message.TrTypeAndNameData CreateTrTypeAndNameDataFromLabelIndex(int typeLabelIndex, int nameLabelIndex) { /*@B 0x6003DB0*/ throw null; }
-		private static global::Dpr.Message.TrTypeAndNameData CreateTrTypeAndNameData(global::Dpr.Message.MessageGlossaryParseDataModel typeDataModel, global::Dpr.Message.MessageGlossaryParseDataModel nameDataModel) { /*@B 0x6003DB1*/ throw null; }
-		private static global::Dpr.Message.TrTypeAndNameData CreateRivalTrTypeAndNameData(string typeLabel) { /*@B 0x6003DB2*/ throw null; }
+		public static void SetRivalTagTrainerTypeAndNameWord(int rivalTagIndex, string rivalTypeLabel, int pairTagIndex, string pairTagTypeLabel, string pairTagNameLabel) {
+            var data1 = CreateRivalTrTypeAndNameData(rivalTypeLabel);
+            var data2 = CreateTrTypeAndNameDataFromLabelName(pairTagTypeLabel, pairTagNameLabel);
+            manager.TagWordBuffer.SetSameTypePairTrTypeAndNameWordParam(rivalTagIndex, data1, pairTagIndex, data2);
+        }
+		public static void SetRivalTagTrainerTypeAndNameWord(int rivalTagIndex, string rivalTypeLabel, int pairTagIndex, int pairTagTypeLabelIndex, int pairTagNameLabelIndex) {
+            var data1 = CreateRivalTrTypeAndNameData(rivalTypeLabel);
+            var data2 = CreateTrTypeAndNameDataFromLabelIndex(pairTagTypeLabelIndex, pairTagNameLabelIndex);
+            manager.TagWordBuffer.SetSameTypePairTrTypeAndNameWordParam(rivalTagIndex, data1, pairTagIndex, data2);
+        }
+		public static void SetSameTagTrainerTypeAndNameWord(int tagIndex1, string typeLabel, string nameLabel1, int tagIndex2, string nameLabel2) {
+            var data1 = CreateTrTypeAndNameDataFromLabelName(typeLabel, nameLabel1);
+            var data2 = CreateTrTypeAndNameDataFromLabelName(typeLabel, nameLabel2);
+            manager.TagWordBuffer.SetSameTypePairTrTypeAndNameWordParam(tagIndex1, data1, tagIndex2, data2);
+        }
+		public static void SetSameTagTrainerTypeAndNameWord(int tagIndex1, int typeLabelIndex, int nameLabelIndex1, int tagIndex2, int nameLabelIndex2) {
+            var data1 = CreateTrTypeAndNameDataFromLabelIndex(typeLabelIndex, nameLabelIndex1);
+            var data2 = CreateTrTypeAndNameDataFromLabelIndex(typeLabelIndex, nameLabelIndex2);
+            manager.TagWordBuffer.SetSameTypePairTrTypeAndNameWordParam(tagIndex1, data1, tagIndex2, data2);
+        }
+		public static void SetDiffTagTrainerTypeAndNameWord(int tagIndex1, string typeLabel1, string nameLabel1, int tagIndex2, string typeLabel2, string nameLabel2) {
+            var data1 = CreateTrTypeAndNameDataFromLabelName(typeLabel1, nameLabel1);
+            var data2 = CreateTrTypeAndNameDataFromLabelName(typeLabel2, nameLabel2);
+            manager.TagWordBuffer.SetDiffTypePairTrTypeAndNameWordParam(tagIndex1, data1, tagIndex2, data2);
+        }
+		public static void SetDiffTagTrainerTypeAndNameWord(int tagIndex1, int typeLabelIndex1, int nameLabelIndex1, int tagIndex2, int typeLabelIndex2, int nameLabelIndex2) {
+            var data1 = CreateTrTypeAndNameDataFromLabelIndex(typeLabelIndex1, nameLabelIndex1);
+            var data2 = CreateTrTypeAndNameDataFromLabelIndex(typeLabelIndex2, nameLabelIndex2);
+            manager.TagWordBuffer.SetDiffTypePairTrTypeAndNameWordParam(tagIndex1, data1, tagIndex2, data2);
+        }
+		private static global::Dpr.Message.TrTypeAndNameData CreateTrTypeAndNameDataFromLabelName(string typeLabel, string nameLabel) {
+            var typeDataModel = GetWordDataModel(MessageDataConstants.TRAINER_TYPE_FILE_NAME, typeLabel);
+            var nameDataModel = GetWordDataModel(MessageDataConstants.TRAINER_NAME_FILE_NAME, nameLabel);
+            return CreateTrTypeAndNameData(typeDataModel, nameDataModel);
+        }
+		private static global::Dpr.Message.TrTypeAndNameData CreateTrTypeAndNameDataFromLabelIndex(int typeLabelIndex, int nameLabelIndex) {
+            var typeDataModel = GetWordDataModel(MessageDataConstants.TRAINER_TYPE_FILE_NAME, typeLabelIndex);
+            var nameDataModel = GetWordDataModel(MessageDataConstants.TRAINER_NAME_FILE_NAME, nameLabelIndex);
+            return CreateTrTypeAndNameData(typeDataModel, nameDataModel);
+        }
+		private static global::Dpr.Message.TrTypeAndNameData CreateTrTypeAndNameData(global::Dpr.Message.MessageGlossaryParseDataModel typeDataModel, global::Dpr.Message.MessageGlossaryParseDataModel nameDataModel) {
+            var data = new TrTypeAndNameData();
+            var typeAttr = typeDataModel.AttributeDataModel;
+            var nameAttr = nameDataModel.AttributeDataModel;
+            data.displayPattern = typeAttr.displayPattern;
+            data.typeParam = new WordParameter {
+                name = typeDataModel.GetName(),
+                gender = typeAttr.gender,
+                initialSound = typeAttr.initialSound,
+                articlePresence = typeAttr.articlePresence,
+                countability = typeAttr.countability,
+                strWidth = typeDataModel.StrWidth,
+            };
+            data.nameParam = new WordParameter {
+                name = nameDataModel.GetName(),
+                gender = nameAttr.gender,
+                initialSound = nameAttr.initialSound,
+                articlePresence = nameAttr.articlePresence,
+                countability = nameAttr.countability,
+                strWidth = nameDataModel.StrWidth,
+            };
+            return data;
+        }
+		private static global::Dpr.Message.TrTypeAndNameData CreateRivalTrTypeAndNameData(string typeLabel) {
+            var data = new TrTypeAndNameData();
+            var typeDataModel = GetWordDataModel(MessageDataConstants.TRAINER_TYPE_FILE_NAME, typeLabel);
+            var typeAttr = typeDataModel.AttributeDataModel;
+            data.displayPattern = typeAttr.displayPattern;
+            data.typeParam = new WordParameter {
+                name = typeDataModel.GetName(),
+                gender = typeAttr.gender,
+                initialSound = typeAttr.initialSound,
+                articlePresence = typeAttr.articlePresence,
+                countability = typeAttr.countability,
+                strWidth = typeDataModel.StrWidth,
+            };
+            data.nameParam = new WordParameter {
+                name = manager.GetRivalName(),
+                gender = 0,
+                strWidth = -1f,
+                articlePresence = 1,
+            };
+            return data;
+        }
 		public static void SetPocketchWord(int tagIndex, int labelIndex) {
             manager.TagWordBuffer.SetGlossaryWordParam(tagIndex, GetWordDataModel(MessageDataConstants.POKETCH_FILE_NAME, labelIndex));
         }
-		public static void SetPocketchNameWord(int tagIndex, int appId) { /*@B 0x6003DB4*/ throw null; }
-		public static void SetGlossaryWord(int index, string msbtName, string labelName) { /*@B 0x6003DB5*/ throw null; }
-		public static void SetGlossaryWord(int index, string msbtName, string labelName, int count) { /*@B 0x6003DB6*/ throw null; }
-		public static void SetGlossaryWord(int index, string msbtName, int labelIndex) { /*@B 0x6003DB7*/ throw null; }
-		public static void SetGlossaryWord(int index, string msbtName, int labelIndex, int count) { /*@B 0x6003DB8*/ throw null; }
-		public static void SetGlossaryWordFromMsgFile(int index, global::Dpr.Message.MessageMsgFile msgFile, string label) { /*@B 0x6003DB9*/ throw null; }
-		public static void SetGlossaryWordFromMsgFile(int index, global::Dpr.Message.MessageMsgFile msgFile, int labelIndex) { /*@B 0x6003DBA*/ throw null; }
-		public static void SetStringWordFromMsgFile(int index, global::Dpr.Message.MessageMsgFile msgFile, string label) { /*@B 0x6003DBB*/ throw null; }
-		public static void SetStringWordFromMsgFile(int index, global::Dpr.Message.MessageMsgFile msgFile, int labelIndex) { /*@B 0x6003DBC*/ throw null; }
-		private static string GetWordStr(string msbtName, int labelIndex) { /*@B 0x6003DBD*/ throw null; }
-		private static string GetWordStr(string msbtName, string labelName) { /*@B 0x6003DBE*/ throw null; }
-		private static global::Dpr.Message.MessageGlossaryParseDataModel GetWordDataModel(string msbtName, int labelIndex) { /*@B 0x6003DBF*/ throw null; }
-		private static global::Dpr.Message.MessageGlossaryParseDataModel GetWordDataModel(string msbtName, string labelName) { /*@B 0x6003DC0*/ throw null; }
-		private static int GetLabelIndexByLabelName(string msbtName, string labelName) { /*@B 0x6003DC1*/ throw null; }
-		private static string GetLabelNameByIndex(string msbtName, int labelIndex) { /*@B 0x6003DC2*/ throw null; }
-		private static bool CheckEnableIndex(string msbtName, int labelIndex) { /*@B 0x6003DC3*/ throw null; }
+		public static void SetPocketchNameWord(int tagIndex, int appId) {
+            SetPocketchWord(tagIndex, appId + 20);
+        }
+		public static void SetGlossaryWord(int index, string msbtName, string labelName) {
+            SetGlossaryWord(index, msbtName, labelName, 1);
+        }
+		public static void SetGlossaryWord(int index, string msbtName, string labelName, int count) {
+            var dataModel = GetWordDataModel(msbtName, labelName);
+            if (dataModel == null)
+                return;
+            manager.TagWordBuffer.SetGlossaryWordParam(index, dataModel, count);
+        }
+		public static void SetGlossaryWord(int index, string msbtName, int labelIndex) {
+            SetGlossaryWord(index, msbtName, labelIndex, 1);
+        }
+		public static void SetGlossaryWord(int index, string msbtName, int labelIndex, int count) {
+            var dataModel = GetWordDataModel(msbtName, labelIndex);
+            if (dataModel == null)
+                return;
+            manager.TagWordBuffer.SetGlossaryWordParam(index, dataModel, count);
+        }
+		public static void SetGlossaryWordFromMsgFile(int index, global::Dpr.Message.MessageMsgFile msgFile, string label) {
+            if (msgFile != null) {
+                manager.TagWordBuffer.SetGlossaryWordParam(index, msgFile.GetNameDataModel(label));
+                return;
+            }
+            MessageHelper.EmitLog(string.Format("SetGlossaryWordFromMsgFile : MessageMsgFile is null!!! TagIndex {0} Label {1}", index, label), global::UnityEngine.LogType.Error);
+        }
+		public static void SetGlossaryWordFromMsgFile(int index, global::Dpr.Message.MessageMsgFile msgFile, int labelIndex) {
+            if (msgFile != null) {
+                manager.TagWordBuffer.SetGlossaryWordParam(index, msgFile.GetNameDataModelByIndex(labelIndex));
+                return;
+            }
+            MessageHelper.EmitLog(string.Format("SetGlossaryWordFromMsgFile : MessageMsgFile is null!!! TagIndex {0} LabelIndex {1}", index, labelIndex), global::UnityEngine.LogType.Error);
+        }
+		public static void SetStringWordFromMsgFile(int index, global::Dpr.Message.MessageMsgFile msgFile, string label) {
+            if (msgFile != null) {
+                manager.TagWordBuffer.SetStrWordParam(index, msgFile.GetNameStr(label));
+                return;
+            }
+            MessageHelper.EmitLog(string.Format("SetStringWordFromMsgFile : MsgFile is null!!! TagIndex {0} Label {1}", index, label), global::UnityEngine.LogType.Error);
+        }
+		public static void SetStringWordFromMsgFile(int index, global::Dpr.Message.MessageMsgFile msgFile, int labelIndex) {
+            if (msgFile != null) {
+                manager.TagWordBuffer.SetStrWordParam(index, msgFile.GetNameStr(labelIndex));
+                return;
+            }
+            MessageHelper.EmitLog(string.Format("SetStringWordFromMsgFile : MsgFile is null!!! TagIndex {0} LabelIndex {1}", index, labelIndex), global::UnityEngine.LogType.Error);
+        }
+		private static string GetWordStr(string msbtName, int labelIndex) {
+            return manager.GetNameMessage(msbtName, labelIndex);
+        }
+		private static string GetWordStr(string msbtName, string labelName) {
+            return manager.GetNameMessage(msbtName, labelName);
+        }
+		private static global::Dpr.Message.MessageGlossaryParseDataModel GetWordDataModel(string msbtName, int labelIndex) {
+            return manager.GetNameMessageDataModel(msbtName, labelIndex);
+        }
+		private static global::Dpr.Message.MessageGlossaryParseDataModel GetWordDataModel(string msbtName, string labelName) {
+            return manager.GetNameMessageDataModel(msbtName, labelName);
+        }
+		private static int GetLabelIndexByLabelName(string msbtName, string labelName) {
+            var msgFile = manager.GetMsgFile(msbtName);
+            if (msgFile == null)
+                return -1;
+            return msgFile.GetLabelIndex(labelName);
+        }
+		private static string GetLabelNameByIndex(string msbtName, int labelIndex) {
+            var msgFile = manager.GetMsgFile(msbtName);
+            if (msgFile == null)
+                return string.Empty;
+            return msgFile.GetLabel(labelIndex);
+        }
+		private static bool CheckEnableIndex(string msbtName, int labelIndex) {
+            var msgFile = manager.GetMsgFile(msbtName);
+            if (msgFile == null)
+                return false;
+            if (msgFile.GetTotalTextNum() <= labelIndex) {
+                MessageHelper.EmitLog(string.Format("{0} : Index over text num - Total Text Array Num : {1}", labelIndex, msgFile.GetTotalTextNum()), global::UnityEngine.LogType.Warning);
+                return false;
+            }
+            return true;
+        }
 		static MessageWordSetHelper() {
             // .cctor @01f9fb10 is a bare `ret`: the type has an (empty) static constructor, no initialisers.
         }
