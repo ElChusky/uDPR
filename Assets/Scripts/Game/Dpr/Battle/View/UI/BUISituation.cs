@@ -8,9 +8,9 @@ namespace Dpr.Battle.View.UI
 	{
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.Battle.View.UI.BUISituationButton[] _situationButtons;
-		private global::System.Collections.Generic.Dictionary<int, global::Dpr.Battle.Logic.BTL_POKEPARAM> _monsParams;
-		private global::System.Collections.Generic.Dictionary<int, string> _trainerNames;
-		private global::System.Collections.Generic.Dictionary<int, global::UnityEngine.UI.Image> _icons;
+		private global::System.Collections.Generic.Dictionary<int, global::Dpr.Battle.Logic.BTL_POKEPARAM> _monsParams = new global::System.Collections.Generic.Dictionary<int, global::Dpr.Battle.Logic.BTL_POKEPARAM>();
+		private global::System.Collections.Generic.Dictionary<int, string> _trainerNames = new global::System.Collections.Generic.Dictionary<int, string>();
+		private global::System.Collections.Generic.Dictionary<int, global::UnityEngine.UI.Image> _icons = new global::System.Collections.Generic.Dictionary<int, global::UnityEngine.UI.Image>();
 		public void Initialize() {
 			IsValid = false;
 
@@ -158,6 +158,6 @@ namespace Dpr.Battle.View.UI
 			BattleViewCore.Instance.UISystem.SwitchShowActionList(true, false, true);
 			BattleViewCore.Instance.UISystem.PlaySe(AK.EVENTS.UI_COMMON_CANCEL);
 		}
-		public BUISituation() { /*@B 0x6006107*/ throw null; }
+		public BUISituation() { }
 	}
 }

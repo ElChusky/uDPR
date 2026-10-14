@@ -16,7 +16,7 @@ namespace Dpr.Battle.View.UI
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIText _effectiveText;
 		public global::System.Nullable<global::Dpr.Battle.View.BTLV_WAZA_INFO> Info { get; private set; }
-		public float AnchorY { get { /*@B 0x60060AE*/ throw null; } }
+		public float AnchorY { get { return _ppText.transform.position.y; } }
 		public void Initialize(int index, global::System.Nullable<global::Dpr.Battle.View.BTLV_WAZA_INFO> info, global::UnityEngine.Sprite typeSprite = null, global::UnityEngine.Sprite effBgSprite = null, global::UnityEngine.Sprite effSprite = null, string affinityString = null, global::UnityEngine.Color[] ppColors = default) {
             _index = index;
             if (!info.HasValue)
@@ -62,7 +62,11 @@ namespace Dpr.Battle.View.UI
                 _effectiveImage.sprite = effSprite;
             }
         }
-		public void SetTextColor(global::UnityEngine.Color color) { /*@B 0x60060B0*/ throw null; }
-		public BUIWazaButton() { /*@B 0x60060B1*/ throw null; }
+		public void SetTextColor(global::UnityEngine.Color color) {
+            _text.color = color;
+            _effectiveText.color = color;
+            _effectiveImage.color = color;
+        }
+		public BUIWazaButton() { }
 	}
 }

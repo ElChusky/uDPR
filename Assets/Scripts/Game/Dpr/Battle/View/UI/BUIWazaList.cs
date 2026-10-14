@@ -23,31 +23,42 @@ namespace Dpr.Battle.View.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite[] _effectBgSprites;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color _wazaTextColor;
+		private global::UnityEngine.Color _wazaTextColor = global::UnityEngine.Color.black;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite[] _disableWazaSprites;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite _disableEffectBgSprite;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color _disableWazaTextColor;
+		private global::UnityEngine.Color _disableWazaTextColor = global::UnityEngine.Color.black;
 		[global::UnityEngine.SerializeField]
 		private global::TMPro.TextMeshProUGUI _yButtonText;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color _ppColorNormal;
+		private global::UnityEngine.Color _ppColorNormal = global::UnityEngine.Color.black;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color _ppColorWarning;
+		private global::UnityEngine.Color _ppColorWarning = global::UnityEngine.Color.yellow;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color _ppColorDanger;
+		private global::UnityEngine.Color _ppColorDanger = new global::UnityEngine.Color(1f, 0.5f, 0.3f);
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color _ppColorEmpty;
+		private global::UnityEngine.Color _ppColorEmpty = global::UnityEngine.Color.red;
 		private global::Dpr.Battle.Logic.BTL_ACTION_PARAM_OBJ _destActionParam;
 		private global::System.Collections.Generic.List<global::System.Nullable<global::Dpr.Battle.View.BTLV_WAZA_INFO>> _btlvWazaInfos;
 		private global::Dpr.Battle.Logic.BTL_POKEPARAM _btlPokeParam;
-		private int _wazaCount;
+		private int _wazaCount = -1;
 		private global::System.Collections.Generic.Dictionary<int, global::Dpr.Battle.View.UI.BUIWazaList.PrevWazaData> _prevUseWazas;
 		private int _pokeIndex;
 		public int Result { get; private set; }
-		public override void Startup() { /*@B 0x600615E*/ throw null; }
+		public override void Startup() {
+            base.Startup();
+            CurrentIndex = 0;
+            _wazaDescriptionButton.SetOnSubmit(OnSubmitWazaDescription);
+            foreach (var wazaButton in _wazaButtons)
+            {
+                wazaButton.SetOnSelected(() => OnSelectedWazaButton(wazaButton));
+                wazaButton.SetOnSubmit(() => OnSubmitWazaButton(wazaButton));
+            }
+            _btlvWazaInfos = new global::System.Collections.Generic.List<global::System.Nullable<global::Dpr.Battle.View.BTLV_WAZA_INFO>>();
+            _prevUseWazas = new global::System.Collections.Generic.Dictionary<int, global::Dpr.Battle.View.UI.BUIWazaList.PrevWazaData>();
+        }
 		public void Initialize(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, byte pokeIndex, global::Dpr.Battle.Logic.BTL_ACTION_PARAM_OBJ dest) {
             IsValid = false;
             Result = -1;
@@ -113,7 +124,26 @@ namespace Dpr.Battle.View.UI
             _btlPokeParam = null;
             _destActionParam = null;
         }
-		public override void OnUpdate(float deltaTime) { /*@B 0x6006161*/ throw null; }
+		public override void OnUpdate(float deltaTime) {
+            if (!IsFocus)
+                return;
+            if (global::Dpr.MsgWindow.MsgWindowManager.IsOpen)
+                return;
+            if (global::Dpr.NetworkUtils.NetworkManager.IsShowApplicationErrorDialog())
+                return;
+            if (global::Dpr.Battle.View.BtlvInput.GetPush(global::Dpr.UI.UIManager.ButtonA))
+                OnSubmit();
+            if (IsValid)
+                return;
+            if (global::Dpr.Battle.View.BtlvInput.GetPush(global::Dpr.UI.UIManager.StickLDown) || global::Dpr.Battle.View.BtlvInput.GetRepeat(global::Dpr.UI.UIManager.StickLDown))
+                PreparaNext(true);
+            if (global::Dpr.Battle.View.BtlvInput.GetPush(global::Dpr.UI.UIManager.StickLUp) || global::Dpr.Battle.View.BtlvInput.GetRepeat(global::Dpr.UI.UIManager.StickLUp))
+                PreparaNext(false);
+            if (global::Dpr.Battle.View.BtlvInput.GetPush(global::Dpr.UI.UIManager.ButtonB))
+                OnCancel();
+            if (global::Dpr.Battle.View.BtlvInput.GetPush(global::Dpr.UI.UIManager.ButtonY))
+                OnSubmitWazaDescription();
+        }
 		protected override void PreparaNext(bool isForward) {
             if (IsValid)
                 return;
@@ -125,8 +155,17 @@ namespace Dpr.Battle.View.UI
             CurrentIndex = Mathe.Rewind(CurrentIndex + (isForward ? 1 : -1), 0, lastIndex);
             SelectButton(_wazaButtons, CurrentIndex, true);
         }
-		protected override void OnShow() { /*@B 0x6006163*/ throw null; }
-		protected override void OnHide() { /*@B 0x6006164*/ throw null; }
+		protected override void OnShow() {
+            base.OnShow();
+            SelectButton(_wazaButtons, CurrentIndex, false);
+            global::Dpr.Battle.View.BattleViewCore.Instance.UISystem.CursorFrame.SetActive(true);
+        }
+		protected override void OnHide() {
+            base.OnHide();
+            var wazaDescription = global::Dpr.Battle.View.BattleViewCore.Instance.UISystem.WazaDescription;
+            if (wazaDescription)
+                wazaDescription.Hide();
+        }
 		public void SetSelect(int num) {
             CurrentIndex = num;
         }
@@ -165,9 +204,39 @@ namespace Dpr.Battle.View.UI
             var info = button.Info.Value;
             wazaDesc.Initialize(button.Info.Value, button.AnchorY);
         }
-		private void OnSubmitWazaButton(global::Dpr.Battle.View.UI.BUIWazaButton button) { /*@B 0x6006169*/ throw null; }
-		private void OnSubmit() { /*@B 0x600616A*/ throw null; }
-		private void OnCancel() { /*@B 0x600616B*/ throw null; }
+		private void OnSubmitWazaButton(global::Dpr.Battle.View.UI.BUIWazaButton button) {
+            _destActionParam.value.fight_pokeID = _btlPokeParam.GetID();
+            _destActionParam.value.fight_targetPos = 5;
+            _destActionParam.value.fight_cmd = 1;
+            _destActionParam.value.fight_waza = (ushort)_btlPokeParam.WAZA_GetID((byte)button.Index);
+            _destActionParam.value.fight_wazaInfoFlag = false;
+            _destActionParam.value.fight_gFlag = false;
+            Result = button.Index;
+        }
+		private void OnSubmit() {
+            var button = _wazaButtons[CurrentIndex];
+            var info = button.Info.Value;
+            if (!global::Pml.WazaData.WazaDataSystem.IsValid(info.WazaNo))
+                return;
+            if (info.PP == 0 && button.Info.HasValue)
+            {
+                global::Dpr.Battle.View.BattleViewCore.Instance.UISystem.PlaySe(global::AK.EVENTS.UI_COMMON_BEEP);
+            }
+            else
+            {
+                UpdateSelectedWazaNo(_pokeIndex, _btlPokeParam.GetID(), info.WazaNo);
+                button.Submit();
+                IsValid = true;
+            }
+        }
+		private void OnCancel() {
+            _destActionParam.value.fight_cmd = 0;
+            Result = -1;
+            IsValid = true;
+            var viewCore = global::Dpr.Battle.View.BattleViewCore.Instance;
+            viewCore.UISystem.CursorFrame.SetActive(false);
+            viewCore.UISystem.PlaySe(global::AK.EVENTS.UI_COMMON_CANCEL);
+        }
 		private void SetYbuttonText(bool isDescriptionShow) {
             _yButtonText.text = BattleStr.Instance.GetFormatUIText(isDescriptionShow ? WazaDescriptionCloseMessageLabel : WazaDescriptionOpenMessageLabel);
         }
@@ -178,9 +247,26 @@ namespace Dpr.Battle.View.UI
 		public void ExecuteCurrentButton() {
             OnSubmit();
         }
-		private global::Pml.WazaNo GetSelectedWazaNo(int pokemonIndex, int id) { /*@B 0x600616F*/ throw null; }
-		private void UpdateSelectedWazaNo(int pokemonIndex, int id, global::Pml.WazaNo selectdWazaNo) { /*@B 0x6006170*/ throw null; }
-		public BUIWazaList() { /*@B 0x6006171*/ throw null; }
+		private global::Pml.WazaNo GetSelectedWazaNo(int pokemonIndex, int id) {
+            if (_prevUseWazas.ContainsKey(pokemonIndex))
+            {
+                var data = _prevUseWazas[pokemonIndex];
+                if (data.id == id)
+                    return data.wazaNo;
+            }
+            return global::Pml.WazaNo.NULL;
+        }
+		private void UpdateSelectedWazaNo(int pokemonIndex, int id, global::Pml.WazaNo selectdWazaNo) {
+            if (_prevUseWazas.ContainsKey(pokemonIndex))
+            {
+                var data = _prevUseWazas[pokemonIndex];
+                data.wazaNo = selectdWazaNo;
+                data.id = id;
+                return;
+            }
+            _prevUseWazas.Add(pokemonIndex, new global::Dpr.Battle.View.UI.BUIWazaList.PrevWazaData(selectdWazaNo, id));
+        }
+		public BUIWazaList() { }
 		public enum ColorForPP
 		{
 			Normal = 0,
@@ -192,7 +278,10 @@ namespace Dpr.Battle.View.UI
 		{
 			public global::Pml.WazaNo wazaNo;
 			public int id;
-			public PrevWazaData(global::Pml.WazaNo wazaNo, int id) { /*@B 0x600B1EC*/ throw null; }
+			public PrevWazaData(global::Pml.WazaNo wazaNo, int id) {
+                this.wazaNo = wazaNo;
+                this.id = id;
+            }
 		}
 	}
 }

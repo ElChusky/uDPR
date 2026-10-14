@@ -24,12 +24,12 @@ namespace Dpr.Battle.View.UI
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.Battle.View.UI.BUIButton _useButton;
 		private global::System.Collections.Generic.List<global::Dpr.Item.ItemInfo> _balls;
-		private global::System.Collections.Generic.Dictionary<global::Pml.ItemNo, global::UnityEngine.Sprite> _ballSprites;
+		private global::System.Collections.Generic.Dictionary<global::Pml.ItemNo, global::UnityEngine.Sprite> _ballSprites = new global::System.Collections.Generic.Dictionary<global::Pml.ItemNo, global::UnityEngine.Sprite>();
 		private global::System.Action _callBack;
 		private int firstIndex;
 		private bool isAction;
 		[global::UnityEngine.SerializeField]
-		private global::System.Collections.Generic.List<global::UnityEngine.Sprite> _sprites;
+		private global::System.Collections.Generic.List<global::UnityEngine.Sprite> _sprites = new global::System.Collections.Generic.List<global::UnityEngine.Sprite>();
 		public global::Pml.ItemNo Result { get; private set; }
 		public bool Initialize(global::System.Collections.Generic.List<global::Dpr.Item.ItemInfo> balls, global::System.Action callback) {
             CurrentIndex = 0;
@@ -75,7 +75,16 @@ namespace Dpr.Battle.View.UI
             if (BtlvInput.GetPush(Dpr.UI.UIManager.ButtonX, true))
                 OnCancel();
         }
-		protected override void OnShow() { /*@B 0x60060EE*/ throw null; }
+		protected override void OnShow() {
+            base.OnShow();
+            isAction = false;
+            var cursor = global::Dpr.Battle.View.BattleViewCore.Instance.UISystem.CursorFrame;
+            cursor.SetActive(true);
+            cursor.transform.SetParent(_useButton.transform);
+            (cursor.transform as global::UnityEngine.RectTransform).sizeDelta = global::UnityEngine.Vector3.zero;
+            cursor.transform.localPosition = global::UnityEngine.Vector3.zero;
+            (cursor.transform as global::UnityEngine.RectTransform).anchoredPosition = global::UnityEngine.Vector2.zero;
+        }
 		public global::Dpr.Battle.View.UI.BUIPokeBallList.BallListState SetOpenBallInfo(bool enableCallback = true) {
             CurrentIndex = firstIndex;
             return SetBallInfo(enableCallback);
@@ -148,7 +157,7 @@ namespace Dpr.Battle.View.UI
             uiSystem.CursorFrame.SetActive(false);
             uiSystem.PlaySe(AK.EVENTS.UI_COMMON_MENU_CLOSE);
         }
-		public BUIPokeBallList() { /*@B 0x60060F7*/ throw null; }
+		public BUIPokeBallList() { }
 		public enum BallListState
 		{
 			Empty = 0,

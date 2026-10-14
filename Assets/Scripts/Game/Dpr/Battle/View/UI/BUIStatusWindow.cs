@@ -46,7 +46,7 @@ namespace Dpr.Battle.View.UI
 		private bool _enableBallBar;
 		private bool _isTag;
 		private float _pokePlateYpos;
-		private global::UnityEngine.Vector2 _originalSize;
+		private global::UnityEngine.Vector2 _originalSize = global::UnityEngine.Vector2.zero;
 		private global::Dpr.Battle.View.Systems.BattleViewSystem.BattleViewSide _side;
 		private global::UnityEngine.Sprite[] _ballStateSprites;
 		private bool _isInitialized;
@@ -58,7 +58,7 @@ namespace Dpr.Battle.View.UI
 		private const float _ballBarHalfWidth = 114f;
 		private const float _hpDuration = 0.7f;
 		public bool DoDisplay { get; private set; }
-		public bool IsHpBarPlaying { get { /*@B 0x600611A*/ throw null; } }
+		public bool IsHpBarPlaying { get { return _hpBar.IsAnimation; } }
 		public global::UnityEngine.GameObject BallBarObject { get { return this._ballBar; } }
 		public bool isInitialized { get { return this._isInitialized; } }
 		public bool isReservationClose { get; set; }
@@ -314,6 +314,6 @@ namespace Dpr.Battle.View.UI
             _expSlider.maxValue = nextExp - minExp;
             _expSlider.value = coreParam.GetExp() - minExp;
         }
-		public BUIStatusWindow() { /*@B 0x6006133*/ throw null; }
+		public BUIStatusWindow() { }
 	}
 }

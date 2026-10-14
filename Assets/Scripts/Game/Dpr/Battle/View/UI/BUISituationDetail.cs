@@ -51,15 +51,58 @@ namespace Dpr.Battle.View.UI
 		private global::System.Collections.Generic.List<global::Dpr.Battle.Logic.BTL_POKEPARAM> _pokeList;
 		private global::System.Collections.Generic.List<string> _trainerNames;
 		private global::System.Collections.Generic.List<global::UnityEngine.UI.Image> _icons;
-		private readonly (string msgID, global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID valueID)[] _paramIDs;
-		private global::System.Collections.Generic.List<(string name, string content, string description)> _statusTexts;
+		private readonly (string msgID, global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID valueID)[] _paramIDs = new (string msgID, global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID valueID)[]
+        {
+            ("msg_ui_btl_kougeki", global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID.BPP_ATTACK_RANK),
+            ("msg_ui_btl_bougyo", global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID.BPP_DEFENCE_RANK),
+            ("msg_ui_btl_tokukou", global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID.BPP_SP_ATTACK_RANK),
+            ("msg_ui_btl_tokubou", global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID.BPP_SP_DEFENCE_RANK),
+            ("msg_ui_btl_subayasa", global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID.BPP_AGILITY_RANK),
+            ("msg_ui_btl_meichu", global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID.BPP_HIT_RATIO),
+            ("msg_ui_btl_kaihi", global::Dpr.Battle.Logic.BTL_POKEPARAM.ValueID.BPP_AVOID_RATIO),
+        };
+		private global::System.Collections.Generic.List<(string name, string content, string description)> _statusTexts = new global::System.Collections.Generic.List<(string name, string content, string description)>();
 		private const string BTL_STATE_HEADER = "BTR_STATE_";
 		private const string BTL_STATE_NAME_FOOTER = "_01";
 		private const string BTL_STATE_DSCRIPTION_FOOTER = "_02";
-		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.EffectType, string> _fieldIDs;
-		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlWeather, string> _weatherIDs;
-		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlGround, string> _groundIDs;
-		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlSideEffect, string> _sideIDs;
+		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.EffectType, string> _fieldIDs = new global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.EffectType, string>
+        {
+            { global::Dpr.Battle.Logic.EffectType.EFF_TRICKROOM, "08" },
+            { global::Dpr.Battle.Logic.EffectType.EFF_JURYOKU, "29" },
+            { global::Dpr.Battle.Logic.EffectType.EFF_FUIN, "46" },
+            { global::Dpr.Battle.Logic.EffectType.EFF_WONDERROOM, "10" },
+            { global::Dpr.Battle.Logic.EffectType.EFF_MAGICROOM, "09" },
+            { global::Dpr.Battle.Logic.EffectType.EFF_FAIRY_LOCK, "65" },
+        };
+		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlWeather, string> _weatherIDs = new global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlWeather, string>
+        {
+            { global::Dpr.Battle.Logic.BtlWeather.BTL_WEATHER_SHINE, "01" },
+            { global::Dpr.Battle.Logic.BtlWeather.BTL_WEATHER_RAIN, "02" },
+            { global::Dpr.Battle.Logic.BtlWeather.BTL_WEATHER_SNOW, "04" },
+            { global::Dpr.Battle.Logic.BtlWeather.BTL_WEATHER_SAND, "03" },
+            { global::Dpr.Battle.Logic.BtlWeather.BTL_WEATHER_STORM, "70" },
+        };
+		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlGround, string> _groundIDs = new global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlGround, string>
+        {
+            { global::Dpr.Battle.Logic.BtlGround.BTL_GROUND_PHYCHO, "72" },
+        };
+		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlSideEffect, string> _sideIDs = new global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlSideEffect, string>
+        {
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_REFLECTOR, "45" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_HIKARINOKABE, "44" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_SINPINOMAMORI, "31" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_SIROIKIRI, "30" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_OIKAZE, "19" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_OMAJINAI, "20" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_MAKIBISI, "48" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_DOKUBISI, "37" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_STEALTHROCK, "32" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_RAINBOW, "66" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_BURNING, "68" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_MOOR, "67" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_NEBANEBANET, "40" },
+            { global::Dpr.Battle.Logic.BtlSideEffect.BTL_SIDEEFF_AURORAVEIL, "74" },
+        };
 		public void Initialize(global::System.Collections.Generic.List<global::Dpr.Battle.Logic.BTL_POKEPARAM> pokeList, global::System.Collections.Generic.List<string> trainerNames, global::System.Collections.Generic.List<global::UnityEngine.UI.Image> icons, int index) {
 			_pokeList = pokeList;
 			_trainerNames = trainerNames;
@@ -357,7 +400,7 @@ namespace Dpr.Battle.View.UI
 			uiSystem.WazaList.Hide(false, null);
 			uiSystem.PlaySe(AK.EVENTS.UI_COMMON_MENU_CLOSE);
 		}
-		public BUISituationDetail() { /*@B 0x6006115*/ throw null; }
+		public BUISituationDetail() { }
 		private enum BattleEffectIndex
 		{
 			TOKUSEI = 0,

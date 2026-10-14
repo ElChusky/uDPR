@@ -38,6 +38,6 @@ namespace Dpr.Battle.View.UI
 			_statusIcon.enabled = btlParam.GetPokeSick() != Pml.PokePara.Sick.NONE;
 			return true;
 		}
-		public BUISituationButton() { /*@B 0x600609C*/ throw null; }
+		public BUISituationButton() { }
 	}
 }

@@ -31,7 +31,7 @@ namespace Dpr.Battle.View.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite[] _commandTimeSprite;
 		[global::UnityEngine.SerializeField]
-		private float _showSeconds;
+		private float _showSeconds = 3f;
 		[global::UnityEngine.SerializeField]
 		private uint _gameTimeSeccond;
 		[global::UnityEngine.SerializeField]
@@ -197,7 +197,7 @@ namespace Dpr.Battle.View.UI
 				_commandTimeShowWait = 0.0f;
 			}
 		}
-		public BUICommTime() { /*@B 0x60060D8*/ throw null; }
+		public BUICommTime() { }
 		private enum SpriteKind
 		{
 			Rest60 = 0,

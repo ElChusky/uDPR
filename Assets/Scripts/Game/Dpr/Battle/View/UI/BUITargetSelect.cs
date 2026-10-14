@@ -9,7 +9,7 @@ namespace Dpr.Battle.View.UI
 {
 	public class BUITargetSelect : global::Dpr.Battle.View.UI.BattleViewUICanvasBase
 	{
-		private static global::Dpr.Battle.Logic.BtlvPos[] _searchOrder;
+		private static global::Dpr.Battle.Logic.BtlvPos[] _searchOrder = new global::Dpr.Battle.Logic.BtlvPos[] { global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_FAR_2, global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_FAR_1, global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_NEAR_1, global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_NEAR_2 };
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.HeaderAttribute("IndexをPml.Btlvposに合わせる")]
 		private global::Dpr.Battle.View.UI.BUITargetButton[] _targetButtons;
@@ -18,14 +18,14 @@ namespace Dpr.Battle.View.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image[] _boardImage;
 		private global::Dpr.Battle.Logic.BTL_ACTION_PARAM_OBJ _destActionParam;
-		private global::Dpr.Battle.Logic.BtlvPos _actionVPos;
-		private global::Pml.WazaData.WazaTarget _targetType;
+		private global::Dpr.Battle.Logic.BtlvPos _actionVPos = global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_NUM;
+		private global::Pml.WazaData.WazaTarget _targetType = global::Pml.WazaData.WazaTarget.TARGET_MAX;
 		[global::UnityEngine.SerializeField]
-		private global::Pml.WazaData.WazaTarget _overrideTargetType;
+		private global::Pml.WazaData.WazaTarget _overrideTargetType = global::Pml.WazaData.WazaTarget.TARGET_MAX;
 		private global::System.Collections.Generic.Dictionary<int, global::Dpr.Battle.Logic.BtlvPos> _prevTargetPos;
 		private int _pokeIndex;
-		private bool _isSingleTarget;
-		private global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlvPos, global::Dpr.Battle.Logic.BTL_POKEPARAM> currentFieldPokeParams;
+		private bool _isSingleTarget = true;
+		private global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlvPos, global::Dpr.Battle.Logic.BTL_POKEPARAM> currentFieldPokeParams = new global::System.Collections.Generic.Dictionary<global::Dpr.Battle.Logic.BtlvPos, global::Dpr.Battle.Logic.BTL_POKEPARAM>();
 		public global::Dpr.Battle.Logic.BtlPokePos Result { get; private set; }
 		public override void Startup() {
 			base.Startup();
@@ -353,8 +353,8 @@ namespace Dpr.Battle.View.UI
 			IsValid = true;
 			BattleViewCore.Instance.UISystem.PlaySe(AK.EVENTS.UI_COMMON_CANCEL);
 		}
-		public BUITargetSelect() { /*@B 0x6006143*/ throw null; }
-		static BUITargetSelect() { /*@B 0x6006144*/ throw null; }
+		public BUITargetSelect() { }
+		static BUITargetSelect() { }
 		private enum BoardIndex
 		{
 			Up = 0,

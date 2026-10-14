@@ -15,6 +15,6 @@ namespace Dpr.Battle.View.UI
 		public void SetContenrsText(string text) {
 			_contentsText.text = text;
 		}
-		public BUISituationDescriptionButton() { /*@B 0x60060A0*/ throw null; }
+		public BUISituationDescriptionButton() { }
 	}
 }
