@@ -15,7 +15,7 @@ namespace Dpr.Battle.Logic
 		public global::Pml.Sex trainerSex;
 		public byte trainerGold;
 		public uint ai_bit;
-		public ushort[] useItem;
+		public ushort[] useItem = new ushort[4];
 		public string modelID;
 		public int colorID;
 		public void Clear() {
@@ -36,6 +36,6 @@ namespace Dpr.Battle.Logic
 			modelID = null;
 			colorID = 0;
 		}
-		public TRAINER_DATA() { /*@B 0x60067D0*/ throw null; }
+		public TRAINER_DATA() { }
 	}
 }

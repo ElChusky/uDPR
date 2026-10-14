@@ -5,8 +5,14 @@ namespace Dpr.Battle.Logic
 	{
 		public ushort ballItem;
 		public bool ballValid;
-		public static void Initialize(global::Dpr.Battle.Logic.TamaHiroiData data) { /*@B 0x600755A*/ throw null; }
-		public static void Copy(global::Dpr.Battle.Logic.TamaHiroiData dst, global::Dpr.Battle.Logic.TamaHiroiData src) { /*@B 0x600755B*/ throw null; }
+		public static void Initialize(global::Dpr.Battle.Logic.TamaHiroiData data) {
+            data.ballItem = 0;
+            data.ballValid = false;
+        }
+		public static void Copy(global::Dpr.Battle.Logic.TamaHiroiData dst, global::Dpr.Battle.Logic.TamaHiroiData src) {
+            dst.ballItem = src.ballItem;
+            dst.ballValid = src.ballValid;
+        }
 		public TamaHiroiData() { }
 	}
 }

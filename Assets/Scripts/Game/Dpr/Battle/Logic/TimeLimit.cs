@@ -3,11 +3,27 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class TimeLimit
 	{
-		private ushort[] m_clientLimitTime;
-		public TimeLimit() { /*@B 0x6007CE5*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.TimeLimit src) { /*@B 0x6007CE6*/ throw null; }
-		public void Clear() { /*@B 0x6007CE7*/ throw null; }
-		public ushort GetClientLimitTime(byte clientID) { /*@B 0x6007CE8*/ throw null; }
-		public void SetClientLimitTime(byte clientID, ushort time) { /*@B 0x6007CE9*/ throw null; }
+		private ushort[] m_clientLimitTime = new ushort[(int)BTL_CLIENT_ID.BTL_CLIENT_NUM];
+		public TimeLimit() { }
+		public void CopyFrom(in global::Dpr.Battle.Logic.TimeLimit src) {
+            for (int i = 0; i < m_clientLimitTime.Length; i++)
+                m_clientLimitTime[i] = src.m_clientLimitTime[i];
+        }
+		public void Clear() {
+            for (int i = 0; i < m_clientLimitTime.Length; i++)
+                m_clientLimitTime[i] = 0;
+        }
+		public ushort GetClientLimitTime(byte clientID) {
+            if (clientID >= m_clientLimitTime.Length)
+                return 0;
+
+            return m_clientLimitTime[clientID];
+        }
+		public void SetClientLimitTime(byte clientID, ushort time) {
+            if (clientID >= m_clientLimitTime.Length)
+                return;
+
+            m_clientLimitTime[clientID] = time;
+        }
 	}
 }

@@ -90,7 +90,7 @@ namespace Dpr.Battle.Logic
                 for (int i = 0; i < args.Length; i++)
                     args[i] = 0;
             }
-			public Param() { /*@B 0x600B69A*/ throw null; }
+			public Param() { }
 		}
 	}
 }

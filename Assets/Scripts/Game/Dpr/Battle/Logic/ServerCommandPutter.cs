@@ -590,7 +590,12 @@ namespace Dpr.Battle.Logic
 		private static void SCQUE_PUT_ACT_Safari(global::Dpr.Battle.Logic.ServerCommandQueue queue, byte pokeID, byte param0, byte param1) {
             queue.Put_Common(ServerCommand.ACT_SAFARI, new int[] { pokeID, param0, param1 });
         }
-		public ServerCommandPutter(in global::Dpr.Battle.Logic.ServerCommandPutter.SetupParam param) { /*@B 0x6007418*/ throw null; }
+		public ServerCommandPutter(in global::Dpr.Battle.Logic.ServerCommandPutter.SetupParam param) {
+            m_pMainModule = param.pMainModule;
+            m_pBattleEnv = param.pBattleEnv;
+            m_pQueue = param.pQueue;
+            m_pExecutor = param.pServerCmdExecutor;
+        }
 		public bool Message(in global::Dpr.Battle.Logic.StrParam strParam) {
             ushort strID = strParam.GetStrID();
             ushort argsCount = strParam.GetArgsCount();
@@ -1969,10 +1974,10 @@ namespace Dpr.Battle.Logic
 			public ushort pokeID;
 			public ushort itemno;
 			public bool needTokuseiWindowDisplay;
-			public ushort cmdQueuePos_TokuseiWindowIn;
-			public ushort cmdQueuePos_ItemUseAction;
-			public ushort cmdQueuePos_TokuseiWindowOut;
-			public UseItemCommandParam() { /*@B 0x600B697*/ throw null; }
+			public ushort cmdQueuePos_TokuseiWindowIn = ServerCommandQueue.INVALID_PTR_VALUE;
+			public ushort cmdQueuePos_ItemUseAction = ServerCommandQueue.INVALID_PTR_VALUE;
+			public ushort cmdQueuePos_TokuseiWindowOut = ServerCommandQueue.INVALID_PTR_VALUE;
+			public UseItemCommandParam() { }
 		}
 	}
 }

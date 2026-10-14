@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec_Category_SimpleSick : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec_Category_SimpleSick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007207*/ throw null; }
+		public Section_WazaExec_Category_SimpleSick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_Category_SimpleSick.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_Category_SimpleSick.Description description) {
 			if (description.targets.GetCount() != 0)
 			{
@@ -47,7 +47,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.PokeSet targets;
-			public Description() { /*@B 0x600B66D*/ throw null; }
+			public Description() {
+				wazaParam = null;
+				attacker = null;
+				targets = null;
+			}
 		}
 		public class Result
 		{

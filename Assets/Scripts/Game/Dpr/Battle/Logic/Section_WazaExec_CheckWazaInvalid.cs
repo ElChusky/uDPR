@@ -18,7 +18,7 @@ namespace Dpr.Battle.Logic
 					return false;
 			}
 		}
-		public Section_WazaExec_CheckWazaInvalid(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600722F*/ throw null; }
+		public Section_WazaExec_CheckWazaInvalid(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_CheckWazaInvalid.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_CheckWazaInvalid.Description description) {
 			pResult.isWazaInvalid = false;
 			description.targets.RemoveDisablePoke(GetBattleEnv().GetPosPoke());
@@ -262,7 +262,17 @@ namespace Dpr.Battle.Logic
 			public bool isDelayAttack;
 			public global::Dpr.Battle.Logic.ActionRecorder actionRecorder;
 			public global::Dpr.Battle.Logic.DmgAffRec affinityRecorder;
-			public Description() { /*@B 0x600B679*/ throw null; }
+			public Description() {
+				actionDesc = null;
+				wazaParam = null;
+				attacker = null;
+				targets = null;
+				isMigawariCheckDisable = false;
+				isTypeAffCheckForce = false;
+				isDelayAttack = false;
+				actionRecorder = null;
+				affinityRecorder = null;
+			}
 		}
 		public class Result
 		{

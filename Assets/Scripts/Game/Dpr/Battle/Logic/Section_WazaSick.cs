@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaSick : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaSick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007274*/ throw null; }
+		public Section_WazaSick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaSick.Result pResult, in global::Dpr.Battle.Logic.Section_WazaSick.Description description) {
 			pResult.isSuccess = false;
 			StrParam specialMessage = new StrParam();
@@ -56,7 +56,17 @@ namespace Dpr.Battle.Logic
 			public bool isFailResultDisplay_ByBasicRules;
 			public bool isFailResultDisplay_BySpecialFactors;
 			public bool isOtherEffectDisplayed;
-			public Description() { /*@B 0x600B68D*/ throw null; }
+			public Description() {
+				attacker = null;
+				target = null;
+				sick = global::Pml.WazaData.WazaSick.WAZASICK_NONE;
+				sickCont = default(BTL_SICKCONT);
+				cause = SickCause.OTHER;
+				actionSerialNo = 0;
+				isFailResultDisplay_ByBasicRules = false;
+				isFailResultDisplay_BySpecialFactors = false;
+				isOtherEffectDisplayed = false;
+			}
 		}
 		public class Result
 		{

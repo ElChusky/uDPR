@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec_Category_PushOut : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec_Category_PushOut(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60071FC*/ throw null; }
+		public Section_WazaExec_Category_PushOut(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_Category_PushOut.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_Category_PushOut.Description description) {
 			ushort effectNo = GetEventLauncher().Event_CheckPushOutEffectNo(description.attacker, description.waza);
 			description.targets.SeekStart();
@@ -35,7 +35,11 @@ namespace Dpr.Battle.Logic
 			public global::Pml.WazaNo waza;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.PokeSet targets;
-			public Description() { /*@B 0x600B667*/ throw null; }
+			public Description() {
+				waza = global::Pml.WazaNo.NULL;
+				attacker = null;
+				targets = null;
+			}
 		}
 		public class Result
 		{

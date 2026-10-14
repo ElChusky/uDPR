@@ -65,7 +65,15 @@ namespace Dpr.Battle.Logic
 			private bool m_fSizeOver;
 			private byte dmy;
 			private unsafe byte* m_buf;
-			public Data() { /*@B 0x600B721*/ throw null; }
+			public Data() {
+                m_writePtr = 0;
+                m_fSizeOver = false;
+                dmy = 0;
+                unsafe
+                {
+                    m_buf = (byte*)BattleUnmanagedMem.Malloc(3072);
+                }
+            }
 			public unsafe void Write(void* data, uint size) {
                 // 01f7722c: only data whose timing code has the "record target" bit (bit 7) is stored; the timing byte is skipped
                 if (size != 0 && !m_fSizeOver && (*(byte*)data & 0x80) != 0)
@@ -97,11 +105,21 @@ namespace Dpr.Battle.Logic
 			private unsafe byte* m_recordData;
 			private uint m_dataSize;
 			private bool m_fReadOver;
-			private uint[] m_readPtr;
-			private unsafe byte*[] m_readBuf;
-			public void ResetError() { /*@B 0x600B726*/ throw null; }
+			private uint[] m_readPtr = new uint[5];
+			private unsafe byte*[] m_readBuf = new byte*[5];
+			public void ResetError() {
+                m_fReadOver = false;
+            }
 			public void SetDataSize(uint size) { this.m_dataSize = size; }
-			public Reader() { /*@B 0x600B728*/ throw null; }
+			public Reader() {
+                unsafe
+                {
+                    m_recordData = null;
+                    byte* buf = (byte*)BattleUnmanagedMem.Malloc(m_readBuf.Length * 64);
+                    for (int i = 0; i < m_readBuf.Length; i++)
+                        m_readBuf[i] = buf + i * 64;
+                }
+            }
 			public unsafe void Init(void* recordData, uint dataSize) {
                 m_recordData = (byte*)recordData;
                 m_dataSize = dataSize;
@@ -124,7 +142,79 @@ namespace Dpr.Battle.Logic
 
                 return false;
             } }
-			public unsafe global::Dpr.Battle.Logic.BTL_ACTION_PARAM* ReadAction(byte clientID, out byte numAction, out bool fChapter, out bool isBtlInCmd) { /*@B 0x600B72C*/ throw null; }
+			public unsafe global::Dpr.Battle.Logic.BTL_ACTION_PARAM* ReadAction(byte clientID, out byte numAction, out bool fChapter, out bool isBtlInCmd) {
+                numAction = 0;
+                isBtlInCmd = false;
+                BTL_ACTION_PARAM* action;
+                if (!m_fReadOver)
+                {
+                    ref uint readPtr = ref m_readPtr[clientID];
+                    while (readPtr < m_dataSize)
+                    {
+                        ReadRecFieldTag(m_recordData[(int)readPtr], out FieldType type, out byte numClient, out fChapter);
+                        readPtr++;
+                        if (readPtr > m_dataSize)
+                            break;
+
+                        if (type == FieldType.BTL_RECFIELD_ACTION)
+                        {
+                            if (numClient < 1 || numClient > (int)BTL_CLIENT_ID.BTL_CLIENT_NUM)
+                                break;
+
+                            BTL_ACTION_PARAM* result = null;
+                            for (int i = 0; i < numClient; i++)
+                            {
+                                ReadClientActionTag(m_recordData[(int)readPtr++], out byte readClientID, out byte readNumAction);
+                                if (readPtr >= m_dataSize)
+                                    break;
+
+                                if (readClientID == clientID)
+                                {
+                                    // Shipped quirk @01f776cc: the source pointer is the byte VALUE at m_recordData[readPtr] (ldrb), not its address.
+                                    Unity.Collections.LowLevel.Unsafe.UnsafeUtility.MemCpy(m_readBuf[clientID], (void*)m_recordData[(int)readPtr], readNumAction * sizeof(BTL_ACTION_PARAM));
+                                    result = (BTL_ACTION_PARAM*)m_readBuf[clientID];
+                                    readPtr += (uint)(readNumAction * sizeof(BTL_ACTION_PARAM));
+                                    numAction = readNumAction;
+                                }
+                                else
+                                {
+                                    readPtr += (uint)(readNumAction * sizeof(BTL_ACTION_PARAM));
+                                }
+                            }
+
+                            if (result != null)
+                                return result;
+                        }
+                        else if (type == FieldType.BTL_RECFIELD_BTLSTART)
+                        {
+                            isBtlInCmd = true;
+                        }
+                        else if (type == FieldType.BTL_RECFIELD_TIMEOVER)
+                        {
+                            action = (BTL_ACTION_PARAM*)m_readBuf[clientID];
+                            BTL_ACTION.SetRecPlayOver(ref *action);
+                            numAction = 1;
+                            fChapter = false;
+                            return action;
+                        }
+                        else
+                        {
+                            break;
+                        }
+
+                        if (readPtr >= m_dataSize)
+                            break;
+                    }
+
+                    m_fReadOver = true;
+                }
+
+                action = (BTL_ACTION_PARAM*)m_readBuf[clientID];
+                BTL_ACTION.SetRecPlayError(ref *action);
+                numAction = 1;
+                fChapter = false;
+                return action;
+            }
 			public uint GetTurnCount() { unsafe {
                 uint turnCount = 0;
                 uint readPtr = 0;
@@ -160,7 +250,7 @@ namespace Dpr.Battle.Logic
 		}
 		public sealed class SendTool
 		{
-			private static readonly int BUFSIZE;
+			private static readonly int BUFSIZE = 1000;
 			private byte m_writePtr;
 			private byte m_clientBit;
 			private byte m_numClients;
@@ -168,7 +258,12 @@ namespace Dpr.Battle.Logic
 			private bool m_fChapter;
 			private bool m_fError;
 			private unsafe byte* m_buffer;
-			public SendTool() { /*@B 0x600B72F*/ throw null; }
+			public SendTool() {
+                unsafe
+                {
+                    m_buffer = (byte*)BattleUnmanagedMem.Malloc(BUFSIZE);
+                }
+            }
 			public void Init(bool fChapter) { unsafe {
                 Unity.Collections.LowLevel.Unsafe.UnsafeUtility.MemSet(m_buffer, 0, BUFSIZE);
                 m_fError = false;
@@ -239,8 +334,25 @@ namespace Dpr.Battle.Logic
                 m_fChapter = false;
                 m_fError = false;
             }
-			public unsafe bool RestoreFwd(ref uint rp, out byte clientID, out byte numAction, global::Dpr.Battle.Logic.BTL_ACTION_PARAM* action) { /*@B 0x600B737*/ throw null; }
-			static SendTool() { /*@B 0x600B738*/ throw null; }
+			public unsafe bool RestoreFwd(ref uint rp, out byte clientID, out byte numAction, global::Dpr.Battle.Logic.BTL_ACTION_PARAM* action) {
+                if (rp == 0)
+                    rp = (uint)HeaderIndex.HEADER_SIZE;
+
+                if (rp < m_writePtr)
+                {
+                    ReadClientActionTag(m_buffer[(int)rp], out clientID, out numAction);
+                    rp++;
+                    uint size = (uint)(numAction * sizeof(BTL_ACTION_PARAM));
+                    Unity.Collections.LowLevel.Unsafe.UnsafeUtility.MemCpy(action, m_buffer + (int)rp, size);
+                    rp += size;
+                    return true;
+                }
+
+                clientID = (byte)BTL_CLIENT_ID.BTL_CLIENT_NULL;
+                numAction = 0;
+                return false;
+            }
+			static SendTool() { }
 		}
 	}
 }

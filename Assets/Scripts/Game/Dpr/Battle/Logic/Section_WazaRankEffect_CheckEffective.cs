@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaRankEffect_CheckEffective : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaRankEffect_CheckEffective(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007266*/ throw null; }
+		public Section_WazaRankEffect_CheckEffective(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaRankEffect_CheckEffective.Result pResult, in global::Dpr.Battle.Logic.Section_WazaRankEffect_CheckEffective.Description description) {
 			pResult.isEffective = false;
 			pResult.failResult = SimpleEffectFailManager.Result.RESULT_STD;

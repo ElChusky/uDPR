@@ -6,9 +6,17 @@ namespace Dpr.Battle.Logic
 		public ushort prevEffectCmd;
 		public ushort mainEffectCmd;
 		private const ushort INVALID_VALUE = 65535;
-		public void CopyFrom(global::Dpr.Battle.Logic.WazaEffectReservedPos src) { /*@B 0x600753F*/ throw null; }
-		public WazaEffectReservedPos() { /*@B 0x6007540*/ throw null; }
-		public bool IsValid() { /*@B 0x6007541*/ throw null; }
+		public void CopyFrom(global::Dpr.Battle.Logic.WazaEffectReservedPos src) {
+            prevEffectCmd = src.prevEffectCmd;
+            mainEffectCmd = src.mainEffectCmd;
+        }
+		public WazaEffectReservedPos() {
+            prevEffectCmd = INVALID_VALUE;
+            mainEffectCmd = INVALID_VALUE;
+        }
+		public bool IsValid() {
+            return mainEffectCmd != INVALID_VALUE;
+        }
 		public void Reserve(global::Dpr.Battle.Logic.ServerCommandQueue queue) {
             prevEffectCmd = queue.ReservePutPos(ServerCommand.ACT_KINOMI_PRE_WAZA);
             mainEffectCmd = queue.ReservePutPos(ServerCommand.ACT_WAZA_EFFECT);

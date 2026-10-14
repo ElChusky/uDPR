@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec_Failed : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec_Failed(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007250*/ throw null; }
+		public Section_WazaExec_Failed(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_Failed.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_Failed.Description description) {
 			if (description.failCause == WazaFailCause.KONRAN)
 			{
@@ -74,7 +74,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM pAttacker;
 			public global::Pml.WazaNo waza;
 			public global::Dpr.Battle.Logic.WazaFailCause failCause;
-			public Description() { /*@B 0x600B681*/ throw null; }
+			public Description() {
+				pAttacker = null;
+				waza = global::Pml.WazaNo.NULL;
+				failCause = WazaFailCause.NONE;
+			}
 		}
 		public class Result
 		{

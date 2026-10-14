@@ -12,11 +12,11 @@ namespace Dpr.Battle.Logic
 		private static global::Dpr.Battle.Logic.Random g_PublicRand;
 		private static global::Pml.WazaNo[] g_WazaStoreWork;
 		private static bool g_SakasaBtlFlag;
-		public static global::Pml.PokePara.PowerID[] PokePowerIDTable;
-		private static readonly global::Dpr.Battle.Logic.calc.StatusRankTableElem[] StatusRankTable;
-		private static readonly global::Dpr.Battle.Logic.calc.HitPerTableElem[] HitPerTable;
+		public static global::Pml.PokePara.PowerID[] PokePowerIDTable = new PowerID[] { PowerID.HP, PowerID.ATK, PowerID.DEF, PowerID.SPATK, PowerID.SPDEF, PowerID.AGI };
+		private static readonly global::Dpr.Battle.Logic.calc.StatusRankTableElem[] StatusRankTable = new StatusRankTableElem[] { new StatusRankTableElem(2, 8), new StatusRankTableElem(2, 7), new StatusRankTableElem(2, 6), new StatusRankTableElem(2, 5), new StatusRankTableElem(2, 4), new StatusRankTableElem(2, 3), new StatusRankTableElem(2, 2), new StatusRankTableElem(3, 2), new StatusRankTableElem(4, 2), new StatusRankTableElem(5, 2), new StatusRankTableElem(6, 2), new StatusRankTableElem(7, 2), new StatusRankTableElem(8, 2) };
+		private static readonly global::Dpr.Battle.Logic.calc.HitPerTableElem[] HitPerTable = new HitPerTableElem[] { new HitPerTableElem(6, 18), new HitPerTableElem(6, 16), new HitPerTableElem(6, 14), new HitPerTableElem(6, 12), new HitPerTableElem(6, 10), new HitPerTableElem(6, 8), new HitPerTableElem(6, 6), new HitPerTableElem(8, 6), new HitPerTableElem(10, 6), new HitPerTableElem(12, 6), new HitPerTableElem(14, 6), new HitPerTableElem(16, 6), new HitPerTableElem(18, 6) };
 		private static readonly byte[] CheckCriticalTable = new byte[4] { 24, 8, 2, 1 };
-		private static readonly byte[] PENALTY_COEF;
+		private static readonly byte[] PENALTY_COEF = new byte[] { 2, 4, 6, 9, 12, 16, 20, 25, 30 };
 		public static void BITFLG_Construction(byte[] flags) {
             for (int i = 0; i < flags.Length; i++)
                 flags[i] = 0;
@@ -318,7 +318,30 @@ namespace Dpr.Battle.Logic
 
             return damage;
         }
-		public static int GetWeatherDmgRatio(global::Dpr.Battle.Logic.BtlWeather weather, byte wazaType) { /*@B 0x6007818*/ throw null; }
+		public static int GetWeatherDmgRatio(global::Dpr.Battle.Logic.BtlWeather weather, byte wazaType) {
+            // byte jump table @03d5cc93 indexed by weather - 1
+            switch (weather)
+            {
+                case BtlWeather.BTL_WEATHER_SHINE:
+                case BtlWeather.BTL_WEATHER_DAY:
+                    if (wazaType == (byte)PokeType.HONOO)
+                        return 0x1800;
+                    if (wazaType == (byte)PokeType.MIZU)
+                        return 0x800;
+                    return 0x1000;
+
+                case BtlWeather.BTL_WEATHER_RAIN:
+                case BtlWeather.BTL_WEATHER_STORM:
+                    if (wazaType == (byte)PokeType.HONOO)
+                        return 0x800;
+                    if (wazaType == (byte)PokeType.MIZU)
+                        return 0x1800;
+                    return 0x1000;
+
+                default:
+                    return 0x1000;
+            }
+        }
 		public static bool IsShineWeather(global::Dpr.Battle.Logic.BtlWeather weather) {
             return weather == BtlWeather.BTL_WEATHER_SHINE || weather == BtlWeather.BTL_WEATHER_DAY;
         }
@@ -353,7 +376,20 @@ namespace Dpr.Battle.Logic
                     break;
             }
         }
-		public static byte HitCountStd(byte numHitMax) { /*@B 0x600781C*/ throw null; }
+		public static byte HitCountStd(byte numHitMax) {
+            if (numHitMax == 5)
+            {
+                byte[] table = new byte[6] { 0, 0, 35, 70, 85, 100 };
+                byte rand = (byte)GetRand(100);
+                for (byte i = 0; i < table.Length; i++)
+                {
+                    if (rand < table[i])
+                        return i;
+                }
+                return 5;
+            }
+            return numHitMax;
+        }
 		public static global::Pml.WazaData.WazaSick CheckMentalSick(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp) {
             uint idx = 0;
             WazaSick sickType;
@@ -512,28 +548,68 @@ namespace Dpr.Battle.Logic
 		public static byte RULE_HandPokeIndex(global::Dpr.Battle.Logic.BtlRule rule, byte numCoverPos) {
             return numCoverPos;
         }
-		public static uint calcWinMoney_Sub(in global::Dpr.Battle.Logic.BSP_TRAINER_DATA trData, in global::Pml.PokeParty party) { /*@B 0x600782D*/ throw null; }
-		public static uint CalcWinMoney(global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM sp) { /*@B 0x600782E*/ throw null; }
-		public static uint CalcLoseMoney(global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM sp, global::Dpr.Battle.Logic.POKECON pokeCon) { /*@B 0x600782F*/ throw null; }
-		private static uint CalcPenaltyMoney(uint level_max) { /*@B 0x6007830*/ throw null; }
-		static calc() { /*@B 0x6007831*/ throw null; }
+		public static uint calcWinMoney_Sub(in global::Dpr.Battle.Logic.BSP_TRAINER_DATA trData, in global::Pml.PokeParty party) {
+            if (party == null || trData == null || party.GetMemberCount() == 0)
+                return 0;
+
+            global::Pml.PokePara.PokemonParam lastPoke = party.GetMemberPointerConst(party.GetMemberCount() - 1);
+            return trData.GetGoldParam() * lastPoke.GetLevel() * 4;
+        }
+		public static uint CalcWinMoney(global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM sp) {
+            if (sp.competitor != BtlCompetitor.BTL_COMPETITOR_TRAINER)
+                return 0;
+
+            uint money = 0;
+            if (sp.tr_data[(int)BTL_CLIENT_ID.BTL_CLIENT_ENEMY1] != null && sp.party[(int)BTL_CLIENT_ID.BTL_CLIENT_ENEMY1] != null)
+                money = calcWinMoney_Sub(sp.tr_data[(int)BTL_CLIENT_ID.BTL_CLIENT_ENEMY1], sp.party[(int)BTL_CLIENT_ID.BTL_CLIENT_ENEMY1]);
+
+            if (sp.tr_data[(int)BTL_CLIENT_ID.BTL_CLIENT_ENEMY2] != null && sp.party[(int)BTL_CLIENT_ID.BTL_CLIENT_ENEMY2] != null)
+                money += calcWinMoney_Sub(sp.tr_data[(int)BTL_CLIENT_ID.BTL_CLIENT_ENEMY2], sp.party[(int)BTL_CLIENT_ID.BTL_CLIENT_ENEMY2]);
+
+            return money;
+        }
+		public static uint CalcLoseMoney(global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM sp, global::Dpr.Battle.Logic.POKECON pokeCon) {
+            BTL_PARTY party = pokeCon.GetPartyDataConst(0);
+            byte memberCount = party.GetMemberCount();
+            uint levelMax = 0;
+            for (int i = 0; i < memberCount; i++)
+            {
+                uint level = (uint)party.GetMemberDataConst((byte)i).GetValue(BTL_POKEPARAM.ValueID.BPP_LEVEL);
+                if (level > levelMax)
+                    levelMax = level;
+            }
+            return CalcPenaltyMoney(levelMax);
+        }
+		private static uint CalcPenaltyMoney(uint level_max) {
+            byte badge = PlayerWork.badge;
+            uint penalty = level_max * PENALTY_COEF[badge] * 4;
+            uint money = (uint)PlayerWork.GetMoney();
+            return money > penalty ? penalty : money;
+        }
+		static calc() { }
 		public class ESCAPEINFO
 		{
 			public uint count;
-			public byte[] clientID;
-			public ESCAPEINFO() { /*@B 0x600B6CF*/ throw null; }
+			public byte[] clientID = new byte[5];
+			public ESCAPEINFO() { }
 		}
 		private struct StatusRankTableElem
 		{
 			public byte num;
 			public byte denom;
-			public StatusRankTableElem(byte num, byte denom) { /*@B 0x600B6D0*/ throw null; }
+			public StatusRankTableElem(byte num, byte denom) {
+				this.num = num;
+				this.denom = denom;
+			}
 		}
 		private struct HitPerTableElem
 		{
 			public byte num;
 			public byte denom;
-			public HitPerTableElem(byte num, byte denom) { /*@B 0x600B6D1*/ throw null; }
+			public HitPerTableElem(byte num, byte denom) {
+				this.num = num;
+				this.denom = denom;
+			}
 		}
 	}
 }

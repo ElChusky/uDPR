@@ -58,7 +58,97 @@ namespace Dpr.Battle.Logic
 
             calcSendData(data, out dataSize, serverReq);
         }
-		private unsafe void calcSendData(void** data, out uint dataSize, global::Dpr.Battle.Logic.ServerRequest serverReq) { /*@B 0x6007753*/ throw null; }
+		private unsafe void calcSendData(void** data, out uint dataSize, global::Dpr.Battle.Logic.ServerRequest serverReq) {
+            *data = null;
+            dataSize = 0;
+            // ushort jump table @03d5cc3c indexed by serverReq - 4
+            switch (serverReq)
+            {
+                case ServerRequest.SELECT_COVER_POKE:
+                    calcSendData_SELECT_COVER_POKE(data, ref dataSize);
+                    break;
+                case ServerRequest.SELECT_CHANGE_POKE:
+                    calcSendData_SELECT_CHANGE_POKE(data, ref dataSize);
+                    break;
+                case ServerRequest.CONFIRM_COUNTER_POKECHANGE:
+                    calcSendData_CONFIRM_COUNTER_POKECHANGE(data, ref dataSize);
+                    break;
+                case ServerRequest.SERVER_COMMAND_FIRST_BATTLE_IN:
+                    calcSendData_SERVER_CMD_FIRST_BATTLE_IN(data, ref dataSize);
+                    break;
+                case ServerRequest.SERVER_COMMAND_POKECHANGE_AFTERFIRSTPOKEIN:
+                    calcSendData_SERVER_CMD_POKECHANGE_AFTERFIRSTPOKEIN(data, ref dataSize);
+                    break;
+                case ServerRequest.SERVER_COMMAND_AFTER_ACTION_SELECT:
+                    calcSendData_SERVER_CMD_AFTER_ACTION_SELECT(data, ref dataSize);
+                    break;
+                case ServerRequest.SERVER_COMMAND_AFTER_COVER_POKE_SELECT:
+                    calcSendData_SERVER_CMD_AFTER_COVER_POKE_SELECT(data, ref dataSize);
+                    break;
+                case ServerRequest.SERVER_COMMAND_AFTER_INTERRUPT_POKECHANGE:
+                    calcSendData_SERVER_CMD_AFTER_INTERRUPT_POKECHANGE(data, ref dataSize);
+                    break;
+                case ServerRequest.SERVER_COMMAND_ESCAPE_BY_CHANGE_OR_ESCAPE:
+                    calcSendData_SERVER_CMD_ESCAPE_BY_CHANGE_OR_ESCAPE(data, ref dataSize);
+                    break;
+                case ServerRequest.RECORD_BATTLE_START_TIMING:
+                    calcSendData_RECORD_BATTLE_START_TIMING(data, ref dataSize);
+                    break;
+                case ServerRequest.RECORD_BATTLE_START_CHAPTER:
+                    calcSendData_RECORD_BATTLE_START_CHAPTER(data, ref dataSize);
+                    break;
+                case ServerRequest.RECORD_POKECHANGE_AFTERFIRSTPOKEIN:
+                    calcSendData_RECORD_ACTION(data, ref dataSize, rec.Timing.RECTIMING_PokeChangeAfterFirstPokeIn, false);
+                    break;
+                case ServerRequest.RECORD_ACTION:
+                    calcSendData_RECORD_ACTION(data, ref dataSize, rec.Timing.RECTIMING_StartTurn, true);
+                    break;
+                case ServerRequest.RECORD_COVER_POKE:
+                    calcSendData_RECORD_ACTION(data, ref dataSize, rec.Timing.RECTIMING_PokeInCover, false);
+                    break;
+                case ServerRequest.RECORD_INTERRUPT_POKECHANGE:
+                    calcSendData_RECORD_ACTION(data, ref dataSize, rec.Timing.RECTIMING_PokeInChange, false);
+                    break;
+                case ServerRequest.RECORD_TIMEUP_CHAPTER:
+                    calcSendData_RECORD_TIMEUP_CHAPTER(data, ref dataSize);
+                    break;
+                case ServerRequest.EXIT_WILD_WIN:
+                    calcSendData_EXIT_WILD_WIN(data, ref dataSize);
+                    break;
+                case ServerRequest.EXIT_WILD_LOSE:
+                    calcSendData_EXIT_WILD_LOSE(data, ref dataSize);
+                    break;
+                case ServerRequest.EXIT_WILD_CAPTURE:
+                    calcSendData_EXIT_CAPTURE(data, ref dataSize);
+                    break;
+                case ServerRequest.EXIT_WILD_FORCE:
+                    calcSendData_EXIT_WILD_FORCE(data, ref dataSize);
+                    break;
+                case ServerRequest.EXIT_COMM:
+                    calcSendData_EXIT_COMM(data, ref dataSize);
+                    break;
+                case ServerRequest.EXIT_NPC:
+                    calcSendData_EXIT_NPC(data, ref dataSize);
+                    break;
+                case ServerRequest.EXIT_BATTLE_SPOT_TRAINER:
+                    calcSendData_EXIT_BATTLE_SPOT_TRAINER(data, ref dataSize);
+                    break;
+                case ServerRequest.SYNC_CLIENT_LIMIT_TIME:
+                    calcSendData_SYNC_CLIENT_LIMIT_TIME(data, ref dataSize);
+                    break;
+                case ServerRequest.RAID_CAPTURE_RESULT:
+                    calcSendData_RAID_CAPTURE_RESULT(data, ref dataSize);
+                    break;
+                case ServerRequest.RAID_SCMD_RESULT:
+                    calcSendData_RAID_SCMD_RESULT(data, ref dataSize);
+                    break;
+                case ServerRequest.RAID_EXIT_LOSE:
+                    calcSendData_RAID_EXIT_LOSE(data, ref dataSize);
+                    break;
+                default:
+                    break;
+            }
+        }
 		private unsafe void calcSendData_SELECT_COVER_POKE(void** data, ref uint dataSize) {
             m_sendData_PokeChangeRequest->requestPosNum = m_pPokeChangeRequest.GetCount();
             for (int i = 0; i < m_sendData_PokeChangeRequest->requestPosNum; i++)

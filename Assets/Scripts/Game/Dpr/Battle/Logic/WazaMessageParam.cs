@@ -10,9 +10,27 @@ namespace Dpr.Battle.Logic
 		public byte attackerID;
 		public global::Dpr.Battle.Logic.BtlPokePos targetPos;
 		public bool needMsgDisplay;
-		public WazaMessageParam() { /*@B 0x6007543*/ throw null; }
-		public void Clear() { /*@B 0x6007544*/ throw null; }
+		public WazaMessageParam() {
+            isDone = false;
+            reservedQueuePos = ServerCommandQueue.INVALID_PTR_VALUE;
+            commandQueuePos = ServerCommandQueue.INVALID_PTR_VALUE;
+            wazano = global::Pml.WazaNo.NULL;
+            attackerID = PokeID.INVALID;
+            targetPos = BtlPokePos.POS_NULL;
+            needMsgDisplay = false;
+        }
+		public void Clear() {
+            isDone = false;
+            reservedQueuePos = ServerCommandQueue.INVALID_PTR_VALUE;
+            commandQueuePos = ServerCommandQueue.INVALID_PTR_VALUE;
+            wazano = global::Pml.WazaNo.NULL;
+            attackerID = PokeID.INVALID;
+            targetPos = BtlPokePos.POS_NULL;
+            needMsgDisplay = false;
+        }
 		public bool IsDone() { return this.isDone; }
-		public bool IsReserved() { /*@B 0x6007546*/ throw null; }
+		public bool IsReserved() {
+            return reservedQueuePos != ServerCommandQueue.INVALID_PTR_VALUE;
+        }
 	}
 }

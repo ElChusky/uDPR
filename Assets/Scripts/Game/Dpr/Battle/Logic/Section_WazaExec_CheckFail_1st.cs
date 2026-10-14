@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec_CheckFail_1st : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec_CheckFail_1st(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600720E*/ throw null; }
+		public Section_WazaExec_CheckFail_1st(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_CheckFail_1st.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_CheckFail_1st.Description description) {
 			pResult.isFailed = false;
 			WazaFailCause failCause = checkFail(description.attacker, description.wazaParam, description.isWazaLock, description.actionDesc);
@@ -272,7 +272,12 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public bool isWazaLock;
 			public global::Dpr.Battle.Logic.ActionDesc actionDesc;
-			public Description() { /*@B 0x600B671*/ throw null; }
+			public Description() {
+				attacker = null;
+				wazaParam = null;
+				actionDesc = null;
+				isWazaLock = false;
+			}
 		}
 		public class Result
 		{

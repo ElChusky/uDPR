@@ -6,7 +6,11 @@ namespace Dpr.Battle.Logic
 		private readonly global::Dpr.Battle.Logic.MainModule m_pMainModule;
 		private global::Dpr.Battle.Logic.BattleEnv m_pBattleEnv;
 		private global::Dpr.Battle.Logic.EventSystem m_pEventSystem;
-		public ServerCommandExecutor(ref global::Dpr.Battle.Logic.ServerCommandExecutor.SetupParam param) { /*@B 0x60072D3*/ throw null; }
+		public ServerCommandExecutor(ref global::Dpr.Battle.Logic.ServerCommandExecutor.SetupParam param) {
+            m_pMainModule = param.pMainModule;
+            m_pBattleEnv = param.pBattleEnv;
+            m_pEventSystem = param.pEventSystem;
+        }
 		private global::Dpr.Battle.Logic.BTL_POKEPARAM getPokeParam(byte pokeID) {
             return m_pBattleEnv.GetPokeCon().GetPokeParam(pokeID);
         }

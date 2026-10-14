@@ -5,8 +5,8 @@ namespace Dpr.Battle.Logic
 	{
 		private const uint CONTAINER_BUFFER_NUM = 2u;
 		private static global::Dpr.Battle.Logic.SendDataContainer s_containerForServerSend;
-		private static global::Dpr.Battle.Logic.SendDataContainer[] s_containerForClientSend;
-		private static global::Dpr.Battle.Logic.SendDataContainer[] s_containerForClientRecieve;
+		private static global::Dpr.Battle.Logic.SendDataContainer[] s_containerForClientSend = new SendDataContainer[(int)BTL_CLIENT_ID.BTL_CLIENT_NUM];
+		private static global::Dpr.Battle.Logic.SendDataContainer[] s_containerForClientRecieve = new SendDataContainer[(int)BTL_CLIENT_ID.BTL_CLIENT_NUM];
 		public static void CreateContainer() {
             s_containerForServerSend = new SendDataContainer(CONTAINER_BUFFER_NUM);
             for (int i = 0; i < (int)BTL_CLIENT_ID.BTL_CLIENT_NUM; i++)
@@ -38,6 +38,6 @@ namespace Dpr.Battle.Logic
 
 			return s_containerForClientRecieve[(int)clientId];
 		}
-		static SendDataContainerFactory() { /*@B 0x6007742*/ throw null; }
+		static SendDataContainerFactory() { }
 	}
 }

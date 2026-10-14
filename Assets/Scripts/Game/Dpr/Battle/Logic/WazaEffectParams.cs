@@ -37,7 +37,24 @@ namespace Dpr.Battle.Logic
             subEff_pokeID_4 = src.subEff_pokeID_4;
             subEff_pokeID_5 = src.subEff_pokeID_5;
         }
-		public void Clear() { /*@B 0x600752E*/ throw null; }
+		public void Clear() {
+            effectWazaID = global::Pml.WazaNo.NULL;
+            attackerPos = BtlPokePos.POS_NULL;
+            targetPos = BtlPokePos.POS_NULL;
+            effectIndex = 0;
+            pluralHitIndex = 0;
+            isGShockOccur = false;
+            fEnable = false;
+            fDone = false;
+            commandQueuePos = ServerCommandQueue.INVALID_PTR_VALUE;
+            isSyncDamageEffect = false;
+            subEff_pokeCnt = 0;
+            subEff_pokeID_1 = 0;
+            subEff_pokeID_2 = 0;
+            subEff_pokeID_3 = 0;
+            subEff_pokeID_4 = 0;
+            subEff_pokeID_5 = 0;
+        }
 		public void Setup(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.PokeSet targets, in global::Dpr.Battle.Logic.PosPoke posPoke) {
             uint targetCountMax = targets.GetCountMax();
             attackerPos = posPoke.GetPokeExistPos(attacker.GetID());
