@@ -416,11 +416,11 @@ public class PiaPluginSession
 		private ushort participantNumMin;
 		private ushort participantNumMax;
 		private ushort gameMode;
-		private global::System.Collections.Generic.List<global::PiaPluginSession.CreateSessionSetting.Attribute> attributeList;
-		private byte[] applicationData;
+		private global::System.Collections.Generic.List<global::PiaPluginSession.CreateSessionSetting.Attribute> attributeList = new global::System.Collections.Generic.List<global::PiaPluginSession.CreateSessionSetting.Attribute>();
+		private byte[] applicationData = (byte[])global::System.Linq.Enumerable.Empty<byte>();
 		private bool isOpenSession;
 		private uint matchmakeSessionOption;
-		private string countryCode;
+		private string countryCode = "";
 		private uint ratingValue;
 		private uint disconnectionRate;
 		private uint violationRate;
@@ -576,7 +576,7 @@ public class PiaPluginSession
 		public ushort GetLocalCommunicationChannel() {
             return localCommunicationChannel;
         }
-		public CreateSessionSetting() { /*@B 0x6009426*/ throw null; }
+		public CreateSessionSetting() { }
 		private enum CondMask
 		{
 			GameMode = 0,
@@ -628,7 +628,28 @@ public class PiaPluginSession
 		public global::System.IntPtr pSessionUserPassword;
 		private global::System.IntPtr pMmatchmakeKeyword;
 		private ushort localCommunicationChannel;
-		internal CreateSessionSettingNative() { /*@B 0x6009427*/ throw null; }
+		internal CreateSessionSettingNative() {
+            // @02cdd2f0: applicationDataSize is not cleared (shipped)
+            pAttributeArray = IntPtr.Zero;
+            attributeNum = 0;
+            pApplicationData = IntPtr.Zero;
+            isOpenSession = false;
+            matchmakeSessionOption = 0;
+            setCondMask = 0;
+            participantNumMin = 0;
+            participantNumMax = 0;
+            gameMode = 0;
+            localCommunicationChannel = 0;
+            pCountryCode = IntPtr.Zero;
+            ratingValue = 0;
+            disconnectionRate = 0;
+            violationRate = 0;
+            isGeoIpUsed = false;
+            pWirelessCryptoKey = IntPtr.Zero;
+            localCommunicationId = 0;
+            pSessionUserPassword = IntPtr.Zero;
+            pMmatchmakeKeyword = IntPtr.Zero;
+        }
 		// @02cdd370
 		internal CreateSessionSettingNative(global::PiaPluginSession.CreateSessionSetting setting) {
             setCondMask = setting.setCondMask;
@@ -685,10 +706,10 @@ public class PiaPluginSession
 		private bool isOpenedOnly;
 		private bool isVacantOnly;
 		private ushort gameMode;
-		private global::System.Collections.Generic.List<global::PiaPluginSession.SessionSearchCriteria.Attribute> attributeList;
-		private global::System.Collections.Generic.List<global::PiaPluginSession.SessionSearchCriteria.AttributeRange> attributeRangeList;
-		public uint[] resultRange;
-		private string countryCode;
+		private global::System.Collections.Generic.List<global::PiaPluginSession.SessionSearchCriteria.Attribute> attributeList = new global::System.Collections.Generic.List<global::PiaPluginSession.SessionSearchCriteria.Attribute>();
+		private global::System.Collections.Generic.List<global::PiaPluginSession.SessionSearchCriteria.AttributeRange> attributeRangeList = new global::System.Collections.Generic.List<global::PiaPluginSession.SessionSearchCriteria.AttributeRange>();
+		public uint[] resultRange = new uint[2];
+		private string countryCode = "";
 		private uint ratingValue;
 		private uint disconnectionRate;
 		private uint violationRate;
@@ -847,7 +868,7 @@ public class PiaPluginSession
 		public bool IsExcludeUserPasswordSet() {
             return isExcludeUserPasswordSet;
         }
-		public SessionSearchCriteria() { /*@B 0x600944C*/ throw null; }
+		public SessionSearchCriteria() { }
 		private enum CondMask
 		{
 			ParticipantNumMin = 0,
@@ -872,8 +893,8 @@ public class PiaPluginSession
 		public class Attribute
 		{
 			public uint index;
-			public global::System.Collections.Generic.List<uint> valueList;
-			public Attribute() { /*@B 0x600BAF2*/ throw null; }
+			public global::System.Collections.Generic.List<uint> valueList = new global::System.Collections.Generic.List<uint>();
+			public Attribute() { }
 		}
 		[global::System.Serializable]
 		[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
@@ -909,7 +930,30 @@ public class PiaPluginSession
 		private ulong localCommunicationId;
 		private global::System.IntPtr pMmatchmakeKeyword;
 		public bool isExcludeUserPasswordSet;
-		public void Reset() { /*@B 0x600944D*/ throw null; }
+		public void Reset() {
+            // @02cde090: pCountryCode is not cleared (shipped); isOpenedOnly / isVacantOnly / isExcludeUserPasswordSet = true
+            participantNumMin = 0;
+            participantNumMax = 0;
+            isOpenedOnly = true;
+            isVacantOnly = true;
+            gameMode = 0;
+            pAttributeNativeArray = IntPtr.Zero;
+            attributeNativeNum = 0;
+            setCondMask = 0;
+            pAttributeRangeArray = IntPtr.Zero;
+            attributeRangeNum = 0;
+            resultOffset = 0;
+            resultSize = 0;
+            ratingValue = 0;
+            disconnectionRate = 0;
+            violationRate = 0;
+            isGeoIpUsed = false;
+            scoreSettingIndex = 0;
+            selectionMethod = 0;
+            localCommunicationId = 0;
+            pMmatchmakeKeyword = IntPtr.Zero;
+            isExcludeUserPasswordSet = true;
+        }
 		// @02cde110 — the sibling class's private fields are read raw = its flag-less getters inlined;
 		// AttributeNative(attribute) inlined (flag 4edbe6a) inside the foreach
 		internal SessionSearchCriteriaNative(global::PiaPluginSession.SessionSearchCriteria criteria) {
@@ -963,8 +1007,17 @@ public class PiaPluginSession
 			public uint index;
 			public global::System.IntPtr pValueArray;
 			public int valueNum;
-			public AttributeNative() { /*@B 0x600BAF4*/ throw null; }
-			public AttributeNative(global::PiaPluginSession.SessionSearchCriteria.Attribute attribute) { /*@B 0x600BAF5*/ throw null; }
+			public AttributeNative() {
+                index = 0;
+                pValueArray = IntPtr.Zero;
+                valueNum = 0;
+            }
+			public AttributeNative(global::PiaPluginSession.SessionSearchCriteria.Attribute attribute) {
+                index = attribute.index;
+                int size = 0;
+                pValueArray = UnmanagedMemoryManager.WriteList(attribute.valueList, ref size);
+                valueNum = attribute.valueList.Count;
+            }
 			// @02cde750
 			public void Dispose() {
                 UnmanagedMemoryManager.Free(pValueArray);
@@ -975,10 +1028,10 @@ public class PiaPluginSession
 	public class SessionSearchCriteriaOwner
 	{
 		private ulong ownerConstantId;
-		public uint[] resultRange;
+		public uint[] resultRange = new uint[2];
 		public void SetOwnerConstantId(ulong ownerConstantId) { this.ownerConstantId = ownerConstantId; }
 		public ulong GetOwnerConstantId() { return this.ownerConstantId; }
-		public SessionSearchCriteriaOwner() { /*@B 0x6009452*/ throw null; }
+		public SessionSearchCriteriaOwner() { }
 	}
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
 	public class SessionSearchCriteriaOwnerNative : global::System.IDisposable
@@ -986,16 +1039,24 @@ public class PiaPluginSession
 		public ulong ownerConstantId;
 		public uint resultOffset;
 		public uint resultSize;
-		internal SessionSearchCriteriaOwnerNative() { /*@B 0x6009453*/ throw null; }
-		internal SessionSearchCriteriaOwnerNative(global::PiaPluginSession.SessionSearchCriteriaOwner criteria) { /*@B 0x6009454*/ throw null; }
+		internal SessionSearchCriteriaOwnerNative() {
+            ownerConstantId = 0;
+            resultOffset = 0;
+            resultSize = 0;
+        }
+		internal SessionSearchCriteriaOwnerNative(global::PiaPluginSession.SessionSearchCriteriaOwner criteria) {
+            ownerConstantId = criteria.GetOwnerConstantId();
+            resultOffset = criteria.resultRange[0];
+            resultSize = criteria.resultRange[1];
+        }
 		public void Dispose() { }
 	}
 	[global::System.Serializable]
 	public class SessionSearchCriteriaParticipant
 	{
-		public global::System.Collections.Generic.List<ulong> participantConstantIdList;
+		public global::System.Collections.Generic.List<ulong> participantConstantIdList = new global::System.Collections.Generic.List<ulong>();
 		public bool isApplicationDataEnabled;
-		public SessionSearchCriteriaParticipant() { /*@B 0x6009456*/ throw null; }
+		public SessionSearchCriteriaParticipant() { }
 	}
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
 	public class SessionSearchCriteriaParticipantNative : global::System.IDisposable
@@ -1003,8 +1064,17 @@ public class PiaPluginSession
 		public global::System.IntPtr pConstantIdList;
 		public int constantIdNum;
 		public bool isApplicationDataEnabled;
-		internal SessionSearchCriteriaParticipantNative() { /*@B 0x6009457*/ throw null; }
-		internal SessionSearchCriteriaParticipantNative(global::PiaPluginSession.SessionSearchCriteriaParticipant criteria) { /*@B 0x6009458*/ throw null; }
+		internal SessionSearchCriteriaParticipantNative() {
+            pConstantIdList = IntPtr.Zero;
+            constantIdNum = 0;
+            isApplicationDataEnabled = false;
+        }
+		internal SessionSearchCriteriaParticipantNative(global::PiaPluginSession.SessionSearchCriteriaParticipant criteria) {
+            int size = 0;
+            constantIdNum = criteria.participantConstantIdList.Count;
+            pConstantIdList = UnmanagedMemoryManager.WriteList(criteria.participantConstantIdList, ref size);
+            isApplicationDataEnabled = criteria.isApplicationDataEnabled;
+        }
 		// @02cdeaf0
 		public void Dispose() {
             UnmanagedMemoryManager.Free(pConstantIdList);
@@ -1019,7 +1089,11 @@ public class PiaPluginSession
 	{
 		private global::System.IntPtr pSessionIdArray;
 		private uint sessionIdArraySize;
-		internal SessionSearchCriteriaSessionIdNative(global::PiaPluginSession.SessionSearchCriteriaSessionId criteria) { /*@B 0x600945B*/ throw null; }
+		internal SessionSearchCriteriaSessionIdNative(global::PiaPluginSession.SessionSearchCriteriaSessionId criteria) {
+            int size = 0;
+            pSessionIdArray = UnmanagedMemoryManager.WriteArray(criteria.sessionIdArray, ref size);
+            sessionIdArraySize = (uint)criteria.sessionIdArray.Length;
+        }
 		// @02cdec10
 		public void Dispose() {
             UnmanagedMemoryManager.Free(pSessionIdArray);
@@ -1034,7 +1108,15 @@ public class PiaPluginSession
 		public int rtt { get; private set; }
 		public float unicastPacketLossRate { get; private set; }
 		public float broadcastPacketLossRate { get; private set; }
-		public StationInfo() { /*@B 0x600946B*/ throw null; }
+		public StationInfo() {
+            playerInfoList = null;
+            constantId = 0;
+            stationIndex = 0;
+            playerNum = 0;
+            rtt = 0;
+            unicastPacketLossRate = 0f;
+            broadcastPacketLossRate = 0f;
+        }
 		// @02cdf050
 		internal StationInfo(global::PiaPluginSession.StationInfoNative stationInfoNative) {
             constantId = stationInfoNative.constantId;
@@ -1081,7 +1163,20 @@ public class PiaPluginSession
 		public global::System.Collections.Generic.List<global::PiaPluginSession.StationInfo> stationInfoList { get; private set; }
 		public global::PiaPluginSession.Status status { get; private set; }
 		public global::PiaPluginSession.DisconnectReason disconnectReason { get; private set; }
-		public SessionStatus() { /*@B 0x6009494*/ throw null; }
+		public SessionStatus() {
+            stationInfoList = null;
+            matchmakeSessionStationNum = 0;
+            matchmakeSessionParticipantNum = 0;
+            sessionId = 0;
+            stationNum = 0;
+            playerNum = 0;
+            jointSessionId = 0;
+            jointSessionHostConstantId = 0;
+            hostConstantId = 0;
+            localConstantId = 0;
+            status = Status.NotConnected;
+            disconnectReason = DisconnectReason.ExternalFactor;
+        }
 		// @02cdee50
 		internal SessionStatus(global::PiaPluginSession.SessionStatusNative sessionNative) {
             sessionId = sessionNative.sessionId;
@@ -1122,7 +1217,25 @@ public class PiaPluginSession
 		public global::System.IntPtr pStationInfoList { get; private set; }
 		public global::PiaPluginSession.Status status { get; private set; }
 		public global::PiaPluginSession.DisconnectReason disconnectReason { get; private set; }
-		internal SessionStatusNative(global::PiaPluginSession.SessionStatus sessionStatus) { /*@B 0x60094AE*/ throw null; }
+		internal SessionStatusNative(global::PiaPluginSession.SessionStatus sessionStatus) {
+            sessionId = sessionStatus.sessionId;
+            stationNum = sessionStatus.stationNum;
+            playerNum = sessionStatus.playerNum;
+            matchmakeSessionStationNum = sessionStatus.matchmakeSessionStationNum;
+            matchmakeSessionParticipantNum = sessionStatus.matchmakeSessionParticipantNum;
+            hostConstantId = sessionStatus.hostConstantId;
+            localConstantId = sessionStatus.localConstantId;
+            jointSessionId = sessionStatus.jointSessionId;
+            jointSessionHostConstantId = sessionStatus.jointSessionHostConstantId;
+            pStationInfoList = IntPtr.Zero;
+            int size = 0;
+            if (sessionStatus.stationInfoList != null)
+            {
+                pStationInfoList = UnmanagedMemoryManager.WriteList(sessionStatus.stationInfoList, ref size);
+            }
+            status = sessionStatus.status;
+            disconnectReason = sessionStatus.disconnectReason;
+        }
 		public void Dispose() { }
 	}
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
@@ -1141,7 +1254,19 @@ public class PiaPluginSession
 		public uint sessionId;
 		public global::System.IntPtr pWirelessCryptoKey;
 		public global::System.IntPtr pSessionUserPassword;
-		internal JoinSessionSettingNative(global::PiaPluginSession.JoinSessionSetting setting) { /*@B 0x60094B1*/ throw null; }
+		internal JoinSessionSettingNative(global::PiaPluginSession.JoinSessionSetting setting) {
+            selectJoinSessionNum = setting.selectJoinSessionNum;
+            sessionId = setting.sessionId;
+            int size = 0;
+            if (setting.wirelessCryptoKey != null)
+            {
+                pWirelessCryptoKey = UnmanagedMemoryManager.WriteUtf8(setting.wirelessCryptoKey, ref size);
+            }
+            if (setting.sessionUserPassword != null)
+            {
+                pSessionUserPassword = UnmanagedMemoryManager.WriteUtf8(setting.sessionUserPassword, ref size);
+            }
+        }
 		// @02cdd760
 		public void Dispose() {
             UnmanagedMemoryManager.Free(pWirelessCryptoKey);
@@ -1152,19 +1277,19 @@ public class PiaPluginSession
 	public class UpdateSessionSetting
 	{
 		public uint setCondMask;
-		private byte[] applicationData;
+		private byte[] applicationData = (byte[])global::System.Linq.Enumerable.Empty<byte>();
 		private int applicationDataSize;
 		public byte priority;
 		private ushort participantNumMin;
 		private ushort participantNumMax;
-		private global::System.Collections.Generic.List<global::PiaPluginSession.UpdateSessionSetting.Attribute> attributeList;
-		private string countryCode;
+		private global::System.Collections.Generic.List<global::PiaPluginSession.UpdateSessionSetting.Attribute> attributeList = new global::System.Collections.Generic.List<global::PiaPluginSession.UpdateSessionSetting.Attribute>();
+		private string countryCode = "";
 		private uint ratingValue;
 		private uint disconnectionRate;
 		private uint violationRate;
 		private bool isUpdateGeoIp;
 		private global::PiaPlugin.DateTime startedTime;
-		private string sessionUserPassword;
+		private string sessionUserPassword = "";
 		private string matchmakeKeyword;
 		// @02cdf6f0
 		public void SetApplicationData(byte[] applicationData, int applicationDataSize) {
@@ -1286,7 +1411,7 @@ public class PiaPluginSession
 		public global::PiaPlugin.DateTime GetStartedTime() {
             return startedTime;
         }
-		public UpdateSessionSetting() { /*@B 0x60094CE*/ throw null; }
+		public UpdateSessionSetting() { }
 		private enum CondMask
 		{
 			ApplicationData = 0,
@@ -1329,7 +1454,22 @@ public class PiaPluginSession
 		public bool isUpdateGeoIp;
 		public global::System.IntPtr pSessionUserPassword;
 		private global::System.IntPtr pMmatchmakeKeyword;
-		internal UpdateSessionSettingNative() { /*@B 0x60094CF*/ throw null; }
+		internal UpdateSessionSettingNative() {
+            // @02cdfdf0: applicationDataSize / priority are not cleared (shipped)
+            setCondMask = 0;
+            pApplicationData = IntPtr.Zero;
+            participantNumMin = 0;
+            participantNumMax = 0;
+            isUpdateGeoIp = false;
+            pAttributeArray = IntPtr.Zero;
+            attributeNum = 0;
+            ratingValue = 0;
+            disconnectionRate = 0;
+            violationRate = 0;
+            pCountryCode = IntPtr.Zero;
+            pSessionUserPassword = IntPtr.Zero;
+            pMmatchmakeKeyword = IntPtr.Zero;
+        }
 		// @02cdfe60 — shipped: isUpdateGeoIp is NOT copied (no load of +0x4c / store to +0x50 in the listing);
 		// the password is written only when non-empty (`ldr w8,[x21,#0x10] ; cmp #1 ; b.lt` — no null test)
 		internal UpdateSessionSettingNative(global::PiaPluginSession.UpdateSessionSetting setting) {
@@ -1379,8 +1519,33 @@ public class PiaPluginSession
 		public byte[] applicationData;
 		public uint applicationDataSize;
 		public ulong targetConstantId;
-		public SessionProperty() { /*@B 0x60094D2*/ throw null; }
-		internal SessionProperty(global::PiaPluginSession.SessionPropertyNative sessionPropertyNative) { /*@B 0x60094D3*/ throw null; }
+		public SessionProperty() {
+            gameMode = 0;
+            sessionId = 0;
+            currentParticipantNum = 0;
+            participantNumMin = 0;
+            participantNumMax = 0;
+            isOpened = true;
+            isRestrictedByUserPassword = true;
+            applicationData = new byte[512];
+            applicationDataSize = 0;
+        }
+		internal SessionProperty(global::PiaPluginSession.SessionPropertyNative sessionPropertyNative) {
+            gameMode = sessionPropertyNative.gameMode;
+            sessionId = sessionPropertyNative.sessionId;
+            currentParticipantNum = sessionPropertyNative.currentParticipantNum;
+            participantNumMin = sessionPropertyNative.participantNumMin;
+            participantNumMax = sessionPropertyNative.participantNumMax;
+            isOpened = sessionPropertyNative.isOpened;
+            isRestrictedByUserPassword = sessionPropertyNative.isRestrictedByUserPassword;
+            applicationDataSize = sessionPropertyNative.applicationDataSize;
+            applicationData = new byte[512];
+            if (applicationDataSize != 0)
+            {
+                Array.Copy(sessionPropertyNative.applicationData, 0, applicationData, 0, applicationDataSize);
+            }
+            targetConstantId = sessionPropertyNative.targetConstantId;
+        }
 	}
 	internal struct SessionPropertyNative : global::System.IDisposable
 	{

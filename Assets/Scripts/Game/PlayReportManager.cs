@@ -7,11 +7,21 @@ using Pml;
 using System;
 public class PlayReportManager
 {
-	private static readonly string[] REPORT_LOG_EVENT_STR;
-	private static readonly string CHECK_POINT_EVENT_STR;
-	private static readonly string RECORD_DATA_EVENT_STR;
-	public static global::PlayReportEvent[] Events;
-	public static global::PlayReportManager.eCaptureType CaptureType;
+	private static readonly string[] REPORT_LOG_EVENT_STR = new string[32]
+	{
+		"tower_single", "tower_double",
+		"union_battle_single_p2p", "union_battle_double_p2p", "union_battle_multi_p2p",
+		"coliseum_battle_single_p2p", "coliseum_battle_double_p2p", "coliseum_battle_multi_p2p",
+		"union_battle_single_net", "union_battle_double_net", "union_battle_multi_net",
+		"coliseum_battle_single_net", "coliseum_battle_double_net", "coliseum_battle_multi_net",
+		"union_trade_p2p", "union_trade_net", "gms_trade_net", "puffin", "fushigi_net", "fushigi_serial",
+		"statue", "landmark", "fossil_digging", "brilliantstone_collect", "fureai", "contest_p2p", "contest_net",
+		"ball_decoration", "costume", "tsurearuki", "pokemon_id", "lithography",
+	};
+	private static readonly string CHECK_POINT_EVENT_STR = "check_point";
+	private static readonly string RECORD_DATA_EVENT_STR = "record_data";
+	public static global::PlayReportEvent[] Events = new PlayReportEvent[77];
+	public static global::PlayReportManager.eCaptureType CaptureType = eCaptureType.None;
 	public static void Init() {
         // @02ce1790: one event object per EventID slot (check points 0x200 bytes, report logs 0x200, record data 0x300)
         for (int i = 0; i < (int)EventID.EVENT_NUM; i++)
@@ -495,7 +505,9 @@ public class PlayReportManager
         PlayerWork.playReportData = data;
     }
 	public PlayReportManager() { }
-	static PlayReportManager() { /*@B 0x6000DBC*/ throw null; }
+	static PlayReportManager() {
+        // @02cea380: all stores are the field initialisers
+    }
 	public enum EventID
 	{
 		CHECK_POINT_RIVAL_1 = 0,

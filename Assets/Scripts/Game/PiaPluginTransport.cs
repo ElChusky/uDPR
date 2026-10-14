@@ -54,7 +54,14 @@ public class PiaPluginTransport
 		public int sendThreadLatencyEmulationMax;
 		public int receiveThreadLatencyEmulationMin;
 		public int receiveThreadLatencyEmulationMax;
-		public EmulationSetting() { /*@B 0x60094D6*/ throw null; }
+		public EmulationSetting() {
+            sendThreadLatencyEmulationMin = -1;
+            sendThreadLatencyEmulationMax = -1;
+            receiveThreadLatencyEmulationMin = -1;
+            receiveThreadLatencyEmulationMax = -1;
+            sendThreadPacketLossRatio = -1;
+            receiveThreadPacketLossRatio = -1;
+        }
 	}
 	public struct TransportAnalysisData
 	{

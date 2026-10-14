@@ -10,11 +10,11 @@ public class PiaPlugin
 	public const int LocalCommunicationVersionMin = 0;
 	public const int LocalCommunicationVersionMax = 32767;
 	public const int PlayerInfoSizeMax = 4;
-	private static global::System.Collections.Generic.List<global::PiaPluginSession.SessionEvent> s_SessionEventList;
-	public static readonly global::PiaPlugin.Result SuccessResult;
-	public static readonly global::PiaPlugin.Result ProgrammingErrorResult;
-	public static readonly global::PiaPlugin.Result InvalidArgumentResult;
-	public static readonly global::PiaPlugin.Result AllocationFailedResult;
+	private static global::System.Collections.Generic.List<global::PiaPluginSession.SessionEvent> s_SessionEventList = new global::System.Collections.Generic.List<global::PiaPluginSession.SessionEvent>();
+	public static readonly global::PiaPlugin.Result SuccessResult = new Result(ResultValue.ResultSuccess, 0u, ViewerType.Void, HandlingType.Void);
+	public static readonly global::PiaPlugin.Result ProgrammingErrorResult = new Result(HandlingType.ProgrammingError);
+	public static readonly global::PiaPlugin.Result InvalidArgumentResult = new Result(ResultValue.ResultInvalidArgument, 0u, ViewerType.ShouldNotUse, HandlingType.ProgrammingError);
+	public static readonly global::PiaPlugin.Result AllocationFailedResult = new Result(ResultValue.ResultAllocationFailed, 0u, ViewerType.ShouldNotUse, HandlingType.ProgrammingError);
 	private static void RegisterPiaLogNative() {
         // shipped: @01e13820 is il2cpp's "no implementation" stub (a native import without a resolvable implementation in the
         // source; dump.cs prints no `extern` for it) — it raises at once (0x2afcd0 → System.MissingMethodException, message
@@ -540,7 +540,9 @@ public class PiaPlugin
         TraceNative(UnmanagedMemoryManager.WriteUtf8(mes, ref size));
     }
 	public PiaPlugin() { }
-	static PiaPlugin() { /*@B 0x60004AE*/ throw null; }
+	static PiaPlugin() {
+        // @01e17900: all stores are the field initialisers (Result ctors inlined)
+    }
 	public enum ResultValue : uint
 	{
 		ResultAllocationFailed = 68609u,
@@ -797,8 +799,15 @@ public class PiaPlugin
 		public global::PiaPlugin.ViewerType viewerType { get; private set; }
 		public global::PiaPlugin.HandlingType handlingType { get; private set; }
 		private global::nn.Result sdkViewerResult { get; }
-		public Result(global::PiaPlugin.HandlingType _handlingType) { /*@B 0x6009357*/ throw null; }
-		public Result(global::PiaPlugin.ResultValue _resultValue, uint _innerErrorCode, global::PiaPlugin.ViewerType _viewerType, global::PiaPlugin.HandlingType _handlingType) { /*@B 0x6009358*/ throw null; }
+		public Result(global::PiaPlugin.HandlingType _handlingType) : this(ResultValue.ResultNotImplemented, 0u, ViewerType.ShouldNotUse, _handlingType) {
+        }
+		public Result(global::PiaPlugin.ResultValue _resultValue, uint _innerErrorCode, global::PiaPlugin.ViewerType _viewerType, global::PiaPlugin.HandlingType _handlingType) {
+            resultValue = _resultValue;
+            innerErrorCode = _innerErrorCode;
+            viewerType = _viewerType;
+            handlingType = _handlingType;
+            sdkViewerResult = default(nn.Result);
+        }
 		public bool IsSuccess() {
             return resultValue == ResultValue.ResultSuccess;
         }
@@ -833,8 +842,15 @@ public class PiaPlugin
 		public byte nameStringLanguage;
 		public string playerName;
 		public global::nn.account.Uid playerId;
-		public PlayerInfo() { /*@B 0x600935E*/ throw null; }
-		internal PlayerInfo(global::PiaPlugin.PlayerInfoNative playerInfoNative) { /*@B 0x600935F*/ throw null; }
+		public PlayerInfo() {
+            nameStringLanguage = 0;
+            playerName = "";
+        }
+		internal PlayerInfo(global::PiaPlugin.PlayerInfoNative playerInfoNative) {
+            // @01e18130: playerId is not copied (shipped)
+            nameStringLanguage = playerInfoNative.nameStringLanguage;
+            playerName = UnmanagedMemoryManager.ReadUtf8(playerInfoNative.playerName, playerInfoNative.playerNameSize);
+        }
 	}
 	public struct PlayerInfoNative : global::System.IDisposable
 	{
@@ -842,7 +858,13 @@ public class PiaPlugin
 		public global::System.IntPtr playerName;
 		public int playerNameSize;
 		public global::nn.account.Uid playerId;
-		internal PlayerInfoNative(global::PiaPlugin.PlayerInfo playerInfo) { /*@B 0x6009360*/ throw null; }
+		internal PlayerInfoNative(global::PiaPlugin.PlayerInfo playerInfo) {
+            int size = 0;
+            nameStringLanguage = playerInfo.nameStringLanguage;
+            playerName = UnmanagedMemoryManager.WriteUtf8(playerInfo.playerName, ref size);
+            playerNameSize = playerInfo.playerName.Length;
+            playerId = playerInfo.playerId;
+        }
 		public void Dispose() {
             UnmanagedMemoryManager.Free(playerName);
         }
@@ -884,8 +906,10 @@ public class PiaPlugin
 	{
 		public const uint ArraySize = 75u;
 		public uint count;
-		public global::PiaPlugin.TraceFlag[] flags;
-		public TraceFlagSetting() { /*@B 0x6009370*/ throw null; }
+		public global::PiaPlugin.TraceFlag[] flags = new TraceFlag[ArraySize];
+		public TraceFlagSetting() {
+            count = 0;
+        }
 		public global::PiaPlugin.TraceFlagSetting add(global::PiaPlugin.TraceFlag value) {
             // @01e18430: `cmp x8, w10, sxtw ; b.ge` → null when full, else store + count++ and return this
             if (count >= flags.Length)
@@ -922,10 +946,10 @@ public class PiaPlugin
 	{
 		public uint piaBufferSize;
 		public global::PiaPlugin.NetworkType networkType;
-		public int backgroundThreadPriority;
-		public global::PiaPlugin.TraceFlagSetting traceFlags;
+		public int backgroundThreadPriority = -1;
+		public global::PiaPlugin.TraceFlagSetting traceFlags = new TraceFlagSetting();
 		public global::PiaPlugin.InitializeFrameworkSetting.CoreId threadCoreId;
-		public InitializeFrameworkSetting() { /*@B 0x6009376*/ throw null; }
+		public InitializeFrameworkSetting() { }
 		public enum CoreId
 		{
 			CoreId_Default = 0,
@@ -942,7 +966,14 @@ public class PiaPlugin
 		public int backgroundThreadPriority;
 		public global::System.IntPtr unityVersion;
 		public int threadCoreId;
-		internal InitializeFrameworkSettingNative(global::PiaPlugin.InitializeFrameworkSetting setting) { /*@B 0x6009377*/ throw null; }
+		internal InitializeFrameworkSettingNative(global::PiaPlugin.InitializeFrameworkSetting setting) {
+            piaBufferSize = setting.piaBufferSize;
+            networkType = (int)setting.networkType;
+            backgroundThreadPriority = setting.backgroundThreadPriority;
+            int size = 0;
+            unityVersion = UnmanagedMemoryManager.WriteUtf8(UnityEngine.Application.unityVersion, ref size);
+            threadCoreId = (int)setting.threadCoreId;
+        }
 		public void Dispose() {
             // shipped empty: @01e17d20 is a bare `ret` (unityVersion is never freed)
         }
@@ -953,12 +984,12 @@ public class PiaPlugin
 		public uint totalMemorySize;
 		public uint emergencyMemorySize;
 		public uint gameId;
-		public string accessKey;
+		public string accessKey = "";
 		public global::nn.account.UserHandle userHandle;
 		public byte nexVersionMajor;
 		public byte nexVersionMinor;
 		public byte nexVersionMicro;
-		public InitializeInternetSetting() { /*@B 0x6009379*/ throw null; }
+		public InitializeInternetSetting() { }
 	}
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
 	public class InitializeInternetSettingNative : global::System.IDisposable
@@ -966,12 +997,22 @@ public class PiaPlugin
 		public uint totalMemorySize;
 		public uint emergencyMemorySize;
 		public uint gameId;
-		public global::System.IntPtr accessKey;
+		public global::System.IntPtr accessKey = global::System.IntPtr.Zero;
 		public global::nn.account.UserHandle userHandle;
 		public byte nexVersionMajor;
 		public byte nexVersionMinor;
 		public byte nexVersionMicro;
-		internal InitializeInternetSettingNative(global::PiaPlugin.InitializeInternetSetting setting) { /*@B 0x600937A*/ throw null; }
+		internal InitializeInternetSettingNative(global::PiaPlugin.InitializeInternetSetting setting) {
+            totalMemorySize = setting.totalMemorySize;
+            emergencyMemorySize = setting.emergencyMemorySize;
+            gameId = setting.gameId;
+            int size = 0;
+            accessKey = UnmanagedMemoryManager.WriteUtf8(setting.accessKey, ref size);
+            userHandle = setting.userHandle;
+            nexVersionMajor = setting.nexVersionMajor;
+            nexVersionMinor = setting.nexVersionMinor;
+            nexVersionMicro = setting.nexVersionMicro;
+        }
 		public void Dispose() {
             UnmanagedMemoryManager.Free(accessKey);
         }
@@ -995,8 +1036,8 @@ public class PiaPlugin
 	{
 		public ushort stationNumMax;
 		public int measurementInterval;
-		public ushort sendProtocolBufferNumPerStation;
-		public ushort receiveProtocolBufferNumPerStation;
+		public ushort sendProtocolBufferNumPerStation = 8;
+		public ushort receiveProtocolBufferNumPerStation = 8;
 		public ushort sendThreadBufferNumPerStation;
 		public ushort receiveThreadBufferNumPerStation;
 		public ushort unreliableProtocolNum;
@@ -1004,7 +1045,7 @@ public class PiaPlugin
 		public ushort broadcastReliableProtocolNum;
 		public ushort streamBroadcastReliableProtocolNum;
 		public bool isAnalysisResultPrintEnabled;
-		public InitializeTransportSetting() { /*@B 0x600937E*/ throw null; }
+		public InitializeTransportSetting() { }
 	}
 	[global::System.Serializable]
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
@@ -1013,8 +1054,8 @@ public class PiaPlugin
 		public bool isEnable;
 		public ushort broadcastEventProtocolNum;
 		public ushort broadcastEventProtocolBufferNum;
-		public uint atomicProtocolIdMax;
-		public InitializeCloneSetting() { /*@B 0x600937F*/ throw null; }
+		public uint atomicProtocolIdMax = 32u;
+		public InitializeCloneSetting() { }
 	}
 	[global::System.Serializable]
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
@@ -1022,8 +1063,8 @@ public class PiaPlugin
 	{
 		public bool isEnable;
 		public bool isChangeDelayEnabled;
-		public uint[] dataUnitSize;
-		public InitializeSyncSetting() { /*@B 0x6009380*/ throw null; }
+		public uint[] dataUnitSize = new uint[16];
+		public InitializeSyncSetting() { }
 	}
 	[global::System.Serializable]
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
@@ -1055,17 +1096,17 @@ public class PiaPlugin
 	{
 		public ushort relayRouteNumMax;
 		public ushort relayRouteRttMax;
-		public bool isEachPlayerCountedAsParticipant;
+		public bool isEachPlayerCountedAsParticipant = true;
 		public bool isAutoInitializeLdn;
-		public uint silenceTimeMax;
-		public uint keepAliveSendingInterval;
-		public int updateMeshSendingInterval;
+		public uint silenceTimeMax = 10000u;
+		public uint keepAliveSendingInterval = 1000u;
+		public int updateMeshSendingInterval = 1000;
 		public global::PiaPlugin.CryptoSetting cryptoSetting;
-		public string localAddress;
+		public string localAddress = "";
 		public uint v4Subnetmask;
 		public int v6InterfaceIndex;
 		public bool useBroadcastOnSendingToAllStation;
-		public StartupSessionSetting() { /*@B 0x6009384*/ throw null; }
+		public StartupSessionSetting() { }
 	}
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
 	private class StartupSessionSettingNative : global::System.IDisposable
@@ -1082,7 +1123,21 @@ public class PiaPlugin
 		public uint v4Subnetmask;
 		public int v6InterfaceIndex;
 		public bool useBroadcastOnSendingToAllStation;
-		internal StartupSessionSettingNative(global::PiaPlugin.StartupSessionSetting setting) { /*@B 0x6009385*/ throw null; }
+		internal StartupSessionSettingNative(global::PiaPlugin.StartupSessionSetting setting) {
+            relayRouteNumMax = setting.relayRouteNumMax;
+            relayRouteRttMax = setting.relayRouteRttMax;
+            isEachPlayerCountedAsParticipant = setting.isEachPlayerCountedAsParticipant;
+            isAutoInitializeLdn = setting.isAutoInitializeLdn;
+            silenceTimeMax = setting.silenceTimeMax;
+            keepAliveSendingInterval = setting.keepAliveSendingInterval;
+            updateMeshSendingInterval = setting.updateMeshSendingInterval;
+            cryptoSetting = setting.cryptoSetting;
+            int size = 0;
+            pLocalAddress = UnmanagedMemoryManager.WriteUtf8(setting.localAddress, ref size);
+            v4Subnetmask = setting.v4Subnetmask;
+            v6InterfaceIndex = setting.v6InterfaceIndex;
+            useBroadcastOnSendingToAllStation = setting.useBroadcastOnSendingToAllStation;
+        }
 		public void Dispose() {
             UnmanagedMemoryManager.Free(pLocalAddress);
         }
@@ -1093,10 +1148,10 @@ public class PiaPlugin
 	{
 		public global::PiaPluginSession.CreateSessionSetting createSessionSetting;
 		public global::PiaPluginSession.SessionSearchCriteria[] sessionSearchCriteriaList;
-		public bool isMyBlockListUsed;
-		public bool isOthersBlockListUsed;
+		public bool isMyBlockListUsed = true;
+		public bool isOthersBlockListUsed = true;
 		public bool isUniqueKeywordEnabled;
-		public JoinRandomSessionSetting() { /*@B 0x6009387*/ throw null; }
+		public JoinRandomSessionSetting() { }
 	}
 	[global::System.Serializable]
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
@@ -1115,8 +1170,20 @@ public class PiaPlugin
 		public long valueMin { get; private set; }
 		public long latestValue { get; private set; }
 		public long updateCount { get; private set; }
-		public Watermark() { /*@B 0x6009393*/ throw null; }
-		internal Watermark(global::PiaPlugin.WatermarkNative watermarkNative) { /*@B 0x6009394*/ throw null; }
+		public Watermark() {
+            name = "";
+            latestValue = 0;
+            updateCount = 0;
+            valueMax = 0;
+            valueMin = 0;
+        }
+		internal Watermark(global::PiaPlugin.WatermarkNative watermarkNative) {
+            name = UnmanagedMemoryManager.ReadUtf8(watermarkNative.pName, watermarkNative.nameSize);
+            valueMax = watermarkNative.valueMax;
+            valueMin = watermarkNative.valueMin;
+            latestValue = watermarkNative.latestValue;
+            updateCount = watermarkNative.updateCount;
+        }
 	}
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
 	internal class WatermarkNative : global::System.IDisposable
@@ -1141,19 +1208,37 @@ public class PiaPlugin
 		public byte minute;
 		public byte second;
 		private bool isRegistered;
-		public DateTime(ushort year_, byte month_, byte day_, byte hour_, byte minute_, byte second_) { /*@B 0x60093A3*/ throw null; }
+		public DateTime(ushort year_, byte month_, byte day_, byte hour_, byte minute_, byte second_) {
+            year = year_;
+            month = month_;
+            day = day_;
+            hour = hour_;
+            minute = minute_;
+            second = second_;
+            isRegistered = true;
+        }
 		public bool IsRegistered() { return this.isRegistered; }
 	}
 	[global::System.Serializable]
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
 	public class LocalAdressInfo
 	{
-		public string address6;
+		public string address6 = "";
 		public uint interfaceIndex;
-		public string address4;
+		public string address4 = "";
 		public uint subnetMask;
-		public LocalAdressInfo() { /*@B 0x60093A5*/ throw null; }
-		internal LocalAdressInfo(global::PiaPlugin.LocalAdressInfoNative localAdressInfoNative) { /*@B 0x60093A6*/ throw null; }
+		public LocalAdressInfo() {
+            address6 = "";
+            interfaceIndex = 0;
+            address4 = "";
+            subnetMask = 0;
+        }
+		internal LocalAdressInfo(global::PiaPlugin.LocalAdressInfoNative localAdressInfoNative) {
+            address6 = UnmanagedMemoryManager.ReadUtf8(localAdressInfoNative.address6, localAdressInfoNative.address6Length);
+            interfaceIndex = localAdressInfoNative.interfaceIndex;
+            address4 = UnmanagedMemoryManager.ReadUtf8(localAdressInfoNative.address4, localAdressInfoNative.address4Length);
+            subnetMask = localAdressInfoNative.subnetMask;
+        }
 	}
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
 	internal class LocalAdressInfoNative : global::System.IDisposable
@@ -1168,8 +1253,21 @@ public class PiaPlugin
             // @01e171dc tests Reset's own init flag 0x4cbeb1c → the inlined call (fidelity fix, report b196: the base code wrote the six stores)
             Reset();
         }
-		internal LocalAdressInfoNative(global::PiaPlugin.LocalAdressInfo localAddressInfo) { /*@B 0x60093B4*/ throw null; }
-		public void Reset() { /*@B 0x60093B5*/ throw null; }
+		internal LocalAdressInfoNative(global::PiaPlugin.LocalAdressInfo localAddressInfo) {
+            // @01e17450: the Length properties are never set here (shipped); one size local shared by both writes
+            int size = 0;
+            Reset();
+            address6 = UnmanagedMemoryManager.WriteUtf8(localAddressInfo.address6, ref size);
+            address4 = UnmanagedMemoryManager.WriteUtf8(localAddressInfo.address4, ref size);
+        }
+		public void Reset() {
+            address6 = global::System.IntPtr.Zero;
+            address6Length = 0;
+            interfaceIndex = 0;
+            address4 = global::System.IntPtr.Zero;
+            address4Length = 0;
+            subnetMask = 0;
+        }
 		public void Dispose() {
             // shipped empty: @01e180a0 is a bare `ret` (address6 / address4 are never freed)
         }
