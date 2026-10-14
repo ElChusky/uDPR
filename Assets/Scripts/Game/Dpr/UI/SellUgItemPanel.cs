@@ -12,10 +12,27 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIText haveCountText;
 		private global::Dpr.Message.MessageMsgFile msgFile;
-		public void Initialize() { /*@B 0x6005CAA*/ throw null; }
-		public void ShowSellItemPanel(global::Pml.UgFather.UgFatherDataManager.SellItemData data) { /*@B 0x6005CAB*/ throw null; }
-		public void HideSellItemPanel() { /*@B 0x6005CAC*/ throw null; }
-		private void SetPanelActive(bool active) { /*@B 0x6005CAD*/ throw null; }
+		public void Initialize() {
+			msgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile("ss_fld_shop");
+			SetPanelActive(false);
+		}
+		public void ShowSellItemPanel(global::Pml.UgFather.UgFatherDataManager.SellItemData data) {
+			itemIconImage.sprite = data.iconSpr;
+			global::Dpr.Message.MessageWordSetHelper.SetUgItemNameWord(0, data.ugItemID);
+			itemNameText.text = msgFile.GetFormattedMessage("SS_fld_shop_299");
+			global::Dpr.Message.MessageWordSetHelper.SetDigitWord(0, data.price);
+			tradeInfoText.text = msgFile.GetFormattedMessage("SS_fld_shop_319");
+			global::Dpr.Message.MessageWordSetHelper.SetDigitWord(0, data.haveCount);
+			haveCountText.text = msgFile.GetFormattedMessage("SS_fld_shop_302");
+			SetPanelActive(true);
+		}
+		public void HideSellItemPanel() {
+			SetPanelActive(false);
+		}
+		private void SetPanelActive(bool active) {
+			if (gameObject.activeSelf != active)
+				gameObject.SetActive(active);
+		}
 		public SellUgItemPanel() { }
 	}
 }

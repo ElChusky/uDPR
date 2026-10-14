@@ -9,7 +9,12 @@ namespace Dpr.UI
 		protected global::UnityEngine.UI.Image _imageBgBody;
 		[global::UnityEngine.SerializeField]
 		protected global::UnityEngine.Sprite[] _spriteBgs;
-		protected void SetupBgs() { /*@B 0x60055F6*/ throw null; }
-		public SelectOpeningBase() { /*@B 0x60055F7*/ throw null; }
+		protected void SetupBgs() {
+			var cassetVersion = global::Pml.PmlUse.Instance.CassetVersion;
+			_imageBg.sprite = _spriteBgs[cassetVersion != global::CassetVersion.DPR_B ? 1 : 0];
+			if (_imageBgBody != null)
+				_imageBgBody.sprite = _spriteBgs[cassetVersion != global::CassetVersion.DPR_B ? 3 : 2];
+		}
+		public SelectOpeningBase() { }
 	}
 }
