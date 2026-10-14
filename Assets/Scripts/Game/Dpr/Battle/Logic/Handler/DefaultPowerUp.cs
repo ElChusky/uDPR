@@ -3,8 +3,14 @@ namespace Dpr.Battle.Logic.Handler
 {
 	public static class DefaultPowerUp
 	{
-		private static readonly global::Dpr.Battle.Logic.Handler.DefaultPowerUp.GET_FUNC_TABLE_ELEM[] GET_FUNC_TABLE;
-		private static readonly global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] HandlerTable_Nusi;
+		private static readonly global::Dpr.Battle.Logic.Handler.DefaultPowerUp.GET_FUNC_TABLE_ELEM[] GET_FUNC_TABLE = new GET_FUNC_TABLE_ELEM[] {
+			new GET_FUNC_TABLE_ELEM(DefaultPowerUpReason.DEFAULT_POWERUP_REASON_NUSI, ADD_Nusi),
+			new GET_FUNC_TABLE_ELEM(DefaultPowerUpReason.DEFAULT_POWERUP_REASON_ULTRA_BEAST, ADD_Nusi),
+			new GET_FUNC_TABLE_ELEM(DefaultPowerUpReason.DEFAULT_POWERUP_REASON_BOSS, ADD_Nusi),
+		};
+		private static readonly global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] HandlerTable_Nusi = new global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] {
+			new global::Dpr.Battle.Logic.EventFactor.EventHandlerTable(EventID.MEMBER_IN_DEFAULT_POWERUP, handler_Nusi_MemberIn),
+		};
 		public static global::Dpr.Battle.Logic.Handler.DefaultPowerUp.HandlerGetFunc getHandlerGetFunc(global::Dpr.Battle.Logic.DefaultPowerUpReason powerUpReason) {
 			for (int i = 0; i < GET_FUNC_TABLE.Length; i++)
 			{
@@ -55,13 +61,16 @@ namespace Dpr.Battle.Logic.Handler
 		public static void handler_Nusi_MemberIn(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) {
 			// Empty in the binary (01901a80 is a bare ret).
 		}
-		static DefaultPowerUp() { /*@B 0x60080FD*/ throw null; }
+		static DefaultPowerUp() { }
 		public delegate global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] HandlerGetFunc();
 		private struct GET_FUNC_TABLE_ELEM
 		{
 			public global::Dpr.Battle.Logic.DefaultPowerUpReason powerUpReason;
 			public global::Dpr.Battle.Logic.Handler.DefaultPowerUp.HandlerGetFunc func;
-			public GET_FUNC_TABLE_ELEM(global::Dpr.Battle.Logic.DefaultPowerUpReason powerUpReason, global::Dpr.Battle.Logic.Handler.DefaultPowerUp.HandlerGetFunc func) { /*@B 0x600B762*/ throw null; }
+			public GET_FUNC_TABLE_ELEM(global::Dpr.Battle.Logic.DefaultPowerUpReason powerUpReason, global::Dpr.Battle.Logic.Handler.DefaultPowerUp.HandlerGetFunc func) {
+					this.powerUpReason = powerUpReason;
+					this.func = func;
+				}
 		}
 	}
 }
