@@ -13537,27 +13537,171 @@ namespace Dpr.EvScript
             _umaAnimatorCtr[index].Play(stateName);
             return true;
         }
-		private bool EvCmd_UMA_ANIME_ATTACH() { /*@B 0x60090A8*/ throw null; }
-		private bool EvCmd_UMA_PLAY_WAIT() { /*@B 0x60090A9*/ throw null; }
-		private bool EvCmd_OBJ_ANIME_SPEED() { /*@B 0x60090AA*/ throw null; }
-		private bool EvCmd_OBJ_SCALE() { /*@B 0x60090AB*/ throw null; }
-		private bool EvCmd_BADGE_GET() { /*@B 0x60090AC*/ throw null; }
-		private bool EvCmdAddUgItem() { /*@B 0x60090AD*/ throw null; }
+		private bool EvCmd_UMA_ANIME_ATTACH() {
+            int index = GetArgInt(_evArg[1]);
+            FieldObjectEntity entity = Find_fieldObjectEntity(GetArgString(_evData, _evArg[2]));
+            entity.isExtruded = false;
+            entity.isLanding = false;
+            entity.SetPositionDirect(Vector3.zero);
+            _umaAnimatorCtr[index].SetChild(entity.transform);
+            return true;
+        }
+		private bool EvCmd_UMA_PLAY_WAIT() {
+            int index = GetArgInt(_evArg[1]);
+            if (_evArg.Length > 1)
+            {
+                // shipped: tests Length > 1 but reads _evArg[2] (Length == 2 throws)
+                string stateName = GetArgString(_evData, _evArg[2]);
+                return !_umaAnimatorCtr[index].IsPlay(stateName);
+            }
+            return !_umaAnimatorCtr[index].IsPlay();
+        }
+		private bool EvCmd_OBJ_ANIME_SPEED() {
+            FieldObjectEntity entity;
+            if (_evArg[1].argType == EvData.ArgType.String)
+                entity = Find_fieldObjectEntity(GetArgString(_evData, _evArg[1]));
+            else
+                entity = GetFieldObject(GetArgInt(_evArg[1]));
+
+            if (entity == null)
+                return false;
+
+            AnimationPlayer animPlayer = entity.GetAnimationPlayer();
+            if (animPlayer == null)
+                return false;
+
+            animPlayer.SetAnimSpeed(GetArgFloat(_evArg[2]));
+            return true;
+        }
+		private bool EvCmd_OBJ_SCALE() {
+            FieldObjectEntity entity;
+            if (_evArg[1].argType == EvData.ArgType.String)
+                entity = Find_fieldObjectEntity(GetArgString(_evData, _evArg[1]));
+            else
+                entity = GetFieldObject(GetArgInt(_evArg[1]));
+
+            if (entity == null)
+                return true;
+
+            float start = GetArgFloat(_evArg[2]);
+            float end = GetArgFloat(_evArg[3]);
+            float frame = GetArgFloat(_evArg[4]);
+            entity.SetScaleData(start, end, frame * (1f / 30f));
+            return true;
+        }
+		private bool EvCmd_BADGE_GET() {
+            int badgeNo;
+            _isOpenSubContentsMenu = true;
+            badgeNo = GetArgInt(_evArg[1]);
+            Sequencer.Start(OpOpenSubContentsWindow<UIBadgeGet>(UIWindowID.BADGE_GET, window => window.Open(UIWindow.WINDOWID_FIELD, badgeNo)));
+            return true;
+        }
+		private bool EvCmdAddUgItem() {
+            int ugItemNo = GetArgInt(_evArg[1]);
+            int num = GetArgInt(_evArg[2]);
+            UgItemWork.AddUgItem(ugItemNo, num);
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[3].data, 1);
+            return true;
+        }
 		private bool EvCmd_DOF_FAR_DEPTH() {
             GameManager.fieldCamera.ScriptFarDepth(GetArgFloat(_evArg[1]), GetArgFloat(_evArg[2]));
             return true;
         }
-		private bool EvCmd_DISPLAY_MESSAGE() { /*@B 0x60090AF*/ throw null; }
-		private bool EvCmd_DISPLAY_MESSAGE_CLOSE() { /*@B 0x60090B0*/ throw null; }
-		private bool EvCmdCustomBallTrainerPage() { /*@B 0x60090B1*/ throw null; }
-		private bool EvCmdCustomBallTrainerCopyOpen() { /*@B 0x60090B2*/ throw null; }
-		private bool EvCmdUgItemName() { /*@B 0x60090B3*/ throw null; }
-		private bool EvCmdFureaiTalkStart() { /*@B 0x60090B4*/ throw null; }
+		private bool EvCmd_DISPLAY_MESSAGE() {
+            if (_evArg.Length < 2)
+            {
+                FieldCanvas.RedGyaradosMessage(true);
+                FieldCanvas.ShowDisplayMessage("100-msg_telop_01", "dp_scenario3", false);
+            }
+            else
+            {
+                string[] split = GetArgString(_evData, _evArg[1]).Split('%');
+                FieldCanvas.RedGyaradosMessage(false);
+                FieldCanvas.ShowDisplayMessage(split[1], split[0], false);
+            }
+            return true;
+        }
+		private bool EvCmd_DISPLAY_MESSAGE_CLOSE() {
+            FieldCanvas.CloseDisplayMessage();
+            return true;
+        }
+		private bool EvCmdCustomBallTrainerPage() {
+            SealTemplateWindow window;
+            int arg2;
+            int sealTemplateId = GetArgInt(_evArg[1]);
+            _isOpenCustomBallTrainer = true;
+            window = UIManager.Instance.CreateUIWindow<SealTemplateWindow>(UIWindowID.SEAL_TEMPLATE);
+            arg2 = _evArg[2].data;
+            window.onClosed += _ =>
+            {
+                _isOpenCustomBallTrainer = false;
+                SetWork(arg2, window.IsCopyRequest ? 1 : 0);
+            };
+            window.Open((Dpr.Trainer.SealTemplateID)sealTemplateId, UIWindow.WINDOWID_FIELD);
+            return true;
+        }
+		private bool EvCmdCustomBallTrainerCopyOpen() {
+            int arg2;
+            int sealTemplateID = GetArgInt(_evArg[1]);
+            _isOpenCustomBallTrainer = true;
+            Dpr.BallDeco.CapsuleData capsuleData = default;
+            TrainerSystem.SetupSealTemplate(ref capsuleData, (Dpr.Trainer.SealTemplateID)sealTemplateID, null);
+            capsuleData.IsAppliedTemplate = true;
+            CapsuleInfo capsuleInfo = new CapsuleInfo(capsuleData, null);
+            UISeal window = UIManager.Instance.CreateUIWindow<UISeal>(UIWindowID.SEAL);
+            arg2 = _evArg[2].data;
+            window.OpenCopyOnly(capsuleInfo, true, result =>
+            {
+                _isOpenCustomBallTrainer = false;
+                SetWork(arg2, result ? 1 : 0);
+            }, UIWindow.WINDOWID_FIELD);
+            return true;
+        }
+		private bool EvCmdUgItemName() {
+            int tagIndex = GetArgInt(_evArg[1]);
+            int ugItemId = GetArgInt(_evArg[2]);
+            int itemCount = GetArgInt(_evArg[3]);
+            MessageWordSetHelper.SetUgItemNameWord(tagIndex, ugItemId, itemCount);
+            return true;
+        }
+		private bool EvCmdFureaiTalkStart() {
+            int temoti = GetArgInt(_evArg[1]);
+            FureaiManager.Instance.TalkStart(temoti);
+            return true;
+        }
 		private bool EvCmdFureaiTalkEnd() { return true; }
-		private bool EvCmdPlayFureaiVoiceNakayoshiRank() { /*@B 0x60090B6*/ throw null; }
-		private bool EvCmdCreateHyouta() { /*@B 0x60090B7*/ throw null; }
-		private bool EvCmd_FADE_DUNGEON_OUT() { /*@B 0x60090B8*/ throw null; }
-		private bool EvCmd_FADE_DUNGEON_IN() { /*@B 0x60090B9*/ throw null; }
+		private bool EvCmdPlayFureaiVoiceNakayoshiRank() {
+            uint temoti = (uint)GetArgInt(_evArg[1]);
+            FureaiManager.Instance.PlayVoice_TemotiID(temoti);
+            return true;
+        }
+		private bool EvCmdCreateHyouta() {
+            if (FlagWork.GetWork(EvWork.WORK_INDEX.SCWK_REG0) == 1)
+            {
+                FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG0, 0);
+                FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG1, 0);
+                return true;
+            }
+            if (FlagWork.GetWork(EvWork.WORK_INDEX.SCWK_REG1) != 1)
+            {
+                FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG1, 1);
+                Vector2Int grid = EntityManager.activeFieldPlayer.gridPosition + Vector2Int.right;
+                Sequencer.Start(Dpr.SubContents.Utils.CreateNPC(grid, "persons/field/fc1062_00", entity =>
+                {
+                    EvDataManager.Instanse.FieldObjectEntityAdd(entity);
+                    FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG0, 1);
+                }, 0));
+            }
+            return false;
+        }
+		private bool EvCmd_FADE_DUNGEON_OUT() {
+            FieldCanvas.FadeOut(FieldFader.FieldFadeType.DUNGEON, _fadeSpeed);
+            return true;
+        }
+		private bool EvCmd_FADE_DUNGEON_IN() {
+            FieldCanvas.FadeIn(FieldFader.FieldFadeType.DUNGEON, _fadeSpeed);
+            return true;
+        }
 		private bool EvCmd_FADE_BUILDING_OUT() {
             FieldCanvas.FadeOut(FieldFader.FieldFadeType.BUILDING, _fadeSpeed);
             return true;
@@ -13566,7 +13710,26 @@ namespace Dpr.EvScript
             FieldCanvas.FadeIn(FieldFader.FieldFadeType.BUILDING, _fadeSpeed);
             return true;
         }
-		private bool EvCmd_FADE_AREA_OUT() { /*@B 0x60090BC*/ throw null; }
+		private bool EvCmd_FADE_AREA_OUT() {
+            FieldFader.FieldFadeType fadeType = FieldFader.FieldFadeType.AREA_UP;
+            if (_evArg.Length > 1)
+            {
+                switch (GetArgInt(_evArg[1]))
+                {
+                    case 2:
+                        fadeType = FieldFader.FieldFadeType.AREA_DOWN;
+                        break;
+                    case 3:
+                        fadeType = FieldFader.FieldFadeType.AREA_LEFT;
+                        break;
+                    case 4:
+                        fadeType = FieldFader.FieldFadeType.AREA_RIGHT;
+                        break;
+                }
+            }
+            FieldCanvas.FadeOut(fadeType, _fadeSpeed);
+            return true;
+        }
 		private bool EvCmd_FADE_AREA_IN() {
             FieldFader.FieldFadeType fadeType = FieldFader.FieldFadeType.AREA_UP;
             if (_evArg.Length > 1)
@@ -13597,7 +13760,12 @@ namespace Dpr.EvScript
 
             return true;
         }
-		private bool EvCmdEntryUwasaZukan() { /*@B 0x60090C0*/ throw null; }
+		private bool EvCmdEntryUwasaZukan() {
+            uint monsno = (uint)GetArgInt(_evArg[1]);
+            PokemonParam param = new PokemonParam((MonsNo)monsno, 1, 1);
+            ZukanWork.SetPoke(monsno, DPData.GET_STATUS.SEE, param.GetSex(), 0, false);
+            return true;
+        }
 		private bool EvCmdTrainingOpen() {
             _isTraining = false;
             _isOpenTraining = true;
@@ -13754,7 +13922,29 @@ namespace Dpr.EvScript
             }
             return true;
         }
-		private bool EvCmd_SET_LIGHTINTENSITY_POKE() { /*@B 0x60090D1*/ throw null; }
+		private bool EvCmd_SET_LIGHTINTENSITY_POKE() {
+            _isRunningLight[LIGHT_POKE] = true;
+            _setlight_timer[LIGHT_POKE] = 0.0f;
+            _start_lightIntensity[LIGHT_POKE] = EnvironmentController.global.AddPokeLightIntensity;
+            _setlight_timer_limit[LIGHT_POKE] = GetArgInt(_evArg[1]) / 30.0f;
+            float light = GetArgFloat(_evArg[2]);
+            if (light <= 0.0f)
+                _end_lightIntensity[LIGHT_POKE] = 0.0f;
+            else
+                _end_lightIntensity[LIGHT_POKE] = light - EnvironmentController.global.parameters.PokeLightIntensity;
+
+            EnvironmentController.global.callback -= EnvironmentControllerSetLightPoke;
+            if (_setlight_timer_limit[LIGHT_POKE] <= 0.0f)
+            {
+                EnvironmentController.global.AddPokeLightIntensity = _end_lightIntensity[LIGHT_POKE];
+                _isRunningLight[LIGHT_POKE] = false;
+            }
+            else
+            {
+                EnvironmentController.global.callback += EnvironmentControllerSetLightPoke;
+            }
+            return true;
+        }
 		private void EnvironmentControllerSetLight(global::EnvironmentController controller, float deltaTime) {
             bool isEnd = EnviromentLightUpdate(LIGHT_FILED, deltaTime, out float light);
             controller.AddLightIntensity = light;
@@ -13782,7 +13972,22 @@ namespace Dpr.EvScript
                 _isRunningLight[LIGHT_POKE] = false;
             }
         }
-		private bool EnviromentLightUpdate(int index, float deltaTime, out float ret) { /*@B 0x60090D5*/ throw null; }
+		private bool EnviromentLightUpdate(int index, float deltaTime, out float ret) {
+            float t = _setlight_timer[index];
+            if (t <= 0.0f)
+                t = 0.0f;
+            else
+                t = t / _setlight_timer_limit[index];
+
+            ret = Mathf.Lerp(_start_lightIntensity[index], _end_lightIntensity[index], t);
+            if (t >= 1.0f)
+            {
+                ret = _end_lightIntensity[index];
+                return true;
+            }
+            _setlight_timer[index] += deltaTime;
+            return false;
+        }
 		private bool EvCmd_TV_RED_GYARADOS_ON() {
             var entity = FieldTvRedGyaradosEntity.GetTvRedGyarados();
 
@@ -13798,7 +14003,12 @@ namespace Dpr.EvScript
 
             return true;
         }
-		private bool EvCmd_AUTO_MSG() { /*@B 0x60090D8*/ throw null; }
+		private bool EvCmd_AUTO_MSG() {
+            _eMsgSpeed = (DPData.MSGSPEED)GetArgInt(_evArg[1]);
+            _autoTime = GetArgFloat(_evArg[2]);
+            _isAutoMsg = true;
+            return true;
+        }
 		private bool EvCmd_AUTO_MSG_STOP() {
             _isAutoMsg = false;
             return true;
@@ -14194,7 +14404,11 @@ namespace Dpr.EvScript
             FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[2].data, count);
             return true;
         }
-		private void ResetSelectMsgWindowStringDate() { /*@B 0x60090FF*/ throw null; }
+		private void ResetSelectMsgWindowStringDate() {
+            _custumWindow_msbt = "";
+            _custumWindow_Labels.Clear();
+            _custumWindow_RetIndex.Clear();
+        }
 		private bool EvCmd_TEMOTI_PER_RND() {
             int pos = GetArgInt(_evArg[1]);
             PokeParty party = PlayerWork.playerParty;
