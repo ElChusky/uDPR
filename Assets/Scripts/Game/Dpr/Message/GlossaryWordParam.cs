@@ -4,6 +4,18 @@ namespace Dpr.Message
 	[global::System.Serializable]
 	public class GlossaryWordParam : global::Dpr.Message.AWordParamBase
 	{
-		public GlossaryWordParam(global::Dpr.Message.MessageGlossaryParseDataModel dataModel, int count, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003DE7*/ throw null; }
+		public GlossaryWordParam(global::Dpr.Message.MessageGlossaryParseDataModel dataModel, int count, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+			if (dataModel != null)
+			{
+				strValue = dataModel.GetName();
+				this.languageId = languageId;
+				this.count = count;
+				gender = dataModel.AttributeDataModel.gender;
+				initialSound = dataModel.AttributeDataModel.initialSound;
+				countablity = dataModel.AttributeDataModel.countability;
+				articlePresence = dataModel.AttributeDataModel.articlePresence;
+				strWidth = dataModel.StrWidth;
+			}
+		}
 	}
 }

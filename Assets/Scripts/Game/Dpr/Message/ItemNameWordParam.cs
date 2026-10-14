@@ -5,7 +5,14 @@ namespace Dpr.Message
 	public class ItemNameWordParam : global::Dpr.Message.AWordParamBase
 	{
 		private int itemNumber;
-		public ItemNameWordParam(int itemNumber, int count, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003DE3*/ throw null; }
-		public override void SetWordParam(global::Dpr.Message.MessageTagDataModel tagDataModel) { /*@B 0x6003DE4*/ throw null; }
+		public ItemNameWordParam(int itemNumber, int count, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+			this.itemNumber = itemNumber;
+			this.languageId = languageId;
+			this.count = count;
+		}
+		public override void SetWordParam(global::Dpr.Message.MessageTagDataModel tagDataModel) {
+			base.SetWordParam(tagDataModel);
+			tagDataModel.intValue = itemNumber;
+		}
 	}
 }
