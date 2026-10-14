@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class OldSoundLoadBank : global::Dpr.SequenceEditor.SoundLoadBank
 	{
 		public string @event;
-		public OldSoundLoadBank(global::Dpr.SequenceEditor.Macro macro) : base(default(global::Dpr.SequenceEditor.Macro)) { /*@B 0x60049E3*/ throw null; }
+		public OldSoundLoadBank(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			@event = Macro.ParseString(macro.GetValue("event"));
+		}
 	}
 }

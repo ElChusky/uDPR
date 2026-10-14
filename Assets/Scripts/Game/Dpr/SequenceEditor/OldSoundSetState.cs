@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public string group;
 		public string name;
-		public OldSoundSetState(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049DF*/ throw null; }
+		public OldSoundSetState(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			group = Macro.ParseString(macro.GetValue("group"));
+			name = Macro.ParseString(macro.GetValue("name"));
+		}
 	}
 }

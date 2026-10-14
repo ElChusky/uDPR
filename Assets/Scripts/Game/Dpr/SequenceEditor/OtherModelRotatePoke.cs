@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_NODE node;
 		public float ofs;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public OtherModelRotatePoke(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AA5*/ throw null; }
+		public OtherModelRotatePoke(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trgPoke = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trgPoke"));
+			dirPoke = Macro.Parse_SEQ_DEF_POS(macro.GetValue("dirPoke"));
+			node = Macro.Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			ofs = Macro.ParseFloat(macro.GetValue("ofs"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ParticleDelete : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_PARTICLE_DELETE deleteType;
-		public ParticleDelete(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049A2*/ throw null; }
+		public ParticleDelete(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			deleteType = (global::Dpr.SequenceEditor.SEQ_DEF_PARTICLE_DELETE)Macro.ParseInt(macro.GetValue("deleteType"), 0);
+		}
 	}
 }

@@ -16,6 +16,19 @@ namespace Dpr.SequenceEditor
 		public int forceCalc;
 		public bool subCamera;
 		public global::Dpr.SequenceEditor.SEQ_DEF_PARTICLE_DELETE deleteType;
-		public ParticleCreate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049A0*/ throw null; }
+		public ParticleCreate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			file = Macro.ParseString(macro.GetValue("file"));
+			isBallEffect = Macro.ParseBool(macro.GetValue("isBallEffect"), 0);
+			isCapture = Macro.ParseBool(macro.GetValue("isCapture"), 0);
+			isStreamLineEffect = Macro.ParseBool(macro.GetValue("isStreamLineEffect"), 0);
+			isAttrEffect = Macro.ParseBool(macro.GetValue("isAttrEffect"), 0);
+			index = Macro.ParseInt(macro.GetValue("index"));
+			isMulti = Macro.ParseBool(macro.GetValue("isMulti"), 0);
+			drawType = Macro.Parse_SEQ_DEF_EFF_DRAWTYPE(macro.GetValue("drawType"));
+			rotOrder = Macro.Parse_SEQ_DEF_ROTATE_ORDER(macro.GetValue("rotOrder"));
+			forceCalc = Macro.ParseInt(macro.GetValue("forceCalc"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+			deleteType = (global::Dpr.SequenceEditor.SEQ_DEF_PARTICLE_DELETE)Macro.ParseInt(macro.GetValue("deleteType"), 0);
+		}
 	}
 }

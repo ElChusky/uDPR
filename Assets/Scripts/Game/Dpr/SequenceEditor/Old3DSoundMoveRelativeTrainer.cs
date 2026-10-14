@@ -10,6 +10,13 @@ namespace Dpr.SequenceEditor
 		public bool isRot;
 		public bool forceUpdate;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public Old3DSoundMoveRelativeTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049F0*/ throw null; }
+		public Old3DSoundMoveRelativeTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 0);
+			forceUpdate = Macro.ParseBool(macro.GetValue("forceUpdate"), 0);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

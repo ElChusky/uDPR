@@ -11,6 +11,14 @@ namespace Dpr.SequenceEditor
 		public bool IsRare;
 		public bool IsEgg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_POKE_G gType;
-		public OtherModelCreate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AA2*/ throw null; }
+		public OtherModelCreate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			Monsno = Macro.ParseInt(macro.GetValue("Monsno"));
+			Form = Macro.ParseInt(macro.GetValue("Form"));
+			Sex = Macro.Parse_SEQ_DEF_MONS_SEX(macro.GetValue("Sex"));
+			IsRare = Macro.ParseBool(macro.GetValue("IsRare"), 0);
+			IsEgg = Macro.ParseBool(macro.GetValue("IsEgg"), 0);
+			gType = Macro.Parse_SEQ_DEF_POKE_G(macro.GetValue("gType"));
+		}
 	}
 }

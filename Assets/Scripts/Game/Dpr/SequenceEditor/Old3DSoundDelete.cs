@@ -4,6 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-1508236230), "blue", "one_frame", "")]
 	public class Old3DSoundDelete : global::Dpr.SequenceEditor.Macro
 	{
-		public Old3DSoundDelete(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049E8*/ throw null; }
+		public Old3DSoundDelete(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+		}
 	}
 }

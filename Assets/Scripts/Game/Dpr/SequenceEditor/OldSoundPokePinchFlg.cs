@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public bool isRTPC;
 		public bool isPlay;
-		public OldSoundPokePinchFlg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049E5*/ throw null; }
+		public OldSoundPokePinchFlg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isRTPC = Macro.ParseBool(macro.GetValue("isRTPC"), 1);
+			isPlay = Macro.ParseBool(macro.GetValue("isPlay"), 1);
+		}
 	}
 }

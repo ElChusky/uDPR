@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class OldSoundFinishCheckInvalid : global::Dpr.SequenceEditor.Macro
 	{
 		public bool enable;
-		public OldSoundFinishCheckInvalid(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049E4*/ throw null; }
+		public OldSoundFinishCheckInvalid(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			enable = Macro.ParseBool(macro.GetValue("enable"), 1);
+		}
 	}
 }

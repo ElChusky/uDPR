@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class OldSoundPostEvent : global::Dpr.SequenceEditor.Macro
 	{
 		public string @event;
-		public OldSoundPostEvent(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049DE*/ throw null; }
+		public OldSoundPostEvent(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			@event = Macro.ParseString(macro.GetValue("event"));
+		}
 	}
 }
