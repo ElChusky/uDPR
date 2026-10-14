@@ -13,8 +13,8 @@ public class FieldWazaCutIn
 	private global::SmartPoint.AssetAssistant.AssetRequestOperation PokemonObjectLoad;
 	private global::UnityEngine.GameObject PokemonObject;
 	private global::Effect.EffectInstance Effect;
-	private global::Dpr.FieldFloatMove Time;
-	private global::Dpr.FieldFloatMove CaptureAlpha;
+	private global::Dpr.FieldFloatMove Time = new global::Dpr.FieldFloatMove();
+	private global::Dpr.FieldFloatMove CaptureAlpha = new global::Dpr.FieldFloatMove();
 	private int PokemonUniqueId;
 	private global::Pml.MonsNo MonsNo;
 	private int FormNo;
@@ -23,7 +23,7 @@ public class FieldWazaCutIn
 	private bool IsForceCaptureInvisible;
 	private bool CaptureAlphaUpdateSkip;
 	private global::FieldWazaCutIn.CutInPhase Phase;
-	private global::FieldWazaCutIn.CameraParamBackup CameraBackup;
+	private global::FieldWazaCutIn.CameraParamBackup CameraBackup = new global::FieldWazaCutIn.CameraParamBackup();
 	public bool IsInitialized { get; private set; }
 	public bool IsBusy { get => Phase != CutInPhase.None; }
 	public bool IsLoaded { get => LoadedPokemonObject != null; }
@@ -361,7 +361,7 @@ public class FieldWazaCutIn
         // CameraParamBackup.Restore inlined @02cc8f34..02cc8f80
         CameraBackup.Restore(camera);
     }
-	public FieldWazaCutIn() { /*@B 0x60002DF*/ throw null; }
+	public FieldWazaCutIn() { }
 	private enum ParamIndex
 	{
 		CameraFov = 0,
@@ -400,8 +400,23 @@ public class FieldWazaCutIn
 		private float nearClipPlane;
 		private float fieldOfView;
 		private bool valid;
-		public void Set(global::UnityEngine.Camera camera) { /*@B 0x600931A*/ throw null; }
-		public void Restore(global::UnityEngine.Camera camera) { /*@B 0x600931B*/ throw null; }
+		public void Set(global::UnityEngine.Camera camera) {
+			orthographic = camera.orthographic;
+			farClipPlane = camera.farClipPlane;
+			nearClipPlane = camera.nearClipPlane;
+			fieldOfView = camera.fieldOfView;
+			valid = true;
+		}
+		public void Restore(global::UnityEngine.Camera camera) {
+			if (valid)
+			{
+				camera.orthographic = orthographic;
+				camera.farClipPlane = farClipPlane;
+				camera.nearClipPlane = nearClipPlane;
+				camera.fieldOfView = fieldOfView;
+				valid = false;
+			}
+		}
 		public CameraParamBackup() { }
 	}
 }
