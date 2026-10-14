@@ -24,8 +24,37 @@ namespace Dpr.Demo
 		private global::Dpr.SubContents.MarkerReceiver receiver;
 		private bool isAutoInput;
 		private float messageElapsed;
-		public Demo_Evolve(global::Dpr.Demo.Demo_Evolve.Param param) { /*@B 0x600489D*/ throw null; }
-		public Demo_Evolve() { /*@B 0x600489E*/ throw null; }
+		public Demo_Evolve(global::Dpr.Demo.Demo_Evolve.Param param) {
+			StartEnterFadeDuration = 0.2f;
+			StartExitFadeDuration = 0.2f;
+			EndEnterFadeDuration = 0.5f;
+			EndExitFadeDuration = 0.5f;
+			FadeColor = Color.black;
+			_param = param;
+			PlayerWork.isEvolveDemo = true;
+			UseCamera = true;
+			DisableEnvironmentController = false;
+			isDisablePostProcess = true;
+			isDisableMainCamera = true;
+		}
+		public Demo_Evolve() {
+			StartEnterFadeDuration = 0.2f;
+			StartExitFadeDuration = 0.2f;
+			EndEnterFadeDuration = 0.5f;
+			EndExitFadeDuration = 0.5f;
+			FadeColor = Color.black;
+			PokemonParam pokemonParam = PlayerWork.playerParty.GetMemberPointer(0);
+			_param = new Param
+			{
+				pokemonParam = pokemonParam,
+				useCancel = true,
+				nextMonsNo = pokemonParam.GetMonsNo() + 1,
+			};
+			UseCamera = true;
+			DisableEnvironmentController = false;
+			isDisablePostProcess = true;
+			isDisableMainCamera = true;
+		}
 		public override void Destroy() {
             base.Destroy();
             OnResult = null;
@@ -331,8 +360,12 @@ namespace Dpr.Demo
 			public global::Pml.MonsNo nextMonsNo;
 			public bool useCancel;
 			public uint evoRoute;
-			public void Evolve() { /*@B 0x600A647*/ throw null; }
-			public void Destroy() { /*@B 0x600A648*/ throw null; }
+			public void Evolve() {
+				pokemonParam.Evolve(nextMonsNo, evoRoute);
+			}
+			public void Destroy() {
+				pokemonParam = null;
+			}
 			public Param() { }
 		}
 		public enum Result
