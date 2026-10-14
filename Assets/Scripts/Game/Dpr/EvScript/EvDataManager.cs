@@ -2530,7 +2530,98 @@ namespace Dpr.EvScript
                 }
             }
         }
-		public bool TrainerEyeCheck(ref global::UnityEngine.Vector3 moveVector, ref global::UnityEngine.Vector2 hitpos) { /*@B 0x6008BE0*/ throw null; }
+		public bool TrainerEyeCheck(ref global::UnityEngine.Vector3 moveVector, ref global::UnityEngine.Vector2 hitpos) {
+            Vector3 subMoveVector = default(Vector3);
+            _eyeEncountTarget[0] = null;
+            _eyeEncountTarget[1] = null;
+
+            if (FieldManager.Instance.IsMenuOpen)
+                return false;
+
+            if (PlayerWork.transitionZoneID != ZoneID.UNKNOWN)
+                return false;
+
+            if (FieldManager.Instance.IsEncountUpdate())
+                return false;
+
+            if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.FLAG_STOP_EYE_ENCOUNT))
+                return false;
+
+            PokeParty party = PlayerWork.playerParty;
+            bool hit = false;
+            for (int i = 0; i < FieldObjectMoveCodes.Count; i++)
+            {
+                FieldObjectMoveCode moveCode = FieldObjectMoveCodes[i];
+                if (moveCode == null)
+                    continue;
+
+                if (!moveCode.TrainerEyeUpdate(ref moveVector, ref hitpos))
+                    continue;
+
+                if (_eyeEncountTarget[0] == null)
+                    _eyeEncountTarget[0] = moveCode;
+                else
+                    _eyeEncountTarget[1] = moveCode;
+
+                if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_PAIR) || party.GetMemberCountEx(PokeParty.CountType.BATTLE_ENABLE) >= 2)
+                {
+                    if (_eyeEncountTarget[0] != null && _eyeEncountTarget[1] != null)
+                    {
+                        hit = true;
+                        break;
+                    }
+                }
+                else if (_eyeEncountTarget[0] != null)
+                {
+                    hit = true;
+                    break;
+                }
+
+                hit = true;
+            }
+
+            if (!hit)
+                return false;
+
+            if (_eyeEncountTarget[1] == null && (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_PAIR) || party.GetMemberCountEx(PokeParty.CountType.BATTLE_ENABLE) >= 2))
+            {
+                subMoveVector = Vector3.zero;
+                for (int i = 0; i < FieldObjectMoveCodes.Count; i++)
+                {
+                    FieldObjectMoveCode moveCode = FieldObjectMoveCodes[i];
+                    if (moveCode == null)
+                        continue;
+
+                    if (_eyeEncountTarget[0] == moveCode)
+                        continue;
+
+                    if (!moveCode.TrainerEyeUpdate(ref subMoveVector, ref hitpos))
+                        continue;
+
+                    _eyeEncountTarget[1] = moveCode;
+                    break;
+                }
+            }
+
+            FieldCanvas.DeleteBalloon(null, false);
+            PlayerInputActive(false, true);
+            moveVector = Vector3.zero;
+            for (int i = 0; i < _eyeEncountTarget.Length; i++)
+            {
+                if (_eyeEncountTarget[i] == null)
+                    continue;
+
+                _eyeEncountTarget[i].MVCodeEncount();
+                TrainerID trainerID = _eyeEncountTarget[i].TrainerID;
+                _talkTrinerIndex[i] = -1;
+                if (trainerID != TrainerID.NONE && trainerID != TrainerID.MAX)
+                    _talkTrinerIndex[i] = (int)trainerID;
+            }
+
+            // EyeTrainerSetUp never reads its time argument (no s0 set before the call @02c50814).
+            EyeTrainerSetUp(0.0f);
+            return true;
+        }
 		private void OnEyeCallBack(global::FieldObjectMoveCode mvobj) {
             PlayerInputActive(false);
 
@@ -2730,7 +2821,12 @@ namespace Dpr.EvScript
 		public bool isUpdateDelegate() {
             return _updateDelegate != null;
         }
-		private void ARRIVEDATA_SetArriveFlag(global::ZoneID id) { /*@B 0x6008BE7*/ throw null; }
+		private void ARRIVEDATA_SetArriveFlag(global::ZoneID id) {
+            if (id < ZoneID.D10R0902)
+                FlagWork.SetSysFlag((EvWork.SYSFLAG_INDEX)((int)id + (int)EvWork.SYSFLAG_INDEX.FLAG_ARRIVE_C01), true);
+            else
+                FlagWork.SetSysFlag((EvWork.SYSFLAG_INDEX)((int)id - (int)ZoneID.D10R0902 + (int)EvWork.SYSFLAG_INDEX.FLAG_ARRIVE_D10R0902), true);
+        }
 		private bool IsPlayingUgEnterOrExit() {
             return PlayerWork.IsToUg || PlayerWork.IsFromUg;
         }
@@ -2766,9 +2862,41 @@ namespace Dpr.EvScript
                 PlayerWork.ugSaveData = ugSaveData;
             }
         }
-		public bool IsCanGotoUG() { /*@B 0x6008BEA*/ throw null; }
-		public bool CheckPlaceData() { /*@B 0x6008BEB*/ throw null; }
-		private global::XLSXContent.UgJumpPos.SheetData GetUgJumpPosData(int MatrixID) { /*@B 0x6008BEC*/ throw null; }
+		public bool IsCanGotoUG() {
+            // The MapInfo row is fetched and never used (result discarded @02c52b5c).
+            var mapInfo = GameManager.mapInfo[(int)PlayerWork.zoneID];
+            int x = EntityManager.activeFieldPlayer.gridPosition.x;
+            int y = EntityManager.activeFieldPlayer.gridPosition.y;
+            _ugNextJumpPos = GetUgJumpPosData(y / 32 * 30 + x / 32);
+            if (_ugNextJumpPos == null)
+                return false;
+
+            return CheckPlaceData();
+        }
+		public bool CheckPlaceData() {
+            PlaceData placeData = DataManager.PlaceData["PlaceData_" + _areaID.ToString()];
+            Vector2Int grid = EntityManager.activeFieldPlayer.gridPosition;
+            for (int i = 0; i < placeData.Data.Length; i++)
+            {
+                if (placeData.Data[i].Dowsing != 0)
+                    continue;
+
+                if ((Vector2)grid == placeData.Data[i].Position)
+                    return false;
+            }
+
+            return true;
+        }
+		private global::XLSXContent.UgJumpPos.SheetData GetUgJumpPosData(int MatrixID) {
+            var data = DataManager.UgJumpPos.Data;
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (data[i].ID == MatrixID)
+                    return data[i];
+            }
+
+            return null;
+        }
 		private void GotoOnTheGround() {
             _ugFallSpdCurrent = _fallDiveSpd;
             Instanse._dummyPlayer.transform.position = EntityManager.activeFieldPlayer.transform.position;
@@ -3130,8 +3258,26 @@ namespace Dpr.EvScript
 
             _ugFromSeq++;
         }
-		private void StartAdjustHeroPos(float deltaTime, string label) { /*@B 0x6008BF5*/ throw null; }
-		private bool CheckUpdateAdjustHeroPos(float deltaTime) { /*@B 0x6008BF6*/ throw null; }
+		private void StartAdjustHeroPos(float deltaTime, string label) {
+            ClearPlayerMoveVector();
+            _callLabel_AdjustHeroPos = label;
+            if (CheckUpdateAdjustHeroPos(deltaTime))
+                return;
+
+            _updateDelegate = UpdateAdjustHeroPos;
+        }
+		private bool CheckUpdateAdjustHeroPos(float deltaTime) {
+            if (!HeroMoveGridCenterFront(deltaTime))
+                return false;
+
+            string label = _callLabel_AdjustHeroPos;
+            _callLabel_AdjustHeroPos = null;
+            if (FieldManager.Instance.StopSwayGrass_NextArea())
+                FieldManager.Instance.SetBgmEvent(FieldManager.Instance.GetNowBgmState());
+
+            JumpLabel(label, null);
+            return true;
+        }
 		private void UpdateAdjustHeroPos(float deltaTime) {
             if (CheckUpdateAdjustHeroPos(deltaTime))
                 _updateDelegate = null;
@@ -3266,8 +3412,21 @@ namespace Dpr.EvScript
             FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG0, (int)itemNo);
             JumpLabel("ev_end_spray", null);
         }
-		private void ChkFadeInput() { /*@B 0x6008BFE*/ throw null; }
-		private void SetCommandUseTime() { /*@B 0x6008BFF*/ throw null; }
+		private void ChkFadeInput() {
+            if (_isFadeEventReturnInput && _eventListIndex < 0 && _battleReturnData.EventListIndex < 0 && !Fader.isBusy && Fader.fillPower <= 0f)
+            {
+                PlayerInputActive(true, true);
+                _isFadeEventReturnInput = false;
+            }
+        }
+		private void SetCommandUseTime() {
+            int week = (int)GameManager.nowTime.DayOfWeek;
+            int month = GameManager.nowTime.Month;
+            int day = GameManager.nowTime.Day;
+            int hour = GameManager.nowTime.Hour;
+            int minute = GameManager.nowTime.Minute;
+            FlagWork.SetWork(EvWork.WORK_INDEX.USE_COMMAND_TIME, (week + 1) * 100000000 + month * 1000000 + day * 10000 + hour * 100 + minute);
+        }
 		private int GetCommandUseTime(global::Dpr.EvScript.EvDataManager.COMMAND_USE_TIME use) {
             int value = FlagWork.GetWork(EvWork.WORK_INDEX.USE_COMMAND_TIME);
             switch (use)
@@ -3286,9 +3445,118 @@ namespace Dpr.EvScript
                     return 0;
             }
         }
-		private void VariableReset() { /*@B 0x6008C01*/ throw null; }
-		private void EventEnd() { /*@B 0x6008C02*/ throw null; }
-		private bool OpenTalk(global::Dpr.EvScript.EvDataManager.MsgOpenParam msgparam) { /*@B 0x6008C03*/ throw null; }
+		private void VariableReset() {
+            _talkStart = 0;
+            _macroCmd = 0;
+            _procCmd = 0;
+            _timeWait = 0f;
+            _heroMoveGridCenterFrontStat = false;
+            _fieldObjectMove.Reset();
+            _fieldObjectMove.FloatMove.EaseFunc = FieldFloatMove.EaseDefault;
+            _fieldObjectRotateYaw.Reset();
+            _fieldObjectRotateYaw.FloatMove.EaseFunc = FieldFloatMove.EaseDefault;
+            _hidenSequence = 0;
+            _runEventLiftEntity = null;
+            _kinomiEffect = null;
+            _liftSequence = 0;
+            _gearSequence = 0;
+            _waterSequence = 0;
+            _kinomiSequence = 0;
+            _kinomiSequenceTime = 0f;
+            _trainSequence = 0;
+            _itemSequence = 0;
+            _btwrSequence = 0;
+            _nicknamePlacementSequence = 0;
+            _softwareKeyboardSubState = 0;
+            _effSeq = 0;
+            _dendou = 0;
+            _warpSequence = 0;
+            _warpSpeedSequence = 0;
+            _warpSpeedSequenceTime = 0f;
+            _scopeSequence = 0;
+            _azukariyaSequence = 0;
+            _pokelistSequence = 0;
+            _turnTime[0] = 0f;
+            _turnTime[1] = 0f;
+            _seqRankingView = 0;
+        }
+		private void EventEnd() {
+            _msgWindow = null;
+            _msgWindowCoroutine = null;
+            SetCloudScaleEnd();
+            _selectDoorObject = null;
+            _eventListIndex = -1;
+            _rideBicycleReserve = false;
+            _isOpenSpecialWin = false;
+            _openSpecialWinLabelSelected = -1;
+
+            if (!FlagWork.GetFlag(EvWork.FLAG_INDEX.FH_NECK_LOCK))
+                EntityManager.activeFieldPlayer.NeckAngle = Vector3.zero;
+
+            PlayerWork._isPlayerInputActive_ContactEvent = true;
+
+            if (_hit_object != null)
+            {
+                FieldCharacterEntity character = _hit_object as FieldCharacterEntity;
+                if (character != null)
+                    character.NeckAngle = Vector3.zero;
+
+                int moveCodeIndex = _hit_object.EventParams.MoveCodeIndex;
+                if (moveCodeIndex >= 0)
+                    FieldObjectMoveCodes[moveCodeIndex].MVCodeRestart();
+
+                _hit_object.EventParams.IsEventRunning = false;
+                _hit_object = null;
+            }
+
+            if (_hit_object_sub != null)
+            {
+                FieldCharacterEntity character = _hit_object_sub as FieldCharacterEntity;
+                if (character != null)
+                    character.NeckAngle = Vector3.zero;
+
+                int moveCodeIndex = _hit_object_sub.EventParams.MoveCodeIndex;
+                if (moveCodeIndex >= 0)
+                    FieldObjectMoveCodes[moveCodeIndex].MVCodeRestart();
+
+                _hit_object_sub.EventParams.IsEventRunning = false;
+                _hit_object_sub = null;
+            }
+
+            FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_TARGET_OBJID, -1);
+            _heroMoveGridCenterFrontDir = DIR.DIR_NOT;
+            EntityManager.activeFieldPlayer.EvEntityCmd.ReleaseMoveData();
+            EntityManager.activeFieldPlayer.EvEntityCmd.ScritpStopStateEnd();
+
+            for (int i = 0; i < _se_datas.Length; i++)
+            {
+                _se_datas[i].name = "";
+                _se_datas[i].AudioInstance = null;
+            }
+
+            for (int i = 0; i < _voice_datas.Length; i++)
+            {
+                _voice_datas[i].name = "";
+                _voice_datas[i].AudioInstance = null;
+            }
+
+            _cutinState = CutInState.None;
+            _liftEntity = null;
+            _tobariGymWallEntity = null;
+            _nagisaGymGearEntity = null;
+            _nomoseGymSwitchEntity = null;
+            _eyePaintingEntity = null;
+            _embankmentEntity = null;
+            _isOpenBtlTowerRecode = false;
+            _temp_PokePara = null;
+        }
+		private bool OpenTalk(global::Dpr.EvScript.EvDataManager.MsgOpenParam msgparam) {
+            if (_msgWindowCoroutine != null)
+                Sequencer.Stop(_msgWindowCoroutine);
+
+            _msgWindowCoroutine = Sequencer.Start(OpenMsgFile(msgparam));
+            return true;
+        }
 		private global::Dpr.Message.MessageMsgFile GetMSBTFile(string msbtfilename) { /*@B 0x6008C04*/ throw null; }
 		private global::System.Collections.IEnumerator OpenMsgFile(global::Dpr.EvScript.EvDataManager.MsgOpenParam msgparam) { /*@B 0x6008C05*/ throw null; }
 		private void CloseMsg() { /*@B 0x6008C06*/ throw null; }
