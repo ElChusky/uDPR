@@ -5,8 +5,8 @@ namespace Dpr.Battle.Logic
 	{
 		private const int TURN_MAX = 4;
 		private const int DEAD_COUNT_MAX = 100;
-		private global::Dpr.Battle.Logic.DeadRec.Data m_data;
-		public DeadRec() { /*@B 0x60075FF*/ throw null; }
+		private global::Dpr.Battle.Logic.DeadRec.Data m_data = new Data();
+		public DeadRec() { }
 		public void CopyFrom(in global::Dpr.Battle.Logic.DeadRec src) {
             m_data.CopyFrom(src.m_data);
         }
@@ -156,20 +156,36 @@ namespace Dpr.Battle.Logic
 		private class Unit
 		{
 			public byte cnt;
-			public bool[] fExpChecked;
-			public byte[] deadPokeID;
-			public void CopyFrom(global::Dpr.Battle.Logic.DeadRec.Unit src) { /*@B 0x600B6AC*/ throw null; }
-			public Unit() { /*@B 0x600B6AD*/ throw null; }
+			public bool[] fExpChecked = new bool[30];
+			public byte[] deadPokeID = new byte[30];
+			public void CopyFrom(global::Dpr.Battle.Logic.DeadRec.Unit src) {
+				cnt = src.cnt;
+				for (int i = 0; i < fExpChecked.Length; i++)
+					fExpChecked[i] = src.fExpChecked[i];
+				for (int i = 0; i < deadPokeID.Length; i++)
+					deadPokeID[i] = src.deadPokeID[i];
+			}
+			public Unit() { }
 		}
 		private class Data
 		{
-			public global::Dpr.Battle.Logic.DeadRec.Unit[] turnRecord;
-			public bool[] currentDeadFlag;
-			public byte[] deadCount;
-			public byte[] relivePokeID;
+			public global::Dpr.Battle.Logic.DeadRec.Unit[] turnRecord = Arrays.InitializeWithDefaultInstances<Unit>(TURN_MAX);
+			public bool[] currentDeadFlag = new bool[30];
+			public byte[] deadCount = new byte[30];
+			public byte[] relivePokeID = new byte[30];
 			public byte relivePokeCount;
-			public void CopyFrom(global::Dpr.Battle.Logic.DeadRec.Data src) { /*@B 0x600B6AE*/ throw null; }
-			public Data() { /*@B 0x600B6AF*/ throw null; }
+			public void CopyFrom(global::Dpr.Battle.Logic.DeadRec.Data src) {
+				for (int i = 0; i < turnRecord.Length; i++)
+					turnRecord[i].CopyFrom(src.turnRecord[i]);
+				for (int i = 0; i < currentDeadFlag.Length; i++)
+					currentDeadFlag[i] = src.currentDeadFlag[i];
+				for (int i = 0; i < deadCount.Length; i++)
+					deadCount[i] = src.deadCount[i];
+				for (int i = 0; i < relivePokeID.Length; i++)
+					relivePokeID[i] = src.relivePokeID[i];
+				relivePokeCount = src.relivePokeCount;
+			}
+			public Data() { }
 		}
 	}
 }

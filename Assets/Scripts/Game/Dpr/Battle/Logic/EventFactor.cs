@@ -7,53 +7,162 @@ namespace Dpr.Battle.Logic
 		private ushort m_instanceID;
 		private global::Dpr.Battle.Logic.EventFactor m_prevFactor;
 		private global::Dpr.Battle.Logic.EventFactor m_nextFactor;
-		private global::Dpr.Battle.Logic.EventFactor.Data m_data;
-		public EventFactor(ushort factorID) { /*@B 0x6006993*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.EventFactor src) { /*@B 0x6006994*/ throw null; }
-		public void Clear() { /*@B 0x6006995*/ throw null; }
+		private global::Dpr.Battle.Logic.EventFactor.Data m_data = new Data();
+		public EventFactor(ushort factorID) {
+			m_instanceID = factorID;
+			m_prevFactor = null;
+			m_nextFactor = null;
+			Clear();
+		}
+		public void CopyFrom(in global::Dpr.Battle.Logic.EventFactor src) {
+			m_instanceID = src.m_instanceID;
+			m_data.CopyFrom(src.m_data);
+		}
+		public void Clear() {
+			m_prevFactor = null;
+			m_nextFactor = null;
+			m_data.Clear();
+		}
 		public ushort GetInstanceID() { return this.m_instanceID; }
-		public void ClearWork() { /*@B 0x6006997*/ throw null; }
-		public int[] GetWork() { /*@B 0x6006998*/ throw null; }
-		public int GetWorkValue(byte workIdx) { /*@B 0x6006999*/ throw null; }
-		public void SetWorkValue(byte workIdx, int value) { /*@B 0x600699A*/ throw null; }
-		public void SetTmpItemFlag() { /*@B 0x600699B*/ throw null; }
-		public void SetRecallEnable() { /*@B 0x600699C*/ throw null; }
-		public void ResetRecallEnable() { /*@B 0x600699D*/ throw null; }
-		public byte GetPokeID() { /*@B 0x600699E*/ throw null; }
-		public void AttachSkipCheckHandler(global::Dpr.Battle.Logic.EventFactor.SkipCheckHandler handler) { /*@B 0x600699F*/ throw null; }
-		public void DetachSkipCheckHandler() { /*@B 0x60069A0*/ throw null; }
-		public global::Dpr.Battle.Logic.EventFactor.SkipCheckHandler GetSkipCheckHandler() { /*@B 0x60069A1*/ throw null; }
-		public void ConvertForIsolate() { /*@B 0x60069A2*/ throw null; }
-		public bool IsIsolateMode() { /*@B 0x60069A3*/ throw null; }
-		public bool Sleep() { /*@B 0x60069A4*/ throw null; }
-		public bool Wake() { /*@B 0x60069A5*/ throw null; }
-		public void Link(global::Dpr.Battle.Logic.EventFactor next) { /*@B 0x60069A6*/ throw null; }
-		public void Unlink() { /*@B 0x60069A7*/ throw null; }
+		public void ClearWork() {
+			m_data.ClearWork();
+		}
+		public int[] GetWork() {
+			return m_data.work;
+		}
+		public int GetWorkValue(byte workIdx) {
+			return m_data.work[workIdx];
+		}
+		public void SetWorkValue(byte workIdx, int value) {
+			m_data.work[workIdx] = value;
+		}
+		public void SetTmpItemFlag() {
+			m_data.tmpItemFlag = true;
+		}
+		public void SetRecallEnable() {
+			if (m_data.callingFlag)
+				m_data.recallEnableFlag = true;
+		}
+		public void ResetRecallEnable() {
+			m_data.recallEnableFlag = false;
+		}
+		public byte GetPokeID() {
+			return m_data.pokeID;
+		}
+		public void AttachSkipCheckHandler(global::Dpr.Battle.Logic.EventFactor.SkipCheckHandler handler) {
+			m_data.skipCheckHandler = handler;
+		}
+		public void DetachSkipCheckHandler() {
+			m_data.skipCheckHandler = null;
+		}
+		public global::Dpr.Battle.Logic.EventFactor.SkipCheckHandler GetSkipCheckHandler() {
+			return m_data.skipCheckHandler;
+		}
+		public void ConvertForIsolate() {
+			m_data.factorType = global::Dpr.Battle.Logic.EventFactorType.ISOLATE;
+		}
+		public bool IsIsolateMode() {
+			return m_data.factorType == global::Dpr.Battle.Logic.EventFactorType.ISOLATE;
+		}
+		public bool Sleep() {
+			if (m_data.sleepFlag)
+				return false;
+			m_data.sleepFlag = true;
+			return true;
+		}
+		public bool Wake() {
+			if (m_data.sleepFlag)
+			{
+				m_data.sleepFlag = false;
+				return true;
+			}
+			return false;
+		}
+		public void Link(global::Dpr.Battle.Logic.EventFactor next) {
+			m_nextFactor = next;
+			if (next != null)
+				next.m_prevFactor = this;
+		}
+		public void Unlink() {
+			if (m_prevFactor != null)
+				m_prevFactor.m_nextFactor = m_nextFactor;
+			if (m_nextFactor != null)
+				m_nextFactor.m_prevFactor = m_prevFactor;
+			m_prevFactor = null;
+			m_nextFactor = null;
+		}
 		public global::Dpr.Battle.Logic.EventFactor GetNext() { return this.m_nextFactor; }
 		public global::Dpr.Battle.Logic.EventFactor GetPrev() { return this.m_prevFactor; }
-		public ushort GetEventLevel() { /*@B 0x60069AA*/ throw null; }
-		public void SetEventLevel(ushort value) { /*@B 0x60069AB*/ throw null; }
-		public global::Dpr.Battle.Logic.EventFactorType GetFactorType() { /*@B 0x60069AC*/ throw null; }
-		public uint GetPriority() { /*@B 0x60069AD*/ throw null; }
-		public byte GetDependID() { /*@B 0x60069AE*/ throw null; }
-		public ushort GetSubID() { /*@B 0x60069AF*/ throw null; }
-		public bool GetExistFlag() { /*@B 0x60069B0*/ throw null; }
-		public bool GetRemoveReserveFlag() { /*@B 0x60069B1*/ throw null; }
-		public bool GetCallingFlag() { /*@B 0x60069B2*/ throw null; }
-		public bool GetRecallEnableFlag() { /*@B 0x60069B3*/ throw null; }
-		public bool GetSleepFlag() { /*@B 0x60069B4*/ throw null; }
-		public bool GetTempItemFlag() { /*@B 0x60069B5*/ throw null; }
-		public global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] GetHandlerTable() { /*@B 0x60069B6*/ throw null; }
-		public byte GetHandlerNum() { /*@B 0x60069B7*/ throw null; }
-		public void SetFactorType(global::Dpr.Battle.Logic.EventFactorType type) { /*@B 0x60069B8*/ throw null; }
-		public void SetPriority(uint value) { /*@B 0x60069B9*/ throw null; }
-		public void SetSubID(ushort value) { /*@B 0x60069BA*/ throw null; }
-		public void SetDependID(byte value) { /*@B 0x60069BB*/ throw null; }
-		public void SetPokeID(byte pokeID) { /*@B 0x60069BC*/ throw null; }
-		public void SetExistFlag(bool value) { /*@B 0x60069BD*/ throw null; }
-		public void SetRemoveReserverFlag(bool value) { /*@B 0x60069BE*/ throw null; }
-		public void SetCallingFlag(bool value) { /*@B 0x60069BF*/ throw null; }
-		public void SetHandlerTable(global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] handlerTable, byte handlerNum) { /*@B 0x60069C0*/ throw null; }
+		public ushort GetEventLevel() {
+			return (ushort)m_data.eventLevel;
+		}
+		public void SetEventLevel(ushort value) {
+			m_data.eventLevel = value;
+		}
+		public global::Dpr.Battle.Logic.EventFactorType GetFactorType() {
+			return m_data.factorType;
+		}
+		public uint GetPriority() {
+			return m_data.priority;
+		}
+		public byte GetDependID() {
+			return m_data.dependID;
+		}
+		public ushort GetSubID() {
+			return m_data.subID;
+		}
+		public bool GetExistFlag() {
+			return m_data.existFlag;
+		}
+		public bool GetRemoveReserveFlag() {
+			return m_data.rmReserveFlag;
+		}
+		public bool GetCallingFlag() {
+			return m_data.callingFlag;
+		}
+		public bool GetRecallEnableFlag() {
+			return m_data.recallEnableFlag;
+		}
+		public bool GetSleepFlag() {
+			return m_data.sleepFlag;
+		}
+		public bool GetTempItemFlag() {
+			return m_data.tmpItemFlag;
+		}
+		public global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] GetHandlerTable() {
+			return m_data.handlerTable;
+		}
+		public byte GetHandlerNum() {
+			return (byte)m_data.numHandlers;
+		}
+		public void SetFactorType(global::Dpr.Battle.Logic.EventFactorType type) {
+			m_data.factorType = type;
+		}
+		public void SetPriority(uint value) {
+			m_data.priority = value;
+		}
+		public void SetSubID(ushort value) {
+			m_data.subID = value;
+		}
+		public void SetDependID(byte value) {
+			m_data.dependID = value;
+		}
+		public void SetPokeID(byte pokeID) {
+			m_data.pokeID = pokeID;
+		}
+		public void SetExistFlag(bool value) {
+			m_data.existFlag = value;
+		}
+		public void SetRemoveReserverFlag(bool value) {
+			m_data.rmReserveFlag = value;
+		}
+		public void SetCallingFlag(bool value) {
+			m_data.callingFlag = value;
+		}
+		public void SetHandlerTable(global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] handlerTable, byte handlerNum) {
+			m_data.handlerTable = handlerTable;
+			m_data.numHandlers = handlerNum;
+		}
 		public class EventHandlerArgs
 		{
 			public global::Dpr.Battle.Logic.MainModule pMainModule;
@@ -72,7 +181,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.EventID eventID;
 			public global::Dpr.Battle.Logic.EventFactor.EventHandler eventHandler;
-			public EventHandlerTable(global::Dpr.Battle.Logic.EventID eventID, global::Dpr.Battle.Logic.EventFactor.EventHandler eventHandler) { /*@B 0x600B47F*/ throw null; }
+			public EventHandlerTable(global::Dpr.Battle.Logic.EventID eventID, global::Dpr.Battle.Logic.EventFactor.EventHandler eventHandler) {
+				this.eventHandler = eventHandler;
+				this.eventID = eventID;
+			}
 		}
 		public class SkipCheckHandlerArgs
 		{
@@ -103,11 +215,50 @@ namespace Dpr.Battle.Logic
 			public bool sleepFlag;
 			public bool tmpItemFlag;
 			public bool existFlag;
-			public int[] work;
-			public void Clear() { /*@B 0x600B485*/ throw null; }
-			public void ClearWork() { /*@B 0x600B486*/ throw null; }
-			public void CopyFrom(global::Dpr.Battle.Logic.EventFactor.Data src) { /*@B 0x600B487*/ throw null; }
-			public Data() { /*@B 0x600B488*/ throw null; }
+			public int[] work = new int[7];
+			public void Clear() {
+				handlerTable = null;
+				skipCheckHandler = null;
+				factorType = 0;
+				priority = 0;
+				subID = 0;
+				dependID = 0;
+				pokeID = 0;
+				eventLevel = 0;
+				numHandlers = 0;
+				callingFlag = false;
+				recallEnableFlag = false;
+				rmReserveFlag = false;
+				sleepFlag = false;
+				tmpItemFlag = false;
+				existFlag = false;
+				for (int i = 0; i < work.Length; i++)
+					work[i] = 0;
+			}
+			public void ClearWork() {
+				for (int i = 0; i < work.Length; i++)
+					work[i] = 0;
+			}
+			public void CopyFrom(global::Dpr.Battle.Logic.EventFactor.Data src) {
+				handlerTable = src.handlerTable;
+				skipCheckHandler = src.skipCheckHandler;
+				factorType = src.factorType;
+				priority = src.priority;
+				subID = src.subID;
+				dependID = src.dependID;
+				pokeID = src.pokeID;
+				eventLevel = src.eventLevel;
+				numHandlers = src.numHandlers;
+				callingFlag = src.callingFlag;
+				recallEnableFlag = src.recallEnableFlag;
+				rmReserveFlag = src.rmReserveFlag;
+				sleepFlag = src.sleepFlag;
+				tmpItemFlag = src.tmpItemFlag;
+				existFlag = src.existFlag;
+				for (int i = 0; i < work.Length; i++)
+					work[i] = src.work[i];
+			}
+			public Data() { }
 		}
 	}
 }
