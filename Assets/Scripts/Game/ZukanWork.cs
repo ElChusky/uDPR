@@ -4,10 +4,10 @@ using Dpr.Message;
 using Pml;
 public static class ZukanWork
 {
-	public static int[] ShinouZukanNos;
-	private static int[] ShinouZukanCompSeeExcludeNos;
-	private static int[] ZenkokuZukanCompGetExcludeNos;
-	private static int[] ZukanRatingExcludeNos;
+	public static int[] ShinouZukanNos = new int[] { 387, 388, 389, 390, 391, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 63, 64, 65, 129, 130, 406, 315, 407, 41, 42, 169, 74, 75, 76, 95, 208, 408, 409, 410, 411, 66, 67, 68, 54, 55, 412, 413, 414, 265, 266, 267, 268, 269, 415, 416, 417, 418, 419, 420, 421, 422, 423, 214, 190, 424, 425, 426, 427, 428, 92, 93, 94, 200, 429, 198, 430, 431, 432, 118, 119, 339, 340, 433, 358, 434, 435, 307, 308, 436, 437, 77, 78, 438, 185, 439, 122, 440, 113, 242, 173, 35, 36, 441, 172, 25, 26, 163, 164, 442, 443, 444, 445, 446, 143, 201, 447, 448, 194, 195, 278, 279, 203, 449, 450, 298, 183, 184, 451, 452, 453, 454, 455, 223, 224, 456, 457, 72, 73, 349, 350, 458, 226, 459, 460, 215, 461, 480, 481, 482, 483, 484, 490 };
+	private static int[] ShinouZukanCompSeeExcludeNos = new int[] { 490 };
+	private static int[] ZenkokuZukanCompGetExcludeNos = new int[] { 151, 249, 250, 251, 385, 386, 489, 490, 491, 492, 493 };
+	private static int[] ZukanRatingExcludeNos = new int[] { 151, 251, 385, 386, 489, 490, 491, 492, 493 };
 	private const uint No_Unknown = 201u;
 	private const uint No_Powarun = 351u;
 	private const uint No_Deokisisu = 386u;
@@ -21,15 +21,15 @@ public static class ZukanWork
 	private const uint No_Girathina = 487u;
 	private const uint No_Sheimi = 492u;
 	private const uint No_Aruseusu = 493u;
-	private static global::DPData.ZUKAN_SORT_TYPE zukanSortType;
-	private static int[] viewModelUniqueIDs;
-	public static int ListIndex;
-	public static float ListScrollPosition;
-	public static int SelectLanguageIndex;
-	public static bool IsShowFootPrintBoth;
-	public static bool IsShowDescription;
-	public static bool IsShowShinouZukan;
-	public static global::DPData.ZUKAN_WORK work { get { /*@B 0x6000D81*/ throw null; } }
+	private static global::DPData.ZUKAN_SORT_TYPE zukanSortType = 0;
+	private static int[] viewModelUniqueIDs = new int[493];
+	public static int ListIndex = 0;
+	public static float ListScrollPosition = 0f;
+	public static int SelectLanguageIndex = 0;
+	public static bool IsShowFootPrintBoth = false;
+	public static bool IsShowDescription = false;
+	public static bool IsShowShinouZukan = false;
+	public static global::DPData.ZUKAN_WORK work { get { return PlayerWork.zukan; } }
 	public static void Reset() {
         ZUKAN_WORK zukan = PlayerWork.zukan;
         zukan.get_status = new GET_STATUS[(int)MonsNo.END];
@@ -579,5 +579,5 @@ public static class ZukanWork
 
         return catalog.SinnohNo;
     }
-	static ZukanWork() { /*@B 0x6000D8C*/ throw null; }
+	static ZukanWork() { }
 }

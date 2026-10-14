@@ -8,9 +8,9 @@ public class VoiceRTPC : global::UnityEngine.ScriptableObject
 	[global::System.Serializable]
 	public class VoiceRTPCData
 	{
-		public byte[] equalizerValues;
+		public byte[] equalizerValues = new byte[] { 48, 48, 48, 48, 48, 48, 48, 48, 48 };
 		public byte waveValue = 48;
-		public VoiceRTPCData() { /*@B 0x6009587*/ throw null; }
+		public VoiceRTPCData() { }
 	}
 	[global::System.Serializable]
 	public class VoiceRTPCDataList

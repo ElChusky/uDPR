@@ -2,60 +2,60 @@
 using UnityEngine;
 public class WaterInteraction : global::ProceduralPlane
 {
-	protected static readonly int ID_WATERCOLOR;
-	protected static readonly int ID_WATERATTENUATION;
-	protected static readonly int ID_WATERUPSCALE;
-	protected static readonly int ID_WATERMAXDENSITY;
-	protected static readonly int ID_REFLECTIVITY;
-	protected static readonly int ID_FRESNELPOWER;
-	protected static readonly int ID_SPECULARPOWER;
-	protected static readonly int ID_SPECULARINTENSITY;
-	protected static readonly int ID_;
+	protected static readonly int ID_WATERCOLOR = Shader.PropertyToID("_WaterSurfaceColor");
+	protected static readonly int ID_WATERATTENUATION = Shader.PropertyToID("_WaterAttenuation");
+	protected static readonly int ID_WATERUPSCALE = Shader.PropertyToID("_WaterUpScale");
+	protected static readonly int ID_WATERMAXDENSITY = Shader.PropertyToID("_WaterMaxDensity");
+	protected static readonly int ID_REFLECTIVITY = Shader.PropertyToID("_Reflectivity");
+	protected static readonly int ID_FRESNELPOWER = Shader.PropertyToID("_FresnelPower");
+	protected static readonly int ID_SPECULARPOWER = Shader.PropertyToID("_SpecularCosinePower");
+	protected static readonly int ID_SPECULARINTENSITY = Shader.PropertyToID("_SpecularColorIntensity");
+	protected static readonly int ID_ = Shader.PropertyToID("_WaterSurfaceColor");
 	[global::UnityEngine.SerializeField]
-	private bool useWaterSettings;
+	private bool useWaterSettings = true;
 	[global::UnityEngine.SerializeField]
-	protected global::UnityEngine.Color _waterColor;
+	protected global::UnityEngine.Color _waterColor = new global::UnityEngine.Color(0.2f, 0.4f, 1f);
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0.1f, 4f)]
-	protected float _waterUpScale;
+	protected float _waterUpScale = 0.25f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0.1f, 8f)]
-	protected float _waterAttenuation;
+	protected float _waterAttenuation = 2f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0.1f, 1f)]
-	protected float _waterMaxDensity;
+	protected float _waterMaxDensity = 0.95f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0f, 1f)]
-	protected float _reflectivity;
+	protected float _reflectivity = 0.03f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0.01f, 8f)]
-	protected float _fresnelPower;
+	protected float _fresnelPower = 5f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0f, 1024f)]
-	protected float _specularIntensity;
+	protected float _specularIntensity = 256f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(1f, 1024f)]
-	protected float _specularCosinePower;
+	protected float _specularCosinePower = 64f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(1f, 3f)]
-	protected int _randomDropCount;
+	protected int _randomDropCount = 1;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0.001f, 0.2f)]
-	protected float _randomDropDepthMin;
+	protected float _randomDropDepthMin = 0.025f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0.001f, 0.2f)]
-	protected float _randomDropDepthMax;
+	protected float _randomDropDepthMax = 0.1f;
 	[global::UnityEngine.SerializeField]
 	protected global::WaterInteraction.CentroidType _centroidType;
 	[global::UnityEngine.SerializeField]
 	protected global::UnityEngine.Texture2D _initialWater;
 	private bool _isInitialized;
-	public static global::XLSXContent.WaterSettings.SheetSettings waterSettings;
+	public static global::XLSXContent.WaterSettings.SheetSettings waterSettings = null;
 	public static global::WaterInteraction global;
-	public global::UnityEngine.Color waterColor { get { /*@B 0x6000E6D*/ throw null; } set { /*@B 0x6000E6E*/ throw null; } }
-	public float waterUpScale { get { return this._waterUpScale; } set { /*@B 0x6000E70*/ throw null; } }
-	public float waterAttenuation { get { return this._waterAttenuation; } set { /*@B 0x6000E72*/ throw null; } }
-	public float waterMaxDensity { get { return this._waterMaxDensity; } set { /*@B 0x6000E74*/ throw null; } }
+	public global::UnityEngine.Color waterColor { get { return this._waterColor; } set { this._waterColor = value; } }
+	public float waterUpScale { get { return this._waterUpScale; } set { this._waterUpScale = value; } }
+	public float waterAttenuation { get { return this._waterAttenuation; } set { this._waterAttenuation = value; } }
+	public float waterMaxDensity { get { return this._waterMaxDensity; } set { this._waterMaxDensity = value; } }
 	public global::WaterInteraction.CentroidType centroidType { get { return this._centroidType; } set { this._centroidType = value; } }
 	protected override void OnEnable() {
         global = this;
@@ -237,8 +237,8 @@ public class WaterInteraction : global::ProceduralPlane
         Graphics.ExecuteCommandBuffer(_commandBuffer);
 #endif
     }
-	public WaterInteraction() { /*@B 0x6000E7B*/ throw null; }
-	static WaterInteraction() { /*@B 0x6000E7C*/ throw null; }
+	public WaterInteraction() { }
+	static WaterInteraction() { }
 	public enum CentroidType
 	{
 		Player = 0,

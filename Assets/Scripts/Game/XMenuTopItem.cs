@@ -15,25 +15,61 @@ public class XMenuTopItem : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.Sprite[] _spriteIcons;
 	private global::UnityEngine.Animator _animator;
-	private static readonly int _animStateSelect;
-	private static readonly int _animStateNormal;
-	private static readonly int _animStateDecide;
-	public static readonly int animStateIn;
-	public static readonly int animStateOut;
-	private global::Dpr.UI.XMenuTop.ItemType _itemType;
+	private static readonly int _animStateSelect = Animator.StringToHash("select");
+	private static readonly int _animStateNormal = Animator.StringToHash("normal");
+	private static readonly int _animStateDecide = Animator.StringToHash("decide");
+	public static readonly int animStateIn = Animator.StringToHash("in");
+	public static readonly int animStateOut = Animator.StringToHash("out");
+	private global::Dpr.UI.XMenuTop.ItemType _itemType = global::Dpr.UI.XMenuTop.ItemType.None;
 	private global::System.Collections.Generic.List<global::Dpr.UI.UIManager.DuplicateImageMaterialParam> _duplicate;
 	public global::Dpr.UI.XMenuTop.ItemType itemType { get { return this._itemType; } }
-	public bool isNew { get { /*@B 0x6000BE8*/ throw null; } }
-	public void Setup(global::Dpr.UI.XMenuTop.ItemType itemType, bool isActived, bool isNew, bool enabled) { /*@B 0x6000BE9*/ throw null; }
-	private void OnDestroy() { /*@B 0x6000BEA*/ throw null; }
-	public void PlayAnimation(int shortNameHash) { /*@B 0x6000BEB*/ throw null; }
+	public bool isNew { get { return _newIcon.enabled; } }
+	public void Setup(global::Dpr.UI.XMenuTop.ItemType itemType, bool isActived, bool isNew, bool enabled) {
+        _itemType = itemType;
+        if (itemType == global::Dpr.UI.XMenuTop.ItemType.Bag)
+        {
+            var bagData = global::Dpr.UI.UIManager.Instance.GetPlayerCharacterBagData();
+            var defaultSprite = global::Dpr.UI.UIManager.Instance.GetAtlasSprite(SpriteAtlasID.COMMON, bagData.XMenuDefault);
+            var selectSprite = global::Dpr.UI.UIManager.Instance.GetAtlasSprite(SpriteAtlasID.COMMON, bagData.XMenuSelect);
+            _spriteIcons = new Sprite[] { defaultSprite, selectSprite };
+            _imageShadow.sprite = global::Dpr.UI.UIManager.Instance.GetAtlasSprite(SpriteAtlasID.COMMON, bagData.XMenuShadow);
+        }
+        _animator = GetComponentInChildren<Animator>(true);
+        gameObject.SetActive(isActived);
+        if (isActived)
+            Select(false);
+        _duplicate = global::Dpr.UI.UIManager.DuplicateImageMaterials(_root);
+        global::Dpr.UI.UIManager.Instance.Grayscale(_root, enabled ? 0f : 1f);
+        _newIcon.enabled = isNew;
+    }
+	private void OnDestroy() { global::Dpr.UI.UIManager.RestoreDuplicateImageMaterials(_duplicate); }
+	public void PlayAnimation(int shortNameHash) { _animator.Play(shortNameHash, 0, 0f); }
 	public void EnableSwapMode(bool enabled) {
         _root.anchoredPosition = enabled ? new Vector2(17.777779f, 10.0f) : Vector2.zero;
     }
-	public void Select(bool enabled) { /*@B 0x6000BED*/ throw null; }
-	public void ShowName(bool enabled) { /*@B 0x6000BEE*/ throw null; }
-	public void Decide(global::UnityEngine.Events.UnityAction<global::XMenuTopItem> onDecided) { /*@B 0x6000BEF*/ throw null; }
-	private global::System.Collections.IEnumerator OpDecide(global::UnityEngine.Events.UnityAction<global::XMenuTopItem> onDecided) { /*@B 0x6000BF0*/ throw null; }
-	public XMenuTopItem() { /*@B 0x6000BF1*/ throw null; }
-	static XMenuTopItem() { /*@B 0x6000BF2*/ throw null; }
+	public void Select(bool enabled) {
+        _icon.sprite = _spriteIcons[enabled ? 1 : 0];
+        if (enabled)
+        {
+            _animator.Play(_animStateSelect);
+            _newIcon.enabled = false;
+        }
+        else
+        {
+            _animator.Play(_animStateNormal);
+        }
+    }
+	public void ShowName(bool enabled) { _name.gameObject.SetActive(enabled); }
+	public void Decide(global::UnityEngine.Events.UnityAction<global::XMenuTopItem> onDecided) { StartCoroutine(OpDecide(onDecided)); }
+	private global::System.Collections.IEnumerator OpDecide(global::UnityEngine.Events.UnityAction<global::XMenuTopItem> onDecided) {
+        _animator.Play(_animStateDecide, 0, 0f);
+        yield return new WaitWhile(() =>
+        {
+            var info = _animator.GetCurrentAnimatorStateInfo(0);
+            return info.shortNameHash != _animStateDecide || info.normalizedTime < 1f;
+        });
+        onDecided?.Invoke(this);
+    }
+	public XMenuTopItem() { }
+	static XMenuTopItem() { }
 }
