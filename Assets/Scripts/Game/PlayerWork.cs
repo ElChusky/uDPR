@@ -15,9 +15,9 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 	[global::UnityEngine.SerializeField]
 	private global::PlayerWork.SaveData _saveData;
 	[global::System.NonSerialized]
-	private global::ZoneID _transitionZoneID;
+	private global::ZoneID _transitionZoneID = ZoneID.UNKNOWN;
 	[global::System.NonSerialized]
-	private int _locatorIndex;
+	private int _locatorIndex = -1;
 	[global::System.NonSerialized]
 	private global::System.Nullable<global::DPData.LOCATION_WORK> _transitionLocation;
 	[global::System.NonSerialized]
@@ -41,36 +41,36 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 	[global::System.NonSerialized]
 	private global::PlayerWork.LoadResult _loadResult;
 	[global::System.NonSerialized]
-	private global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM _battleSetupParam;
+	private global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM _battleSetupParam = new global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM();
 	[global::System.NonSerialized]
 	private global::Pml.PokeParty _playerParty;
 	[global::System.NonSerialized]
 	private global::Pml.PokePara.PokemonParam _capturedPokemon;
 	[global::System.NonSerialized]
-	private global::System.Collections.Generic.List<global::EvolveDemoTools.Param> _evolveRequets;
+	private global::System.Collections.Generic.List<global::EvolveDemoTools.Param> _evolveRequets = new global::System.Collections.Generic.List<global::EvolveDemoTools.Param>();
 	[global::System.NonSerialized]
-	private byte[] _writeSrcBuffer;
+	private byte[] _writeSrcBuffer = new byte[Marshal.SizeOf(typeof(SaveData))];
 	[global::System.NonSerialized]
-	private bool _isMainSave;
+	private bool _isMainSave = true;
 	[global::System.NonSerialized]
 	private bool _isBackupSave;
 	private static bool _isPlayerInputActive;
-	public static bool _isPlayerInputActive_ContactEvent;
-	public static bool IsFieldKuruKuruStart;
-	public static bool IsFieldFallStart;
-	public static bool IsToUg;
-	public static bool IsFromUg;
-	public static bool ReserveZoneChangeNaminoriEnd;
+	public static bool _isPlayerInputActive_ContactEvent = true;
+	public static bool IsFieldKuruKuruStart = false;
+	public static bool IsFieldFallStart = false;
+	public static bool IsToUg = false;
+	public static bool IsFromUg = false;
+	public static bool ReserveZoneChangeNaminoriEnd = false;
 	public const int InputNormal = 0;
 	public const int InputLR = 1;
 	public const int InputUD = 2;
 	public const int InputCross = 3;
-	public static global::System.Collections.Generic.List<global::Pml.WazaNo> UsedFieldWazaInArea;
+	public static global::System.Collections.Generic.List<global::Pml.WazaNo> UsedFieldWazaInArea = new global::System.Collections.Generic.List<global::Pml.WazaNo>();
 	private bool _autosaveCoroutineIsBusy;
 	private bool _autosaveWindowCoroutineIsBusy;
 	private global::Dpr.UI.AutoSaveWindow _autosaveWindow;
 	private float _autosaveWindowCloseOpenTime;
-	private static bool isNeedFixPokemonExp;
+	private static bool isNeedFixPokemonExp = false;
 	public static int playerID { get { return playerSex ? 1 : 2; } }
 	public static string userName { get { return instance._saveData.playerData.mystatus.name; } set { instance._saveData.playerData.mystatus.name = value; } }
 	public static bool playerSex { get { return instance._saveData.playerData.mystatus.sex; } set {
@@ -235,20 +235,87 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 	public static bool IsMovePokemon { get { return MovePokemonIndex >= 0; } }
 	public static int MovePokemonIndex { get; set; }
 	public static bool IsD26Key { get; set; }
-	public static global::DPData._DENDOU_SAVEDATA dendoudata { get { /*@B 0x6000B20*/ throw null; } set { /*@B 0x6000B21*/ throw null; } }
-	public static global::DPData.BadgeSaveData BadgeData { get { /*@B 0x6000B22*/ throw null; } set { /*@B 0x6000B23*/ throw null; } }
-	public static int natuki_walkcnt { get { /*@B 0x6000B26*/ throw null; } set { /*@B 0x6000B25*/ throw null; } }
-	public static global::DPData.BoukenNote boukenNote { get { /*@B 0x6000B28*/ throw null; } set { /*@B 0x6000B27*/ throw null; } }
-	public static global::DPData.TV_DATA tvData { get { /*@B 0x6000B2A*/ throw null; } set { /*@B 0x6000B29*/ throw null; } }
-	public static global::DPData.UnionSaveData unionSaveData { get { /*@B 0x6000B2C*/ throw null; } set { /*@B 0x6000B2B*/ throw null; } }
-	public static global::DPData.MysteryGiftSaveData MysteryGiftData { get { /*@B 0x6000B2D*/ throw null; } set { /*@B 0x6000B2E*/ throw null; } }
-	public static global::DPData.ZUKAN_PERSONAL_RND_DATA zukanPersonalRndData { get { /*@B 0x6000B30*/ throw null; } set { /*@B 0x6000B2F*/ throw null; } }
-	public static global::DPData.POKETCH_POKETORE_COUNT_ARRAY poketoreCountArray { get { /*@B 0x6000B33*/ throw null; } set { /*@B 0x6000B32*/ throw null; } }
-	public static global::DPData.DENDOU_SAVE_ADD dendouSaveAdd { get { /*@B 0x6000B35*/ throw null; } set { /*@B 0x6000B34*/ throw null; } }
-	public static global::ReBuffnameData reBuffNameData { get { /*@B 0x6000B37*/ throw null; } set { /*@B 0x6000B36*/ throw null; } }
-	public static global::PLAYREPORT_DATA playReportData { get { /*@B 0x6000B43*/ throw null; } set { /*@B 0x6000B42*/ throw null; } }
-	public static ref global::PLAYREPORT_DATA playReportDataRef { get { /*@B 0x6000B44*/ throw null; } }
-	protected override void Initialization() { /*@B 0x6000A14*/ throw null; }
+	public static global::DPData._DENDOU_SAVEDATA dendoudata { get { return instance._saveData.dendoudata; } set { instance._saveData.dendoudata = value; } }
+	public static global::DPData.BadgeSaveData BadgeData { get { return instance._saveData.badgeSaveData; } set { instance._saveData.badgeSaveData = value; } }
+	public static int natuki_walkcnt { get { return instance._saveData.player_save_data.natuki_walkcnt; } set { instance._saveData.player_save_data.natuki_walkcnt = value; } }
+	public static global::DPData.BoukenNote boukenNote { get { return instance._saveData.boukenNote; } set { instance._saveData.boukenNote = value; } }
+	public static global::DPData.TV_DATA tvData { get { return instance._saveData.tvData; } set { instance._saveData.tvData = value; } }
+	public static global::DPData.UnionSaveData unionSaveData { get { return instance._saveData.unionSaveData; } set { instance._saveData.unionSaveData = value; } }
+	public static global::DPData.MysteryGiftSaveData MysteryGiftData { get { return instance._saveData.mysteryGiftSaveData; } set { instance._saveData.mysteryGiftSaveData = value; } }
+	public static global::DPData.ZUKAN_PERSONAL_RND_DATA zukanPersonalRndData { get { return instance._saveData.zukanPersonalRndData; } set { instance._saveData.zukanPersonalRndData = value; } }
+	public static global::DPData.POKETCH_POKETORE_COUNT_ARRAY poketoreCountArray { get { return instance._saveData.poketoreCountArray; } set { instance._saveData.poketoreCountArray = value; } }
+	public static global::DPData.DENDOU_SAVE_ADD dendouSaveAdd { get { return instance._saveData.dendouSaveAdd; } set { instance._saveData.dendouSaveAdd = value; } }
+	public static global::ReBuffnameData reBuffNameData { get { return instance._saveData.reBuffNameData; } set { instance._saveData.reBuffNameData = value; } }
+	public static global::PLAYREPORT_DATA playReportData { get { return instance._saveData.playReportData; } set { instance._saveData.playReportData = value; } }
+	public static ref global::PLAYREPORT_DATA playReportDataRef { get { return ref instance._saveData.playReportData; } }
+	protected override void Initialization() {
+        _saveData.version = SaveData.CURRENT_VERSION;
+        _saveData.intValues = new int[500];
+        _saveData.boolValues = new bool[4000];
+        _saveData.systemFlags = new bool[1000];
+        _saveData.zoneID = ZoneID.UNKNOWN;
+        _saveData.rivalName = "ジュン";
+        _locatorIndex = -1;
+        _saveData.timeScale = 1440f;
+        RandomGroupWork.Init();
+        _saveData.saveItem = new global::Dpr.Item.SaveItem[3000];
+        _saveData.saveUgItem = new global::Dpr.Item.SaveUgItem[999];
+        _saveData.saveItemShortcut = new ushort[4];
+        _saveData.playerParty.Clear();
+        _saveData.boxData.Clear();
+        _saveData.boxTray = new global::Dpr.Box.SaveBoxTrayData[40];
+        for (int i = 0; i < _saveData.boxTray.Length; i++)
+            _saveData.boxTray[i].Clear();
+        global::Dpr.Box.BoxWork.SetTrayMax(18);
+        // one 400-byte memset over playerData + zukanData (@02ceb1ec)
+        _saveData.playerData = new PLAYER_DATA();
+        _saveData.zukanData = new ZUKAN_WORK();
+        ZukanWork.Reset();
+        _saveData.tr_battleData = new TR_BATTLE_DATA[707];
+        TrainerWork.Reset();
+        _saveData.topMenuData = TopMenuWork.Create();
+        _saveData.fieldObj_Save = new _FIELDOBJ_SAVE();
+        _saveData.fieldObj_Save.fldobj_sv = new FIELD_OBJ_SAVE_DATA[1000];
+        _saveData.fieldGimmickSaveData.GearRotate = new int[3];
+        _saveData.kinomiGrowSaveData.kinomiGrows = new KinomiGrow[128];
+        _saveData.ugSaveData = new UgSaveData();
+        _saveData.ugSaveData.EncountPokes = new global::Pml.PokePara.SerializedPokemonFull[15];
+        _saveData.ugSaveData.EncountPokePositions = new Vector3[15];
+        _saveData.ugSaveData.ugRecord.myBase.ugStoneStatue = new UgStoneStatue[30];
+        _saveData.ugSaveData.TalkedNPCsID = new byte[100];
+        _saveData.poffinSaveData = new PoffinSaveData();
+        _saveData.poffinSaveData.Reset();
+        EncountDataWork.Create();
+        RecordWork.Create();
+        global::Dpr.Contest.ContestWork.ResetContestData();
+        global::Dpr.GMS.GMSWork.ResetGMSData();
+        global::Dpr.NetworkUtils.NetworkHelper.InitNetworkData();
+        _saveData.ballDecoData.Clear();
+        _saveData.saveSeal = new global::Dpr.BallDeco.SaveSealData[200];
+        ConfigWork.Initialize(ref config);
+        _saveData.player_save_data = new PLAYER_SAVE_DATA(0);
+        BtlTowerWork.Create();
+        global::Dpr.NetworkUtils.NetworkManager.Reset();
+        _saveData.poketchData = new POKETCH_DATA(0);
+        _saveData.azukariyaData = new AzukariyaData();
+        _saveData.azukariyaData.Initialize();
+        _saveData.badgeSaveData = new BadgeSaveData();
+        _saveData.badgeSaveData.Clear();
+        _saveData.boukenNote = new BoukenNote(0);
+        TvWork.Initialize();
+        _saveData.dendoudata = new _DENDOU_SAVEDATA(0);
+        _saveData.zukanPersonalRndData = new ZUKAN_PERSONAL_RND_DATA();
+        _saveData.zukanPersonalRndData.Clear();
+        _saveData.mysteryGiftSaveData = new MysteryGiftSaveData();
+        _saveData.mysteryGiftSaveData.Clear();
+        _saveData.playReportData = new PLAYREPORT_DATA();
+        _saveData.mtData = new MT_DATA();
+        _saveData.mtData.Clear();
+        POKETCH_POKETORE_COUNT_ARRAY.CreatePoketoreData();
+        _saveData.dendouSaveAdd = new DENDOU_SAVE_ADD(0);
+        _saveData.ballDecoExtraData = new global::Dpr.BallDeco.SaveBallDecoExtraData();
+        _saveData.ballDecoExtraData.Clear();
+    }
 	private void ToBytes<T>(T obj, ref byte[] bytes) {
         int size = Marshal.SizeOf<T>(obj);
         IntPtr ptr = Marshal.AllocHGlobal(size);
@@ -422,14 +489,65 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 	public static bool ExistBackUpData() {
         return Dpr.NX.SaveSystem.BackupExists();
     }
-	public static int GetInt(global::Dpr.EvScript.EvWork.WORK_INDEX index) { /*@B 0x6000A25*/ throw null; }
-	public static void SetInt(global::Dpr.EvScript.EvWork.WORK_INDEX index, int value) { /*@B 0x6000A26*/ throw null; }
-	public static bool GetBool(global::Dpr.EvScript.EvWork.FLAG_INDEX index) { /*@B 0x6000A27*/ throw null; }
-	public static void SetBool(global::Dpr.EvScript.EvWork.FLAG_INDEX index, bool value) { /*@B 0x6000A28*/ throw null; }
-	public static bool GetSytemFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX index) { /*@B 0x6000A29*/ throw null; }
-	public static void SetSytemFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX index, bool value) { /*@B 0x6000A2A*/ throw null; }
-	public static void SetTransitionZone(global::ZoneID zoneID, int index = 0) { /*@B 0x6000A2B*/ throw null; }
-	public static void SetWarp(global::PlayerWork.WarpType warp) { /*@B 0x6000A2C*/ throw null; }
+	public static int GetInt(global::Dpr.EvScript.EvWork.WORK_INDEX index) {
+        return instance._saveData.intValues[(int)index];
+    }
+	public static void SetInt(global::Dpr.EvScript.EvWork.WORK_INDEX index, int value) {
+        instance._saveData.intValues[(int)index] = value;
+    }
+	public static bool GetBool(global::Dpr.EvScript.EvWork.FLAG_INDEX index) {
+        return instance._saveData.boolValues[(int)index];
+    }
+	public static void SetBool(global::Dpr.EvScript.EvWork.FLAG_INDEX index, bool value) {
+        instance._saveData.boolValues[(int)index] = value;
+    }
+	public static bool GetSytemFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX index) {
+        // shipped: an empty range test (index - 0x326 < 4) precedes the read (@02ceda30) - no effect
+        return instance._saveData.systemFlags[(int)index];
+    }
+	public static void SetSytemFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX index, bool value) {
+        instance._saveData.systemFlags[(int)index] = value;
+    }
+	public static void SetTransitionZone(global::ZoneID zoneID, int index = 0) {
+        transitionZoneID = zoneID;
+        locatorIndex = index;
+    }
+	public static void SetWarp(global::PlayerWork.WarpType warp) {
+        Warp = warp;
+        transitionLocation = GetLocationWork();
+
+        if (transitionLocation.HasValue)
+        {
+            if (warp != WarpType.Teleport)
+            {
+                SetTransitionZone((ZoneID)transitionLocation.Value.zoneID);
+                return;
+            }
+
+            if (transitionLocation.Value.dir < 1)
+                SetTransitionZone((ZoneID)transitionLocation.Value.zoneID);
+            else
+                SetTransitionZone((ZoneID)transitionLocation.Value.zoneID, transitionLocation.Value.dir);
+        }
+
+        if (warp == WarpType.Teleport)
+            transitionLocation = null;
+
+        LOCATION_WORK? GetLocationWork()
+        {
+            switch (warp)
+            {
+                case WarpType.Zenmetsu:
+                    return PlayerSaveData.worpPoint.zenmetu;
+                case WarpType.Teleport:
+                    return PlayerSaveData.worpPoint.teleport;
+                case WarpType.Ananuke:
+                    return PlayerSaveData.worpPoint.ananuke;
+                default:
+                    return null;
+            }
+        }
+    }
 	public static void SetWarpSorawotobu(global::ZoneID zoneId, int locatorIndex) {
         // Warp setter inlined (static +0x40), SetTransitionZone inlined (flag 0x4edbe9e @02cee5f0)
         Warp = WarpType.Sorawotobu;
@@ -444,7 +562,9 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
         instance._saveData.playerData.mystatus.height = player.Height;
         instance._saveData.playerData.mystatus.rotation = player.yawAngle;
     }
-	public static void SetPlayerGrid(global::UnityEngine.Vector2Int vec) { /*@B 0x6000A40*/ throw null; }
+	public static void SetPlayerGrid(global::UnityEngine.Vector2Int vec) {
+        instance._saveData.playerData.mystatus.grid = vec;
+    }
 	public static void SetPlayerHeight(float height) {
         instance._saveData.playerData.mystatus.height = height;
     }
@@ -457,8 +577,12 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 	public static int GetMoney() {
         return instance._saveData.playerData.mystatus.gold;
     }
-	public static void SetItem(int itemno, global::Dpr.Item.SaveItem value) { /*@B 0x6000A69*/ throw null; }
-	public static global::Dpr.Item.SaveItem GetItem(int itemno) { /*@B 0x6000A6A*/ throw null; }
+	public static void SetItem(int itemno, global::Dpr.Item.SaveItem value) {
+        instance._saveData.saveItem[itemno] = value;
+    }
+	public static global::Dpr.Item.SaveItem GetItem(int itemno) {
+        return instance._saveData.saveItem[itemno];
+    }
 	public static void SetUgItem(int ugItemNo, global::Dpr.Item.SaveUgItem value) {
         instance._saveData.saveUgItem[ugItemNo] = value;
     }
@@ -556,9 +680,38 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
         for (int i = 0; i < sysCount; i++)
             instance._saveData.systemFlags[i] = false;
     }
-	public static void GetDateTime(out int year, out int month, out int day) { /*@B 0x6000ADF*/ throw null; }
-	public static void SetPlayerStatus(int selectIndex = 4, string name = null) { /*@B 0x6000AEA*/ throw null; }
-	public static void SetPlayerStatus(bool sex, int colorId, string name = null) { /*@B 0x6000AEB*/ throw null; }
+	public static void GetDateTime(out int year, out int month, out int day) {
+        DateTime now = GameManager.nowTime;
+        year = now.Year;
+        month = now.Month;
+        day = now.Day;
+    }
+	public static void SetPlayerStatus(int selectIndex = 4, string name = null) {
+        SetPlayerStatus(selectIndex < 4, selectIndex & 3, name);
+    }
+	public static void SetPlayerStatus(bool sex, int colorId, string name = null) {
+        uniqueID = GenerateUniqueId();
+        playerSex = sex;
+        colorID = colorId;
+
+        int fashion;
+        string defaultName;
+        if (!playerSex)
+        {
+            fashion = 100;
+            defaultName = "ヒカリ";
+        }
+        else
+        {
+            fashion = 0;
+            defaultName = "コウキ";
+        }
+        playerFashion = fashion;
+        userName = string.IsNullOrEmpty(name) ? defaultName : name;
+
+        SystemTimeWork.SetStartTime(false);
+        TvWork.MakeDailyTopic();
+    }
 	public static global::DPData.CON_PHOTO_DATA GetPhotoDataByCategoryID(global::Dpr.Contest.CategoryID categoryID) {
         return contestData.photoDatas[(int)categoryID - 1];
     }
@@ -646,20 +799,217 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
         Array.Copy(hash, 0, byteArray, SaveData.SAVEDATA_HASH_ADDR, SaveData.SAVEDATA_HASH_SIZE);
         return result;
     }
-	private void makeSaveDataHash(ref byte[] buf) { /*@B 0x6000B39*/ throw null; }
-	public static global::PlayerWork.LoadResult GetLoadResult() { /*@B 0x6000B3A*/ throw null; }
-	private static void TakeOverOldVersion() { /*@B 0x6000B3B*/ throw null; }
-	public static bool IsAutoSaveSystemBusy() { /*@B 0x6000B3C*/ throw null; }
-	public static void AutoSave(bool mainsave, bool backup) { /*@B 0x6000B3D*/ throw null; }
-	public static global::System.Collections.IEnumerator AutoSaveCoroutine(bool mainsave, bool backup) { /*@B 0x6000B3E*/ throw null; }
-	private global::System.Collections.IEnumerator AutoSaveWindowAnime() { /*@B 0x6000B3F*/ throw null; }
-	private static void CheckMoveAfterSaveGrid(ref global::UnityEngine.Vector2Int pos) { /*@B 0x6000B40*/ throw null; }
-	public static bool IsMyPokemon(global::Pml.PokePara.CoreParam poke) { /*@B 0x6000B41*/ throw null; }
-	public static void FixPokemonExpAll() { /*@B 0x6000B45*/ throw null; }
-	private static bool FixPokemonExp(global::Pml.PokePara.PokemonParam pp) { /*@B 0x6000B46*/ throw null; }
-	private static void CheckDameTamago() { /*@B 0x6000B47*/ throw null; }
-	public PlayerWork() { /*@B 0x6000B48*/ throw null; }
-	static PlayerWork() { /*@B 0x6000B49*/ throw null; }
+	private void makeSaveDataHash(ref byte[] buf) {
+        using (var crypto = new MD5CryptoServiceProvider())
+        {
+            Array.Clear(buf, SaveData.SAVEDATA_HASH_ADDR, SaveData.SAVEDATA_HASH_SIZE);
+            byte[] hash = crypto.ComputeHash(buf, 0, Marshal.SizeOf(typeof(SaveData)));
+            Array.Copy(hash, 0, buf, SaveData.SAVEDATA_HASH_ADDR, SaveData.SAVEDATA_HASH_SIZE);
+        }
+    }
+	public static global::PlayerWork.LoadResult GetLoadResult() {
+        return instance._loadResult;
+    }
+	private static void TakeOverOldVersion() {
+        int version = instance._saveData.version;
+
+        if (version < SaveData.CURRENT_VERSION_24)
+            DendouiriWork.NicNameTakeOver();
+
+        if (version < SaveData.CURRENT_VERSION_26)
+        {
+            RecordWork.CreateAddData();
+            RecordWork.PatchLanguage();
+        }
+
+        if (version < SaveData.CURRENT_VERSION_27)
+            ZukanWork.CheckLangFlags();
+
+        if (version < SaveData.CURRENT_VERSION_28)
+            POKETCH_POKETORE_COUNT_ARRAY.CreatePoketoreData();
+
+        if (version < SaveData.CURRENT_VERSION_29)
+        {
+            Dpr.GMS.GMSWork.ResetGMSData();
+            GC.Collect();
+        }
+
+        if (version < SaveData.CURRENT_VERSION_2B)
+            DendouiriWork.UpdateSaveData_v2B();
+
+        if (version < SaveData.CURRENT_VERSION_2E)
+            BallDecoWork.IsFixBallDecoExtraData = true;
+
+        if (version < SaveData.CURRENT_VERSION_2F)
+            RecordWork.Sub(RECORD_ID.RECID_CAPTURE_POKE, 1);
+
+        if (version < SaveData.CURRENT_VERSION_31)
+            BtlTowerWork.ResetBtlAve();
+
+        if (version < SaveData.CURRENT_VERSION_32)
+            TvWork.Initialize();
+
+        if (version < SaveData.CURRENT_VERSION_34)
+            BallDecoWork.ResetBallDecoExtraData();
+    }
+	public static bool IsAutoSaveSystemBusy() {
+        return instance._autosaveCoroutineIsBusy || instance._autosaveWindowCoroutineIsBusy;
+    }
+	public static void AutoSave(bool mainsave, bool backup) {
+        if (instance._autosaveCoroutineIsBusy)
+            return;
+
+        instance._autosaveCoroutineIsBusy = true;
+        // AutoSaveCoroutine inlined (d__500 built here @02cf6190)
+        SmartPoint.AssetAssistant.Sequencer.Start(AutoSaveCoroutine(mainsave, backup));
+    }
+	public static global::System.Collections.IEnumerator AutoSaveCoroutine(bool mainsave, bool backup) {
+        while (IsSaveSystemBusy())
+            yield return null;
+
+        SaveAsync(mainsave, backup);
+
+        if (mainsave && !instance._autosaveWindowCoroutineIsBusy)
+        {
+            instance._autosaveWindowCoroutineIsBusy = true;
+            SmartPoint.AssetAssistant.Sequencer.Start(instance.AutoSaveWindowAnime());
+        }
+
+        while (IsSaveSystemBusy())
+            yield return null;
+
+        instance._autosaveCoroutineIsBusy = false;
+    }
+	private global::System.Collections.IEnumerator AutoSaveWindowAnime() {
+        if (SmartPoint.Components.Fader.fillPower > 0.5f)
+            yield return null;
+
+        if (_autosaveWindow == null)
+        {
+            _autosaveWindow = Dpr.UI.UIManager.Instance.CreateUIWindow<Dpr.UI.AutoSaveWindow>(UIWindowID.FIELD_AUTOSAVE);
+            _autosaveWindow.Open((UIWindowID)(-2));
+        }
+
+        float limit = DataManager.FieldCommonParam[(int)FieldCommon.ParamIndx.AutoSaveMinTime].param * 0.001f;
+        _autosaveWindowCloseOpenTime = 0f;
+        while (_autosaveWindowCloseOpenTime < limit)
+        {
+            _autosaveWindowCloseOpenTime += Time.deltaTime;
+            yield return null;
+        }
+
+        _autosaveWindow.Close(window =>
+        {
+            _autosaveWindow = null;
+            _autosaveWindowCoroutineIsBusy = false;
+        }, (UIWindowID)(-2));
+    }
+	private static void CheckMoveAfterSaveGrid(ref global::UnityEngine.Vector2Int pos) {
+        if (DataManager.MoveAfterSaveGrid == null)
+            return;
+
+        var data = DataManager.MoveAfterSaveGrid.data;
+        for (int i = 0; i < data.Length; i++)
+        {
+            if (data[i].zoneID == zoneID && pos.x == data[i].grid.x && pos.y == data[i].grid.y)
+            {
+                pos.x = data[i].regrid.x;
+                pos.y = data[i].regrid.y;
+                return;
+            }
+        }
+    }
+	public static bool IsMyPokemon(global::Pml.PokePara.CoreParam poke) {
+        bool validFlag = poke.StartFastMode();
+        Sex sex = playerSex ? Sex.MALE : Sex.FEMALE;
+        bool result = uniqueID == poke.GetID() && sex == poke.GetParentSex() && userName == poke.GetParentName();
+        poke.EndFastMode(validFlag);
+        return result;
+    }
+	public static void FixPokemonExpAll() {
+        uint memberCount = playerParty.GetMemberCount();
+        for (uint i = 0; i < memberCount; i++)
+            FixPokemonExp(playerParty.GetMemberPointer(i));
+
+        var pp = new global::Pml.PokePara.PokemonParam();
+        for (int tray = 0; tray < 40; tray++)
+        {
+            for (int pos = 0; pos < 30; pos++)
+            {
+                Dpr.Box.BoxPokemonWork.GetPokemon(pp, tray, pos);
+                if (FixPokemonExp(pp))
+                    Dpr.Box.BoxPokemonWork.UpdatePokemon(pp, tray, pos);
+            }
+        }
+
+        var azukariya = instance._saveData.azukariyaData.pokemonParam;
+        for (int i = 0; i < azukariya.Length; i++)
+        {
+            // static form: PokemonParam's own Serialize_Full / Deserialize_Full(byte[]) hide the extension methods
+            global::Pml.PokePara.SerializedPokemonExtensions.Deserialize_Full(pp, in azukariya[i]);
+            if (FixPokemonExp(pp))
+                global::Pml.PokePara.SerializedPokemonExtensions.Serialize_Full(pp, ref azukariya[i]);
+        }
+    }
+	private static bool FixPokemonExp(global::Pml.PokePara.PokemonParam pp) {
+        if (pp == null)
+            return false;
+
+        bool validFlag = pp.StartFastMode();
+        try
+        {
+            if (pp.IsNull())
+                return false;
+
+            uint exp = pp.GetExp();
+            pp.SetExp(exp);
+            return exp != pp.GetExp();
+        }
+        finally
+        {
+            pp.EndFastMode(validFlag);
+        }
+    }
+	private static void CheckDameTamago() {
+        uint memberCount = playerParty.GetMemberCount();
+        for (uint i = 0; i < memberCount; i++)
+        {
+            var pp = playerParty.GetMemberPointer(i);
+            if (pp.IsNull())
+                pp.GetAccessor().SetFuseiTamagoFlag(true);
+        }
+    }
+	public PlayerWork() {
+    }
+	static PlayerWork() {
+        capturedMonsNo = MonsNo.NULL;
+        capturedBallCountTvTopic = 0;
+        encountEnable = true;
+        isDebugWalk = false;
+        isDebugPlayerVisible = false;
+        FieldWorpLinkName = "";
+        FieldWorpLabel = "";
+        isDebugNpcVisble = false;
+        isDebugNpcPokeVisble = false;
+        DebugEncountMonsNo = MonsNo.NULL;
+        FieldWeather = (SYS_WEATHER)0;
+        DebugWeek = -1;
+        FieldInputMode = InputNormal;
+        IsZenmetuFlag = false;
+        IsNeedUnloadOnFieldConnector = false;
+        Warp = WarpType.None;
+        Telescope = false;
+        TelescopeReturn = false;
+        FieldCacheFlag = false;
+        SafariCaptureMonsNo = new global::System.Collections.Generic.List<MonsNo>();
+        IsCpuBoostMode = 3;
+        UsedFieldItem = null;
+        UsedFieldWazaNo = WazaNo.NULL;
+        UsedFieldWazaTemotiNo = 0;
+        PoketchOpen = false;
+        MovePokemonIndex = -1;
+        IsD26Key = false;
+    }
 	public enum LoadResult
 	{
 		SUCCESS = 0,
@@ -694,7 +1044,7 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 		public const int CURRENT_VERSION_34 = 52;
 		public const int CURRENT_VERSION = 52;
 		public const int LAUNCH_VERSION = 37;
-		public static readonly int[] BINARY_SIZE;
+		public static readonly int[] BINARY_SIZE = new int[] { 956456, 957416, 971096, 971144, 971144, 972416, 973856, 973856, 973856, 973856, 973856, 973856, 973856, 978316, 978316, 979108 };
 		public const int SAVEDATA_HASH_ADDR = 956440;
 		public const int SAVEDATA_HASH_SIZE = 16;
 		public const int GMS_WORK_ADDR = 643132;
@@ -754,7 +1104,8 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 		public global::DPData.DENDOU_SAVE_ADD dendouSaveAdd;
 		public global::DPData.TV_DATA tvData;
 		public global::Dpr.BallDeco.SaveBallDecoExtraData ballDecoExtraData;
-		static SaveData() { /*@B 0x6009606*/ throw null; }
+		static SaveData() {
+        }
 	}
 	public enum WarpType
 	{
