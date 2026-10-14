@@ -27,17 +27,17 @@ public class FieldManager
 	private global::FieldManager.EncountUpdateType _encountUpdateType;
 	private float _encountWait;
 	private global::FieldManager.EncountFadeType _encountFadeType;
-	private global::System.Collections.Generic.Queue<global::FieldManager.AttributeEvent> _attributeEntitySE;
-	private global::System.Collections.Generic.Queue<global::FieldManager.AttributeEvent> _attributeEntityEffect;
+	private global::System.Collections.Generic.Queue<global::FieldManager.AttributeEvent> _attributeEntitySE = new global::System.Collections.Generic.Queue<global::FieldManager.AttributeEvent>();
+	private global::System.Collections.Generic.Queue<global::FieldManager.AttributeEvent> _attributeEntityEffect = new global::System.Collections.Generic.Queue<global::FieldManager.AttributeEvent>();
 	public global::MapType NowMapType;
 	public global::MapType OldMapType;
-	private global::ZoneID _now_zoneID;
+	private global::ZoneID _now_zoneID = global::ZoneID.UNKNOWN;
 	private global::FieldManager.LoadEffectData[] _effectDataArray;
 	private global::Effect.EffectInstance _weatherEffectInstance;
 	private global::SYS_WEATHER _nowWeather;
 	private global::FieldWeather _weather;
-	public global::FieldMistWork MistWork;
-	public global::FieldFlashWork FlashWork;
+	public global::FieldMistWork MistWork = new global::FieldMistWork();
+	public global::FieldFlashWork FlashWork = new global::FieldFlashWork();
 	private global::Dpr.Trainer.TrainerID _btl_trainerID1;
 	private global::Dpr.Trainer.TrainerID _btl_trainerID2;
 	private global::UnityEngine.GameObject _ug_hole;
@@ -53,7 +53,7 @@ public class FieldManager
 	private global::Dpr.Field.EncountResult _encResult;
 	private global::EncEffectSequenceController _encEffctController;
 	private int _encEffectCount;
-	private global::UnityEngine.GameObject[] _encEffectAsset;
+	private global::UnityEngine.GameObject[] _encEffectAsset = new global::UnityEngine.GameObject[2];
 	private bool _encountAttriLog;
 	private global::Dpr.Field.FieldFishing _fishing;
 	private global::FishingRod _useRod;
@@ -68,8 +68,8 @@ public class FieldManager
 	private bool _initFlag;
 	private global::FieldManager.AutoSaveState _autoSaveState;
 	public static bool SealPrevFalg;
-	public global::UnityEngine.Vector3 eventTownMapPos;
-	private global::System.Collections.Generic.List<int> unnnoonFormList;
+	public global::UnityEngine.Vector3 eventTownMapPos = global::UnityEngine.Vector3.zero;
+	private global::System.Collections.Generic.List<int> unnnoonFormList = new global::System.Collections.Generic.List<int>(28);
 	private int _shorCutSeq;
 	private global::UnityEngine.Transform _akLisnerTransform;
 	public event global::System.Action OnZoneChangeEvent;
@@ -77,32 +77,404 @@ public class FieldManager
 	public static global::FieldManager Instance { get; private set; }
 	public static bool IsResume { get; private set; }
 	public global::FieldManager.UpdateType updateType { get { return this._updateType; } }
-	public global::XLSXContent.MapInfo.SheetZoneData ZoneData { get { /*@B 0x60000C8*/ throw null; } }
-	public global::AreaID areaID { get { /*@B 0x60000C9*/ throw null; } }
-	public global::ZoneID zoneID { get { /*@B 0x60000CA*/ throw null; } }
-	public global::ZoneID Before_zoneID { get; private set; }
+	public global::XLSXContent.MapInfo.SheetZoneData ZoneData { get { return GameManager.mapInfo[(int)PlayerWork.zoneID]; } }
+	public global::AreaID areaID { get { return ZoneData.AreaID; } }
+	public global::ZoneID zoneID { get { return ZoneData.ZoneID; } }
+	public global::ZoneID Before_zoneID { get; private set; } = global::ZoneID.UNKNOWN;
 	public global::UnityEngine.GameObject UG_Hole { get { return this._ug_hole; } }
-	public static bool IsWazaActionEnd { get { /*@B 0x60000CE*/ throw null; } }
-	public uint _nowEventId { get { /*@B 0x60000CF*/ throw null; } set { /*@B 0x60000D0*/ throw null; } }
+	public static bool IsWazaActionEnd { get { return Instance._wazaAction == null; } }
+	public uint _nowEventId { get { return PlayerWork.SystemData.fd_bgmEvnet; } set {
+		global::DPData.SYSTEMDATA systemData = PlayerWork.SystemData;
+		systemData.fd_bgmEvnet = value;
+		PlayerWork.SystemData = systemData;
+	} }
 	public bool IsMenuOpen { get; private set; }
 	public bool isMenuOpenRequest { get { return this._isMenuOpenRequest; } }
 	public bool IsPoketchOpen { get; private set; }
 	public global::KinomiResources KinomiResources { get; private set; }
-	public FieldManager() { /*@B 0x60000D8*/ throw null; }
-	private void SeqOnDestroy() { /*@B 0x60000D9*/ throw null; }
-	public void SetDefaultParam() { /*@B 0x60000DA*/ throw null; }
-	public global::System.Collections.IEnumerator SceneInit() { /*@B 0x60000DB*/ throw null; }
-	private bool IsSavedMapType(global::MapType mapType) { /*@B 0x60000DC*/ throw null; }
-	private bool IsTownMapNoSavedZone(global::ZoneID zoneid) { /*@B 0x60000DD*/ throw null; }
-	public bool IsSceneLoadEnd() { /*@B 0x60000DE*/ throw null; }
-	public bool UnUsed_UnloadAsset() { /*@B 0x60000DF*/ throw null; }
-	public global::System.Collections.IEnumerator SceneInitAfter() { /*@B 0x60000E0*/ throw null; }
-	private global::System.Collections.IEnumerator EffectLoad() { /*@B 0x60000E1*/ throw null; }
-	public void SceneStart() { /*@B 0x60000E2*/ throw null; }
-	public void OnDestroy() { /*@B 0x60000E3*/ throw null; }
-	private bool IsDemoReqestStop() { /*@B 0x60000E4*/ throw null; }
-	public void ActiveUpdate() { /*@B 0x60000E5*/ throw null; }
-	public void DeleteUpdate() { /*@B 0x60000E6*/ throw null; }
+	public FieldManager() {
+		if (Instance != null)
+			return;
+		Instance = this;
+		global::Dpr.Field.SwayGrass.SwayGrass_InitSwayGrass();
+		UniqueBGMEvent(PlayerWork.transitionZoneID, PlayerWork.zoneID);
+		FlagWork.SetSysFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.SYS_INPUT_OFF, false);
+		FlagWork.SetSysFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.SYS_FLAG_AUTOSAVE_STOP, false);
+		if (fwMng == null)
+			fwMng = new global::Dpr.Field.Walking.FieldWalkingManager();
+		SwitchNotification.FocusStateChanged += (int a) =>
+		{
+#if SWITCH
+			if (SwitchNotification.CurrentFocusHandlingMode == global::UnityEngine.Switch.Notification.FocusHandlingMode.Notify
+				&& global::UnityEngine.Switch.Notification.GetCurrentFocusState() == global::UnityEngine.Switch.Notification.FocusState.InFocus)
+			{
+				DailyEventWork.PenaltyCheck();
+				IsResume = true;
+			}
+#endif
+		};
+		SwitchNotification.Resume += (int a) =>
+		{
+#if SWITCH
+			if (SwitchNotification.CurrentFocusHandlingMode == global::UnityEngine.Switch.Notification.FocusHandlingMode.Suspend)
+			{
+				DailyEventWork.PenaltyCheck();
+				IsResume = true;
+			}
+#endif
+		};
+		Sequencer.onDestroy -= SeqOnDestroy;
+		Sequencer.onDestroy += SeqOnDestroy;
+		UnionWork.SetPenaltyTime();
+	}
+	private void SeqOnDestroy() {
+		while (!global::Dpr.EvScript.EvDataManager.Instanse.ForceUnload())
+		{
+		}
+		KinomiResources.ReleaseAll();
+		Sequencer.onDestroy -= SeqOnDestroy;
+	}
+	public void SetDefaultParam() {
+		_encountUpdateType = EncountUpdateType.CallEffect;
+		_encountWait = 0f;
+		_encountFadeType = EncountFadeType.Normal;
+		_btl_trainerID1 = global::Dpr.Trainer.TrainerID.NONE;
+		_btl_trainerID2 = global::Dpr.Trainer.TrainerID.NONE;
+		_useRod = FishingRod.None;
+		_wazaAction = null;
+		_updateType = NowMapType == MapType.MAPTYPE_UNDERGROUND ? UpdateType.UnderGround : UpdateType.Field;
+		if (!SealPrevFalg)
+			IsMenuOpen = false;
+		IsPoketchOpen = false;
+	}
+	public global::System.Collections.IEnumerator SceneInit() {
+		DeleteUpdate();
+		global::XLSXContent.MapInfo mapInfo = GameManager.mapInfo;
+		global::XLSXContent.MapInfo.SheetZoneData zoneData = mapInfo[(int)PlayerWork.transitionZoneID];
+		if (!PlayerWork.IsZenmetuFlag && !PlayerWork.TelescopeReturn && PlayerWork.zoneID != global::ZoneID.UNKNOWN
+			&& !IsTownMapNoSavedZone(PlayerWork.zoneID)
+			&& !IsSavedMapType(mapInfo[(int)PlayerWork.zoneID].MapType)
+			&& IsSavedMapType(zoneData.MapType))
+		{
+			if (FlagWork.GetFlag(global::Dpr.EvScript.EvWork.FLAG_INDEX.FLAG_STOP_ZONE_PROGRAM))
+				SetTownMapPos(PlayerWork.zoneID, ref eventTownMapPos);
+			else
+				SetTownMapPos(PlayerWork.zoneID, ref EntityManager.activeFieldPlayer.worldPosition);
+		}
+		PlayerWork.TelescopeReturn = false;
+		_attributeEntitySE.Clear();
+		_attributeEntityEffect.Clear();
+		if (PlayerWork.FieldCacheFlag)
+		{
+			SetDefaultParam();
+			yield break;
+		}
+		global::Dpr.EvScript.EvDataManager.Instanse.Init_PokemonCenter();
+		global::Dpr.EvScript.EvDataManager.Instanse.Init_FieldShip();
+		if (KinomiResources == null)
+		{
+			KinomiResources = new global::KinomiResources();
+			KinomiResources.LoadAll();
+			while (!KinomiResources.IsValid())
+				yield return null;
+		}
+		if (!FlashWork.IsValid)
+		{
+			FlashWork.Load();
+			while (!FlashWork.IsValid)
+				yield return null;
+		}
+		OldMapType = NowMapType;
+		NowMapType = zoneData.MapType;
+		_updateType = NowMapType == MapType.MAPTYPE_UNDERGROUND ? UpdateType.UnderGround : UpdateType.Field;
+		yield return global::Dpr.EvScript.EvDataManager.Instanse.RequestAssetSetUp(mapInfo[(int)PlayerWork.transitionZoneID].AreaID);
+		if (_updateType == UpdateType.UnderGround)
+		{
+			UgResManager.DataLoadRequest(null);
+			UgFatherResourceManager.DataLoadRequest(null);
+			LightStoneResourcesManager.DataLoadRequest(null);
+		}
+		else
+		{
+			UgResManager.UnLoad();
+			UgFatherResourceManager.UnLoad();
+			LightStoneResourcesManager.UnLoad();
+			_ugMainProc = null;
+		}
+		if (_fldCanvasObject == null && _fldCanvasAssetReqOpe == null)
+		{
+			_fldCanvasAssetReqOpe = AssetManager.AppendAssetBundleRequest("fieldui/main", true, null, null);
+			AssetManager.DispatchRequests();
+		}
+		if (_encFadeTextures == null && _encFadeTexturesReqOpe == null)
+		{
+			_encFadeTexturesReqOpe = AssetManager.AppendAssetBundleRequest("field/fade_tex", true, null, null);
+			AssetManager.DispatchRequests();
+		}
+		UIManager.onFieldWaza -= UI_onFieldWaza;
+		UIManager.onFieldWaza += UI_onFieldWaza;
+		UIManager.onUseFieldItem -= UI_onUseFieldItem;
+		UIManager.onUseFieldItem += UI_onUseFieldItem;
+		UIManager.onWazaFly -= UI_onWazaFly;
+		UIManager.onWazaFly += UI_onWazaFly;
+		FieldPoketch.CreatePoketchWindow();
+		FieldPoketch.RegisterEvent();
+		if (_weather == null)
+			_weather = new FieldWeather();
+		if (_fishing == null)
+			_fishing = new FieldFishing();
+		if (ZoneWork.IsSpFishingZone(PlayerWork.transitionZoneID))
+			yield return SpFishing.LoadFishingData();
+		AudioAmbientManager.SetEnabled(true);
+		SetAkLisnerTransform(EntityManager.activeFieldPlayer.transform);
+		RecordWork.AddDataMineNull();
+	}
+	private bool IsSavedMapType(global::MapType mapType) {
+		switch (mapType)
+		{
+			case MapType.MAPTYPE_NOWHERE:
+				return false;
+			case MapType.MAPTYPE_CAVE:
+			case MapType.MAPTYPE_ROOM:
+			case MapType.MAPTYPE_POKECEN:
+			case MapType.MAPTYPE_UNDERGROUND:
+				return true;
+		}
+		return false;
+	}
+	private bool IsTownMapNoSavedZone(global::ZoneID zoneid) {
+		switch (zoneid)
+		{
+			case global::ZoneID.D05R0104:
+			case global::ZoneID.D05R0105:
+			case global::ZoneID.D05R0114:
+			case global::ZoneID.D05R0115:
+			case global::ZoneID.D05R0116:
+			case global::ZoneID.D06R0201:
+			case global::ZoneID.D06R0202:
+			case global::ZoneID.D06R0203:
+			case global::ZoneID.D06R0204:
+			case global::ZoneID.D06R0205:
+			case global::ZoneID.D06R0206:
+			case global::ZoneID.D10R0101:
+			case global::ZoneID.D11R0101:
+			case global::ZoneID.D13R0101:
+			case global::ZoneID.D23R0101:
+				return true;
+		}
+		return false;
+	}
+	public bool IsSceneLoadEnd() {
+		if (!global::Dpr.EvScript.EvDataManager.Instanse.IsLoadAssetBundle())
+			return false;
+		if (_fldCanvasAssetReqOpe != null && _fldCanvasAssetReqOpe.assetBundleRequest.status != RequestStatus.Complete)
+			return false;
+		if (_encFadeTexturesReqOpe != null && _encFadeTexturesReqOpe.assetBundleRequest.status != RequestStatus.Complete)
+			return false;
+		if (_effectDataArray != null)
+		{
+			for (int i = 0; i < _effectDataArray.Length; i++)
+			{
+				if (_effectDataArray[i].isLoading)
+					return false;
+			}
+		}
+		return true;
+	}
+	public bool UnUsed_UnloadAsset() {
+		return global::Dpr.EvScript.EvDataManager.Instanse.RefCountZeroUnload();
+	}
+	public global::System.Collections.IEnumerator SceneInitAfter() {
+		if (PlayerWork.FieldCacheFlag)
+		{
+			global::Dpr.EvScript.EvDataManager.Instanse.SaveDataReflection();
+			global::Dpr.EvScript.EvDataManager.Instanse.SetupGimmickEntity();
+			if (fwMng.isBattleRetrurnCreate)
+			{
+				fwMng.isBattleRetrurnCreate = false;
+				yield return fwMng.CreatePartner(true, true, false);
+			}
+			ActiveUpdate();
+			PlayerWork.FieldCacheFlag = false;
+			OnSceneInitEvent?.Invoke();
+			yield break;
+		}
+		if (_fldCanvasAssetReqOpe != null)
+		{
+			while (_fldCanvasAssetReqOpe.assetBundleRequest.status != RequestStatus.Complete)
+				yield return null;
+			if (_fldCanvasObject == null)
+			{
+				_fldCanvasObject = global::UnityEngine.Object.Instantiate(_fldCanvasAssetReqOpe.assetBundleRequest.cache.loadedAssets[0] as GameObject);
+				_fldCanvasObject.name = "Field Canvas";
+				_fldCanvasObject.transform.position = Vector3.zero;
+			}
+			AssetManager.UnloadAssetBundle(_fldCanvasAssetReqOpe.assetBundleRequest.uri);
+			_fldCanvasAssetReqOpe = null;
+		}
+		if (_encFadeTexturesReqOpe != null)
+		{
+			while (_encFadeTexturesReqOpe.assetBundleRequest.status != RequestStatus.Complete)
+				yield return null;
+			if (_encFadeTextures == null)
+			{
+				_encFadeTextures = _encFadeTexturesReqOpe.assetBundleRequest.cache.loadedAssets[0] as EncountFadeTextures;
+				_encFadeMaterial = new Material(AssetManager.FindShader("Delphis/Battle/Encount02"));
+			}
+			AssetManager.UnloadAssetBundle(_encFadeTexturesReqOpe.assetBundleRequest.uri);
+			_encFadeTexturesReqOpe = null;
+		}
+		global::Dpr.EvScript.EvDataManager.Instanse.SetCreateParent(GameManager.connector.characterCacheObjects);
+		global::Dpr.EvScript.EvDataManager.Instanse.SortLoadObjectData(new Vector2Int((int)(0.5f - EntityManager.activeFieldPlayer.worldPosition.x), (int)(EntityManager.activeFieldPlayer.worldPosition.z + 0.5f)));
+		yield return global::Dpr.EvScript.EvDataManager.Instanse.StartUpCreate();
+		global::Dpr.EvScript.EvDataManager.Instanse.SaveDataReflection();
+		global::Dpr.EvScript.EvDataManager.Instanse.SetupGimmickEntity();
+		if (_updateType == UpdateType.UnderGround)
+		{
+			while (!UgResManager.IsDataLoadEnd)
+				yield return null;
+			while (!UgFatherResourceManager.IsDataLoadEnd)
+				yield return null;
+			while (!LightStoneResourcesManager.IsDataLoadEnd)
+				yield return null;
+			if (_ugMainProc == null)
+			{
+				_ugMainProc = new UgMainProc();
+				_ugMainProc.Init();
+			}
+			yield return UgResManager.CreateAsset();
+			yield return UgFatherResourceManager.CreateAsset();
+			yield return LightStoneResourcesManager.CreateAsset();
+			global::XLSXContent.MapInfo.SheetZoneData zoneData = GameManager.mapInfo[(int)PlayerWork.transitionZoneID];
+			if (PlayerWork.transitionZoneID != zoneID)
+				_ugMainProc.EncountMonsLot(zoneData.LandmarkType);
+			yield return _ugMainProc.CreateObject();
+			UgMiniMapComponent.Init();
+		}
+		yield return EffectLoad();
+		if (_ug_hole == null)
+		{
+			_ug_hole = new GameObject("ug hole");
+			_ug_hole.transform.SetParent(EntityManager.activeFieldPlayer.transform);
+			_ug_hole.transform.localPosition = new Vector3(0f, 0.1f, 0f);
+			_ug_hole.transform.localScale = Vector3.zero;
+			GameObject sprite = new GameObject("sprite");
+			sprite.transform.SetParent(_ug_hole.transform);
+			sprite.transform.localPosition = Vector3.zero;
+			sprite.transform.localScale = Vector3.one;
+			Vector3 euler = new Vector3(-90f, 0f, 0f);
+			sprite.transform.SetLocalRotationEuler(euler);
+			sprite.AddComponent<SpriteRenderer>().sprite = FieldCanvas.UgHoleSprite;
+		}
+		_ug_hole.SetActive(false);
+		if (fwMng.isBattleRetrurnCreate)
+		{
+			fwMng.isBattleRetrurnCreate = false;
+			yield return fwMng.CreatePartner(true, true, false);
+		}
+		ActiveUpdate();
+		_initFlag = true;
+	}
+	private global::System.Collections.IEnumerator EffectLoad() {
+		if (SingletonMonoBehaviour<EffectManager>.Instance == null)
+			yield break;
+		if (SingletonMonoBehaviour<EffectManager>.Instance.dbEffects == null)
+			yield break;
+		int count = SingletonMonoBehaviour<EffectManager>.Instance.dbEffects.FieldEffectData.Length;
+		if (_effectDataArray != null)
+			yield break;
+		{
+		int loadCount;
+		_effectDataArray = new LoadEffectData[count];
+		List<EffectManager.LoadParam> loadParams = new List<EffectManager.LoadParam>();
+		loadCount = 0;
+		for (int i = 0; i < count; i++)
+		{
+			global::XLSXContent.EffectDatabase.SheetFieldEffectData item = SingletonMonoBehaviour<EffectManager>.Instance.dbEffects.FieldEffectData[i];
+			_effectDataArray[i] = new LoadEffectData();
+			_effectDataArray[i].name = Path.GetFileName(item.AssetBundleName);
+			_effectDataArray[i].isComplete = false;
+			_effectDataArray[i].isLoading = false;
+			if (item.InitLoad)
+			{
+				_effectDataArray[i].isLoading = true;
+				loadParams.Add(item);
+				loadCount++;
+			}
+		}
+		yield return SingletonMonoBehaviour<EffectManager>.Instance.OpLoad(loadParams.ToArray(), (effectData, isAllLoaded) =>
+		{
+			loadCount--;
+			string name = effectData.prefab.name;
+			for (int i = 0; i < _effectDataArray.Length; i++)
+			{
+				if (_effectDataArray[i].name == name)
+				{
+					_effectDataArray[i].isLoading = false;
+					_effectDataArray[i].isComplete = true;
+					_effectDataArray[i].effect = effectData;
+					return;
+				}
+			}
+		});
+		while (loadCount > 0)
+			yield return null;
+		}
+	}
+	public void SceneStart() {
+		OnZoneChange(false);
+		global::Dpr.EvScript.EvDataManager.Instanse.DelteAruseus();
+		FieldPlayerEntity player = EntityManager.activeFieldPlayer;
+		player.moveVector = Vector3.zero;
+		player.StopBicycleDecelerate();
+		player.EvEntityCmd.ScritpStopStateEnd();
+		player.rodVariation = -1;
+		player.TenkaiWwise();
+		global::Dpr.EvScript.EvDataManager.Instanse.UpdateStart();
+		SealPrevFalg = false;
+		EntityManager.BuildFieldEntities();
+		FieldPlayerEntity activePlayer = EntityManager.activeFieldPlayer;
+		bool telescope = PlayerWork.Telescope;
+		if (activePlayer.isActiveAndEnabled == telescope)
+			activePlayer.gameObject.SetActive(!telescope);
+		if (SwayGrass.BattleEndRensaStart)
+		{
+			FieldPlayerEntity swayPlayer = EntityManager.activeFieldPlayer;
+			Vector2Int grid = swayPlayer.gridPosition;
+			SwayGrass.LotSwayGrass(ref grid, swayPlayer.Height);
+			if (PlayerWork.evolveRequets.Count == 0)
+				SwayGrass._callSwayBGM = false;
+			SwayGrass.BattleEndRensaStart = false;
+		}
+		PlayerWork.MovePokemonIndex = -1;
+		if (global::Dpr.UnderGround.UgFieldManager.Instance != null)
+			global::Dpr.UnderGround.UgFieldManager.Instance.AddInputUpdate();
+	}
+	public void OnDestroy() {
+		DeleteUpdate();
+		_ug_hole = null;
+		fwMng = null;
+		abUnloader = null;
+	}
+	private bool IsDemoReqestStop() {
+		if (PlayerWork.evolveRequets.Count != 0)
+			return true;
+		if (PlayerWork.isEvolveDemo)
+			return true;
+		if (PlayerWork.isHatchDemo)
+			return true;
+		return PlayerWork.capturedPokemon != null;
+	}
+	public void ActiveUpdate() {
+		Sequencer.update += update;
+		Sequencer.lateUpdate += lateupdate;
+		Sequencer.postLateUpdate += postLateUpdate;
+	}
+	public void DeleteUpdate() {
+		Sequencer.update -= update;
+		Sequencer.lateUpdate -= lateupdate;
+		Sequencer.postLateUpdate -= postLateUpdate;
+	}
 	public void update(float deltatime) { /*@B 0x60000E7*/ throw null; }
 	public void lateupdate(float deltatime) { /*@B 0x60000E8*/ throw null; }
 	public void postLateUpdate(float deltatime) { /*@B 0x60000E9*/ throw null; }
