@@ -28,11 +28,11 @@ namespace Dpr.SealPreview
 		private string m_playingSeqFileNameHash;
 		private global::XLSXContent.BattleDataTable m_battleDataTable;
 		private global::XLSXContent.BattleDefaultPlacementData m_defaultPlacementData;
-		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetPoke;
-		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetDamage;
-		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetTrainer;
-		private global::Pml.BallId[] m_effectBallId;
-		private global::Dpr.Battle.View.BtlvBallInfo[] m_effectBallInfo;
+		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetPoke = new global::Dpr.Battle.Logic.BtlvPos[2];
+		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetDamage = new global::Dpr.Battle.Logic.BtlvPos[7];
+		private global::Dpr.Battle.Logic.BtlvPos[] m_comTargetTrainer = new global::Dpr.Battle.Logic.BtlvPos[2];
+		private global::Pml.BallId[] m_effectBallId = new global::Pml.BallId[4];
+		private global::Dpr.Battle.View.BtlvBallInfo[] m_effectBallInfo = new global::Dpr.Battle.View.BtlvBallInfo[4];
 		private global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.HashSet<global::Dpr.ObjectEntity>> m_uPtrModelHash;
 		private global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.HashSet<global::Dpr.Battle.View.Objects.BtlvEffectInstance>> m_uPtrParticleVectorHash;
 		private global::System.Collections.Generic.Stack<global::System.Tuple<int, uint, uint>> m_uPtrSoundPlayingIDHash;
@@ -78,7 +78,27 @@ namespace Dpr.SealPreview
 				return false;
 			} }
 		public global::Dpr.Battle.View.TaskManager GetTaskManagerAlways() { return m_iPtrTaskManagerAlways; }
-		public SealPreviewViewSystem(global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.View.Objects.BOCamera camera) { /*@B 0x6004184*/ throw null; }
+		public SealPreviewViewSystem(global::Dpr.Battle.Logic.MainModule mainModule, global::Dpr.Battle.View.Objects.BOCamera camera) {
+			m_isFinalize = false;
+			m_wazaParam = global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM.Factory();
+			m_iPtrCameraSystem = new global::Dpr.SealPreview.SealPreviewCameraSystem(this, camera);
+			m_uPtrModelHash = new global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.HashSet<global::Dpr.ObjectEntity>>(64);
+			m_uPtrSoundPlayingIDHash = new global::System.Collections.Generic.Stack<global::System.Tuple<int, uint, uint>>(64);
+			m_uPtrParticleVectorHash = new global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.HashSet<global::Dpr.Battle.View.Objects.BtlvEffectInstance>>(64);
+			m_battleDataTable = global::Dpr.Battle.Logic.BattleDataTableManager.Instance.BattleDataTable;
+			m_defaultPlacementData = global::Dpr.Battle.Logic.BattleDataTableManager.Instance.BattleDefaultPlacementData;
+			m_iPtrSequenceSystem = new global::Dpr.Battle.View.Systems.BattleSequenceSystem(this);
+			m_iPtrTaskManager = new global::Dpr.Battle.View.TaskManager(104);
+			m_iPtrTaskManagerLate = new global::Dpr.Battle.View.TaskManager(24);
+			m_iPtrTaskManagerAlways = new global::Dpr.Battle.View.TaskManager(24);
+			trainers = new global::Dpr.Battle.View.Objects.BOTrainer[7];
+			trainerEntities = new global::BattleCharacterEntity[7];
+			pokemons = new global::Dpr.Battle.View.Objects.BOPokemon[7];
+			pokemonEntities = new global::BattlePokemonEntity[7];
+			affixSealDatas = new global::Dpr.BallDeco.AffixSealData[7][];
+			affixSealCounts = new int[7];
+			m_pMainModule = mainModule;
+		}
 		public void SetTrainer(global::Dpr.Battle.Logic.BtlvPos vPos, global::Dpr.Battle.View.Objects.BOTrainer trainer, global::BattleCharacterEntity battleCharacterEntity) {
             trainers[(int)vPos] = trainer;
             trainerEntities[(int)vPos] = battleCharacterEntity;
@@ -373,10 +393,24 @@ namespace Dpr.SealPreview
 		}
 		public void SEQ_CMD_ResetDefaultCamera(int frame, global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE moveType, global::Dpr.SequenceEditor.SequenceCameraSystem system) { }
 		public global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM SetWazaParam(global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM param) { throw new NotImplementedException(); }
-		public void CheckWazaDataPath_Particle(ref string path, int idx, bool isBallEffect, bool isCapture, bool isAttributeEffect, bool isStreamLineEffect) { /*@B 0x60041A6*/ throw null; }
+		public void CheckWazaDataPath_Particle(ref string path, int idx, bool isBallEffect, bool isCapture, bool isAttributeEffect, bool isStreamLineEffect) {
+			global::Pml.BallId ballId = m_effectBallId[idx];
+			if (isBallEffect)
+				path = m_battleDataTable.BallEffectData[(int)ballId].IntroEffectAssetbundleName;
+			else if (isCapture)
+				path = m_battleDataTable.BallEffectData[(int)ballId].CaptureEffectAssetbundleName;
+		}
 		private global::Pml.BallId __SeqComFunc_GetEffectBallId__(int idx) { return m_effectBallId[idx]; }
 		public global::Dpr.Battle.View.BtlvBallInfo SeqComFunc_GetEffectBallInfo(int idx) { return m_effectBallInfo[idx]; }
-		public string GetBallModelPath(int idx) { /*@B 0x60041A9*/ throw null; }
+		public string GetBallModelPath(int idx) {
+			bool isStrangeBall = m_effectBallInfo[idx].isStrangeBall;
+			string path = global::Dpr.Battle.View.BattleViewDefine.Path.GetBallPath(m_effectBallId[idx]);
+			if (isStrangeBall)
+				path = global::Dpr.Battle.View.BattleViewDefine.Path.GetBallPath((global::Pml.BallId)99);
+			if (string.IsNullOrEmpty(path))
+				path = global::Dpr.Battle.View.BattleViewDefine.Path.GetBallPath(global::Pml.BallId.MONSUTAABOORU);
+			return path;
+		}
 		public string GetBttleWazaModelPath(string idx) { throw new NotImplementedException(); }
 		public void GetDefaultPokePos(global::Dpr.Battle.Logic.BtlvPos vPos, ref global::UnityEngine.Vector3 pos, ref int deg, global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT placement = (global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT)(0)) {
 			var pokeModel = pokemons[(int)vPos];
@@ -1096,8 +1130,24 @@ namespace Dpr.SealPreview
 			m_seqKeepResource = keepResource;
 		}
 		private global::Dpr.SealPreview.SealPreviewSetupParam GetSetupParam() { return _sealPreviewController.GetSealPreviewSetupParam(); }
-		public SealPreviewViewSystem(in global::Dpr.SealPreview.SealPreviewController controller) { /*@B 0x60041E2*/ throw null; }
-		public void UnInitialize() { /*@B 0x60041E3*/ throw null; }
+		public SealPreviewViewSystem(in global::Dpr.SealPreview.SealPreviewController controller) {
+			_sealPreviewController = controller;
+			_initializeSequenceState = global::Dpr.Battle.View.Systems.BattleViewSystem.InitializeSequenceStateType.Unregistered;
+			_loadObjectCnt = 0;
+			pokemons = new global::Dpr.Battle.View.Objects.BOPokemon[7];
+			trainers = new global::Dpr.Battle.View.Objects.BOTrainer[7];
+			global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+			global::SmartPoint.AssetAssistant.Sequencer.lateUpdate += OnLateUpdate;
+		}
+		public void UnInitialize() {
+			if (global::Dpr.Battle.View.Systems.BattleViewUISystem.Instance != null)
+				global::Dpr.Battle.View.Systems.BattleViewUISystem.Instance.SetActive(true);
+			global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+			global::SmartPoint.AssetAssistant.Sequencer.lateUpdate -= OnLateUpdate;
+			_sealPreviewController = null;
+			_initializeSequenceState = global::Dpr.Battle.View.Systems.BattleViewSystem.InitializeSequenceStateType.Unregistered;
+			_loadObjectCnt = 0;
+		}
 		public bool Initialize() {
 			switch (_initializeSequenceState)
 			{
