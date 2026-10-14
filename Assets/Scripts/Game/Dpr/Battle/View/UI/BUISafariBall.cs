@@ -16,6 +16,6 @@ namespace Dpr.Battle.View.UI
 			Dpr.Message.MessageWordSetHelper.SetDigitWord(0, count);
 			_ballCount.text = Dpr.Battle.Logic.BattleStr.Instance.GetFormatUIText(BallCountLabel);
 		}
-		public BUISafariBall() { /*@B 0x60060FE*/ throw null; }
+		public BUISafariBall() { }
 	}
 }

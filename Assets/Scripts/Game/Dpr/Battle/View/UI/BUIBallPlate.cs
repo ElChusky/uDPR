@@ -124,6 +124,6 @@ namespace Dpr.Battle.View.UI
 		public override void OnUpdate(float deltaTime) {
 			// Empty in the binary (01d20610: ret)
 		}
-		public BUIBallPlate() { /*@B 0x60060D0*/ throw null; }
+		public BUIBallPlate() { }
 	}
 }

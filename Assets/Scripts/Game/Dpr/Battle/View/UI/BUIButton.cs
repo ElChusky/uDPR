@@ -3,6 +3,6 @@ namespace Dpr.Battle.View.UI
 {
 	public class BUIButton : global::Dpr.Battle.View.UI.BUIButtonBase<global::Dpr.Battle.View.UI.BUIButton>
 	{
-		public BUIButton() { /*@B 0x6006085*/ throw null; }
+		public BUIButton() { }
 	}
 }

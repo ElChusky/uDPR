@@ -7,13 +7,19 @@ namespace Dpr.Battle.View.UI
 {
 	public class BattleAffinityInfo
 	{
-		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Single_Near;
-		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Single_Far;
-		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Double_Near;
-		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Double_Fa;
-		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Raid_Near;
-		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Raid_Far;
-		private static readonly global::System.Collections.Generic.List<global::Pml.Battle.TypeAffinity.AboutAffinityID> AboutAffinityPriority;
+		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Single_Near = new global::Dpr.Battle.Logic.BtlvPos[] { global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_NEAR_1 };
+		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Single_Far = new global::Dpr.Battle.Logic.BtlvPos[] { global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_FAR_1 };
+		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Double_Near = new global::Dpr.Battle.Logic.BtlvPos[] { global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_NEAR_1, global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_NEAR_2 };
+		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Double_Fa = new global::Dpr.Battle.Logic.BtlvPos[] { global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_FAR_1, global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_FAR_2 };
+		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Raid_Near = new global::Dpr.Battle.Logic.BtlvPos[] { global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_NEAR_1, global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_NEAR_2, global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_NEAR_3, global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_NEAR_4 };
+		private static global::Dpr.Battle.Logic.BtlvPos[] kVposList_Raid_Far = new global::Dpr.Battle.Logic.BtlvPos[] { global::Dpr.Battle.Logic.BtlvPos.BTL_VPOS_FAR_1 };
+		private static readonly global::System.Collections.Generic.List<global::Pml.Battle.TypeAffinity.AboutAffinityID> AboutAffinityPriority = new global::System.Collections.Generic.List<global::Pml.Battle.TypeAffinity.AboutAffinityID>
+		{
+			global::Pml.Battle.TypeAffinity.AboutAffinityID.NONE,
+			global::Pml.Battle.TypeAffinity.AboutAffinityID.DISADVANTAGE,
+			global::Pml.Battle.TypeAffinity.AboutAffinityID.NORMAL,
+			global::Pml.Battle.TypeAffinity.AboutAffinityID.ADVANTAGE,
+		};
 		public static global::System.Collections.Generic.List<global::Dpr.Battle.Logic.BTL_POKEPARAM> GetBattleTargets() {
 			var viewSystem = BattleViewCore.Instance.ViewSystem;
 			var targets = new List<BTL_POKEPARAM>();
@@ -65,6 +71,6 @@ namespace Dpr.Battle.View.UI
             return result;
         }
 		public BattleAffinityInfo() { }
-		static BattleAffinityInfo() { /*@B 0x600619B*/ throw null; }
+		static BattleAffinityInfo() { }
 	}
 }

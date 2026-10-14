@@ -119,7 +119,7 @@ namespace Dpr.Battle.View.UI
 			}
 			_effectiveText.transform.parent.SetActive(!isEmpty);
 		}
-		public BUITargetButton() { /*@B 0x60060AB*/ throw null; }
+		public BUITargetButton() { }
 		private enum ButtonType
 		{
 			Player = 0,

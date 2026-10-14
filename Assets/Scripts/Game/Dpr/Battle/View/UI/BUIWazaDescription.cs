@@ -84,6 +84,6 @@ namespace Dpr.Battle.View.UI
 			sizeDelta.y = Mathf.Abs(_connectorRight.localPosition.y - _connectorLeft.localPosition.y);
 			_connectorVirtival.sizeDelta = sizeDelta;
 		}
-		public BUIWazaDescription() { /*@B 0x600615B*/ throw null; }
+		public BUIWazaDescription() { }
 	}
 }

@@ -11,7 +11,7 @@ namespace Dpr.Battle.View.UI
 		public override void OnUpdate(float deltaTime) {
 			// Empty in the binary (01d22b00: ret)
 		}
-		public BUIResult() { /*@B 0x60060FA*/ throw null; }
+		public BUIResult() { }
 		[global::System.Serializable]
 		private class PokeStatus
 		{

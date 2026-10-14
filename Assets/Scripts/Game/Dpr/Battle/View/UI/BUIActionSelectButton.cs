@@ -3,7 +3,18 @@ namespace Dpr.Battle.View.UI
 {
 	public class BUIActionSelectButton : global::Dpr.Battle.View.UI.BUIButtonBase<global::Dpr.Battle.View.UI.BUIActionSelectButton>
 	{
-		private global::System.Collections.Generic.Dictionary<global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType, string> _buttonMsgLabels;
+		private global::System.Collections.Generic.Dictionary<global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType, string> _buttonMsgLabels = new global::System.Collections.Generic.Dictionary<global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType, string>
+        {
+            { global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType.Fight, "msg_ui_btl_00" },
+            { global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType.Pokemon, "msg_ui_btl_02" },
+            { global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType.Bag, "msg_ui_btl_01" },
+            { global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType.Escape, "msg_ui_btl_04" },
+            { global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType.Return, "msg_ui_btl_08" },
+            { global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType.SafariBall, "msg_ui_btl_SafariCommnadBallMsg" },
+            { global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType.SafariFood, "msg_ui_btl_SafariCommnadEsaMsg" },
+            { global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType.SafariMud, "msg_ui_btl_SafariCommnadDoroMsg" },
+            { global::Dpr.Battle.View.UI.BUIActionList.ActionButtonType.SafariEscape, "msg_ui_btl_SafariCommandEscapeMsg" },
+        };
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image _lightFrame;
 		[global::UnityEngine.SerializeField]
@@ -52,6 +63,6 @@ namespace Dpr.Battle.View.UI
             base.OnChangeState(type);
             _lightFrame.enabled = type == StateType.Selected;
         }
-		public BUIActionSelectButton() { /*@B 0x6006084*/ throw null; }
+		public BUIActionSelectButton() { }
 	}
 }

@@ -16,7 +16,7 @@ namespace Dpr.Battle.View.UI
 		public bool isSkillSwapOpenAnimation;
 		public global::Pml.TokuseiNo _currentNo { get; private set; }
 		public bool IsDisplay { get; private set; }
-		public bool IsStable { get { /*@B 0x6006149*/ throw null; } }
+		public bool IsStable { get { return IsDisplay && IsShow; } }
 		public void Initialize(global::Dpr.Battle.Logic.BTL_POKEPARAM btlParam, bool isEnablePokeName = true) {
 			IsDisplay = false;
 			_changeNo = TokuseiNo.NULL;
@@ -79,6 +79,6 @@ namespace Dpr.Battle.View.UI
 			yield return new WaitForSeconds(TOKUSEI_PLATE_WAIT);
 			PlayHide();
 		}
-		public BUITokuseiPlate() { /*@B 0x6006155*/ throw null; }
+		public BUITokuseiPlate() { }
 	}
 }
