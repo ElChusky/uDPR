@@ -3,33 +3,744 @@ namespace Dpr.Battle.Logic
 {
 	public class BtlAiBasic : global::Dpr.Battle.Logic.BtlAIBaseScript
 	{
-		protected override void main() { /*@B 0x6007E94*/ throw null; }
-		private void main_proc() { /*@B 0x6007E95*/ throw null; }
-		private int Basic_ConaHoushi() { /*@B 0x6007E96*/ throw null; }
-		private int Basic_Itazuragokoro() { /*@B 0x6007E97*/ throw null; }
-		private int Basic_Sensei() { /*@B 0x6007E98*/ throw null; }
-		private int Basic_Hayatenotubasa() { /*@B 0x6007E99*/ throw null; }
-		private int Basic_DaimaxNG() { /*@B 0x6007E9A*/ throw null; }
-		private int Calc_BasicDamage() { /*@B 0x6007E9B*/ throw null; }
-		private int BasicDmg_00_1() { /*@B 0x6007E9C*/ throw null; }
-		private int BasicDmg_00_2() { /*@B 0x6007E9D*/ throw null; }
-		private int BasicDmg_00_3() { /*@B 0x6007E9E*/ throw null; }
-		private int BasicDmg_00_4() { /*@B 0x6007E9F*/ throw null; }
-		private int BasicDmg_00_5() { /*@B 0x6007EA0*/ throw null; }
-		private int BasicDmg_00_7() { /*@B 0x6007EA1*/ throw null; }
-		private void Calc_BasicAll() { /*@B 0x6007EA2*/ throw null; }
-		private int Bouon_Check() { /*@B 0x6007EA3*/ throw null; }
-		private int Boudan_Check() { /*@B 0x6007EA4*/ throw null; }
-		private void BaciAI_Seq_001() { /*@B 0x6007EA5*/ throw null; }
-		private void BaciAI_Seq_007() { /*@B 0x6007EA6*/ throw null; }
-		private void BaciAI_Seq_008() { /*@B 0x6007EA7*/ throw null; }
-		private void BaciAI_Seq_010() { /*@B 0x6007EA8*/ throw null; }
-		private void BaciAI_Seq_011() { /*@B 0x6007EA9*/ throw null; }
-		private void BaciAI_Seq_012() { /*@B 0x6007EAA*/ throw null; }
-		private void BaciAI_Seq_013() { /*@B 0x6007EAB*/ throw null; }
-		private void BaciAI_Seq_014() { /*@B 0x6007EAC*/ throw null; }
-		private void BaciAI_Seq_015() { /*@B 0x6007EAD*/ throw null; }
-		private void BaciAI_Seq_016() { /*@B 0x6007EAE*/ throw null; }
+		protected override void main()
+		{
+			long seqNo = Call(CMD_CHECK_WORKWAZA_SEQNO);
+			PRINTF(string.Format("■PAWN basicAI start ...wazaNo = {0}[{1}],　seqNo = {2}, score={3}\n", CurrentWazaNo(), (int)CurrentWazaNo(), seqNo, p_Score));
+			main_proc();
+			PRINTF(string.Format("■PAWN baseAI score = {0}\n", p_Score));
+		}
+		private void main_proc()
+		{
+			if (Call(CMD_CHECK_BTL_RULE) == 1)
+			{
+				if (Call(CMD_IF_MIKATA_ATTACK) != 0)
+					return;
+			}
+			if (Basic_ConaHoushi() == 1)
+				return;
+			if (Basic_Itazuragokoro() == 1)
+				return;
+			if (Basic_Sensei() == 1)
+				return;
+			if (Basic_Hayatenotubasa() == 1)
+				return;
+			if (Basic_DaimaxNG() == 1)
+				return;
+			int wazaNo = (int)CurrentWazaNo();
+			if (wazaNo != 32 && wazaNo != 90)
+			{
+				if (Call(CMD_CHECK_DAMAGE_WAZA, new long[] { (ushort)CurrentWazaNo() }) == 0)
+				{
+					Calc_BasicAll();
+					return;
+				}
+			}
+			if (Calc_BasicDamage() == 1)
+				Calc_BasicAll();
+		}
+		private int Basic_ConaHoushi()
+		{
+			switch ((int)CurrentWazaNo())
+			{
+				case 77:
+				case 78:
+				case 79:
+				case 147:
+				case 476:
+				case 600:
+					break;
+				default:
+					return 0;
+			}
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE) == 142)
+			{
+				long tokusei = Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK);
+				if (tokusei != 104 && tokusei != 163 && tokusei != 164)
+				{
+					ScoreCtrl(-10);
+					return 1;
+				}
+			}
+			if (Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE1) == 11 || Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE2) == 11)
+			{
+				ScoreCtrl(-10);
+				return 1;
+			}
+			return 0;
+		}
+		private int Basic_Itazuragokoro()
+		{
+			long atkTokusei = Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK);
+			long defTokusei = Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE);
+			long wazaKind = Call(CMD_CHECK_WAZA_KIND);
+			if (atkTokusei != 158)
+				return 0;
+			if (wazaKind == 1 || wazaKind == 2)
+				return 0;
+			switch (Call(CMD_GET_WAZA_TARGET))
+			{
+				case 0:
+				case 3:
+				case 4:
+				case 5:
+				case 8:
+				case 9:
+					break;
+				default:
+					return 0;
+			}
+			if (Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE1) == 16 || Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE2) == 16)
+			{
+				ScoreCtrl(-10);
+				return 1;
+			}
+			if (Call(CMD_IF_EXIST_GROUND, 4) != 0 && Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE1) != 2)
+			{
+				long type2 = Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE2);
+				if (defTokusei != 26 && type2 != 2)
+				{
+					ScoreCtrl(-10);
+					return 1;
+				}
+			}
+			if (defTokusei == 219 || defTokusei == 214)
+			{
+				ScoreCtrl(-10);
+				return 1;
+			}
+			return 0;
+		}
+		private int Basic_Sensei()
+		{
+			long defTokusei = Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE);
+			switch (Call(CMD_CHECK_WORKWAZA_SEQNO))
+			{
+				case 103:
+				case 158:
+				case 223:
+				case 248:
+				case 360:
+				case 364:
+				case 377:
+				case 382:
+				case 388:
+					break;
+				default:
+					return 0;
+			}
+			if (Call(CMD_IF_EXIST_GROUND, 4) != 0 && Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE1) != 2)
+			{
+				long type2 = Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE2);
+				if (defTokusei != 26 && type2 != 2)
+				{
+					ScoreCtrl(-10);
+					return 1;
+				}
+			}
+			if (defTokusei == 219 || defTokusei == 214)
+			{
+				ScoreCtrl(-10);
+				return 1;
+			}
+			return 0;
+		}
+		private int Basic_Hayatenotubasa()
+		{
+			long atkTokusei = Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK);
+			long defTokusei = Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE);
+			if (atkTokusei != 177)
+				return 0;
+			if (Call(CMD_IF_HP_EQUAL, CHECK_ATTACK, 100) == 0)
+				return 0;
+			if (Call(CMD_CHECK_WORKWAZA_TYPE) != 2)
+				return 0;
+			switch (Call(CMD_GET_WAZA_TARGET))
+			{
+				case 0:
+				case 3:
+				case 4:
+				case 5:
+				case 8:
+				case 9:
+					break;
+				default:
+					return 0;
+			}
+			if (Call(CMD_IF_EXIST_GROUND, 4) != 0 && Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE1) != 2)
+			{
+				long type2 = Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE2);
+				if (defTokusei != 26 && type2 != 2)
+				{
+					ScoreCtrl(-10);
+					return 1;
+				}
+			}
+			if (defTokusei == 219 || defTokusei == 214)
+			{
+				ScoreCtrl(-10);
+				return 1;
+			}
+			return 0;
+		}
+		private int Basic_DaimaxNG()
+		{
+			if (Call(CMD_IF_G, CHECK_DEFENCE) == 0)
+				return 0;
+			switch ((int)CurrentWazaNo())
+			{
+				case 12:
+				case 18:
+				case 32:
+				case 46:
+				case 50:
+				case 67:
+				case 90:
+				case 102:
+				case 119:
+				case 227:
+				case 259:
+				case 285:
+				case 286:
+				case 288:
+				case 289:
+				case 329:
+				case 447:
+				case 484:
+				case 502:
+				case 507:
+				case 535:
+				case 689:
+					ScoreCtrl(-10);
+					return 1;
+			}
+			return 0;
+		}
+		private int Calc_BasicDamage()
+		{
+			long atkTokusei = Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK);
+			long defTokusei = Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE);
+			if (Call(CMD_CHECK_WAZA_AISYOU, CHECK_ATTACK, CHECK_DEFENCE, (ushort)CurrentWazaNo(), AISYOU_0BAI) != 0)
+			{
+				long wazaType = Call(CMD_CHECK_TYPE, CHECK_WAZA);
+				if (defTokusei == 26 && wazaType == 4 && (atkTokusei == 104 || atkTokusei == 163 || atkTokusei == 164))
+					return 1;
+				long seqNo = Call(CMD_CHECK_WORKWAZA_SEQNO);
+				if (seqNo == 135 || seqNo == 173 || seqNo == 222)
+					return 1;
+				ScoreCtrl(-10);
+				return 0;
+			}
+			if (atkTokusei == 104 || atkTokusei == 163 || atkTokusei == 164)
+				return 1;
+			PRINTF(string.Format("とくせい = {0}\n", defTokusei));
+			int result;
+			switch (defTokusei)
+			{
+				case 10:
+				case 31:
+				case 78:
+					result = BasicDmg_00_1();
+					break;
+				case 11:
+				case 87:
+				case 114:
+					result = BasicDmg_00_2();
+					break;
+				case 18:
+					result = BasicDmg_00_3();
+					break;
+				case 25:
+					result = BasicDmg_00_4();
+					break;
+				case 26:
+					result = BasicDmg_00_5();
+					break;
+				case 157:
+					result = BasicDmg_00_7();
+					break;
+				default:
+					result = 0;
+					break;
+			}
+			return result == 0 ? 1 : 0;
+		}
+		private int BasicDmg_00_1()
+		{
+			if (Call(CMD_CHECK_TYPE, CHECK_WAZA) == 12)
+			{
+				ScoreCtrl(-12);
+				return 1;
+			}
+			return 0;
+		}
+		private int BasicDmg_00_2()
+		{
+			if (Call(CMD_CHECK_TYPE, CHECK_WAZA) == 10)
+			{
+				ScoreCtrl(-12);
+				return 1;
+			}
+			return 0;
+		}
+		private int BasicDmg_00_3()
+		{
+			if (Call(CMD_CHECK_TYPE, CHECK_WAZA) == 9)
+			{
+				ScoreCtrl(-12);
+				return 1;
+			}
+			return 0;
+		}
+		private int BasicDmg_00_4()
+		{
+			if (Call(CMD_CHECK_WAZA_AISYOU, CHECK_ATTACK, CHECK_DEFENCE, (ushort)CurrentWazaNo(), AISYOU_2BAI) != 0)
+				return 0;
+			if (Call(CMD_CHECK_WAZA_AISYOU, CHECK_ATTACK, CHECK_DEFENCE, (ushort)CurrentWazaNo(), AISYOU_4BAI) != 0)
+				return 0;
+			ScoreCtrl(-10);
+			return 1;
+		}
+		private int BasicDmg_00_5()
+		{
+			if (Call(CMD_CHECK_TYPE, CHECK_WAZA) == 4)
+			{
+				if (Call(CMD_FLDEFF_CHECK, 2) == 0)
+				{
+					ScoreCtrl(-10);
+					return 1;
+				}
+			}
+			return 0;
+		}
+		private int BasicDmg_00_7()
+		{
+			if (Call(CMD_CHECK_TYPE, CHECK_WAZA) == 11)
+			{
+				ScoreCtrl(-12);
+				return 1;
+			}
+			return 0;
+		}
+		private void Calc_BasicAll()
+		{
+			if (Bouon_Check() == 1)
+				return;
+			if (Boudan_Check() == 1)
+				return;
+			long seqNo = Call(CMD_CHECK_WORKWAZA_SEQNO);
+			PRINTF(string.Format("シーケンス = {0} のチェックをします\n", seqNo));
+			switch (seqNo)
+			{
+				case 1: case 187: BaciAI_Seq_001(); break;
+				case 7: BaciAI_Seq_007(); break;
+				case 8: BaciAI_Seq_008(); break;
+				case 10: case 50: case 277: case 308: case 312: case 316: case 322: case 327: BaciAI_Seq_010(); break;
+				case 11: case 51: case 156: case 328: BaciAI_Seq_011(); break;
+				case 12: case 52: case 284: BaciAI_Seq_012(); break;
+				case 13: case 53: case 290: case 321: case 365: BaciAI_Seq_013(); break;
+				case 14: case 54: BaciAI_Seq_014(); break;
+				case 15: case 55: BaciAI_Seq_015(); break;
+				case 16: case 56: case 108: BaciAI_Seq_016(); break;
+				case 18: case 58: case 343: case 346: case 356: case 364: case 411: BaciAI_Seq_018(); break;
+				case 19: case 59: BaciAI_Seq_019(); break;
+				case 20: case 60: BaciAI_Seq_020(); break;
+				case 21: case 61: case 357: BaciAI_Seq_021(); break;
+				case 22: case 62: BaciAI_Seq_022(); break;
+				case 23: case 63: BaciAI_Seq_023(); break;
+				case 24: case 64: BaciAI_Seq_024(); break;
+				case 25: case 143: BaciAI_Seq_025(); break;
+				case 28: BaciAI_Seq_028(); break;
+				case 32: case 381: BaciAI_Seq_032(); break;
+				case 33: case 66: BaciAI_Seq_033(); break;
+				case 35: BaciAI_Seq_035(); break;
+				case 37: BaciAI_Seq_037(); break;
+				case 38: BaciAI_Seq_038(); break;
+				case 46: BaciAI_Seq_046(); break;
+				case 47: BaciAI_Seq_047(); break;
+				case 49: case 118: case 166: case 199: BaciAI_Seq_049(); break;
+				case 65: BaciAI_Seq_065(); break;
+				case 67: BaciAI_Seq_067(); break;
+				case 79: BaciAI_Seq_079(); break;
+				case 84: BaciAI_Seq_084(); break;
+				case 86: BaciAI_Seq_086(); break;
+				case 90: BaciAI_Seq_090(); break;
+				case 92: case 97: BaciAI_Seq_092(); break;
+				case 94: BaciAI_Seq_094(); break;
+				case 102: BaciAI_Seq_102(); break;
+				case 106: BaciAI_Seq_106(); break;
+				case 107: BaciAI_Seq_107(); break;
+				case 109: BaciAI_Seq_109(); break;
+				case 112: BaciAI_Seq_112(); break;
+				case 113: BaciAI_Seq_113(); break;
+				case 114: BaciAI_Seq_114(); break;
+				case 115: BaciAI_Seq_115(); break;
+				case 120: BaciAI_Seq_120(); break;
+				case 124: BaciAI_Seq_124(); break;
+				case 127: BaciAI_Seq_127(); break;
+				case 132: case 133: case 134: case 157: BaciAI_Seq_132(); break;
+				case 136: BaciAI_Seq_136(); break;
+				case 137: BaciAI_Seq_137(); break;
+				case 142: BaciAI_Seq_142(); break;
+				case 148: BaciAI_Seq_148(); break;
+				case 158: case 376: case 382: BaciAI_Seq_158(); break;
+				case 160: BaciAI_Seq_160(); break;
+				case 161: case 162: BaciAI_Seq_161(); break;
+				case 164: BaciAI_Seq_164(); break;
+				case 165: BaciAI_Seq_165(); break;
+				case 167: BaciAI_Seq_167(); break;
+				case 168: BaciAI_Seq_168(); break;
+				case 172: BaciAI_Seq_172(); break;
+				case 175: BaciAI_Seq_175(); break;
+				case 176: BaciAI_Seq_176(); break;
+				case 177: BaciAI_Seq_177(); break;
+				case 178: BaciAI_Seq_178(); break;
+				case 179: BaciAI_Seq_179(); break;
+				case 181: BaciAI_Seq_181(); break;
+				case 184: BaciAI_Seq_184(); break;
+				case 188: BaciAI_Seq_188(); break;
+				case 191: BaciAI_Seq_191(); break;
+				case 192: BaciAI_Seq_192(); break;
+				case 193: BaciAI_Seq_193(); break;
+				case 205: BaciAI_Seq_205(); break;
+				case 206: BaciAI_Seq_206(); break;
+				case 208: BaciAI_Seq_208(); break;
+				case 211: BaciAI_Seq_211(); break;
+				case 212: BaciAI_Seq_212(); break;
+				case 215: BaciAI_Seq_215(); break;
+				case 216: BaciAI_Seq_216(); break;
+				case 220: BaciAI_Seq_220(); break;
+				case 222: BaciAI_Seq_222(); break;
+				case 225: BaciAI_Seq_225(); break;
+				case 226: BaciAI_Seq_226(); break;
+				case 227: BaciAI_Seq_227(); break;
+				case 232: BaciAI_Seq_232(); break;
+				case 233: BaciAI_Seq_233(); break;
+				case 234: BaciAI_Seq_234(); break;
+				case 236: BaciAI_Seq_236(); break;
+				case 238: BaciAI_Seq_238(); break;
+				case 239: BaciAI_Seq_239(); break;
+				case 241: BaciAI_Seq_241(); break;
+				case 242: BaciAI_Seq_242(); break;
+				case 243: BaciAI_Seq_243(); break;
+				case 244: BaciAI_Seq_244(); break;
+				case 246: BaciAI_Seq_246(); break;
+				case 247: BaciAI_Seq_247(); break;
+				case 249: BaciAI_Seq_249(); break;
+				case 251: BaciAI_Seq_251(); break;
+				case 252: BaciAI_Seq_252(); break;
+				case 258: BaciAI_Seq_258(); break;
+				case 259: BaciAI_Seq_259(); break;
+				case 265: BaciAI_Seq_265(); break;
+				case 266: BaciAI_Seq_266(); break;
+				case 270: BaciAI_Seq_270(); break;
+				case 278: BaciAI_Seq_278(); break;
+				case 281: BaciAI_Seq_281(); break;
+				case 285: BaciAI_Seq_285(); break;
+				case 286: BaciAI_Seq_286(); break;
+				case 292: BaciAI_Seq_292(); break;
+				case 294: BaciAI_Seq_294(); break;
+				case 298: BaciAI_Seq_298(); break;
+				case 299: BaciAI_Seq_299(); break;
+				case 300: BaciAI_Seq_300(); break;
+				case 301: BaciAI_Seq_301(); break;
+				case 307: BaciAI_Seq_307(); break;
+				case 309: case 386: BaciAI_Seq_309(); break;
+				case 311: BaciAI_Seq_311(); break;
+				case 315: BaciAI_Seq_315(); break;
+				case 318: BaciAI_Seq_318(); break;
+				case 320: BaciAI_Seq_320(); break;
+				case 323: BaciAI_Seq_323(); break;
+				case 338: BaciAI_Seq_338(); break;
+				case 339: BaciAI_Seq_339(); break;
+				case 340: BaciAI_Seq_340(); break;
+				case 342: BaciAI_Seq_342(); break;
+				case 349: BaciAI_Seq_349(); break;
+				case 350: BaciAI_Seq_350(); break;
+				case 351: BaciAI_Seq_351(); break;
+				case 352: BaciAI_Seq_352(); break;
+				case 354: BaciAI_Seq_354(); break;
+				case 362: BaciAI_Seq_362(); break;
+				case 363: BaciAI_Seq_363(); break;
+				case 366: BaciAI_Seq_366(); break;
+				case 368: BaciAI_Seq_368(); break;
+				case 370: BaciAI_Seq_370(); break;
+				case 375: BaciAI_Seq_375(); break;
+				case 387: BaciAI_Seq_387(); break;
+				case 388: BaciAI_Seq_388(); break;
+				case 389: BaciAI_Seq_389(); break;
+				case 391: BaciAI_Seq_391(); break;
+				case 394: BaciAI_Seq_394(); break;
+				case 397: BaciAI_Seq_397(); break;
+				case 399: BaciAI_Seq_399(); break;
+				case 406: BaciAI_Seq_406(); break;
+				case 419: BaciAI_Seq_419(); break;
+				case 420: BaciAI_Seq_423(); break;
+				case 425: BaciAI_Seq_425(); break;
+				case 426: BaciAI_Seq_426(); break;
+				case 428: BaciAI_Seq_428(); break;
+				case 429: BaciAI_Seq_429(); break;
+				case 431: BaciAI_Seq_431(); break;
+				case 432: BaciAI_Seq_432(); break;
+				case 434: BaciAI_Seq_434(); break;
+			}
+		}
+		private int Bouon_Check()
+		{
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE) != 43)
+				return 0;
+			long atkTokusei = Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK);
+			if (atkTokusei == 104 || atkTokusei == 163 || atkTokusei == 164)
+				return 0;
+			switch ((int)CurrentWazaNo())
+			{
+				case 45:
+				case 46:
+				case 47:
+				case 48:
+				case 103:
+				case 173:
+				case 195:
+				case 253:
+				case 304:
+				case 319:
+				case 320:
+				case 405:
+				case 448:
+				case 496:
+				case 497:
+				case 547:
+				case 555:
+				case 568:
+				case 574:
+				case 575:
+				case 586:
+				case 590:
+				case 664:
+				case 691:
+				case 786:
+					ScoreCtrl(-10);
+					return 1;
+			}
+			return 0;
+		}
+		private int Boudan_Check()
+		{
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE) != 171)
+				return 0;
+			long atkTokusei = Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK);
+			if (atkTokusei == 104 || atkTokusei == 163 || atkTokusei == 164)
+				return 0;
+			switch ((int)CurrentWazaNo())
+			{
+				case 121:
+				case 140:
+				case 188:
+				case 190:
+				case 192:
+				case 247:
+				case 296:
+				case 301:
+				case 311:
+				case 331:
+				case 360:
+				case 396:
+				case 402:
+				case 411:
+				case 412:
+				case 426:
+				case 439:
+				case 443:
+				case 486:
+				case 491:
+				case 545:
+					ScoreCtrl(-10);
+					return 1;
+			}
+			return 0;
+		}
+		private void BaciAI_Seq_001()
+		{
+			if (Call(CMD_IF_POKESICK, CHECK_DEFENCE) != 0)
+			{
+				ScoreCtrl(-10);
+				return;
+			}
+			if (Call(CMD_IF_SIDEEFF, CHECK_DEFENCE, 2) != 0)
+			{
+				ScoreCtrl(-10);
+				return;
+			}
+			long atkTokusei = Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK);
+			long migawari = Call(CMD_IF_MIGAWARI, CHECK_DEFENCE);
+			if (atkTokusei != 151 && migawari != 0)
+			{
+				ScoreCtrl(-10);
+				return;
+			}
+			long defTokusei = Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE);
+			long type1 = Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE1);
+			long type2 = Call(CMD_CHECK_TYPE, CHECK_DEFENCE_TYPE2);
+			long ground = Call(CMD_IF_EXIST_GROUND, 3);
+			if (type2 != 2 && type1 != 2 && defTokusei != 26 && ground != 0)
+			{
+				ScoreCtrl(-10);
+				return;
+			}
+			ground = Call(CMD_IF_EXIST_GROUND, 2);
+			if (type2 != 2 && type1 != 2 && defTokusei != 26 && ground != 0)
+			{
+				ScoreCtrl(-10);
+				return;
+			}
+			long rule = Call(CMD_CHECK_BTL_RULE);
+			if (atkTokusei == 104 || atkTokusei == 163 || atkTokusei == 164)
+				return;
+			if (defTokusei != 15 && defTokusei != 156 && defTokusei != 72)
+			{
+				if (type1 == 11 || type2 == 11)
+				{
+					if (defTokusei != 166)
+					{
+						if (rule != 1)
+							return;
+						if (Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE_FRIEND) != 166)
+							return;
+					}
+				}
+				else if (defTokusei == 197)
+				{
+					if (Call(CMD_IF_HP_OVER, CHECK_DEFENCE, 51) == 0)
+						return;
+				}
+				else if (defTokusei != 175)
+				{
+					if (rule != 1)
+						return;
+					if (Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE_FRIEND) != 175)
+						return;
+				}
+			}
+			ScoreCtrl(-10);
+		}
+		private void BaciAI_Seq_007()
+		{
+			if (Call(CMD_CHECK_WAZA_AISYOU, CHECK_ATTACK, CHECK_DEFENCE, (ushort)CurrentWazaNo(), AISYOU_0BAI) != 0)
+			{
+				ScoreCtrl(-10);
+				return;
+			}
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK) != 104 && Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE) == 6)
+			{
+				ScoreCtrl(-10);
+				return;
+			}
+			if (Call(CMD_CHECK_BTL_RULE) != 0)
+				return;
+			if (Call(CMD_CHECK_BENCH_COUNT, CHECK_ATTACK) != 0)
+				return;
+			if (Call(CMD_CHECK_BENCH_COUNT, CHECK_DEFENCE) == 0)
+				ScoreCtrl(-1);
+			else
+				ScoreCtrl(-10);
+		}
+		private void BaciAI_Seq_008()
+		{
+			if (Call(CMD_IFN_WAZASICK, CHECK_DEFENCE, 2) == 0)
+			{
+				if (Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE) != 98)
+					return;
+			}
+			ScoreCtrl(-10);
+		}
+		private void BaciAI_Seq_010()
+		{
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK) == 126)
+			{
+				ScoreCtrl(-12);
+				return;
+			}
+			if (Call(CMD_IF_PARA_EQUAL, new long[] { CHECK_ATTACK, PARA_POW, 12 }) == 0)
+				return;
+			ScoreCtrl(-10);
+		}
+		private void BaciAI_Seq_011()
+		{
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK) == 126)
+			{
+				ScoreCtrl(-12);
+				return;
+			}
+			if (Call(CMD_IF_PARA_EQUAL, new long[] { CHECK_ATTACK, PARA_DEF, 12 }) == 0)
+				return;
+			ScoreCtrl(-10);
+		}
+		private void BaciAI_Seq_012()
+		{
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK) == 126)
+			{
+				ScoreCtrl(-12);
+				return;
+			}
+			if (Call(CMD_IF_PARA_EQUAL, new long[] { CHECK_ATTACK, PARA_AGI, 12 }) != 0)
+			{
+				ScoreCtrl(-10);
+				return;
+			}
+			if (Call(CMD_FLDEFF_CHECK, 1) == 0)
+				return;
+			ScoreCtrl(-5);
+		}
+		private void BaciAI_Seq_013()
+		{
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK) == 126)
+			{
+				ScoreCtrl(-12);
+				return;
+			}
+			if (Call(CMD_IF_PARA_EQUAL, new long[] { CHECK_ATTACK, PARA_SPEPOW, 12 }) == 0)
+				return;
+			ScoreCtrl(-10);
+		}
+		private void BaciAI_Seq_014()
+		{
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK) == 126)
+			{
+				ScoreCtrl(-12);
+				return;
+			}
+			if (Call(CMD_IF_PARA_EQUAL, new long[] { CHECK_ATTACK, PARA_SPEDEF, 12 }) == 0)
+				return;
+			ScoreCtrl(-10);
+		}
+		private void BaciAI_Seq_015()
+		{
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK) == 126)
+			{
+				ScoreCtrl(-12);
+				return;
+			}
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE) != 99 && Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK) != 99)
+			{
+				if (Call(CMD_IF_PARA_EQUAL, new long[] { CHECK_ATTACK, PARA_HIT, 12 }) == 0)
+					return;
+			}
+			ScoreCtrl(-10);
+		}
+		private void BaciAI_Seq_016()
+		{
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK) == 126)
+			{
+				ScoreCtrl(-12);
+				return;
+			}
+			if (Call(CMD_CHECK_TOKUSEI, CHECK_DEFENCE) != 99 && Call(CMD_CHECK_TOKUSEI, CHECK_ATTACK) != 99)
+			{
+				if (Call(CMD_IF_PARA_EQUAL, new long[] { CHECK_ATTACK, PARA_AVOID, 12 }) == 0)
+					return;
+			}
+			ScoreCtrl(-10);
+		}
 		private void BaciAI_Seq_018() { /*@B 0x6007EAF*/ throw null; }
 		private void BaciAI_Seq_019() { /*@B 0x6007EB0*/ throw null; }
 		private void BaciAI_Seq_020() { /*@B 0x6007EB1*/ throw null; }
