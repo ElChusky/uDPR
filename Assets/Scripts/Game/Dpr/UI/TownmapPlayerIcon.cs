@@ -5,12 +5,14 @@ namespace Dpr.UI
 	{
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image _image;
-		protected override void Awake() { /*@B 0x600555F*/ throw null; }
+		protected override void Awake() {
+            _image.sprite = GetSpritePlayerIcon();
+        }
 		private global::UnityEngine.Sprite GetSpritePlayerIcon() {
             // @0184fbb8: the name is formatted BEFORE UIManager.Instance is fetched (@0184fc3c)
             string name = string.Format("map_ico_player_01_{0:D3}_{1:D2}", PlayerWork.playerFashion, PlayerWork.colorID);
             return UIManager.Instance.GetAtlasSprite(SpriteAtlasID.TEXTUREMASS, name);
         }
-		public TownmapPlayerIcon() { /*@B 0x6005561*/ throw null; }
+		public TownmapPlayerIcon() { }
 	}
 }
