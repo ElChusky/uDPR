@@ -4,18 +4,59 @@ namespace Dpr
 	public class FieldObjectRotateYaw
 	{
 		private global::System.WeakReference<global::FieldObjectEntity> _Entity;
-		public global::Dpr.FieldFloatMove FloatMove;
+		public global::Dpr.FieldFloatMove FloatMove = new global::Dpr.FieldFloatMove();
 		private float BaseYawAngle;
 		private float TargetYawAngle;
-		public bool IsBusy { get { /*@B 0x6003081*/ throw null; } }
-		private global::FieldObjectEntity Entity { get { /*@B 0x6003083*/ throw null; } set { /*@B 0x6003082*/ throw null; } }
-		public void SetObjectEntity(global::FieldObjectEntity entity) { /*@B 0x6003084*/ throw null; }
-		public void Reset() { /*@B 0x6003085*/ throw null; }
-		public void Update(float deltaTime) { /*@B 0x6003086*/ throw null; }
-		public void Stop() { /*@B 0x6003087*/ throw null; }
-		public void SetYawAngle(float yawAngle) { /*@B 0x6003088*/ throw null; }
-		public void MoveTime(float targetYawAngle, float moveTime) { /*@B 0x6003089*/ throw null; }
-		public void MoveSpeed(float targetYawAngle, float moveSpeed) { /*@B 0x600308A*/ throw null; }
-		public FieldObjectRotateYaw() { /*@B 0x600308B*/ throw null; }
+		public bool IsBusy { get {
+				return FloatMove.IsBusy;
+			} }
+		private global::FieldObjectEntity Entity { get {
+				global::FieldObjectEntity entity;
+				if (!_Entity.TryGetTarget(out entity))
+					entity = null;
+				return entity;
+			} set {
+				_Entity = new global::System.WeakReference<global::FieldObjectEntity>(value);
+			} }
+		public void SetObjectEntity(global::FieldObjectEntity entity) {
+			Entity = entity;
+		}
+		public void Reset() {
+			FloatMove.Stop();
+			Entity = null;
+		}
+		public void Update(float deltaTime) {
+			if (!FloatMove.IsBusy)
+				return;
+
+			FloatMove.Update(deltaTime);
+			if (Entity != null)
+				Entity.yawAngle = global::UnityEngine.Mathf.Lerp(BaseYawAngle, TargetYawAngle, FloatMove.CurrentValue);
+		}
+		public void Stop() {
+			FloatMove.Stop();
+		}
+		public void SetYawAngle(float yawAngle) {
+			FloatMove.Stop();
+			Entity.yawAngle = yawAngle;
+		}
+		public void MoveTime(float targetYawAngle, float moveTime) {
+			if (moveTime <= 0.0f)
+			{
+				SetYawAngle(targetYawAngle);
+				return;
+			}
+
+			float delta = global::UnityEngine.Mathf.DeltaAngle(Entity.yawAngle, targetYawAngle);
+			TargetYawAngle = targetYawAngle;
+			BaseYawAngle = targetYawAngle - delta;
+			FloatMove.SetValue(0.0f);
+			FloatMove.MoveTime(1.0f, moveTime);
+		}
+		public void MoveSpeed(float targetYawAngle, float moveSpeed) {
+			float delta = global::UnityEngine.Mathf.DeltaAngle(Entity.yawAngle, targetYawAngle);
+			MoveTime(targetYawAngle, global::UnityEngine.Mathf.Abs(delta) / moveSpeed);
+		}
+		public FieldObjectRotateYaw() { }
 	}
 }

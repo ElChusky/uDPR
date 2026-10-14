@@ -6,18 +6,72 @@ namespace Dpr
 		public bool IgnoreY;
 		public float JumpHeight;
 		private global::System.WeakReference<global::FieldObjectEntity> _Entity;
-		public global::Dpr.FieldFloatMove FloatMove;
+		public global::Dpr.FieldFloatMove FloatMove = new global::Dpr.FieldFloatMove();
 		private global::UnityEngine.Vector3 BaseWldPos;
 		private global::UnityEngine.Vector3 TargetWldPos;
-		public bool IsBusy { get { /*@B 0x6003076*/ throw null; } }
-		private global::FieldObjectEntity Entity { get { /*@B 0x6003078*/ throw null; } set { /*@B 0x6003077*/ throw null; } }
-		public void SetObjectEntity(global::FieldObjectEntity entity) { /*@B 0x6003079*/ throw null; }
-		public void Reset() { /*@B 0x600307A*/ throw null; }
-		public void Update(float deltaTime) { /*@B 0x600307B*/ throw null; }
-		public void Stop() { /*@B 0x600307C*/ throw null; }
-		public void SetWorldPos(global::UnityEngine.Vector3 wldPos) { /*@B 0x600307D*/ throw null; }
-		public void MoveTime(global::UnityEngine.Vector3 targetWldPos, float moveTime) { /*@B 0x600307E*/ throw null; }
-		public void MoveSpeed(global::UnityEngine.Vector3 targetWldPos, float moveSpeed) { /*@B 0x600307F*/ throw null; }
-		public FieldObjectMove() { /*@B 0x6003080*/ throw null; }
+		public bool IsBusy { get {
+				return FloatMove.IsBusy;
+			} }
+		private global::FieldObjectEntity Entity { get {
+				global::FieldObjectEntity entity;
+				if (!_Entity.TryGetTarget(out entity))
+					entity = null;
+				return entity;
+			} set {
+				_Entity = new global::System.WeakReference<global::FieldObjectEntity>(value);
+			} }
+		public void SetObjectEntity(global::FieldObjectEntity entity) {
+			Entity = entity;
+		}
+		public void Reset() {
+			FloatMove.Stop();
+			Entity = null;
+			IgnoreY = false;
+			JumpHeight = 0.0f;
+		}
+		public void Update(float deltaTime) {
+			if (!FloatMove.IsBusy)
+				return;
+
+			FloatMove.Update(deltaTime);
+			if (Entity != null)
+			{
+				global::UnityEngine.Vector3 pos = global::UnityEngine.Vector3.Lerp(BaseWldPos, TargetWldPos, FloatMove.CurrentValue);
+				if (IgnoreY)
+					pos.y = Entity.worldPosition.y;
+
+				if (JumpHeight > 0.0f)
+					pos.y += global::UnityEngine.Mathf.Sin(FloatMove.CurrentValue * global::UnityEngine.Mathf.PI) * JumpHeight;
+
+				Entity.worldPosition = pos;
+			}
+		}
+		public void Stop() {
+			FloatMove.Stop();
+		}
+		public void SetWorldPos(global::UnityEngine.Vector3 wldPos) {
+			FloatMove.Stop();
+			Entity.worldPosition = wldPos;
+		}
+		public void MoveTime(global::UnityEngine.Vector3 targetWldPos, float moveTime) {
+			if (moveTime <= 0.0f)
+			{
+				SetWorldPos(targetWldPos);
+				return;
+			}
+
+			BaseWldPos = Entity.worldPosition;
+			TargetWldPos = targetWldPos;
+			FloatMove.SetValue(0.0f);
+			FloatMove.MoveTime(1.0f, moveTime);
+		}
+		public void MoveSpeed(global::UnityEngine.Vector3 targetWldPos, float moveSpeed) {
+			global::UnityEngine.Vector3 dir = targetWldPos - Entity.worldPosition;
+			if (Entity.isLanding)
+				dir.y = 0.0f;
+
+			MoveTime(targetWldPos, dir.magnitude / moveSpeed);
+		}
+		public FieldObjectMove() { }
 	}
 }

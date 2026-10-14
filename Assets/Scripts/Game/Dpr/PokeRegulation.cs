@@ -5,8 +5,16 @@ namespace Dpr
 {
 	public static class PokeRegulation
 	{
-		private static readonly global::Pml.MonsNo[] legend_monsno;
-		private static readonly global::Pml.MonsNo[] sub_legend_monsno;
+		private static readonly global::Pml.MonsNo[] legend_monsno = new global::Pml.MonsNo[] {
+			MonsNo.MYUUTUU, MonsNo.MYUU, MonsNo.RUGIA, MonsNo.HOUOU, MonsNo.SEREBHI, MonsNo.KAIOOGA,
+			MonsNo.GURAADON, MonsNo.REKKUUZA, MonsNo.ZIRAATI, MonsNo.DEOKISISU, MonsNo.DHIARUGA, MonsNo.PARUKIA,
+			MonsNo.GIRATHINA, MonsNo.FIONE, MonsNo.MANAFI, MonsNo.DAAKURAI, MonsNo.SHEIMI, MonsNo.ARUSEUSU,
+		};
+		private static readonly global::Pml.MonsNo[] sub_legend_monsno = new global::Pml.MonsNo[] {
+			MonsNo.HURIIZAA, MonsNo.SANDAA, MonsNo.FAIYAA, MonsNo.RAIKOU, MonsNo.ENTEI, MonsNo.SUIKUN,
+			MonsNo.REZIROKKU, MonsNo.REZIAISU, MonsNo.REZISUTIRU, MonsNo.RATHIASU, MonsNo.RATHIOSU, MonsNo.YUKUSII,
+			MonsNo.EMURITTO, MonsNo.AGUNOMU, MonsNo.HIIDORAN, MonsNo.REZIGIGASU, MonsNo.KURESERIA,
+		};
 		public static bool CheckLegend(global::Pml.MonsNo monsno, byte formno = 0) {
 			for (int i = 0; i < legend_monsno.Length; i++)
 			{
@@ -121,6 +129,6 @@ namespace Dpr
 
 			return result;
 		}
-		static PokeRegulation() { /*@B 0x60030C0*/ throw null; }
+		static PokeRegulation() { }
 	}
 }

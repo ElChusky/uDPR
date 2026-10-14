@@ -10,10 +10,14 @@ namespace Dpr
 		public const uint SND_SWITCH_STATE = 1893047300u;
 		public global::Dpr.PokeAnimSound.AnimEventData[] AnimEvent;
 		private global::AnimationPlayer _animationPlayer;
-		private int _oldClipIndex;
-		private int _oldEventIndex;
+		private int _oldClipIndex = -1;
+		private int _oldEventIndex = -1;
 		public bool Enable { get; set; }
-		public void Init(global::AnimationPlayer animationPlayer) { /*@B 0x60030F1*/ throw null; }
+		public void Init(global::AnimationPlayer animationPlayer) {
+			_animationPlayer = animationPlayer;
+			_oldClipIndex = -1;
+			_oldEventIndex = -1;
+		}
 		public void Update(global::UnityEngine.Transform transform) {
             if (!Enable)
                 return;
@@ -63,7 +67,7 @@ namespace Dpr
 
             return i - 1;
         }
-		public PokeAnimSound() { /*@B 0x60030F4*/ throw null; }
+		public PokeAnimSound() { }
 		[global::System.Serializable]
 		public class AnimEventData
 		{
