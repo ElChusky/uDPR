@@ -5,7 +5,10 @@ namespace Dpr.SubContents
 	{
 		protected global::System.Action OnStopTimeLine;
 		protected global::System.Action OnResumeTimeLine;
-		public void SetCallBack(global::System.Action OnStop, global::System.Action OnResume) { /*@B 0x6003370*/ throw null; }
+		public void SetCallBack(global::System.Action OnStop, global::System.Action OnResume) {
+			OnStopTimeLine = OnStop;
+			OnResumeTimeLine = OnResume;
+		}
 		public void StopTimeLine() {
 			OnStopTimeLine?.Invoke();
 		}
