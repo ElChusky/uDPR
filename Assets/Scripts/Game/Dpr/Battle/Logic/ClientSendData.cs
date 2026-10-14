@@ -3,7 +3,9 @@ namespace Dpr.Battle.Logic
 {
 	public class ClientSendData
 	{
-		public static void Copy(ref global::Dpr.Battle.Logic.ClientSendData.RAID_BALL_SELECT pDest, in global::Dpr.Battle.Logic.ClientSendData.RAID_BALL_SELECT src) { /*@B 0x60075EB*/ throw null; }
+		public static void Copy(ref global::Dpr.Battle.Logic.ClientSendData.RAID_BALL_SELECT pDest, in global::Dpr.Battle.Logic.ClientSendData.RAID_BALL_SELECT src) {
+			pDest = src;
+		}
 		public ClientSendData() { }
 		public unsafe struct ACTION_SELECT
 		{
@@ -26,7 +28,10 @@ namespace Dpr.Battle.Logic
 		{
 			public bool isThrow;
 			public ushort itemID;
-			public void CopyFrom(global::Dpr.Battle.Logic.ClientSendData.RAID_BALL_SELECT src) { /*@B 0x600B6A8*/ throw null; }
+			public void CopyFrom(global::Dpr.Battle.Logic.ClientSendData.RAID_BALL_SELECT src) {
+				isThrow = src.isThrow;
+				itemID = src.itemID;
+			}
 		}
 	}
 }

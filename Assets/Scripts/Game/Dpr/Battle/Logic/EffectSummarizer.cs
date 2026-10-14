@@ -6,7 +6,11 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.ServerCommandQueue m_pQueue;
 		private ushort m_reservedPos_Effect;
 		private ushort m_reservedPos_Message;
-		public EffectSummarizer(global::Dpr.Battle.Logic.ServerCommandQueue pQueue) { /*@B 0x6006BAA*/ throw null; }
+		public EffectSummarizer(global::Dpr.Battle.Logic.ServerCommandQueue pQueue) {
+			m_pQueue = pQueue;
+			m_reservedPos_Effect = 0;
+			m_reservedPos_Message = 0;
+		}
 		public void Reserve() {
 			m_reservedPos_Effect = m_pQueue.ReservePutPos(ServerCommand.ACT_SUMMARIZED_GSHOCK_EFFECT);
 			m_reservedPos_Message = m_pQueue.ReservePutPos(ServerCommand.MSG_STD);

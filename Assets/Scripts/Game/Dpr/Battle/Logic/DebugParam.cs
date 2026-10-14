@@ -5,9 +5,9 @@ namespace Dpr.Battle.Logic
 	{
 		public bool captureMustFail_isEnable;
 		public byte captureMustFail_yureCount;
-		public int[] yubiWoHuruWaza;
+		public int[] yubiWoHuruWaza = new int[5];
 		public int gTurnMax;
-		public global::Dpr.Battle.Logic.DebugParam.ClientParam[] clientParam;
+		public global::Dpr.Battle.Logic.DebugParam.ClientParam[] clientParam = Arrays.InitializeWithDefaultInstances<ClientParam>(5);
 		private static global::Dpr.Battle.Logic.DebugParam s_uPtrDebugParam;
 		public static void CreateInstance() {
 			s_uPtrDebugParam = new DebugParam();
@@ -18,7 +18,12 @@ namespace Dpr.Battle.Logic
 		public static global::Dpr.Battle.Logic.DebugParam GetInstance() {
 			return s_uPtrDebugParam;
 		}
-		public DebugParam() { /*@B 0x6007613*/ throw null; }
+		public DebugParam() {
+			captureMustFail_isEnable = false;
+			captureMustFail_yureCount = 0;
+			for (byte i = 0; i < yubiWoHuruWaza.Length; i++)
+				yubiWoHuruWaza[i] = 0;
+		}
 		public void IncYubiWoHuruWaza(global::Dpr.Battle.Logic.BtlPokePos pos) {
 			while (true)
 			{

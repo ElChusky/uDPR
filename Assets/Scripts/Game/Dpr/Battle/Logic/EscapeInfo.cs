@@ -3,11 +3,23 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class EscapeInfo
 	{
-		private global::Dpr.Battle.Logic.EscapeInfo.PARAM m_param;
-		public uint GetCount() { /*@B 0x600762A*/ throw null; }
-		private void clear() { /*@B 0x600762B*/ throw null; }
-		public EscapeInfo() { /*@B 0x600762C*/ throw null; }
-		public void Clear() { /*@B 0x600762D*/ throw null; }
+		private global::Dpr.Battle.Logic.EscapeInfo.PARAM m_param = new PARAM();
+		public uint GetCount() {
+			return m_param.count;
+		}
+		private void clear() {
+			m_param.count = 0;
+			for (int i = 0; i < m_param.clientID.Length; i++)
+				m_param.clientID[i] = (byte)global::Dpr.Battle.Logic.BTL_CLIENT_ID.BTL_CLIENT_NULL;
+		}
+		public EscapeInfo() {
+			Clear();
+		}
+		public void Clear() {
+			m_param.count = 0;
+			for (int i = 0; i < m_param.clientID.Length; i++)
+				m_param.clientID[i] = (byte)global::Dpr.Battle.Logic.BTL_CLIENT_ID.BTL_CLIENT_NULL;
+		}
 		public void Add(byte clientID) {
             var clientIDs = m_param.clientID;
             for (int i = 0; i < clientIDs.Length; i++)
@@ -54,8 +66,8 @@ namespace Dpr.Battle.Logic
 		private class PARAM
 		{
 			public uint count;
-			public byte[] clientID;
-			public PARAM() { /*@B 0x600B6B1*/ throw null; }
+			public byte[] clientID = new byte[5];
+			public PARAM() { }
 		}
 	}
 }

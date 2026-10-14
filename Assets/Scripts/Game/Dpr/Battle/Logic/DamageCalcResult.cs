@@ -5,9 +5,19 @@ namespace Dpr.Battle.Logic
 	{
 		public byte realHitCount;
 		public byte migawariHitCount;
-		public global::Dpr.Battle.Logic.DamageCalcResult.RECORD[] record;
-		public DamageCalcResult() { /*@B 0x6006985*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.DamageCalcResult src) { /*@B 0x6006986*/ throw null; }
+		public global::Dpr.Battle.Logic.DamageCalcResult.RECORD[] record = Arrays.InitializeWithDefaultInstances<RECORD>(6);
+		public DamageCalcResult() {
+			realHitCount = 0;
+			migawariHitCount = 0;
+			for (int i = 0; i < record.Length; i++)
+				record[i].Clear();
+		}
+		public void CopyFrom(in global::Dpr.Battle.Logic.DamageCalcResult src) {
+			realHitCount = src.realHitCount;
+			migawariHitCount = src.migawariHitCount;
+			for (int i = 0; i < record.Length; i++)
+				record[i].CopyFrom(src.record[i]);
+		}
 		public void Merge(in global::Dpr.Battle.Logic.DamageCalcResult src) {
 			if (GetTargetCount() + src.GetTargetCount() > record.Length || src.GetTargetCount() == 0)
 				return;
@@ -43,8 +53,26 @@ namespace Dpr.Battle.Logic
 			public bool isCriticalByFriendship;
 			public bool isFixDamage;
 			public bool isMigawari;
-			public void Clear() { /*@B 0x600B477*/ throw null; }
-			public void CopyFrom(global::Dpr.Battle.Logic.DamageCalcResult.RECORD src) { /*@B 0x600B478*/ throw null; }
+			public void Clear() {
+				damage = 0;
+				pokeID = 0;
+				affinity = 0;
+				koraeruCause = 0;
+				isCritical = false;
+				isCriticalByFriendship = false;
+				isFixDamage = false;
+				isMigawari = false;
+			}
+			public void CopyFrom(global::Dpr.Battle.Logic.DamageCalcResult.RECORD src) {
+				damage = src.damage;
+				pokeID = src.pokeID;
+				affinity = src.affinity;
+				koraeruCause = src.koraeruCause;
+				isCritical = src.isCritical;
+				isCriticalByFriendship = src.isCriticalByFriendship;
+				isFixDamage = src.isFixDamage;
+				isMigawari = src.isMigawari;
+			}
 			public RECORD() { }
 		}
 	}

@@ -5,8 +5,14 @@ namespace Dpr.Battle.Logic
 	{
 		private global::Dpr.Battle.Logic.BtlPokePos m_capturedPokePos;
 		private global::Dpr.Battle.Logic.BTL_CLIENT_ID m_captguredClientID;
-		public CaptureInfo() { /*@B 0x600698D*/ throw null; }
-		public void Clear() { /*@B 0x600698E*/ throw null; }
+		public CaptureInfo() {
+			m_capturedPokePos = global::Dpr.Battle.Logic.BtlPokePos.POS_NULL;
+			m_captguredClientID = global::Dpr.Battle.Logic.BTL_CLIENT_ID.BTL_CLIENT_NULL;
+		}
+		public void Clear() {
+			m_capturedPokePos = global::Dpr.Battle.Logic.BtlPokePos.POS_NULL;
+			m_captguredClientID = global::Dpr.Battle.Logic.BTL_CLIENT_ID.BTL_CLIENT_NULL;
+		}
 		public global::Dpr.Battle.Logic.BtlPokePos GetCauturedPokePos() { return this.m_capturedPokePos; }
 		public void SetCapturedPokePos(global::Dpr.Battle.Logic.BtlPokePos pos) { this.m_capturedPokePos = pos; }
 		public global::Dpr.Battle.Logic.BTL_CLIENT_ID GetCapturedClientID() { return this.m_captguredClientID; }

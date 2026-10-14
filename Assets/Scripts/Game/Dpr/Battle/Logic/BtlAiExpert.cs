@@ -2142,7 +2142,21 @@ namespace Dpr.Battle.Logic
 					ScoreCtrl(-2);
 			}
 		}
-		private void ExpertAI_Seq_038() { /*@B 0x6007FA4*/ throw null; }
+		private void ExpertAI_Seq_038() {
+			PRINTF("expertAI シーケンス038 一撃必殺のチェック…\n");
+			if (Call(CMD_IF_WAZASICK, new long[] { CHECK_ATTACK, WAZASICK_MUSTHIT_TARGET }) != 0)
+			{
+				PRINTF("ロックオン中なので230ランダムプラス\n");
+				if (Call(CMD_IF_RND_UNDER, new long[] { 230 }) != 0)
+					ScoreCtrl(2);
+			}
+			PRINTF("単純な150ランダムプラスです\n");
+			if (Call(CMD_IF_RND_UNDER, new long[] { 150 }) != 0)
+			{
+				ScoreCtrl(1);
+				return;
+			}
+		}
 		private void ExpertAI_Seq_039() {
 			PRINTF("expertAI シーケンス039 タメ技のチェック…\n");
 			if (Call(CMD_CHECK_WAZA_AISYOU, new long[] { CHECK_ATTACK, CHECK_DEFENCE, (ushort)CurrentWazaNo(), AISYOU_0BAI }) != 0 ||
@@ -4494,7 +4508,19 @@ namespace Dpr.Battle.Logic
 					ScoreCtrl(1);
 			}
 		}
-		private void ExpertAI_Seq_173() { /*@B 0x6007FE0*/ throw null; }
+		private void ExpertAI_Seq_173() {
+			PRINTF("expertAI シーケンス173 しぜんのちからのチェック…\n");
+			long isMist = Call(CMD_IF_EXIST_GROUND, new long[] { BTL_GROUND_MIST });
+			long isGrass = Call(CMD_IF_EXIST_GROUND, new long[] { BTL_GROUND_GRASS });
+			byte WazaType = POKETYPE_NORMAL;
+			if (isMist != 0)
+				WazaType = POKETYPE_FAIRY;
+			if (isGrass != 0)
+				WazaType = POKETYPE_KUSA;
+			if (Call(CMD_IF_EXIST_GROUND, new long[] { BTL_GROUND_ELEKI }) != 0)
+				WazaType = POKETYPE_DENKI;
+			ExpertAI_TypeCheck(WazaType);
+		}
 		private void ExpertAI_Seq_174() {
 			PRINTF("expertAI シーケンス174 じゅうでんのチェック…\n");
 			if (Call(CMD_CHECK_WAZA_AISYOU, new long[] { CHECK_ATTACK, CHECK_DEFENCE, (ushort)CurrentWazaNo(), AISYOU_0BAI }) != 0)
@@ -6792,7 +6818,33 @@ namespace Dpr.Battle.Logic
 					ScoreCtrl(1);
 			}
 		}
-		private void ExpertAI_Seq_304() { /*@B 0x600803B*/ throw null; }
+		private void ExpertAI_Seq_304() {
+			PRINTF("expertAI シーケンス304 クリアスモッグのチェック…\n");
+			if (Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_POW, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_DEF, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_SPEPOW, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_SPEDEF, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_AGI, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_HIT, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_AVOID, 6 }) != 0)
+			{
+				PRINTF("状況が有利なので240ランダムマイナスです\n");
+				if (Call(CMD_IF_RND_UNDER, new long[] { 240 }) != 0)
+					ScoreCtrl(-1);
+			}
+			if (Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_POW, 7 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_DEF, 7 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_SPEPOW, 7 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_SPEDEF, 7 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_AGI, 6 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_HIT, 7 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_AVOID, 7 }) == 0)
+				return;
+			PRINTF("状況が不利なので180ランダムプラスです\n");
+			if (Call(CMD_IF_RND_UNDER, new long[] { 180 }) == 0)
+				return;
+			ScoreCtrl(2);
+		}
 		private void ExpertAI_Seq_305() {
 			PRINTF("expertAI シーケンス305 アシストパワーのチェック…\n");
 			if (Call(CMD_CHECK_WAZA_AISYOU, new long[] { CHECK_ATTACK, CHECK_DEFENCE, (ushort)CurrentWazaNo(), AISYOU_0BAI }) != 0)
@@ -7208,7 +7260,38 @@ namespace Dpr.Battle.Logic
 					ScoreCtrl(1);
 			}
 		}
-		private void ExpertAI_Seq_347() { /*@B 0x6008053*/ throw null; }
+		private void ExpertAI_Seq_347() {
+			PRINTF("expertAI シーケンス347　ひっくりかえすのチェック…\n");
+			if (Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_POW, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_DEF, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_SPEPOW, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_SPEDEF, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_AGI, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_HIT, 6 }) != 0 ||
+				Call(CMD_IF_PARA_UNDER, new long[] { CHECK_DEFENCE, PARA_AVOID, 6 }) != 0)
+			{
+				PRINTF("状況が有利なので240ランダムマイナスです\n");
+				if (Call(CMD_IF_RND_UNDER, new long[] { 240 }) != 0)
+					ScoreCtrl(-3);
+			}
+			if (Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_POW, 6 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_DEF, 6 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_SPEPOW, 6 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_SPEDEF, 6 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_AGI, 6 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_HIT, 6 }) == 0 &&
+				Call(CMD_IF_PARA_OVER, new long[] { CHECK_DEFENCE, PARA_AVOID, 6 }) == 0)
+			{
+				if (Call(CMD_IF_RND_UNDER, new long[] { 240 }) == 0)
+					return;
+				ScoreCtrl(-3);
+				return;
+			}
+			PRINTF("状況が不利なので180ランダムプラスです\n");
+			if (Call(CMD_IF_RND_UNDER, new long[] { 180 }) == 0)
+				return;
+			ScoreCtrl(2);
+		}
 		private void ExpertAI_Seq_349() {
 			PRINTF("expertAI シーケンス349 トリックガードのチェック…\n");
 			if (ExpertAI_Seq_ReturnWazaPokemon() == 1)

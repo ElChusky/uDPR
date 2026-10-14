@@ -10,7 +10,7 @@ namespace Dpr.Battle.Logic
 		private const uint FACTOR_MAX_FOR_FIELD = 10u;
 		private const uint FACTOR_MAX_ALLOWANCE = 16u;
 		private const uint FACTOR_REGISTER_MAX = 172u;
-		private global::Dpr.Battle.Logic.EventFactor[] m_factors;
+		private global::Dpr.Battle.Logic.EventFactor[] m_factors = new EventFactor[FACTOR_REGISTER_MAX];
 		private global::Dpr.Battle.Logic.EventFactor m_pRunningFactor;
 		private global::Dpr.Battle.Logic.EventFactor m_pStoredFactor;
 		private const uint SUBPRI_BIT_WIDTH = 24u;
@@ -18,13 +18,27 @@ namespace Dpr.Battle.Logic
 		private static uint calcFactorPriority(global::Dpr.Battle.Logic.EventPriority mainPri, uint subPri) {
             return ((9 - (uint)mainPri) << (int)SUBPRI_BIT_WIDTH) | subPri;
         }
-		private static bool isDependPokeFactorType(global::Dpr.Battle.Logic.EventFactorType factorType) { /*@B 0x60069C2*/ throw null; }
-		public EventFactorContainer() { /*@B 0x60069C3*/ throw null; }
+		private static bool isDependPokeFactorType(global::Dpr.Battle.Logic.EventFactorType factorType) {
+			if ((factorType | (global::Dpr.Battle.Logic.EventFactorType)4) == global::Dpr.Battle.Logic.EventFactorType.TOKUSEI)
+				return true;
+			return factorType == global::Dpr.Battle.Logic.EventFactorType.ITEM;
+		}
+		public EventFactorContainer() {
+			m_pRunningFactor = null;
+			m_pStoredFactor = null;
+			createFactors();
+			storeAllFactors();
+		}
 		private void createFactors() {
             for (int i=0; i<m_factors.Length; i++)
                 m_factors[i] = new EventFactor((ushort)i);
         }
-		private void storeAllFactors() { /*@B 0x60069C5*/ throw null; }
+		private void storeAllFactors() {
+			m_pRunningFactor = null;
+			m_pStoredFactor = null;
+			for (int i = 0; i < m_factors.Length; i++)
+				storeFactor(m_factors[i]);
+		}
 		public void CopyFrom(in global::Dpr.Battle.Logic.EventFactorContainer src) {
             storeAllFactors();
 
@@ -38,17 +52,119 @@ namespace Dpr.Battle.Logic
                     addRunningFactor(newFactor);
             }
         }
-		private global::Dpr.Battle.Logic.EventFactor getFactor(ushort instanceID) { /*@B 0x60069C7*/ throw null; }
-		public void Clear() { /*@B 0x60069C8*/ throw null; }
-		public global::Dpr.Battle.Logic.EventFactor AddFactor(global::Dpr.Battle.Logic.EventFactorType factorType, ushort subID, global::Dpr.Battle.Logic.EventPriority mainPri, uint subPri, byte dependID, global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] handlerTable, byte handlerNum, ushort eventLevel) { /*@B 0x60069C9*/ throw null; }
-		public void RemoveFactor(global::Dpr.Battle.Logic.EventFactor pFactor) { /*@B 0x60069CA*/ throw null; }
+		private global::Dpr.Battle.Logic.EventFactor getFactor(ushort instanceID) {
+			for (int i = 0; i < m_factors.Length; i++)
+			{
+				if (m_factors[i].GetInstanceID() == instanceID)
+					return m_factors[i];
+			}
+			return null;
+		}
+		public void Clear() {
+			// shipped quirk kept: the loop never advances (the factor copies its successor instead of moving to it)
+			var factor = m_pRunningFactor;
+			while (factor != null)
+			{
+				var next = factor.GetNext();
+				storeFactor(factor);
+				factor.CopyFrom(next);
+			}
+			m_pRunningFactor = null;
+		}
+		public global::Dpr.Battle.Logic.EventFactor AddFactor(global::Dpr.Battle.Logic.EventFactorType factorType, ushort subID, global::Dpr.Battle.Logic.EventPriority mainPri, uint subPri, byte dependID, global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] handlerTable, byte handlerNum, ushort eventLevel) {
+			var factor = pickStoredFactor();
+			if (factor != null)
+			{
+				byte pokeID = isDependPokeFactorType(factorType) ? dependID : PokeID.INVALID;
+				factor.Clear();
+				factor.SetPriority(calcFactorPriority(mainPri, subPri));
+				factor.SetFactorType(factorType);
+				factor.SetHandlerTable(handlerTable, handlerNum);
+				factor.SetDependID(dependID);
+				factor.SetSubID(subID);
+				factor.SetPokeID(pokeID);
+				factor.SetEventLevel(eventLevel);
+				factor.SetExistFlag(true);
+				addRunningFactor(factor);
+			}
+			return factor;
+		}
+		public void RemoveFactor(global::Dpr.Battle.Logic.EventFactor pFactor) {
+			if (m_pRunningFactor == pFactor)
+				m_pRunningFactor = pFactor.GetNext();
+			storeFactor(pFactor);
+		}
 		public global::Dpr.Battle.Logic.EventFactor GetFirstFactor() { return this.m_pRunningFactor; }
-		public global::Dpr.Battle.Logic.EventFactor SeekFactor(global::Dpr.Battle.Logic.EventFactorType factorType) { /*@B 0x60069CC*/ throw null; }
-		public global::Dpr.Battle.Logic.EventFactor SeekFactor(global::Dpr.Battle.Logic.EventFactorType factorType, byte dependID) { /*@B 0x60069CD*/ throw null; }
-		public global::Dpr.Battle.Logic.EventFactor GetNextFactor(global::Dpr.Battle.Logic.EventFactor pFactor, bool isSkipDependIDCheck = false) { /*@B 0x60069CE*/ throw null; }
-		private void storeFactor(global::Dpr.Battle.Logic.EventFactor pFactor) { /*@B 0x60069CF*/ throw null; }
-		private void storeAllRunningFactor() { /*@B 0x60069D0*/ throw null; }
-		private global::Dpr.Battle.Logic.EventFactor pickStoredFactor(int instanceID = -1) { /*@B 0x60069D1*/ throw null; }
+		public global::Dpr.Battle.Logic.EventFactor SeekFactor(global::Dpr.Battle.Logic.EventFactorType factorType) {
+			for (var factor = m_pRunningFactor; factor != null; factor = factor.GetNext())
+			{
+				if (factor.GetExistFlag() && factor.GetFactorType() == factorType && !factor.GetRemoveReserveFlag())
+					return factor;
+			}
+			return null;
+		}
+		public global::Dpr.Battle.Logic.EventFactor SeekFactor(global::Dpr.Battle.Logic.EventFactorType factorType, byte dependID) {
+			for (var factor = m_pRunningFactor; factor != null; factor = factor.GetNext())
+			{
+				if (factor.GetExistFlag() && factor.GetFactorType() == factorType && factor.GetDependID() == dependID && !factor.GetRemoveReserveFlag())
+					return factor;
+			}
+			return null;
+		}
+		public global::Dpr.Battle.Logic.EventFactor GetNextFactor(global::Dpr.Battle.Logic.EventFactor pFactor, bool isSkipDependIDCheck = false) {
+			if (pFactor == null)
+				return null;
+			for (var factor = pFactor.GetNext(); factor != null; factor = factor.GetNext())
+			{
+				if (factor.GetFactorType() != pFactor.GetFactorType())
+					continue;
+				if (!isSkipDependIDCheck && factor.GetDependID() != pFactor.GetDependID())
+					continue;
+				if (factor.GetRemoveReserveFlag())
+					continue;
+				return factor;
+			}
+			return null;
+		}
+		private void storeFactor(global::Dpr.Battle.Logic.EventFactor pFactor) {
+			pFactor.Unlink();
+			pFactor.Clear();
+			pFactor.Link(m_pStoredFactor);
+			m_pStoredFactor = pFactor;
+		}
+		private void storeAllRunningFactor() {
+			// shipped quirk kept: the loop never advances (the factor copies its successor instead of moving to it)
+			var factor = m_pRunningFactor;
+			while (factor != null)
+			{
+				var next = factor.GetNext();
+				storeFactor(factor);
+				factor.CopyFrom(next);
+			}
+			m_pRunningFactor = null;
+		}
+		private global::Dpr.Battle.Logic.EventFactor pickStoredFactor(int instanceID = -1) {
+			var head = m_pStoredFactor;
+			if (head == null)
+				return null;
+			if (instanceID < 0)
+			{
+				m_pStoredFactor = head.GetNext();
+				head.Unlink();
+				return head;
+			}
+			for (var factor = head; factor != null; factor = factor.GetNext())
+			{
+				if (factor.GetInstanceID() == instanceID)
+				{
+					if (head == factor)
+						m_pStoredFactor = head.GetNext();
+					factor.Unlink();
+					return factor;
+				}
+			}
+			return null;
+		}
 		private void addRunningFactor(global::Dpr.Battle.Logic.EventFactor pNewFactor) {
             if (m_pRunningFactor != null)
             {
