@@ -3,9 +3,14 @@ namespace Dpr.Battle.Logic
 {
 	public class BATTLE_PGL_RECORD_SET
 	{
-		public global::Dpr.Battle.Logic.BATTLE_PGL_RECORD[] myParty;
-		public global::Dpr.Battle.Logic.BATTLE_PGL_RECORD[] enemysParty;
-		public void Clear() { /*@B 0x6006751*/ throw null; }
-		public BATTLE_PGL_RECORD_SET() { /*@B 0x6006752*/ throw null; }
+		public global::Dpr.Battle.Logic.BATTLE_PGL_RECORD[] myParty = Arrays.InitializeWithDefaultInstances<BATTLE_PGL_RECORD>(6);
+		public global::Dpr.Battle.Logic.BATTLE_PGL_RECORD[] enemysParty = Arrays.InitializeWithDefaultInstances<BATTLE_PGL_RECORD>(6);
+		public void Clear() {
+			for (int i = 0; i < myParty.Length; i++)
+				myParty[i].Clear();
+			for (int i = 0; i < enemysParty.Length; i++)
+				enemysParty[i].Clear();
+		}
+		public BATTLE_PGL_RECORD_SET() { }
 	}
 }

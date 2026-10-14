@@ -3,13 +3,13 @@ namespace Dpr.Battle.Logic
 {
 	public class BATTLE_TVNAVI_DATA
 	{
-		public ushort[] frontPoke;
+		public ushort[] frontPoke = new ushort[2];
 		public ushort lastWaza;
 		public void Clear() {
 			for (int i = 0; i < frontPoke.Length; i++)
 				frontPoke[i] = 0;
 			lastWaza = 0;
 		}
-		public BATTLE_TVNAVI_DATA() { /*@B 0x60067DD*/ throw null; }
+		public BATTLE_TVNAVI_DATA() { }
 	}
 }

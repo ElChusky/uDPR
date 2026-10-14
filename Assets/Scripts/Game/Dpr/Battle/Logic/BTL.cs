@@ -4,8 +4,8 @@ namespace Dpr.Battle.Logic
 	public static class BTL
 	{
 		private const string CONDITION = "DMY";
-		public static int s_printBit;
-		private static global::System.Text.StringBuilder sb;
+		public static int s_printBit = 0xe3;
+		private static global::System.Text.StringBuilder sb = new global::System.Text.StringBuilder();
 		public static global::System.Text.StringBuilder GetStringBuilder(bool isClear = true) {
 			if (isClear)
 				sb.Clear();
@@ -29,6 +29,6 @@ namespace Dpr.Battle.Logic
 		public static void N_PrintfSimple(global::Dpr.Battle.Logic.BtlDebugStrID strID, params object[] args) { }
 		[global::System.Diagnostics.ConditionalAttribute("DMY")]
 		public static void UTIL_SetPrintType(global::Dpr.Battle.Logic.BtlPrintType type) { }
-		static BTL() { /*@B 0x6007621*/ throw null; }
+		static BTL() { }
 	}
 }

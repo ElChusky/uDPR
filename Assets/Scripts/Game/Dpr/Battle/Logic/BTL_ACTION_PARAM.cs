@@ -88,33 +88,33 @@ namespace Dpr.Battle.Logic
 		private const int cheer_loc1 = 4;
 		private const long cheer_mask0 = 15L;
 		private const long cheer_mask1 = 496L;
-		public byte gen_cmd { get { /*@B 0x600779F*/ throw null; } set { /*@B 0x60077A0*/ throw null; } }
-		public byte gen_pokeID { get { /*@B 0x60077A1*/ throw null; } set { /*@B 0x60077A2*/ throw null; } }
-		public ulong gen_param { get { /*@B 0x60077A3*/ throw null; } set { /*@B 0x60077A4*/ throw null; } }
-		public byte fight_cmd { get { /*@B 0x60077A5*/ throw null; } set { /*@B 0x60077A6*/ throw null; } }
-		public byte fight_pokeID { get { /*@B 0x60077A7*/ throw null; } set { /*@B 0x60077A8*/ throw null; } }
-		public byte fight_targetPos { get { /*@B 0x60077A9*/ throw null; } set { /*@B 0x60077AA*/ throw null; } }
-		public ushort fight_waza { get { /*@B 0x60077AB*/ throw null; } set { /*@B 0x60077AC*/ throw null; } }
-		public bool fight_wazaInfoFlag { get { /*@B 0x60077AD*/ throw null; } set { /*@B 0x60077AE*/ throw null; } }
-		public bool fight_ultraBurstFlag { get { /*@B 0x60077AF*/ throw null; } set { /*@B 0x60077B0*/ throw null; } }
-		public bool fight_gFlag { get { /*@B 0x60077B1*/ throw null; } set { /*@B 0x60077B2*/ throw null; } }
-		public bool fight_forbidGWaza { get { /*@B 0x60077B3*/ throw null; } set { /*@B 0x60077B4*/ throw null; } }
-		public bool fight_forceGWaza { get { /*@B 0x60077B5*/ throw null; } set { /*@B 0x60077B6*/ throw null; } }
-		public byte item_cmd { get { /*@B 0x60077B7*/ throw null; } set { /*@B 0x60077B8*/ throw null; } }
-		public byte item_pokeID { get { /*@B 0x60077B9*/ throw null; } set { /*@B 0x60077BA*/ throw null; } }
-		public byte item_targetID { get { /*@B 0x60077BB*/ throw null; } set { /*@B 0x60077BC*/ throw null; } }
-		public ushort item_number { get { /*@B 0x60077BD*/ throw null; } set { /*@B 0x60077BE*/ throw null; } }
-		public byte item_param { get { /*@B 0x60077BF*/ throw null; } set { /*@B 0x60077C0*/ throw null; } }
-		public byte change_cmd { get { /*@B 0x60077C1*/ throw null; } set { /*@B 0x60077C2*/ throw null; } }
-		public byte change_pokeID { get { /*@B 0x60077C3*/ throw null; } set { /*@B 0x60077C4*/ throw null; } }
-		public byte change_posIdx { get { /*@B 0x60077C5*/ throw null; } set { /*@B 0x60077C6*/ throw null; } }
-		public byte change_memberIdx { get { /*@B 0x60077C7*/ throw null; } set { /*@B 0x60077C8*/ throw null; } }
-		public bool change_depleteFlag { get { /*@B 0x60077C9*/ throw null; } set { /*@B 0x60077CA*/ throw null; } }
-		public byte escape_cmd { get { /*@B 0x60077CB*/ throw null; } set { /*@B 0x60077CC*/ throw null; } }
-		public byte escape_pokeID { get { /*@B 0x60077CD*/ throw null; } set { /*@B 0x60077CE*/ throw null; } }
-		public byte g_start_cmd { get { /*@B 0x60077CF*/ throw null; } set { /*@B 0x60077D0*/ throw null; } }
-		public byte g_start_pokeID { get { /*@B 0x60077D1*/ throw null; } set { /*@B 0x60077D2*/ throw null; } }
-		public byte cheer_cmd { get { /*@B 0x60077D3*/ throw null; } set { /*@B 0x60077D4*/ throw null; } }
-		public byte cheer_pokeID { get { /*@B 0x60077D5*/ throw null; } set { /*@B 0x60077D6*/ throw null; } }
+		public byte gen_cmd { get { return (byte)((raw & gen_mask0) >> gen_loc0); } set { raw = (raw & ~gen_mask0) | (((long)value << gen_loc0) & gen_mask0); } }
+		public byte gen_pokeID { get { return (byte)((raw & gen_mask1) >> gen_loc1); } set { raw = (raw & ~gen_mask1) | (((long)value << gen_loc1) & gen_mask1); } }
+		public ulong gen_param { get { return (ulong)((raw & gen_mask2) >> gen_loc2); } set { raw = (raw & ~gen_mask2) | (((long)value << gen_loc2) & gen_mask2); } }
+		public byte fight_cmd { get { return (byte)((raw & fight_mask0) >> fight_loc0); } set { raw = (raw & ~fight_mask0) | (((long)value << fight_loc0) & fight_mask0); } }
+		public byte fight_pokeID { get { return (byte)((raw & fight_mask1) >> fight_loc1); } set { raw = (raw & ~fight_mask1) | (((long)value << fight_loc1) & fight_mask1); } }
+		public byte fight_targetPos { get { return (byte)((raw & fight_mask2) >> fight_loc2); } set { raw = (raw & ~fight_mask2) | (((long)value << fight_loc2) & fight_mask2); } }
+		public ushort fight_waza { get { return (ushort)((raw & fight_mask3) >> fight_loc3); } set { raw = (raw & ~fight_mask3) | (((long)value << fight_loc3) & fight_mask3); } }
+		public bool fight_wazaInfoFlag { get { return (raw & fight_mask4) != 0; } set { raw = (raw & ~fight_mask4) | (value ? fight_mask4 : 0L); } }
+		public bool fight_ultraBurstFlag { get { return (raw & fight_mask5) != 0; } set { raw = (raw & ~fight_mask5) | (value ? fight_mask5 : 0L); } }
+		public bool fight_gFlag { get { return (raw & fight_mask6) != 0; } set { raw = (raw & ~fight_mask6) | (value ? fight_mask6 : 0L); } }
+		public bool fight_forbidGWaza { get { return (raw & fight_mask7) != 0; } set { raw = (raw & ~fight_mask7) | (value ? fight_mask7 : 0L); } }
+		public bool fight_forceGWaza { get { return (raw & fight_mask8) != 0; } set { raw = (raw & ~fight_mask8) | (value ? fight_mask8 : 0L); } }
+		public byte item_cmd { get { return (byte)((raw & item_mask0) >> item_loc0); } set { raw = (raw & ~item_mask0) | (((long)value << item_loc0) & item_mask0); } }
+		public byte item_pokeID { get { return (byte)((raw & item_mask1) >> item_loc1); } set { raw = (raw & ~item_mask1) | (((long)value << item_loc1) & item_mask1); } }
+		public byte item_targetID { get { return (byte)((raw & item_mask2) >> item_loc2); } set { raw = (raw & ~item_mask2) | (((long)value << item_loc2) & item_mask2); } }
+		public ushort item_number { get { return (ushort)((raw & item_mask3) >> item_loc3); } set { raw = (raw & ~item_mask3) | (((long)value << item_loc3) & item_mask3); } }
+		public byte item_param { get { return (byte)((raw & item_mask4) >> item_loc4); } set { raw = (raw & ~item_mask4) | (((long)value << item_loc4) & item_mask4); } }
+		public byte change_cmd { get { return (byte)((raw & change_mask0) >> change_loc0); } set { raw = (raw & ~change_mask0) | (((long)value << change_loc0) & change_mask0); } }
+		public byte change_pokeID { get { return (byte)((raw & change_mask1) >> change_loc1); } set { raw = (raw & ~change_mask1) | (((long)value << change_loc1) & change_mask1); } }
+		public byte change_posIdx { get { return (byte)((raw & change_mask2) >> change_loc2); } set { raw = (raw & ~change_mask2) | (((long)value << change_loc2) & change_mask2); } }
+		public byte change_memberIdx { get { return (byte)((raw & change_mask3) >> change_loc3); } set { raw = (raw & ~change_mask3) | (((long)value << change_loc3) & change_mask3); } }
+		public bool change_depleteFlag { get { return (raw & change_mask4) != 0; } set { raw = (raw & ~change_mask4) | (value ? change_mask4 : 0L); } }
+		public byte escape_cmd { get { return (byte)((raw & escape_mask0) >> escape_loc0); } set { raw = (raw & ~escape_mask0) | (((long)value << escape_loc0) & escape_mask0); } }
+		public byte escape_pokeID { get { return (byte)((raw & escape_mask1) >> escape_loc1); } set { raw = (raw & ~escape_mask1) | (((long)value << escape_loc1) & escape_mask1); } }
+		public byte g_start_cmd { get { return (byte)((raw & g_start_mask0) >> g_start_loc0); } set { raw = (raw & ~g_start_mask0) | (((long)value << g_start_loc0) & g_start_mask0); } }
+		public byte g_start_pokeID { get { return (byte)((raw & g_start_mask1) >> g_start_loc1); } set { raw = (raw & ~g_start_mask1) | (((long)value << g_start_loc1) & g_start_mask1); } }
+		public byte cheer_cmd { get { return (byte)((raw & cheer_mask0) >> cheer_loc0); } set { raw = (raw & ~cheer_mask0) | (((long)value << cheer_loc0) & cheer_mask0); } }
+		public byte cheer_pokeID { get { return (byte)((raw & cheer_mask1) >> cheer_loc1); } set { raw = (raw & ~cheer_mask1) | (((long)value << cheer_loc1) & cheer_mask1); } }
 	}
 }

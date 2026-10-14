@@ -8,9 +8,19 @@ namespace Dpr.Battle.Logic
 		public ushort finishWazaNumber;
 		public ushort attackPokeNumber;
 		public ushort attackPokeForm;
-		public ushort[] wazaUseCount;
-		public ushort[] wazaKillCount;
-		public void Clear() { /*@B 0x600674F*/ throw null; }
-		public BATTLE_PGL_RECORD() { /*@B 0x6006750*/ throw null; }
+		public ushort[] wazaUseCount = new ushort[4];
+		public ushort[] wazaKillCount = new ushort[4];
+		public void Clear() {
+			deadPokeNumber = 0;
+			deadPokeForm = 0;
+			finishWazaNumber = 0;
+			attackPokeNumber = 0;
+			attackPokeForm = 0;
+			for (int i = 0; i < wazaUseCount.Length; i++)
+				wazaUseCount[i] = 0;
+			for (int i = 0; i < wazaKillCount.Length; i++)
+				wazaKillCount[i] = 0;
+		}
+		public BATTLE_PGL_RECORD() { }
 	}
 }
