@@ -24,10 +24,10 @@ namespace Dpr.Battle.View.Systems
 		private const int SEQ_END_WAIT_SAFETY_COUNT = 100;
 		private const int SEQ_END_WAIT_DOT_DIST_MAX = 10;
 		public const string PokemonNameMessageLabel = "msg_ui_btl_pokename";
-		public static readonly string[] AffinityText;
+		public static readonly string[] AffinityText = new string[] { "msg_ui_btl_kouka_03", "msg_ui_btl_kouka_01", "msg_ui_btl_kouka_00", "msg_ui_btl_kouka_02" };
 		public const string ContextMenuMsgFile = "ss_btl_app";
-		public static readonly string[][] ContextMenuText;
-		public static readonly string[] AffinitySpriteName;
+		public static readonly string[][] ContextMenuText = new string[][] { new string[] { "msg_ui_btl_yesno_02", "msg_ui_btl_yesno_03" }, new string[] { "msg_ui_btl_yesno_00", "msg_ui_btl_yesno_01" }, new string[] { "msg_ui_btl_yesno_04", "msg_ui_btl_yesno_05" } };
+		public static readonly string[] AffinitySpriteName = new string[] { "btl_txt_resist_01_04", "btl_txt_resist_01_02", "btl_txt_resist_01_01", "btl_txt_resist_01_03" };
 		private const float _msgTimeOut = 20f;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.RawImage _decoImage;
@@ -66,19 +66,19 @@ namespace Dpr.Battle.View.Systems
 		private global::Dpr.UI.Cursor _cursor;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("チュートリアル カーソル移動ウェイト")]
-		private float _cursorWait;
+		private float _cursorWait = 0.7f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("チュートリアル ボタン押下ウェイト")]
-		private float _executeWait;
+		private float _executeWait = 2.5f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("チュートリアル ボール個数")]
-		private int _tutorialBallCount;
+		private int _tutorialBallCount = 20;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("チュートリアル キズぐすり個数")]
-		private int _tutorialDrugCount;
+		private int _tutorialDrugCount = 9;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("チュートリアル おこづかい")]
-		private int _tutorialMoney;
+		private int _tutorialMoney = 10000;
 		private bool _isMenuUIEnd;
 		private bool _isFirstTime;
 		private bool _isPlaySound;
@@ -88,8 +88,8 @@ namespace Dpr.Battle.View.Systems
 		[global::UnityEngine.SerializeField]
 		private bool _isMessageOpen;
 		private float _msgTimer;
-		private global::Dpr.Battle.View.Systems.MsgShowParam _showParam;
-		private global::System.Collections.Generic.Queue<global::System.ValueTuple<global::Dpr.Message.MessageTextParseDataModel, global::Dpr.Battle.View.Systems.MsgShowParam>> _messagePramQueue;
+		private global::Dpr.Battle.View.Systems.MsgShowParam _showParam = MsgShowParam.Default;
+		private global::System.Collections.Generic.Queue<global::System.ValueTuple<global::Dpr.Message.MessageTextParseDataModel, global::Dpr.Battle.View.Systems.MsgShowParam>> _messagePramQueue = new global::System.Collections.Generic.Queue<global::System.ValueTuple<global::Dpr.Message.MessageTextParseDataModel, global::Dpr.Battle.View.Systems.MsgShowParam>>();
 		private global::UnityEngine.Coroutine _coMsgQueue;
 		private global::System.Action _endMsgAction;
 		private global::Dpr.MsgWindow.MsgWindow _msgWindow;
@@ -104,18 +104,21 @@ namespace Dpr.Battle.View.Systems
 		private global::Dpr.Battle.View.Systems.HUDEventID preHUDEventId;
 		private uint _outMemberIndex;
 		private global::Pml.ItemNo _selectItem;
-		private int _selectWaza;
-		private int _selectPoke;
+		private int _selectWaza = -1;
+		private int _selectPoke = -1;
 		private global::Dpr.Battle.View.Systems.BUIAutoPilot _autoPilot;
 		private global::Dpr.Battle.Logic.BTL_POKEPARAM _currentPoke;
 		private global::DG.Tweening.Sequence _decoballSequence;
 		private int SeqEndWaitSafetyCount;
 		public int seqDotDispWaitTime;
-		private static uint _lastSelectedBallId;
-		public static bool IsDebugHide;
+		private static uint _lastSelectedBallId = 0;
+		public static bool IsDebugHide = false;
 		private global::UnityEngine.CanvasGroup _uiCanvasGroup;
-		private static global::Dpr.Battle.View.Systems.BattleViewUISystem _instance;
-		public static uint lastSelectedBallItemNo { get { /*@B 0x6006561*/ throw null; } set { /*@B 0x6006562*/ throw null; } }
+		private static global::Dpr.Battle.View.Systems.BattleViewUISystem _instance = null;
+		public static uint lastSelectedBallItemNo { get { return _lastSelectedBallId; } set {
+                if (calc.ITEM_IsBall((ushort)value) && value != (uint)ItemNo.SAFARIBOORU && value != (uint)ItemNo.PAAKUBOORU)
+                    _lastSelectedBallId = value;
+            } }
 		public global::Dpr.Battle.View.UI.BUIActionList ActionList { get { return this._actionList; } }
 		public global::Dpr.Battle.View.UI.BUIWazaList WazaList { get { return this._wazaList; } }
 		public global::Dpr.Battle.View.UI.BUIPokeBallList PokeBallList { get { return this._pokeBallList; } }
@@ -129,19 +132,80 @@ namespace Dpr.Battle.View.Systems
 		public global::Dpr.Battle.View.UI.BUITargetSelect TargetSelect { get { return this._targetSelect; } }
 		public global::Dpr.Battle.View.UI.BUICommTime CommTime { get { return this._commTime; } }
 		public global::Dpr.UI.Cursor CursorFrame { get { return this._cursor; } }
-		public global::Pml.ItemNo SelectItem { get { /*@B 0x6006570*/ throw null; } }
-		public static global::Dpr.Battle.View.Systems.BattleViewUISystem Instance { get { /*@B 0x6006571*/ throw null; } }
+		public global::Pml.ItemNo SelectItem { get { return _pokeBallList.IsValid ? _pokeBallList.Result : _selectItem; } }
+		public static global::Dpr.Battle.View.Systems.BattleViewUISystem Instance { get { return _instance; } }
 		public void HUD_Hide() {
             SwitchShowStatusWindows(false);
         }
-		public void CMD_UI_SelectAction_Start(in global::Dpr.Battle.Logic.BattleViewBase.SelectActionParam param, global::Dpr.Battle.Logic.BTL_ACTION_PARAM_OBJ dest) { /*@B 0x6006525*/ throw null; }
-		public global::Dpr.Battle.Logic.BtlAction CMD_UI_SelectAction_Wait() { /*@B 0x6006526*/ throw null; }
-		public void CMD_UI_SelectAction_ForceQuit() { /*@B 0x6006527*/ throw null; }
-		public void CMD_UI_SelectWaza_Start(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, byte pokeIndex, global::Dpr.Battle.Logic.BTL_ACTION_PARAM_OBJ dest) { /*@B 0x6006528*/ throw null; }
-		public void CMD_UI_SelectWaza_Restart(byte pokeIndex) { /*@B 0x6006529*/ throw null; }
-		public bool CMD_UI_SelectWaza_Wait() { /*@B 0x600652A*/ throw null; }
-		public bool CMD_UI_SelectWaza_End() { /*@B 0x600652B*/ throw null; }
-		public void CMD_UI_SelectWaza_ForceQuit() { /*@B 0x600652C*/ throw null; }
+		public void CMD_UI_SelectAction_Start(in global::Dpr.Battle.Logic.BattleViewBase.SelectActionParam param, global::Dpr.Battle.Logic.BTL_ACTION_PARAM_OBJ dest) {
+            UnityEngine.Debug.Log("[BattleUI]SelectAction");
+            _actionList.Initialize(in param);
+            _actionParam = param;
+            _currentPoke = param.pActPoke;
+            if (param.pokeIndex == 0)
+                _swapWaitPokemon = null;
+
+            bool withStatusWindow = false;
+            for (int i = 0; i < _statusWindows.Length; i++)
+            {
+                var window = _statusWindows[i];
+                if (window.isInitialized && window.DoDisplay && window.isCloseState)
+                {
+                    withStatusWindow = true;
+                    break;
+                }
+            }
+
+            StartCoroutine(SwitchActionListCoroutine(true, withStatusWindow, !_wazaList.IsShow));
+        }
+		public global::Dpr.Battle.Logic.BtlAction CMD_UI_SelectAction_Wait() {
+            if (!_actionList.IsValid)
+                return BtlAction.BTL_ACTION_NULL;
+
+            BtlAction result = _actionList.Result;
+            bool withStatusWindow = result != BtlAction.BTL_ACTION_FIGHT;
+            if (result == BtlAction.BTL_ACTION_ESCAPE)
+                withStatusWindow = !_actionList.IsReturnable;
+
+            StartCoroutine(SwitchActionListCoroutine(false, withStatusWindow, result != BtlAction.BTL_ACTION_FIGHT));
+            return _actionList.Result;
+        }
+		public void CMD_UI_SelectAction_ForceQuit() {
+            _actionList.ForceHide();
+        }
+		public void CMD_UI_SelectWaza_Start(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, byte pokeIndex, global::Dpr.Battle.Logic.BTL_ACTION_PARAM_OBJ dest) {
+            _wazaList.Initialize(bpp, pokeIndex, dest);
+            _wazaList.Show(null);
+            SwitchShowDecoImage(true);
+        }
+		public void CMD_UI_SelectWaza_Restart(byte pokeIndex) {
+            _wazaList.Show(null);
+            StartCoroutine(SwitchShowStatusWindowsCoroutine(true));
+            SwitchShowDecoImage(true);
+        }
+		public bool CMD_UI_SelectWaza_Wait() {
+            if (!_wazaList.IsValid)
+                return false;
+
+            if (_wazaList.Result != -1)
+            {
+                _wazaList.SetInvalid();
+                SwitchShowDecoImage(false);
+                return true;
+            }
+
+            _wazaList.Hide(false, null);
+            return true;
+        }
+		public bool CMD_UI_SelectWaza_End() {
+            if (_wazaList.IsShow)
+                _wazaList.Hide(false, null);
+
+            return true;
+        }
+		public void CMD_UI_SelectWaza_ForceQuit() {
+            _wazaList.Hide(false, null);
+        }
 		public void CMD_UI_SelectTarget_Start(byte poke_index, global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, global::Dpr.Battle.Logic.BTL_ACTION_PARAM_OBJ dest) {
             _targetSelect.Initialize(poke_index, bpp, dest);
             _targetSelect.Show(null);
@@ -466,8 +530,29 @@ namespace Dpr.Battle.View.Systems
             else
                 (isNear ? _ballPlateNear : _ballPlateFar).Hide(false, null);
         }
-		public static global::System.Collections.IEnumerator LoadAssetSelf(global::UnityEngine.Transform parent, global::System.Action callback = null) { /*@B 0x6006572*/ throw null; }
-		public static global::Dpr.AssetBundleUnloader UnloadAssetSelf() { /*@B 0x6006573*/ throw null; }
+		public static global::System.Collections.IEnumerator LoadAssetSelf(global::UnityEngine.Transform parent, global::System.Action callback = null) {
+            if (_instance != null)
+                yield break;
+
+            SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(BattleViewDefine.Path.GetUISystemPath(), true, null, MessageHelper.GetLocalizeVariants());
+            yield return SmartPoint.AssetAssistant.AssetManager.DispatchRequests((eventType, name, asset) =>
+            {
+                if (eventType == SmartPoint.AssetAssistant.RequestEventType.Activated)
+                {
+                    var go = asset as GameObject;
+                    if (go != null)
+                        _instance = UnityEngine.Object.Instantiate(go, parent).GetComponent<BattleViewUISystem>();
+                }
+            });
+            callback?.Invoke();
+        }
+		public static global::Dpr.AssetBundleUnloader UnloadAssetSelf() {
+            var unloader = new AssetBundleUnloader();
+            unloader.assetBundleName = BattleViewDefine.Path.GetUISystemPath();
+            unloader.isUnloadAllLoadedObjects = true;
+            unloader.Release();
+            return unloader;
+        }
 		public void Remove() {
             UIManager.onUseItemInBattle = null;
             if (GameManager.Instance != null && GameManager.battleObjectHolder != null)
@@ -658,7 +743,21 @@ namespace Dpr.Battle.View.Systems
 
             preHUDEventId = eventId;
         }
-		public void Apply(int interpFrame) { /*@B 0x600657C*/ throw null; }
+		public void Apply(int interpFrame) {
+            var viewSystem = BattleViewCore.Instance.ViewSystem;
+            for (int i = 0; i < _statusWindows.Length; i++)
+            {
+                var bpp = new BTL_POKEPARAM();
+                if (viewSystem.GetBattlePokeParam_forUI(bpp, (BtlvPos)i))
+                {
+                    var party = viewSystem.GetBattleParty(viewSystem.GetBtlvPosToClientId((BtlvPos)i));
+                    _statusWindows[i].Apply(party, bpp, false, false);
+                }
+            }
+
+            if (viewSystem.GetBattleRule() == BtlRule.BTL_RULE_SAFARI)
+                _safariBall.SetBallCount(viewSystem.GetSafariBallNum());
+        }
 		public void SetCurrentPokemonStatus() {
             var viewSystem = BattleViewCore.Instance.ViewSystem;
             var rule = viewSystem.GetMainModule().GetRule();
@@ -861,7 +960,15 @@ namespace Dpr.Battle.View.Systems
 
             return !flags[0] && !flags[2] && (flags[1] || flags[3]);
         }
-		private bool IsStatusWindowTarasit() { /*@B 0x600658D*/ throw null; }
+		private bool IsStatusWindowTarasit() {
+            for (int i = 0; i < _statusWindows.Length; i++)
+            {
+                if (_statusWindows[i].IsTransition)
+                    return true;
+            }
+
+            return false;
+        }
 		public bool Wait() {
             foreach (var window in _statusWindows)
             {
@@ -903,11 +1010,57 @@ namespace Dpr.Battle.View.Systems
 		public void SwitchShowActionList(bool isShow, bool withStatusWindow = false, bool withDecoraton = true) {
             StartCoroutine(SwitchActionListCoroutine(isShow, withStatusWindow, withDecoraton));
         }
-		private global::System.Collections.IEnumerator SwitchActionListCoroutine(bool isShow, bool withStatusWindow = false, bool withDecoraton = true) { /*@B 0x6006590*/ throw null; }
+		private global::System.Collections.IEnumerator SwitchActionListCoroutine(bool isShow, bool withStatusWindow = false, bool withDecoraton = true) {
+            while (IsOpenMessage() || IsStatusWindowTarasit() || _actionList.IsTransition)
+                yield return null;
+
+            if (isShow)
+            {
+                if (!_actionList.IsShow)
+                {
+                    _actionList.Show(null);
+                    _actionList.UpdateActionButton(false);
+                    _pokeBallList.SetInvalid();
+                    PlaySe(AK.EVENTS.UI_COMMON_SLIDE);
+                }
+            }
+            else if (_actionList.IsShow)
+            {
+                _actionList.Hide(false, null);
+            }
+
+            SetCurrentPokemonStatus();
+            if (withStatusWindow)
+            {
+                Apply(0);
+                SwitchShowStatusWindowsCore(isShow, false);
+            }
+
+            if (withDecoraton)
+                SwitchShowDecoImage(isShow);
+        }
 		private void ShowActionListOnly(bool isShow) {
             StartCoroutine(ShowActionListOnlyCoroutine(isShow));
         }
-		private global::System.Collections.IEnumerator ShowActionListOnlyCoroutine(bool isShow) { /*@B 0x6006592*/ throw null; }
+		private global::System.Collections.IEnumerator ShowActionListOnlyCoroutine(bool isShow) {
+            while (IsOpenMessage() || _actionList.IsTransition)
+                yield return null;
+
+            if (isShow)
+            {
+                if (!_actionList.IsShow)
+                {
+                    _actionList.Show(null);
+                    _actionList.UpdateActionButton(false);
+                    _pokeBallList.SetInvalid();
+                    PlaySe(AK.EVENTS.UI_COMMON_SLIDE);
+                }
+            }
+            else if (_actionList.IsShow)
+            {
+                _actionList.Hide(false, null);
+            }
+        }
 		private void SwitchShowDecoImage(bool isShow) {
             Action callback = null;
             if (_isShowDeco == isShow)
@@ -1376,8 +1529,8 @@ namespace Dpr.Battle.View.Systems
 
             target.sprite = UIManager.Instance.GetSpritePokemonSex(sex);
         }
-		public BattleViewUISystem() { /*@B 0x60065B3*/ throw null; }
-		static BattleViewUISystem() { /*@B 0x60065B4*/ throw null; }
+		public BattleViewUISystem() { }
+		static BattleViewUISystem() { }
 		private enum Side
 		{
 			Near = 0,
@@ -1402,7 +1555,7 @@ namespace Dpr.Battle.View.Systems
 			public bool isPlayerPlateVisible;
 			public bool isFirstTimeAnime;
 			public bool isPlayerPlateVisibleIfDead;
-			public DispInfo() { /*@B 0x600B378*/ throw null; }
+			public DispInfo() { }
 		}
 	}
 }
