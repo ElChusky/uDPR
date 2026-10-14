@@ -39,36 +39,176 @@ namespace Dpr.UI
 		public global::Dpr.UI.UIModelViewController.ModelParam modelParam { get { return this._modelParam; } }
 		public global::UnityEngine.RectTransform modelBgRoot { get { return this._modelBgRoot; } }
 		public void SetModelViewType(global::Dpr.UI.UIModelViewController.ModelViewType type) { this._modelViewType = type; }
-		public global::System.ValueTuple<global::UnityEngine.Vector3, global::UnityEngine.Vector3, float, global::UnityEngine.Vector3, global::UnityEngine.Vector2> GetModelViewParameters(global::Dpr.UI.UIModelViewController.ModelViewType type, global::Pml.PokePara.PokemonParam pokemonParam) { /*@B 0x60055A9*/ throw null; }
-		public int GetModelViewParameterIdleAnimation(global::Dpr.UI.UIModelViewController.ModelViewType type, global::Pml.PokePara.PokemonParam pokemonParam) { /*@B 0x60055AA*/ throw null; }
-		public void SaveEnvironmentController() { /*@B 0x60055AB*/ throw null; }
-		public void EnableModelLight(bool enabled, global::Dpr.UI.UIModelViewController.ModelViewType type) { /*@B 0x60055AC*/ throw null; }
+		public global::System.ValueTuple<global::UnityEngine.Vector3, global::UnityEngine.Vector3, float, global::UnityEngine.Vector3, global::UnityEngine.Vector2> GetModelViewParameters(global::Dpr.UI.UIModelViewController.ModelViewType type, global::Pml.PokePara.PokemonParam pokemonParam) {
+            var catalog = global::GameData.DataManager.GetPokemonCatalog(global::GameData.DataManager.GetUniqueID(pokemonParam));
+            switch (type)
+            {
+                case ModelViewType.Party:
+                    return (catalog.StatusModelOffset, catalog.StatusModelRotationAngle, catalog.StatusScale, global::UnityEngine.Vector3.zero, global::UnityEngine.Vector2.zero);
+                case ModelViewType.Zukan:
+                    return (catalog.ModelOffset, catalog.ModelRotationAngle, catalog.MenuScale, global::UnityEngine.Vector3.zero, global::UnityEngine.Vector2.zero);
+                case ModelViewType.Box:
+                    return (catalog.BoxModelOffset, catalog.BoxModelRotationAngle, catalog.BoxScale, global::UnityEngine.Vector3.zero, global::UnityEngine.Vector2.zero);
+                case ModelViewType.Habitat:
+                    return (catalog.DistributionModelOffset, catalog.DistributionModelRotationAngle, catalog.DistributionScale, global::UnityEngine.Vector3.zero, global::UnityEngine.Vector2.zero);
+                case ModelViewType.Moving:
+                    return (catalog.VoiceModelOffset, catalog.VoiceModelRotationAngle, catalog.VoiceScale, catalog.CenterPointOffset, catalog.RotationLimitAngle);
+                case ModelViewType.Compare:
+                    return (catalog.CompareModelOffset, catalog.CompareModelRotationAngle, catalog.CompareScale, global::UnityEngine.Vector3.zero, global::UnityEngine.Vector2.zero);
+                default:
+                    return (global::UnityEngine.Vector3.zero, global::UnityEngine.Vector3.zero, 1f, global::UnityEngine.Vector3.zero, global::UnityEngine.Vector2.zero);
+            }
+        }
+		public int GetModelViewParameterIdleAnimation(global::Dpr.UI.UIModelViewController.ModelViewType type, global::Pml.PokePara.PokemonParam pokemonParam) {
+            var catalog = global::GameData.DataManager.GetPokemonCatalog(global::GameData.DataManager.GetUniqueID(pokemonParam));
+            string clipName;
+            switch (type)
+            {
+                case ModelViewType.Party: clipName = catalog.StatusModelMotion; break;
+                case ModelViewType.Box: clipName = catalog.BoxModelMotion; break;
+                case ModelViewType.Habitat: clipName = catalog.DistributionModelMotion; break;
+                case ModelViewType.Moving: clipName = catalog.VoiceModelMotion; break;
+                case ModelViewType.Compare: clipName = catalog.CompareModelMotion; break;
+                default: clipName = catalog.ModelMotion; break;
+            }
+            return global::Dpr.UI.UIManager.Instance.modelView.GetAnimationIndexByClipName(clipName);
+        }
+		public void SaveEnvironmentController() {
+            _environmentControllerSaver.Save(true);
+        }
+		public void EnableModelLight(bool enabled, global::Dpr.UI.UIModelViewController.ModelViewType type) {
+            if (enabled)
+            {
+                _environmentControllerSaver.Save(false);
+                if (IsEnableGlobalEnvironmentController())
+                    EnableGlobalEnvironmentController(false);
+                if (!_modelEnvironmentController.gameObject.activeSelf)
+                {
+                    _modelEnvironmentController.throughGlobal = true;
+                    _modelEnvironmentController.gameObject.SetActive(true);
+                }
+                _modelEnvironmentController.SetLight(GetEnvironmentSettings(type), global::PeriodOfDay.Daytime, 0f, 0f);
+                _modelEnvironmentController.cloudShadowEnable = false;
+                return;
+            }
+            if (_modelEnvironmentController.gameObject.activeSelf)
+                _modelEnvironmentController.gameObject.SetActive(false);
+            _environmentControllerSaver.Restore();
+        }
 		private global::EnvironmentSettings GetEnvironmentSettings(global::Dpr.UI.UIModelViewController.ModelViewType type) {
             // @01a0f010: `tst w1, #2 ; csel` — a bit test, not a boxed Enum.HasFlag call
             return (type & ModelViewType.Character) != 0 ? _environmentCharacter : _environmentPokemon;
         }
-		private bool IsEnableGlobalEnvironmentController() { /*@B 0x60055AE*/ throw null; }
-		private void EnableGlobalEnvironmentController(bool enabled) { /*@B 0x60055AF*/ throw null; }
-		public void ModelViewSize(float width, float height) { /*@B 0x60055B0*/ throw null; }
-		public void ModelCameraFov(float fov) { /*@B 0x60055B1*/ throw null; }
-		public void ModelReflection(float alpha) { /*@B 0x60055B2*/ throw null; }
+		private bool IsEnableGlobalEnvironmentController() {
+            return global::EnvironmentController.global != null
+                && global::EnvironmentController.global.gameObject.activeSelf
+                && global::EnvironmentController.global.enabled;
+        }
+		private void EnableGlobalEnvironmentController(bool enabled) {
+            if (global::EnvironmentController.global == null)
+                return;
+            global::EnvironmentController.global.gameObject.SetActive(enabled);
+            global::EnvironmentController.global.enabled = enabled;
+        }
+		public void ModelViewSize(float width, float height) {
+            _modelViewSize = new global::UnityEngine.Vector2(width, height);
+        }
+		public void ModelCameraFov(float fov) { _modelCameraFov = fov; }
+		public void ModelReflection(float alpha) { _modelReflectionAlpha = alpha; }
 		public void ModelCameraCenterOffsetX(float offsetX) {
             // @01a0f090: two field stores, no Vector2 ctor call (ModelViewSize @01a0f030 does call the ctor)
             _modelCameraCenterOffset.x = offsetX;
             _modelCameraCenterOffset.y = 0.0f;
         }
-		public void ModelCameraCenterOffset(global::UnityEngine.Vector2 offset) { /*@B 0x60055B4*/ throw null; }
-		public void SetModelOffset(global::UnityEngine.Vector3 offset) { /*@B 0x60055B5*/ throw null; }
-		public void SetModelRotation(global::UnityEngine.Vector3 rotation) { /*@B 0x60055B6*/ throw null; }
-		public global::UnityEngine.Vector3 GetModelRotation() { /*@B 0x60055B7*/ throw null; }
-		public void SetModelScale(float scale) { /*@B 0x60055B8*/ throw null; }
-		public void SetModelAttachOffset(global::UnityEngine.Vector3 offset) { /*@B 0x60055B9*/ throw null; }
+		public void ModelCameraCenterOffset(global::UnityEngine.Vector2 offset) { _modelCameraCenterOffset = offset; }
+		public void SetModelOffset(global::UnityEngine.Vector3 offset) { _modelOffset = offset; }
+		public void SetModelRotation(global::UnityEngine.Vector3 rotation) { _modelRotation = rotation; }
+		public global::UnityEngine.Vector3 GetModelRotation() { return _modelRotation; }
+		public void SetModelScale(float scale) { _modelScale = scale; }
+		public void SetModelAttachOffset(global::UnityEngine.Vector3 offset) { _modelAttachOffset = offset; }
 		public float GetCameraRotationX() { return this._cameraRotationX; }
-		public void SetCameraRotationX(float x) { /*@B 0x60055BB*/ throw null; }
-		public global::UnityEngine.Vector3 GetModelCameraPosition() { /*@B 0x60055BC*/ throw null; }
-		public int ResetCaches(int num, bool isUnload = true) { /*@B 0x60055BD*/ throw null; }
-		public global::System.Collections.IEnumerator OpLoadModel(global::Dpr.UI.UIModelViewController.ModelViewType modelViewType, int uniqueId, string assetBundleName, bool isDontClear, global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIModelViewController.ModelParam> onSetupParam, global::UnityEngine.Events.UnityAction onSetup) { /*@B 0x60055BE*/ throw null; }
-		private void CacheParamMoveLast(global::Dpr.UI.UIModelViewController.ModelParam modelParam) { /*@B 0x60055BF*/ throw null; }
+		public void SetCameraRotationX(float x) { _cameraRotationX = x; }
+		public global::UnityEngine.Vector3 GetModelCameraPosition() { return _modelCamera.transform.position; }
+		public int ResetCaches(int num, bool isUnload = true) {
+            int maxNum = _cacheParams.maxNum;
+            _cacheParams.Reset(num, removeParam =>
+            {
+                if (removeParam != null && removeParam.root != null && removeParam.root.gameObject != null)
+                    removeParam.Destroy();
+            });
+            return maxNum;
+        }
+		public global::System.Collections.IEnumerator OpLoadModel(global::Dpr.UI.UIModelViewController.ModelViewType modelViewType, int uniqueId, string assetBundleName, bool isDontClear, global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIModelViewController.ModelParam> onSetupParam, global::UnityEngine.Events.UnityAction onSetup) {
+            SetActive(true);
+            _loadRequestModelId = uniqueId;
+            ModelParam cacheParam = _cacheParams.Find(x => x.IsEnableCache(modelViewType, uniqueId));
+            if (cacheParam == null)
+            {
+                SetupModelViewCameras(true);
+                EnableModelLight(true, modelViewType);
+                cacheParam = new ModelParam();
+                cacheParam.modelViewType = modelViewType;
+                cacheParam.uniqueId = uniqueId;
+                var unloader = new global::Dpr.AssetBundleUnloader();
+                unloader.assetBundleName = assetBundleName;
+                unloader.isUnloadAllLoadedObjects = true;
+                cacheParam.assetBundleUnloader = unloader;
+                cacheParam.isDontClear = isDontClear;
+                _cacheParams.Add(cacheParam);
+                global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(assetBundleName, true, null, null);
+                yield return global::SmartPoint.AssetAssistant.AssetManager.DispatchRequests((eventType, name, asset) =>
+                {
+                    if (eventType != global::SmartPoint.AssetAssistant.RequestEventType.Activated)
+                        return;
+                    var prefab = asset as global::UnityEngine.GameObject;
+                    cacheParam.loaded = true;
+                    if (prefab != null)
+                    {
+                        var root = new global::UnityEngine.GameObject("Root");
+                        root.gameObject.SetActive(false);
+                        root.transform.SetParent(_modelRoot, false);
+                        var attach = new global::UnityEngine.GameObject("Attach");
+                        attach.transform.SetParent(root.transform, false);
+                        var instance = global::UnityEngine.Object.Instantiate<global::UnityEngine.GameObject>(prefab, attach.transform);
+                        cacheParam.root = root.transform;
+                        cacheParam.attachTo = attach.transform;
+                        cacheParam.gameObject = instance;
+                        cacheParam.gameObject.SetActive(true);
+                        cacheParam.baseEntity = instance.GetComponent<global::BaseEntity>();
+                        ModelAttachTransforms(cacheParam);
+                        CacheParamMoveLast(cacheParam);
+                        onSetupParam.Invoke(cacheParam);
+                    }
+                    if (_isActived && prefab != null && _loadRequestModelId == uniqueId)
+                    {
+                        ClearModelView(false);
+                        _modelParam = cacheParam;
+                        CacheParamMoveLast(cacheParam);
+                        _modelParam.Active(true);
+                        onSetup.Invoke();
+                    }
+                });
+            }
+            else if (cacheParam.loaded && _loadRequestModelId == uniqueId)
+            {
+                ClearModelView(false);
+                _modelParam = cacheParam;
+                CacheParamMoveLast(cacheParam);
+                _modelParam.Active(true);
+                onSetup.Invoke();
+            }
+        }
+		private void CacheParamMoveLast(global::Dpr.UI.UIModelViewController.ModelParam modelParam) {
+            _cacheParams.MoveLast(modelParam, removeParam =>
+            {
+                if (removeParam.uniqueId == _loadRequestModelId || removeParam.root == null || removeParam.isDontClear)
+                    return false;
+                removeParam.Destroy();
+                if (_modelParam == removeParam)
+                    _modelParam = null;
+                return true;
+            });
+        }
 		public global::System.Collections.IEnumerator OpLoadCharacterModel(int uniqueId, string assetBundleName, bool isDontClear = false, global::UnityEngine.Events.UnityAction<int> onSetup = null, global::Dpr.Trainer.TrainerType trainerType = (global::Dpr.Trainer.TrainerType)(-1)) { /*@B 0x60055C0*/ throw null; }
 		public void EnableMainCameraByUiMode(bool enabled) { /*@B 0x60055C1*/ throw null; }
 		private void SetupCharacterModel(global::Dpr.Trainer.TrainerType trainerType) { /*@B 0x60055C2*/ throw null; }
