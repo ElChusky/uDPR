@@ -16162,10 +16162,94 @@ namespace Dpr.EvScript
             }
             AssetManager.DispatchRequests(null);
         }
-		public global::System.Collections.IEnumerator PreRequestAssetSetUp(global::AreaID areaid) { /*@B 0x6009113*/ throw null; }
-		private void SetSaveDataParam(ref global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) { /*@B 0x6009114*/ throw null; }
-		public void SetCreateParent(global::UnityEngine.Transform parent) { /*@B 0x6009115*/ throw null; }
-		public void SortLoadObjectData(global::UnityEngine.Vector2Int grid) { /*@B 0x6009116*/ throw null; }
+		public global::System.Collections.IEnumerator PreRequestAssetSetUp(global::AreaID areaid) {
+            while (!DataManager.IsLoaded())
+                yield return null;
+            if (areaid == global::AreaID.UNKNOWN)
+                yield break;
+            string key = "PlaceData_" + areaid.ToString();
+            if (!DataManager.PlaceData.ContainsKey(key))
+                yield break;
+            global::XLSXContent.PlaceData place = DataManager.PlaceData[key];
+            int length = DataManager.CharacterGraphics.Data.Length;
+            for (int i = 0; i < place.Data.Length; i++)
+            {
+                global::XLSXContent.PlaceData.SheetData pd = place.Data[i];
+                if (pd == null)
+                    continue;
+                if (pd.DoNotLoad != EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag(pd.DoNotLoad))
+                    continue;
+                int graphic = pd.ObjectGraphicIndex;
+                if (graphic < 0)
+                    continue;
+                string path;
+                if (graphic == 4)
+                    graphic = PlayerWork.playerSex ? 140 : 139;
+                if (graphic >= Graphic_Poke)
+                {
+                    path = string.Format("{0}pm{1:D4}_{2:D2}_{3:D2}", Path_Poke_Model, graphic / 10000, graphic / 100 % 100, graphic % 100);
+                }
+                else if (graphic >= Graphic_Gimmick && graphic < Graphic_Gimmick + 500)
+                {
+                    path = DataManager.GimmickGraphics.Data[graphic - Graphic_Gimmick].AssetPath;
+                }
+                else if (graphic >= Graphic_SekiZou && graphic < Graphic_SekiZouMAX)
+                {
+                    path = string.Format("pokemons/statue/{0}", graphic - Graphic_SekiZou);
+                }
+                else
+                {
+                    path = "";
+                    if (graphic < length)
+                        path = Path_Parsons + DataManager.CharacterGraphics.Data[graphic].FieldGraphic;
+                }
+                yield return global::Dpr.Title.AssetPreloader.LoadAssetBundle(path);
+            }
+        }
+		private void SetSaveDataParam(ref global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) {
+            FIELD_OBJ_SAVE_DATA data = FieldObjWork.Get(lodata.ObjectName.GetHashCode(), out bool flag);
+            if (flag)
+            {
+                lodata.Position.x = data.grid_x;
+                lodata.Position.y = data.grid_y;
+                lodata.Height = data.height;
+                lodata.Angle = data.angle;
+                lodata.MoveCode = data.movecode;
+                lodata.MoveParam0 = data.mvParam0;
+                lodata.MoveParam1 = data.mvParam1;
+                lodata.MoveParam2 = data.mvParam2;
+                lodata.MoveLimitX = data.limitX;
+                lodata.MoveLimitZ = data.limitZ;
+                lodata.Ev_Type = data.ev_type;
+                lodata.mv_old_dir = data.mv_old_dir;
+                lodata.mv_dir = data.mv_dir;
+                lodata.useloadData = true;
+            }
+            else
+            {
+                lodata.useloadData = false;
+            }
+        }
+		public void SetCreateParent(global::UnityEngine.Transform parent) {
+            _loadObjectParent = parent;
+        }
+		public void SortLoadObjectData(global::UnityEngine.Vector2Int grid) {
+            for (int i = 0; i < _loadObjectList.Count; i++)
+            {
+                if (_loadObjectList[i].IsCreated || _loadObjectList[i].IsLoadFast)
+                {
+                    _loadObjectList[i].Distance = 0;
+                }
+                else
+                {
+                    float x = UnityEngine.Mathf.Abs(_loadObjectList[i].Position.x);
+                    float dx = UnityEngine.Mathf.Abs(grid.x - x);
+                    float dz = UnityEngine.Mathf.Abs(grid.y - _loadObjectList[i].Position.y);
+                    _loadObjectList[i].Distance = (dx > 32f || dz > 32f) ? (int)(dx + dz) : 0;
+                }
+            }
+            _loadObjectList.Sort((a, b) => a.Distance - b.Distance);
+        }
 		public global::System.Collections.IEnumerator StartUpCreate() { /*@B 0x6009117*/ throw null; }
 		public void UpdateCreate() { /*@B 0x6009118*/ throw null; }
 		public void Init_PokemonCenter() {
