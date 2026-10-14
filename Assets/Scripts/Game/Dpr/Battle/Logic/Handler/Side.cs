@@ -720,13 +720,140 @@ namespace Dpr.Battle.Logic.Handler
 			desc.successMessage.AddArg(pokeID);
 			Common.Damage(args, desc);
 		}
-		static Side() { /*@B 0x6008393*/ throw null; }
+		static Side() {
+			GET_FUNC_TABLE = new GET_FUNC_TABLE_ELEM[]
+			{
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_REFLECTOR, ADD_SIDE_Reflector),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_HIKARINOKABE, ADD_SIDE_Hikarinokabe),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_SINPINOMAMORI, ADD_SIDE_Sinpinomamori),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_SIROIKIRI, ADD_SIDE_SiroiKiri),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_OIKAZE, ADD_SIDE_Oikaze),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_OMAJINAI, ADD_SIDE_Omajinai),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_MAKIBISI, ADD_SIDE_Makibisi),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_DOKUBISI, ADD_SIDE_Dokubisi),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_STEALTHROCK, ADD_SIDE_StealthRock),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_STEALTHROCK_HAGANE, ADD_SIDE_StealthRock_Hagane),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_WIDEGUARD, ADD_SIDE_WideGuard),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_FASTGUARD, ADD_SIDE_FastGuard),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_RAINBOW, ADD_SIDE_Rainbow),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_BURNING, ADD_SIDE_Burning),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_MOOR, ADD_SIDE_Moor),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_NEBANEBANET, ADD_SIDE_NebaNebaNet),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_TATAMIGAESHI, ADD_SIDE_TatamiGaeshi),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_TRICKGUARD, ADD_SIDE_TrickGuard),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_AURORAVEIL, ADD_SIDE_AuroraVeil),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_SPOTLIGHT, ADD_SIDE_SpotLight),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_GSHOCK_HONOO, ADD_SIDE_GShock_Honoo),
+				new GET_FUNC_TABLE_ELEM(BtlSideEffect.BTL_SIDEEFF_GSHOCK_IWA, ADD_SIDE_GShock_Iwa),
+			};
+			HandlerTable_Reflector = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_side_Reflector),
+			};
+			HandlerTable_Hikarinokabe = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_side_HikariNoKabe),
+			};
+			HandlerTable_AuroraVeil = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_side_AuroraVeil),
+			};
+			HandlerTable_Sinpinomamori = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.ADDSICK_CHECKFAIL, handler_side_SinpiNoMamori_CheckFail),
+				new EventFactor.EventHandlerTable(EventID.ADDSICK_FAILED, handler_side_SinpiNoMamori_FixFail),
+			};
+			HandlerTable_SiroiKiri = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.RANKEFF_LAST_CHECK, handler_side_SiroiKiri_CheckFail),
+				new EventFactor.EventHandlerTable(EventID.RANKEFF_FAILED, handler_side_SiroiKiri_FixFail),
+			};
+			HandlerTable_Oikaze = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CALC_AGILITY, handler_side_Oikaze),
+			};
+			HandlerTable_Omajinai = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CRITICAL_CHECK, handler_side_Omajinai),
+			};
+			HandlerTable_StealthRock = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.MEMBER_IN, handler_side_StealthRock),
+			};
+			HandlerTable_StealthRock_Hagane = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.MEMBER_IN, handler_side_StealthRock_Hagane),
+			};
+			HandlerTable_WideGuard = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_SIDEEFF_GUARD, handler_side_WideGuard),
+			};
+			HandlerTable_FastGuard = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_SIDEEFF_GUARD, handler_side_FastGuard),
+				new EventFactor.EventHandlerTable(EventID.FREEFALL_START_GUARD, handler_side_FastGuard),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC_G, handler_side_FastGuard_Dmg),
+				new EventFactor.EventHandlerTable(EventID.AFTER_CRITICAL, handler_side_FastGuard_MsgAfterCritical),
+			};
+			HandlerTable_TatamiGaeshi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_MAMORU, handler_side_TatamiGaeshi),
+				new EventFactor.EventHandlerTable(EventID.FREEFALL_START_GUARD, handler_side_TatamiGaeshi),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC_G, handler_side_TatamiGaeshi_DmgG),
+				new EventFactor.EventHandlerTable(EventID.AFTER_CRITICAL, handler_side_Tatamigaeshi_MsgAfterCritical),
+			};
+			HandlerTable_TrickGuard = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_SIDEEFF_GUARD, handler_side_TrickGuard),
+			};
+			HandlerTable_Makibisi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.MEMBER_IN, handler_side_Makibisi),
+			};
+			HandlerTable_Dokubisi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.MEMBER_IN, handler_side_Dokubisi),
+			};
+			HandlerTable_NebaNebaNet = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.MEMBER_IN, handler_side_NebaNebaNet),
+			};
+			HandlerTable_SpotLight = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TEMPT_TARGET, handler_SpotLight_TemptTarget),
+			};
+			HandlerTable_Rainbow = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.ADD_SICK, handler_Rainbow),
+				new EventFactor.EventHandlerTable(EventID.ADD_RANK_TARGET, handler_Rainbow),
+				new EventFactor.EventHandlerTable(EventID.WAZA_SHRINK_PER, handler_Rainbow_Shrink),
+			};
+			HandlerTable_Burning = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_side_Burning),
+			};
+			HandlerTable_Moor = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CALC_AGILITY, handler_side_Moor),
+			};
+			HandlerTable_GShock_Honoo = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_side_GShock_Honoo),
+			};
+			HandlerTable_GShock_Iwa = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_side_GShock_Iwa),
+			};
+		}
 		public delegate global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] HandlerGetFunc();
 		private struct GET_FUNC_TABLE_ELEM
 		{
 			public global::Dpr.Battle.Logic.BtlSideEffect eff;
 			public global::Dpr.Battle.Logic.Handler.Side.HandlerGetFunc func;
-			public GET_FUNC_TABLE_ELEM(global::Dpr.Battle.Logic.BtlSideEffect eff, global::Dpr.Battle.Logic.Handler.Side.HandlerGetFunc func) { /*@B 0x600B77D*/ throw null; }
+			public GET_FUNC_TABLE_ELEM(global::Dpr.Battle.Logic.BtlSideEffect eff, global::Dpr.Battle.Logic.Handler.Side.HandlerGetFunc func) {
+				this.eff = eff;
+				this.func = func;
+			}
 		}
 	}
 }

@@ -2102,7 +2102,18 @@ namespace Dpr.Battle.Logic.Handler
 		public static global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] ADD_WeatherBall() {
 			return HandlerTable_WeatherBall;
 		}
-		private static bool get_WeatherBallParam(ref global::Dpr.Battle.Logic.Handler.Waza.WeatherBallParam param, global::Dpr.Battle.Logic.BtlWeather weather) { /*@B 0x60086EF*/ throw null; }
+		private static bool get_WeatherBallParam(ref global::Dpr.Battle.Logic.Handler.Waza.WeatherBallParam param, global::Dpr.Battle.Logic.BtlWeather weather) {
+			switch (weather)
+			{
+				case BtlWeather.BTL_WEATHER_SHINE: param.type = PokeType.HONOO; param.effIndex = 1; return true;
+				case BtlWeather.BTL_WEATHER_RAIN: param.type = PokeType.MIZU; param.effIndex = 2; return true;
+				case BtlWeather.BTL_WEATHER_SNOW: param.type = PokeType.KOORI; param.effIndex = 4; return true;
+				case BtlWeather.BTL_WEATHER_SAND: param.type = PokeType.IWA; param.effIndex = 3; return true;
+				case BtlWeather.BTL_WEATHER_STORM: param.type = PokeType.MIZU; param.effIndex = 2; return true;
+				case BtlWeather.BTL_WEATHER_DAY: param.type = PokeType.HONOO; param.effIndex = 1; return true;
+				default: param.type = PokeType.NORMAL; param.effIndex = 0; return false;
+			}
+		}
 		public static void handler_WeatherBall_Type(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) {
 			if (Common.GetEventVar(args, EventVar.Label.POKEID) != pokeID)
 				return;
@@ -4419,7 +4430,23 @@ namespace Dpr.Battle.Logic.Handler
 		public static global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] ADD_AsaNoHizasi() {
 			return HandlerTable_AsaNoHizasi;
 		}
-		public static void handler_AsaNoHizasi(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) { /*@B 0x60087D5*/ throw null; }
+		public static void handler_AsaNoHizasi(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) {
+			if (Common.GetEventVar(args, EventVar.Label.POKEID_ATK) != pokeID)
+				return;
+
+			int ratio;
+			switch (Common.GetLocalWeather(args, pokeID))
+			{
+				case BtlWeather.BTL_WEATHER_SHINE: ratio = 2732; break;
+				case BtlWeather.BTL_WEATHER_RAIN: ratio = 1024; break;
+				case BtlWeather.BTL_WEATHER_SNOW: ratio = 1024; break;
+				case BtlWeather.BTL_WEATHER_SAND: ratio = 1024; break;
+				case BtlWeather.BTL_WEATHER_STORM: ratio = 1024; break;
+				case BtlWeather.BTL_WEATHER_DAY: ratio = 2732; break;
+				default: ratio = 2048; break;
+			}
+			Common.RewriteEventVar(args, EventVar.Label.RATIO, ratio);
+		}
 		public static global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] ADD_Sunaatume() {
 			return HandlerTable_Sunaatume;
 		}
@@ -7377,7 +7404,1666 @@ namespace Dpr.Battle.Logic.Handler
 			if (Common.CheckFieldEffect(args, EffectType.EFF_JURYOKU))
 				Common.MulEventVar(args, EventVar.Label.WAZA_POWER_RATIO, 0x1800);
 		}
-		static Waza() { /*@B 0x6008919*/ throw null; }
+		static Waza() {
+			GET_FUNC_TABLE = new GET_FUNC_TABLE_ELEM[]
+			{
+				new GET_FUNC_TABLE_ELEM(WazaNo.TEKUSUTYAA, ADD_Texture),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KUROIKIRI, ADD_KuroiKiri),
+				new GET_FUNC_TABLE_ELEM(WazaNo.YUMEKUI, ADD_Yumekui),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TORAIATAKKU, ADD_TriAttack),
+				new GET_FUNC_TABLE_ELEM(WazaNo.IKARINOMAEBA, ADD_IkariNoMaeba),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TIKYUUNAGE, ADD_TikyuuNage),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NAITOHEDDO, ADD_TikyuuNage),
+				new GET_FUNC_TABLE_ELEM(WazaNo.IBIKI, ADD_Ibiki),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TOTTEOKI, ADD_Totteoki),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZITABATA, ADD_Jitabata),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KISIKAISEI, ADD_Jitabata),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MINEUTI, ADD_Mineuti),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KUROIMANAZASI, ADD_KumoNoSu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TOOSENBOU, ADD_KumoNoSu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KORAERU, ADD_Koraeru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NEKODAMASI, ADD_Nekodamasi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.GAMUSYARA, ADD_Gamusyara),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HUNKA, ADD_Funka),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SIOHUKI, ADD_Funka),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ASANOHIZASI, ADD_AsaNoHizasi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TUKINOHIKARI, ADD_AsaNoHizasi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KOUGOUSEI, ADD_AsaNoHizasi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NIGIRITUBUSU, ADD_Siboritoru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.WHEZAABOORU, ADD_WeatherBall),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MAMORU, ADD_Mamoru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MIKIRI, ADD_Mamoru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HANERU, ADD_Haneru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NOROI, ADD_Noroi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ABARERU, ADD_Abareru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SAWAGU, ADD_Sawagu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KOROGARU, ADD_Korogaru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TORIPURUKIKKU, ADD_TripleKick),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HANABIRANOMAI, ADD_Abareru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.GEKIRIN, ADD_Abareru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SIOMIZU, ADD_Siomizu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TUBOWOTUKU, ADD_TuboWoTuku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SORAWOTOBU, ADD_SoraWoTobu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TOBIHANERU, ADD_Tobihaneru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DAIBINGU, ADD_Diving),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ANAWOHORU, ADD_AnaWoHoru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SOORAABIIMU, ADD_SolarBeam),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SOORAABUREEDO, ADD_SolarBeam),
+				new GET_FUNC_TABLE_ELEM(WazaNo.GODDOBAADO, ADD_GodBird),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ROKETTOZUTUKI, ADD_RocketZutuki),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ANKOORU, ADD_Encore),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TATUMAKI, ADD_Tatumaki),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KAZEOKOSI, ADD_Tatumaki),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZISIN, ADD_Jisin),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NAMINORI, ADD_Naminori),
+				new GET_FUNC_TABLE_ELEM(WazaNo.FEINTO, ADD_Feint),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SYADOODAIBU, ADD_ShadowDive),
+				new GET_FUNC_TABLE_ELEM(WazaNo.WARUAGAKI, ADD_Waruagaki),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TYOUHATU, ADD_Chouhatu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HARADAIKO, ADD_Haradaiko),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MITIDURE, ADD_Michidure),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KARAGENKI, ADD_Karagenki),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SIPPEGAESI, ADD_Sippegaesi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MEZAMERUPAWAA, ADD_MezameruPower),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TIISAKUNARU, ADD_Tiisakunaru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MARUKUNARU, ADD_Marukunaru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HUMITUKE, ADD_Fumituke),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DAIMAKKUSUHOU, ADD_DaiMaxHou),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KYOZYUUZAN, ADD_DaiMaxHou),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KYOZYUUDAN, ADD_DaiMaxHou),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HUIUTI, ADD_Fuiuti),
+				new GET_FUNC_TABLE_ELEM(WazaNo.AROMASERAPII, ADD_Alomatherapy),
+				new GET_FUNC_TABLE_ELEM(WazaNo.IYASINOSUZU, ADD_IyasiNoSuzu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.OKIMIYAGE, ADD_Okimiyage),
+				new GET_FUNC_TABLE_ELEM(WazaNo.URAMI, ADD_Urami),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NEMURU, ADD_Nemuru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ROKKUON, ADD_LockON),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KOKORONOME, ADD_LockON),
+				new GET_FUNC_TABLE_ELEM(WazaNo.RIHUREKUTAA, ADD_Reflector),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HIKARINOKABE, ADD_HikariNoKabe),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SINPINOMAMORI, ADD_SinpiNoMamori),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SIROIKIRI, ADD_SiroiKiri),
+				new GET_FUNC_TABLE_ELEM(WazaNo.OIKAZE, ADD_Oikaze),
+				new GET_FUNC_TABLE_ELEM(WazaNo.PUREZENTO, ADD_Present),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HUUIN, ADD_Fuuin),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZYUURYOKU, ADD_Juryoku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ONNEN, ADD_Onnen),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TEDASUKE, ADD_Tedasuke),
+				new GET_FUNC_TABLE_ELEM(WazaNo.IEKI, ADD_Ieki),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NARIKIRI, ADD_Narikiri),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MAKIBISI, ADD_Makibisi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DOKUBISI, ADD_Dokubisi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SUTERUSUROKKU, ADD_StealthRock),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HANEYASUME, ADD_Haneyasume),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DENZIHUYUU, ADD_DenjiFuyuu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.RENZOKUGIRI, ADD_RenzokuGiri),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SAIKOSIHUTO, ADD_PsycoShift),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DAMEOSI, ADD_Dameosi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TEKUSUTYAA2, ADD_Texture2),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KAUNTAA, ADD_Counter),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MIRAAKOOTO, ADD_MilerCoat),
+				new GET_FUNC_TABLE_ELEM(WazaNo.METARUBAASUTO, ADD_MetalBurst),
+				new GET_FUNC_TABLE_ELEM(WazaNo.RIBENZI, ADD_Revenge),
+				new GET_FUNC_TABLE_ELEM(WazaNo.YUKINADARE, ADD_Revenge),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZYAIROBOORU, ADD_GyroBall),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ITAMIWAKE, ADD_Itamiwake),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KONOYUBITOMARE, ADD_KonoyubiTomare),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NAYAMINOTANE, ADD_NayamiNoTane),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DENZIHA, ADD_Denjiha),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZIKOANZI, ADD_JikoAnji),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HAATOSUWAPPU, ADD_HeartSwap),
+				new GET_FUNC_TABLE_ELEM(WazaNo.PAWAASUWAPPU, ADD_PowerSwap),
+				new GET_FUNC_TABLE_ELEM(WazaNo.GAADOSUWAPPU, ADD_GuardSwap),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MEROMERO, ADD_Meromero),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SABAKINOTUBUTE, ADD_SabakiNoTubute),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HATAKIOTOSU, ADD_Hatakiotosu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KANASIBARI, ADD_Kanasibari),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DOROBOU, ADD_Dorobou),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HOSIGARU, ADD_Dorobou),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TORIKKU, ADD_Trick),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SURIKAE, ADD_Trick),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MONOMANE, ADD_Monomane),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SUKETTI, ADD_Sketch),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TOBIHIZAGERI, ADD_Tobigeri),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KIRIBARAI, ADD_Kiribarai),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KAWARAWARI, ADD_Kawarawari),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TORIKKURUUMU, ADD_TrickRoom),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZYUUDEN, ADD_Juden),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HOROBINOUTA, ADD_HorobiNoUta),
+				new GET_FUNC_TABLE_ELEM(WazaNo.YADORIGINOTANE, ADD_YadorigiNoTane),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HUKURODATAKI, ADD_FukuroDataki),
+				new GET_FUNC_TABLE_ELEM(WazaNo.AKUARINGU, ADD_AquaRing),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MIKADUKINOMAI, ADD_MikadukiNoMai),
+				new GET_FUNC_TABLE_ELEM(WazaNo.IYASINONEGAI, ADD_IyasiNoNegai),
+				new GET_FUNC_TABLE_ELEM(WazaNo.YUBIWOHURU, ADD_YubiWoFuru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SIZENNOTIKARA, ADD_SizenNoTikara),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MANEKKO, ADD_Manekko),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NEGOTO, ADD_Negoto),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KETAGURI, ADD_Ketaguri),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KUSAMUSUBI, ADD_Ketaguri),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KIAIPANTI, ADD_KiaiPunch),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TAKUWAERU, ADD_Takuwaeru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HAKIDASU, ADD_Hakidasu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NOMIKOMU, ADD_Nomikomu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MIRAIYOTI, ADD_Miraiyoti),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HAMETUNONEGAI, ADD_HametuNoNegai),
+				new GET_FUNC_TABLE_ELEM(WazaNo.RISAIKURU, ADD_Recycle),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NEKONIKOBAN, ADD_NekoNiKoban),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MAZIKKUKOOTO, ADD_MagicCoat),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TEREPOOTO, ADD_Teleport),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TONBOGAERI, ADD_TonboGaeri),
+				new GET_FUNC_TABLE_ELEM(WazaNo.BATONTATTI, ADD_BatonTouch),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TUIBAMU, ADD_Tuibamu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MUSIKUI, ADD_Tuibamu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HOOBARU, ADD_Hoobaru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NAGETUKERU, ADD_Nagetukeru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MAKITUKU, ADD_Makituku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SIMETUKERU, ADD_Makituku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HONOONOUZU, ADD_Makituku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SUNAZIGOKU, ADD_Makituku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MAGUMASUTOOMU, ADD_Makituku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TORABASAMI, ADD_Makituku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.UZUSIO, ADD_Uzusio),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KOUSOKUSUPIN, ADD_KousokuSpin),
+				new GET_FUNC_TABLE_ELEM(WazaNo.PAWAATORIKKU, ADD_PowerTrick),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HENSIN, ADD_Hensin),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DAIBAKUHATU, ADD_Daibakuhatsu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZIBAKU, ADD_Daibakuhatsu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KIAIDAME, ADD_Kiaidame),
+				new GET_FUNC_TABLE_ELEM(WazaNo.GENSINOTIKARA, ADD_GensiNoTikara),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KAMINARI, ADD_Kaminari),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HUBUKI, ADD_Fubuki),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZETTAIREIDO, ADD_ZettaiReido),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NEGAIGOTO, ADD_Negaigoto),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SEITYOU, ADD_Seityou),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DOKUDOKU, ADD_Dokudoku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.BENOMUSYOKKU, ADD_BenomShock),
+				new GET_FUNC_TABLE_ELEM(WazaNo.IKARINOKONA, ADD_Ikarinokona),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MIZUBITASI, ADD_Mizubitasi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SINPURUBIIMU, ADD_SimpleBeem),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NAKAMADUKURI, ADD_NakamaDukuri),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KURIASUMOGGU, ADD_ClearSmog),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ASISUTOPAWAA, ADD_AsistPower),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TUKEAGARU, ADD_AsistPower),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KARAWOYABURU, ADD_KarawoYaburu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TATARIME, ADD_Tatarime),
+				new GET_FUNC_TABLE_ELEM(WazaNo.AKUROBATTO, ADD_Acrobat),
+				new GET_FUNC_TABLE_ELEM(WazaNo.BORUTOTHENZI, ADD_TonboGaeri),
+				new GET_FUNC_TABLE_ELEM(WazaNo.WAIDOGAADO, ADD_WideGuard),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TATAMIGAESI, ADD_TatamiGaeshi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MIRAATAIPU, ADD_MirrorType),
+				new GET_FUNC_TABLE_ELEM(WazaNo.PAWAASHEA, ADD_PowerShare),
+				new GET_FUNC_TABLE_ELEM(WazaNo.GAADOSHEA, ADD_GuardShare),
+				new GET_FUNC_TABLE_ELEM(WazaNo.BODHIPAAZI, ADD_BodyPurge),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HEBIIBONBAA, ADD_HeavyBomber),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HIITOSUTANPU, ADD_HeatStamp),
+				new GET_FUNC_TABLE_ELEM(WazaNo.WANDAARUUMU, ADD_WonderRoom),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MAZIKKURUUMU, ADD_MagicRoom),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SAIKOSYOKKU, ADD_PsycoShock),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SAIKOBUREIKU, ADD_PsycoShock),
+				new GET_FUNC_TABLE_ELEM(WazaNo.EREKIBOORU, ADD_ElectBall),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SEINARUTURUGI, ADD_NasiKuzusi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ddRARIATTO, ADD_NasiKuzusi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.EKOOBOISU, ADD_EchoVoice),
+				new GET_FUNC_TABLE_ELEM(WazaNo.YAKITUKUSU, ADD_Yakitukusu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TOMOENAGE, ADD_TomoeNage),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DORAGONTEERU, ADD_TomoeNage),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KATAKIUTI, ADD_Katakiuti),
+				new GET_FUNC_TABLE_ELEM(WazaNo.IKASAMA, ADD_Ikasama),
+				new GET_FUNC_TABLE_ELEM(WazaNo.BODHIPURESU, ADD_BodyPress),
+				new GET_FUNC_TABLE_ELEM(WazaNo.UTIOTOSU, ADD_Utiotosu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.INOTIGAKE, ADD_Inotigake),
+				new GET_FUNC_TABLE_ELEM(WazaNo.OSAKINIDOUZO, ADD_OsakiniDouzo),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SAKIOKURI, ADD_Sakiokuri),
+				new GET_FUNC_TABLE_ELEM(WazaNo.RINSYOU, ADD_Rinsyou),
+				new GET_FUNC_TABLE_ELEM(WazaNo.FASUTOGAADO, ADD_FastGuard),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SAIDOTHENZI, ADD_SideChange),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KOOTOTHENZI, ADD_CourtChange),
+				new GET_FUNC_TABLE_ELEM(WazaNo.BOUHUU, ADD_Kaminari),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SINPINOTURUGI, ADD_PsycoShock),
+				new GET_FUNC_TABLE_ELEM(WazaNo.INISIENOUTA, ADD_InisieNoUta),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TEKUNOBASUTAA, ADD_TechnoBaster),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HURIIZUBORUTO, ADD_FreezeBolt),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KOORUDOHUREA, ADD_FreezeBolt),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MIZUNOTIKAI, ADD_CombiWazaCommon),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HONOONOTIKAI, ADD_CombiWazaCommon),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KUSANOTIKAI, ADD_CombiWazaCommon),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KUROSUHUREIMU, ADD_FlameSoul),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KUROSUSANDAA, ADD_FlameSoul),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NETTOU, ADD_Nettou),
+				new GET_FUNC_TABLE_ELEM(WazaNo.UTAKATANOARIA, ADD_UtakatanoAria),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DORAGONDAIBU, ADD_Fumituke),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NOSIKAKARI, ADD_Fumituke),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HAROWHIN, ADD_Halloween),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MORINONOROI, ADD_Morinonoroi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HIKKURIKAESU, ADD_Hikkurikaesu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SUTEZERIHU, ADD_SuteZerifu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HURAWAAGAADO, ADD_FlowerGuard),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TODOMEBARI, ADD_TodomeBari),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NEBANEBANETTO, ADD_NebaNebaNet),
+				new GET_FUNC_TABLE_ELEM(WazaNo.GURASUFIIRUDO, ADD_GrassField),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MISUTOFIIRUDO, ADD_MistField),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HURAINGUPURESU, ADD_FlyingPress),
+				new GET_FUNC_TABLE_ELEM(WazaNo.GOOSUTODAIBU, ADD_ShadowDive),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HURIIZUDORAI, ADD_FreezDry),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SOUDEN, ADD_Souden),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KINGUSIIRUDO, ADD_KingShield),
+				new GET_FUNC_TABLE_ELEM(WazaNo.BUROKKINGU, ADD_Blocking),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SAUZANWHEEBU, ADD_SouthernWave),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SAUZANAROO, ADD_ThousanArrow),
+				new GET_FUNC_TABLE_ELEM(WazaNo.EREKIFIIRUDO, ADD_ElecField),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HAPPIITAIMU, ADD_HappyTime),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZIBASOUSA, ADD_ZibaSousa),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ASISUTOGIA, ADD_ZibaSousa),
+				new GET_FUNC_TABLE_ELEM(WazaNo.BENOMUTORAPPU, ADD_BenomTrap),
+				new GET_FUNC_TABLE_ELEM(WazaNo.IZIGENHOORU, ADD_IjigenHall),
+				new GET_FUNC_TABLE_ELEM(WazaNo.FEARIIROKKU, ADD_FairyLock),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HUNZIN, ADD_Funjin),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZIOKONTOROORU, ADD_GeoControl),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TORIKKUGAADO, ADD_TrickGuard),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NIIDORUGAADO, ADD_NeedleGuard),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TEKAGEN, ADD_Mineuti),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MATOWARITUKU, ADD_Makituku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SUTIIMUBAASUTO, ADD_Nettou),
+				new GET_FUNC_TABLE_ELEM(WazaNo.OIWAI, ADD_Oiwai),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TEWOTUNAGU, ADD_TeWoTunagu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HOERU, ADD_Hoeru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HUKITOBASI, ADD_Hoeru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.IZIGENRASSYU, ADD_IjigenRush),
+				new GET_FUNC_TABLE_ELEM(WazaNo.OORAGURUMA, ADD_AuraGuruma),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SUNAATUME, ADD_Sunaatume),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HURAWAAHIIRU, ADD_FlowerHeal),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DEAIGASIRA, ADD_Deaigasira),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TOOTIKA, ADD_Tootika),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MEZAMERUDANSU, ADD_MezameruDance),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KAHUNDANGO, ADD_Kahundango),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KOAPANISSYAA, ADD_CorePunisher),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KAGENUI, ADD_Kagenui),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ANKAASYOTTO, ADD_Kagenui),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KURAITUKU, ADD_Kuraituku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TAKOGATAME, ADD_TakoGatame),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZYOUKA, ADD_Zyouka),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TIKARAWOSUITORU, ADD_Tikarawosuitoru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TOGISUMASU, ADD_Togisumasu),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SUPIIDOSUWAPPU, ADD_SpeedSwap),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MOETUKIRU, ADD_Moetukiru),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SAIKOFIIRUDO, ADD_PhychoField),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KUTIBASIKYANON, ADD_KutibasiCanon),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SAIKOFANGU, ADD_Kawarawari),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TORAPPUSHERU, ADD_TrapShell),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ZIDANDA, ADD_Zidanda),
+				new GET_FUNC_TABLE_ELEM(WazaNo.OORORABEERU, ADD_AuroraVeil),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SAIHAI, ADD_Saihai),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NAINEBORUBUUSUTO, ADD_GensiNoTikara),
+				new GET_FUNC_TABLE_ELEM(WazaNo.METEODORAIBU, ADD_MeteorDrive),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SYADOOREI, ADD_MeteorDrive),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SIZENNOIKARI, ADD_IkariNoMaeba),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MARUTIATAKKU, ADD_MultiAttack),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SYADOOSUTIIRU, ADD_ShadowSteal),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DAAKUHOORU, ADD_DarkHole),
+				new GET_FUNC_TABLE_ELEM(WazaNo.PURAZUMAFISUTO, ADD_PlasmaFist),
+				new GET_FUNC_TABLE_ELEM(WazaNo.FOTONGEIZAA, ADD_PhotonGeyser),
+				new GET_FUNC_TABLE_ELEM(WazaNo.BIKKURIHEDDO, ADD_Hanabisenyou),
+				new GET_FUNC_TABLE_ELEM(WazaNo.KOROKOROWAZA, ADD_Hanabisenyou),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DAIWHOORU, ADD_DaiWall),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NERAIUTI, ADD_NeraiUti),
+				new GET_FUNC_TABLE_ELEM(WazaNo.HAISUINOZIN, ADD_HaisuiNoJin),
+				new GET_FUNC_TABLE_ELEM(WazaNo.SOURUBIITO, ADD_SoulBeat),
+				new GET_FUNC_TABLE_ELEM(WazaNo.MAHOUNOKONA, ADD_MahouNoKona),
+				new GET_FUNC_TABLE_ELEM(WazaNo.OTYAKAI, ADD_Ochakai),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DENGEKIKUTIBASI, ADD_DengekiKutibasi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.ERAGAMI, ADD_DengekiKutibasi),
+				new GET_FUNC_TABLE_ELEM(WazaNo.TAARUSYOTTO, ADD_TarShot),
+				new GET_FUNC_TABLE_ELEM(WazaNo.DORAGONAROO, ADD_DragonArrow),
+				new GET_FUNC_TABLE_ELEM(WazaNo.INOTINOSIZUKU, ADD_InotiNoSizuku),
+				new GET_FUNC_TABLE_ELEM(WazaNo.NYUUTON, ADD_Newton),
+			};
+			HandlerTable_Texture = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Texture),
+			};
+			HandlerTable_TrickRoom = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.FIELD_EFFECT_CALL, handler_TrickRoom),
+			};
+			HandlerTable_Juryoku = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.FIELD_EFFECT_CALL, handler_Juryoku),
+			};
+			HandlerTable_Kiribarai = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Kiribarai),
+			};
+			HandlerTable_Kawarawari = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC1, handler_Kawarawari_DmgProc1),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC_END, handler_Kawarawari_DmgProcEnd),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_DETERMINE, handler_Kawarawari_DmgDetermine),
+			};
+			HandlerTable_Tobigeri = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_NO_EFFECT, handler_Tobigeri_NoEffect),
+			};
+			HandlerTable_Monomane = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Monomane),
+			};
+			HandlerTable_Sketch = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Sketch),
+			};
+			HandlerTable_KonoyubiTomare = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_KonoyubiTomare_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_KonoyubiTomare_Exe),
+				new EventFactor.EventHandlerTable(EventID.TEMPT_TARGET, handler_KonoyubiTomare_TemptTarget),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_KonoyubiTomare_TurnCheck),
+			};
+			HandlerTable_Ikarinokona = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_KonoyubiTomare_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_KonoyubiTomare_Exe),
+				new EventFactor.EventHandlerTable(EventID.TEMPT_TARGET, handler_Ikarinokona_TemptTarget),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_KonoyubiTomare_TurnCheck),
+			};
+			HandlerTable_KumoNoSu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_L2, handler_KumoNoSu_NoEffCheck),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_KumoNoSu),
+			};
+			HandlerTable_KuroiKiri = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.FIELD_EFFECT_CALL, handler_KuroiKiri),
+			};
+			HandlerTable_Haneru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Haneru_CheckFail),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Haneru),
+			};
+			HandlerTable_Oiwai = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Oiwai),
+			};
+			HandlerTable_TeWoTunagu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_TeWoTunagu),
+			};
+			HandlerTable_Noroi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM, handler_Noroi_WazaParam),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Noroi),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Noroi_ExeCheck3rd_FailToGWall),
+			};
+			HandlerTable_Denjiha = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_AFFINITY_ENABLE, handler_Denjiha),
+			};
+			HandlerTable_NayamiNoTane = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_L2, handler_NayamiNoTane_NoEff),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_NayamiNoTane),
+			};
+			HandlerTable_Yumekui = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_L2, handler_Yumekui),
+			};
+			HandlerTable_TriAttack = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.ADD_SICK, handler_TriAttack),
+			};
+			HandlerTable_Nettou = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_Nettou),
+			};
+			HandlerTable_UtakatanoAria = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_UtakatanoAria),
+			};
+			HandlerTable_Osyaberi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.ADD_SICK, handler_Osyaberi),
+			};
+			HandlerTable_Makituku = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.ADD_SICK, handler_Makituku),
+				new EventFactor.EventHandlerTable(EventID.WAZASICK_STR, handler_Makituku_Str),
+			};
+			HandlerTable_Uzusio = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.ADD_SICK, handler_Makituku),
+				new EventFactor.EventHandlerTable(EventID.WAZASICK_STR, handler_Makituku_Str),
+				new EventFactor.EventHandlerTable(EventID.CHECK_POKE_HIDE, handler_Uzusio_CheckHide),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_Uzusio_Dmg),
+			};
+			HandlerTable_IkariNoMaeba = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC1, handler_IkariNoMaeba),
+			};
+			HandlerTable_Gamusyara = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_L2, handler_Gamusyara_CheckNoEffect),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC1, handler_Gamusyara),
+			};
+			HandlerTable_TikyuuNage = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC1, handler_TikyuuNage),
+			};
+			HandlerTable_Takuwaeru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Takuwaeru_CheckExe),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Takuwaeru),
+			};
+			HandlerTable_Hakidasu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Hakidasu_CheckExe),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Hakidasu_Pow),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_DONE, handler_Hakidasu_Done),
+			};
+			HandlerTable_Nomikomu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Hakidasu_CheckExe),
+				new EventFactor.EventHandlerTable(EventID.RECOVER_HP_RATIO, handler_Nomikomu_Ratio),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_DONE, handler_Hakidasu_Done),
+			};
+			HandlerTable_Counter = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Counter_CheckExe),
+				new EventFactor.EventHandlerTable(EventID.DECIDE_TARGET, handler_Counter_Target),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC1, handler_Counter_CalcDamage),
+			};
+			HandlerTable_MilerCoat = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_MilerCoat_CheckExe),
+				new EventFactor.EventHandlerTable(EventID.DECIDE_TARGET, handler_MilerCoat_Target),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC1, handler_MilerCoat_CalcDamage),
+			};
+			HandlerTable_MetalBurst = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_MetalBurst_CheckExe),
+				new EventFactor.EventHandlerTable(EventID.DECIDE_TARGET, handler_MetalBurst_Target),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC1, handler_MetalBurst_CalcDamage),
+			};
+			HandlerTable_Totteoki = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Totteoki),
+			};
+			HandlerTable_Ibiki = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_FAIL_THREW, handler_Ibiki_CheckFail_1),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Ibiki_CheckFail_2),
+			};
+			HandlerTable_Fuiuti = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Fuiuti_NoEff),
+			};
+			HandlerTable_Daibakuhatsu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_START, handler_Daibakuhatsu_ExeStart),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_DETERMINE, handler_Daibakuhatsu_DmgDetermine),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_DONE, handler_Daibakuhatsu_ExeFix),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaid),
+			};
+			HandlerTable_Kiaidame = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Kiaidame),
+			};
+			HandlerTable_Juden = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_START, handler_Juden_Exe),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_Juden_WazaStart),
+				new EventFactor.EventHandlerTable(EventID.CHECK_REMOVEALL_CANCEL, handler_Juden_RemoveAllTarget),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_Juden_Pow),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_END, handler_Juden_WazaEnd),
+			};
+			HandlerTable_HorobiNoUta = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaidPlayerSide),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_EFFECTIVE, handler_HorobiNoUta_Exe),
+			};
+			HandlerTable_YadorigiNoTane = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZASICK_PARAM, handler_YadorigiNoTane_Param),
+			};
+			HandlerTable_NekoNiKoban = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_DETERMINE, handler_NekoNiKoban),
+			};
+			HandlerTable_AquaRing = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_AquaRing),
+			};
+			HandlerTable_Abareru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_START, handler_Abareru),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_END, handler_Abareru_SeqEnd),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_END, handler_Abareru_turnCheck),
+			};
+			HandlerTable_Sawagu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_DETERMINE, handler_Sawagu),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_END, handler_Sawagu_SeqEnd),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_END, handler_Sawagu_turnCheck),
+				new EventFactor.EventHandlerTable(EventID.ADDSICK_CHECKFAIL, handler_Sawagu_CheckSickFail),
+				new EventFactor.EventHandlerTable(EventID.CHECK_INEMURI, handler_Sawagu_CheckInemuri),
+			};
+			HandlerTable_Korogaru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_START, handler_Korogaru_ExeFix),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_FAIL, handler_Korogaru_NoEffect),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_NO_EFFECT, handler_Korogaru_NoEffect),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_END, handler_Korogaru_SeqEnd),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Korogaru_Pow),
+			};
+			HandlerTable_TripleKick = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_TripleKick),
+				new EventFactor.EventHandlerTable(EventID.WAZA_HIT_COUNT, handler_TripleKick_HitCount),
+			};
+			HandlerTable_GyroBall = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_GyroBall),
+			};
+			HandlerTable_Revenge = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Revenge),
+			};
+			HandlerTable_Jitabata = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Jitabata),
+			};
+			handler_JitabataTable = new handler_JitabataTableElem[]
+			{
+				new handler_JitabataTableElem(1, 200),
+				new handler_JitabataTableElem(4, 150),
+				new handler_JitabataTableElem(9, 100),
+				new handler_JitabataTableElem(16, 80),
+				new handler_JitabataTableElem(32, 40),
+				new handler_JitabataTableElem(48, 20),
+			};
+			HandlerTable_Karagenki = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.ATTACKER_POWER, handler_Karagenki_AtkPow),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_Karagenki_WazaPow),
+			};
+			HandlerTable_Sippegaesi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Sippegaesi),
+			};
+			HandlerTable_Funka = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Funka),
+			};
+			HandlerTable_Siboritoru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Siboritoru),
+			};
+			HandlerTable_Siomizu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_Siomizu),
+			};
+			HandlerTable_RenzokuGiri = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_RenzokuGiri),
+			};
+			HandlerTable_Dameosi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Dameosi),
+			};
+			HandlerTable_Ketaguri = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToG),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Ketaguri),
+			};
+			HandlerTable_WeatherBall = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM, handler_WeatherBall_Type),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_WeatherBall_Pow),
+				new EventFactor.EventHandlerTable(EventID.CHANGE_G_WAZA, handler_WeatherBall_ChangeGWaza),
+			};
+			HandlerTable_Tatumaki = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_POKE_HIDE, handler_Tatumaki_checkHide),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Tatumaki),
+			};
+			HandlerTable_Kaminari = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_POKE_HIDE, handler_Kaminari_checkHide),
+				new EventFactor.EventHandlerTable(EventID.CALC_HIT_CANCEL, handler_Kaminari_excuseHitCalc),
+				new EventFactor.EventHandlerTable(EventID.WAZA_HIT_RATIO, handler_Kaminari_hitRatio),
+			};
+			HandlerTable_Fubuki = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CALC_HIT_CANCEL, handler_Fubuki),
+			};
+			HandlerTable_ZettaiReido = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_HIT_RATIO_ICHIGEKI, handler_ZettaiReido_hitRatio),
+			};
+			HandlerTable_Jisin = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_POKE_HIDE, handler_Jisin_checkHide),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_Jisin_damage),
+			};
+			HandlerTable_SabakiNoTubute = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM, handler_SabakiNoTubute),
+			};
+			HandlerTable_MultiAttack = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM, handler_MultiAttack),
+				new EventFactor.EventHandlerTable(EventID.CHANGE_G_WAZA, handler_MultiAttack_ChangeGWaza),
+			};
+			HandlerTable_TechnoBaster = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM, handler_TechnoBaster),
+				new EventFactor.EventHandlerTable(EventID.CHANGE_G_WAZA, handler_TechnoBaster_ChangeGWaza),
+			};
+			HandlerTable_MezameruPower = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM, handler_MezameruPower_Type),
+			};
+			HandlerTable_Hatakiotosu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaid),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_Hatakiotosu_WazaPow),
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_Hatakiotosu_EndHit),
+			};
+			HandlerTable_MagicCoat = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_MagicCoat_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_MagicCoat),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_TOKUSEI, handler_MagicCoat_Wait),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_REFRECT, handler_MagicCoat_Reflect),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_MagicCoat_TurnCheck),
+			};
+			HandlerTable_Dorobou = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaid),
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_START, handler_Dorobou_Start),
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_Dorobou),
+			};
+			HandlerTable_Trick = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaid),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Trick),
+			};
+			HandlerTable_Naminori = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_POKE_HIDE, handler_Naminori_checkHide),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_Naminori),
+			};
+			HandlerTable_Fumituke = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CALC_HIT_CANCEL, handler_Fumituke_HitCheckSkip),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_Fumituke_DamegeProc),
+			};
+			HandlerTable_DaiMaxHou = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_DaiMaxHou_DamegeProc),
+			};
+			HandlerTable_Mineuti = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.KORAERU_CHECK, handler_Mineuti),
+			};
+			HandlerTable_Koraeru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_Mamoru_StartSeq),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Mamoru_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_FAIL, handler_Mamoru_ExeFail),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Koraeru),
+				new EventFactor.EventHandlerTable(EventID.KORAERU_CHECK, handler_Koraeru_Check),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_Koraeru_TurnCheck),
+			};
+			HandlerTable_Mamoru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_Mamoru_StartSeq),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Mamoru_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_FAIL, handler_Mamoru_ExeFail),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Mamoru),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC_G, handler_Mamoru_Dmg),
+				new EventFactor.EventHandlerTable(EventID.AFTER_CRITICAL, handler_Mamoru_MsgAfterCritical),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_Mamoru_Off),
+			};
+			WazaTable_Mamoru = new ushort[] { 182, 197, 203, 469, 501, 596, 588, 561, 661, 743, 792 };
+			RandRangeTable_Mamoru = new ushort[] { 1, 3, 9, 27, 81, 243, 729 };
+			HandlerTable_Recycle = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Recycle),
+			};
+			HandlerTable_PsycoShift = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_PsycoShift),
+			};
+			HandlerTable_Itamiwake = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Itamiwake),
+			};
+			HandlerTable_Haradaiko = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Haradaiko),
+			};
+			HandlerTable_Feint = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_MAMORU_BREAK, handler_Feint_MamoruBreak),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_SIDEEFF_GUARD_BEGIN, handler_Feint_NoEffCheckBegin),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_SIDEEFF_GUARD_END, handler_Feint_NoEffCheckEnd),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_DETERMINE, handler_Feint_AfterDamage),
+			};
+			HandlerTable_IjigenHall = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_MAMORU_BREAK, handler_Feint_MamoruBreak),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_SIDEEFF_GUARD_BEGIN, handler_Feint_NoEffCheckBegin),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_SIDEEFF_GUARD_END, handler_Feint_NoEffCheckEnd),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_DETERMINE, handler_IjigenHall_AfterDamage),
+			};
+			HandlerTable_TuboWoTuku = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_TuboWoTuku),
+			};
+			HandlerTable_Nemuru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Nemuru_exeCheck),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Nemuru),
+			};
+			HandlerTable_Meromero = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_L2, handler_Meromero_CheckNoEffect),
+			};
+			HandlerTable_Texture2 = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Texture2),
+			};
+			HandlerTable_Encore = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Encore),
+			};
+			HandlerTable_Chouhatu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Chouhatu),
+			};
+			HandlerTable_Kanasibari = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Kanasibari),
+			};
+			HandlerTable_Present = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DMG_TO_RECOVER_CHECK, handler_Present_Check),
+				new EventFactor.EventHandlerTable(EventID.DMG_TO_RECOVER_FIX, handler_Present_Fix),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Present_Pow),
+			};
+			HandlerTable_Fuuin = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Fuuin),
+			};
+			HandlerTable_Alomatherapy = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_DECIDE, handler_Alomatherapy_Exe),
+				new EventFactor.EventHandlerTable(EventID.CHECK_REMOVEALL_CANCEL, handler_IyasiNoSuzu_RemoveAllTarget),
+				new EventFactor.EventHandlerTable(EventID.SKIP_AVOID_CHECK, handler_Tedasuke_SkipAvoid),
+				new EventFactor.EventHandlerTable(EventID.CHECK_POKE_HIDE, handler_Tedasuke_CheckHide),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Alomatherapy),
+			};
+			HandlerTable_IyasiNoSuzu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_DECIDE, handler_IyasiNoSuzu_Exe),
+				new EventFactor.EventHandlerTable(EventID.CHECK_REMOVEALL_CANCEL, handler_IyasiNoSuzu_RemoveAllTarget),
+				new EventFactor.EventHandlerTable(EventID.SKIP_AVOID_CHECK, handler_Tedasuke_SkipAvoid),
+				new EventFactor.EventHandlerTable(EventID.CHECK_POKE_HIDE, handler_Tedasuke_CheckHide),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_IyasiNoSuzu),
+			};
+			HandlerTable_Okimiyage = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Okimiyage),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaid),
+			};
+			HandlerTable_Urami = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Urami),
+			};
+			HandlerTable_JikoAnji = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_JikoAnji),
+			};
+			HandlerTable_HeartSwap = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_HeartSwap),
+			};
+			HandlerTable_PowerSwap = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_PowerSwap),
+			};
+			HandlerTable_GuardSwap = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_GuardSwap),
+			};
+			HandlerTable_PowerTrick = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_PowerTrick),
+			};
+			HandlerTable_PowerShare = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_PowerShare),
+			};
+			HandlerTable_GuardShare = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_GuardShare),
+			};
+			HandlerTable_LockON = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_LockON),
+			};
+			HandlerTable_Dokudoku = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_START, handler_Dokudoku),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_DONE, handler_Dokudoku_Done),
+			};
+			HandlerTable_Reflector = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_Reflector),
+			};
+			HandlerTable_HikariNoKabe = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_HikariNoKabe),
+			};
+			HandlerTable_SinpiNoMamori = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_SinpiNoMamori),
+			};
+			HandlerTable_SiroiKiri = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_SiroiKiri),
+			};
+			HandlerTable_Oikaze = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_Oikaze),
+			};
+			HandlerTable_Makibisi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_Makibisi),
+			};
+			HandlerTable_Dokubisi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_Dokubisi),
+			};
+			HandlerTable_StealthRock = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_StealthRock),
+			};
+			HandlerTable_NebaNebaNet = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_NebaNebaNet),
+			};
+			HandlerTable_WideGuard = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_WideGuard_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_WideGuard),
+			};
+			HandlerTable_TatamiGaeshi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_TatamiGaeshi_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_Mamoru_StartSeq),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_FAIL, handler_Mamoru_ExeFail),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_TatamiGaeshi),
+			};
+			HandlerTable_Hensin = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Hensin),
+			};
+			HandlerTable_MikadukiNoMai = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_MikadukiNoMai),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaid),
+			};
+			HandlerTable_IyasiNoNegai = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_IyasiNoNegai),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaid),
+			};
+			HandlerTable_Negaigoto = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Negaigoto),
+			};
+			HandlerTable_Miraiyoti = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_DELAY_WAZA, handler_Miraiyoti),
+				new EventFactor.EventHandlerTable(EventID.DECIDE_DELAY_WAZA, handler_Miraiyoti_Decide),
+			};
+			HandlerTable_HametuNoNegai = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_DELAY_WAZA, handler_HametuNoNegai),
+				new EventFactor.EventHandlerTable(EventID.DECIDE_DELAY_WAZA, handler_HametuNoNegai_Decide),
+			};
+			HandlerTable_Ieki = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Ieki),
+			};
+			HandlerTable_Narikiri = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Narikiri),
+			};
+			HandlerTable_TonboGaeri = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_L4, handler_TonboGaeri),
+			};
+			HandlerTable_KousokuSpin = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZADMG_SIDE_AFTER, handler_KousokuSpin),
+			};
+			HandlerTable_BatonTouch = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_BatonTouch),
+			};
+			HandlerTable_Teleport = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Teleport),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Teleport_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.NIGERU_EXMSG, handler_Teleport_ExMsg),
+			};
+			HandlerTable_Nagetukeru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Nagetukeru_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Nagetukeru_WazaPower),
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_START, handler_Nagetukeru_DmgProcStart),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_REACTION, handler_Nagetukeru_DmgAfter),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_DONE, handler_Nagetukeru_Done),
+			};
+			HandlerTable_DenjiFuyuu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_DenjiFuyuu_CheckFail),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_DenjiFuyuu),
+			};
+			HandlerTable_Tedasuke = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.SKIP_AVOID_CHECK, handler_Tedasuke_SkipAvoid),
+				new EventFactor.EventHandlerTable(EventID.CHECK_POKE_HIDE, handler_Tedasuke_CheckHide),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Tedasuke_Ready),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_Tedasuke_WazaPow),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_Tedasuke_TurnCheck),
+			};
+			HandlerTable_FukuroDataki = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_HIT_COUNT, handler_FukuroDataki),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_FukuroDataki_Pow),
+			};
+			HandlerTable_Nekodamasi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Nekodamasi),
+			};
+			HandlerTable_Deaigasira = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Deaigasira),
+			};
+			HandlerTable_AsaNoHizasi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.RECOVER_HP_RATIO, handler_AsaNoHizasi),
+			};
+			HandlerTable_Sunaatume = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.RECOVER_HP_RATIO, handler_Sunaatume),
+			};
+			HandlerTable_FlowerHeal = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.RECOVER_HP_RATIO, handler_FlowerHeal),
+			};
+			HandlerTable_SoraWoTobu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TAME_START, handler_SoraWoTobu_TameStart),
+			};
+			HandlerTable_ShadowDive = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TAME_START, handler_ShadowDive_TameStart),
+				new EventFactor.EventHandlerTable(EventID.CHECK_MAMORU_BREAK, handler_Feint_MamoruBreak),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_SIDEEFF_GUARD_BEGIN, handler_Feint_NoEffCheckBegin),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_SIDEEFF_GUARD_END, handler_Feint_NoEffCheckEnd),
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_L1, handler_ShadowDive_AfterDamage),
+			};
+			HandlerTable_Tobihaneru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TAME_START, handler_Tobihaneru_TameStart),
+			};
+			HandlerTable_Diving = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TAME_START, handler_Diving_TameStart),
+			};
+			HandlerTable_AnaWoHoru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TAME_START, handler_AnaWoHoru_TameStart),
+			};
+			HandlerTable_SolarBeam = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_TAMETURN_SKIP, handler_SolarBeam_TameSkip),
+				new EventFactor.EventHandlerTable(EventID.TAME_START, handler_SolarBeam_TameStart),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_SolarBeam_Power),
+			};
+			HandlerTable_GodBird = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TAME_START, handler_GodBird_TameStart),
+			};
+			HandlerTable_RocketZutuki = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TAME_START_FIXED, handler_RocketZutuki_TameStart),
+			};
+			HandlerTable_Tuibamu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaid),
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_Tuibamu),
+			};
+			HandlerTable_Hoobaru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Hoobaru),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_EFFECTIVE, handler_Hoobaru_Decide),
+			};
+			HandlerTable_Waruagaki = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_CALL_DECIDE, handler_Waruagaki_SeqStart),
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM, handler_Waruagaki_WazaParam),
+				new EventFactor.EventHandlerTable(EventID.CALC_KICKBACK, handler_Waruagaki_KickBack),
+			};
+			HandlerTable_Michidure = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaidPlayerSide),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Michidure_CheckFail),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Michidure_Ready),
+				new EventFactor.EventHandlerTable(EventID.ACTPROC_START, handler_Michidure_ActStart),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_REACTION_L2, handler_Michidure_WazaDamage),
+			};
+			HandlerTable_Onnen = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Onnen_Ready),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_REACTION, handler_Onnen_WazaDamage),
+				new EventFactor.EventHandlerTable(EventID.ACTPROC_START, handler_Onnen_ActStart),
+			};
+			HandlerTable_Tiisakunaru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_START, handler_Tiisakunaru),
+			};
+			HandlerTable_Marukunaru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_START, handler_Marukunaru),
+			};
+			HandlerTable_Haneyasume = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_EFFECTIVE, handler_Haneyasume),
+			};
+			HandlerTable_KiaiPunch = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.BEFORE_FIGHT, handler_KiaiPunch),
+			};
+			HandlerTable_YubiWoFuru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.REQWAZA_PARAM, handler_YubiWoFuru),
+				new EventFactor.EventHandlerTable(EventID.REQWAZA_MSG, handler_YubiWoFuru_Msg),
+			};
+			HandlerTable_SizenNoTikara = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.REQWAZA_PARAM, handler_SizenNoTikara),
+				new EventFactor.EventHandlerTable(EventID.REQWAZA_MSG, handler_SizenNoTikara_Msg),
+			};
+			HandlerTable_Negoto = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_FAIL_THREW, handler_Ibiki_CheckFail_1),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Ibiki_CheckFail_2),
+				new EventFactor.EventHandlerTable(EventID.REQWAZA_PARAM, handler_Negoto),
+			};
+			HandlerTable_Manekko = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.REQWAZA_PARAM, handler_Manekko_CheckParam),
+			};
+			HandlerTable_GensiNoTikara = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.GET_RANKEFF_VALUE, handler_GensiNoTikara),
+			};
+			HandlerTable_BenomShock = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_BenomShock),
+			};
+			HandlerTable_Tatarime = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Tatarime),
+			};
+			HandlerTable_Acrobat = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Acrobat),
+			};
+			HandlerTable_AsistPower = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_AsistPower),
+			};
+			HandlerTable_HeavyBomber = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToG),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaidBoss),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_HeavyBomber),
+				new EventFactor.EventHandlerTable(EventID.CALC_HIT_CANCEL, handler_Fumituke_HitCheckSkip),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_Fumituke_DamegeProc),
+			};
+			HandlerTable_HeatStamp = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToG),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaidBoss),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_HeavyBomber),
+				new EventFactor.EventHandlerTable(EventID.CALC_HIT_CANCEL, handler_Fumituke_HitCheckSkip),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_Fumituke_DamegeProc),
+			};
+			HandlerTable_ElectBall = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_ElectBall),
+			};
+			HandlerTable_EchoVoice = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_EchoVoice),
+			};
+			HandlerTable_Katakiuti = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_Katakiuti),
+			};
+			HandlerTable_Ikasama = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.ATTACKER_POWER_PREV, handler_Ikasama),
+			};
+			HandlerTable_BodyPress = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.ATTACKER_POWER_VID, handler_BodyPress),
+			};
+			HandlerTable_Mizubitasi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Mizubitasi),
+			};
+			HandlerTable_MahouNoKona = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_MahouNoKona),
+			};
+			HandlerTable_SimpleBeem = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_SimpleBeem),
+			};
+			HandlerTable_NakamaDukuri = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_NakamaDukuri),
+			};
+			HandlerTable_ClearSmog = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_REACTION, handler_ClearSmog),
+			};
+			HandlerTable_Yakitukusu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaid),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_REACTION_L2, handler_Yakitukusu),
+			};
+			HandlerTable_TomoeNage = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_TomoeNage),
+			};
+			HandlerTable_Hoeru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.PUSHOUT_EFFECT_NO, handler_Hoeru),
+			};
+			HandlerTable_Utiotosu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_Utiotosu),
+				new EventFactor.EventHandlerTable(EventID.CHECK_POKE_HIDE, handler_Kaminari_checkHide),
+			};
+			HandlerTable_KarawoYaburu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_KarawoYaburu),
+			};
+			HandlerTable_MirrorType = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_MirrorType),
+			};
+			HandlerTable_BodyPurge = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_RANKEFF_FIXED, handler_BodyPurge),
+			};
+			HandlerTable_PsycoShock = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DEFENDER_GUARD_PREV, handler_PsycoShock),
+			};
+			HandlerTable_NasiKuzusi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DEFENDER_GUARD_PREV, handler_NasiKuzusi_CalcDmg),
+				new EventFactor.EventHandlerTable(EventID.WAZA_HIT_RANK, handler_NasiKuzusi_HitCheck),
+			};
+			HandlerTable_WonderRoom = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.FIELD_EFFECT_CALL, handler_WonderRoom),
+			};
+			HandlerTable_MagicRoom = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.FIELD_EFFECT_CALL, handler_MagicRoom),
+			};
+			HandlerTable_Inotigake = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC1, handler_Inotigake_CalcDamage),
+				new EventFactor.EventHandlerTable(EventID.CHECK_ATTACKER_DEAD, handler_Inotigake_CheckDead),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaid),
+			};
+			HandlerTable_OsakiniDouzo = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_OsakiniDouzo),
+			};
+			HandlerTable_Sakiokuri = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Sakiokuri),
+			};
+			HandlerTable_Rinsyou = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_START, handler_Rinsyou),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Rinsyou_Pow),
+			};
+			HandlerTable_FastGuard = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_WideGuard_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_FastGuard),
+			};
+			HandlerTable_SideChange = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaidPlayerSide),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_SideChange),
+			};
+			HandlerTable_CourtChange = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_CourtChange),
+			};
+			HandlerTable_InisieNoUta = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_L2, handler_InisieNoUta),
+			};
+			HandlerTable_Seityou = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.GET_RANKEFF_VALUE, handler_Seityou),
+			};
+			HandlerTable_FreezeBolt = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TAME_START, handler_FreezeBolt_TameStart),
+			};
+			HandlerTable_FlameSoul = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_FlameSoul_Pow),
+			};
+			CombiTbl = new GetCombiWazaTypeTableElem[]
+			{
+				new GetCombiWazaTypeTableElem(WazaNo.MIZUNOTIKAI, WazaNo.HONOONOTIKAI, CombiEffectType.COMBI_EFFECT_RAINBOW),
+				new GetCombiWazaTypeTableElem(WazaNo.KUSANOTIKAI, WazaNo.HONOONOTIKAI, CombiEffectType.COMBI_EFFECT_BURNING),
+				new GetCombiWazaTypeTableElem(WazaNo.MIZUNOTIKAI, WazaNo.KUSANOTIKAI, CombiEffectType.COMBI_EFFECT_MOOR),
+			};
+			HandlerTable_CombiWazaCommon = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.COMBIWAZA_CHECK, handler_CombiWaza_CheckExe),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_DECIDE, handler_CombiWaza_Decide),
+				new EventFactor.EventHandlerTable(EventID.TYPEMATCH_CHECK, handler_CombiWaza_TypeMatch),
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_CombiWaza_Pow),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXE_START, handler_CombiWaza_ChangeEff),
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_L2, handler_CombiWaza_AfterDmg),
+			};
+			HandlerTable_Halloween = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Halloween),
+			};
+			HandlerTable_Morinonoroi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Morinonoroi),
+			};
+			HandlerTable_FlowerGuard = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_POKE_HIDE, handler_Tagayasu_CheckHide),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_FlowerGuard),
+			};
+			HandlerTable_TodomeBari = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_TodomeBari),
+			};
+			HandlerTable_KogoeruHadou = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_KogoeruHadou),
+			};
+			HandlerTable_Hikkurikaesu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Hikkurikaesu),
+			};
+			HandlerTable_NeraiPunch = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TEMPT_TARGET, handler_NeraiPunch),
+			};
+			HandlerTable_SuteZerifu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNDAMAGEPROC_END, handler_TonboGaeri),
+			};
+			HandlerTable_FlyingPress = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_AFFINITY, handler_FlyingPress),
+				new EventFactor.EventHandlerTable(EventID.CHECK_AFFINITY_ONLY_ATTACKER, handler_FlyingPress),
+				new EventFactor.EventHandlerTable(EventID.CALC_HIT_CANCEL, handler_Fumituke_HitCheckSkip),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_Fumituke_DamegeProc),
+			};
+			HandlerTable_FreezDry = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_AFFINITY, handler_FreezDry),
+				new EventFactor.EventHandlerTable(EventID.CHECK_AFFINITY_ONLY_ATTACKER, handler_FreezDry),
+			};
+			HandlerTable_Souden = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaidPlayerSide),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Souden),
+			};
+			HandlerTable_GrassField = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.FIELD_EFFECT_CALL, handler_GrassField),
+			};
+			HandlerTable_MistField = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.FIELD_EFFECT_CALL, handler_MistField),
+			};
+			HandlerTable_ElecField = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.FIELD_EFFECT_CALL, handler_ElecField),
+			};
+			HandlerTable_PhychoField = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.FIELD_EFFECT_CALL, handler_PhychoField),
+			};
+			HandlerTable_KingShield = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_Mamoru_StartSeq),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Mamoru_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_FAIL, handler_Mamoru_ExeFail),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_KingShield),
+				new EventFactor.EventHandlerTable(EventID.MAMORU_SUCCESS, handler_KingShield_Success),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC_G, handler_Mamoru_Dmg),
+				new EventFactor.EventHandlerTable(EventID.AFTER_CRITICAL, handler_KingShield_MsgAfterCritical),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_REACTION_L2, handler_KingShield_DmgReaction),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_Mamoru_Off),
+			};
+			HandlerTable_Blocking = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_Mamoru_StartSeq),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Mamoru_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_FAIL, handler_Mamoru_ExeFail),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_KingShield),
+				new EventFactor.EventHandlerTable(EventID.MAMORU_SUCCESS, handler_Blocking_Success),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC_G, handler_Mamoru_Dmg),
+				new EventFactor.EventHandlerTable(EventID.AFTER_CRITICAL, handler_KingShield_MsgAfterCritical),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_REACTION_L2, handler_Blocking_DmgReaction),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_Mamoru_Off),
+			};
+			HandlerTable_ThousanArrow = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.AFFINE_FLOATING_CANCEL, handler_ThousanArrow_CancelFloat),
+				new EventFactor.EventHandlerTable(EventID.CHECK_AFFINITY_ENABLE, handler_ThousanArrow_AffEnable),
+				new EventFactor.EventHandlerTable(EventID.REWRITE_AFFINITY, handler_ThousanArrow_CheckAffine),
+				new EventFactor.EventHandlerTable(EventID.CHECK_POKE_HIDE, handler_Kaminari_checkHide),
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_ThousanArrow),
+			};
+			HandlerTable_HappyTime = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_HappyTime),
+			};
+			HandlerTable_ZibaSousa = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.GET_RANKEFF_VALUE, handler_ZibaSousa),
+			};
+			HandlerTable_BenomTrap = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.GET_RANKEFF_VALUE, handler_BenomTrap),
+			};
+			HandlerTable_PlasmaFist = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_L1, handler_PlasmaFist),
+			};
+			HandlerTable_FairyLock = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.FIELD_EFFECT_CALL, handler_FairyLock),
+			};
+			HandlerTable_Funjin = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Funjin),
+			};
+			HandlerTable_GeoControl = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TAME_START, handler_GeoControl_TameStart),
+			};
+			HandlerTable_TrickGuard = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_WideGuard_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_TrickGuard),
+			};
+			HandlerTable_NeedleGuard = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_Mamoru_StartSeq),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Mamoru_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_FAIL, handler_Mamoru_ExeFail),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Mamoru),
+				new EventFactor.EventHandlerTable(EventID.MAMORU_SUCCESS, handler_NeedleGuard_Success),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC_G, handler_Mamoru_Dmg),
+				new EventFactor.EventHandlerTable(EventID.AFTER_CRITICAL, handler_KingShield_MsgAfterCritical),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_REACTION_L2, handler_NeedleGuard_DmgReaction),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_Mamoru_Off),
+			};
+			HandlerTable_SouthernWave = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_southernWave),
+			};
+			HandlerTable_IjigenRush = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_IjigenRush),
+				new EventFactor.EventHandlerTable(EventID.CHECK_MAMORU_BREAK, handler_Feint_MamoruBreak),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_SIDEEFF_GUARD_BEGIN, handler_Feint_NoEffCheckBegin),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_SIDEEFF_GUARD_END, handler_Feint_NoEffCheckEnd),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_DETERMINE, handler_IjigenRush_AfterDamage),
+			};
+			HandlerTable_AuraGuruma = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_AuraGuruma),
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM, handler_AuraGuruma_Waza),
+				new EventFactor.EventHandlerTable(EventID.CHANGE_G_WAZA, handler_AuraGuruma_ChangeGWaza),
+			};
+			HandlerTable_DarkHole = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_DarkHole),
+			};
+			HandlerTable_Tootika = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_Mamoru_StartSeq),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Mamoru_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_FAIL, handler_Mamoru_ExeFail),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Mamoru),
+				new EventFactor.EventHandlerTable(EventID.MAMORU_SUCCESS, handler_Tootika_Success),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC_G, handler_Mamoru_Dmg),
+				new EventFactor.EventHandlerTable(EventID.AFTER_CRITICAL, handler_KingShield_MsgAfterCritical),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_REACTION_L2, handler_Tootika_DmgReaction),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_Mamoru_Off),
+			};
+			HandlerTable_MezameruDance = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM, handler_MezameruDance_WazaParam),
+			};
+			HandlerTable_Kahundango = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_Kahundango_ExecuteCheck),
+				new EventFactor.EventHandlerTable(EventID.DMG_TO_RECOVER_CHECK, handler_Kahundango_RecoverCheck),
+				new EventFactor.EventHandlerTable(EventID.DMG_TO_RECOVER_FIX, handler_Kahundango_RecoverFix),
+				new EventFactor.EventHandlerTable(EventID.CHECK_AFFINITY_ONLY_ATTACKER, handler_Kahundango_Check_Affinity),
+			};
+			HandlerTable_CorePunisher = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_REACTION_PREV, handler_CorePunisher_HitReal),
+			};
+			HandlerTable_Kagenui = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_Kagenui_HitReal),
+			};
+			HandlerTable_Kuraituku = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_REAL, handler_Kuraituku),
+			};
+			HandlerTable_TakoGatame = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_L2, handler_TakoGatame_NoEffCheck),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_takoGatame),
+			};
+			HandlerTable_Zyouka = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Zyouka),
+			};
+			HandlerTable_Tikarawosuitoru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Tikarawosuitoru),
+			};
+			HandlerTable_Togisumasu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Togisumasu),
+			};
+			HandlerTable_SpeedSwap = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_SpeedSwap),
+			};
+			HandlerTable_Moetukiru = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.FAIL_WAZAMELT_CHECK, handler_Moetukiru_WazaMeltCheck),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_Moetukiru_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END, handler_Moetukiru_DamageProcEnd),
+			};
+			HandlerTable_KutibasiCanon = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.BEFORE_FIGHT, handler_KutibasiCanon_BeforeFight),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_REACTION, handler_KutibasiCanon_DamageReaction),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_END, handler_KutibasiCanon_WazaSeqEnd),
+				new EventFactor.EventHandlerTable(EventID.REPLACE_ACT_WAZA, handler_KutibasiCanon_ReplaceWaza),
+				new EventFactor.EventHandlerTable(EventID.ACTPROC_CANCELED, handler_KutibasiCanon_Canceled),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_KutibasiCanon_ExeCheck),
+			};
+			HandlerTable_TrapShell = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.BEFORE_FIGHT, handler_TrapShell_BeforeFight),
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_END_HIT_L5, handler_TrapShell_DamageProcEnd),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_TrapShell_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_END, handler_TrapShell_WazaEnd),
+				new EventFactor.EventHandlerTable(EventID.ACTPROC_CANCELED, handler_KutibasiCanon_Canceled),
+			};
+			HandlerTable_Zidanda = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_Zidanda_Dmg),
+			};
+			HandlerTable_AuroraVeil = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_AuroraVeil_CheckExe),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA_NO_TARGET, handler_AuroraVeil),
+			};
+			HandlerTable_Saihai = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_common_ExeCheck3rd_FailToGWall),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Saihai),
+			};
+			HandlerTable_MeteorDrive = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_MeteorDrive_WazaSeqStart),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_END, handler_MeteorDrive_WazaSeqEnd),
+			};
+			HandlerTable_ShadowSteal = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DAMAGEPROC_START, handler_ShadowSteal_DamageProcStart),
+			};
+			HandlerTable_PhotonGeyser = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM, handler_PhotonGeyser_WazaParam),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_MeteorDrive_WazaSeqStart),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_END, handler_MeteorDrive_WazaSeqEnd),
+			};
+			HandlerTable_Hanabisenyou = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_DETERMINE, handler_Hanabisenyou_dmg_determine),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_NO_EFFECT, handler_Hanabisenyou_no_effect),
+			};
+			HandlerTable_DaiWall = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_Mamoru_StartSeq),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_Mamoru_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_FAIL, handler_Mamoru_ExeFail),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_DaiWall),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_OTHERS, handler_DaiWall_NoEffectCheck),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_Mamoru_Off),
+			};
+			HandlerTable_NeraiUti = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_TEMPT_TARGET_ENABLE, handler_NeraiUti_Tempt),
+				new EventFactor.EventHandlerTable(EventID.CHECK_AIM_TARGET_ENABLE, handler_NeraiUti_Aim),
+			};
+			HandlerTable_HaisuiNoJin = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_HaisuiNoJin_ExeCheck),
+				new EventFactor.EventHandlerTable(EventID.GET_RANKEFF_VALUE, handler_GensiNoTikara),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_EFFECTIVE, handler_HaisuiNoJin),
+			};
+			HandlerTable_SoulBeat = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.GET_RANKEFF_VALUE, handler_GensiNoTikara),
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_3RD, handler_SoulBeat_CheckExe),
+				new EventFactor.EventHandlerTable(EventID.WAZA_RANKEFF_FIXED, handler_SoulBeat_Damage),
+			};
+			HandlerTable_Ochakai = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_common_ExeCheck2nd_FailOnRaid),
+				new EventFactor.EventHandlerTable(EventID.UNCATEGORIZE_WAZA, handler_Ochakai),
+			};
+			HandlerTable_DengekiKutibasi = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER_BASE, handler_DengekiKutibasi),
+			};
+			HandlerTable_TarShot = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZASICK_STR, handler_TarShot_Str),
+			};
+			HandlerTable_DragonArrow = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM, handler_DragonArrow_Param),
+				new EventFactor.EventHandlerTable(EventID.CHECK_WAZA_TARGET_INCREASE, handler_DragonArrow_Inc),
+				new EventFactor.EventHandlerTable(EventID.CHECK_HITCOUNT_MESSAGE, handler_DragonArrow_Msg),
+			};
+			HandlerTable_InotiNoSizuku = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_RECOVER_MSG_CUSTOM, handler_InotiNoSizuku_Msg),
+			};
+			HandlerTable_Newton = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_Newton),
+			};
+		}
 		public enum CombiEffectType
 		{
 			COMBI_EFFECT_NULL = 0,
@@ -7390,13 +9076,19 @@ namespace Dpr.Battle.Logic.Handler
 		{
 			public global::Pml.WazaNo waza;
 			public global::Dpr.Battle.Logic.Handler.Waza.HandlerGetFunc func;
-			public GET_FUNC_TABLE_ELEM(global::Pml.WazaNo waza, global::Dpr.Battle.Logic.Handler.Waza.HandlerGetFunc func) { /*@B 0x600B789*/ throw null; }
+			public GET_FUNC_TABLE_ELEM(global::Pml.WazaNo waza, global::Dpr.Battle.Logic.Handler.Waza.HandlerGetFunc func) {
+				this.waza = waza;
+				this.func = func;
+			}
 		}
 		private struct handler_JitabataTableElem
 		{
 			public ushort dot_ratio;
 			public ushort pow;
-			public handler_JitabataTableElem(ushort dot_ratio, ushort pow) { /*@B 0x600B78A*/ throw null; }
+			public handler_JitabataTableElem(ushort dot_ratio, ushort pow) {
+				this.dot_ratio = dot_ratio;
+				this.pow = pow;
+			}
 		}
 		private struct WeatherBallParam
 		{
@@ -7408,7 +9100,11 @@ namespace Dpr.Battle.Logic.Handler
 			public global::Pml.WazaNo waza1;
 			public global::Pml.WazaNo waza2;
 			public global::Dpr.Battle.Logic.Handler.Waza.CombiEffectType effect;
-			public GetCombiWazaTypeTableElem(global::Pml.WazaNo waza1, global::Pml.WazaNo waza2, global::Dpr.Battle.Logic.Handler.Waza.CombiEffectType effect) { /*@B 0x600B78B*/ throw null; }
+			public GetCombiWazaTypeTableElem(global::Pml.WazaNo waza1, global::Pml.WazaNo waza2, global::Dpr.Battle.Logic.Handler.Waza.CombiEffectType effect) {
+				this.waza1 = waza1;
+				this.waza2 = waza2;
+				this.effect = effect;
+			}
 		}
 	}
 }
