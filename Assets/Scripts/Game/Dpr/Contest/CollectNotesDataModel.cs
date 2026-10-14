@@ -3,9 +3,9 @@ namespace Dpr.Contest
 {
 	public sealed class CollectNotesDataModel
 	{
-		private global::System.Collections.Generic.List<global::Dpr.Contest.CollectNotesDataModel.NotesDensityData> containNotesDataList;
-		private global::System.Collections.Generic.List<int> notesNumList;
-		private global::System.Collections.Generic.List<int> notesIndexList;
+		private global::System.Collections.Generic.List<global::Dpr.Contest.CollectNotesDataModel.NotesDensityData> containNotesDataList = new global::System.Collections.Generic.List<global::Dpr.Contest.CollectNotesDataModel.NotesDensityData>();
+		private global::System.Collections.Generic.List<int> notesNumList = new global::System.Collections.Generic.List<int>();
+		private global::System.Collections.Generic.List<int> notesIndexList = new global::System.Collections.Generic.List<int>();
 		public void CreateContainsNotesData(global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> notesList, float beatSec, float skillAnimDuration, int bgmSigunature) {
 			notesNumList.Clear();
 			containNotesDataList.Clear();
@@ -87,7 +87,7 @@ namespace Dpr.Contest
 
 			return notesIndexList[UnityEngine.Random.Range(0, notesIndexList.Count)];
 		}
-		public CollectNotesDataModel() { /*@B 0x600431F*/ throw null; }
+		public CollectNotesDataModel() { }
 		private sealed class NotesDensityData
 		{
 			public int notesNum;

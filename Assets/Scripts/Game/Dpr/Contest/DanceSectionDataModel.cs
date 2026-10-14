@@ -8,22 +8,22 @@ namespace Dpr.Contest
 		private global::Dpr.Contest.SceneObjectManager objManager;
 		private global::Dpr.Contest.PlayerDanceDataModel[] playerDataArray;
 		private global::Dpr.Contest.PlayerDanceDataModel userDataModel;
-		private global::System.Collections.Generic.Dictionary<int, global::Dpr.Contest.TensionData> tensionTable;
-		private global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> currentNoteDataList;
-		private global::Dpr.Contest.CollectNotesDataModel collectNotesDataModel;
-		private global::UnityEngine.Vector2 notesSpan;
+		private global::System.Collections.Generic.Dictionary<int, global::Dpr.Contest.TensionData> tensionTable = new global::System.Collections.Generic.Dictionary<int, global::Dpr.Contest.TensionData>();
+		private global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> currentNoteDataList = new global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel>();
+		private global::Dpr.Contest.CollectNotesDataModel collectNotesDataModel = new global::Dpr.Contest.CollectNotesDataModel();
+		private global::UnityEngine.Vector2 notesSpan = global::UnityEngine.Vector2.zero;
 		private int currentDataIndex;
 		private int musicBpm;
-		private global::System.Collections.Generic.Dictionary<int, float> tapTimingTable;
-		private global::System.Collections.Generic.Dictionary<int, float> longTapTimeSpanTable;
-		private global::Dpr.Contest.TapResultData tapResultData;
+		private global::System.Collections.Generic.Dictionary<int, float> tapTimingTable = new global::System.Collections.Generic.Dictionary<int, float>();
+		private global::System.Collections.Generic.Dictionary<int, float> longTapTimeSpanTable = new global::System.Collections.Generic.Dictionary<int, float>();
+		private global::Dpr.Contest.TapResultData tapResultData = new global::Dpr.Contest.TapResultData();
 		private global::Dpr.Contest.NoteIcon longStartNote;
 		private float totalSec;
 		private float startElapsedTime;
 		private float endTapSec;
-		private global::System.Collections.Generic.Dictionary<int, int[]> scoreTable;
+		private global::System.Collections.Generic.Dictionary<int, int[]> scoreTable = new global::System.Collections.Generic.Dictionary<int, int[]>();
 		private global::Dpr.Contest.DanceSectionDataModel.SkillComboData[] comboBonusDataArray;
-		private global::Dpr.Contest.ApplyScoreResult applyScoreResult;
+		private global::Dpr.Contest.ApplyScoreResult applyScoreResult = new global::Dpr.Contest.ApplyScoreResult();
 		private int maxScore;
 		private int totalVisualScore;
 		private int totalScore;
@@ -34,19 +34,19 @@ namespace Dpr.Contest
 		private float skillChainDuration;
 		private float downVolumePersent;
 		private int chainCount;
-		private int lastUsePlayerIndex;
+		private int lastUsePlayerIndex = -1;
 		private bool canUpdateChain;
 		private global::Dpr.Contest.NotesDataModel lastNoteData;
-		public float BeatSec { get { /*@B 0x6004457*/ throw null; } }
-		public bool IsFinishCreate { get { /*@B 0x6004458*/ throw null; } }
-		public bool IsLongTap { get { /*@B 0x600445C*/ throw null; } }
+		public float BeatSec { get { return 60f / musicBpm; } }
+		public bool IsFinishCreate { get { return currentDataIndex >= currentNoteDataList.Count; } }
+		public bool IsLongTap { get { return longStartNote != null; } }
 		public float SuccessScoreRatio { get { return this.successScoreRatio; } }
 		public bool CanUpdateAcceptChain { get { return this.canUpdateChain; } }
 		public int ChainCount { get { return this.chainCount; } }
 		public int LastUsePlayerIndex { get { return this.lastUsePlayerIndex; } }
 		public float DownVolumePersent { get { return this.downVolumePersent; } }
 		public global::Dpr.Contest.NotesDataModel LastNoteData { get { return this.lastNoteData; } }
-		public bool IsAlreadyUseUserSkill { get { /*@B 0x6004476*/ throw null; } }
+		public bool IsAlreadyUseUserSkill { get { return userDataModel.IsAlreadyUseSkill; } }
 		public void Initialize() {
 			objManager = SceneObjectManager.Instance;
 			comboBonusDataArray = new SkillComboData[4];
@@ -513,13 +513,19 @@ namespace Dpr.Contest
 
 			return userDataModel.contestSkill.WazaType == playerDataArray[palyerIndex].contestSkill.WazaType;
 		}
-		public DanceSectionDataModel() { /*@B 0x6004479*/ throw null; }
+		public DanceSectionDataModel() { }
 		private class SkillComboData
 		{
 			public bool IsContain;
 			public int score;
-			public SkillComboData() { /*@B 0x600A43C*/ throw null; }
-			public void Reset() { /*@B 0x600A43D*/ throw null; }
+			public SkillComboData() {
+				IsContain = false;
+				score = 0;
+			}
+			public void Reset() {
+				IsContain = false;
+				score = 0;
+			}
 		}
 	}
 }

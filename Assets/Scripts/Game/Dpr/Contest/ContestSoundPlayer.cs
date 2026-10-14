@@ -6,9 +6,39 @@ namespace Dpr.Contest
 	public class ContestSoundPlayer
 	{
 		public static global::Dpr.Contest.ContestSoundPlayer player;
-		private readonly global::System.Collections.Generic.Dictionary<int, uint> PLAY_SE_TABLE;
-		private readonly global::System.Collections.Generic.Dictionary<int, uint> PLAY_LOOP_SE_TABLE;
-		private readonly global::System.Collections.Generic.Dictionary<int, uint> STOP_SE_TABLE;
+		private readonly global::System.Collections.Generic.Dictionary<int, uint> PLAY_SE_TABLE = new global::System.Collections.Generic.Dictionary<int, uint>
+		{
+			{ (int)PlaySE_ID.CheerIntro, EVENTS.S_CON_CHEER_INTRO },
+			{ (int)PlaySE_ID.Cheer_S, EVENTS.S_CON_CHEER_S },
+			{ (int)PlaySE_ID.Cheer_M, EVENTS.S_CON_CHEER_INTRO },
+			{ (int)PlaySE_ID.TapSuccess, EVENTS.S_CON_TAP_A },
+			{ (int)PlaySE_ID.TapMiss, EVENTS.S_CON_TAP_MISS },
+			{ (int)PlaySE_ID.PointHeart, EVENTS.S_CON_POINT_HEART },
+			{ (int)PlaySE_ID.PokeHeartM, EVENTS.S_CON_POKE_HEART_M },
+			{ (int)PlaySE_ID.PokeHeartL, EVENTS.S_CON_POKE_HEART_L },
+			{ (int)PlaySE_ID.Point, EVENTS.S_CON_POINT },
+			{ (int)PlaySE_ID.Waza_L, EVENTS.S_CON_WAZA_L },
+			{ (int)PlaySE_ID.Waza_R, EVENTS.S_CON_WAZA_R },
+			{ (int)PlaySE_ID.Waza_SameType, EVENTS.S_CON_WAZA_SAME },
+			{ (int)PlaySE_ID.Success, EVENTS.S_CON_SUCCESS },
+			{ (int)PlaySE_ID.GaugeFix, EVENTS.S_CON_GAUGE_FIX },
+			{ (int)PlaySE_ID.Rankup, EVENTS.S_CON_RANKUP },
+			{ (int)PlaySE_ID.DrumRoll1, EVENTS.S_CON_DRUMROLL1 },
+			{ (int)PlaySE_ID.DrumRoll2, EVENTS.S_CON_DRUMROLL2 },
+			{ (int)PlaySE_ID.Medal, EVENTS.S_CON_MEDAL },
+		};
+		private readonly global::System.Collections.Generic.Dictionary<int, uint> PLAY_LOOP_SE_TABLE = new global::System.Collections.Generic.Dictionary<int, uint>
+		{
+			{ (int)PlayLoopSE_ID.TapLong, EVENTS.S_CON_TAP_LONG },
+			{ (int)PlayLoopSE_ID.Gauge, EVENTS.S_CON_GAUGE },
+			{ (int)PlayLoopSE_ID.Cheer, EVENTS.S_CON_CHEER_OUTRO },
+		};
+		private readonly global::System.Collections.Generic.Dictionary<int, uint> STOP_SE_TABLE = new global::System.Collections.Generic.Dictionary<int, uint>
+		{
+			{ (int)StopSE_ID.TapLong, EVENTS.STOP_S_CON_TAP_LONG },
+			{ (int)StopSE_ID.Gauge, EVENTS.STOP_S_CON_GAUGE },
+			{ (int)StopSE_ID.Cheer, EVENTS.STOP_S_CON_CHEER_OUTRO },
+		};
 		private const float FADE_DURATION = 0.3f;
 		private global::Audio.AudioManager audioManager;
 		private global::Audio.AudioInstance contestBGMInstance;
@@ -172,7 +202,7 @@ namespace Dpr.Contest
 			if (contestBGMInstance != null && playingMusic)
 				contestBGMInstance.SetVolume(volume);
 		}
-		public ContestSoundPlayer() { /*@B 0x60046D5*/ throw null; }
+		public ContestSoundPlayer() { }
 		static ContestSoundPlayer() { }
 		public enum PlaySE_ID
 		{

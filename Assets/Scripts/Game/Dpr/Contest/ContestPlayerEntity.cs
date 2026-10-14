@@ -6,10 +6,10 @@ namespace Dpr.Contest
 {
 	public class ContestPlayerEntity
 	{
-		private readonly global::UnityEngine.Vector3 RESET_BALL_POS;
+		private readonly global::UnityEngine.Vector3 RESET_BALL_POS = new global::UnityEngine.Vector3(0.0f, -200.0f, 0.0f);
 		private global::XLSXContent.PokemonInfo.SheetCatalog catalog;
 		private global::UnityEngine.Object assetPokeModel;
-		private global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BtlvEffectInstance> iPtrSealEffects;
+		private global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BtlvEffectInstance> iPtrSealEffects = new global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BtlvEffectInstance>();
 		private global::Dpr.Battle.View.Objects.BtlvEffectInstance iPtrLightEffect;
 		private global::Dpr.Battle.View.Objects.BOPokemon wazaPoke;
 		private global::Dpr.Battle.View.Objects.BOTrainer boTrainer;
@@ -22,23 +22,25 @@ namespace Dpr.Contest
 		private global::UnityEngine.Vector3 defaultPokemonPos;
 		private global::Dpr.Trainer.TrainerType trainerType;
 		private int colorID;
-		private string characterModelPath;
-		private string pokeModelPath;
-		private string ballModelPath;
-		private string pokeIconPath;
+		private string characterModelPath = string.Empty;
+		private string pokeModelPath = string.Empty;
+		private string ballModelPath = string.Empty;
+		private string pokeIconPath = string.Empty;
 		public global::Dpr.Contest.AContestPlayerData PlayerData { get { return this.playerData; } }
-		public int Index { get { /*@B 0x6004394*/ throw null; } }
-		public global::Dpr.Contest.PlayerType PlayerType { get { /*@B 0x6004395*/ throw null; } }
+		public int Index { get { return playerData.index; } }
+		public global::Dpr.Contest.PlayerType PlayerType { get { return playerData.playerType; } }
 		public global::Dpr.Battle.View.Objects.BOTrainer BoTrainer { get { return this.boTrainer; } }
 		public global::Dpr.Battle.View.Objects.BOPokemon BoPokemon { get { return this.boPokemon; } }
 		public global::Dpr.ObjectEntity BallEntity { get { return this.ballEntity; } }
 		public global::XLSXContent.PokemonInfo.SheetCatalog Catalog { get { return this.catalog; } }
-		public bool IsActiveBOPokemon { get { /*@B 0x600439C*/ throw null; } }
-		public bool IsActiveWazaPokemon { get { /*@B 0x600439D*/ throw null; } }
+		public bool IsActiveBOPokemon { get { return boPokemon.IsActive(); } }
+		public bool IsActiveWazaPokemon { get { return wazaPoke.IsActive(); } }
 		public global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BtlvEffectInstance> SealEffects { get => iPtrSealEffects; }
 		public global::Dpr.Battle.View.Objects.BtlvEffectInstance LightEffect { get => iPtrLightEffect; }
 		public global::Dpr.Battle.View.Objects.BOPokemon WazaPokemon { get { return this.wazaPoke; } }
-		public ContestPlayerEntity(global::Dpr.Contest.AContestPlayerData playerData) { /*@B 0x600438D*/ throw null; }
+		public ContestPlayerEntity(global::Dpr.Contest.AContestPlayerData playerData) {
+			this.playerData = playerData;
+		}
 		public void Setup() {
 			SetupTrainerModel();
 			SetupPokeModel();

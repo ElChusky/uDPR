@@ -5,9 +5,19 @@ namespace Dpr.Contest
 	{
 		public float arriveSec;
 		public int index;
-		public bool emitFlag;
+		public bool emitFlag = true;
 		public bool isLast;
-		public NotesDataModel(int index, bool valid_flag, ushort id, float arriveSec, global::Dpr.Contest.NoteTypeID notesType, bool isLast) { /*@B 0x6004319*/ throw null; }
-		public void Reset() { /*@B 0x600431A*/ throw null; }
+		public NotesDataModel(int index, bool valid_flag, ushort id, float arriveSec, global::Dpr.Contest.NoteTypeID notesType, bool isLast) {
+			this.valid_flag = valid_flag;
+			this.index = index;
+			this.id = id;
+			this.notesType = notesType;
+			this.arriveSec = arriveSec;
+			this.isLast = isLast;
+			emitFlag = true;
+		}
+		public void Reset() {
+			emitFlag = true;
+		}
 	}
 }

@@ -4,6 +4,6 @@ namespace Dpr.Contest
 	public class CountDownNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Contest.CountDownData>
 	{
 		public override byte GetDataID { get { return 1; } }
-		public CountDownNetData() { /*@B 0x6004348*/ throw null; }
+		public CountDownNetData() { }
 	}
 }

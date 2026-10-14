@@ -7,24 +7,24 @@ namespace Dpr.BattleMatching
 {
 	public static class BattleMatchingWork
 	{
-		public static int stationIndex;
-		public static int opponentStationIndex;
-		public static int hostStationIndex;
-		public static global::INL1.IlcaNetSessionNetworkType networkType;
-		public static global::Dpr.NetworkUtils.BattleModeID battleModeID;
-		public static bool isColiseum;
-		public static int coliseumTeam;
-		public static global::Dpr.Battle.Logic.BtlResult battleResult;
-		public static global::Dpr.BattleMatching.BattleMatchingPlayerData[] playerDataList;
-		public static global::Dpr.BattleMatching.PokemonNum pokemonNum;
-		public static global::Dpr.Regulation.LevelRangeType pokemonLevel;
-		public static bool isBanLegendPokemon;
-		public static bool isBanSamePokemon;
-		public static bool isBanSameItem;
-		public static bool isBanIllegal;
-		public static global::Pml.PokePara.PokemonParam[] pokemonParams;
-		public static int[] orderIndexList;
-		public static int battleTeamIndex;
+		public static int stationIndex = 0;
+		public static int opponentStationIndex = 0;
+		public static int hostStationIndex = 0;
+		public static global::INL1.IlcaNetSessionNetworkType networkType = 0;
+		public static global::Dpr.NetworkUtils.BattleModeID battleModeID = 0;
+		public static bool isColiseum = false;
+		public static int coliseumTeam = 0;
+		public static global::Dpr.Battle.Logic.BtlResult battleResult = 0;
+		public static global::Dpr.BattleMatching.BattleMatchingPlayerData[] playerDataList = null;
+		public static global::Dpr.BattleMatching.PokemonNum pokemonNum = 0;
+		public static global::Dpr.Regulation.LevelRangeType pokemonLevel = global::Dpr.Regulation.LevelRangeType.NONE;
+		public static bool isBanLegendPokemon = false;
+		public static bool isBanSamePokemon = false;
+		public static bool isBanSameItem = false;
+		public static bool isBanIllegal = false;
+		public static global::Pml.PokePara.PokemonParam[] pokemonParams = null;
+		public static int[] orderIndexList = null;
+		public static int battleTeamIndex = -1;
 		public static void Init() {
             stationIndex = 0;
             opponentStationIndex = 0;
@@ -330,6 +330,6 @@ namespace Dpr.BattleMatching
             }
         }
 		public static void EmitLog(string log, global::UnityEngine.LogType logType = (global::UnityEngine.LogType)(3)) { }
-		static BattleMatchingWork() { /*@B 0x6003823*/ throw null; }
+		static BattleMatchingWork() { }
 	}
 }

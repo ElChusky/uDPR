@@ -3,7 +3,7 @@ namespace Dpr.Contest
 {
 	public class LockPlayFx
 	{
-		private global::Dpr.MsgWindow.WaitTimer waitTimer;
+		private global::Dpr.MsgWindow.WaitTimer waitTimer = new global::Dpr.MsgWindow.WaitTimer();
 		private bool isLock;
 		public bool IsLock { get { return this.isLock; } }
 		public void Initialize(float limitTime) {
@@ -22,6 +22,6 @@ namespace Dpr.Contest
 				isLock = false;
 			}
 		}
-		public LockPlayFx() { /*@B 0x6004507*/ throw null; }
+		public LockPlayFx() { }
 	}
 }

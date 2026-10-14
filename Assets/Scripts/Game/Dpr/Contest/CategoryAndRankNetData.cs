@@ -4,6 +4,6 @@ namespace Dpr.Contest
 	public class CategoryAndRankNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Contest.CategoryAndRankData>
 	{
 		public override byte GetDataID { get { return 4; } }
-		public CategoryAndRankNetData() { /*@B 0x600434E*/ throw null; }
+		public CategoryAndRankNetData() { }
 	}
 }

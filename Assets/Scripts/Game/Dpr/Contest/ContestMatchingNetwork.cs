@@ -23,7 +23,7 @@ namespace Dpr.Contest
 		private global::Dpr.Contest.ResultScoreNetData resultScoreData;
 		private global::Dpr.NetworkUtils.StationWaitFrameData waitFrameData;
 		private global::Dpr.NetworkUtils.NetworkManager networkManager;
-		private global::Dpr.MsgWindow.WaitTimer repeatSendSpanTimer;
+		private global::Dpr.MsgWindow.WaitTimer repeatSendSpanTimer = new global::Dpr.MsgWindow.WaitTimer();
 		private uint[] attributeValueArray;
 		private uint[] attributeMinValueArray;
 		private uint[] attributeMaxValueArray;
@@ -664,6 +664,6 @@ namespace Dpr.Contest
 			if (networkManager.IsJoinOtherPlayer())
 				data.SendReliableDataToAll();
 		}
-		public ContestMatchingNetwork() { /*@B 0x600423A*/ throw null; }
+		public ContestMatchingNetwork() { }
 	}
 }

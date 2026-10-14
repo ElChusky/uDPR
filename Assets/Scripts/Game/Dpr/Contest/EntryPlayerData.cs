@@ -11,8 +11,8 @@ namespace Dpr.Contest
 		public global::Dpr.Contest.PlayerType playerType;
 		public global::Pml.WazaNo wazaNo;
 		public global::Pml.MonsNo monsNo;
-		public global::Pml.Sex playerSex;
-		public global::Pml.Sex monsSex;
+		public global::Pml.Sex playerSex = global::Pml.Sex.NUM;
+		public global::Pml.Sex monsSex = global::Pml.Sex.NUM;
 		public global::Pml.PokePara.RareType rareType;
 		public ushort itemNo;
 		public global::Dpr.Message.MessageEnumData.MsgLangId userLangID;
@@ -31,7 +31,33 @@ namespace Dpr.Contest
 		public byte fur;
 		public bool isRare;
 		public bool isDpClear;
-		public void Reset() { /*@B 0x6004307*/ throw null; }
-		public EntryPlayerData() { /*@B 0x6004308*/ throw null; }
+		public void Reset() {
+			trainerModelPath = string.Empty;
+			pokemonNickName = string.Empty;
+			playerName = string.Empty;
+			fashion = 0;
+			wazaNo = 0;
+			monsNo = 0;
+			playerSex = global::Pml.Sex.NUM;
+			monsSex = global::Pml.Sex.NUM;
+			rareType = global::Pml.PokePara.RareType.NOT_RARE;
+			itemNo = 0;
+			userLangID = monsLangID = global::Dpr.Message.MessageManager.Instance.UserLanguageID;
+			wazaSeqTime = 0.0f;
+			formNo = 0;
+			cassetVersion = 0;
+			colorID = 0;
+			npcDataIndex = 0;
+			npcWazaNo = 0;
+			style = 0;
+			beautiful = 0;
+			cute = 0;
+			clever = 0;
+			strong = 0;
+			fur = 0;
+			isRare = false;
+			isDpClear = false;
+		}
+		public EntryPlayerData() { }
 	}
 }

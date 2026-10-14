@@ -9,10 +9,10 @@ namespace Dpr.Contest
 		public global::Dpr.Contest.ResultID resultID;
 		public int multiResult;
 		public bool bIsMulti;
-		public uint categoryRibbon;
-		public uint contestStarRibbon;
+		public uint categoryRibbon = (uint)global::Pml.RibbonNo.NULL;
+		public uint contestStarRibbon = (uint)global::Pml.RibbonNo.NULL;
 		public int itemNo;
-		public uint twinkleStarRibbon;
-		public ContestRewardData() { /*@B 0x600433A*/ throw null; }
+		public uint twinkleStarRibbon = (uint)global::Pml.RibbonNo.NULL;
+		public ContestRewardData() { }
 	}
 }

@@ -4,7 +4,7 @@ namespace Dpr.Contest
 	public class DanceNPC : global::Dpr.Contest.ADancePlayer
 	{
 		private const float LAUNCH_SKILL_TIME_OFFSET = 0.1f;
-		private global::Dpr.Contest.DanceTapData tapData;
+		private global::Dpr.Contest.DanceTapData tapData = new global::Dpr.Contest.DanceTapData();
 		private global::Dpr.Contest.NotesDataModel nextNote;
 		private global::XLSXContent.ContestMasterDatas.SheetNPCLevelData npcLevelData;
 		private double prevElapsedTime;
@@ -15,10 +15,17 @@ namespace Dpr.Contest
 		private float waitTimer;
 		private bool bIsStandbySkill;
 		private bool bIsHold;
-		private bool bTapActionEnable;
+		private bool bTapActionEnable = true;
 		private bool bIsTutorial;
 		public global::Dpr.Contest.DanceTapData TapData { get { return this.tapData; } }
-		public DanceNPC(global::Dpr.Contest.ContestPlayerEntity entity, global::Dpr.Contest.CollectNotesDataModel collectNotesData, global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> notesDataList, global::System.Action<global::Dpr.Contest.ADancePlayer> onLockSkill) : base(default(int), default(global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel>), default(global::System.Action<global::Dpr.Contest.ADancePlayer>)) { /*@B 0x600441F*/ throw null; }
+		public DanceNPC(global::Dpr.Contest.ContestPlayerEntity entity, global::Dpr.Contest.CollectNotesDataModel collectNotesData, global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> notesDataList, global::System.Action<global::Dpr.Contest.ADancePlayer> onLockSkill) : base(entity.Index, notesDataList, onLockSkill) {
+			danceData = entity.PlayerData.danceDataModel;
+			playerType = PlayerType.NPC;
+			npcLevelData = (entity.PlayerData as ContestNPCData).levelData;
+			reserveLaunchSkillTime = notesDataList[collectNotesData.FindNotesIndexByDensityOarder(npcLevelData.densityOrder)].arriveSec - 0.1f;
+			bIsActive = false;
+			Reset();
+		}
 		protected override void Dispose() {
 			bIsActive = false;
 			bTapActionEnable = false;

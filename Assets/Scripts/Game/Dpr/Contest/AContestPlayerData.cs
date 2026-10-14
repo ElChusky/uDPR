@@ -5,16 +5,16 @@ namespace Dpr.Contest
 	{
 		public global::Dpr.Contest.PlayerType playerType;
 		public int index;
-		public global::Dpr.Contest.PlayerInfo playerInfo;
-		public global::Dpr.Contest.PokemonInfo pokemonInfo;
+		public global::Dpr.Contest.PlayerInfo playerInfo = new global::Dpr.Contest.PlayerInfo();
+		public global::Dpr.Contest.PokemonInfo pokemonInfo = new global::Dpr.Contest.PokemonInfo();
 		public global::Dpr.Battle.View.BtlvBallInfo ballInfo;
-		public global::Dpr.Contest.PlayerVisualDataModel visualDataModel;
-		public global::Dpr.Contest.PlayerDanceDataModel danceDataModel;
+		public global::Dpr.Contest.PlayerVisualDataModel visualDataModel = new global::Dpr.Contest.PlayerVisualDataModel();
+		public global::Dpr.Contest.PlayerDanceDataModel danceDataModel = new global::Dpr.Contest.PlayerDanceDataModel();
 		public int modelColorID;
 		public global::Dpr.Trainer.TrainerType trainerType;
 		public string trainerModelPath;
 		public string pokemonModelPath;
 		public string ballModelPath;
-		public AContestPlayerData() { /*@B 0x6004360*/ throw null; }
+		public AContestPlayerData() { }
 	}
 }

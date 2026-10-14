@@ -14,26 +14,36 @@ namespace Dpr.Battle.View.UI
 		protected global::Dpr.Battle.View.UI.BattleViewUICanvasBase.TransitionType _transitionType;
 		[global::UnityEngine.HeaderAttribute("[TransitionParams]")]
 		[global::UnityEngine.SerializeField]
-		protected global::Dpr.Battle.View.UI.BattleViewUICanvasBase.TransitionParams _transitionParams;
+		protected global::Dpr.Battle.View.UI.BattleViewUICanvasBase.TransitionParams _transitionParams = global::Dpr.Battle.View.UI.BattleViewUICanvasBase.TransitionParams.Factory();
 		private global::UnityEngine.RectTransform _cachedRectTransform;
 		protected global::UnityEngine.CanvasGroup _canvasGroup;
 		protected global::System.Action _onShowComplete;
 		protected global::System.Action _onHideComplete;
-		public global::UnityEngine.RectTransform RectTransform { get { /*@B 0x6006174*/ throw null; } }
+		public global::UnityEngine.RectTransform RectTransform { get {
+            if (_cachedRectTransform == null)
+                _cachedRectTransform = transform as RectTransform;
+            return _cachedRectTransform;
+        } }
 		protected int MaxIndex { get; set; }
-		public global::UnityEngine.CanvasGroup CanvasGroup { get { /*@B 0x6006177*/ throw null; } }
+		public global::UnityEngine.CanvasGroup CanvasGroup { get { return this.GetComponentThis(ref _canvasGroup); } }
 		public int CurrentIndex { get; protected set; }
 		public bool IsFocus { get; protected set; }
 		public bool IsShow { get; protected set; }
 		public bool IsValid { get; protected set; }
 		public bool IsTransition { get; protected set; }
 		public global::Dpr.Battle.View.UI.BattleViewUICanvasBase.BattleUIAnimationState animationState { get; protected set; }
-		public bool isOpenState { get { /*@B 0x6006184*/ throw null; } }
-		public bool isCloseState { get { /*@B 0x6006185*/ throw null; } }
+		public bool isOpenState { get { return animationState == BattleUIAnimationState.Opening || animationState == BattleUIAnimationState.Opened; } }
+		public bool isCloseState { get { return animationState == BattleUIAnimationState.closing || animationState == BattleUIAnimationState.Closed; } }
 		private void OnDestroy() {
             UnInitialize();
         }
-		public virtual void Startup() { /*@B 0x6006187*/ throw null; }
+		public virtual void Startup() {
+            IsValid = false;
+            IsFocus = false;
+            IsShow = false;
+            animationState = BattleUIAnimationState.Closed;
+            CanvasGroup.alpha = 0.0f;
+        }
 		public virtual void Reset() {
             // Empty
         }
@@ -44,8 +54,17 @@ namespace Dpr.Battle.View.UI
             _onHideComplete = null;
         }
 		public abstract void OnUpdate(float deltaTime);
-		public void Show(global::System.Action onComplete = null) { /*@B 0x600618B*/ throw null; }
-		public void Hide(bool isForce = false, global::System.Action onComplete = null) { /*@B 0x600618C*/ throw null; }
+		public void Show(global::System.Action onComplete = null) {
+            _onShowComplete = onComplete;
+            if (DOTween.IsTweening(CanvasGroup, false))
+                CanvasGroup.DOKill(false);
+            PlayTransitionAnimation(true);
+        }
+		public void Hide(bool isForce = false, global::System.Action onComplete = null) {
+            IsFocus = false;
+            _onHideComplete = onComplete;
+            PlayTransitionAnimation(false);
+        }
 		protected void PlayTransitionAnimation(bool isShow) {
             animationState = isShow ? BattleUIAnimationState.Opening : BattleUIAnimationState.closing;
             float endValue = isShow ? 1.0f : 0.0f;
@@ -99,10 +118,19 @@ namespace Dpr.Battle.View.UI
             yield return new WaitForSeconds(time);
             OnPlayAnimation();
         }
-		protected virtual void PreparaNext(bool isForward) { /*@B 0x600618F*/ throw null; }
+		protected virtual void PreparaNext(bool isForward) {
+            CurrentIndex += isForward ? 1 : -1;
+        }
 		public virtual void ForceHide() { }
-		protected virtual void OnShow() { /*@B 0x6006191*/ throw null; }
-		protected virtual void OnHide() { /*@B 0x6006192*/ throw null; }
+		protected virtual void OnShow() {
+            IsFocus = true;
+            IsShow = true;
+            animationState = BattleUIAnimationState.Opened;
+        }
+		protected virtual void OnHide() {
+            IsShow = false;
+            animationState = BattleUIAnimationState.Closed;
+        }
 		protected virtual void OnPlayAnimation() { }
 		protected virtual void SetAlpha(float alpha, float duration = 0f) {
             if (duration == 0.0f)
@@ -131,7 +159,7 @@ namespace Dpr.Battle.View.UI
             if (isPlaySe)
                 BattleViewCore.Instance.UISystem.PlaySe(AK.EVENTS.UI_COMMON_SELECT);
         }
-		protected BattleViewUICanvasBase() { /*@B 0x6006196*/ throw null; }
+		protected BattleViewUICanvasBase() { }
 		public enum TransitionType : byte
 		{
 			FadeInOut = 0,
@@ -156,7 +184,16 @@ namespace Dpr.Battle.View.UI
 			public global::DG.Tweening.Ease Ease;
 			public float Duration;
 			public float Delay;
-			public static global::Dpr.Battle.View.UI.BattleViewUICanvasBase.TransitionParams Factory() { /*@B 0x600B1F0*/ throw null; }
+			public static global::Dpr.Battle.View.UI.BattleViewUICanvasBase.TransitionParams Factory() {
+                return new TransitionParams
+                {
+                    HideAnchorPosition = Vector2.zero,
+                    ShowAnchorPosition = Vector2.zero,
+                    Ease = Ease.OutSine,
+                    Duration = 0.25f,
+                    Delay = 0.0f,
+                };
+            }
 		}
 	}
 }

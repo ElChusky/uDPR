@@ -4,11 +4,27 @@ namespace Dpr.Contest
 	public class ContestCameraSystem : global::Dpr.SequenceEditor.SequenceCameraSystem
 	{
 		public global::Dpr.SequenceEditor.SequenceCameraSystem.WaitCameraStateType WaitCameraState { get; set; }
-		public bool IsPlayWaitCamera { get { /*@B 0x6004635*/ throw null; } }
+		public bool IsPlayWaitCamera { get { return WaitCameraState != WaitCameraStateType.None; } }
 		public global::UnityEngine.Transform GetTargetTransform() {
 			return (Cameras[0] as Dpr.Battle.View.Objects.BOCamera).GetTargetTransform();
 		}
-		public ContestCameraSystem(global::Dpr.SequenceEditor.ISequenceViewSystem cameraView, global::UnityEngine.Camera mainCamera) : base(default(global::Dpr.SequenceEditor.ISequenceViewSystem)) { /*@B 0x6004637*/ throw null; }
+		public ContestCameraSystem(global::Dpr.SequenceEditor.ISequenceViewSystem cameraView, global::UnityEngine.Camera mainCamera) : base(cameraView) {
+			_viewSystem = cameraView;
+			global::System.Array values = global::System.Enum.GetValues(typeof(CameraStateType));
+			Cameras = new global::Dpr.Battle.View.Objects.BOCamera[values.Length];
+			foreach (CameraStateType type in values)
+			{
+				if (type == CameraStateType.Sub)
+					continue;
+				if (mainCamera == null)
+					continue;
+				var boCamera = mainCamera.AddComponentIfNecessary<global::Dpr.Battle.View.Objects.BOCamera>();
+				boCamera.Initialize(type);
+				boCamera.IsAudioListener = true;
+				Cameras[(int)type] = boCamera;
+			}
+			CameraState = CameraStateType.Main;
+		}
 		public override void OnLateUpdate(float deltaTime) {
 			if (Cameras != null)
 				base.OnLateUpdate(deltaTime);

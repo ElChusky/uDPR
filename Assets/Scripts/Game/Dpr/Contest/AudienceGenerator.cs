@@ -4,14 +4,14 @@ namespace Dpr.Contest
 {
 	public sealed class AudienceGenerator : global::UnityEngine.MonoBehaviour
 	{
-		private readonly global::UnityEngine.Vector3 COPY_TARGET_POSITION;
+		private readonly global::UnityEngine.Vector3 COPY_TARGET_POSITION = new global::UnityEngine.Vector3(0.0f, -500.0f, 0.0f);
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.GameObject[] copyTargetArray;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Transform[] generateParentArray;
 		private global::Dpr.Contest.AudienceGenerator.AudienceObj[] audienceArray;
 		private global::UnityEngine.GameObject copyParent;
-		private bool bPlaying;
+		private bool bPlaying = true;
 		private void Start() {
 			bPlaying = true;
 			SmartPoint.AssetAssistant.Sequencer.postLateUpdate -= PostLateUpdate;
@@ -82,7 +82,7 @@ namespace Dpr.Contest
 			foreach (AudienceObj audience in audienceArray)
 				audience.OnUpdate();
 		}
-		public AudienceGenerator() { /*@B 0x6004266*/ throw null; }
+		public AudienceGenerator() { }
 		private struct AudienceObj
 		{
 			private global::UnityEngine.Camera cameraPtr;

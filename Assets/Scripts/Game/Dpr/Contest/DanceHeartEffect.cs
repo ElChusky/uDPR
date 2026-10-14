@@ -9,7 +9,7 @@ namespace Dpr.Contest
 		private global::Effect.EffectManager fxManagerPtr;
 		private global::Effect.EffectData heartFxData;
 		private global::Effect.EffectInstance fxInst;
-		private global::DG.Tweening.Ease easeTypeID;
+		private global::DG.Tweening.Ease easeTypeID = global::DG.Tweening.Ease.InCubic;
 		private global::UnityEngine.Transform effectTransform;
 		private global::UnityEngine.Transform fxInstTransform;
 		private global::UnityEngine.Transform fxManagerTransform;
@@ -174,6 +174,6 @@ namespace Dpr.Contest
 					go.SetActive(active);
 			}
 		}
-		public DanceHeartEffect() { /*@B 0x60043CB*/ throw null; }
+		public DanceHeartEffect() { }
 	}
 }

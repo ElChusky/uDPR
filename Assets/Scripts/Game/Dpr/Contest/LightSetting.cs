@@ -4,10 +4,10 @@ namespace Dpr.Contest
 	[global::System.Serializable]
 	public class LightSetting
 	{
-		public int userRank;
-		public global::UnityEngine.Vector3 positon;
-		public global::UnityEngine.Vector3 rot;
-		public global::UnityEngine.Vector3 scale;
-		public LightSetting() { /*@B 0x60043B4*/ throw null; }
+		public int userRank = 1;
+		public global::UnityEngine.Vector3 positon = global::UnityEngine.Vector3.zero;
+		public global::UnityEngine.Vector3 rot = global::UnityEngine.Vector3.zero;
+		public global::UnityEngine.Vector3 scale = global::UnityEngine.Vector3.one;
+		public LightSetting() { }
 	}
 }

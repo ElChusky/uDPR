@@ -15,6 +15,6 @@ namespace Dpr.Contest
 			itemNo = 0;
 			twinkleStarRibbon = (uint)Pml.RibbonNo.NULL;
 		}
-		public ContestRewardDataModel() { /*@B 0x6004339*/ throw null; }
+		public ContestRewardDataModel() { }
 	}
 }

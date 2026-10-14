@@ -3,7 +3,7 @@ namespace Dpr.Contest
 {
 	public class ContestInput
 	{
-		private global::GameController.LogicalInput localInput;
+		private global::GameController.LogicalInput localInput = new global::GameController.LogicalInput();
 		public void Subscribe() {
 			AssignTap();
 			AssignWaza();
@@ -48,7 +48,7 @@ namespace Dpr.Contest
 		private bool IsButtonRelease(int assignValue) {
 			return (assignValue & ~localInput.release) == 0;
 		}
-		public ContestInput() { /*@B 0x60043FF*/ throw null; }
+		public ContestInput() { }
 		private enum KeyAssignId
 		{
 			Tap = 0,

@@ -10,6 +10,10 @@ namespace Dpr.Box
             for (int i = 0; i < BoxWork.TRAY_POKE_MAX; i++)
                 SerializedPokemonFull.Swap(ref lhs.pokemonParam[i], ref rhs.pokemonParam[i]);
         }
-		public void Clear() { /*@B 0x60040F6*/ throw null; }
+		public void Clear() {
+            pokemonParam = new SerializedPokemonFull[BoxWork.TRAY_POKE_MAX];
+            for (int i = 0; i < pokemonParam.Length; i++)
+                pokemonParam[i].CreateWorkIfNeed();
+        }
 	}
 }

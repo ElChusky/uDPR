@@ -11,7 +11,7 @@ namespace Dpr.Contest
 		private global::Dpr.Contest.VisualHeartEffect[] visualLargeHeartArray;
 		private global::Dpr.Contest.DanceHeartEffect[] danceNormalHeartArray;
 		private global::Dpr.Contest.DanceHeartEffect[] danceLargeHeartArray;
-		private global::System.Collections.Generic.List<global::Dpr.Contest.VisualHeartEffect> activeVisualHeartList;
+		private global::System.Collections.Generic.List<global::Dpr.Contest.VisualHeartEffect> activeVisualHeartList = new global::System.Collections.Generic.List<global::Dpr.Contest.VisualHeartEffect>();
 		private global::Dpr.Contest.HeartBeziePath[] bezieParams;
 		private global::Dpr.Contest.NPCHeartParam npcHeartParam;
 		private global::Effect.EffectData normalHeartFxData;
@@ -23,7 +23,7 @@ namespace Dpr.Contest
 		private int visualLargeArrayIndex;
 		private bool bLoadedVisualHeartFx;
 		private bool bLoadedDanceHeartFx;
-		public bool IsLoaded { get { /*@B 0x6004750*/ throw null; } }
+		public bool IsLoaded { get { return bLoadedVisualHeartFx && bLoadedDanceHeartFx; } }
 		public void Setup(global::Dpr.Contest.ContestPlayerEntity[] playerEntityArray, global::UnityEngine.Transform visualHeartContent, global::UnityEngine.Transform danceHeartContent, global::Dpr.Contest.ContestSettings contestSetting) {
 			screenHalfSize = new Vector2(Screen.width, Screen.height) * 0.5f;
 			fxManagerPtr = EffectManager.Instance;
@@ -273,6 +273,6 @@ namespace Dpr.Contest
 			foreach (var heart in danceLargeHeartArray)
 				heart.Stop();
 		}
-		public ContestHeartEmitter() { /*@B 0x6004761*/ throw null; }
+		public ContestHeartEmitter() { }
 	}
 }

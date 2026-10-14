@@ -14,13 +14,13 @@ namespace Dpr.Contest
 {
 	public class ContestDataModel
 	{
-		private global::Dpr.Contest.ContestRewardDataModel contestResultDataModel;
-		private global::Dpr.Contest.ResultDataModel resultData;
+		private global::Dpr.Contest.ContestRewardDataModel contestResultDataModel = new global::Dpr.Contest.ContestRewardDataModel();
+		private global::Dpr.Contest.ResultDataModel resultData = new global::Dpr.Contest.ResultDataModel();
 		private global::Dpr.Message.MessageMsgFile wazaNameMsgFile;
 		private global::Dpr.Message.MessageMsgFile nameMsgFile;
 		private global::XLSXContent.ArenaInfo.SheetArenaData currentArenaData;
-		private global::Dpr.Contest.CaptureData mainCaptureData;
-		private global::Dpr.Contest.CaptureData wazaCaptureData;
+		private global::Dpr.Contest.CaptureData mainCaptureData = new global::Dpr.Contest.CaptureData();
+		private global::Dpr.Contest.CaptureData wazaCaptureData = new global::Dpr.Contest.CaptureData();
 		private global::UnityEngine.ShadowResolution backupShadowResolution;
 		private global::UnityEngine.Sprite contestTitleSpr;
 		private global::UnityEngine.Sprite contestCategorySpr;
@@ -30,22 +30,25 @@ namespace Dpr.Contest
 		private int userContestPoint;
 		private int userIndex;
 		private const int INIT_CAPACITY = 32;
-		private global::System.Collections.Generic.Dictionary<int, global::XLSXContent.ContestMasterDatas.SheetNPCCapsuleData> npcCapsuleTable;
-		private global::System.Collections.Generic.Dictionary<int, global::XLSXContent.ContestMasterDatas.SheetSealData> sealDataTable;
-		private global::System.Collections.Generic.Dictionary<int, global::XLSXContent.ContestMasterDatas.SheetItemData> itemDataTable;
+		private global::System.Collections.Generic.Dictionary<int, global::XLSXContent.ContestMasterDatas.SheetNPCCapsuleData> npcCapsuleTable = new global::System.Collections.Generic.Dictionary<int, global::XLSXContent.ContestMasterDatas.SheetNPCCapsuleData>();
+		private global::System.Collections.Generic.Dictionary<int, global::XLSXContent.ContestMasterDatas.SheetSealData> sealDataTable = new global::System.Collections.Generic.Dictionary<int, global::XLSXContent.ContestMasterDatas.SheetSealData>();
+		private global::System.Collections.Generic.Dictionary<int, global::XLSXContent.ContestMasterDatas.SheetItemData> itemDataTable = new global::System.Collections.Generic.Dictionary<int, global::XLSXContent.ContestMasterDatas.SheetItemData>();
 		private global::XLSXContent.ContestMasterDatas contestMasterDatas;
 		private global::XLSXContent.ContestConfigDatas contestConfigDatas;
 		private global::XLSXContent.ContestMasterDatas.SheetContestData useContestData;
 		private global::XLSXContent.ContestMasterDatas.SheetBgmData useBgmData;
 		private global::XLSXContent.ContestMasterDatas.SheetRewardData useRewardData;
 		private global::Dpr.Contest.DanceSectionData danceSectionData;
-		private global::System.Text.StringBuilder categoryTexNameSb;
-		private global::System.Text.StringBuilder useNotesDataFilePathSb;
-		private global::System.Text.StringBuilder useSequenceFilePathSb;
+		private global::System.Text.StringBuilder categoryTexNameSb = new global::System.Text.StringBuilder(INIT_CAPACITY);
+		private global::System.Text.StringBuilder useNotesDataFilePathSb = new global::System.Text.StringBuilder(INIT_CAPACITY);
+		private global::System.Text.StringBuilder useSequenceFilePathSb = new global::System.Text.StringBuilder(INIT_CAPACITY);
 		private uint mainBgmEventID;
 		private uint userContestRank;
-		public global::Dpr.Contest.CategoryID ContestCategoryID { get { /*@B 0x60042B0*/ throw null; } }
-		public bool IsTutorial { get { /*@B 0x60042B1*/ throw null; } }
+		public global::Dpr.Contest.CategoryID ContestCategoryID { get {
+			var category = (CategoryID)useContestData.category;
+			return category == CategoryID.Tutorial ? CategoryID.Style : category;
+		} }
+		public bool IsTutorial { get { return useContestData.category == (int)CategoryID.Tutorial; } }
 		public void Initialize() {
 			nameMsgFile = MessageManager.Instance.GetMsgFile("dp_characters");
 			wazaNameMsgFile = MessageManager.Instance.GetMsgFile("ss_wazaname");
@@ -1179,6 +1182,6 @@ namespace Dpr.Contest
 			// GetValueData inlined (no metadata, no flag): ValueData[15].value, scvtf + fdiv 1000f @01c62f3c
 			return GetValueData(15) / 1000f;
 		}
-		public ContestDataModel() { /*@B 0x6004305*/ throw null; }
+		public ContestDataModel() { }
 	}
 }
