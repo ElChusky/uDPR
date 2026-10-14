@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public float fov;
 		public bool[] enableElem;
 		public bool relative;
-		public CameraNearFarFovSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004986*/ throw null; }
+		public CameraNearFarFovSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			near = Macro.ParseFloat(macro.GetValue("near"));
+			far = Macro.ParseFloat(macro.GetValue("far"));
+			fov = Macro.ParseFloat(macro.GetValue("fov"));
+			enableElem = Macro.ParseBoolArray(macro.GetValue("enableElem"), 1, 1, 1);
+			relative = Macro.ParseBool(macro.GetValue("relative"), 0);
+		}
 	}
 }

@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_NODE node;
 		public float ofs;
 		public bool vertical;
-		public ClusterRotatePoke(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A16*/ throw null; }
+		public ClusterRotatePoke(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			dirPoke = Macro.Parse_SEQ_DEF_POS(macro.GetValue("dirPoke"));
+			node = Macro.Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			ofs = Macro.ParseFloat(macro.GetValue("ofs"));
+			vertical = Macro.ParseBool(macro.GetValue("vertical"));
+		}
 	}
 }

@@ -13,6 +13,16 @@ namespace Dpr.SequenceEditor
 		public bool isRot;
 		public bool isRotPos;
 		public bool forceUpdate;
-		public ClusterMoveRelativePoke(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A12*/ throw null; }
+		public ClusterMoveRelativePoke(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			node = Macro.Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			rate = Macro.ParseInt(macro.GetValue("rate"), 100);
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), 1);
+			isScale = Macro.ParseBool(macro.GetValue("isScale"), 1);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 1);
+			isRotPos = Macro.ParseBool(macro.GetValue("isRotPos"), 1);
+			forceUpdate = Macro.ParseBool(macro.GetValue("forceUpdate"), 0);
+		}
 	}
 }

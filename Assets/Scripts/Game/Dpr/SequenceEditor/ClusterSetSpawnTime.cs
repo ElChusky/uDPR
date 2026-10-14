@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ClusterSetSpawnTime : global::Dpr.SequenceEditor.Macro
 	{
 		public int spawnTime;
-		public ClusterSetSpawnTime(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A1F*/ throw null; }
+		public ClusterSetSpawnTime(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			spawnTime = Macro.ParseInt(macro.GetValue("spawnTime"));
+		}
 	}
 }

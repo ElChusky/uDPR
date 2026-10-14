@@ -20,6 +20,23 @@ namespace Dpr.SequenceEditor
 		public int spawnDegE;
 		public int spawnLen;
 		public bool isMulti;
-		public ClusterCreateEffect(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A10*/ throw null; }
+		public ClusterCreateEffect(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			file = Macro.ParseString(macro.GetValue("file"));
+			drawType = Macro.Parse_SEQ_DEF_EFF_DRAWTYPE(macro.GetValue("drawType"));
+			rotOrder = Macro.Parse_SEQ_DEF_ROTATE_ORDER(macro.GetValue("rotOrder"));
+			spawnMax = Macro.ParseInt(macro.GetValue("spawnMax"), 8);
+			spawnTime = Macro.ParseInt(macro.GetValue("spawnTime"));
+			spawnInterval = Macro.ParseInt(macro.GetValue("spawnInterval"), 1);
+			spawnNum = Macro.ParseInt(macro.GetValue("spawnNum"), 1);
+			spawnRate = Macro.ParseInt(macro.GetValue("spawnRate"), 100);
+			spawnLife = Macro.ParseInt(macro.GetValue("spawnLife"));
+			spawnType = Macro.Parse_CLUSTER_SPAWN(macro.GetValue("spawnType"));
+			spawnAxis = Macro.Parse_CLUSTER_POS_AXIS(macro.GetValue("spawnAxis"));
+			spawnSize = Macro.ParseVector3(macro.GetValue("spawnSize"), 1f, 1f, 1f);
+			spawnDegS = Macro.ParseInt(macro.GetValue("spawnDegS"));
+			spawnDegE = Macro.ParseInt(macro.GetValue("spawnDegE"), 360);
+			spawnLen = Macro.ParseInt(macro.GetValue("spawnLen"), 0);
+			isMulti = Macro.ParseBool(macro.GetValue("isMulti"));
+		}
 	}
 }

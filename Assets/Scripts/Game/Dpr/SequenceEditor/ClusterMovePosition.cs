@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::UnityEngine.Vector3 pos;
 		public bool relative;
-		public ClusterMovePosition(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A11*/ throw null; }
+		public ClusterMovePosition(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+		}
 	}
 }

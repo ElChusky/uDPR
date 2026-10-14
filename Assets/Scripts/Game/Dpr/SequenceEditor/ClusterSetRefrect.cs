@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.CLUSTER_POS_PLANE refDir;
 		public global::Dpr.SequenceEditor.CLUSTER_REFRECT refAct;
 		public float brake;
-		public ClusterSetRefrect(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A1E*/ throw null; }
+		public ClusterSetRefrect(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			pos = Macro.ParseFloat(macro.GetValue("pos"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			refDir = Macro.Parse_CLUSTER_POS_PLANE(macro.GetValue("refDir"));
+			refAct = Macro.Parse_CLUSTER_REFRECT(macro.GetValue("refAct"));
+			brake = Macro.ParseFloat(macro.GetValue("brake"), 1f);
+		}
 	}
 }

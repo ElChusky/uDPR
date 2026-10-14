@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::UnityEngine.Vector3 min;
 		public global::UnityEngine.Vector3 max;
-		public ClusterStartRotate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A1B*/ throw null; }
+		public ClusterStartRotate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			min = Macro.ParseVector3(macro.GetValue("min"));
+			max = Macro.ParseVector3(macro.GetValue("max"));
+		}
 	}
 }

@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::UnityEngine.Vector3 scale;
 		public bool relative;
-		public ClusterRotate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A15*/ throw null; }
+		public ClusterRotate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			scale = Macro.ParseVector3(macro.GetValue("scale"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+		}
 	}
 }

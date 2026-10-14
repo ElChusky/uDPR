@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 offset;
 		public float spd;
 		public float acc;
-		public ClusterSpeedDiffuse(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A17*/ throw null; }
+		public ClusterSpeedDiffuse(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			center = Macro.Parse_CLUSTER_POS(macro.GetValue("center"));
+			offset = Macro.ParseVector3(macro.GetValue("offset"));
+			spd = Macro.ParseFloat(macro.GetValue("spd"));
+			acc = Macro.ParseFloat(macro.GetValue("acc"), 1f);
+		}
 	}
 }

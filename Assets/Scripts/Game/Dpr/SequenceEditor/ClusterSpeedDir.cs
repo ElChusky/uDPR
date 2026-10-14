@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public int rotRand;
 		public float spd;
 		public float acc;
-		public ClusterSpeedDir(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A18*/ throw null; }
+		public ClusterSpeedDir(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			rot = Macro.ParseVector3(macro.GetValue("rot"));
+			rotRand = Macro.ParseInt(macro.GetValue("rotRand"));
+			spd = Macro.ParseFloat(macro.GetValue("spd"));
+			acc = Macro.ParseFloat(macro.GetValue("acc"), 1f);
+		}
 	}
 }

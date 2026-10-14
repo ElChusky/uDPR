@@ -4,7 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::System.Serializable]
 	public sealed class Command
 	{
-		public static global::Dpr.SequenceEditor.Command Default;
+		public static global::Dpr.SequenceEditor.Command Default = new global::Dpr.SequenceEditor.Command();
 		public int StartFrame;
 		public int EndFrame;
 		public byte ColR;
@@ -14,6 +14,6 @@ namespace Dpr.SequenceEditor
 		public int IsActive;
 		public global::Dpr.SequenceEditor.Macro Macro;
 		public Command() { }
-		static Command() { /*@B 0x6004BBE*/ throw null; }
+		static Command() { }
 	}
 }

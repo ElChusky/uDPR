@@ -11,6 +11,14 @@ namespace Dpr.SequenceEditor
 		public bool isFlip;
 		public bool isRot;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public CameraMoveSpecialPos(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004974*/ throw null; }
+		public CameraMoveSpecialPos(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			posTrg = Macro.Parse_SEQ_DEF_SPPOS(macro.GetValue("posTrg"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			trg = Macro.ParseVector3(macro.GetValue("trg"));
+			fov = Macro.ParseFloat(macro.GetValue("fov"));
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), 1);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 1);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 min;
 		public global::UnityEngine.Vector3 max;
 		public bool sync;
-		public ClusterStartScale(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A1A*/ throw null; }
+		public ClusterStartScale(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			min = Macro.ParseVector3(macro.GetValue("min"), 1f, 1f, 1f);
+			max = Macro.ParseVector3(macro.GetValue("max"), 1f, 1f, 1f);
+			sync = Macro.ParseBool(macro.GetValue("sync"), 1);
+		}
 	}
 }

@@ -10,6 +10,13 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_AXIS axis;
 		public bool pos;
 		public bool trg;
-		public CameraShake(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600497A*/ throw null; }
+		public CameraShake(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			srate = Macro.ParseFloat(macro.GetValue("srate"));
+			erate = Macro.ParseFloat(macro.GetValue("erate"));
+			dec = Macro.ParseFloat(macro.GetValue("dec"));
+			axis = Macro.Parse_SEQ_DEF_AXIS(macro.GetValue("axis"));
+			pos = Macro.ParseBool(macro.GetValue("pos"), 1);
+			trg = Macro.ParseBool(macro.GetValue("trg"), 1);
+		}
 	}
 }

@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public int parent;
 		public global::Dpr.SequenceEditor.CLUSTER_CHILD type;
 		public bool follow;
-		public ClusterSetChild(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A20*/ throw null; }
+		public ClusterSetChild(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			parent = Macro.ParseInt(macro.GetValue("parent"));
+			type = Macro.Parse_CLUSTER_CHILD(macro.GetValue("type"));
+			follow = Macro.ParseBool(macro.GetValue("follow"));
+		}
 	}
 }

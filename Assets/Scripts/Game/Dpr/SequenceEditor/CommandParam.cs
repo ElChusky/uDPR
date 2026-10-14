@@ -15,7 +15,17 @@ namespace Dpr.SequenceEditor
 		public float StartTime { get => 1.0f / PcPlatform.PcFrameClock.LogicRate * StartFrame; }
 		public float EndTime { get => 1.0f / PcPlatform.PcFrameClock.LogicRate * EndFrame; }
 		public CommandParam() { }
-		public CommandParam(global::Dpr.SequenceEditor.CommandParam other) { /*@B 0x6004BC2*/ throw null; }
+		public CommandParam(global::Dpr.SequenceEditor.CommandParam other) {
+			Group = other.Group;
+			IsAlreadyCalled = false;
+			CommandNo = other.Macro.CommandNo;
+			StartFrame = other.StartFrame;
+			EndFrame = other.EndFrame;
+			GroupNo = other.GroupNo;
+			GroupOption = other.GroupOption;
+			Macro = other.Macro;
+			Macro.CamFile = other.Macro.CamFile;
+		}
 		public global::Dpr.SequenceEditor.GroupOption GetGroupOption(global::Dpr.SequenceEditor.GRP_OPT option) {
 			if (GroupOption.IsNullOrEmpty())
 				return null;

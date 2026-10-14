@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 pos;
 		public bool relative;
 		public float power;
-		public ClusterAccelGravity(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A19*/ throw null; }
+		public ClusterAccelGravity(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			type = Macro.Parse_CLUSTER_POS(macro.GetValue("type"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			power = Macro.ParseFloat(macro.GetValue("power"));
+		}
 	}
 }

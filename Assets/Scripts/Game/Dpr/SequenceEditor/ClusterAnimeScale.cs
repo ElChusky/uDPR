@@ -14,6 +14,17 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 scale4;
 		public int frame5;
 		public global::UnityEngine.Vector3 scale5;
-		public ClusterAnimeScale(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A1C*/ throw null; }
+		public ClusterAnimeScale(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			frame1 = Macro.ParseInt(macro.GetValue("frame1"));
+			scale1 = Macro.ParseVector3(macro.GetValue("scale1"), 1f, 1f, 1f);
+			frame2 = Macro.ParseInt(macro.GetValue("frame2"));
+			scale2 = Macro.ParseVector3(macro.GetValue("scale2"), 1f, 1f, 1f);
+			frame3 = Macro.ParseInt(macro.GetValue("frame3"));
+			scale3 = Macro.ParseVector3(macro.GetValue("scale3"), 1f, 1f, 1f);
+			frame4 = Macro.ParseInt(macro.GetValue("frame4"));
+			scale4 = Macro.ParseVector3(macro.GetValue("scale4"), 1f, 1f, 1f);
+			frame5 = Macro.ParseInt(macro.GetValue("frame5"));
+			scale5 = Macro.ParseVector3(macro.GetValue("scale5"), 1f, 1f, 1f);
+		}
 	}
 }

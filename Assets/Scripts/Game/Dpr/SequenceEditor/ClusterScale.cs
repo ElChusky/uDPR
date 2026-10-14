@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::UnityEngine.Vector3 scale;
 		public bool relative;
-		public ClusterScale(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A14*/ throw null; }
+		public ClusterScale(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			scale = Macro.ParseVector3(macro.GetValue("scale"), 1f, 1f, 1f);
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+		}
 	}
 }

@@ -14,6 +14,17 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 rotate4;
 		public int frame5;
 		public global::UnityEngine.Vector3 rotate5;
-		public ClusterAnimeRotate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A1D*/ throw null; }
+		public ClusterAnimeRotate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			frame1 = Macro.ParseInt(macro.GetValue("frame1"));
+			rotate1 = Macro.ParseVector3(macro.GetValue("rotate1"));
+			frame2 = Macro.ParseInt(macro.GetValue("frame2"));
+			rotate2 = Macro.ParseVector3(macro.GetValue("rotate2"));
+			frame3 = Macro.ParseInt(macro.GetValue("frame3"));
+			rotate3 = Macro.ParseVector3(macro.GetValue("rotate3"));
+			frame4 = Macro.ParseInt(macro.GetValue("frame4"));
+			rotate4 = Macro.ParseVector3(macro.GetValue("rotate4"));
+			frame5 = Macro.ParseInt(macro.GetValue("frame5"));
+			rotate5 = Macro.ParseVector3(macro.GetValue("rotate5"));
+		}
 	}
 }
