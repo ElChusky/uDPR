@@ -8,7 +8,14 @@ namespace Dpr.Battle.Logic
 		private byte m_clientID;
 		private byte m_pokeIndex;
 		private bool m_endFlag;
-		public FrontPokeAccessor(global::Dpr.Battle.Logic.MainModule pMainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv) { /*@B 0x6006B93*/ throw null; }
+		public FrontPokeAccessor(global::Dpr.Battle.Logic.MainModule pMainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv) {
+			m_pMainModule = pMainModule;
+			m_pBattleEnv = pBattleEnv;
+			m_clientID = 0;
+			m_pokeIndex = 0;
+			m_endFlag = true;
+			Initialize();
+		}
 		public void Initialize() {
 			m_clientID = 0;
 			m_pokeIndex = 0;

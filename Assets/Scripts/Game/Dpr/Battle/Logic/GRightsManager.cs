@@ -4,8 +4,12 @@ namespace Dpr.Battle.Logic
 	public sealed class GRightsManager
 	{
 		private readonly global::Dpr.Battle.Logic.MainModule m_pMainModule;
-		private global::Dpr.Battle.Logic.GRights[] m_gRights;
-		public GRightsManager(global::Dpr.Battle.Logic.MainModule pMainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv) { /*@B 0x6007655*/ throw null; }
+		private global::Dpr.Battle.Logic.GRights[] m_gRights = new global::Dpr.Battle.Logic.GRights[(int)BtlSide.BTL_SIDE_NUM];
+		public GRightsManager(global::Dpr.Battle.Logic.MainModule pMainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv) {
+			m_pMainModule = pMainModule;
+			createGRights(pMainModule, pBattleEnv);
+			Initialize();
+		}
 		private void createGRights(global::Dpr.Battle.Logic.MainModule pMainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv) {
             for (int i = 0; i < (int)BtlSide.BTL_SIDE_NUM; i++)
                 m_gRights[i] = new GRights(pMainModule, pBattleEnv);
@@ -24,6 +28,8 @@ namespace Dpr.Battle.Logic
                 return;
             GetGRights(side).AddClient(clientID);
         }
-		public global::Dpr.Battle.Logic.GRights GetGRights(global::Dpr.Battle.Logic.BtlSide side) { /*@B 0x600765A*/ throw null; }
+		public global::Dpr.Battle.Logic.GRights GetGRights(global::Dpr.Battle.Logic.BtlSide side) {
+			return m_gRights[(int)side];
+		}
 	}
 }

@@ -9,16 +9,76 @@ namespace Dpr.Battle.Logic
 		private int m_mulMin;
 		private int m_mulMax;
 		private object m_address;
-		public EventVar() { /*@B 0x6006B5F*/ throw null; }
+		public EventVar() {
+			m_label = Label.INVALID;
+			m_rewriteState = RewriteState.FREE;
+			m_value = 0;
+			m_mulMin = 0;
+			m_mulMax = 0;
+			m_address = null;
+		}
 		public void SetLabel(global::Dpr.Battle.Logic.EventVar.Label label) { this.m_label = label; }
-		public void SetValue(int value) { /*@B 0x6006B61*/ throw null; }
-		public void SetConstValue(int value) { /*@B 0x6006B62*/ throw null; }
-		public void SetRewriteOnceValue(int value) { /*@B 0x6006B63*/ throw null; }
-		public bool RewriteValue(int value) { /*@B 0x6006B64*/ throw null; }
-		public void RecoveryRewriteOncePermission() { /*@B 0x6006B65*/ throw null; }
-		public void SetMulValue(int value, int min, int max) { /*@B 0x6006B66*/ throw null; }
-		public void MulValue(int mulValue) { /*@B 0x6006B67*/ throw null; }
-		public void SetAddress(object ptr) { /*@B 0x6006B68*/ throw null; }
+		public void SetValue(int value) {
+			m_value = value;
+			m_mulMin = 0;
+			m_mulMax = 0;
+			m_address = null;
+			m_rewriteState = RewriteState.FREE;
+		}
+		public void SetConstValue(int value) {
+			m_value = value;
+			m_mulMin = 0;
+			m_mulMax = 0;
+			m_address = null;
+			m_rewriteState = RewriteState.LOCK;
+		}
+		public void SetRewriteOnceValue(int value) {
+			m_value = value;
+			m_mulMin = 0;
+			m_mulMax = 0;
+			m_address = null;
+			m_rewriteState = RewriteState.ONCE;
+		}
+		public bool RewriteValue(int value) {
+			if (m_rewriteState == RewriteState.FREE || m_rewriteState == RewriteState.ONCE)
+			{
+				m_value = value;
+				if (m_rewriteState == RewriteState.ONCE)
+					m_rewriteState = RewriteState.END;
+				return true;
+			}
+			return false;
+		}
+		public void RecoveryRewriteOncePermission() {
+			m_rewriteState = RewriteState.ONCE;
+		}
+		public void SetMulValue(int value, int min, int max) {
+			m_value = value;
+			m_mulMin = min;
+			m_mulMax = max;
+			m_address = null;
+			m_rewriteState = RewriteState.MUL;
+		}
+		public void MulValue(int mulValue) {
+			if (m_rewriteState != RewriteState.MUL)
+				return;
+			int result = (int)(((long)m_value * mulValue + 0x800) >> 12);
+			if (m_mulMin != 0 || m_mulMax != 0)
+			{
+				if (result < m_mulMin)
+					result = m_mulMin;
+				if (result > m_mulMax)
+					result = m_mulMax;
+			}
+			m_value = result;
+		}
+		public void SetAddress(object ptr) {
+			m_value = 0;
+			m_mulMin = 0;
+			m_mulMax = 0;
+			m_address = ptr;
+			m_rewriteState = RewriteState.FREE;
+		}
 		public global::Dpr.Battle.Logic.EventVar.Label GetLabel() { return this.m_label; }
 		public int GetValue() { return this.m_value; }
 		public object GetAddress() { return this.m_address; }

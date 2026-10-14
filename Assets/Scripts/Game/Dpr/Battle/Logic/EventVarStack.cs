@@ -4,14 +4,70 @@ namespace Dpr.Battle.Logic
 	public sealed class EventVarStack
 	{
 		private const uint EVENTVAL_STACK_DEPTH = 96u;
-		private global::Dpr.Battle.Logic.EventVar[] m_variables;
+		private global::Dpr.Battle.Logic.EventVar[] m_variables = new global::Dpr.Battle.Logic.EventVar[EVENTVAL_STACK_DEPTH];
 		private uint m_sp;
-		public EventVarStack() { /*@B 0x6006B77*/ throw null; }
-		private void createVariables() { /*@B 0x6006B78*/ throw null; }
-		public void ToEmpty() { /*@B 0x6006B79*/ throw null; }
-		public bool IsEmpty() { /*@B 0x6006B7A*/ throw null; }
-		public void Push() { /*@B 0x6006B7B*/ throw null; }
-		public void Pop() { /*@B 0x6006B7C*/ throw null; }
-		public global::Dpr.Battle.Logic.EventVar GetNewPoint(global::Dpr.Battle.Logic.EventVar.Label label) { /*@B 0x6006B7D*/ throw null; }
+		public EventVarStack() {
+			m_sp = 0;
+			createVariables();
+			ToEmpty();
+		}
+		private void createVariables() {
+			for (int i = 0; i < m_variables.Length; i++)
+				m_variables[i] = new EventVar();
+		}
+		public void ToEmpty() {
+			m_sp = 0;
+			for (int i = 0; i < m_variables.Length; i++)
+				m_variables[i].SetLabel(EventVar.Label.INVALID);
+		}
+		public bool IsEmpty() {
+			return m_sp == 0;
+		}
+		public void Push() {
+			if (m_sp >= EVENTVAL_STACK_DEPTH)
+				return;
+			while (m_sp < EVENTVAL_STACK_DEPTH)
+			{
+				if (m_variables[m_sp].GetLabel() == EventVar.Label.INVALID)
+					break;
+				m_sp++;
+			}
+			if (m_sp < EVENTVAL_STACK_DEPTH - 1)
+			{
+				m_variables[m_sp].SetLabel(EventVar.Label.SYS_SEPARATE);
+				m_sp++;
+			}
+		}
+		public void Pop() {
+			if (m_sp == 0)
+				return;
+			for (ushort i = (ushort)m_sp; i < EVENTVAL_STACK_DEPTH; i++)
+			{
+				if (m_variables[i].GetLabel() == EventVar.Label.INVALID)
+					break;
+				m_variables[i].SetLabel(EventVar.Label.INVALID);
+			}
+			m_sp--;
+			m_variables[m_sp].SetLabel(EventVar.Label.INVALID);
+			while (m_sp != 0)
+			{
+				m_sp--;
+				if (m_variables[m_sp].GetLabel() == EventVar.Label.SYS_SEPARATE)
+				{
+					m_sp++;
+					break;
+				}
+			}
+		}
+		public global::Dpr.Battle.Logic.EventVar GetNewPoint(global::Dpr.Battle.Logic.EventVar.Label label) {
+			for (long i = m_sp; i < m_variables.Length; i++)
+			{
+				EventVar variable = m_variables[i];
+				EventVar.Label varLabel = variable.GetLabel();
+				if (varLabel == EventVar.Label.INVALID || varLabel == label)
+					return variable;
+			}
+			return null;
+		}
 	}
 }

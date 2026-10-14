@@ -4,14 +4,35 @@ namespace Dpr.Battle.Logic
 	public class EventVarSetStack
 	{
 		private const uint STACK_SIZE = 32u;
-		private global::Dpr.Battle.Logic.EventVarSet[] m_varSets;
+		private global::Dpr.Battle.Logic.EventVarSet[] m_varSets = new global::Dpr.Battle.Logic.EventVarSet[STACK_SIZE];
 		private uint m_stackPointer;
-		public EventVarSetStack() { /*@B 0x6006B70*/ throw null; }
-		private void createVarSets() { /*@B 0x6006B71*/ throw null; }
-		public void ToEmpty() { /*@B 0x6006B72*/ throw null; }
+		public EventVarSetStack() {
+			m_stackPointer = 0;
+			createVarSets();
+			ToEmpty();
+		}
+		private void createVarSets() {
+			for (int i = 0; i < m_varSets.Length; i++)
+				m_varSets[i] = new EventVarSet();
+		}
+		public void ToEmpty() {
+			m_stackPointer = 0;
+			for (int i = 0; i < m_varSets.Length; i++)
+				m_varSets[i].Clear();
+		}
 		public virtual void Dispose() { }
-		public global::Dpr.Battle.Logic.EventVarSet GetCurrent() { /*@B 0x6006B74*/ throw null; }
-		public void Push() { /*@B 0x6006B75*/ throw null; }
-		public void Pop() { /*@B 0x6006B76*/ throw null; }
+		public global::Dpr.Battle.Logic.EventVarSet GetCurrent() {
+			return m_varSets[m_stackPointer];
+		}
+		public void Push() {
+			if (m_stackPointer < m_varSets.Length - 1)
+				m_stackPointer++;
+		}
+		public void Pop() {
+			if (m_stackPointer == 0)
+				return;
+			m_varSets[m_stackPointer].Clear();
+			m_stackPointer--;
+		}
 	}
 }

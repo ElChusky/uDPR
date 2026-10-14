@@ -5,12 +5,25 @@ namespace Dpr.Battle.Logic
 	{
 		public const byte MAX_VALUE = 7;
 		private byte m_value;
-		public GGauge() { /*@B 0x600763A*/ throw null; }
-		public void Initialize() { /*@B 0x600763B*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.GGauge src) { /*@B 0x600763C*/ throw null; }
+		public GGauge() {
+			m_value = MAX_VALUE;
+		}
+		public void Initialize() {
+			m_value = MAX_VALUE;
+		}
+		public void CopyFrom(in global::Dpr.Battle.Logic.GGauge src) {
+			m_value = src.m_value;
+		}
 		public byte GetValue() { return this.m_value; }
-		public bool IsFull() { /*@B 0x600763E*/ throw null; }
-		public void IncValue() { /*@B 0x600763F*/ throw null; }
-		public void SetEmpty() { /*@B 0x6007640*/ throw null; }
+		public bool IsFull() {
+			return m_value >= MAX_VALUE;
+		}
+		public void IncValue() {
+			if (m_value < MAX_VALUE)
+				m_value++;
+		}
+		public void SetEmpty() {
+			m_value = 0;
+		}
 	}
 }
