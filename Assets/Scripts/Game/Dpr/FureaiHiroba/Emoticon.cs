@@ -5,7 +5,7 @@ namespace Dpr.FureaiHiroba
 	public class Emoticon : global::UnityEngine.MonoBehaviour
 	{
 		private global::Balloon bln;
-		private static readonly uint[] SELabels;
+		private static readonly uint[] SELabels = new uint[] { 1826380188u, 4209053862u, 3883812387u, 697667233u, 697667233u, 1660949006u, 1610407615u, 1328879114u, 2931241802u, 4044939041u, 2837496650u, 852093493u, 3759747276u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u, 3197220984u };
 		[global::Dpr.SubContents.ButtonAttribute("TestBaloon", "!", new object[] { 0 })]
 		public int Button10;
 		[global::Dpr.SubContents.ButtonAttribute("TestBaloon", "!!", new object[] { 1 })]
@@ -92,7 +92,7 @@ namespace Dpr.FureaiHiroba
 		public int Button51;
 		[global::Dpr.SubContents.ButtonAttribute("PlaySeAmbient", "PlaySe 12", new object[] { 12 })]
 		public int Button52;
-		public bool IsVisible { get { /*@B 0x6003398*/ throw null; } }
+		public bool IsVisible { get { return bln != null && bln.gameObject.activeInHierarchy; } }
 		public void SetParent(global::UnityEngine.Transform t) {
             transform.parent = t;
             transform.localPosition = Vector3.zero;
@@ -171,6 +171,6 @@ namespace Dpr.FureaiHiroba
             Audio.AudioManager.Instance.CreateSe(audioEventId, 0, transform.position, transform.rotation, null).Play(null, false);
         }
 		public Emoticon() { }
-		static Emoticon() { /*@B 0x60033A6*/ throw null; }
+		static Emoticon() { }
 	}
 }

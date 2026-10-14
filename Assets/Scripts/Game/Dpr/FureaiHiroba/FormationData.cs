@@ -3,9 +3,14 @@ namespace Dpr.FureaiHiroba
 {
 	internal class FormationData
 	{
-		private global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.List<global::UnityEngine.Vector2>> FormationOffsets;
-		public void SetFormationOffsets(int pokeNum, global::System.Collections.Generic.List<global::UnityEngine.Vector2> formation) { /*@B 0x600346A*/ throw null; }
-		public global::UnityEngine.Vector3 GetOffset(int pokeNum, int positionNo) { /*@B 0x600346B*/ throw null; }
-		public FormationData() { /*@B 0x600346C*/ throw null; }
+		private global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.List<global::UnityEngine.Vector2>> FormationOffsets = new global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.List<global::UnityEngine.Vector2>>();
+		public void SetFormationOffsets(int pokeNum, global::System.Collections.Generic.List<global::UnityEngine.Vector2> formation) {
+			FormationOffsets.Add(pokeNum, formation);
+		}
+		public global::UnityEngine.Vector3 GetOffset(int pokeNum, int positionNo) {
+			global::UnityEngine.Vector2 offset = FormationOffsets[pokeNum][positionNo];
+			return new global::UnityEngine.Vector3(offset.x, 0f, -offset.y);
+		}
+		public FormationData() { }
 	}
 }

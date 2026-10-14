@@ -7,10 +7,10 @@ namespace Dpr.FureaiHiroba
 	public class FureaiDebugManager : global::UnityEngine.MonoBehaviour
 	{
 		private const string TEXT_PARENT_NAME = "DebugTexts";
-		private static global::System.Collections.Generic.Dictionary<string, global::UnityEngine.UI.Text> Texts;
+		private static global::System.Collections.Generic.Dictionary<string, global::UnityEngine.UI.Text> Texts = new global::System.Collections.Generic.Dictionary<string, global::UnityEngine.UI.Text>();
 		[global::Dpr.SubContents.ButtonAttribute("CreateDebugDraw", "CreateDebugDraw", new object[] {  })]
 		public int Button01;
-		private static global::UnityEngine.Transform TextsParent { get { /*@B 0x60033EB*/ throw null; } }
+		private static global::UnityEngine.Transform TextsParent { get { return global::UnityEngine.GameObject.Find("DebugTexts").transform; } }
 		private void CreateDebugDraw() {
 			ClearDebugView();
 			var canvas = CreateCanvas(null, "Canvas");
@@ -86,6 +86,6 @@ namespace Dpr.FureaiHiroba
 			return eventSystem;
 		}
 		public FureaiDebugManager() { }
-		static FureaiDebugManager() { /*@B 0x60033F5*/ throw null; }
+		static FureaiDebugManager() { }
 	}
 }

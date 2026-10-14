@@ -8,11 +8,14 @@ namespace Dpr.FureaiHiroba
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.FureaiHiroba.PokeWalkManager pokeWalkMng;
 		private bool isVisible;
-		private global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiDebugView> debugViewList;
-		private global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> models { get { /*@B 0x60033FD*/ throw null; } }
-		private void Awake() { /*@B 0x60033FE*/ throw null; }
+		private global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiDebugView> debugViewList = new global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiDebugView>();
+		private global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> models { get { return pokeWalkMng.GetPokeWalkers(); } }
+		private void Awake() {
+			global::UnityEngine.RectTransform rectTransform = GetComponent<global::UnityEngine.RectTransform>();
+			rectTransform.anchoredPosition = rectTransform.anchoredPosition + global::UnityEngine.Vector2.left * 200f;
+		}
 		public void AddDebugView(global::Dpr.FureaiHiroba.FureaiPokeModel model) { }
 		protected override void OnUpdate(float deltaTime) { }
-		public FureaiDebugViewManager() { /*@B 0x6003401*/ throw null; }
+		public FureaiDebugViewManager() { }
 	}
 }
