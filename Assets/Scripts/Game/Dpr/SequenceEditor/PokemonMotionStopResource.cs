@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public int slot;
-		public PokemonMotionStopResource(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004957*/ throw null; }
+		public PokemonMotionStopResource(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			slot = Macro.ParseInt(macro.GetValue("slot"), 0);
+		}
 	}
 }

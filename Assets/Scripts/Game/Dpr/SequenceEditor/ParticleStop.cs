@@ -4,6 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-200671636), "green", "one_frame", "")]
 	public class ParticleStop : global::Dpr.SequenceEditor.Macro
 	{
-		public ParticleStop(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049A1*/ throw null; }
+		public ParticleStop(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+		}
 	}
 }

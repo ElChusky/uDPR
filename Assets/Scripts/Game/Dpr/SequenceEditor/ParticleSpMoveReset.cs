@@ -4,6 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(123434092), "green", "", "")]
 	public class ParticleSpMoveReset : global::Dpr.SequenceEditor.Macro
 	{
-		public ParticleSpMoveReset(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049B6*/ throw null; }
+		public ParticleSpMoveReset(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+		}
 	}
 }

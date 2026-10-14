@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public bool isRotPos;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool[] enableElem;
-		public ParticleMovePosition(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049A3*/ throw null; }
+		public ParticleMovePosition(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			isRotPos = Macro.ParseBool(macro.GetValue("isRotPos"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			enableElem = Macro.ParseBoolArray(macro.GetValue("enableElem"), 1, 1, 1);
+		}
 	}
 }

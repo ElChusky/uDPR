@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ParticleSetAutoRotate : global::Dpr.SequenceEditor.Macro
 	{
 		public bool isEnable;
-		public ParticleSetAutoRotate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049B3*/ throw null; }
+		public ParticleSetAutoRotate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), true);
+		}
 	}
 }

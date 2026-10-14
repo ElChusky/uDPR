@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public float sdec;
 		public float edec;
 		public global::Dpr.SequenceEditor.SEQ_DEF_AXIS axis;
-		public ParticleSpMoveShake(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049B7*/ throw null; }
+		public ParticleSpMoveShake(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			srate = Macro.ParseFloat(macro.GetValue("srate"));
+			erate = Macro.ParseFloat(macro.GetValue("erate"));
+			sdec = Macro.ParseFloat(macro.GetValue("sdec"));
+			edec = Macro.ParseFloat(macro.GetValue("edec"));
+			axis = Macro.Parse_SEQ_DEF_AXIS(macro.GetValue("axis"));
+		}
 	}
 }

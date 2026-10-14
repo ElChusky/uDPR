@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOTION motion;
-		public PokemonMotion(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004953*/ throw null; }
+		public PokemonMotion(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			motion = Macro.Parse_SEQ_DEF_MOTION(macro.GetValue("motion"));
+		}
 	}
 }

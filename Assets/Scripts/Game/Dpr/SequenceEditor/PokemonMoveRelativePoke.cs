@@ -15,6 +15,18 @@ namespace Dpr.SequenceEditor
 		public bool forceUpdate;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool[] enableElem;
-		public PokemonMoveRelativePoke(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004944*/ throw null; }
+		public PokemonMoveRelativePoke(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			moveTrg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("moveTrg"));
+			posTrg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("posTrg"));
+			node = Macro.Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			ofs = Macro.ParseVector3(macro.GetValue("ofs"));
+			rate = Macro.ParseInt(macro.GetValue("rate"), 100);
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), true);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), true);
+			isRotPos = Macro.ParseBool(macro.GetValue("isRotPos"), true);
+			forceUpdate = Macro.ParseBool(macro.GetValue("forceUpdate"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			enableElem = Macro.ParseBoolArray(macro.GetValue("enableElem"), 1, 1, 1);
+		}
 	}
 }

@@ -12,6 +12,15 @@ namespace Dpr.SequenceEditor
 		public bool isScl;
 		public global::UnityEngine.Vector3 pos;
 		public global::UnityEngine.Vector3 rot;
-		public PokemonFollowMode(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600495F*/ throw null; }
+		public PokemonFollowMode(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			grpNo = Macro.ParseInt(macro.GetValue("grpNo"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			isPos = Macro.ParseBool(macro.GetValue("isPos"), true);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), true);
+			isScl = Macro.ParseBool(macro.GetValue("isScl"), true);
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			rot = Macro.ParseVector3(macro.GetValue("rot"));
+		}
 	}
 }

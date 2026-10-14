@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 pos;
 		public bool isRotPos;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public ParticleMoveRelativeParticle(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049A8*/ throw null; }
+		public ParticleMoveRelativeParticle(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.ParseInt(macro.GetValue("trg"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			isRotPos = Macro.ParseBool(macro.GetValue("isRotPos"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }
