@@ -3,12 +3,75 @@ public class FieldPokemonCenter
 {
 	private global::UnityEngine.GameObject[] BallObjects;
 	private global::SmartPoint.AssetAssistant.AssetRequestOperation[] BallObjectLoads;
-	public void Initialize() { /*@B 0x600020E*/ throw null; }
-	public void LoadTemotiBall() { /*@B 0x600020F*/ throw null; }
-	public bool IsLoadedTemotiBall() { /*@B 0x6000210*/ throw null; }
-	public void ReleaseAll() { /*@B 0x6000211*/ throw null; }
-	public global::UnityEngine.GameObject GetBallObject(global::Pml.BallId ballId) { /*@B 0x6000212*/ throw null; }
-	private void OnLoadedBallObject(int index, global::UnityEngine.Object content) { /*@B 0x6000213*/ throw null; }
-	private global::Pml.BallId CheckBallId(global::Pml.BallId ballId) { /*@B 0x6000214*/ throw null; }
+	public void Initialize() {
+		BallObjects = new global::UnityEngine.GameObject[29];
+		BallObjectLoads = new global::SmartPoint.AssetAssistant.AssetRequestOperation[29];
+	}
+	public void LoadTemotiBall() {
+		uint count = PlayerWork.playerParty.GetMemberCount();
+		bool requested = false;
+		for (int i = 0; i < count; i++)
+		{
+			int ballIndex;
+			global::Pml.PokePara.PokemonParam param = PlayerWork.playerParty.GetMemberPointer((uint)i);
+			if (param.IsEgg(global::Pml.PokePara.EggCheckType.BOTH_EGG))
+				continue;
+			ballIndex = (int)CheckBallId((global::Pml.BallId)param.GetGetBall());
+			if (BallObjectLoads[ballIndex] != null)
+				continue;
+			string assetBundleName = string.Format("{0}/ob{1:D4}_00", "objects", (ballIndex == 28 ? 99 : ballIndex) + 200);
+			BallObjectLoads[ballIndex] = global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(assetBundleName, true, (type, name, content) =>
+			{
+				if (type == global::SmartPoint.AssetAssistant.RequestEventType.Activated)
+					OnLoadedBallObject(ballIndex, content);
+			}, null);
+			requested = true;
+		}
+		if (requested)
+			global::SmartPoint.AssetAssistant.AssetManager.DispatchRequests(null);
+	}
+	public bool IsLoadedTemotiBall() {
+		uint count = PlayerWork.playerParty.GetMemberCount();
+		for (int i = 0; i < count; i++)
+		{
+			global::Pml.PokePara.PokemonParam param = PlayerWork.playerParty.GetMemberPointer((uint)i);
+			if (param.IsEgg(global::Pml.PokePara.EggCheckType.BOTH_EGG))
+				continue;
+			if (BallObjects[(int)CheckBallId((global::Pml.BallId)param.GetGetBall())] == null)
+				return false;
+		}
+		return true;
+	}
+	public void ReleaseAll() {
+		if (BallObjects != null)
+		{
+			for (int i = 0; i < BallObjects.Length; i++)
+				BallObjects[i] = null;
+		}
+		if (BallObjectLoads != null)
+		{
+			for (int i = 0; i < BallObjectLoads.Length; i++)
+			{
+				if (BallObjectLoads[i] != null)
+				{
+					global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(BallObjectLoads[i].assetBundleRequest.uri);
+					BallObjectLoads[i] = null;
+				}
+			}
+		}
+	}
+	public global::UnityEngine.GameObject GetBallObject(global::Pml.BallId ballId) {
+		return BallObjects[(int)CheckBallId(ballId)];
+	}
+	private void OnLoadedBallObject(int index, global::UnityEngine.Object content) {
+		global::UnityEngine.GameObject obj = content as global::UnityEngine.GameObject;
+		if (obj != null)
+			BallObjects[index] = obj;
+	}
+	private global::Pml.BallId CheckBallId(global::Pml.BallId ballId) {
+		if (global::Pml.Item.ItemManager.IsStrangeBall(ballId))
+			return global::Pml.BallId.MAX;
+		return ballId;
+	}
 	public FieldPokemonCenter() { }
 }

@@ -128,8 +128,15 @@ public static class FieldPoketch
         if (PlayerWork.PoketchPedometer > 99999)
             PlayerWork.PoketchPedometer = 99999;
     }
-	public static void SetAvailablePoketchApp(global::DPData.POKETCH_APPID appId) { /*@B 0x6000224*/ throw null; }
-	public static bool IsAvailablePoketchApp(global::DPData.POKETCH_APPID appId) { /*@B 0x6000225*/ throw null; }
+	public static void SetAvailablePoketchApp(global::DPData.POKETCH_APPID appId) {
+		if (PlayerWork.PoketchData.app_flag != null && PlayerWork.PoketchData.app_flag.Length != 0)
+			PlayerWork.PoketchData.app_flag[(int)appId] = true;
+	}
+	public static bool IsAvailablePoketchApp(global::DPData.POKETCH_APPID appId) {
+		if (PlayerWork.PoketchData.app_flag != null && PlayerWork.PoketchData.app_flag.Length != 0)
+			return PlayerWork.PoketchData.app_flag[(int)appId];
+		return false;
+	}
 	public static void AddPokemonHistory(global::Pml.PokePara.PokemonParam pokeParam) {
         if (pokeParam.IsEgg(EggCheckType.BOTH_EGG))
             return;
@@ -324,7 +331,24 @@ public static class FieldPoketch
 	private static bool AvailableKairikiObject(global::FieldObjectEntity obj) {
         return obj.EventParams.Kairiki;
     }
-	private static global::FieldObjectEntity SearchCanHidenContactObject(global::System.Func<global::FieldObjectEntity, bool> CheckFunc, out int outIndex) { /*@B 0x6000236*/ throw null; }
+	private static global::FieldObjectEntity SearchCanHidenContactObject(global::System.Func<global::FieldObjectEntity, bool> CheckFunc, out int outIndex) {
+		EvDataManager evDataManager = EvDataManager.Instanse;
+		Vector3 playerpos = evDataManager.CalcContactCheckPos();
+		int count = evDataManager._fieldObjectEntity.Count;
+		for (int i = 0; i < count; i++)
+		{
+			FieldObjectEntity obj = evDataManager._fieldObjectEntity[i];
+			if (obj == null)
+				continue;
+			if (EvDataManager.Instanse.CanContact(obj, playerpos) && CheckFunc(obj))
+			{
+				outIndex = i;
+				return obj;
+			}
+		}
+		outIndex = 0;
+		return null;
+	}
 	private static bool CanHidenContact(global::System.Func<global::FieldObjectEntity, bool> CheckFunc) {
         int index = 0;
         return SearchCanHidenContactObject(CheckFunc, out index) != null;
@@ -340,12 +364,24 @@ public static class FieldPoketch
         PlayerWork._isPlayerInputActive_ContactEvent = false;
         EvDataManager.Instanse.JumpLabel(label, null);
     }
-	static FieldPoketch() { /*@B 0x600023A*/ throw null; }
+	static FieldPoketch() {
+		HidenWazaParams = new global::System.Collections.Generic.Dictionary<global::FieldPoketch.HidenWazaType, (global::Dpr.EvScript.EvWork.SYSFLAG_INDEX flag, global::Pml.ItemNo itemNo)>
+		{
+			{ HidenWazaType.Iwakudaki, (global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.BADGE_ID_C03, global::Pml.ItemNo.HIDENMASIN06) },
+			{ HidenWazaType.Iaigiri, (global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.BADGE_ID_C04, global::Pml.ItemNo.HIDENMASIN01) },
+			{ HidenWazaType.Sorawotobu, (global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.BADGE_ID_C07, global::Pml.ItemNo.HIDENMASIN02) },
+			{ HidenWazaType.Kiribarai, (global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.BADGE_ID_C06, global::Pml.ItemNo.HIDENMASIN05) },
+			{ HidenWazaType.Naminori, (global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.BADGE_ID_C05, global::Pml.ItemNo.HIDENMASIN03) },
+			{ HidenWazaType.Kairiki, (global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.BADGE_ID_C02, global::Pml.ItemNo.HIDENMASIN04) },
+			{ HidenWazaType.Rockclimb, (global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.BADGE_ID_C09, global::Pml.ItemNo.HIDENMASIN08) },
+			{ HidenWazaType.Takinobori, (global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.BADGE_ID_C08, global::Pml.ItemNo.HIDENMASIN07) },
+		};
+	}
 	public class DowsingResult
 	{
-		public global::System.Collections.Generic.List<global::UnityEngine.Vector2> ItemPoints;
+		public global::System.Collections.Generic.List<global::UnityEngine.Vector2> ItemPoints = new global::System.Collections.Generic.List<global::UnityEngine.Vector2>();
 		public bool ExistItem;
-		public DowsingResult() { /*@B 0x60092F2*/ throw null; }
+		public DowsingResult() { }
 	}
 	public enum HidenWazaType
 	{

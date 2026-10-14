@@ -5,11 +5,11 @@ public class FieldToUgInvisibleObjects
 {
 	private global::UnityEngine.Transform[] Objects;
 	private global::UnityEngine.Vector3[] BaseScale;
-	private global::Dpr.FieldFloatMove Scale;
-	private static string InvisibleName0;
-	private static string InvisibleName1;
-	private static float NearDist;
-	private static float NearDistSq;
+	private global::Dpr.FieldFloatMove Scale = new global::Dpr.FieldFloatMove();
+	private static string InvisibleName0 = "Flower";
+	private static string InvisibleName1 = "ComGrass";
+	private static float NearDist = 0.48f;
+	private static float NearDistSq = NearDist * NearDist;
 	public void SearchObjects() {
         FieldPlayerEntity player = EntityManager.activeFieldPlayer;
         if (player == null)
@@ -96,6 +96,6 @@ public class FieldToUgInvisibleObjects
             obj.SetActive(scaleValue > 0.0f);
         }
     }
-	public FieldToUgInvisibleObjects() { /*@B 0x6000250*/ throw null; }
-	static FieldToUgInvisibleObjects() { /*@B 0x6000251*/ throw null; }
+	public FieldToUgInvisibleObjects() { }
+	static FieldToUgInvisibleObjects() { }
 }
