@@ -103,15 +103,15 @@ namespace Dpr.Demo
 			cameraController.PlayAnim("chapter001-001_cut01", 0f);
 			yield return null;
 			cameraController.PauseAnim();
-			DrawMessage(++nowMessageNo);
+			DrawNextMessage();
 			yield return WaitMessageWindow(true, 0f);
 			global::DG.Tweening.DOTweenModuleUI.DOFade(manager.Fade, 0f, 2f);
 			cameraController.ResumeAnim();
 			global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Audio.AudioManager>.Instance.SetBgmEvent(global::AK.EVENTS.B_OTH003, false);
 			yield return new global::UnityEngine.WaitForSeconds(2f);
-			DrawMessage(++nowMessageNo);
+			DrawNextMessage();
 			yield return WaitMessageWindow(false, 0f);
-			DrawMessage(++nowMessageNo);
+			DrawNextMessage();
 			yield return WaitMessageWindow(true, 0f);
 			hakaseEntity.RequestAnimationState(global::BattleCharacterEntity.AnimationState.Wait02_B, 0.15f, 0f, false);
 			yield return new global::UnityEngine.WaitForSeconds(0.5f);
@@ -144,15 +144,15 @@ namespace Dpr.Demo
 			});
 			global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Audio.AudioManager>.Instance.PlaySe(global::AK.EVENTS.PLAY_BA_SYS_BALL_OPEN, null);
 			yield return new global::UnityEngine.WaitForSeconds(3.5f);
-			DrawMessage(++nowMessageNo);
+			DrawNextMessage();
 			yield return WaitMessageWindow(false, 0f);
-			DrawMessage(++nowMessageNo);
+			DrawNextMessage();
 			yield return WaitMessageWindow(false, 0f);
-			DrawMessage(++nowMessageNo);
+			DrawNextMessage();
 			yield return WaitMessageWindow(true, 0f);
 			yield return null;
 			yield return PlayerSelect(null, null); // TO CHECK: the inlined d__17 creation stores only this - the call's arguments are not recoverable (unused parameters are not hoisted)
-			DrawMessage(++nowMessageNo);
+			DrawNextMessage();
 			yield return WaitMessageWindow(true, 0f);
 			global::UnityEngine.GameObject rival = global::UnityEngine.Object.Instantiate(Rival3DModel, parent) as global::UnityEngine.GameObject;
 			rival.transform.localPosition = new global::UnityEngine.Vector3(-3f, 0f, 2.1f);
@@ -161,7 +161,7 @@ namespace Dpr.Demo
 			var tw = global::DG.Tweening.TweenSettingsExtensions.SetEase(global::DG.Tweening.ShortcutExtensions.DOLocalMove(cam.transform, new global::UnityEngine.Vector3(-3f, 1.2f, 5f), 2f, false), global::DG.Tweening.Ease.InOutQuint);
 			while (global::DG.Tweening.TweenExtensions.IsPlaying(tw))
 				yield return null;
-			DrawMessage(++nowMessageNo);
+			DrawNextMessage();
 			yield return WaitMessageWindow(false, 0f);
 			yield return RivalSelect();
 			cameraController.PlayAnim("chapter001-001_cut04", 0f);
@@ -170,17 +170,53 @@ namespace Dpr.Demo
 				animPlayer.Play(0x30, 0f, 0f);
 				animPlayer.forceLoop = true;
 			}, true);
-			DrawMessage(++nowMessageNo);
+			DrawNextMessage();
 			yield return WaitMessageWindow(false, 0f);
-			DrawMessage(++nowMessageNo);
+			DrawNextMessage();
 			yield return WaitMessageWindow(false, 0f);
-			DrawMessage(++nowMessageNo);
+			DrawNextMessage();
 			yield return WaitMessageWindow(true, 0f);
 			cameraController.PlayAnim("chapter001-001_cut05", 0f);
 			yield return new global::UnityEngine.WaitForSeconds(3f);
 			global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Audio.AudioManager>.Instance.SetBgmEvent("EV012", false);
 		}
-		private global::System.Collections.IEnumerator PlayerSelect(global::UnityEngine.GameObject gonbe, global::UnityEngine.UI.Image bgImage) { /*@B 0x6004854*/ throw null; }
+		private global::System.Collections.IEnumerator PlayerSelect(global::UnityEngine.GameObject gonbe, global::UnityEngine.UI.Image bgImage) {
+			bool isFinished = false;
+			while (!isFinished) {
+				bool isCharacterSelected = false;
+				bool isSelect;
+				if (openingController != null) {
+					openingController.OnFinishedCallBack = () => {
+						isCharacterSelected = true;
+					};
+					openingController.OpenSelectPlayerVisual();
+				}
+				else {
+					isCharacterSelected = true;
+				}
+				yield return new global::UnityEngine.WaitForSeconds(0.2f);
+				while (!isCharacterSelected)
+					yield return null;
+				global::Dpr.Message.MessageWordSetHelper.SetPlayerNickNameWord(0);
+				DrawNextMessage();
+				global::Dpr.MsgWindow.MsgWindowParam param = nowMSG;
+				isSelect = false;
+				param.onFinishedShowAllMessage = () => {
+					global::Dpr.MsgWindow.MsgWindowManager.OpenYesNoMenu(selectIndex => {
+						if (selectIndex != 0) {
+							nowMessageNo--;
+							isSelect = true;
+							return;
+						}
+						isFinished = true;
+						isSelect = true;
+					}, global::Dpr.UI.ContextMenuWindow.CursorType.Arrow, true, true, null, global::AK.EVENTS.UI_COMMON_DECIDE);
+				};
+				while (!isSelect)
+					yield return null;
+				CloseWindow();
+			}
+		}
 		private global::System.Collections.IEnumerator RivalSelect() { /*@B 0x6004855*/ throw null; }
 		public override void LightUpdate() {
             // FIX (b236): @01ad2750 — no base call: environmentSettings[1] (indexer-checked, no Count guard) with PeriodOfDay 1
