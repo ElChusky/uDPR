@@ -3,8 +3,18 @@ using Dpr.EvScript;
 public class FieldMistPlate
 {
 	private global::FieldEventEntity MistPlateEntity;
-	public void Setup(global::ZoneID zoneId) { /*@B 0x6000150*/ throw null; }
-	public void Terminate() { /*@B 0x6000151*/ throw null; }
+	public void Setup(global::ZoneID zoneId) {
+        if (zoneId == ZoneID.C10 || zoneId == ZoneID.R224)
+            MistPlateEntity = EvDataManager.Instanse.GetFieldEventEntity("P_D_010_HeightFog_01");
+        else if (zoneId == ZoneID.R206)
+            MistPlateEntity = EvDataManager.Instanse.GetFieldEventEntity("P_R_206_HeightFog_01");
+        else
+            MistPlateEntity = null;
+        Update(zoneId);
+    }
+	public void Terminate() {
+        MistPlateEntity = null;
+    }
 	public void Update(global::ZoneID zoneId) {
         switch (zoneId)
         {
@@ -22,6 +32,9 @@ public class FieldMistPlate
                 break;
         }
     }
-	public void SetVisible(bool visible) { /*@B 0x6000153*/ throw null; }
+	public void SetVisible(bool visible) {
+        if (MistPlateEntity != null && MistPlateEntity.isActiveAndEnabled != visible)
+            MistPlateEntity.SetActive(visible);
+    }
 	public FieldMistPlate() { }
 }

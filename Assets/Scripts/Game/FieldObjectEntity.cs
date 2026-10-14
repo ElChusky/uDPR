@@ -2,16 +2,16 @@
 public class FieldObjectEntity : global::BaseEntity
 {
 	[global::System.NonSerialized]
-	public global::UnityEngine.Vector3 moveVector;
+	public global::UnityEngine.Vector3 moveVector = global::UnityEngine.Vector3.zero;
 	[global::System.NonSerialized]
 	public bool isExtruded;
 	[global::System.NonSerialized]
-	public bool isLanding;
+	public bool isLanding = true;
 	private global::Dpr.RouteSearch.FieldObjectRouteMove _routeMove;
 	public bool IsIgnorePlayerCollision;
 	private global::EvEntityCommand _evEntityCmd;
 	[global::System.NonSerialized]
-	public global::UnityEngine.Vector3[] logPosition;
+	public global::UnityEngine.Vector3[] logPosition = new global::UnityEngine.Vector3[3];
 	[global::System.NonSerialized]
 	public byte logcount;
 	private bool _scaleChangeFlag;
@@ -20,33 +20,193 @@ public class FieldObjectEntity : global::BaseEntity
 	private float _scaleTime;
 	private float _scaleProgressTime;
 	[global::System.NonSerialized]
-	public global::Dpr.EvScript.EvDataManager.EntityParam EventParams;
-	public override string entityType { get { /*@B 0x60006D6*/ throw null; } }
+	public global::Dpr.EvScript.EvDataManager.EntityParam EventParams = new global::Dpr.EvScript.EvDataManager.EntityParam();
+	public override string entityType { get {
+            return "FieldObject";
+        } }
 	public global::UnityEngine.Vector3 oldMoveVector { get; private set; }
-	public global::UnityEngine.Vector4 locatorDirect { set { /*@B 0x60006D9*/ throw null; } }
-	public global::Dpr.RouteSearch.FieldObjectRouteMove RouteMove { get { /*@B 0x60006DA*/ throw null; } }
-	public bool IsBusyRouteMove { get { /*@B 0x60006DB*/ throw null; } }
-	public global::UnityEngine.Vector2Int gridPosition { get { /*@B 0x60006DC*/ throw null; } set { /*@B 0x60006DD*/ throw null; } }
-	public global::UnityEngine.Vector2Int gridPositionDirect { get { /*@B 0x60006DE*/ throw null; } set { /*@B 0x60006DF*/ throw null; } }
-	public global::EvEntityCommand EvEntityCmd { get { /*@B 0x60006E0*/ throw null; } }
+	public global::UnityEngine.Vector4 locatorDirect { set {
+            global::UnityEngine.Vector3 pos = transform.position;
+            if (value.x >= 0.0f)
+            {
+                value.x = (float)global::System.Math.Floor(-value.x);
+                value.y = (float)global::System.Math.Floor(value.y);
+            }
+            pos.x = value.x;
+            pos.y = value.w;
+            pos.z = value.y;
+            SetPositionDirect(pos);
+            moveVector = global::UnityEngine.Vector3.zero;
+            oldGridPosition = gridPosition;
+            SetYawAngleDirect(value.z * 90.0f);
+        } }
+	public global::Dpr.RouteSearch.FieldObjectRouteMove RouteMove { get {
+            if (_routeMove == null)
+                _routeMove = new global::Dpr.RouteSearch.FieldObjectRouteMove(this);
+            return _routeMove;
+        } }
+	public bool IsBusyRouteMove { get {
+            return _routeMove != null && _routeMove.IsBusy;
+        } }
+	public global::UnityEngine.Vector2Int gridPosition { get {
+            return new global::UnityEngine.Vector2Int((int)(0.5f - worldPosition.x), (int)(worldPosition.z + 0.5f));
+        } set {
+            worldPosition.x = -value.x;
+            worldPosition.z = value.y;
+        } }
+	public global::UnityEngine.Vector2Int gridPositionDirect { get {
+            return new global::UnityEngine.Vector2Int((int)(0.5f - transform.position.x), (int)(transform.position.z + 0.5f));
+        } set {
+            global::UnityEngine.Vector3 pos = transform.position;
+            SetPositionDirect(new global::UnityEngine.Vector3(-value.x, pos.y, value.y));
+        } }
+	public global::EvEntityCommand EvEntityCmd { get {
+            if (_evEntityCmd == null)
+                _evEntityCmd = new global::EvEntityCommand(this);
+            return _evEntityCmd;
+        } }
 	public global::UnityEngine.Vector2Int oldGridPosition { get; private set; }
-	public float Height { get { /*@B 0x60006E3*/ throw null; } set { /*@B 0x60006E4*/ throw null; } }
-	public static global::UnityEngine.Vector2 GridToPosition(global::UnityEngine.Vector2Int grid) { /*@B 0x60006E5*/ throw null; }
-	public static global::UnityEngine.Vector2Int PositionToGrid(global::UnityEngine.Vector3 position) { /*@B 0x60006E6*/ throw null; }
-	public static global::UnityEngine.Vector3 Vec2ToVec3Position(in global::UnityEngine.Vector2 position, float height) { /*@B 0x60006E7*/ throw null; }
-	public static global::UnityEngine.Vector2 Vec3ToVec2Position(in global::UnityEngine.Vector3 position) { /*@B 0x60006E8*/ throw null; }
-	protected override void OnUpdate(float deltaTime) { /*@B 0x60006E9*/ throw null; }
-	protected override void OnLateUpdate(float deltaTime) { /*@B 0x60006EA*/ throw null; }
-	protected override bool SwitchToNext() { /*@B 0x60006EB*/ throw null; }
-	protected override void ProcessSequence(float deltaTime) { /*@B 0x60006EC*/ throw null; }
-	public global::DIR GetDir() { /*@B 0x60006ED*/ throw null; }
-	public static global::DIR GetDir(float dir) { /*@B 0x60006EE*/ throw null; }
-	public void SetDir(global::DIR dir) { /*@B 0x60006EF*/ throw null; }
-	public static int GetIdleAnimation(global::FieldObjectEntity entity) { /*@B 0x60006F0*/ throw null; }
-	public static int GetWalkAnimation(global::FieldObjectEntity entity) { /*@B 0x60006F1*/ throw null; }
-	public void SetScaleData(float start = 1f, float end = 1f, float time = 0f) { /*@B 0x60006F2*/ throw null; }
-	private void ChangeScale(float deltaTime) { /*@B 0x60006F3*/ throw null; }
-	public FieldObjectEntity() { /*@B 0x60006F4*/ throw null; }
+	public float Height { get {
+            return transform.position.y;
+        } set {
+            global::UnityEngine.Vector3 pos = transform.position;
+            transform.position = new global::UnityEngine.Vector3(pos.x, value, pos.z);
+        } }
+	public static global::UnityEngine.Vector2 GridToPosition(global::UnityEngine.Vector2Int grid) {
+        return new global::UnityEngine.Vector2(-grid.x, grid.y);
+    }
+	public static global::UnityEngine.Vector2Int PositionToGrid(global::UnityEngine.Vector3 position) {
+        return new global::UnityEngine.Vector2Int((int)(0.5f - position.x), (int)(position.z + 0.5f));
+    }
+	public static global::UnityEngine.Vector3 Vec2ToVec3Position(in global::UnityEngine.Vector2 position, float height) {
+        return new global::UnityEngine.Vector3(position.x, height, position.y);
+    }
+	public static global::UnityEngine.Vector2 Vec3ToVec2Position(in global::UnityEngine.Vector3 position) {
+        return new global::UnityEngine.Vector2(position.x, position.z);
+    }
+	protected override void OnUpdate(float deltaTime) {
+        base.OnUpdate(deltaTime);
+        if (isActiveAndEnabled && _routeMove != null)
+            _routeMove.Update(deltaTime);
+    }
+	protected override void OnLateUpdate(float deltaTime) {
+        base.OnLateUpdate(deltaTime);
+        oldGridPosition = gridPosition;
+        worldPosition = worldPosition + moveVector;
+        oldMoveVector = moveVector;
+        moveVector = global::UnityEngine.Vector3.zero;
+        isExtruded = false;
+        if (isLanding)
+            worldPosition.y += CollisionUtility.CollideGround(worldPosition, 1.0f, Layer.Ground);
+
+        if (global::UnityEngine.Mathf.Abs(logPosition[0].x - worldPosition.x) >= 1.0f ||
+            global::UnityEngine.Mathf.Abs(logPosition[0].y - worldPosition.y) >= 1.0f ||
+            global::UnityEngine.Mathf.Abs(logPosition[0].z - worldPosition.z) >= 1.0f)
+        {
+            for (int i = logPosition.Length - 1; i >= 1; i--)
+                logPosition[i] = logPosition[i - 1];
+            logPosition[0] = worldPosition;
+            logcount = (byte)(logcount + 1) < 3 ? (byte)(logcount + 1) : (byte)3;
+        }
+        ChangeScale(deltaTime);
+    }
+	protected override bool SwitchToNext() {
+        return base.SwitchToNext();
+    }
+	protected override void ProcessSequence(float deltaTime) {
+        int seq = currentSequence;
+        if (seq == SequenceID.ScriptStop)
+            return;
+        if (seq == SequenceID.ScriptMove)
+        {
+            EvEntityCmd.ScriptMove(deltaTime);
+            return;
+        }
+        if (seq == BaseEntity.SequenceID.Initialize)
+            nextSequence = SequenceID.Active;
+        base.ProcessSequence(deltaTime);
+    }
+	public global::DIR GetDir() {
+        return GetDir(yawAngle);
+    }
+	public static global::DIR GetDir(float dir) {
+        float angle = (dir + 360.0f) % 360.0f;
+        if (angle < 45.0f)
+            return global::DIR.DIR_DOWN;
+        if (angle < 135.0f)
+            return global::DIR.DIR_LEFT;
+        if (angle < 225.0f)
+            return global::DIR.DIR_UP;
+        if (angle < 315.0f)
+            return global::DIR.DIR_RIGHT;
+        return global::DIR.DIR_DOWN;
+    }
+	public void SetDir(global::DIR dir) {
+        switch (dir)
+        {
+            case global::DIR.DIR_UP:
+                yawAngle = 180.0f;
+                break;
+            case global::DIR.DIR_DOWN:
+                yawAngle = 0.0f;
+                break;
+            case global::DIR.DIR_LEFT:
+                yawAngle = 90.0f;
+                break;
+            case global::DIR.DIR_RIGHT:
+                yawAngle = 270.0f;
+                break;
+        }
+        SetYawAngleDirect(yawAngle);
+    }
+	public static int GetIdleAnimation(global::FieldObjectEntity entity) {
+        var character = entity as global::FieldCharacterEntity;
+        if (character != null)
+        {
+            character.GetIdleAnimationIndex(out int index, out float duration);
+            return index;
+        }
+        var pokemon = entity as global::FieldPokemonEntity;
+        if (pokemon != null)
+            return pokemon.GetIdleAnimationIndex();
+        return 0;
+    }
+	public static int GetWalkAnimation(global::FieldObjectEntity entity) {
+        var character = entity as global::FieldCharacterEntity;
+        if (character != null)
+            return character.GetWalkAnimationIndex();
+        var pokemon = entity as global::FieldPokemonEntity;
+        if (pokemon != null)
+            return pokemon.GetWalkAnimationIndex();
+        return 0;
+    }
+	public void SetScaleData(float start = 1f, float end = 1f, float time = 0f) {
+        _scaleChangeFlag = true;
+        _scaleStart = start;
+        _scaleEnd = end;
+        _scaleTime = time;
+        _scaleProgressTime = 0.0f;
+    }
+	private void ChangeScale(float deltaTime) {
+        if (!_scaleChangeFlag)
+            return;
+        _scaleProgressTime += deltaTime;
+        float scale = global::UnityEngine.Mathf.Lerp(_scaleStart, _scaleEnd, _scaleProgressTime / _scaleTime);
+        global::UnityEngine.Vector3 localScale = transform.localScale;
+        localScale.x = scale;
+        localScale.y = scale;
+        localScale.z = scale;
+        transform.SetLocalScale(localScale);
+        if (_scaleTime <= _scaleProgressTime)
+        {
+            _scaleChangeFlag = false;
+            _scaleStart = 0.0f;
+            _scaleEnd = 0.0f;
+            _scaleTime = 0.0f;
+            _scaleProgressTime = 0.0f;
+        }
+    }
+	public FieldObjectEntity() { }
 	public class SequenceID : global::BaseEntity.SequenceID
 	{
 		public const int Active = 4096;

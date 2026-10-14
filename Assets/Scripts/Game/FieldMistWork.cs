@@ -6,8 +6,10 @@ public class FieldMistWork
 {
 	private global::EnvironmentSettings currentSetting;
 	private global::EnvironmentSettings mistSetting;
-	private global::Dpr.FieldFloatMove mistWeight;
-	public bool IsEnable { get { /*@B 0x6000158*/ throw null; } }
+	private global::Dpr.FieldFloatMove mistWeight = new global::Dpr.FieldFloatMove();
+	public bool IsEnable { get {
+            return mistWeight.IsBusy || mistWeight.CurrentValue > 0.0f;
+        } }
 	public static bool CheckMistWeather() {
         return WeatherWork.WeatherID == SYS_WEATHER.MIST1 || WeatherWork.WeatherID == SYS_WEATHER.MIST2;
     }
@@ -138,5 +140,5 @@ public class FieldMistWork
 
         float Get() { return DataManager.FieldCommonParam[index++].param; }
     }
-	public FieldMistWork() { /*@B 0x6000161*/ throw null; }
+	public FieldMistWork() { }
 }

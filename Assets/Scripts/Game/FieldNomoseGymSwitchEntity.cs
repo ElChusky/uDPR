@@ -4,15 +4,50 @@ public class FieldNomoseGymSwitchEntity : global::FieldEventEntity
 	public int WaterLevel;
 	public string WaterEventLabel;
 	[global::System.NonSerialized]
-	public global::Dpr.FieldFloatMove HeightMove;
+	public global::Dpr.FieldFloatMove HeightMove = new global::Dpr.FieldFloatMove();
 	private float DefaultHeightValue;
 	private float PushedHeightValue;
-	protected override void Awake() { /*@B 0x60006C4*/ throw null; }
-	protected override void OnUpdate(float deltaTime) { /*@B 0x60006C5*/ throw null; }
-	public bool IsPushed() { /*@B 0x60006C6*/ throw null; }
-	public void Setup() { /*@B 0x60006C7*/ throw null; }
-	public void ChangeState(int level) { /*@B 0x60006C8*/ throw null; }
-	private float GetHeightValue(bool pushed) { /*@B 0x60006C9*/ throw null; }
-	private void SetHeight(float height) { /*@B 0x60006CA*/ throw null; }
-	public FieldNomoseGymSwitchEntity() { /*@B 0x60006CB*/ throw null; }
+	protected override void Awake() {
+        base.Awake();
+        HeightMove.EaseFunc = global::Dpr.FieldFloatMove.EaseInOutSin;
+        isLanding = false;
+        float ofs = GameData.DataManager.FieldCommonParam[(int)FieldCommon.ParamIndx.NomoseSwitchOfs].param;
+        DefaultHeightValue = ToWorldValue(0.0f);
+        PushedHeightValue = ToWorldValue(ofs);
+
+        float ToWorldValue(float localValue)
+        {
+            global::UnityEngine.Vector3 pos = transform.localPosition;
+            pos[1] = localValue;
+            return transform.parent.TransformPoint(pos)[1];
+        }
+    }
+	protected override void OnUpdate(float deltaTime) {
+        base.OnUpdate(deltaTime);
+        if (enabled && HeightMove.IsBusy)
+        {
+            HeightMove.Update(deltaTime);
+            SetHeight(HeightMove.CurrentValue);
+        }
+    }
+	public bool IsPushed() {
+        if (EntityManager.fieldNomoseGymWater.Length == 0)
+            return false;
+        return EntityManager.fieldNomoseGymWater[0].WaterLevel == WaterLevel;
+    }
+	public void Setup() {
+        HeightMove.SetValue(GetHeightValue(IsPushed()));
+        SetHeight(HeightMove.CurrentValue);
+    }
+	public void ChangeState(int level) {
+        float time = GameData.DataManager.FieldCommonParam[(int)FieldCommon.ParamIndx.NomoseSwitchTime].param;
+        HeightMove.MoveTime(GetHeightValue(WaterLevel == level), time);
+    }
+	private float GetHeightValue(bool pushed) {
+        return pushed ? PushedHeightValue : DefaultHeightValue;
+    }
+	private void SetHeight(float height) {
+        SetPositionDirect(new global::UnityEngine.Vector3(worldPosition.x, height, worldPosition.z));
+    }
+	public FieldNomoseGymSwitchEntity() { }
 }
