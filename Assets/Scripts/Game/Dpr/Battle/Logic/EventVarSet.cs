@@ -3,10 +3,24 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class EventVarSet
 	{
-		private global::Dpr.Battle.Logic.EventVar[] m_pVariables;
-		public EventVarSet() { /*@B 0x6006B6C*/ throw null; }
-		public void Clear() { /*@B 0x6006B6D*/ throw null; }
-		public global::Dpr.Battle.Logic.EventVar GetVariable(global::Dpr.Battle.Logic.EventVar.Label label) { /*@B 0x6006B6E*/ throw null; }
-		public void SetVariable(global::Dpr.Battle.Logic.EventVar variable) { /*@B 0x6006B6F*/ throw null; }
+		private global::Dpr.Battle.Logic.EventVar[] m_pVariables = new global::Dpr.Battle.Logic.EventVar[(int)global::Dpr.Battle.Logic.EventVar.Label.NUM];
+		public EventVarSet() {
+			Clear();
+		}
+		public void Clear() {
+			for (int i = 0; i < m_pVariables.Length; i++)
+				m_pVariables[i] = null;
+		}
+		public global::Dpr.Battle.Logic.EventVar GetVariable(global::Dpr.Battle.Logic.EventVar.Label label) {
+			if ((int)label >= m_pVariables.Length)
+				return null;
+			return m_pVariables[(int)label];
+		}
+		public void SetVariable(global::Dpr.Battle.Logic.EventVar variable) {
+			EventVar.Label label = variable.GetLabel();
+			if ((int)label >= m_pVariables.Length)
+				return;
+			m_pVariables[(int)label] = variable;
+		}
 	}
 }

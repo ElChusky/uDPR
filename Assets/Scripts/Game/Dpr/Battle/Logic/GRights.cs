@@ -5,12 +5,25 @@ namespace Dpr.Battle.Logic
 	{
 		private readonly global::Dpr.Battle.Logic.MainModule m_pMainModule;
 		private readonly global::Dpr.Battle.Logic.BattleEnv m_pBattleEnv;
-		private global::Dpr.Battle.Logic.GRights.ClientInfo[] m_clientInfo;
+		private global::Dpr.Battle.Logic.GRights.ClientInfo[] m_clientInfo = Arrays.InitializeWithDefaultInstances<ClientInfo>((int)BTL_CLIENT_ID.BTL_CLIENT_NUM);
 		private byte m_clientNum;
 		private byte m_assignedClientIdx;
 		private uint m_passedTurnCount;
-		public GRights(global::Dpr.Battle.Logic.MainModule pMainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv) { /*@B 0x6007646*/ throw null; }
-		public void Initialize() { /*@B 0x6007647*/ throw null; }
+		public GRights(global::Dpr.Battle.Logic.MainModule pMainModule, global::Dpr.Battle.Logic.BattleEnv pBattleEnv) {
+			m_pMainModule = pMainModule;
+			m_pBattleEnv = pBattleEnv;
+			Initialize();
+		}
+		public void Initialize() {
+			for (byte i = 0; i < m_clientInfo.Length; i++)
+			{
+				m_clientInfo[i].clientID = BTL_CLIENT_ID.BTL_CLIENT_NUM;
+				m_clientInfo[i].isInvalid = false;
+			}
+			m_clientNum = 0;
+			m_assignedClientIdx = 0;
+			m_passedTurnCount = 0;
+		}
 		public void CopyFrom(in global::Dpr.Battle.Logic.GRights src) {
             for (int i = 0; i < m_clientInfo.Length; i++)
                 m_clientInfo[i].CopyFrom(src.m_clientInfo[i]);
@@ -96,7 +109,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_CLIENT_ID clientID;
 			public bool isInvalid;
-			public void CopyFrom(global::Dpr.Battle.Logic.GRights.ClientInfo src) { /*@B 0x600B6B4*/ throw null; }
+			public void CopyFrom(global::Dpr.Battle.Logic.GRights.ClientInfo src) {
+				clientID = src.clientID;
+				isInvalid = src.isInvalid;
+			}
 			public ClientInfo() { }
 		}
 	}

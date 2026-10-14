@@ -5,10 +5,21 @@ namespace Dpr.Battle.Logic
 	{
 		private const int TURN_MAX = 16;
 		private const int DEPEND_POKE_NUM_MAX = 5;
-		private global::Dpr.Battle.Logic.FieldStatus.Data m_data;
-		public FieldStatus() { /*@B 0x6007A17*/ throw null; }
-		public void Init() { /*@B 0x6007A18*/ throw null; }
-		private void initWork() { /*@B 0x6007A19*/ throw null; }
+		private global::Dpr.Battle.Logic.FieldStatus.Data m_data = new Data();
+		public FieldStatus() {
+			initWork();
+		}
+		public void Init() {
+			initWork();
+		}
+		private void initWork() {
+			for (EffectType effect = 0; effect < EffectType.EFF_MAX; effect++)
+				clearFactorWork(effect);
+			m_data.weather = BtlWeather.BTL_WEATHER_NONE;
+			m_data.weatherTurn = DefineConstants.BTL_WEATHER_TURN_PERMANENT;
+			m_data.weatherTurnCount = 0;
+			m_data.weatherCausePokeID = 31; // BTL_POKEID_NULL
+		}
 		public void CopyFrom(in global::Dpr.Battle.Logic.FieldStatus src) {
             m_data.CopyFrom(src.m_data);
         }
@@ -42,7 +53,12 @@ namespace Dpr.Battle.Logic
             m_data.weatherTurnCount = 0;
             m_data.weatherCausePokeID = causePokeID;
         }
-		public void EndWeather() { /*@B 0x6007A22*/ throw null; }
+		public void EndWeather() {
+			m_data.weather = BtlWeather.BTL_WEATHER_NONE;
+			m_data.weatherTurn = 0;
+			m_data.weatherTurnCount = 0;
+			m_data.weatherCausePokeID = 31; // BTL_POKEID_NULL
+		}
 		public global::Dpr.Battle.Logic.BtlWeather TurnCheckWeather() {
             if (m_data.weather != BtlWeather.BTL_WEATHER_NONE && m_data.weatherTurn != DefineConstants.BTL_WEATHER_TURN_PERMANENT)
             {
@@ -277,12 +293,12 @@ namespace Dpr.Battle.Logic
 			public uint weatherTurnCount;
 			public byte weatherCausePokeID;
 			public global::Dpr.Battle.Logic.BtlGround currentGround;
-			public global::Dpr.Battle.Logic.BTL_SICKCONT[] cont;
-			public uint[] turnCount;
-			public uint[][] dependPokeID;
-			public uint[] dependPokeCount;
-			public bool[] enableFlag;
-			public ushort[] subParam;
+			public global::Dpr.Battle.Logic.BTL_SICKCONT[] cont = Arrays.InitializeWithDefaultInstances<BTL_SICKCONT>((int)EffectType.EFF_MAX);
+			public uint[] turnCount = new uint[(int)EffectType.EFF_MAX];
+			public uint[][] dependPokeID = RectangularArrays.RectangularDefaultArray<uint>((int)EffectType.EFF_MAX, DEPEND_POKE_NUM_MAX);
+			public uint[] dependPokeCount = new uint[(int)EffectType.EFF_MAX];
+			public bool[] enableFlag = new bool[(int)EffectType.EFF_MAX];
+			public ushort[] subParam = new ushort[(int)EffectType.EFF_MAX];
 			public void CopyFrom(global::Dpr.Battle.Logic.FieldStatus.Data src) {
                 weather = src.weather;
                 weatherTurn = src.weatherTurn;
@@ -310,7 +326,7 @@ namespace Dpr.Battle.Logic
                 for (int i = 0; i < subParam.Length; i++)
                     subParam[i] = src.subParam[i];
             }
-			public Data() { /*@B 0x600B6F5*/ throw null; }
+			public Data() { }
 		}
 	}
 }

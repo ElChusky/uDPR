@@ -6,8 +6,16 @@ namespace Dpr.Battle.Logic
 {
 	public static class ExpCalculator
 	{
-		private static readonly global::Dpr.Battle.Logic.ExpCalculator.calcEffortExp_PokeTableElem[] RelationTbl;
-		private static readonly global::Pml.Personal.ParamID[] PERSONAL_PARAM_TABLE;
+		private static readonly global::Dpr.Battle.Logic.ExpCalculator.calcEffortExp_PokeTableElem[] RelationTbl = new calcEffortExp_PokeTableElem[]
+		{
+			new calcEffortExp_PokeTableElem(ParamID.PAINS_HP, PowerID.HP, 294),
+			new calcEffortExp_PokeTableElem(ParamID.PAINS_ATK, PowerID.ATK, 289),
+			new calcEffortExp_PokeTableElem(ParamID.PAINS_DEF, PowerID.DEF, 290),
+			new calcEffortExp_PokeTableElem(ParamID.PAINS_AGI, PowerID.AGI, 293),
+			new calcEffortExp_PokeTableElem(ParamID.PAINS_SPATK, PowerID.SPATK, 291),
+			new calcEffortExp_PokeTableElem(ParamID.PAINS_SPDEF, PowerID.SPDEF, 292),
+		};
+		private static readonly global::Pml.Personal.ParamID[] PERSONAL_PARAM_TABLE = new global::Pml.Personal.ParamID[] { ParamID.PAINS_HP, ParamID.PAINS_ATK, ParamID.PAINS_DEF, ParamID.PAINS_AGI, ParamID.PAINS_SPATK, ParamID.PAINS_SPDEF };
 		public static bool CalcExp(global::Dpr.Battle.Logic.ExpCalculator.CalcExpContainer result, in global::Dpr.Battle.Logic.ExpCalculator.CalcParam param) {
 			CalcExpContainer tmpResult = new CalcExpContainer();
 			calcExp_Party(tmpResult, param.myStatus, param.mainModule, param.party, param.deadPoke);
@@ -142,7 +150,7 @@ namespace Dpr.Battle.Logic
 				total *= 2;
 			result.g = (byte)total;
 		}
-		static ExpCalculator() { /*@B 0x6006B90*/ throw null; }
+		static ExpCalculator() { }
 		public class CalcExpWork
 		{
 			public uint exp;
@@ -156,7 +164,19 @@ namespace Dpr.Battle.Logic
 			public bool fBonus;
 			public bool bGakusyuSouti;
 			public bool bGakusyuSoutiOnly;
-			public void Clear() { /*@B 0x600B48D*/ throw null; }
+			public void Clear() {
+				exp = 0;
+				hp = 0;
+				pow = 0;
+				def = 0;
+				agi = 0;
+				sp_pow = 0;
+				sp_def = 0;
+				g = 0;
+				fBonus = false;
+				bGakusyuSouti = false;
+				bGakusyuSoutiOnly = true;
+			}
 			public void Marge(in global::Dpr.Battle.Logic.ExpCalculator.CalcExpWork rhs) {
 				exp += rhs.exp;
 				hp += rhs.hp;
@@ -176,8 +196,13 @@ namespace Dpr.Battle.Logic
 		public class CalcExpContainer
 		{
 			public global::Dpr.Battle.Logic.ExpCalculator.CalcExpWork[] work = Arrays.InitializeWithDefaultInstances<CalcExpWork>(DefineConstants.BTL_PARTY_MEMBER_MAX);
-			public CalcExpContainer() { /*@B 0x600B490*/ throw null; }
-			public void Clear() { /*@B 0x600B491*/ throw null; }
+			public CalcExpContainer() {
+				Clear();
+			}
+			public void Clear() {
+				for (byte i = 0; i < work.Length; i++)
+					work[i].Clear();
+			}
 			public bool IsExpExist() {
 				for (byte i = 0; i < work.Length; i++)
 				{
@@ -216,7 +241,11 @@ namespace Dpr.Battle.Logic
 			public global::Pml.Personal.ParamID personalParamID;
 			public global::Pml.PokePara.PowerID pokeParamID;
 			public ushort boostItemID;
-			public calcEffortExp_PokeTableElem(global::Pml.Personal.ParamID personalParamID, global::Pml.PokePara.PowerID pokeParamID, ushort boostItemID) { /*@B 0x600B495*/ throw null; }
+			public calcEffortExp_PokeTableElem(global::Pml.Personal.ParamID personalParamID, global::Pml.PokePara.PowerID pokeParamID, ushort boostItemID) {
+				this.personalParamID = personalParamID;
+				this.pokeParamID = pokeParamID;
+				this.boostItemID = boostItemID;
+			}
 		}
 	}
 }
