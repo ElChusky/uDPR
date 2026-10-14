@@ -3,8 +3,12 @@ namespace SmartPoint.AssetAssistant
 {
 	public abstract class SequenceMonoBehaviour : global::UnityEngine.MonoBehaviour
 	{
-		protected virtual void OnEnable() { /*@B AssetAssistant:0x600017D*/ throw null; }
-		protected virtual void OnDisable() { /*@B AssetAssistant:0x600017E*/ throw null; }
+		protected virtual void OnEnable() {
+			global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+		}
+		protected virtual void OnDisable() {
+			global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+		}
 		protected abstract void OnUpdate(float deltaTime);
 		protected SequenceMonoBehaviour() { }
 	}

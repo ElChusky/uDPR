@@ -4,41 +4,77 @@ namespace SmartPoint.AssetAssistant
 	public class SceneDatabase : global::SmartPoint.AssetAssistant.SingletonScriptableObject<global::SmartPoint.AssetAssistant.SceneDatabase>
 	{
 		[global::UnityEngine.SerializeField]
-		private global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty[] _properties;
+		private global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty[] _properties = global::SmartPoint.AssetAssistant.UnityExtensions.ArrayHelper.Empty<global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty>();
 		[global::System.NonSerialized]
 		private global::System.Collections.Generic.Dictionary<string, global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty> _sceneDictionary;
-		protected override void OnEnable() { /*@B AssetAssistant:0x6000160*/ throw null; }
-		public void InternalUpdate() { /*@B AssetAssistant:0x6000161*/ throw null; }
-		public static bool Contains(string scenePath) { /*@B AssetAssistant:0x6000162*/ throw null; }
-		public static string GUIDToPath(string guid) { /*@B AssetAssistant:0x6000163*/ throw null; }
-		public static bool IsExist(string scenePath) { /*@B AssetAssistant:0x6000164*/ throw null; }
-		public static global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty GetProperty(string scenePath) { /*@B AssetAssistant:0x6000165*/ throw null; }
-		public static string GetAssetBundleName(string scenePath) { /*@B AssetAssistant:0x6000166*/ throw null; }
-		public static void AddProperty(string path) { /*@B AssetAssistant:0x6000167*/ throw null; }
-		public static global::System.Collections.Generic.Dictionary<string, global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty> GetAllSceneProperty() { /*@B AssetAssistant:0x6000168*/ throw null; }
-		public SceneDatabase() { /*@B AssetAssistant:0x6000169*/ throw null; }
+		protected override void OnEnable() {
+			base.OnEnable();
+			InternalUpdate();
+		}
+		public void InternalUpdate() {
+			_sceneDictionary = new global::System.Collections.Generic.Dictionary<string, global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty>();
+			for (int i = 0; i < _properties.Length; i++)
+				_sceneDictionary.Add(_properties[i].scenePath, _properties[i]);
+		}
+		public static bool Contains(string scenePath) {
+			return instance._sceneDictionary.ContainsKey(scenePath);
+		}
+		public static string GUIDToPath(string guid) {
+			foreach (var property in instance._sceneDictionary.Values) {
+				if (property.guid == guid)
+					return property.scenePath;
+			}
+			return string.Empty;
+		}
+		public static bool IsExist(string scenePath) {
+			return instance._sceneDictionary.ContainsKey(scenePath);
+		}
+		public static global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty GetProperty(string scenePath) {
+			global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty property = null;
+			if (!instance._sceneDictionary.TryGetValue(scenePath, out property))
+				property = null;
+			return property;
+		}
+		public static string GetAssetBundleName(string scenePath) {
+			global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty property = null;
+			bool found = instance._sceneDictionary.TryGetValue(scenePath, out property);
+			if (property != null && found && !string.IsNullOrEmpty(property.assetBundleName))
+				return property.assetBundleName;
+			return string.Empty;
+		}
+		public static void AddProperty(string path) {
+			if (instance._sceneDictionary.ContainsKey(path))
+				return;
+			instance._sceneDictionary.Add(path, new global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty(path));
+		}
+		public static global::System.Collections.Generic.Dictionary<string, global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty> GetAllSceneProperty() {
+			return instance._sceneDictionary;
+		}
+		public SceneDatabase() { }
 		[global::System.Serializable]
 		public class SceneProperty
 		{
 			[global::UnityEngine.SerializeField]
-			private string _scenePath;
+			private string _scenePath = string.Empty;
 			[global::UnityEngine.SerializeField]
-			private string _guid;
+			private string _guid = string.Empty;
 			[global::UnityEngine.SerializeField]
-			private string _assetBundleName;
+			private string _assetBundleName = string.Empty;
 			[global::UnityEngine.SerializeField]
 			private bool _dontDiscard;
 			[global::UnityEngine.SerializeField]
-			private bool _leaveHistory;
+			private bool _leaveHistory = true;
 			[global::UnityEngine.SerializeField]
-			private string[] _includes;
+			private string[] _includes = global::SmartPoint.AssetAssistant.UnityExtensions.ArrayHelper.Empty<string>();
 			public string scenePath { get { return this._scenePath; } }
 			public string guid { get { return this._guid; } }
 			public string assetBundleName { get { return this._assetBundleName; } }
 			public bool dontDiscard { get { return this._dontDiscard; } }
 			public bool leaveHistroy { get { return this._leaveHistory; } }
 			public string[] includes { get { return this._includes; } }
-			public SceneProperty(string path) { /*@B AssetAssistant:0x6000278*/ throw null; }
+			public SceneProperty(string path) {
+				_scenePath = path;
+			}
 		}
 	}
 }

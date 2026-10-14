@@ -8,24 +8,144 @@ namespace SmartPoint.AssetAssistant
 		private bool _isRequested;
 		private bool _isLoaded;
 		private global::UnityEngine.GameObject _suspendObject;
-		private global::SmartPoint.AssetAssistant.SceneEntity[] _includes;
-		private global::System.Collections.Generic.Dictionary<global::UnityEngine.MonoBehaviour, global::System.Collections.Generic.Queue<global::SmartPoint.AssetAssistant.SceneEntity.Operation>> _activateOperations;
-		public string path { get { /*@B AssetAssistant:0x600016C*/ throw null; } }
+		private global::SmartPoint.AssetAssistant.SceneEntity[] _includes = global::SmartPoint.AssetAssistant.UnityExtensions.ArrayHelper.Empty<global::SmartPoint.AssetAssistant.SceneEntity>();
+		private global::System.Collections.Generic.Dictionary<global::UnityEngine.MonoBehaviour, global::System.Collections.Generic.Queue<global::SmartPoint.AssetAssistant.SceneEntity.Operation>> _activateOperations = new global::System.Collections.Generic.Dictionary<global::UnityEngine.MonoBehaviour, global::System.Collections.Generic.Queue<global::SmartPoint.AssetAssistant.SceneEntity.Operation>>();
+		public string path { get { return _property.scenePath; } }
 		public global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty property { get { return this._property; } }
 		public global::UnityEngine.GameObject cluster { get { return this._suspendObject; } }
 		public global::SmartPoint.AssetAssistant.SceneEntity[] includes { get { return this._includes; } set { this._includes = value; } }
-		public bool isRequested { get { return this._isRequested; } set { /*@B AssetAssistant:0x6000172*/ throw null; } }
-		public global::UnityEngine.Transform clusterRootTransform { get { /*@B AssetAssistant:0x6000173*/ throw null; } }
-		public bool isLoaded { get { return this._isLoaded; } set { /*@B AssetAssistant:0x6000175*/ throw null; } }
-		public bool isActivatable { get { /*@B AssetAssistant:0x6000177*/ throw null; } }
-		public SceneEntity(string sceneName) { /*@B AssetAssistant:0x600016A*/ throw null; }
-		public SceneEntity(global::UnityEngine.SceneManagement.Scene scene) { /*@B AssetAssistant:0x600016B*/ throw null; }
-		public global::UnityEngine.MonoBehaviour[] FindScripts() { /*@B AssetAssistant:0x6000176*/ throw null; }
-		private bool CanActivate() { /*@B AssetAssistant:0x6000178*/ throw null; }
+		public bool isRequested { get { return this._isRequested; } set { _isRequested = value; } }
+		public global::UnityEngine.Transform clusterRootTransform { get {
+			if (_suspendObject == null)
+				return null;
+			return _suspendObject.transform;
+		} }
+		public bool isLoaded { get { return this._isLoaded; } set {
+			if (_isLoaded == value)
+				return;
+			if (value) {
+				_scene = global::UnityEngine.SceneManagement.SceneManager.GetSceneByPath(_property.scenePath);
+				global::UnityEngine.GameObject[] roots = _scene.GetRootGameObjects();
+				if (roots.Length != 0)
+					_suspendObject = roots[0];
+				if (global::UnityEngine.Application.isEditor && global::SmartPoint.AssetAssistant.StartupSettings.assetBundleTarget != global::SmartPoint.AssetAssistant.AssetBundleTarget.AssetDatabase)
+					global::SmartPoint.AssetAssistant.Sequencer.editorProxy.ReloadEditorShadersInScene(_scene);
+				_activateOperations.Clear();
+				global::UnityEngine.MonoBehaviour[] behaviours = _suspendObject.GetComponentsInChildren<global::UnityEngine.MonoBehaviour>(true);
+				for (int i = 0; i < behaviours.Length; i++) {
+					global::UnityEngine.MonoBehaviour behaviour = behaviours[i];
+					if (behaviour == null)
+						continue;
+					global::System.Reflection.MethodInfo method = global::SmartPoint.AssetAssistant.SceneBrowser.GetSceneRestoreOperationMethod(behaviour.GetType());
+					if (method != null) {
+						global::System.Collections.Generic.Queue<global::SmartPoint.AssetAssistant.SceneEntity.Operation> queue;
+						if (!_activateOperations.TryGetValue(behaviour, out queue)) {
+							queue = new global::System.Collections.Generic.Queue<global::SmartPoint.AssetAssistant.SceneEntity.Operation>();
+							_activateOperations.Add(behaviour, queue);
+						}
+						global::SmartPoint.AssetAssistant.SceneEntity.Operation operation = new global::SmartPoint.AssetAssistant.SceneEntity.Operation();
+						operation.behaviour = behaviour;
+						operation.method = method;
+						if (global::SmartPoint.AssetAssistant.AssetManager.isReady)
+							operation.coroutine = global::SmartPoint.AssetAssistant.Sequencer.Start(method.Invoke(behaviour, new global::SmartPoint.AssetAssistant.SceneEntity[] { this }) as global::System.Collections.IEnumerator);
+						queue.Enqueue(operation);
+					}
+				}
+			}
+			_isLoaded = value;
+		} }
+		public bool isActivatable { get {
+			bool result = true;
+			for (int i = 0; i < _includes.Length; i++)
+				result &= _includes[i].CanActivate();
+			return result & CanActivate();
+		} }
+		public SceneEntity(string sceneName) {
+			_property = global::SmartPoint.AssetAssistant.SceneDatabase.GetProperty(sceneName);
+		}
+		public SceneEntity(global::UnityEngine.SceneManagement.Scene scene) {
+			_scene = scene;
+			_isRequested = false;
+			_isLoaded = true;
+			_property = new global::SmartPoint.AssetAssistant.SceneDatabase.SceneProperty(scene.path);
+		}
+		public global::UnityEngine.MonoBehaviour[] FindScripts() {
+			global::System.Collections.Generic.List<global::UnityEngine.MonoBehaviour> list = new global::System.Collections.Generic.List<global::UnityEngine.MonoBehaviour>();
+			for (int i = 0; i < _includes.Length; i++) {
+				global::UnityEngine.GameObject[] includeRoots = _includes[i].GetRootGameObjects();
+				for (int j = 0; j < includeRoots.Length; j++)
+					list.AddRange(includeRoots[j].GetComponentsInChildren<global::UnityEngine.MonoBehaviour>(true));
+			}
+			global::UnityEngine.GameObject[] roots = _scene.GetRootGameObjects();
+			for (int i = 0; i < roots.Length; i++)
+				list.AddRange(roots[i].GetComponentsInChildren<global::UnityEngine.MonoBehaviour>(true));
+			return list.ToArray();
+		}
+		private bool CanActivate() {
+			if (!_isLoaded)
+				return false;
+			if (_activateOperations.Count > 0) {
+				bool busy = false;
+				foreach (var queue in _activateOperations.Values) {
+					if (queue.Count == 0)
+						continue;
+					global::SmartPoint.AssetAssistant.SceneEntity.Operation operation = queue.Peek();
+					if (operation.coroutine == null) {
+						operation.coroutine = global::SmartPoint.AssetAssistant.Sequencer.Start(operation.method.Invoke(operation.behaviour, new global::SmartPoint.AssetAssistant.SceneEntity[] { this }) as global::System.Collections.IEnumerator);
+						busy = true;
+					}
+					else {
+						if (global::SmartPoint.AssetAssistant.Sequencer.IsFinished(operation.coroutine))
+							queue.Dequeue();
+						busy |= queue.Count > 0;
+					}
+				}
+				if (!busy)
+					_activateOperations.Clear();
+			}
+			return _activateOperations.Count == 0;
+		}
 		private bool CanDeactivate() { return true; }
-		public global::UnityEngine.GameObject[] GetRootGameObjects() { /*@B AssetAssistant:0x600017A*/ throw null; }
-		public void Suspend() { /*@B AssetAssistant:0x600017B*/ throw null; }
-		public void Resume() { /*@B AssetAssistant:0x600017C*/ throw null; }
+		public global::UnityEngine.GameObject[] GetRootGameObjects() {
+			global::UnityEngine.SceneManagement.Scene scene = global::UnityEngine.SceneManagement.SceneManager.GetSceneByPath(_property.scenePath);
+			if (scene.IsValid() && scene.isLoaded)
+				return scene.GetRootGameObjects();
+			return global::SmartPoint.AssetAssistant.UnityExtensions.ArrayHelper.Empty<global::UnityEngine.GameObject>();
+		}
+		public void Suspend() {
+			if (_suspendObject == null) {
+				global::UnityEngine.GameObject go = new global::UnityEngine.GameObject("Suspend");
+				go.SetActive(false);
+				global::UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(go, _scene);
+				_suspendObject = go;
+			}
+			global::UnityEngine.GameObject[] roots = GetRootGameObjects();
+			global::UnityEngine.Transform parent = _suspendObject.transform;
+			for (int i = 0; i < roots.Length; i++) {
+				global::UnityEngine.GameObject root = roots[i];
+				if (root == null)
+					continue;
+				if (root == _suspendObject)
+					continue;
+				root.transform.SetParent(parent);
+			}
+		}
+		public void Resume() {
+			if (_suspendObject == null)
+				return;
+			if (!_suspendObject.activeSelf)
+				_suspendObject.SetActive(true);
+			global::UnityEngine.Transform transform = _suspendObject.transform;
+			int childCount = transform.childCount;
+			global::UnityEngine.GameObject[] children = new global::UnityEngine.GameObject[childCount];
+			for (int i = 0; i < childCount; i++)
+				children[i] = transform.GetChild(i).gameObject;
+			transform.DetachChildren();
+			for (int i = 0; i < childCount; i++)
+				global::UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(children[i], _scene);
+			global::UnityEngine.Object.Destroy(_suspendObject);
+			_suspendObject = null;
+		}
 		private class Operation
 		{
 			public global::UnityEngine.MonoBehaviour behaviour;
