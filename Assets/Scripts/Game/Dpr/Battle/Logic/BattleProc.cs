@@ -19,10 +19,10 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.BattleProc.UpdateCoreFunc updateCore;
 		private int subSeq;
 		private bool isFinalized;
-		public static bool isInitialized { get { /*@B 0x600670E*/ throw null; } }
+		public static bool isInitialized { get { return _isInitialized; } }
 		public global::UnityEngine.Transform Cluster { get { return this.cluster; } }
 		public global::Dpr.Battle.Logic.MainModule MainModule { get { return this.mainModule; } }
-		public static bool isEnd { get { /*@B 0x6006711*/ throw null; } }
+		public static bool isEnd { get { return _isEnd; } }
 		private void OnEnable() {
             Sequencer.update -= OnUpdate;
             Sequencer.update += OnUpdate;
@@ -218,7 +218,7 @@ namespace Dpr.Battle.Logic
             if (Dpr.Field.SwayGrass.SwayGrass_CheckValid())
                 Audio.AudioManager.Instance.PostEvent(AK.EVENTS.BA013_AGAIN, 0x100009, false);
         }
-		public BattleProc() { /*@B 0x6006721*/ throw null; }
+		public BattleProc() { }
 		public delegate void EndFuncDelegate();
 		private delegate void UpdateCoreFunc(float deltaTime);
 	}

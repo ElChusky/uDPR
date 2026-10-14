@@ -6,7 +6,14 @@ namespace Dpr.Battle.Logic
 		private readonly global::Dpr.Battle.Logic.BattleEnv m_pSrcBattleEnv;
 		private global::Dpr.Battle.Logic.BattleEnv m_battleEnv;
 		private global::Dpr.Battle.Logic.BattleDriver m_battleDriver;
-		public BattleSimulator(in global::Dpr.Battle.Logic.BattleSimulator.SetupParam param) { /*@B 0x6006979*/ throw null; }
+		public BattleSimulator(in global::Dpr.Battle.Logic.BattleSimulator.SetupParam param)
+		{
+			this.m_pSrcBattleEnv = param.pSrcEnv;
+			this.m_battleEnv = null;
+			this.m_battleDriver = null;
+			this.createBattleEnv(param.pMainModule);
+			this.createBattleDriver(param.pMainModule);
+		}
 		public void createBattleEnv(global::Dpr.Battle.Logic.MainModule pMainModule) {
             BattleEnv.SetupParam setupParam = new BattleEnv.SetupParam();
             setupParam.pMainModule = pMainModule;

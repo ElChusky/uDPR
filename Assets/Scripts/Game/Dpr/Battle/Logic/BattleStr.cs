@@ -6,12 +6,12 @@ namespace Dpr.Battle.Logic
 {
 	public class BattleStr
 	{
-		private static readonly string[] MSBT_MSG_FILES;
+		private static readonly string[] MSBT_MSG_FILES = new string[] { "ss_btl_std", "ss_btl_set", "ss_btl_attack", "ss_btl_talk", "dp_trainer_msg", "dp_trainer_msg_sub", "ss_btl_app", "ss_btl_pokelist" };
 		private static global::Dpr.Battle.Logic.BattleStr s_Instance;
-		private static bool isInitializedOwner;
+		private static bool isInitializedOwner = false;
 		private global::Dpr.Battle.Logic.MainModule mainModule;
 		private global::Dpr.Battle.Logic.POKECON pokeCon;
-		private global::Dpr.Message.MessageMsgFile[] _msgFiles;
+		private global::Dpr.Message.MessageMsgFile[] _msgFiles = new global::Dpr.Message.MessageMsgFile[8];
 		private uint clientID;
 		private bool fIgnoreFormat;
 		private bool fForceTrueName;
@@ -20,10 +20,10 @@ namespace Dpr.Battle.Logic
 		private const int BUFIDX_POKE_2ND = 1;
 		private const int BUFIDX_TRAINER_NAME_1ST = 10;
 		private const int BUFIDX_TRAINER_NAME_2ND = 11;
-		private static readonly ushort[] USE_TRMSG_SUB_TABLE;
-		private global::System.Text.StringBuilder checkTagSb;
-		private static global::System.Text.StringBuilder textSb;
-		public static global::Dpr.Battle.Logic.BattleStr Instance { get { /*@B 0x6006782*/ throw null; } }
+		private static readonly ushort[] USE_TRMSG_SUB_TABLE = new ushort[] { 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 264, 267 };
+		private global::System.Text.StringBuilder checkTagSb = new global::System.Text.StringBuilder();
+		private static global::System.Text.StringBuilder textSb = new global::System.Text.StringBuilder();
+		public static global::Dpr.Battle.Logic.BattleStr Instance { get { return s_Instance; } }
 		private global::Dpr.Message.MessageMsgFile GetMsgFile(global::Dpr.Battle.Logic.BattleStr.MsgSrcID id) {
             return _msgFiles[(int)id];
         }
@@ -57,7 +57,14 @@ namespace Dpr.Battle.Logic
             s_Instance.pokeCon = null;
             s_Instance = null;
         }
-		public BattleStr(global::Dpr.Battle.Logic.MainModule mainModule, byte playerClientID, global::Dpr.Battle.Logic.POKECON pokeCon) { /*@B 0x6006786*/ throw null; }
+		public BattleStr(global::Dpr.Battle.Logic.MainModule mainModule, byte playerClientID, global::Dpr.Battle.Logic.POKECON pokeCon)
+		{
+			this.mainModule = mainModule;
+			this.pokeCon = pokeCon;
+			this.clientID = playerClientID;
+			this.fIgnoreFormat = mainModule == null;
+			this.fForceTrueName = false;
+		}
 		public void SetupMsgFiles() {
             for (int i = 0; i < (int)MsgSrcID.MAX; i++)
                 _msgFiles[i] = MessageManager.Instance.GetMsgFile(MSBT_MSG_FILES[i]);
@@ -622,7 +629,28 @@ namespace Dpr.Battle.Logic
 		private int get_setPtnStrID(byte pokeID, int originStrID, byte ptnNum) {
             return originStrID + ptnNum * 4 + (int)get_strFormat(pokeID);
         }
-		private int searchPokeTagCount(global::Dpr.Message.MessageMsgFile msgFile, int strID) { /*@B 0x60067A4*/ throw null; }
+		private int searchPokeTagCount(global::Dpr.Message.MessageMsgFile msgFile, int strID)
+		{
+			getTextDataModel(msgFile, strID, out MessageTextParseDataModel textData);
+			int count = 0;
+			for (int i = 0; i < textData.TagDataList.Count; i++)
+			{
+				MessageTagDataModel tag = textData.TagDataList[i];
+				if (tag.patternId == MessageEnumData.TagPatternID.Word)
+				{
+					switch (tag.tagId)
+					{
+						case (int)MessageEnumData.NameID.PokemonName:
+						case (int)MessageEnumData.NameID.PokemonNickname:
+						case (int)MessageEnumData.NameID.PokemonNicknameTwo:
+						case (int)MessageEnumData.NameID.AnotherName:
+							count++;
+							break;
+					}
+				}
+			}
+			return count;
+		}
 		public global::Dpr.Message.MessageTextParseDataModel MakeStringWaza(byte pokeID, ushort waza) {
             return makeStringWaza(pokeID, waza);
         }
@@ -742,7 +770,29 @@ namespace Dpr.Battle.Logic
             if (checkTagSb.Length != 0)
                 checkTagSb.Clear();
         }
-		private bool getTextDataModel(global::Dpr.Message.MessageMsgFile msgFile, int strID, out global::Dpr.Message.MessageTextParseDataModel outTextData) { /*@B 0x60067AD*/ throw null; }
+		private bool getTextDataModel(global::Dpr.Message.MessageMsgFile msgFile, int strID, out global::Dpr.Message.MessageTextParseDataModel outTextData)
+		{
+			MessageTextParseDataModel textData;
+			switch (GetMsgSrcID(msgFile))
+			{
+				case MsgSrcID.STD:
+					textData = msgFile.GetTextDataModel(BTL_STRID_STD.LABEL[strID]);
+					break;
+				case MsgSrcID.SET:
+					textData = msgFile.GetTextDataModel(BTL_STRID_SET.LABEL[strID]);
+					break;
+				default:
+					textData = msgFile.GetTextDataModelByIndex(strID);
+					break;
+			}
+			if (textData == null || textData.IsLabelNull)
+			{
+				outTextData = _msgFiles[0].GetTextDataModelByIndex(0);
+				return false;
+			}
+			outTextData = textData;
+			return true;
+		}
 		private global::Dpr.Battle.Logic.BattleStr.MsgSrcID GetMsgSrcID(global::Dpr.Message.MessageMsgFile msgFile) {
             for (int i = 0; i < _msgFiles.Length; i++)
             {
@@ -807,7 +857,7 @@ namespace Dpr.Battle.Logic
 		public static string GetTokuseiInfo(global::Pml.TokuseiNo tokuseiNo) {
             return MessageManager.Instance.GetSimpleMessage("ss_tokuseiinfo", (int)tokuseiNo);
         }
-		static BattleStr() { /*@B 0x60067BA*/ throw null; }
+		static BattleStr() { }
 		public enum MsgSrcID
 		{
 			STD = 0,

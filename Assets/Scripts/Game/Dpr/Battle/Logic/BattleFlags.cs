@@ -3,13 +3,24 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class BattleFlags
 	{
-		private bool[] m_flags;
-		public BattleFlags() { /*@B 0x6006973*/ throw null; }
-		public void Initialize() { /*@B 0x6006974*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.BattleFlags src) { /*@B 0x6006975*/ throw null; }
-		public bool Get(global::Dpr.Battle.Logic.BattleFlags.Flag flag) { /*@B 0x6006976*/ throw null; }
-		public void Set(global::Dpr.Battle.Logic.BattleFlags.Flag flag) { /*@B 0x6006977*/ throw null; }
-		public void Remove(global::Dpr.Battle.Logic.BattleFlags.Flag flag) { /*@B 0x6006978*/ throw null; }
+		private bool[] m_flags = Arrays.InitializeWithDefaultInstances<bool>((int)Flag.NUM);
+		public BattleFlags()
+		{
+			this.Initialize();
+		}
+		public void Initialize()
+		{
+			for (int i = 0; i < this.m_flags.Length; i++)
+				this.m_flags[i] = false;
+		}
+		public void CopyFrom(in global::Dpr.Battle.Logic.BattleFlags src)
+		{
+			for (int i = 0; i < this.m_flags.Length; i++)
+				this.m_flags[i] = src.m_flags[i];
+		}
+		public bool Get(global::Dpr.Battle.Logic.BattleFlags.Flag flag) => this.m_flags[(int)flag];
+		public void Set(global::Dpr.Battle.Logic.BattleFlags.Flag flag) { this.m_flags[(int)flag] = true; }
+		public void Remove(global::Dpr.Battle.Logic.BattleFlags.Flag flag) { this.m_flags[(int)flag] = false; }
 		public enum Flag : ushort
 		{
 			FIRST_POKEIN_DONE = 0,

@@ -3,11 +3,36 @@ namespace Dpr.Battle.Logic
 {
 	public static class BattleUnmanagedMem
 	{
-		private static global::System.Collections.Generic.List<global::Dpr.Battle.Logic.BattleUnmanagedMem.ELEM> m_Elems;
-		public static unsafe void* Malloc(long size, global::Unity.Collections.Allocator allocator = (global::Unity.Collections.Allocator)(4), int alignment = 16) { /*@B 0x60067BB*/ throw null; }
-		public static unsafe void Free(void* pAddr) { /*@B 0x60067BC*/ throw null; }
-		public static void FreeAll() { /*@B 0x60067BD*/ throw null; }
-		static BattleUnmanagedMem() { /*@B 0x60067BE*/ throw null; }
+		private static global::System.Collections.Generic.List<global::Dpr.Battle.Logic.BattleUnmanagedMem.ELEM> m_Elems = new global::System.Collections.Generic.List<global::Dpr.Battle.Logic.BattleUnmanagedMem.ELEM>(64);
+		public static unsafe void* Malloc(long size, global::Unity.Collections.Allocator allocator = (global::Unity.Collections.Allocator)(4), int alignment = 16)
+		{
+			void* p = global::Unity.Collections.LowLevel.Unsafe.UnsafeUtility.Malloc(size, alignment, allocator);
+			global::Unity.Collections.LowLevel.Unsafe.UnsafeUtility.MemSet(p, 0, size);
+			ELEM elem;
+			elem.pAddr = p;
+			elem.allocator = allocator;
+			m_Elems.Add(elem);
+			return p;
+		}
+		public static unsafe void Free(void* pAddr)
+		{
+			for (int i = 0; i < m_Elems.Count; i++)
+			{
+				if (m_Elems[i].pAddr == pAddr)
+				{
+					global::Unity.Collections.LowLevel.Unsafe.UnsafeUtility.Free(pAddr, m_Elems[i].allocator);
+					m_Elems.RemoveAt(i);
+					return;
+				}
+			}
+		}
+		public static unsafe void FreeAll()
+		{
+			for (int i = 0; i < m_Elems.Count; i++)
+				global::Unity.Collections.LowLevel.Unsafe.UnsafeUtility.Free(m_Elems[i].pAddr, m_Elems[i].allocator);
+			m_Elems.Clear();
+		}
+		static BattleUnmanagedMem() { }
 		private struct ELEM
 		{
 			public unsafe void* pAddr;

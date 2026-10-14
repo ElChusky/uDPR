@@ -3,8 +3,68 @@ namespace Dpr.Battle.Logic
 {
 	public static class BattleResultJudge
 	{
-		public static global::Dpr.Battle.Logic.BtlResult CheckBattleResult(in global::Dpr.Battle.Logic.MainModule mainModule, in global::Dpr.Battle.Logic.POKECON pokecon, in global::Dpr.Battle.Logic.DeadRec deadRec, in global::Dpr.Battle.Logic.TimeLimit timeLimit, out global::Dpr.Battle.Logic.ResultCause judgeCause) { /*@B 0x60075AD*/ throw null; }
-		private static global::Dpr.Battle.Logic.BtlSide JudgeWinSide(in global::Dpr.Battle.Logic.MainModule mainModule, in global::Dpr.Battle.Logic.POKECON pokecon, in global::Dpr.Battle.Logic.DeadRec deadRec, in global::Dpr.Battle.Logic.TimeLimit timeLimit, out global::Dpr.Battle.Logic.ResultCause judgeCause) { /*@B 0x60075AE*/ throw null; }
+		public static global::Dpr.Battle.Logic.BtlResult CheckBattleResult(in global::Dpr.Battle.Logic.MainModule mainModule, in global::Dpr.Battle.Logic.POKECON pokecon, in global::Dpr.Battle.Logic.DeadRec deadRec, in global::Dpr.Battle.Logic.TimeLimit timeLimit, out global::Dpr.Battle.Logic.ResultCause judgeCause)
+		{
+			BtlSide winSide = JudgeWinSide(mainModule, pokecon, deadRec, timeLimit, out judgeCause);
+			if (winSide == BtlSide.BTL_SIDE_NULL)
+				return BtlResult.BTL_RESULT_DRAW;
+			if (winSide == mainModule.GetClientSide(mainModule.GetPlayerClientID()))
+				return BtlResult.BTL_RESULT_WIN;
+			return BtlResult.BTL_RESULT_LOSE;
+		}
+		private static global::Dpr.Battle.Logic.BtlSide JudgeWinSide(in global::Dpr.Battle.Logic.MainModule mainModule, in global::Dpr.Battle.Logic.POKECON pokecon, in global::Dpr.Battle.Logic.DeadRec deadRec, in global::Dpr.Battle.Logic.TimeLimit timeLimit, out global::Dpr.Battle.Logic.ResultCause judgeCause)
+		{
+			judgeCause = ResultCause.RESULT_CAUSE_OTHER;
+			if (mainModule.IsScenarioMultiBattle())
+			{
+				if (pokecon.GetPartyDataConst(0).GetAliveMemberCount() == 0)
+				{
+					judgeCause = ResultCause.RESULT_CAUSE_ALL_DEAD;
+					return BtlSide.BTL_SIDE_2ND;
+				}
+			}
+			byte[] alivePokeCount = new byte[(int)BtlSide.BTL_SIDE_NUM];
+			byte[] totalPokeCount = new byte[(int)BtlSide.BTL_SIDE_NUM];
+			byte[] timeOverCount = new byte[(int)BtlSide.BTL_SIDE_NUM];
+			GetPokeCountBySide(alivePokeCount, totalPokeCount, timeOverCount, mainModule, pokecon, timeLimit);
+			BtlSide winSide = JudgeWinSide_UniqueAlive(mainModule, alivePokeCount);
+			if (winSide != BtlSide.BTL_SIDE_NULL)
+			{
+				judgeCause = ResultCause.RESULT_CAUSE_ALL_DEAD;
+				return winSide;
+			}
+			if (mainModule.IsClientLimitTimeExist())
+			{
+				winSide = JudgeWinSide_UniqueTimeOver(timeOverCount, mainModule);
+				if (winSide != BtlSide.BTL_SIDE_NULL)
+				{
+					judgeCause = ResultCause.RESULT_CAUSE_TIMEOVER;
+					return winSide;
+				}
+			}
+			if (!mainModule.IsResultStrictMode())
+				return BtlSide.BTL_SIDE_NULL;
+			winSide = JudgeWinSide_DeadBoth(alivePokeCount, totalPokeCount, mainModule, deadRec);
+			if (winSide != BtlSide.BTL_SIDE_NULL)
+			{
+				judgeCause = ResultCause.RESULT_CAUSE_ALL_DEAD;
+				return winSide;
+			}
+			judgeCause = ResultCause.RESULT_CAUSE_TIMEOVER;
+			winSide = JudgeWinSide_ByDeadPokeCount(mainModule, alivePokeCount, totalPokeCount);
+			if (winSide != BtlSide.BTL_SIDE_NULL)
+				return winSide;
+			int[] remainedHpTotal = new int[(int)BtlSide.BTL_SIDE_NUM];
+			int[] remainedHpRatio = new int[(int)BtlSide.BTL_SIDE_NUM];
+			BtlSide side = BtlSide.BTL_SIDE_1ST;
+			CalcHPRatio(ref remainedHpTotal[0], ref remainedHpRatio[0], mainModule, pokecon, side);
+			side = BtlSide.BTL_SIDE_2ND;
+			CalcHPRatio(ref remainedHpTotal[1], ref remainedHpRatio[1], mainModule, pokecon, side);
+			winSide = JudgeWinSide_ByRemainedHpRatio(mainModule, remainedHpRatio);
+			if (winSide != BtlSide.BTL_SIDE_NULL)
+				return winSide;
+			return JudgeWinSide_ByRemainedHpTotal(mainModule, remainedHpTotal);
+		}
 		private static void GetPokeCountBySide(byte[] alivePokeCount, byte[] totalPokeCount, byte[] timeOverCount, in global::Dpr.Battle.Logic.MainModule mainModule, in global::Dpr.Battle.Logic.POKECON pokecon, in global::Dpr.Battle.Logic.TimeLimit timeLimit) {
             for (int i = 0; i < (int)BtlSide.BTL_SIDE_NUM; i++)
             {

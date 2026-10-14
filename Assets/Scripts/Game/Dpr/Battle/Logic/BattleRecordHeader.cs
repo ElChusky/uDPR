@@ -6,7 +6,11 @@ namespace Dpr.Battle.Logic
 		public ushort turnNum;
 		public global::BtlRecordResult1 result1;
 		public global::BtlRecordResult2 result2;
-		public void Clear() { /*@B 0x600675B*/ throw null; }
+		public void Clear() {
+			this.turnNum = 0;
+			this.result1 = global::BtlRecordResult1.BTL_RECORD_RESULT_1_WIN;
+			this.result2 = global::BtlRecordResult2.BTL_RECORD_RESULT_2_DEAD;
+		}
 		public BattleRecordHeader() { }
 	}
 }

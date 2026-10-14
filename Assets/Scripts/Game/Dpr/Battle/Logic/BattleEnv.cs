@@ -16,15 +16,76 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.ActionSerialNoManager m_actionSerialNoManager;
 		private global::Dpr.Battle.Logic.TimeLimit m_timeLimit;
 		private global::Dpr.Battle.Logic.GRightsManager m_gRightsManager;
-		private global::Dpr.Battle.Logic.GGauge[] m_gGauge;
+		private global::Dpr.Battle.Logic.GGauge[] m_gGauge = new global::Dpr.Battle.Logic.GGauge[5];
 		private global::Dpr.Battle.Logic.RaidBattleStatus m_raidBattleStatus;
 		private global::Dpr.Battle.Logic.BattleFlags m_flags;
 		private global::Dpr.Battle.Logic.BattleCounter m_counter;
 		private global::Dpr.Battle.Logic.EscapeInfo m_escapeInfo;
-		private global::Dpr.Battle.Logic.WazaParam m_lastExecutedWaza;
-		private global::Dpr.Battle.Logic.TamaHiroiData m_tamaHiroiData;
-		public BattleEnv(in global::Dpr.Battle.Logic.BattleEnv.SetupParam param) { /*@B 0x6006958*/ throw null; }
-		public void Dispose() { /*@B 0x6006959*/ throw null; }
+		private global::Dpr.Battle.Logic.WazaParam m_lastExecutedWaza = new global::Dpr.Battle.Logic.WazaParam();
+		private global::Dpr.Battle.Logic.TamaHiroiData m_tamaHiroiData = new global::Dpr.Battle.Logic.TamaHiroiData();
+		public BattleEnv(in global::Dpr.Battle.Logic.BattleEnv.SetupParam param)
+		{
+			this.m_pokecon = null;
+			this.m_fieldStatus = null;
+			this.m_sideEffectManager = null;
+			this.m_posEffectManager = null;
+			this.m_eventFactorContainer = null;
+			this.m_posPoke = null;
+			this.m_deadRec = null;
+			this.m_wazaRec = null;
+			this.m_affCounter = null;
+			this.m_actionRecorder = null;
+			this.m_actionSerialNoManager = null;
+			this.m_timeLimit = null;
+			this.m_gRightsManager = null;
+			this.m_raidBattleStatus = null;
+			this.m_flags = null;
+			this.m_counter = null;
+			this.m_escapeInfo = null;
+			this.m_fieldStatus = new global::Dpr.Battle.Logic.FieldStatus();
+			this.m_pokecon = new global::Dpr.Battle.Logic.POKECON(param.pMainModule, this.m_fieldStatus);
+			this.m_sideEffectManager = new global::Dpr.Battle.Logic.SideEffectManager();
+			this.m_posEffectManager = new global::Dpr.Battle.Logic.PosEffectManager();
+			this.m_eventFactorContainer = new global::Dpr.Battle.Logic.EventFactorContainer();
+			this.m_posPoke = new global::Dpr.Battle.Logic.PosPoke();
+			this.m_deadRec = new global::Dpr.Battle.Logic.DeadRec();
+			this.m_wazaRec = new global::Dpr.Battle.Logic.WazaRec();
+			this.m_affCounter = new global::Dpr.Battle.Logic.AffCounter();
+			this.m_actionRecorder = new global::Dpr.Battle.Logic.ActionRecorder();
+			this.m_actionSerialNoManager = new global::Dpr.Battle.Logic.ActionSerialNoManager();
+			this.m_timeLimit = new global::Dpr.Battle.Logic.TimeLimit();
+			this.m_gRightsManager = new global::Dpr.Battle.Logic.GRightsManager(param.pMainModule, this);
+			this.m_raidBattleStatus = new global::Dpr.Battle.Logic.RaidBattleStatus();
+			for (byte i = 0; i < this.m_gGauge.Length; i++)
+				this.m_gGauge[i] = new global::Dpr.Battle.Logic.GGauge();
+			this.m_flags = new global::Dpr.Battle.Logic.BattleFlags();
+			this.m_counter = new global::Dpr.Battle.Logic.BattleCounter();
+			this.m_escapeInfo = new global::Dpr.Battle.Logic.EscapeInfo();
+			this.Initialize(param.pMainModule);
+		}
+		public void Dispose()
+		{
+			this.m_pokecon = null;
+			this.m_fieldStatus = null;
+			this.m_sideEffectManager = null;
+			this.m_posEffectManager = null;
+			this.m_eventFactorContainer = null;
+			this.m_posPoke = null;
+			this.m_deadRec = null;
+			this.m_wazaRec = null;
+			this.m_affCounter = null;
+			this.m_actionRecorder = null;
+			this.m_actionSerialNoManager = null;
+			this.m_timeLimit = null;
+			this.m_gRightsManager = null;
+			this.m_gGauge = null;
+			this.m_raidBattleStatus = null;
+			this.m_flags = null;
+			this.m_counter = null;
+			this.m_escapeInfo = null;
+			this.m_lastExecutedWaza = null;
+			this.m_tamaHiroiData = null;
+		}
 		public void Initialize(global::Dpr.Battle.Logic.MainModule mainModule) {
             m_eventFactorContainer.Clear();
             m_pokecon.Clear();
