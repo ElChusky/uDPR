@@ -7,7 +7,7 @@ namespace Dpr.Rendering
 	public class ChromaticAberration : global::SmartPoint.Rendering.ImageEffectObject
 	{
 		private const float DISPERION_ADJUST = 0.2f;
-		public static readonly int _Disper;
+		public static readonly int _Disper = global::UnityEngine.Shader.PropertyToID("_Disper");
 		private static global::UnityEngine.Material _chromaticAberrationMaterial;
 		public override global::UnityEngine.Rendering.CommandBuffer Build(global::UnityEngine.Rendering.RenderTargetIdentifier sourceRT, out global::UnityEngine.Rendering.RenderTargetIdentifier resultRT, bool feedbackCameraTarget = true) {
 			Destroy();
@@ -70,6 +70,6 @@ namespace Dpr.Rendering
 			_chromaticAberrationMaterial.SetVector(_Disper, -param.chromaticAberrationMagnificationDispersion * DISPERION_ADJUST);
 		}
 		public ChromaticAberration() { }
-		static ChromaticAberration() { /*@B 0x600382C*/ throw null; }
+		static ChromaticAberration() { }
 	}
 }

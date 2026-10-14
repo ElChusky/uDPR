@@ -6,9 +6,9 @@ namespace Dpr.Rendering
 	[global::UnityEngine.CreateAssetMenuAttribute(menuName = "ScriptableObjects/ImageEffect/RadialBlur", fileName = "RadialBlur")]
 	public class RadialBlur : global::SmartPoint.Rendering.ImageEffectObject
 	{
-		public static readonly int _RadialBlurCenter;
-		public static readonly int _RadialBlurIntensity;
-		public static readonly int _RadialBlurNumSamples;
+		public static readonly int _RadialBlurCenter = global::UnityEngine.Shader.PropertyToID("_RadialBlurCenter");
+		public static readonly int _RadialBlurIntensity = global::UnityEngine.Shader.PropertyToID("_RadialBlurIntensity");
+		public static readonly int _RadialBlurNumSamples = global::UnityEngine.Shader.PropertyToID("_RadialBlurNumSamples");
 		private static global::UnityEngine.Material _radialBlurMaterial;
 		public override global::UnityEngine.Rendering.CommandBuffer Build(global::UnityEngine.Rendering.RenderTargetIdentifier sourceRT, out global::UnityEngine.Rendering.RenderTargetIdentifier resultRT, bool feedbackCameraTarget = true) {
 			Destroy();
@@ -71,6 +71,6 @@ namespace Dpr.Rendering
 			_radialBlurMaterial.SetInt(_RadialBlurNumSamples, param.radialBlurNumSamples);
 		}
 		public RadialBlur() { }
-		static RadialBlur() { /*@B 0x600383B*/ throw null; }
+		static RadialBlur() { }
 	}
 }

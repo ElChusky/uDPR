@@ -4,9 +4,19 @@ namespace Dpr.RouteSearch
 {
 	public static class FieldObjectRoute
 	{
-		private static readonly int OneBlockGridCount;
-		private static readonly global::UnityEngine.Vector2Int[] MoveVec;
-		private static readonly float StraightCost;
+		private static readonly int OneBlockGridCount = 32;
+		private static readonly global::UnityEngine.Vector2Int[] MoveVec = new global::UnityEngine.Vector2Int[]
+		{
+			global::UnityEngine.Vector2Int.up,
+			new global::UnityEngine.Vector2Int(1, 1),
+			global::UnityEngine.Vector2Int.right,
+			new global::UnityEngine.Vector2Int(1, -1),
+			global::UnityEngine.Vector2Int.down,
+			new global::UnityEngine.Vector2Int(-1, -1),
+			global::UnityEngine.Vector2Int.left,
+			new global::UnityEngine.Vector2Int(-1, 1),
+		};
+		private static readonly float StraightCost = 1f;
 		private static readonly float DiagonalCost = Mathf.Sqrt(2.0f);
 		private static readonly int DefaultNodeWidth = 32;
 		private static readonly int DefaultNodeHeight = 32;
@@ -169,6 +179,6 @@ namespace Dpr.RouteSearch
             }
             return route;
         }
-		static FieldObjectRoute() { /*@B 0x600384D*/ throw null; }
+		static FieldObjectRoute() { }
 	}
 }
