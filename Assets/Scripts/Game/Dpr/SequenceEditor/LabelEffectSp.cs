@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-1604927454), "lightgreen", "", "")]
 	public class LabelEffectSp : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelEffectSp(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049FF*/ throw null; }
+		public LabelEffectSp(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

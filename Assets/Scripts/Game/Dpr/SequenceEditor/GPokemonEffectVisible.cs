@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE obj;
 		public bool visible;
 		public bool fade;
-		public GPokemonEffectVisible(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004967*/ throw null; }
+		public GPokemonEffectVisible(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			obj = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("obj"));
+			visible = Macro.ParseBool(macro.GetValue("visible"), 0);
+			fade = Macro.ParseBool(macro.GetValue("fade"), 0);
+		}
 	}
 }

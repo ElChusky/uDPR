@@ -8,7 +8,14 @@ namespace Dpr.SequenceEditor
 		public string Color { get; private set; }
 		public string Type { get; private set; }
 		public string PreFunc { get; private set; }
-		public MacroAttribute(global::Dpr.SequenceEditor.CommandNo command) { /*@B 0x600490A*/ throw null; }
-		public MacroAttribute(global::Dpr.SequenceEditor.CommandNo command, string color, string type, string preFunc) { /*@B 0x600490B*/ throw null; }
+		public MacroAttribute(global::Dpr.SequenceEditor.CommandNo command) {
+			CommandNo = command;
+		}
+		public MacroAttribute(global::Dpr.SequenceEditor.CommandNo command, string color, string type, string preFunc) {
+			CommandNo = command;
+			Color = color;
+			Type = type;
+			PreFunc = preFunc;
+		}
 	}
 }

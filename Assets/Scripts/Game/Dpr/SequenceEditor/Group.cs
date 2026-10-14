@@ -4,7 +4,7 @@ namespace Dpr.SequenceEditor
 	[global::System.Serializable]
 	public sealed class Group
 	{
-		public static global::Dpr.SequenceEditor.Group Default;
+		public static global::Dpr.SequenceEditor.Group Default = new global::Dpr.SequenceEditor.Group();
 		public string Name;
 		public int GrpNo;
 		public int IsOpen;
@@ -23,6 +23,6 @@ namespace Dpr.SequenceEditor
 		public global::System.Collections.Generic.List<global::Dpr.SequenceEditor.GroupOption> GroupOption;
 		public global::System.Collections.Generic.List<global::Dpr.SequenceEditor.Command> Commands;
 		public Group() { }
-		static Group() { /*@B 0x6004BBB*/ throw null; }
+		static Group() { }
 	}
 }

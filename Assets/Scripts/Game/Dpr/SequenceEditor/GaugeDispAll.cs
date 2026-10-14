@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class GaugeDispAll : global::Dpr.SequenceEditor.Macro
 	{
 		public bool visible;
-		public GaugeDispAll(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049F9*/ throw null; }
+		public GaugeDispAll(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			visible = Macro.ParseBool(macro.GetValue("visible"), 1);
+		}
 	}
 }

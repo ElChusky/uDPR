@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 col;
 		public float alpha;
 		public global::Dpr.SequenceEditor.FADE_TYPE type;
-		public EffSpFadeIn(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A05*/ throw null; }
+		public EffSpFadeIn(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			col = Macro.ParseVector3(macro.GetValue("col"));
+			alpha = Macro.ParseFloat(macro.GetValue("alpha"), 255f);
+			type = Macro.Parse_FADE_TYPE(macro.GetValue("type"));
+		}
 	}
 }

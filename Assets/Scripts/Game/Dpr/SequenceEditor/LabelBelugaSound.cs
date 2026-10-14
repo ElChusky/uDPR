@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-809013044), "blue", "", "")]
 	public class LabelBelugaSound : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelBelugaSound(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A6C*/ throw null; }
+		public LabelBelugaSound(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

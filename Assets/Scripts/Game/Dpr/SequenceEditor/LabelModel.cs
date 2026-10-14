@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(1552326676), "pink", "", "")]
 	public class LabelModel : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelModel(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049B8*/ throw null; }
+		public LabelModel(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

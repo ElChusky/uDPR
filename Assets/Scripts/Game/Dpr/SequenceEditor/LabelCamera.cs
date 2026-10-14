@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(251254343), "yellow", "", "")]
 	public class LabelCamera : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelCamera(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600496F*/ throw null; }
+		public LabelCamera(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

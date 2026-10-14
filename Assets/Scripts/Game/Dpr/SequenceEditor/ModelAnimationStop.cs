@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ModelAnimationStop : global::Dpr.SequenceEditor.Macro
 	{
 		public int slot;
-		public ModelAnimationStop(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049D6*/ throw null; }
+		public ModelAnimationStop(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			slot = Macro.ParseInt(macro.GetValue("slot"), 0);
+		}
 	}
 }

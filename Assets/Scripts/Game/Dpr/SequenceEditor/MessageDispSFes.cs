@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class MessageDispSFes : global::Dpr.SequenceEditor.Macro
 	{
 		public int option;
-		public MessageDispSFes(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A54*/ throw null; }
+		public MessageDispSFes(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			option = Macro.ParseInt(macro.GetValue("option"));
+		}
 	}
 }

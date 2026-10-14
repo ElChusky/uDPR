@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-1994283944), "orange", "", "")]
 	public class LabelContestCamera : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelContestCamera(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B2C*/ throw null; }
+		public LabelContestCamera(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

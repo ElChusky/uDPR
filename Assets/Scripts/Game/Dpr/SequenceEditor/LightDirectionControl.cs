@@ -14,6 +14,17 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 dir;
 		public bool flip;
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS flipTrg;
-		public LightDirectionControl(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A0C*/ throw null; }
+		public LightDirectionControl(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			type = Macro.Parse_LIGHT_TYPE(macro.GetValue("type"));
+			trgSide = Macro.Parse_SEQ_DEF_LIGHT_TRG_SIDE(macro.GetValue("trgSide"));
+			poke = Macro.ParseBool(macro.GetValue("poke"), 0);
+			gpoke = Macro.ParseBool(macro.GetValue("gpoke"), 0);
+			trainer = Macro.ParseBool(macro.GetValue("trainer"), 0);
+			background = Macro.ParseBool(macro.GetValue("background"), 0);
+			shadow = Macro.ParseBool(macro.GetValue("shadow"), 0);
+			dir = Macro.ParseVector3(macro.GetValue("dir"));
+			flip = Macro.ParseBool(macro.GetValue("flip"), 0);
+			flipTrg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("flipTrg"));
+		}
 	}
 }

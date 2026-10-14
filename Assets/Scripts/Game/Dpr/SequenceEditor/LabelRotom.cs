@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-1413205123), "", "", "")]
 	public class LabelRotom : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelRotom(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A62*/ throw null; }
+		public LabelRotom(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

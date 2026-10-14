@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-411374357), "purple", "one_frame", "")]
 	public class MessageHide : global::Dpr.SequenceEditor.Macro
 	{
-		public MessageHide(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A40*/ throw null; }
+		public MessageHide(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

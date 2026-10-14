@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-952537523), "lightyellow", "", "")]
 	public class LabelDprTrainer : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelDprTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AB7*/ throw null; }
+		public LabelDprTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

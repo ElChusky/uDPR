@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public string MsgId;
 		public bool isKeyWait;
 		public global::Dpr.SequenceEditor.SEQ_DEF_WINDOW_TYPE type;
-		public MessageDispTalk(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A3E*/ throw null; }
+		public MessageDispTalk(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			MsgId = Macro.ParseString(macro.GetValue("MsgId"));
+			isKeyWait = Macro.ParseBool(macro.GetValue("isKeyWait"), 0);
+			type = Macro.Parse_SEQ_DEF_WINDOW_TYPE(macro.GetValue("type"));
+		}
 	}
 }

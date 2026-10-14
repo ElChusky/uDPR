@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(1322407623), "violet", "", "")]
 	public class LabelUniQualitySettings : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelUniQualitySettings(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B0A*/ throw null; }
+		public LabelUniQualitySettings(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

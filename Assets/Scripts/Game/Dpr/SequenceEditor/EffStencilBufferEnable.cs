@@ -16,6 +16,19 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_STENCIL_TARGET trgNo4;
 		public int grpNo4Start;
 		public int grpNo4End;
-		public EffStencilBufferEnable(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A81*/ throw null; }
+		public EffStencilBufferEnable(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trgNo1 = Macro.Parse_SEQ_STENCIL_TARGET(macro.GetValue("trgNo1"));
+			grpNo1Start = Macro.ParseInt(macro.GetValue("grpNo1Start"), 0);
+			grpNo1End = Macro.ParseInt(macro.GetValue("grpNo1End"), 0);
+			trgNo2 = Macro.Parse_SEQ_STENCIL_TARGET(macro.GetValue("trgNo2"));
+			grpNo2Start = Macro.ParseInt(macro.GetValue("grpNo2Start"), 0);
+			grpNo2End = Macro.ParseInt(macro.GetValue("grpNo2End"), 0);
+			trgNo3 = Macro.Parse_SEQ_STENCIL_TARGET(macro.GetValue("trgNo3"));
+			grpNo3Start = Macro.ParseInt(macro.GetValue("grpNo3Start"), 0);
+			grpNo3End = Macro.ParseInt(macro.GetValue("grpNo3End"), 0);
+			trgNo4 = Macro.Parse_SEQ_STENCIL_TARGET(macro.GetValue("trgNo4"));
+			grpNo4Start = Macro.ParseInt(macro.GetValue("grpNo4Start"), 0);
+			grpNo4End = Macro.ParseInt(macro.GetValue("grpNo4End"), 0);
+		}
 	}
 }

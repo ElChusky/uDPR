@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-1507977363), "purple", "one_frame", "")]
 	public class MessageWazaStart : global::Dpr.SequenceEditor.Macro
 	{
-		public MessageWazaStart(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A41*/ throw null; }
+		public MessageWazaStart(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }
