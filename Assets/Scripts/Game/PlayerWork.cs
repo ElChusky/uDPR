@@ -71,91 +71,130 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 	private global::Dpr.UI.AutoSaveWindow _autosaveWindow;
 	private float _autosaveWindowCloseOpenTime;
 	private static bool isNeedFixPokemonExp;
-	public static int playerID { get { /*@B 0x6000A2E*/ throw null; } }
-	public static string userName { get { /*@B 0x6000A2F*/ throw null; } set { /*@B 0x6000A30*/ throw null; } }
-	public static bool playerSex { get { /*@B 0x6000A31*/ throw null; } set { /*@B 0x6000A32*/ throw null; } }
-	public static global::Dpr.Message.MessageEnumData.GenderID playerGenderId { get { /*@B 0x6000A33*/ throw null; } }
-	public static int playerFashion { get { /*@B 0x6000A34*/ throw null; } set { /*@B 0x6000A35*/ throw null; } }
-	public static string rivalName { get { /*@B 0x6000A36*/ throw null; } set { /*@B 0x6000A37*/ throw null; } }
-	public static global::ZoneID zoneID { get { /*@B 0x6000A38*/ throw null; } set { /*@B 0x6000A39*/ throw null; } }
+	public static int playerID { get { return playerSex ? 1 : 2; } }
+	public static string userName { get { return instance._saveData.playerData.mystatus.name; } set { instance._saveData.playerData.mystatus.name = value; } }
+	public static bool playerSex { get { return instance._saveData.playerData.mystatus.sex; } set {
+            instance._saveData.playerData.mystatus.sex = value;
+            FlagWork.SetFlag(EvWork.FLAG_INDEX.FE_MAN_WOMAN, !value);
+            ItemWork.SetBagIconSex(value);
+        } }
+	public static global::Dpr.Message.MessageEnumData.GenderID playerGenderId { get { return playerSex ? MessageEnumData.GenderID.Masculine : MessageEnumData.GenderID.Feminine; } }
+	public static int playerFashion { get { return instance._saveData.playerData.mystatus.fashion; } set { instance._saveData.playerData.mystatus.fashion = (byte)value; } }
+	public static string rivalName { get { return instance._saveData.rivalName; } set { instance._saveData.rivalName = value; } }
+	public static global::ZoneID zoneID { get { return instance._saveData.zoneID; } set { instance._saveData.zoneID = value; } }
 	public static bool NoSavePlayerPos { get; set; }
-	public static global::UnityEngine.Vector2Int grid { get { /*@B 0x6000A3D*/ throw null; } }
-	public static float height { get { /*@B 0x6000A3E*/ throw null; } }
-	public static float rotation { get { /*@B 0x6000A3F*/ throw null; } }
-	public static global::ZoneID transitionZoneID { get { /*@B 0x6000A43*/ throw null; } set { /*@B 0x6000A44*/ throw null; } }
-	public static int locatorIndex { get { /*@B 0x6000A45*/ throw null; } set { /*@B 0x6000A46*/ throw null; } }
-	public static global::System.Nullable<global::DPData.LOCATION_WORK> transitionLocation { get { /*@B 0x6000A47*/ throw null; } set { /*@B 0x6000A48*/ throw null; } }
-	public static bool isBattling { get { /*@B 0x6000A49*/ throw null; } set { /*@B 0x6000A4A*/ throw null; } }
-	public static bool isContest { get { /*@B 0x6000A4B*/ throw null; } set { /*@B 0x6000A4C*/ throw null; } }
-	public static bool isSealPreview { get { /*@B 0x6000A4D*/ throw null; } set { /*@B 0x6000A4E*/ throw null; } }
-	public static bool isEvolveDemo { get { /*@B 0x6000A4F*/ throw null; } set { /*@B 0x6000A50*/ throw null; } }
-	public static bool isHatchDemo { get { /*@B 0x6000A51*/ throw null; } set { /*@B 0x6000A52*/ throw null; } }
-	public static bool isDigFossil { get { /*@B 0x6000A53*/ throw null; } set { /*@B 0x6000A54*/ throw null; } }
-	public static bool isGMS { get { /*@B 0x6000A55*/ throw null; } set { /*@B 0x6000A56*/ throw null; } }
-	public static bool isMass { get { /*@B 0x6000A57*/ throw null; } set { /*@B 0x6000A58*/ throw null; } }
-	public static bool isEncount { get { /*@B 0x6000A59*/ throw null; } set { /*@B 0x6000A5A*/ throw null; } }
-	public static int colorID { get { /*@B 0x6000A5B*/ throw null; } set { /*@B 0x6000A5C*/ throw null; } }
-	public static byte badge { get { /*@B 0x6000A5D*/ throw null; } set { /*@B 0x6000A5E*/ throw null; } }
-	public static global::Dpr.Message.MessageEnumData.MsgLangId msgLangID { get { /*@B 0x6000A5F*/ throw null; } set { /*@B 0x6000A60*/ throw null; } }
-	public static int cassetVersion { get { /*@B 0x6000A61*/ throw null; } set { /*@B 0x6000A62*/ throw null; } }
-	public static bool isKanji { get { /*@B 0x6000A63*/ throw null; } set { /*@B 0x6000A64*/ throw null; } }
-	public static global::DPData.BTLTOWER_SAVEWORK btlTowerSave { get { /*@B 0x6000A68*/ throw null; } set { /*@B 0x6000A67*/ throw null; } }
-	public static bool bicycleGear { get { /*@B 0x6000A7D*/ throw null; } set { /*@B 0x6000A7E*/ throw null; } }
-	public static byte bicycleColor { get { /*@B 0x6000A7F*/ throw null; } set { /*@B 0x6000A80*/ throw null; } }
-	public static global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM battleSetupParam { get { /*@B 0x6000A81*/ throw null; } }
-	public static global::Pml.PokeParty playerParty { get { /*@B 0x6000A82*/ throw null; } }
-	public static global::Pml.PokePara.PokemonParam capturedPokemon { get { /*@B 0x6000A83*/ throw null; } set { /*@B 0x6000A84*/ throw null; } }
+	public static global::UnityEngine.Vector2Int grid { get { return instance._saveData.playerData.mystatus.grid; } }
+	public static float height { get { return instance._saveData.playerData.mystatus.height; } }
+	public static float rotation { get { return instance._saveData.playerData.mystatus.rotation; } }
+	public static global::ZoneID transitionZoneID { get { return instance._transitionZoneID; } set { instance._transitionZoneID = value; } }
+	public static int locatorIndex { get { return instance._locatorIndex; } set { instance._locatorIndex = value; } }
+	public static global::System.Nullable<global::DPData.LOCATION_WORK> transitionLocation { get { return instance._transitionLocation; } set { instance._transitionLocation = value; } }
+	public static bool isBattling { get { return instance._isBattling; } set { instance._isBattling = value; } }
+	public static bool isContest { get { return instance._isContest; } set { instance._isContest = value; } }
+	public static bool isSealPreview { get { return instance._isSealPreview; } set { instance._isSealPreview = value; } }
+	public static bool isEvolveDemo { get { return instance._isEvolveDemo; } set { instance._isEvolveDemo = value; } }
+	public static bool isHatchDemo { get { return instance._isHatchDemo; } set { instance._isHatchDemo = value; } }
+	public static bool isDigFossil { get { return instance._isDigFossil; } set { instance._isDigFossil = value; } }
+	public static bool isGMS { get { return instance._isGMS; } set { instance._isGMS = value; } }
+	public static bool isMass { get { return instance._isMass; } set { instance._isMass = value; } }
+	public static bool isEncount { get { return instance._isEncount; } set { instance._isEncount = value; } }
+	public static int colorID { get { return instance._saveData.playerData.mystatus.body_type; } set { instance._saveData.playerData.mystatus.body_type = (byte)value; } }
+	public static byte badge { get { return instance._saveData.playerData.mystatus.badge; } set { instance._saveData.playerData.mystatus.badge = value; } }
+	public static global::Dpr.Message.MessageEnumData.MsgLangId msgLangID { get { return (MessageEnumData.MsgLangId)instance._saveData.playerData.config.msg_lang_id; } set {
+            instance._saveData.playerData.config.msg_lang_id = (int)value;
+            instance._saveData.playerData.mystatus.region_code = (byte)value;
+        } }
+	public static int cassetVersion { get { return instance._saveData.playerData.mystatus.rom_code != 0 ? 49 : 48; } set { instance._saveData.playerData.mystatus.rom_code = (byte)(value != 48 ? 1 : 0); } }
+	public static bool isKanji { get { return instance._saveData.playerData.config.is_kanji; } set { instance._saveData.playerData.config.is_kanji = value; } }
+	public static global::DPData.BTLTOWER_SAVEWORK btlTowerSave { get { return instance._saveData.btlTowerSave; } set { instance._saveData.btlTowerSave = value; } }
+	public static bool bicycleGear { get { return instance._saveData.player_save_data.gear_type; } set { instance._saveData.player_save_data.gear_type = value; } }
+	public static byte bicycleColor { get { return instance._saveData.player_save_data.bic_color; } set { instance._saveData.player_save_data.bic_color = value; } }
+	public static global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM battleSetupParam { get { return instance._battleSetupParam; } }
+	public static global::Pml.PokeParty playerParty { get {
+            if (instance._playerParty == null && DataManager.IsLoaded())
+                instance._playerParty = new global::Pml.PokeParty();
+            return instance._playerParty;
+        } }
+	public static global::Pml.PokePara.PokemonParam capturedPokemon { get { return instance._capturedPokemon; } set { instance._capturedPokemon = value; } }
 	public static global::Pml.MonsNo capturedMonsNo { get; set; }
 	public static int capturedBallCountTvTopic { get; set; }
-	public static global::System.Collections.Generic.List<global::EvolveDemoTools.Param> evolveRequets { get { /*@B 0x6000A89*/ throw null; } }
+	public static global::System.Collections.Generic.List<global::EvolveDemoTools.Param> evolveRequets { get { return instance._evolveRequets; } }
 	public static bool encountEnable { get; set; }
 	public static bool isDebugDash { get { return false; } }
 	public static bool isDebugWalk { get; set; }
 	public static bool isDebugPlayerVisible { get; set; }
 	public static bool isDebugBattleTextView { get; set; }
-	public static ref global::DPData.PLAYER_DATA playerData { get { /*@B 0x6000A93*/ throw null; } }
-	public static ref global::DPData.MYSTATUS playerStatus { get { /*@B 0x6000A94*/ throw null; } }
-	public static ref global::DPData.CONFIG config { get { /*@B 0x6000A95*/ throw null; } }
-	public static ref global::DPData.CONTEST_DATA contestData { get { /*@B 0x6000A96*/ throw null; } }
-	public static ref global::DPData.CON_PHOTO_LANG_DATA contestPhotoLangData { get { /*@B 0x6000A97*/ throw null; } }
-	public static ref global::DPData.CON_PHOTO_EXT_DATA[] contestPhotoExtData { get { /*@B 0x6000A98*/ throw null; } }
-	public static ref global::DPData.GMS_DATA gmsData { get { /*@B 0x6000A99*/ throw null; } }
-	public static ref global::DPData.GMS_POINT_HISTORY_EXT_DATA[] gmsExtData { get { /*@B 0x6000A9A*/ throw null; } }
-	public static ref global::DPData.PLAYER_NETWORK_DATA networkData { get { /*@B 0x6000A9B*/ throw null; } }
-	public static global::DPData.ZUKAN_WORK zukan { get { /*@B 0x6000A9D*/ throw null; } set { /*@B 0x6000A9C*/ throw null; } }
-	public static bool isPlayerInputActive { get { /*@B 0x6000A9F*/ throw null; } set { /*@B 0x6000A9E*/ throw null; } }
-	public static uint uniqueID { get { /*@B 0x6000AA1*/ throw null; } set { /*@B 0x6000AA0*/ throw null; } }
-	public static global::DPData.DefaultPokeType defaultPokeType { get { /*@B 0x6000AA3*/ throw null; } set { /*@B 0x6000AA2*/ throw null; } }
-	public static global::Pml.MonsNo defaultPokeNo { get { /*@B 0x6000AA4*/ throw null; } }
-	public static global::DPData.DefaultPokeType rivalPokeType { get { /*@B 0x6000AA5*/ throw null; } }
-	public static global::Pml.MonsNo rivalPokeNo { get { /*@B 0x6000AA6*/ throw null; } }
-	public static global::DPData.DefaultPokeType supportPokeType { get { /*@B 0x6000AA7*/ throw null; } }
-	public static global::Pml.MonsNo supportPokeNo { get { /*@B 0x6000AA8*/ throw null; } }
-	public static global::DPData.TR_BATTLE_DATA[] tr_battleData { get { /*@B 0x6000AAC*/ throw null; } set { /*@B 0x6000AAB*/ throw null; } }
-	public static global::DPData.TOPMENU_WORK topMenu { get { /*@B 0x6000AAD*/ throw null; } set { /*@B 0x6000AAE*/ throw null; } }
-	public static global::DPData._FIELDOBJ_SAVE fieldObjSave { get { /*@B 0x6000AB1*/ throw null; } set { /*@B 0x6000AB0*/ throw null; } }
-	public static global::DPData.RECORD_ARRAY record { get { /*@B 0x6000AB3*/ throw null; } set { /*@B 0x6000AB2*/ throw null; } }
-	public static global::DPData.RECORD_ADD_DATA recordAddData { get { /*@B 0x6000AB5*/ throw null; } set { /*@B 0x6000AB4*/ throw null; } }
+	public static ref global::DPData.PLAYER_DATA playerData { get { return ref instance._saveData.playerData; } }
+	public static ref global::DPData.MYSTATUS playerStatus { get { return ref instance._saveData.playerData.mystatus; } }
+	public static ref global::DPData.CONFIG config { get { return ref instance._saveData.playerData.config; } }
+	public static ref global::DPData.CONTEST_DATA contestData { get { return ref instance._saveData.playerData.contestdata; } }
+	public static ref global::DPData.CON_PHOTO_LANG_DATA contestPhotoLangData { get { return ref instance._saveData.contstPhotoLangData; } }
+	public static ref global::DPData.CON_PHOTO_EXT_DATA[] contestPhotoExtData { get { return ref instance._saveData.contestPhotoExtData; } }
+	public static ref global::DPData.GMS_DATA gmsData { get { return ref instance._saveData.gmsdata; } }
+	public static ref global::DPData.GMS_POINT_HISTORY_EXT_DATA[] gmsExtData { get { return ref instance._saveData.gmsPointExtData; } }
+	public static ref global::DPData.PLAYER_NETWORK_DATA networkData { get { return ref instance._saveData.networkdata; } }
+	public static global::DPData.ZUKAN_WORK zukan { get { return instance._saveData.zukanData; } set { instance._saveData.zukanData = value; } }
+	public static bool isPlayerInputActive { get { return _isPlayerInputActive && _isPlayerInputActive_ContactEvent; } set { _isPlayerInputActive = value; } }
+	public static uint uniqueID { get { return instance._saveData.playerData.mystatus.id; } set { instance._saveData.playerData.mystatus.id = value; } }
+	public static global::DPData.DefaultPokeType defaultPokeType { get { return instance._saveData.playerData.mystatus.defaultPokeType; } set { instance._saveData.playerData.mystatus.defaultPokeType = value; } }
+	public static global::Pml.MonsNo defaultPokeNo { get {
+            if (defaultPokeType == DefaultPokeType.KUSA)
+                return global::Pml.MonsNo.NAETORU;
+            return defaultPokeType == DefaultPokeType.MIZU ? global::Pml.MonsNo.POTTYAMA : global::Pml.MonsNo.HIKOZARU;
+        } }
+	public static global::DPData.DefaultPokeType rivalPokeType { get {
+            if (defaultPokeType == DefaultPokeType.KUSA)
+                return DefaultPokeType.HONOO;
+            return defaultPokeType == DefaultPokeType.MIZU ? DefaultPokeType.KUSA : DefaultPokeType.MIZU;
+        } }
+	public static global::Pml.MonsNo rivalPokeNo { get {
+            if (defaultPokeType == DefaultPokeType.KUSA)
+                return global::Pml.MonsNo.HIKOZARU;
+            return defaultPokeType == DefaultPokeType.MIZU ? global::Pml.MonsNo.NAETORU : global::Pml.MonsNo.POTTYAMA;
+        } }
+	public static global::DPData.DefaultPokeType supportPokeType { get {
+            if (rivalPokeType == DefaultPokeType.KUSA)
+                return DefaultPokeType.HONOO;
+            return rivalPokeType == DefaultPokeType.MIZU ? DefaultPokeType.KUSA : DefaultPokeType.MIZU;
+        } }
+	public static global::Pml.MonsNo supportPokeNo { get {
+            if (rivalPokeType == DefaultPokeType.KUSA)
+                return global::Pml.MonsNo.HIKOZARU;
+            return rivalPokeType == DefaultPokeType.MIZU ? global::Pml.MonsNo.NAETORU : global::Pml.MonsNo.POTTYAMA;
+        } }
+	public static global::DPData.TR_BATTLE_DATA[] tr_battleData { get { return instance._saveData.tr_battleData; } set { instance._saveData.tr_battleData = value; } }
+	public static global::DPData.TOPMENU_WORK topMenu { get { return instance._saveData.topMenuData; } set { instance._saveData.topMenuData = value; } }
+	public static global::DPData._FIELDOBJ_SAVE fieldObjSave { get { return instance._saveData.fieldObj_Save; } set { instance._saveData.fieldObj_Save = value; } }
+	public static global::DPData.RECORD_ARRAY record { get { return instance._saveData.record; } set { instance._saveData.record = value; } }
+	public static global::DPData.RECORD_ADD_DATA recordAddData { get { return instance._saveData.recodeAddData; } set { instance._saveData.recodeAddData = value; } }
 	public static string FieldWorpLinkName { get; set; }
 	public static string FieldWorpLabel { get; set; }
 	public static bool isDebugNpcVisble { get; set; }
 	public static bool isDebugNpcPokeVisble { get; set; }
 	public static global::Pml.MonsNo DebugEncountMonsNo { get; set; }
 	public static global::SYS_WEATHER FieldWeather { get; set; }
-	public static global::DPData.ENC_SV_DATA Enc_SV_Data { get { /*@B 0x6000AC4*/ throw null; } set { /*@B 0x6000AC3*/ throw null; } }
-	public static byte BtlSearcherCharge { get { /*@B 0x6000AC6*/ throw null; } set { /*@B 0x6000AC5*/ throw null; } }
-	public static int HoneyLastTreeIndex { get { /*@B 0x6000AC8*/ throw null; } set { /*@B 0x6000AC7*/ throw null; } }
-	public static global::DPData.HONEY_DATA[] HoneyData { get { /*@B 0x6000AC9*/ throw null; } }
-	public static long HoneyLastUpdateMinutes { get { /*@B 0x6000ACA*/ throw null; } set { /*@B 0x6000ACB*/ throw null; } }
-	public static int WalkEncountCount { get { /*@B 0x6000ACC*/ throw null; } set { /*@B 0x6000ACD*/ throw null; } }
-	public static global::DPData.PLAYER_SAVE_DATA PlayerSaveData { get { /*@B 0x6000ACF*/ throw null; } set { /*@B 0x6000ACE*/ throw null; } }
-	public static float WalkCount { get { /*@B 0x6000AD1*/ throw null; } set { /*@B 0x6000AD0*/ throw null; } }
+	public static global::DPData.ENC_SV_DATA Enc_SV_Data { get { return instance._saveData.enc_sv_data; } set { instance._saveData.enc_sv_data = value; } }
+	public static byte BtlSearcherCharge { get { return instance._saveData.enc_sv_data.BtlSearcherCharge; } set {
+            instance._saveData.enc_sv_data.BtlSearcherCharge = value;
+            if (instance._saveData.enc_sv_data.BtlSearcherCharge > 100)
+                instance._saveData.enc_sv_data.BtlSearcherCharge = 100;
+        } }
+	public static int HoneyLastTreeIndex { get { return instance._saveData.enc_sv_data.HoneyTree.TreeNo; } set { instance._saveData.enc_sv_data.HoneyTree.TreeNo = (byte)value; } }
+	public static global::DPData.HONEY_DATA[] HoneyData { get { return instance._saveData.enc_sv_data.HoneyTree.HoneyData; } }
+	public static long HoneyLastUpdateMinutes { get { return instance._saveData.enc_sv_data.HoneyTree.LastUpdateMinutes; } set { instance._saveData.enc_sv_data.HoneyTree.LastUpdateMinutes = value; } }
+	public static int WalkEncountCount { get { return instance._saveData.enc_sv_data.encountWalkCount; } set { instance._saveData.enc_sv_data.encountWalkCount = value; } }
+	public static global::DPData.PLAYER_SAVE_DATA PlayerSaveData { get { return instance._saveData.player_save_data; } set { instance._saveData.player_save_data = value; } }
+	public static float WalkCount { get { return instance._saveData.player_save_data.walkcount; } set { instance._saveData.player_save_data.walkcount = value; } }
 	public static global::DoubleSlot DoubleSlot { get { return (global::DoubleSlot)(0); } }
-	public static global::DPData._RANDOM_GROUP RandomGroup { get { /*@B 0x6000AD4*/ throw null; } set { /*@B 0x6000AD3*/ throw null; } }
-	public static int[] GimmickGearRotate { get { /*@B 0x6000AD6*/ throw null; } set { /*@B 0x6000AD5*/ throw null; } }
-	public static global::DPData.KinomiGrow[] KinomiGrows { get { /*@B 0x6000AD7*/ throw null; } }
-	public static long KinomiGrowLastUpdateMinutes { get { /*@B 0x6000AD8*/ throw null; } set { /*@B 0x6000AD9*/ throw null; } }
-	public static global::System.DayOfWeek Week { get { /*@B 0x6000ADA*/ throw null; } }
+	public static global::DPData._RANDOM_GROUP RandomGroup { get { return instance._saveData.randomGroup; } set { instance._saveData.randomGroup = value; } }
+	public static int[] GimmickGearRotate { get { return instance._saveData.fieldGimmickSaveData.GearRotate; } set { instance._saveData.fieldGimmickSaveData.GearRotate = value; } }
+	public static global::DPData.KinomiGrow[] KinomiGrows { get { return instance._saveData.kinomiGrowSaveData.kinomiGrows; } }
+	public static long KinomiGrowLastUpdateMinutes { get { return instance._saveData.kinomiGrowSaveData.LastUpdateMinutes; } set { instance._saveData.kinomiGrowSaveData.LastUpdateMinutes = value; } }
+	public static global::System.DayOfWeek Week { get {
+            if (DebugWeek >= 0 && DebugWeek <= 6)
+                return (global::System.DayOfWeek)DebugWeek;
+            return GameManager.nowTime.DayOfWeek;
+        } }
 	public static int DebugWeek { get; set; }
 	public static int FieldInputMode { get; set; }
 	public static bool IsZenmetuFlag { get; set; }
@@ -163,14 +202,20 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 	public static global::PlayerWork.WarpType Warp { get; private set; }
 	public static bool Telescope { get; set; }
 	public static bool TelescopeReturn { get; set; }
-	public static global::DPData.UgSaveData ugSaveData { get { /*@B 0x6000AEF*/ throw null; } set { /*@B 0x6000AF0*/ throw null; } }
-	public static int ReturnZoneID { get { /*@B 0x6000AF1*/ throw null; } set { /*@B 0x6000AF2*/ throw null; } }
-	public static int ReturnUgZoneID { get { /*@B 0x6000AF3*/ throw null; } set { /*@B 0x6000AF4*/ throw null; } }
-	public static global::UnityEngine.Vector3 UgReturnPos { get { /*@B 0x6000AF5*/ throw null; } set { /*@B 0x6000AF6*/ throw null; } }
-	public static ref global::DPData.UGRecord UgRecord { get { /*@B 0x6000AF7*/ throw null; } }
-	public static ref global::DPData.UgCountRecord UgCountRecord { get { /*@B 0x6000AF8*/ throw null; } }
-	public static global::DPData.PoffinSaveData poffinSaveData { get { /*@B 0x6000AF9*/ throw null; } }
-	public static int CookingCount { get { /*@B 0x6000AFA*/ throw null; } set { /*@B 0x6000AFB*/ throw null; } }
+	public static global::DPData.UgSaveData ugSaveData { get { return instance._saveData.ugSaveData; } set { instance._saveData.ugSaveData = value; } }
+	public static int ReturnZoneID { get { return instance._saveData.ugSaveData.ReturnZoneID; } set { instance._saveData.ugSaveData.ReturnZoneID = value; } }
+	public static int ReturnUgZoneID { get { return instance._saveData.ugSaveData.ReturnUgZoneID; } set { instance._saveData.ugSaveData.ReturnUgZoneID = value; } }
+	public static global::UnityEngine.Vector3 UgReturnPos { get {
+            return new global::UnityEngine.Vector3(instance._saveData.ugSaveData.ReturnGridPosX, instance._saveData.ugSaveData.ReturnPosY, instance._saveData.ugSaveData.ReturnGridPosZ);
+        } set {
+            instance._saveData.ugSaveData.ReturnGridPosX = (int)value.x;
+            instance._saveData.ugSaveData.ReturnPosY = (int)value.y;
+            instance._saveData.ugSaveData.ReturnGridPosZ = (int)value.z;
+        } }
+	public static ref global::DPData.UGRecord UgRecord { get { return ref instance._saveData.ugSaveData.ugRecord; } }
+	public static ref global::DPData.UgCountRecord UgCountRecord { get { return ref instance._saveData.ugCountRecord; } }
+	public static global::DPData.PoffinSaveData poffinSaveData { get { return instance._saveData.poffinSaveData; } }
+	public static int CookingCount { get { return instance._saveData.poffinSaveData.CookingCount; } set { instance._saveData.poffinSaveData.CookingCount = value; } }
 	public static bool FieldCacheFlag { get; set; }
 	public static int SafariBallNum { get; set; }
 	public static int SafariStepCount { get; set; }
@@ -179,15 +224,15 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 	public static global::Dpr.Item.ItemInfo UsedFieldItem { get; set; }
 	public static global::Pml.WazaNo UsedFieldWazaNo { get; set; }
 	public static int UsedFieldWazaTemotiNo { get; set; }
-	public static bool Kiribarai { get { /*@B 0x6000B0C*/ throw null; } set { /*@B 0x6000B0D*/ throw null; } }
+	public static bool Kiribarai { get { return FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_KIRIBARAI); } set { FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_KIRIBARAI, value); } }
 	public static bool Flash { get; set; }
-	public static global::DPData.SYSTEMDATA SystemData { get { /*@B 0x6000B10*/ throw null; } set { /*@B 0x6000B11*/ throw null; } }
+	public static global::DPData.SYSTEMDATA SystemData { get { return instance._saveData.systemData; } set { instance._saveData.systemData = value; } }
 	public static bool PoketchOpen { get; set; }
-	public static global::DPData.POKETCH_DATA PoketchData { get { /*@B 0x6000B14*/ throw null; } set { /*@B 0x6000B15*/ throw null; } }
-	public static uint PoketchPedometer { get { /*@B 0x6000B16*/ throw null; } set { /*@B 0x6000B17*/ throw null; } }
-	public static int TureWalkMemberIndex { get { /*@B 0x6000B18*/ throw null; } set { /*@B 0x6000B19*/ throw null; } }
-	public static ref global::AzukariyaData AzukariyaData { get { /*@B 0x6000B1A*/ throw null; } }
-	public static bool IsMovePokemon { get { /*@B 0x6000B1B*/ throw null; } }
+	public static global::DPData.POKETCH_DATA PoketchData { get { return instance._saveData.poketchData; } set { instance._saveData.poketchData = value; } }
+	public static uint PoketchPedometer { get { return instance._saveData.poketchData.pedometer; } set { instance._saveData.poketchData.pedometer = value; } }
+	public static int TureWalkMemberIndex { get { return instance._saveData.playerData.mystatus.turewalkMemberIndex; } set { instance._saveData.playerData.mystatus.turewalkMemberIndex = value; } }
+	public static ref global::AzukariyaData AzukariyaData { get { return ref instance._saveData.azukariyaData; } }
+	public static bool IsMovePokemon { get { return MovePokemonIndex >= 0; } }
 	public static int MovePokemonIndex { get; set; }
 	public static bool IsD26Key { get; set; }
 	public static global::DPData._DENDOU_SAVEDATA dendoudata { get { /*@B 0x6000B20*/ throw null; } set { /*@B 0x6000B21*/ throw null; } }
