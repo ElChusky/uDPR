@@ -12530,8 +12530,23 @@ namespace Dpr.EvScript
             }
             return _warpSequence < 0;
         }
-		private bool EvCmdOpenPasswordSWKeyboard() { /*@B 0x6009039*/ throw null; }
-		private bool EvCmdSetMatchingGroup() { /*@B 0x600903A*/ throw null; }
+		private bool EvCmdOpenPasswordSWKeyboard() {
+            int workIndex = _evArg[1].data;
+            matchingPassword.Clear();
+            Utils.OpenPasswordSoftwareKeyboard((isSuccess, resultText) =>
+            {
+                if (isSuccess)
+                    matchingPassword.Append(resultText);
+                SetWork(workIndex, isSuccess ? 1 : 0);
+            });
+            return true;
+        }
+		private bool EvCmdSetMatchingGroup() {
+            string groupName = PlayerWork.RandomGroup.group[(int)RANDOMGROUP.RANDOMGROUP_MYUSE].group_name;
+            matchingPassword.Clear();
+            matchingPassword.Append(groupName);
+            return true;
+        }
 		private bool EvCmdCheckOnlineAccount() {
             _isWaitCheckOnlineAccount = false;
             int resultWorkIndex = _evArg[1].data;
@@ -12548,14 +12563,70 @@ namespace Dpr.EvScript
             });
             return true;
         }
-		private bool EvCmdCheckGMSOnlineAccount() { /*@B 0x600903C*/ throw null; }
+		private bool EvCmdCheckGMSOnlineAccount() {
+            _isWaitCheckOnlineAccount = false;
+            int workIndex = _evArg[1].data;
+            if (_evArg.Length >= 3)
+            {
+                int isFirstConnect = Dpr.NetworkUtils.NetworkHelper.IsFirstConnectInternet() ? 1 : 0;
+                Dpr.NetworkUtils.NetworkHelper.EmitNetworkLog(string.Format("First Connect Internet : [{0}]", isFirstConnect));
+                FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[2].data, isFirstConnect);
+            }
+            Dpr.NetworkUtils.NetworkManager.SetAutoLogoutControl(false);
+            Dpr.NetworkUtils.NetworkHelper.CheckOnlineAccountAsync(success =>
+            {
+                _isWaitCheckOnlineAccount = true;
+                SetWork(workIndex, success ? 1 : 0);
+            });
+            return true;
+        }
 		private bool EvCmdWaitCheckOnlineAccount() {
             return _isWaitCheckOnlineAccount;
         }
-		private bool EvCmdGMSEnd() { /*@B 0x600903E*/ throw null; }
-		private bool EvCmd_DENDOU_NUM_SET() { /*@B 0x600903F*/ throw null; }
-		private bool EvCmdTemotiBoxPokeChk() { /*@B 0x6009040*/ throw null; }
-		private bool EvCmdTemotiBoxMonsNo() { /*@B 0x6009041*/ throw null; }
+		private bool EvCmdGMSEnd() {
+            Dpr.NetworkUtils.NetworkManager.SetAutoLogoutControl(true);
+            return true;
+        }
+		private bool EvCmd_DENDOU_NUM_SET() {
+            int num = GetArgInt(_evArg[1]);
+            if (num > 9999)
+                num = 9999;
+            if (num < 0)
+                num = 0;
+            RecordWork.Set(RECORD_ID.RECID_DENDOU_CNT, (uint)num);
+            return true;
+        }
+		private bool EvCmdTemotiBoxPokeChk() {
+            int no = GetArgInt(_evArg[2]);
+            bool find = false;
+            PokeParty party = PlayerWork.playerParty;
+            int memberCount = (int)party.GetMemberCount();
+            for (int i = 0; i < memberCount; i++)
+            {
+                if (CheckMonsNo(party.GetMemberPointer((uint)i), no))
+                {
+                    find = true;
+                    break;
+                }
+            }
+            if (!find)
+                BoxScan(param => find |= CheckMonsNo(param, no));
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, find ? 1 : 0);
+            return true;
+
+            bool CheckMonsNo(PokemonParam param, int monsNo)
+            {
+                return CheckValidPokemonParam(param) && (int)param.GetMonsNo() == monsNo;
+            }
+        }
+		private bool EvCmdTemotiBoxMonsNo() {
+            int index = GetArgInt(_evArg[1]);
+            int trayIndex = GetArgInt(_evArg[2]);
+            PokemonParam param = GetPokemonParam(trayIndex, index);
+            int monsNo = CheckValidPokemonParam(param) ? (int)param.GetMonsNo() : 0;
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[3].data, monsNo);
+            return true;
+        }
 		private global::Pml.PokePara.PokemonParam GetPokemonParam(int trayIndex, int index) {
             if (trayIndex >= 0)
             {
@@ -12629,8 +12700,27 @@ namespace Dpr.EvScript
             else
                 param.AddWazaIfEmptyExist(learnWazaNo);
         }
-		private bool EvCmdCheckWazaOshie() { /*@B 0x6009048*/ throw null; }
-		private bool EvCmdCheckWazaOshieAll() { /*@B 0x6009049*/ throw null; }
+		private bool EvCmdCheckWazaOshie() {
+            int trayIndex = GetArgInt(_evArg[3]);
+            int index = GetArgInt(_evArg[2]);
+            PokemonParam param = GetPokemonParam(trayIndex, index);
+            WazaNo wazaNo = (WazaNo)GetArgInt(_evArg[4]);
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, (int)CheckWazaOshie(param, wazaNo));
+            return true;
+        }
+		private bool EvCmdCheckWazaOshieAll() {
+            WazaNo oshieWazaNo = (WazaNo)GetArgInt(_evArg[2]);
+            bool enable = false;
+            TemotiBoxScan((param, tray, index) =>
+            {
+                if (CheckWazaOshie(param, oshieWazaNo) != WazaOshieResult.OK)
+                    return true;
+                enable = true;
+                return false;
+            });
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, enable ? 1 : 0);
+            return true;
+        }
 		private global::Dpr.EvScript.EvDataManager.WazaOshieResult CheckWazaOshie(global::Pml.PokePara.PokemonParam param, global::Pml.WazaNo oshieWazaNo) {
             string nickName = param.GetNickName();
             if (!CheckValidPokemonParam(param))
@@ -12641,16 +12731,58 @@ namespace Dpr.EvScript
                 return WazaOshieResult.Learned;
             return WazaOshieResult.OK;
         }
-		private bool EvCmdTemotiBoxPokemonName() { /*@B 0x600904B*/ throw null; }
+		private bool EvCmdTemotiBoxPokemonName() {
+            int tagIndex = GetArgInt(_evArg[1]);
+            int trayIndex = GetArgInt(_evArg[3]);
+            int index = GetArgInt(_evArg[2]);
+            MessageWordSetHelper.SetMonsNameWord(tagIndex, GetPokemonParam(trayIndex, index));
+            return true;
+        }
 		private bool EvCmd_BTWR_TOOL_CHK_ENTRY_POKE_NUM() { return true; }
-		private bool EvCmd_BTWR_TOOL_CLEAR_PLAY_DATA() { /*@B 0x600904D*/ throw null; }
-		private bool EvCmd_BTWR_TOOL_PUSH_NOW_LOCATION() { /*@B 0x600904E*/ throw null; }
-		private bool EvCmd_BTWR_TOOL_POP_NOW_LOCATION() { /*@B 0x600904F*/ throw null; }
+		private bool EvCmd_BTWR_TOOL_CLEAR_PLAY_DATA() {
+            BtlTowerWork.Clear();
+            return true;
+        }
+		private bool EvCmd_BTWR_TOOL_PUSH_NOW_LOCATION() {
+            FieldPlayerEntity player = EntityManager.activeFieldPlayer;
+            PLAYER_SAVE_DATA saveData = PlayerWork.PlayerSaveData;
+            saveData.isTokushuLocation = true;
+            saveData.TokushuLocation.posX = player.gridPosition.x;
+            saveData.TokushuLocation.posY = player.Height;
+            saveData.TokushuLocation.posZ = player.gridPosition.y;
+            saveData.TokushuLocation.zoneID = (int)PlayerWork.zoneID;
+            saveData.TokushuLocation.dir = (int)player.GetDir();
+            PlayerWork.PlayerSaveData = saveData;
+            return true;
+        }
+		private bool EvCmd_BTWR_TOOL_POP_NOW_LOCATION() {
+            PLAYER_SAVE_DATA saveData = PlayerWork.PlayerSaveData;
+            PlayerWork.transitionLocation = saveData.TokushuLocation;
+            PlayerWork.SetTransitionZone((ZoneID)PlayerWork.transitionLocation.Value.zoneID, 0);
+            // Shipped: the flag is written true again here (02c934cc), not cleared.
+            saveData.isTokushuLocation = true;
+            PlayerWork.PlayerSaveData = saveData;
+            return true;
+        }
 		private bool EvCmd_BTWR_TOOL_GET_WIFI_RANK() { return true; }
-		private bool EvCmd_BTWR_TOOL_SET_PLAY_MODE() { /*@B 0x6009051*/ throw null; }
-		private bool EvCmd_BTWR_TOOL_SET_NOW_WIN() { /*@B 0x6009052*/ throw null; }
-		private bool EvCmd_BTWR_TOOL_SET_RANK() { /*@B 0x6009053*/ throw null; }
-		private bool EvCmd_BTWR_SUB_GET_RANK() { /*@B 0x6009054*/ throw null; }
+		private bool EvCmd_BTWR_TOOL_SET_PLAY_MODE() {
+            BtlTowerWork.SetMode(GetArgInt(_evArg[1]));
+            return true;
+        }
+		private bool EvCmd_BTWR_TOOL_SET_NOW_WIN() {
+            int mode = BtlTowerWork.GetMode();
+            BtlTowerWork.SetRound(mode, GetArgInt(_evArg[1]));
+            return true;
+        }
+		private bool EvCmd_BTWR_TOOL_SET_RANK() {
+            int mode = GetArgInt(_evArg[1]);
+            BtlTowerWork.SetRank(mode, (byte)GetArgInt(_evArg[2]));
+            return true;
+        }
+		private bool EvCmd_BTWR_SUB_GET_RANK() {
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[2].data, BtlTowerWork.GetRank(GetArgInt(_evArg[1])));
+            return true;
+        }
 		private bool EvCmd_BTWR_SUB_RANK_DOWN_LOSE() {
             FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[2].data, (int)BtlTowerWork.GetRankDownLose(GetArgInt(_evArg[1])));
             return true;
@@ -12659,11 +12791,33 @@ namespace Dpr.EvScript
             BtlTowerWork.ReseRankDownLose(GetArgInt(_evArg[1]));
             return true;
         }
-		private bool EvCmd_BTWR_SUB_ADD_LOSE() { /*@B 0x6009057*/ throw null; }
+		private bool EvCmd_BTWR_SUB_ADD_LOSE() {
+            int mode = GetArgInt(_evArg[1]);
+            BtlTowerWork.AddLose(mode);
+            int renshou = (int)BtlTowerWork.GetRenshou(mode);
+            if (renshou > 5)
+                InterviewWork.SetTopicRecordBattleTower(renshou + 1, false);
+            BtlTowerWork.ResetRenshou(mode);
+            return true;
+        }
 		private bool EvCmd_BTWR_SUB_CHK_ENTRY_POKE() { return true; }
-		private bool EvCmd_BTWR_SUB_GET_NOW_ROUND() { /*@B 0x6009059*/ throw null; }
-		private bool EvCmd_BTWR_SUB_INC_ROUND() { /*@B 0x600905A*/ throw null; }
-		private bool EvCmd_BTWR_SUB_IS_CLEAR() { /*@B 0x600905B*/ throw null; }
+		private bool EvCmd_BTWR_SUB_GET_NOW_ROUND() {
+            int mode = BtlTowerWork.GetMode();
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, BtlTowerWork.GetRound(mode));
+            return true;
+        }
+		private bool EvCmd_BTWR_SUB_INC_ROUND() {
+            int mode = BtlTowerWork.GetMode();
+            BtlTowerWork.RoundAdd(mode);
+            if (BtlTowerWork.GetRound(mode) > 6)
+                InterviewWork.SetTopicRecordBattleTower((int)BtlTowerWork.GetRenshou(mode), true);
+            return true;
+        }
+		private bool EvCmd_BTWR_SUB_IS_CLEAR() {
+            int mode = BtlTowerWork.GetMode();
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, BtlTowerWork.GameClear(mode) ? 1 : 0);
+            return true;
+        }
 		private bool EvCmd_BTWR_SUB_GET_RENSHOU_CNT() { /*@B 0x600905C*/ throw null; }
 		private bool EvCmd_BTWR_SUB_SET_SCORE() { /*@B 0x600905D*/ throw null; }
 		private bool EvCmd_BTWR_SUB_CHOICE_BTL_PARTNER() { return true; }
