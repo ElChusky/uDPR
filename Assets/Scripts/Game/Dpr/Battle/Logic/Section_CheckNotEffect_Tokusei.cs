@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckNotEffect_Tokusei : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckNotEffect_Tokusei(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DDD*/ throw null; }
+		public Section_CheckNotEffect_Tokusei(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckNotEffect_Tokusei.Result pResult, in global::Dpr.Battle.Logic.Section_CheckNotEffect_Tokusei.Description description) {
             if (description.targets.GetCount() == 0)
                 return;
@@ -30,7 +30,13 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.DmgAffRec affinityRecorder;
 			public global::Dpr.Battle.Logic.PokeSet targets;
 			public global::Dpr.Battle.Logic.ActionRecorder actionRecorder;
-			public Description() { /*@B 0x600B4DF*/ throw null; }
+			public Description() {
+				attacker = null;
+				wazaParam = null;
+				affinityRecorder = null;
+				targets = null;
+				actionRecorder = null;
+			}
 		}
 		public class Result
 		{

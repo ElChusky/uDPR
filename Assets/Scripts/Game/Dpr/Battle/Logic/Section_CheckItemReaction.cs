@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckItemReaction : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckItemReaction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DB5*/ throw null; }
+		public Section_CheckItemReaction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckItemReaction.Result pResult, in global::Dpr.Battle.Logic.Section_CheckItemReaction.Description desc) {
             BTL_POKEPARAM bpp = GetPokeParam(desc.pokeID);
             if (bpp.GetItem() != 0)
@@ -11,9 +11,9 @@ namespace Dpr.Battle.Logic
         }
 		public class Description
 		{
-			public byte pokeID;
+			public byte pokeID = PokeID.INVALID;
 			public byte reactionType;
-			public Description() { /*@B 0x600B4CF*/ throw null; }
+			public Description() { }
 		}
 		public class Result
 		{

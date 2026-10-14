@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckRealHitPoke : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckRealHitPoke(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DF3*/ throw null; }
+		public Section_CheckRealHitPoke(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckRealHitPoke.Result pResult, in global::Dpr.Battle.Logic.Section_CheckRealHitPoke.Description description) {
 			pResult.realHitPokeCount = (byte)storeDamageRecords(description.damageProcParams, description.damageRecord);
 		}
@@ -32,7 +32,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.DamageCalcResult damageRecord;
 			public global::Dpr.Battle.Logic.DamageProcParams damageProcParams;
-			public Description() { /*@B 0x600B4E3*/ throw null; }
+			public Description() {
+				damageRecord = null;
+				damageProcParams = null;
+			}
 		}
 		public class Result
 		{

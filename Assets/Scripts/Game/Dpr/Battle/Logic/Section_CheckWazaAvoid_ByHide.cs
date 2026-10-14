@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckWazaAvoid_ByHide : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckWazaAvoid_ByHide(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DFF*/ throw null; }
+		public Section_CheckWazaAvoid_ByHide(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckWazaAvoid_ByHide.Result pResult, in global::Dpr.Battle.Logic.Section_CheckWazaAvoid_ByHide.Description description) {
             bool bEnableAvoidMsg = false;
             description.targets.SeekStart();
@@ -28,7 +28,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.PokeSet targets;
-			public Description() { /*@B 0x600B4E9*/ throw null; }
+			public Description() {
+				wazaParam = null;
+				attacker = null;
+				targets = null;
+			}
 		}
 		public class Result
 		{

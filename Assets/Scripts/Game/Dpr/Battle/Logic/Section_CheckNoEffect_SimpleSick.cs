@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckNoEffect_SimpleSick : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckNoEffect_SimpleSick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DC0*/ throw null; }
+		public Section_CheckNoEffect_SimpleSick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckNoEffect_SimpleSick.Result pResult, in global::Dpr.Battle.Logic.Section_CheckNoEffect_SimpleSick.Description description) {
             if (checkNoEffect(description.wazaParam, description.attacker, description.targets))
                 return;
@@ -52,7 +52,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.PokeSet targets;
-			public Description() { /*@B 0x600B4D5*/ throw null; }
+			public Description() {
+				wazaParam = null;
+				attacker = null;
+				targets = null;
+			}
 		}
 		public class Result
 		{

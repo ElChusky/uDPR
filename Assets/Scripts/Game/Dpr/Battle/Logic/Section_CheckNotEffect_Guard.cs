@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckNotEffect_Guard : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckNotEffect_Guard(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DD4*/ throw null; }
+		public Section_CheckNotEffect_Guard(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckNotEffect_Guard.Result pResult, in global::Dpr.Battle.Logic.Section_CheckNotEffect_Guard.Description description) {
 			check_Field(description.attacker, description.wazaParam, description.affinityRecorder, description.targets);
 			bool isRemovedAllByField = description.targets.IsRemovedAll();
@@ -99,7 +99,13 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.DmgAffRec affinityRecorder;
 			public global::Dpr.Battle.Logic.PokeSet targets;
 			public global::Dpr.Battle.Logic.ActionRecorder actionRecorder;
-			public Description() { /*@B 0x600B4DD*/ throw null; }
+			public Description() {
+				attacker = null;
+				wazaParam = null;
+				affinityRecorder = null;
+				targets = null;
+				actionRecorder = null;
+			}
 		}
 		public class Result
 		{

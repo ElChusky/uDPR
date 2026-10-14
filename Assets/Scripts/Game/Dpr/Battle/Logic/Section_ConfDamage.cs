@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_ConfDamage : global::Dpr.Battle.Logic.Section
 	{
-		public Section_ConfDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E1D*/ throw null; }
+		public Section_ConfDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ConfDamage.Result pResult, in global::Dpr.Battle.Logic.Section_ConfDamage.Description description) {
             pResult.damage = 0;
             ushort damage = calcDamage(description.attacker);
@@ -46,7 +46,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
-			public Description() { /*@B 0x600B4F2*/ throw null; }
+			public Description() {
+				attacker = null;
+			}
 		}
 		public class Result
 		{

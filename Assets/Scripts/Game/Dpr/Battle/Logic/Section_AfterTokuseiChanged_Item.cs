@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_AfterTokuseiChanged_Item : global::Dpr.Battle.Logic.Section
 	{
-		public Section_AfterTokuseiChanged_Item(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D7C*/ throw null; }
+		public Section_AfterTokuseiChanged_Item(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_AfterTokuseiChanged_Item.Result pResult, in global::Dpr.Battle.Logic.Section_AfterTokuseiChanged_Item.Description desc) {
             if (desc.poke.CheckSick(Pml.WazaData.WazaSick.WAZASICK_IEKI))
                 return;

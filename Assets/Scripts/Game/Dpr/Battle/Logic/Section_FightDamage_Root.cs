@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FightDamage_Root : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FightDamage_Root(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EA9*/ throw null; }
+		public Section_FightDamage_Root(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FightDamage_Root.Result pResult, in global::Dpr.Battle.Logic.Section_FightDamage_Root.Description description) {
 			event_DamageProcStart(description.pAttacker, description.pWazaParam, description.pTargets);
 
@@ -145,7 +145,14 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.DmgAffRec pDmgAffRec;
 			public global::Dpr.Battle.Logic.PokeSet pTargets;
 			public bool isDelayAttack;
-			public Description() { /*@B 0x600B51D*/ throw null; }
+			public Description() {
+				pAttacker = null;
+				pWazaParam = null;
+				pActionDesc = null;
+				pDmgAffRec = null;
+				pTargets = null;
+				isDelayAttack = false;
+			}
 		}
 		public class Result
 		{

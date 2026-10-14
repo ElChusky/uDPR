@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Fight : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Fight(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E65*/ throw null; }
+		public Section_Fight(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Fight.Result pResult, in global::Dpr.Battle.Logic.Section_Fight.Description description) {
 			Section_WazaExecStart.ResultCode resultCode;
 			bool isWazaEffective = false;
@@ -140,7 +140,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.PokeAction pokeAction;
-			public Description() { /*@B 0x600B50F*/ throw null; }
+			public Description() {
+				pokeAction = null;
+			}
 		}
 		public class Result
 		{

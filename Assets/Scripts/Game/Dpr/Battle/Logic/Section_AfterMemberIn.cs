@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_AfterMemberIn : global::Dpr.Battle.Logic.Section
 	{
-		public Section_AfterMemberIn(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D73*/ throw null; }
+		public Section_AfterMemberIn(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_AfterMemberIn.Result pResult, in global::Dpr.Battle.Logic.Section_AfterMemberIn.Description description) {
             PokeSet targets = new PokeSet();
             getTargets(targets, description.targets);
@@ -63,7 +63,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.PokeIDRegister targets;
-			public Description() { /*@B 0x600B4AB*/ throw null; }
+			public Description() {
+				targets = null;
+			}
 		}
 		public class Result
 		{

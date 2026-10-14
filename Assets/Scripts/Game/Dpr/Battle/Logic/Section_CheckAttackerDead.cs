@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckAttackerDead : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckAttackerDead(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DA3*/ throw null; }
+		public Section_CheckAttackerDead(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckAttackerDead.Result pResult, in global::Dpr.Battle.Logic.Section_CheckAttackerDead.Description description) {
             if (GetEventLauncher().Event_CheckAttackerDeadPreTarget(description.attacker, description.wazaParam))
                 checkPokeDead(description.attacker);
@@ -20,7 +20,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
-			public Description() { /*@B 0x600B4C7*/ throw null; }
+			public Description() {
+				attacker = null;
+				wazaParam = null;
+			}
 		}
 		public class Result
 		{

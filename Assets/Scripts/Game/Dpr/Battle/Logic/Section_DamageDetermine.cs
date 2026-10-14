@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_DamageDetermine : global::Dpr.Battle.Logic.Section
 	{
-		public Section_DamageDetermine(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E31*/ throw null; }
+		public Section_DamageDetermine(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_DamageDetermine.Result pResult, in global::Dpr.Battle.Logic.Section_DamageDetermine.Description description) {
 			if (description.pHitCheckParam.IsFirstTime())
 				damageDetermineEvent(description.pDamageRecord, description.pAttacker, description.pWazaParam);
@@ -39,7 +39,12 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.HITCHECK_PARAM pHitCheckParam;
 			public global::Dpr.Battle.Logic.DamageCalcResult pDamageRecord;
 			public global::Dpr.Battle.Logic.WazaParam pWazaParam;
-			public Description() { /*@B 0x600B4FA*/ throw null; }
+			public Description() {
+				pAttacker = null;
+				pHitCheckParam = null;
+				pDamageRecord = null;
+				pWazaParam = null;
+			}
 		}
 		public class Result
 		{

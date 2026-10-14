@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_AddSick_Core : global::Dpr.Battle.Logic.Section
 	{
-		public Section_AddSick_Core(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D65*/ throw null; }
+		public Section_AddSick_Core(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_AddSick_Core.Result pResult, in global::Dpr.Battle.Logic.Section_AddSick_Core.Description description) {
 			GetServerCommandPutter().AddSick(description.target, description.sick, description.sickCont);
 
@@ -189,7 +189,16 @@ namespace Dpr.Battle.Logic
 			public bool isDefaultMessageDisplay;
 			public global::Dpr.Battle.Logic.StrParam specialMessage;
 			public bool isItemReactionDisable;
-			public Description() { /*@B 0x600B4A5*/ throw null; }
+			public Description() {
+				attacker = null;
+				target = null;
+				specialMessage = null;
+				sick = WazaSick.WAZASICK_NONE;
+				sickCont.raw = 0;
+				isEffectDisplay = true;
+				isDefaultMessageDisplay = false;
+				isItemReactionDisable = false;
+			}
 		}
 		public class Result
 		{

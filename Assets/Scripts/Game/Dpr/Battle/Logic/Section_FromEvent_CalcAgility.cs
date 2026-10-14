@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_CalcAgility : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_CalcAgility(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006ED4*/ throw null; }
+		public Section_FromEvent_CalcAgility(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_CalcAgility.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_CalcAgility.Description description) {
 			result.agility = GetEventLauncher().Event_CalcAgility(description.poke, description.isTrickRoomApply);
 		}
@@ -11,7 +11,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
 			public bool isTrickRoomApply;
-			public Description() { /*@B 0x600B52D*/ throw null; }
+			public Description() {
+				poke = null;
+				isTrickRoomApply = false;
+			}
 		}
 		public class Result
 		{

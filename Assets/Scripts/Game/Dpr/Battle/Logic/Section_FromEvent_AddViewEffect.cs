@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_AddViewEffect : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_AddViewEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006ECD*/ throw null; }
+		public Section_FromEvent_AddViewEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_AddViewEffect.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_AddViewEffect.Description description) {
             if (description.isMessageWindowVanish)
                 GetServerCommandPutter().Act_HideMessageWindow();
@@ -29,8 +29,15 @@ namespace Dpr.Battle.Logic
 			public ushort reservedQueuePos;
 			public bool isQueueReserved;
 			public bool isMessageWindowVanish;
-			public global::Dpr.Battle.Logic.StrParam afterMessage;
-			public Description() { /*@B 0x600B527*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam afterMessage = new StrParam();
+			public Description() {
+				effectNo = 0;
+				pos_from = BtlPokePos.POS_NULL;
+				pos_to = BtlPokePos.POS_NULL;
+				reservedQueuePos = 0;
+				isQueueReserved = false;
+				isMessageWindowVanish = false;
+			}
 		}
 		public class Result
 		{

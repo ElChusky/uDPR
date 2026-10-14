@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckWazaDamageAffinity : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckWazaDamageAffinity(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E01*/ throw null; }
+		public Section_CheckWazaDamageAffinity(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckWazaDamageAffinity.Result pResult, in global::Dpr.Battle.Logic.Section_CheckWazaDamageAffinity.Description description) {
 			pResult.typeAffinity = TypeAffinity.AffinityID.TYPEAFF_1;
 			pResult.isNoEffectByFloatingStatus = false;
@@ -58,7 +58,12 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM defender;
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public bool checkOnlyAttacker;
-			public Description() { /*@B 0x600B4EB*/ throw null; }
+			public Description() {
+				attacker = null;
+				defender = null;
+				wazaParam = null;
+				checkOnlyAttacker = false;
+			}
 		}
 		public class Result
 		{

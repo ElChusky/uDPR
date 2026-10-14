@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CoverCheck : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CoverCheck(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E23*/ throw null; }
+		public Section_CoverCheck(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CoverCheck.Result pResult, in global::Dpr.Battle.Logic.Section_CoverCheck.Description description) {
 			if (GetBattleEnv().GetDeadRec().IsRelivedPokePuttableEmptyPos(GetBattleEnv().GetPosPoke()) || GetBattleEnv().GetDeadRec().GetCount(0) != 0)
 			{

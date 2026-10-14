@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_AfterItemEquip : global::Dpr.Battle.Logic.Section
 	{
-		public Section_AfterItemEquip(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D71*/ throw null; }
+		public Section_AfterItemEquip(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_AfterItemEquip.Result pResult, in global::Dpr.Battle.Logic.Section_AfterItemEquip.Description description) {
 			if (description.isKinomiCheckEnable && Pml.Item.ItemData.IsNuts(description.itemID))
 				GetServerCommandPutter().SetPermFlag(description.poke, BTL_POKEPARAM.PermFlag.PERMFLAG_ATE_KINOMI);
@@ -15,7 +15,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
 			public ushort itemID;
 			public bool isKinomiCheckEnable;
-			public Description() { /*@B 0x600B4A9*/ throw null; }
+			public Description() {
+				poke = null;
+				itemID = 0;
+				isKinomiCheckEnable = false;
+			}
 		}
 		public class Result
 		{

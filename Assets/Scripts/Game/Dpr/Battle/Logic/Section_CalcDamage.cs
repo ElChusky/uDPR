@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CalcDamage : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CalcDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D87*/ throw null; }
+		public Section_CalcDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CalcDamage.Result pResult, in global::Dpr.Battle.Logic.Section_CalcDamage.Description description) {
             ushort damage = 0;
             ushort koraeruDamage = 0;
@@ -106,8 +106,8 @@ namespace Dpr.Battle.Logic
 		}
 		public class Result
 		{
-			public global::Dpr.Battle.Logic.DamageCalcResult calcResult;
-			public Result() { /*@B 0x600B4B6*/ throw null; }
+			public global::Dpr.Battle.Logic.DamageCalcResult calcResult = new DamageCalcResult();
+			public Result() { }
 		}
 	}
 }

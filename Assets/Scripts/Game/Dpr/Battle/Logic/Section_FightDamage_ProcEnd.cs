@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FightDamage_ProcEnd : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FightDamage_ProcEnd(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EA1*/ throw null; }
+		public Section_FightDamage_ProcEnd(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FightDamage_ProcEnd.Result pResult, in global::Dpr.Battle.Logic.Section_FightDamage_ProcEnd.Description description) {
 			cureKori(description.wazaParam, description.attacker, description.targets);
 			friendPinchAction(description.targets);
@@ -80,7 +80,13 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.PokeSet targets;
 			public bool byDelayAttack;
-			public Description() { /*@B 0x600B51B*/ throw null; }
+			public Description() {
+				actionDesc = null;
+				wazaParam = null;
+				attacker = null;
+				targets = null;
+				byDelayAttack = false;
+			}
 		}
 		public class Result
 		{
