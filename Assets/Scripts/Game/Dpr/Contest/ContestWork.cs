@@ -7,18 +7,18 @@ namespace Dpr.Contest
 {
 	public static class ContestWork
 	{
-		public static global::Dpr.Contest.EntryPlayerData[] entryPlayerDatas;
-		public static global::Dpr.Contest.CategoryID categoryID;
-		public static int cassetVersion;
-		public static global::Dpr.Contest.RankID rankID;
-		public static global::Dpr.Contest.ContestMode playMode;
-		public static uint selectPartyIndex;
-		public static byte selectWazaIndex;
-		public static int selectCapsuleNumber;
-		public static int contestStageRank;
-		public static ushort playerFashion;
-		public static global::DPData.MSGSPEED sceneMsgSpeed;
-		public static bool IsMultiMode { get { /*@B 0x6004245*/ throw null; } }
+		public static global::Dpr.Contest.EntryPlayerData[] entryPlayerDatas = null;
+		public static global::Dpr.Contest.CategoryID categoryID = 0;
+		public static int cassetVersion = 0;
+		public static global::Dpr.Contest.RankID rankID = 0;
+		public static global::Dpr.Contest.ContestMode playMode = global::Dpr.Contest.ContestMode.NULL;
+		public static uint selectPartyIndex = 0;
+		public static byte selectWazaIndex = 0;
+		public static int selectCapsuleNumber = 0;
+		public static int contestStageRank = 0;
+		public static ushort playerFashion = 0;
+		public static global::DPData.MSGSPEED sceneMsgSpeed = global::DPData.MSGSPEED.MSGSPEED_MAX;
+		public static bool IsMultiMode { get { return playMode == ContestMode.Local || playMode == ContestMode.Internet; } }
 		public static void SetResultData(global::Dpr.Contest.ContestRewardDataModel resultDataModel) {
             if (resultDataModel.bIsMulti)
                 SetMultiModeResultData(resultDataModel);
@@ -442,6 +442,6 @@ namespace Dpr.Contest
                 ContestUtils.EmitLog(string.Format("{0} : Can not Capture!!", categoryID));
             }
         }
-		static ContestWork() { /*@B 0x600425E*/ throw null; }
+		static ContestWork() { }
 	}
 }

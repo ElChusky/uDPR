@@ -3,15 +3,21 @@ namespace Dpr.Contest
 {
 	public class DanceUser : global::Dpr.Contest.ADancePlayer
 	{
-		private global::Dpr.Contest.ContestInput input;
-		private global::Dpr.Contest.DanceTapData tapData;
+		private global::Dpr.Contest.ContestInput input = new global::Dpr.Contest.ContestInput();
+		private global::Dpr.Contest.DanceTapData tapData = new global::Dpr.Contest.DanceTapData();
 		private global::Dpr.Contest.ContestUserData contestUserData;
 		private double prevElapsedTime;
 		private bool canInput;
 		private bool bAutoMode;
 		private bool isOn;
 		public global::Dpr.Contest.DanceTapData TapData { get { return this.tapData; } }
-		public DanceUser(global::Dpr.Contest.ContestPlayerEntity entity, global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> notesDataList, global::System.Action<global::Dpr.Contest.ADancePlayer> onLockSkill) : base(default(int), default(global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel>), default(global::System.Action<global::Dpr.Contest.ADancePlayer>)) { /*@B 0x600447A*/ throw null; }
+		public DanceUser(global::Dpr.Contest.ContestPlayerEntity entity, global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> notesDataList, global::System.Action<global::Dpr.Contest.ADancePlayer> onLockSkill) : base(entity.Index, notesDataList, onLockSkill) {
+			contestUserData = entity.PlayerData as ContestUserData;
+			danceData = contestUserData.danceDataModel;
+			playerType = PlayerType.User;
+			bIsActive = false;
+			Reset();
+		}
 		public override void Activate() {
 			bIsActive = true;
 			canInput = true;

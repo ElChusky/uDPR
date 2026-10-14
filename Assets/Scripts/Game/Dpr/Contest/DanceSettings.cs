@@ -5,27 +5,27 @@ namespace Dpr.Contest
 	public class DanceSettings : global::UnityEngine.ScriptableObject
 	{
 		[global::UnityEngine.HeaderAttribute("【ハートエフェクトの出力間隔間】")]
-		public float waitEmitHeartSpan;
+		public float waitEmitHeartSpan = 0.15f;
 		[global::UnityEngine.HeaderAttribute("【端まで到達したノートのフェード時間】")]
-		public float notesFadeDuration;
+		public float notesFadeDuration = 0.2f;
 		[global::UnityEngine.HeaderAttribute("【テンションアイコンのアニメーション時間】")]
-		public float tensionIconTweenDuration;
+		public float tensionIconTweenDuration = 0.3f;
 		[global::UnityEngine.HeaderAttribute("【テンションアイコンの移動距離】")]
-		public float tensionIconJumpPower;
+		public float tensionIconJumpPower = 20f;
 		[global::UnityEngine.HeaderAttribute("【技発動FXと効果中FXの間隔(s)】")]
-		public float waitWazaStartTime;
+		public float waitWazaStartTime = 0.38f;
 		[global::UnityEngine.HeaderAttribute("【スコアゲージの増加速度(1sに増える割合値】")]
-		public float addScoreGaugeValue;
+		public float addScoreGaugeValue = 0.03f;
 		[global::UnityEngine.HeaderAttribute("【スコアゲージに再生するエフェクトの制御時間")]
-		public float lockGaugeFxTime;
+		public float lockGaugeFxTime = 1f;
 		[global::UnityEngine.HeaderAttribute("【進行アイコンのジャンプアニメーション時間】")]
-		public float gaugeIconJumpDuration;
+		public float gaugeIconJumpDuration = 1.2f;
 		[global::UnityEngine.HeaderAttribute("【進行アイコンのジャンプ移動距離】")]
-		public float gaugeIconJumpPower;
+		public float gaugeIconJumpPower = 27f;
 		[global::UnityEngine.HeaderAttribute("【進行アイコンのジャンプ回数】")]
-		public int gaugeIconJumpCount;
+		public int gaugeIconJumpCount = 3;
 		[global::UnityEngine.HeaderAttribute("【進行アイコンの揺れる最大角度(z)】")]
-		public float limitIconRotZ;
-		public DanceSettings() { /*@B 0x60043B8*/ throw null; }
+		public float limitIconRotZ = 15f;
+		public DanceSettings() { }
 	}
 }

@@ -5,7 +5,10 @@ namespace Dpr.Contest
 	{
 		private bool bIsGamerActive;
 		public bool IsGamerActive { get { return this.bIsGamerActive; } }
-		public DanceOtherUser(global::Dpr.Contest.ContestPlayerEntity entity, global::Dpr.Contest.CollectNotesDataModel collectNotesData, global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> notesDataList, global::System.Action<global::Dpr.Contest.ADancePlayer> onLockSkill) : base(default(global::Dpr.Contest.ContestPlayerEntity), default(global::Dpr.Contest.CollectNotesDataModel), default(global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel>), default(global::System.Action<global::Dpr.Contest.ADancePlayer>)) { /*@B 0x6004439*/ throw null; }
+		public DanceOtherUser(global::Dpr.Contest.ContestPlayerEntity entity, global::Dpr.Contest.CollectNotesDataModel collectNotesData, global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> notesDataList, global::System.Action<global::Dpr.Contest.ADancePlayer> onLockSkill) : base(entity, collectNotesData, notesDataList, onLockSkill) {
+			bIsGamerActive = true;
+			playerType = PlayerType.Other;
+		}
 		protected override void UpdateAction() {
 			if (bIsGamerActive)
 				return;

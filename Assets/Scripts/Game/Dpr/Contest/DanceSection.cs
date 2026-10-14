@@ -17,13 +17,13 @@ namespace Dpr.Contest
 		private global::UnityEngine.WaitForSeconds waitUIFadeTween;
 		private global::UnityEngine.WaitForSeconds waitIconJumpTween;
 		private global::UnityEngine.WaitForSeconds waitUserWazaAfter;
-		private global::Dpr.Contest.DanceSectionDataModel dataModel;
-		private global::Dpr.Contest.WazaSequencePlayer wazaSeqPlayer;
-		private global::System.Collections.Generic.Queue<global::Dpr.Contest.EmitHeartData> emitHeartDataQueue;
-		private global::System.Collections.Generic.List<global::Dpr.Contest.DanceHeartEffect> activeDanceHeartList;
-		private global::System.Collections.Generic.List<global::UnityEngine.Coroutine> runningCoroutineList;
+		private global::Dpr.Contest.DanceSectionDataModel dataModel = new global::Dpr.Contest.DanceSectionDataModel();
+		private global::Dpr.Contest.WazaSequencePlayer wazaSeqPlayer = new global::Dpr.Contest.WazaSequencePlayer();
+		private global::System.Collections.Generic.Queue<global::Dpr.Contest.EmitHeartData> emitHeartDataQueue = new global::System.Collections.Generic.Queue<global::Dpr.Contest.EmitHeartData>();
+		private global::System.Collections.Generic.List<global::Dpr.Contest.DanceHeartEffect> activeDanceHeartList = new global::System.Collections.Generic.List<global::Dpr.Contest.DanceHeartEffect>();
+		private global::System.Collections.Generic.List<global::UnityEngine.Coroutine> runningCoroutineList = new global::System.Collections.Generic.List<global::UnityEngine.Coroutine>();
 		private global::Dpr.Contest.SceneObjectManager manager;
-		private global::Dpr.MsgWindow.WaitTimer waitEmitHeartTimer;
+		private global::Dpr.MsgWindow.WaitTimer waitEmitHeartTimer = new global::Dpr.MsgWindow.WaitTimer();
 		private float elapsedTime;
 		private float deltaTime;
 		private float userSkillDuration;
@@ -866,6 +866,6 @@ namespace Dpr.Contest
 			player.ForceLaunchSkill(data.startElapsedTime);
 			ContestUtils.EmitLog(string.Format("Force Launch Skill : StartTime : {0} - Finish : {1}", data.startElapsedTime, duration + elapsedTime));
 		}
-		public DanceSection() { /*@B 0x60045FC*/ throw null; }
+		public DanceSection() { }
 	}
 }

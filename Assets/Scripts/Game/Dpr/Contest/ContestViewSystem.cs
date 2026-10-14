@@ -15,17 +15,17 @@ namespace Dpr.Contest
 	public class ContestViewSystem : global::Dpr.SequenceEditor.ISequenceViewSystem
 	{
 		private const float INVALID_COMMAND_OFFSET_END_TIME = 3f;
-		private global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.HashSet<global::Dpr.ObjectEntity>> hashTabel;
+		private global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.HashSet<global::Dpr.ObjectEntity>> hashTabel = new global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.HashSet<global::Dpr.ObjectEntity>>();
 		private global::Dpr.Contest.SceneObjectManager objManager;
 		private global::Dpr.Battle.View.Systems.BattleViewSystem.SequenceSeq m_sequenceSeq;
 		private global::Dpr.Battle.View.Systems.BattleSequenceSystem m_iPtrSequenceSystem;
 		private global::Dpr.SequenceEditor.SequenceCameraSystem cameraSystem;
 		private global::Dpr.Battle.View.Systems.BTLV_ATTR_EFF_PARAM m_attrEffParam;
-		private global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.HashSet<global::Dpr.Battle.View.Objects.BtlvEffectInstance>> m_uPtrParticleVectorHash;
-		private global::System.Collections.Generic.Stack<global::System.Tuple<int, uint, uint>> m_uPtrSoundPlayingIDHash;
+		private global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.HashSet<global::Dpr.Battle.View.Objects.BtlvEffectInstance>> m_uPtrParticleVectorHash = new global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.HashSet<global::Dpr.Battle.View.Objects.BtlvEffectInstance>>();
+		private global::System.Collections.Generic.Stack<global::System.Tuple<int, uint, uint>> m_uPtrSoundPlayingIDHash = new global::System.Collections.Generic.Stack<global::System.Tuple<int, uint, uint>>();
 		private global::Dpr.Battle.View.Objects.BattleScreenObject m_iPtrScreenObject;
 		private global::System.Func<bool> m_pComWaitFunc;
-		private global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM m_wazaParam;
+		private global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM m_wazaParam = global::Dpr.Battle.View.Systems.BTLV_WAZA_EFF_PARAM.Factory();
 		private global::Dpr.Battle.View.TaskManager m_iPtrTaskManager;
 		private global::Dpr.Battle.View.TaskManager m_iPtrTaskManagerLate;
 		private global::Dpr.Battle.View.TaskManager m_iPtrTaskManagerAlways;
@@ -35,16 +35,16 @@ namespace Dpr.Contest
 		private global::Dpr.Contest.ContestViewSystem.ViewSystemType currentViewSystemType;
 		private global::System.Action<global::Dpr.SequenceEditor.CommandNo, global::Dpr.Contest.ContestViewSystem> onFindCommand;
 		private global::System.Action<global::Dpr.SequenceEditor.CommandNo, global::Dpr.Contest.ContestViewSystem, global::Dpr.SequenceEditor.Macro> onPerformCommand;
-		private string seqFilePath;
+		private string seqFilePath = string.Empty;
 		private bool m_seqKeepResource;
-		private bool canOpenMsgWindowFlag;
+		private bool canOpenMsgWindowFlag = true;
 		private bool ready;
 		public bool IsReady { get { return this.ready; } }
-		public bool IsLoaded { get { /*@B 0x600463B*/ throw null; } }
-		public bool IsPause { get { /*@B 0x600463C*/ throw null; } }
+		public bool IsLoaded { get { return m_iPtrSequenceSystem != null && m_iPtrSequenceSystem.IsLoadedSequenceFile; } }
+		public bool IsPause { get { return m_iPtrSequenceSystem != null && m_iPtrSequenceSystem.IsPause; } }
 		public global::Dpr.Contest.ContestViewSystem.ViewSystemType SystemType { get { return this.currentViewSystemType; } }
-		public bool IsEnd { get { /*@B 0x600463E*/ throw null; } }
-		public float MaxTime { get { /*@B 0x600463F*/ throw null; } }
+		public bool IsEnd { get { return m_iPtrSequenceSystem.IsFinishSequence; } }
+		public float MaxTime { get { return m_iPtrSequenceSystem.MaxTime; } }
 		private bool __IsSuspendSequenceSystem__ { get {
 				if (m_wazaParam.m_enableKeyAdjust && m_wazaParam.m_keyDiffFrame <= -3 && m_wazaParam.m_frame == 0)
 					return true;
@@ -954,7 +954,9 @@ namespace Dpr.Contest
 
 			return BtlvPos.BTL_VPOS_NEAR_1;
 		}
-		public void FindContestCommand(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600468F*/ throw null; }
+		public void FindContestCommand(global::Dpr.SequenceEditor.Macro macro) {
+			onFindCommand?.Invoke(macro.CommandNo, this);
+		}
 		public void PerformContestCommand(global::Dpr.SequenceEditor.Macro macro) {
 			onPerformCommand?.Invoke(macro.CommandNo, this, macro);
 		}
@@ -974,7 +976,7 @@ namespace Dpr.Contest
 		public global::Dpr.Battle.View.BtlvBallInfo SeqComFunc_GetEffectBallInfo(int idx) {
 			return SceneObjectManager.Instance.GetBallInfoByIndex(idx);
 		}
-		public ContestViewSystem() { /*@B 0x6004698*/ throw null; }
+		public ContestViewSystem() { }
 		public enum ViewSystemType
 		{
 			Main = 0,
