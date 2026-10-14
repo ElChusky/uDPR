@@ -7,17 +7,45 @@ namespace Dpr.Demo
 		private const string RIVAL_ASSET_PATH = "persons/battle/tr0002_00";
 		private const string GONBE_ASSET_PATH = "pm0446_00_00_gonbe";
 		private global::UnityEngine.Object Rival3DModel;
-		private static readonly string[] RIVAL_NAMES_D;
-		private static readonly string[] RIVAL_NAMES_P;
+		private static readonly string[] RIVAL_NAMES_D = new string[] { "7-msg_opening_26", "7-msg_opening_27", "7-msg_opening_28", "7-msg_opening_29", "7-msg_opening_30" };
+		private static readonly string[] RIVAL_NAMES_P = new string[] { "7-msg_opening_26", "7-msg_opening_31", "7-msg_opening_32", "7-msg_opening_33", "7-msg_opening_34" };
 		private global::UnityEngine.RuntimeAnimatorController animController;
 		public global::OpeningController openingController;
 		private global::BattleCharacterEntity hakaseEntity;
 		private global::Effect.EffectInstance bgEffect;
 		private global::Effect.EffectData bgEffectData;
 		private bool isSkip;
-		public override global::SmartPoint.AssetAssistant.AssetRequestOperation PreloadAssetBundles() { /*@B 0x600484F*/ throw null; }
-		public override void ReleasePreloadedAssetBundles() { /*@B 0x6004850*/ throw null; }
-		public Demo_Hakase() { /*@B 0x6004851*/ throw null; }
+		public override global::SmartPoint.AssetAssistant.AssetRequestOperation PreloadAssetBundles() {
+			global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(AssetBundlePath, true, null, null);
+			global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(HAKASE_ASSET_PATH, true, null, null);
+			global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(RIVAL_ASSET_PATH, true, null, null);
+			global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest("field/camera/chapter001", true, null, null);
+			global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(BGPaths[(int)bgType], true, null, null);
+			global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(GetPokemonAssetBundle(global::Pml.MonsNo.GONBE, 0, global::Pml.Sex.MALE, false), true, null, null);
+			global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Effect.EffectManager>.Instance.dbEffects.FieldEffectData[180].AssetBundleName, true, null, null);
+			return global::SmartPoint.AssetAssistant.AssetManager.DispatchRequests(null);
+		}
+		public override void ReleasePreloadedAssetBundles() {
+			global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(AssetBundlePath);
+			global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(HAKASE_ASSET_PATH);
+			global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(RIVAL_ASSET_PATH);
+			global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle("field/camera/chapter001");
+			global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(BGPaths[(int)bgType]);
+			global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(GetPokemonAssetBundle(global::Pml.MonsNo.GONBE, 0, global::Pml.Sex.MALE, false));
+			if (global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Effect.EffectManager>.Instance != null)
+				global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Effect.EffectManager>.Instance.dbEffects.FieldEffectData[180].AssetBundleName);
+		}
+		public Demo_Hakase() {
+			UseStartEnterFade = true;
+			UseStartExitFade = true;
+			UseEndEnterFade = true;
+			UseEndExitFade = false;
+			StartEnterFadeDuration = 1f;
+			StartExitFadeDuration = 1f;
+			EndEnterFadeDuration = 1f;
+			EndExitFadeDuration = 1f;
+			FadeColor = global::UnityEngine.Color.black;
+		}
 		public override global::System.Collections.IEnumerator Enter() { /*@B 0x6004852*/ throw null; }
 		public override global::System.Collections.IEnumerator Main() { /*@B 0x6004853*/ throw null; }
 		private global::System.Collections.IEnumerator PlayerSelect(global::UnityEngine.GameObject gonbe, global::UnityEngine.UI.Image bgImage) { /*@B 0x6004854*/ throw null; }
@@ -27,6 +55,6 @@ namespace Dpr.Demo
             manager.MyEnvironmentController.SetLight(cameraController.environmentSettings[1], PeriodOfDay.Daytime, 0.0f, 0.0f);
         }
 		public override global::System.Collections.IEnumerator Exit() { /*@B 0x6004857*/ throw null; }
-		static Demo_Hakase() { /*@B 0x6004858*/ throw null; }
+		static Demo_Hakase() { }
 	}
 }
