@@ -39,9 +39,9 @@ namespace Dpr.UI
 		private global::UnityEngine.Sprite pearlBadeCaseIconSprite;
 		[global::UnityEngine.HeaderAttribute("プレイヤーモデルの回転量")]
 		[global::UnityEngine.SerializeField]
-		private float PlayerModelRotateValue;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private float PlayerModelRotateValue = 5f;
+		private readonly int _animStateIn = Animator.StringToHash("in");
+		private readonly int _animStateOut = Animator.StringToHash("out");
 		private global::UnityEngine.GameObject modelViewObject;
 		private global::Dpr.UI.CardModelViewController modelViewController;
 		private bool isWaitUpdate;
@@ -161,7 +161,18 @@ namespace Dpr.UI
 				ShowPlayerModel();
 			}
 		}
-		private void UpdateKeyGuide() { /*@B 0x600504E*/ throw null; }
+		private void UpdateKeyGuide() {
+			global::Dpr.UI.Keyguide.Param param = new global::Dpr.UI.Keyguide.Param();
+			param.itemParams.Add(new KeyguideItem.Param { keyguideId = modelViewController.IsCardFront ? KeyguideID.TRAINERCARD_CARD_REAR : KeyguideID.TRAINERCARD_CARD_FRONT });
+			if (this.param == null || this.param.IsShowBadgeCase)
+				param.itemParams.Add(new KeyguideItem.Param { keyguideId = KeyguideID.TRAINERCARD_CARD_CHANGE });
+			if (modelViewController.IsCardFront)
+				param.itemParams.Add(new KeyguideItem.Param { keyguideId = KeyguideID.TRAINERCARD_CARD_ROTATION });
+			param.itemParams.Add(new KeyguideItem.Param { keyguideId = KeyguideID.TRAINERCARD_CARD_BACK });
+			global::Dpr.UI.Keyguide keyguide = UIManager.Instance.GetKeyguide(null, true);
+			keyguide.transform.SetParent(transform, false);
+			keyguide.Open(param);
+		}
 		private void SetupCardImage(int rank) {
 			int cardRank = rank + 1;
 			// shipped: the title format "{0:00}" gets a STRING ("01" / "02"), so the zero-padding never applies (@017a8e60)
@@ -223,7 +234,7 @@ namespace Dpr.UI
 		public void SetTextBackOther(int cookingCount, int fossilCount, int statueCount) {
 			cardBackView.SetOtherTexts(cookingCount, fossilCount, statueCount);
 		}
-		public UICard() { /*@B 0x6005057*/ throw null; }
+		public UICard() { }
 		public class Param
 		{
 			public bool IsShowBadgeCase;

@@ -20,10 +20,10 @@ namespace Dpr.UI
 		private global::Dpr.UI.ConditionRaderChart _rader;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.ConditionFur _uiConditionFur;
-		private global::Dpr.UI.KeyGuideCreater _keyGuide;
+		private global::Dpr.UI.KeyGuideCreater _keyGuide = new global::Dpr.UI.KeyGuideCreater();
 		private global::Dpr.EvScript.EvWork.WORK_INDEX _resultWorkIndex;
-		private global::Dpr.Contest.ContestMenuEventID _resultEventID;
-		private global::Dpr.MsgWindow.MsgWindowParam msgWindowParam;
+		private global::Dpr.Contest.ContestMenuEventID _resultEventID = global::Dpr.Contest.ContestMenuEventID.None;
+		private global::Dpr.MsgWindow.MsgWindowParam msgWindowParam = new global::Dpr.MsgWindow.MsgWindowParam();
 		private global::Dpr.MsgWindow.MsgWindow msgWindowPtr;
 		private uint startSelectIndex;
 		private bool _bInputed;
@@ -221,6 +221,6 @@ namespace Dpr.UI
 		private void ResetContestParam() {
 			ContestWork.selectPartyIndex = startSelectIndex;
 		}
-		public UIContPokeSelect() { /*@B 0x600536C*/ throw null; }
+		public UIContPokeSelect() { }
 	}
 }

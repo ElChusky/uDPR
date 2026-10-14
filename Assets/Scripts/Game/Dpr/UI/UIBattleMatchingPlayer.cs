@@ -11,7 +11,7 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIContMatchingPlayerBoard[] _playerBoards;
 		private global::System.Collections.Generic.List<int> _indexList;
-		private string[] uiPlayerNameArray;
+		private string[] uiPlayerNameArray = new string[UnionWork.COLISEUM_MAX_PLAYER_NUM_MULTI];
 		public void Initialize(int num, global::Dpr.NetworkUtils.BattleModeID type, bool vs = false) {
 			if (vs)
 			{
@@ -104,6 +104,6 @@ namespace Dpr.UI
 				images[i] = _playerBoards[_indexList[i]].FindDeep("ModelRT", true).GetComponent<RawImage>();
 			return images;
 		}
-		public UIBattleMatchingPlayer() { /*@B 0x6004D77*/ throw null; }
+		public UIBattleMatchingPlayer() { }
 	}
 }

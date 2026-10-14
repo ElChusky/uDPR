@@ -15,9 +15,9 @@ namespace Dpr.UI
 		private global::Dpr.UI.WazaManageWazaStatusPanel _wazaPanel;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIPokeStatusSelectPanel _uiPokeStatus;
-		private global::Dpr.UI.KeyGuideCreater _keyGuide;
+		private global::Dpr.UI.KeyGuideCreater _keyGuide = new global::Dpr.UI.KeyGuideCreater();
 		private global::Dpr.EvScript.EvWork.WORK_INDEX _resultWorkIndex;
-		private global::Dpr.Contest.ContestMenuEventID _resultEventID;
+		private global::Dpr.Contest.ContestMenuEventID _resultEventID = global::Dpr.Contest.ContestMenuEventID.None;
 		private global::Pml.PokePara.PokemonParam selectPokeParam;
 		private byte _startSelectIndex;
 		private bool _bInputed;
@@ -146,6 +146,6 @@ namespace Dpr.UI
 		private void ResetContestParam() {
 			ContestWork.selectWazaIndex = _startSelectIndex;
 		}
-		public UIContWazaSelect() { /*@B 0x600537B*/ throw null; }
+		public UIContWazaSelect() { }
 	}
 }

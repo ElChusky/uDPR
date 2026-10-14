@@ -16,7 +16,17 @@ namespace Dpr.UI
 			}
 			gameObject.SetActive(isActive);
 		}
-		public void SetZukan(int typeNo, global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(11)) { /*@B 0x6005142*/ throw null; }
+		public void SetZukan(int typeNo, global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(11)) {
+			bool isActive = false;
+			if (typeNo >= 0 && typeNo < (int)Pml.PokeType.MAX)
+			{
+				if (langId == global::Dpr.Message.MessageEnumData.MsgLangId.Num)
+					langId = global::Dpr.Message.MessageManager.Instance.UserLanguageID;
+				iconImage.sprite = UIManager.Instance.GetSpritePokemonTypeZukan(typeNo, langId);
+				isActive = true;
+			}
+			gameObject.SetActive(isActive);
+		}
 		public void Deactive() {
 			gameObject.SetActive(false);
 		}

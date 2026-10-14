@@ -25,15 +25,15 @@ namespace Dpr.UI
 		private global::System.Action _onDecide;
 		private global::System.Action _onCancel;
 		private global::Dpr.UI.UIBattleMatchingTeamSelect.UIState _currentState;
-		private bool _cancelFade;
+		private bool _cancelFade = true;
 		private bool _closed;
 		private bool _isServerError;
 		private global::System.Collections.Generic.Dictionary<int, bool[]> _illegalList;
-		private int _currentIndex;
-		private global::Dpr.SubContents.ShowMessageWindow _msgWindow;
+		private int _currentIndex = -1;
+		private global::Dpr.SubContents.ShowMessageWindow _msgWindow = new global::Dpr.SubContents.ShowMessageWindow();
 		private float _closingProgressTime;
-		private readonly string[] YESNO_CONTEXTMENU_LABELS;
-		private readonly global::UnityEngine.Vector2 MSG_WINDOW_ANCHOR_POS;
+		private readonly string[] YESNO_CONTEXTMENU_LABELS = new string[] { "SS_net_net_btl_036", "SS_net_net_btl_037" };
+		private readonly global::UnityEngine.Vector2 MSG_WINDOW_ANCHOR_POS = new global::UnityEngine.Vector2(15f, 110f);
 		public bool isActiveKeyGuide { get; private set; }
 		public bool IsServerError { get { return this._isServerError; } }
 		public override void OnCreate() {
@@ -609,7 +609,7 @@ namespace Dpr.UI
 		private void CloseContextMenu() {
 			MsgWindowManager.Instance.CloseContextMenu();
 		}
-		public UIBattleMatchingTeamSelect() { /*@B 0x6004DDC*/ throw null; }
+		public UIBattleMatchingTeamSelect() { }
 		private enum UIState
 		{
 			MatchingMenu = 0,

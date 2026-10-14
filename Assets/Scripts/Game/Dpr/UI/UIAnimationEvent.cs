@@ -5,9 +5,23 @@ namespace Dpr.UI
 	{
 		public global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIAnimationEvent.AnimationEventBase> onAnimationEvent;
 		public global::UnityEngine.Events.UnityAction<global::TransitionID, global::Dpr.UI.UITransition.FadeType> onTransition;
-		private void OnAnimEvent(string json) { /*@B 0x6005BA4*/ throw null; }
-		private void OnAnimEventTransitionIn(int transitionId) { /*@B 0x6005BA5*/ throw null; }
-		private void OnAnimEventTransitionOut(int transitionId) { /*@B 0x6005BA6*/ throw null; }
+		private void OnAnimEvent(string json) {
+			global::Dpr.UI.UIAnimationEvent.AnimationEventBase eventBase = global::UnityEngine.JsonUtility.FromJson<global::Dpr.UI.UIAnimationEvent.AnimationEventBase>(json);
+			global::Dpr.UI.UIAnimationEvent.AnimationEventBase animationEvent = null;
+			switch (eventBase.type)
+			{
+				case global::Dpr.UI.UIAnimationEvent.AnimationEventBase.EventType.Hoge:
+					animationEvent = global::UnityEngine.JsonUtility.FromJson<global::Dpr.UI.UIAnimationEvent.AnimationEventHoge>(json);
+					break;
+			}
+			onAnimationEvent?.Invoke(animationEvent);
+		}
+		private void OnAnimEventTransitionIn(int transitionId) {
+			onTransition?.Invoke((global::TransitionID)transitionId, global::Dpr.UI.UITransition.FadeType.In);
+		}
+		private void OnAnimEventTransitionOut(int transitionId) {
+			onTransition?.Invoke((global::TransitionID)transitionId, global::Dpr.UI.UITransition.FadeType.Out);
+		}
 		public UIAnimationEvent() { }
 		[global::System.Serializable]
 		public class AnimationEventBase
@@ -22,8 +36,8 @@ namespace Dpr.UI
 		[global::System.Serializable]
 		public class AnimationEventHoge : global::Dpr.UI.UIAnimationEvent.AnimationEventBase
 		{
-			public int hoge;
-			public AnimationEventHoge() { /*@B 0x600AF4C*/ throw null; }
+			public int hoge = 123;
+			public AnimationEventHoge() { }
 		}
 	}
 }

@@ -33,12 +33,12 @@ namespace Dpr.UI
 		public TvRankingMenuItem() { }
 		public class RankParam
 		{
-			public global::DPData.RANDOMGROUP groupId;
-			public int rank;
+			public global::DPData.RANDOMGROUP groupId = (global::DPData.RANDOMGROUP)(-1);
+			public int rank = -1;
 			public uint value;
 			public long timeStamp;
-			public bool isMine { get { /*@B 0x600AF31*/ throw null; } }
-			public RankParam() { /*@B 0x600AF32*/ throw null; }
+			public bool isMine { get { return groupId == global::DPData.RANDOMGROUP.RANDOMGROUP_MINE; } }
+			public RankParam() { }
 		}
 	}
 }

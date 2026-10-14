@@ -46,8 +46,8 @@ namespace Dpr.UI
 		private global::Dpr.SubContents.ShowMessageWindow _msgWindow = new ShowMessageWindow();
 		private global::Dpr.MsgWindow.MsgWindowManager _msgWindowManager;
 		private float _showMsgTime;
-		private readonly string[] YESNO_CONTEXTMENU_LABELS;
-		private readonly global::UnityEngine.Vector2 MSG_WINDOW_ANCHOR_POS;
+		private readonly string[] YESNO_CONTEXTMENU_LABELS = new string[] { "SS_net_net_btl_036", "SS_net_net_btl_037" };
+		private readonly global::UnityEngine.Vector2 MSG_WINDOW_ANCHOR_POS = new global::UnityEngine.Vector2(15f, 110f);
 		public int GetNowViewModelCount { get => _modelView.ModelViewCount; }
 		public void Initialize() {
 			Fader.fillColor = Color.black;
@@ -424,6 +424,6 @@ namespace Dpr.UI
 				return;
 			_msgWindowManager.CloseContextMenu();
 		}
-		public UIBattleMatching() { /*@B 0x6004D6C*/ throw null; }
+		public UIBattleMatching() { }
 	}
 }

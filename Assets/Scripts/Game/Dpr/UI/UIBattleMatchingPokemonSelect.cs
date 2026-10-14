@@ -31,17 +31,17 @@ namespace Dpr.UI
 		private global::System.Action _onCancel;
 		private global::System.Action _onUpdateTimer;
 		private bool _isBattleTower;
-		private bool _decideFade;
+		private bool _decideFade = true;
 		private bool _isOpeningStatus;
 		private bool _isOpeningTeam;
 		private int _currentIndex;
 		private int _maxIndex;
 		private int _requiredNumMin;
 		private int _requiredNumMax;
-		private global::System.Collections.Generic.List<int> _joinIndexList;
+		private global::System.Collections.Generic.List<int> _joinIndexList = new global::System.Collections.Generic.List<int>();
 		private bool _isOpeningMessage;
-		private global::Dpr.SubContents.ShowMessageWindow _msgWindow;
-		private readonly global::UnityEngine.Vector2 MSG_WINDOW_ANCHOR_POS;
+		private global::Dpr.SubContents.ShowMessageWindow _msgWindow = new global::Dpr.SubContents.ShowMessageWindow();
+		private readonly global::UnityEngine.Vector2 MSG_WINDOW_ANCHOR_POS = new global::UnityEngine.Vector2(15f, 110f);
 		public global::System.Action onUpdateTimer { set { this._onUpdateTimer = value; } }
 		public override void OnCreate() {
 			base.OnCreate();
@@ -486,6 +486,6 @@ namespace Dpr.UI
 		public void CloseKeyGuide() {
 			UIManager.Instance.GetKeyguide(null, true).Close(window => UIManager.Instance._ReleaseUIWindow(window));
 		}
-		public UIBattleMatchingPokemonSelect() { /*@B 0x6004D90*/ throw null; }
+		public UIBattleMatchingPokemonSelect() { }
 	}
 }

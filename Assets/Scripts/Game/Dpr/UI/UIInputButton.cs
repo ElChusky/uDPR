@@ -6,11 +6,13 @@ namespace Dpr.UI
 	{
 		private global::UnityEngine.Events.UnityAction<int, global::Dpr.UI.UIInputButton.State> _onCallbacked;
 		private global::Dpr.UI.UIInputController _input;
-		private float _longPressTime;
+		private float _longPressTime = 0.5f;
 		private int _button;
 		private float _pressTime;
-		public UIInputButton() { /*@B 0x6005BA8*/ throw null; }
-		public UIInputButton(int button, global::UnityEngine.Events.UnityAction<int, global::Dpr.UI.UIInputButton.State> onCallbacked, global::Dpr.UI.UIInputController input = null, bool isAutoUpdate = true, float longPressTime = 0.5f) { /*@B 0x6005BA9*/ throw null; }
+		public UIInputButton() { }
+		public UIInputButton(int button, global::UnityEngine.Events.UnityAction<int, global::Dpr.UI.UIInputButton.State> onCallbacked, global::Dpr.UI.UIInputController input = null, bool isAutoUpdate = true, float longPressTime = 0.5f) {
+			Setup(button, onCallbacked, input, isAutoUpdate, longPressTime);
+		}
 		public void Setup(int button, global::UnityEngine.Events.UnityAction<int, global::Dpr.UI.UIInputButton.State> onCallbacked, global::Dpr.UI.UIInputController input = null, bool isAutoUpdate = true, float longPressTime = 0.5f) {
 			_onCallbacked = onCallbacked;
 			_input = input;

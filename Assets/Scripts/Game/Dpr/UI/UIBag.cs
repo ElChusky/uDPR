@@ -92,28 +92,28 @@ namespace Dpr.UI
 		private global::Dpr.UI.BagWazaSelectPanel wazaSelectPanel;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform effectRoot;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private readonly int _animStateIn = Animator.StringToHash("in");
+		private readonly int _animStateOut = Animator.StringToHash("out");
 		private global::Dpr.UI.UIBag.BootType bootType;
 		private global::Dpr.UI.UIBag.ModeType modeType;
 		private global::Pml.PokePara.PokemonParam onlyViewPokemonParam;
 		private int onlyViewPartyIndex;
-		private int onlyViewBattlePokemonId;
+		private int onlyViewBattlePokemonId = -1;
 		private global::Dpr.UI.UIBag.BattleBootParam battleBootParam;
 		private global::System.Action<int> onSelectedKinomiItem;
 		private global::System.Action onCompleteAutoPilot;
 		private global::Dpr.UI.UIMsgWindowController msgWindowController;
 		private global::Dpr.UI.PokemonParty.Param pokemonPartyParam;
-		private int displayMoney;
+		private int displayMoney = -1;
 		private bool isWaitUpdate;
 		private bool isWaitPokemonParty;
 		private bool isKinomiContact;
 		private bool isDontBuryNuts;
 		private bool isAutoPilot;
-		private bool isBattle { get { /*@B 0x6004C60*/ throw null; } }
-		private bool isNeedBgmDuck { get { /*@B 0x6004C61*/ throw null; } }
-		private bool canSwitchFavorite { get { /*@B 0x6004C62*/ throw null; } }
-		private bool canSort { get { /*@B 0x6004C63*/ throw null; } }
+		private bool isBattle { get { return PlayerWork.isBattling; } }
+		private bool isNeedBgmDuck { get { return (isBattle && modeType == ModeType.Default) || bootType == BootType.Poffine; } }
+		private bool canSwitchFavorite { get { return !isBattle && !bagItemPanel.IsNoItem; } }
+		private bool canSort { get { return !isBattle && !bagItemPanel.IsNoItem; } }
 		private bool canUseItem { get => modeType != ModeType.EquipOnly; }
 		public bool IsOpenFromBattleTeam { get; set; }
 		public override void OnCreate() {
@@ -2173,7 +2173,7 @@ namespace Dpr.UI
             contextMenu.InputController.SetAutoButton(UIManager.ButtonA);
             _input.inputEnabled = true;
         }
-		public UIBag() { /*@B 0x6004C93*/ throw null; }
+		public UIBag() { }
 		public enum BootType
 		{
 			Default = 0,

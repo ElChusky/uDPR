@@ -99,6 +99,6 @@ namespace Dpr.UI
 
 			return string.Format(animeName, badgeNo + 1);
 		}
-		public UIBadgeGet() { /*@B 0x6005042*/ throw null; }
+		public UIBadgeGet() { }
 	}
 }

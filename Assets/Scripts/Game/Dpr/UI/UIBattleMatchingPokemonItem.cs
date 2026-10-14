@@ -14,8 +14,8 @@ namespace Dpr.UI
 		private global::Dpr.UI.UIText _textItem;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image _imageItem;
-		private readonly string NO_MSBT;
-		private readonly string[] NO_LABELS;
+		private readonly string NO_MSBT = "ss_btl_pokeselect";
+		private readonly string[] NO_LABELS = new string[] { "msg_ui_btl_pokeselect_top_no_00", "msg_ui_btl_pokeselect_top_no_01", "msg_ui_btl_pokeselect_top_no_02", "msg_ui_btl_pokeselect_top_no_03", "msg_ui_btl_pokeselect_top_no_04", "msg_ui_btl_pokeselect_top_no_05" };
 		public void Setup(global::Pml.PokePara.PokemonParam param) {
 			_objNo.SetActive(false);
 			if (param == null)
@@ -41,6 +41,6 @@ namespace Dpr.UI
 		public void SetDisableNumber() {
 			_objNo.SetActive(false);
 		}
-		public UIBattleMatchingPokemonItem() { /*@B 0x6004D7B*/ throw null; }
+		public UIBattleMatchingPokemonItem() { }
 	}
 }

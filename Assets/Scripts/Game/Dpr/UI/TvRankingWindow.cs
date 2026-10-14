@@ -30,9 +30,9 @@ namespace Dpr.UI
 		private global::Dpr.UI.TvRankingWindow.RankingParam[] _rankingParam;
 		private int _selectMenuIndex;
 		private int _selectRankIndex;
-		private global::System.Collections.Generic.List<global::Dpr.UI.TvRankingMenuItem> _menuItems;
-		private global::System.Collections.Generic.List<global::Dpr.UI.TvRankingRankItem> _rankItems;
-		private bool _isActiveMenu;
+		private global::System.Collections.Generic.List<global::Dpr.UI.TvRankingMenuItem> _menuItems = new global::System.Collections.Generic.List<global::Dpr.UI.TvRankingMenuItem>();
+		private global::System.Collections.Generic.List<global::Dpr.UI.TvRankingRankItem> _rankItems = new global::System.Collections.Generic.List<global::Dpr.UI.TvRankingRankItem>();
+		private bool _isActiveMenu = true;
 		private const int _rankMaxNum = 6;
 		private global::Dpr.UI.TvRankingWindow.Param _param;
 		public override void OnCreate() {
@@ -171,7 +171,14 @@ namespace Dpr.UI
             for (int i = count; i < rankItems.Count; i++)
                 rankItems[i].gameObject.SetActive(false);
         }
-		private void SetupKeyguide() { /*@B 0x6005B93*/ throw null; }
+		private void SetupKeyguide() {
+			global::Dpr.UI.Keyguide keyguide = UIManager.Instance.GetKeyguide(null, true);
+			keyguide.transform.SetParent(transform, false);
+			global::Dpr.UI.Keyguide.Param param = new global::Dpr.UI.Keyguide.Param();
+			param.itemParams.Add(new KeyguideItem.Param { keyguideId = KeyguideID.RANKING_LISTSORT });
+			param.itemParams.Add(new KeyguideItem.Param { keyguideId = KeyguideID.RANKING_BACK });
+			keyguide.Open(param);
+		}
 		public void Close(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) {
             SmartPoint.AssetAssistant.Sequencer.Start(OpClose(onClosed_, nextWindowId));
         }
@@ -381,7 +388,7 @@ namespace Dpr.UI
             _cursorRank.transform.SetParent(_rankItems[_selectRankIndex].transform, false);
             return true;
         }
-		public TvRankingWindow() { /*@B 0x6005B9F*/ throw null; }
+		public TvRankingWindow() { }
 		[global::System.Serializable]
 		private class RankingParam
 		{

@@ -19,6 +19,6 @@ namespace Dpr.UI
 			_animator.Play(_isSelected ? animState0Select : animState0Normal, 0);
 			_animator.Play(_isEnabled ? animState1Enable : animState1Disable, 1);
 		}
-		public TrainingItemStart() { /*@B 0x6005B70*/ throw null; }
+		public TrainingItemStart() { }
 	}
 }
