@@ -8,8 +8,8 @@ namespace Dpr.UI
 	{
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.FrameList[] _TargetFrames;
-		private global::System.Collections.Generic.List<global::UnityEngine.UI.Image[]> _showFrames;
-		private global::System.Collections.Generic.List<global::UnityEngine.UI.Image[]> _hideFrames;
+		private global::System.Collections.Generic.List<global::UnityEngine.UI.Image[]> _showFrames = new global::System.Collections.Generic.List<global::UnityEngine.UI.Image[]>();
+		private global::System.Collections.Generic.List<global::UnityEngine.UI.Image[]> _hideFrames = new global::System.Collections.Generic.List<global::UnityEngine.UI.Image[]>();
 		public void SetCursorFrame(global::Dpr.Battle.Logic.BtlvPos attackerPos, global::Pml.WazaData.WazaTarget targetType) {
 			_showFrames.Clear();
 			_hideFrames.Clear();
@@ -165,6 +165,6 @@ namespace Dpr.UI
 					image.enabled = isShow;
 			}
 		}
-		public TargetSelectCursor() { /*@B 0x6004BDC*/ throw null; }
+		public TargetSelectCursor() { }
 	}
 }

@@ -10,10 +10,55 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.ShopItemDescriptionPanel.Stock _stock;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector2[] _iconSizes;
-		private global::Dpr.UI.ShopBase.ShopType _shopType;
+		private global::UnityEngine.Vector2[] _iconSizes = new global::UnityEngine.Vector2[] { new global::UnityEngine.Vector2(80f, 80f), new global::UnityEngine.Vector2(40f, 40f) };
+		private global::Dpr.UI.ShopBase.ShopType _shopType = (global::Dpr.UI.ShopBase.ShopType)(-1);
 		private global::Dpr.UI.ShopItemItem _itemItem;
-		public void Set(global::Dpr.UI.ShopBase.ShopType shopType, global::Dpr.UI.ShopItemItem itemItem) { /*@B 0x6005B1A*/ throw null; }
+		public void Set(global::Dpr.UI.ShopBase.ShopType shopType, global::Dpr.UI.ShopItemItem itemItem) {
+            _itemItem = itemItem;
+            _shopType = shopType;
+            bool isMale = PlayerWork.playerSex;
+            int category;
+            switch (shopType)
+            {
+                case ShopBase.ShopType.Seal:
+                case ShopBase.ShopType.Flower:
+                    Set(shopType, itemItem.GetSealInfo());
+                    category = (int)Dpr.Item.ItemInfo.CategoryType.Important;
+                    break;
+
+                case ShopBase.ShopType.TobariDepart4F:
+                    Set(shopType, itemItem.GetUgItemInfo());
+                    category = (int)Dpr.Item.ItemInfo.CategoryType.Important;
+                    break;
+
+                case ShopBase.ShopType.Underground:
+                {
+                    var ugItem = itemItem.GetUgItemInfo();
+                    if (Pml.Item.UgItemManager.Instance.GetItemId(ugItem.UgItemId) < 1)
+                    {
+                        SetUnderGround(ugItem);
+                        category = (int)Dpr.Item.ItemInfo.CategoryType.Important;
+                        break;
+                    }
+                    var item = itemItem.GetItemInfo();
+                    itemNameText.SetupMessage("ss_fld_shop", "SS_fld_shop_212");
+                    wazaNameText.text = null;
+                    Set(shopType, item);
+                    category = (int)item.Category;
+                    break;
+                }
+
+                default:
+                {
+                    var item = itemItem.GetItemInfo();
+                    Set(shopType, item);
+                    category = (int)item.Category;
+                    break;
+                }
+            }
+            _stock.bag.Initialize(isMale);
+            _stock.bag.Set(category);
+        }
 		private void Set(global::Dpr.UI.ShopBase.ShopType shopType, global::Dpr.UI.SealInfo item) {
             Set(item, false);
             _stock.num.SetFormattedText(() => MessageWordSetHelper.SetDigitWord(0, BallDecoWork.GetSealCount(item.SealId)), null, null);
@@ -86,9 +131,33 @@ namespace Dpr.UI
             Set(ugItem, false);
             _stock.num.SetFormattedText(() => MessageWordSetHelper.SetDigitWord(0, ugItem.count), null, null);
         }
-		private void Set(global::Dpr.Item.UgItemInfo ugItem, bool isChangeShowWaza = true) { /*@B 0x6005B22*/ throw null; }
-		private void SetUnderGround(global::Dpr.Item.UgItemInfo ugItemInfo) { /*@B 0x6005B23*/ throw null; }
-		public ShopItemDescriptionPanel() { /*@B 0x6005B24*/ throw null; }
+		private void Set(global::Dpr.Item.UgItemInfo ugItem, bool isChangeShowWaza = true) {
+            if (ugItem == null)
+                return;
+
+            Dpr.Item.UgItemInfo.LoadItemIcon(ugItem.UgItemId, sprite => itemIconImage.sprite = sprite);
+            itemIconImage.enabled = true;
+            itemNameText.SetFormattedText(() => MessageWordSetHelper.SetUgItemNameWord(0, ugItem.UgItemId), "ss_fld_shop", "SS_fld_shop_318");
+            descriptionText.text = ugItem.DescriptionText;
+
+            if (isChangeShowWaza)
+            {
+                wazaNameText.text = null;
+                HideWazaDescriptionPanel();
+            }
+        }
+		private void SetUnderGround(global::Dpr.Item.UgItemInfo ugItemInfo) {
+            if (ugItemInfo == null)
+                return;
+
+            Dpr.Item.UgItemInfo.LoadItemIcon(ugItemInfo.UgItemId, sprite => itemIconImage.sprite = sprite);
+            itemNameText.SetFormattedText(() => MessageWordSetHelper.SetUgItemNameWord(0, ugItemInfo.UgItemId), "ss_fld_shop", "SS_fld_shop_318");
+            descriptionText.text = ugItemInfo.DescriptionText;
+            _stock.num.SetFormattedText(() => MessageWordSetHelper.SetDigitWord(0, ugItemInfo.count), null, null);
+            wazaNameText.text = null;
+            itemIconImage.enabled = true;
+        }
+		public ShopItemDescriptionPanel() { }
 		[global::System.Serializable]
 		private class Stock
 		{

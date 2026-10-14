@@ -18,46 +18,187 @@ namespace Dpr.UI
 		public const int DialogTextMaxLength = 500;
 		public const int SepareteTextPosMax = 8;
 		public const int CustomizedDicionarySetMax = 24;
-		private static bool _isInitialized;
-		private static global::Dpr.UI.SoftwareKeyboard.Param _param;
-		private static global::System.Func<string, global::Dpr.UI.SoftwareKeyboard.ErrorState, global::System.ValueTuple<bool, string>> _onInputCheck;
-		private static global::UnityEngine.Events.UnityAction<bool, string> _onComplete;
-		private static string _resultText;
-		private static global::Dpr.UI.SoftwareKeyboard.ErrorState _errorState;
-		private static bool _isCheckResult;
-		private static global::nn.swkbd.ShowKeyboardArg _showKeyboardArg;
-		private static global::nn.ngc.ProfanityFilter.PatternList _patterns;
+		private static bool _isInitialized = false;
+		private static global::Dpr.UI.SoftwareKeyboard.Param _param = null;
+		private static global::System.Func<string, global::Dpr.UI.SoftwareKeyboard.ErrorState, global::System.ValueTuple<bool, string>> _onInputCheck = null;
+		private static global::UnityEngine.Events.UnityAction<bool, string> _onComplete = null;
+		private static string _resultText = null;
+		private static global::Dpr.UI.SoftwareKeyboard.ErrorState _errorState = global::Dpr.UI.SoftwareKeyboard.ErrorState.None;
+		private static bool _isCheckResult = true;
+		private static global::nn.swkbd.ShowKeyboardArg _showKeyboardArg = default(global::nn.swkbd.ShowKeyboardArg);
+		private static global::nn.ngc.ProfanityFilter.PatternList _patterns = 0;
 		private const string _messageFileNameWhiteWords = "dlp_whitelist_monsname";
 		private const string _messageFileName = "ss_strinput";
 		private const int _maxNumberNum = 5;
 		private static char _errorWhiteUnicode = ' ';
-		private static int _disableErrorChecks;
-		private static global::Dpr.Message.MessageEnumData.MsgLangId _checkLangId;
+		private static int _disableErrorChecks = 0;
+		private static global::Dpr.Message.MessageEnumData.MsgLangId _checkLangId = (global::Dpr.Message.MessageEnumData.MsgLangId)(-1);
 		private const int _errorMessageArgIndex = 18;
-		private static bool _isSuspendUnityThreads;
-		private static bool _isThreadCall;
-		private static bool _isMainThreadBlocked;
-		private static global::Dpr.UI.SoftwareKeyboard.ThreadParam _threadParam;
-		private static global::System.Threading.SynchronizationContext _mainContext;
-		private static int _mainThreadId;
-		private static global::System.Reflection.MethodInfo _methodExecuteTasks;
-		public static bool isInitialized { get { /*@B 0x6005B40*/ throw null; } }
-		public static global::System.Func<string, global::Dpr.UI.SoftwareKeyboard.ErrorState, global::System.ValueTuple<bool, string>> onInputCheck { get { /*@B 0x6005B41*/ throw null; } }
-		public static global::UnityEngine.Events.UnityAction<bool, string> onComplete { get { /*@B 0x6005B42*/ throw null; } }
-		public static string resultText { get { /*@B 0x6005B43*/ throw null; } }
-		public static global::Dpr.UI.SoftwareKeyboard.ErrorState errorState { get { /*@B 0x6005B44*/ throw null; } }
-		public static bool isCheckResult { get { /*@B 0x6005B45*/ throw null; } }
-		public static void Initialize() { /*@B 0x6005B46*/ throw null; }
-		public static string GetMessageText(string messageLabel) { /*@B 0x6005B47*/ throw null; }
-		private static bool IsDisableCheck(global::Dpr.UI.SoftwareKeyboard.ErrorCheck checkBit) { /*@B 0x6005B48*/ throw null; }
-		private static bool CheckWhiteSpace(string text) { /*@B 0x6005B49*/ throw null; }
-		private static bool CheckNumbers(string text) { /*@B 0x6005B4A*/ throw null; }
-		private static bool CheckWhiteUnicodes(string text) { /*@B 0x6005B4B*/ throw null; }
-		private static bool CheckWhiteWords(string text) { /*@B 0x6005B4C*/ throw null; }
-		public static void Terminate() { /*@B 0x6005B4D*/ throw null; }
-		public static bool Open(global::Dpr.UI.SoftwareKeyboard.Param param, global::System.Func<string, global::Dpr.UI.SoftwareKeyboard.ErrorState, global::System.ValueTuple<bool, string>> onInputCheck, global::UnityEngine.Events.UnityAction<bool, string> onComplete) { /*@B 0x6005B4E*/ throw null; }
-		private static void WakerOpen(object obj) { /*@B 0x6005B4F*/ throw null; }
-		private static void MainThreadPost(global::UnityEngine.Events.UnityAction onCallback, bool isSleep = false) { /*@B 0x6005B50*/ throw null; }
+		private static bool _isSuspendUnityThreads = false;
+		private static bool _isThreadCall = false;
+		private static bool _isMainThreadBlocked = false;
+		private static global::Dpr.UI.SoftwareKeyboard.ThreadParam _threadParam = null;
+		private static global::System.Threading.SynchronizationContext _mainContext = null;
+		private static int _mainThreadId = 0;
+		private static global::System.Reflection.MethodInfo _methodExecuteTasks = null;
+		public static bool isInitialized { get { return _isInitialized; } }
+		public static global::System.Func<string, global::Dpr.UI.SoftwareKeyboard.ErrorState, global::System.ValueTuple<bool, string>> onInputCheck { get { return _onInputCheck; } }
+		public static global::UnityEngine.Events.UnityAction<bool, string> onComplete { get { return _onComplete; } }
+		public static string resultText { get { return _resultText; } }
+		public static global::Dpr.UI.SoftwareKeyboard.ErrorState errorState { get { return _errorState; } }
+		public static bool isCheckResult { get { return _isCheckResult; } }
+		public static void Initialize() {
+            if (_isInitialized)
+                return;
+
+            _isInitialized = true;
+            _mainContext = global::System.Threading.SynchronizationContext.Current;
+            _mainThreadId = global::System.Threading.Thread.CurrentThread.ManagedThreadId;
+            _methodExecuteTasks = _mainContext.GetType().GetMethod("ExecuteTasks", global::System.Reflection.BindingFlags.Static | global::System.Reflection.BindingFlags.NonPublic);
+
+            if (_threadParam == null)
+            {
+                _threadParam = new ThreadParam();
+                _threadParam.Create();
+            }
+
+            Swkbd.Initialize(ref _showKeyboardArg, false, true);
+            _patterns = GetLanguagePatternAll();
+
+            // Shipped: the IsInitialize result is read and discarded (tail call @018483e4).
+            if (global::Dpr.Message.MessageManager.isInstantiated && global::Dpr.Message.MessageManager.Instance.IsInitialize) { }
+        }
+		public static string GetMessageText(string messageLabel) {
+            var msgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile(_messageFileName);
+            if (msgFile == null)
+                return "_msgFile is Null";
+
+            var textDataModel = msgFile.GetTextDataModel(messageLabel);
+            textDataModel.ApplyFormat();
+            return textDataModel.GetAllText();
+        }
+		private static bool IsDisableCheck(global::Dpr.UI.SoftwareKeyboard.ErrorCheck checkBit) {
+            return (_disableErrorChecks & (int)checkBit) != 0;
+        }
+		private static bool CheckWhiteSpace(string text) {
+            if (IsDisableCheck(ErrorCheck.WhiteSpace) || string.IsNullOrEmpty(text))
+                return true;
+
+            return text.Trim().Length > 0;
+        }
+		private static bool CheckNumbers(string text) {
+            if (IsDisableCheck(ErrorCheck.NumberCount))
+                return true;
+
+            int count = 0;
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] >= '0' && text[i] <= '9')
+                    count++;
+            }
+            return count <= _maxNumberNum;
+        }
+		private static bool CheckWhiteUnicodes(string text) {
+            if (IsDisableCheck(ErrorCheck.WhiteUnicode))
+                return true;
+
+            var hashSet = UIManager.Instance.GetInputLimitHashSet(_checkLangId);
+            for (int i = 0; i < text.Length; i++)
+            {
+                char c = text[i];
+                if (!hashSet.Contains(c))
+                {
+                    _errorWhiteUnicode = c;
+                    return false;
+                }
+            }
+            return true;
+        }
+		private static bool CheckWhiteWords(string text) {
+            var msgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile(_messageFileNameWhiteWords, _checkLangId);
+            int total = msgFile.GetTotalTextNum();
+            for (int i = 0; i < total; i++)
+            {
+                if (msgFile.GetSimpleMessage(i) == text)
+                    return true;
+            }
+            return false;
+        }
+		public static void Terminate() {
+            Swkbd.Destroy(ref _showKeyboardArg);
+            if (_threadParam != null)
+            {
+                _threadParam.Remove();
+                _threadParam = null;
+            }
+            _isInitialized = false;
+        }
+		public static bool Open(global::Dpr.UI.SoftwareKeyboard.Param param, global::System.Func<string, global::Dpr.UI.SoftwareKeyboard.ErrorState, global::System.ValueTuple<bool, string>> onInputCheck, global::UnityEngine.Events.UnityAction<bool, string> onComplete) {
+            if (_threadParam.isActived)
+            {
+                onComplete.Invoke(false, null);
+                return false;
+            }
+
+            _param = param;
+            _onInputCheck = onInputCheck;
+            _onComplete = onComplete;
+            _errorState = ErrorState.None;
+            _isCheckResult = true;
+            _isThreadCall = global::Dpr.NetworkUtils.NetworkManager.IsConnect;
+
+            if (_isThreadCall)
+            {
+                _isMainThreadBlocked = true;
+                _threadParam.Call();
+            }
+            else
+            {
+                _isMainThreadBlocked = false;
+                OpenInternal();
+            }
+
+            var akInitializer = global::Audio.AudioManager.Instance.GetComponent<AkInitializer>();
+            while (_isMainThreadBlocked)
+            {
+                global::Dpr.NetworkUtils.NetworkManager.Instance.OnUpdate(1f / 30f);
+                if (_methodExecuteTasks != null)
+                    _methodExecuteTasks.Invoke(null, null);
+
+                akInitializer.LateUpdate();
+                global::System.Threading.Thread.Sleep(33);
+            }
+            return true;
+        }
+		private static void WakerOpen(object obj) {
+            var param = (ThreadParam)obj;
+            while (true)
+            {
+                param.callEvent.WaitOne();
+                OpenInternal();
+                param.isActived = false;
+            }
+        }
+		private static void MainThreadPost(global::UnityEngine.Events.UnityAction onCallback, bool isSleep = false) {
+            if (_isThreadCall)
+            {
+                bool isComplete = false;
+                _mainContext.Post(_ =>
+                {
+                    onCallback.Invoke();
+                    isComplete = true;
+                }, null);
+
+                if (isSleep)
+                {
+                    while (!isComplete)
+                        global::System.Threading.Thread.Sleep(1);
+                }
+                return;
+            }
+
+            onCallback.Invoke();
+        }
 		private static void OpenInternal() {
             Param param = _param;
             KeyboardMode keyboardMode = GetKeyboardMode();
@@ -111,10 +252,46 @@ namespace Dpr.UI
                 _SetResult(false, _param.text);
             }
         }
-		private static global::Dpr.UI.SoftwareKeyboard.KeyboardMode GetKeyboardMode() { /*@B 0x6005B52*/ throw null; }
-		private static global::Dpr.UI.SoftwareKeyboard.KeyboardMode GetLanguageKeyboardMode() { /*@B 0x6005B53*/ throw null; }
-		internal static void _SetCheckResult(bool isCheckResult) { /*@B 0x6005B54*/ throw null; }
-		internal static void _SetResult(bool isSuccess, string resultText) { /*@B 0x6005B55*/ throw null; }
+		private static global::Dpr.UI.SoftwareKeyboard.KeyboardMode GetKeyboardMode() {
+            if (_param.keyboardMode == KeyboardMode.Auto)
+                return GetLanguageKeyboardMode();
+
+            return _param.keyboardMode;
+        }
+		private static global::Dpr.UI.SoftwareKeyboard.KeyboardMode GetLanguageKeyboardMode() {
+            // switch table @03d48858 (MsgLangId 1..10)
+            switch (UIManager.GetCurrentLangId())
+            {
+                case global::Dpr.Message.MessageEnumData.MsgLangId.JPN:
+                    return KeyboardMode.LanguageSet1;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.USA:
+                case global::Dpr.Message.MessageEnumData.MsgLangId.FRA:
+                case global::Dpr.Message.MessageEnumData.MsgLangId.ITA:
+                case global::Dpr.Message.MessageEnumData.MsgLangId.DEU:
+                case (global::Dpr.Message.MessageEnumData.MsgLangId)6:
+                case global::Dpr.Message.MessageEnumData.MsgLangId.ESP:
+                    return KeyboardMode.Alphabet;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.KOR:
+                    return KeyboardMode.Korean;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.SCH:
+                    return KeyboardMode.SimplifiedChinese;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.TCH:
+                    return KeyboardMode.TraditionalChinese;
+                default:
+                    return KeyboardMode.Alphabet;
+            }
+        }
+		internal static void _SetCheckResult(bool isCheckResult) { _isCheckResult = isCheckResult; }
+		internal static void _SetResult(bool isSuccess, string resultText) {
+            _resultText = resultText;
+            MainThreadPost(() =>
+            {
+                _onComplete.Invoke(isSuccess, _resultText);
+                _onComplete = null;
+                _onInputCheck = null;
+                _isMainThreadBlocked = false;
+            }, false);
+        }
 		private static global::nn.ngc.ProfanityFilter.PatternList GetLanguagePatternAll() {
             ProfanityFilter.PatternList[] patternList = new ProfanityFilter.PatternList[]
             {
@@ -200,8 +377,29 @@ namespace Dpr.UI
             length = bytes.Length;
             return result;
         }
-		public static global::Dpr.UI.SoftwareKeyboard.ErrorState CheckNgWords(ref string resultText, int disableErrorChecks = 0, global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(-1)) { /*@B 0x6005B5A*/ throw null; }
-		private static global::Dpr.UI.SoftwareKeyboard.ErrorState _CheckNgWords(ref string resultText, int disableErrorChecks, global::Dpr.Message.MessageEnumData.MsgLangId langId) { /*@B 0x6005B5B*/ throw null; }
+		public static global::Dpr.UI.SoftwareKeyboard.ErrorState CheckNgWords(ref string resultText, int disableErrorChecks = 0, global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(-1)) {
+            return _CheckNgWords(ref resultText, disableErrorChecks, langId);
+        }
+		private static global::Dpr.UI.SoftwareKeyboard.ErrorState _CheckNgWords(ref string resultText, int disableErrorChecks, global::Dpr.Message.MessageEnumData.MsgLangId langId) {
+            if (langId <= 0)
+                langId = UIManager.GetCurrentLangId();
+
+            _checkLangId = langId;
+            _disableErrorChecks = disableErrorChecks;
+            _errorState = ErrorState.None;
+
+            _errorState = CheckWhiteSpace(resultText) ? ErrorState.None : ErrorState.WhiteSpace;
+            if (_errorState == ErrorState.None)
+                _errorState = CheckNumbers(resultText) ? ErrorState.None : ErrorState.NumberCount;
+            if (_errorState == ErrorState.None)
+                _errorState = CheckWhiteUnicodes(resultText) ? ErrorState.None : ErrorState.WhiteUnicode;
+            if (_errorState == ErrorState.None && !IsDisableCheck(ErrorCheck.NgWord))
+            {
+                if (!CheckWhiteWords(resultText))
+                    _errorState = CheckNgc(ref resultText, false) ? ErrorState.NgWord : ErrorState.None;
+            }
+            return _errorState;
+        }
 		private static bool CheckNgc(ref string resultText, bool isMaskResult = false) {
             using (var profanityFilter = new ProfanityFilter())
             {
@@ -223,9 +421,51 @@ namespace Dpr.UI
                 return isNgWord;
             }
         }
-		public static int LanguageMaxLength(int maxLength, global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(-1)) { /*@B 0x6005B5D*/ throw null; }
-		public static global::System.ValueTuple<bool, string> InputCheck(string resultText, global::Dpr.UI.SoftwareKeyboard.ErrorState errorState) { /*@B 0x6005B5E*/ throw null; }
-		static SoftwareKeyboard() { /*@B 0x6005B5F*/ throw null; }
+		public static int LanguageMaxLength(int maxLength, global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(-1)) {
+            if (langId <= 0)
+                langId = UIManager.GetCurrentLangId();
+
+            if (langId == global::Dpr.Message.MessageEnumData.MsgLangId.JPN)
+                return maxLength;
+
+            switch (langId)
+            {
+                case global::Dpr.Message.MessageEnumData.MsgLangId.KOR:
+                case global::Dpr.Message.MessageEnumData.MsgLangId.SCH:
+                case global::Dpr.Message.MessageEnumData.MsgLangId.TCH:
+                    return maxLength;
+                default:
+                    return maxLength * 2;
+            }
+        }
+		public static global::System.ValueTuple<bool, string> InputCheck(string resultText, global::Dpr.UI.SoftwareKeyboard.ErrorState errorState) {
+            string messageLabel;
+            switch (errorState)
+            {
+                case ErrorState.WhiteSpace:
+                    messageLabel = "SS_strinput_004";
+                    break;
+                case ErrorState.NumberCount:
+                    messageLabel = "SS_strinput_035";
+                    break;
+                case ErrorState.WhiteUnicode:
+                    global::Dpr.Message.MessageWordSetHelper.SetStringWord(_errorMessageArgIndex, string.Format("{0}", _errorWhiteUnicode));
+                    messageLabel = "SS_strinput_003";
+                    break;
+                case ErrorState.NgWord:
+                    messageLabel = "SS_strinput_002";
+                    break;
+                default:
+                    messageLabel = null;
+                    break;
+            }
+
+            if (string.IsNullOrEmpty(messageLabel))
+                return new global::System.ValueTuple<bool, string>(true, null);
+
+            return new global::System.ValueTuple<bool, string>(false, GetMessageText(messageLabel));
+        }
+		static SoftwareKeyboard() { }
 		public enum Preset
 		{
 			Default = 0,
@@ -285,17 +525,17 @@ namespace Dpr.UI
 		}
 		public class Param
 		{
-			public global::Dpr.UI.SoftwareKeyboard.Preset preset;
-			public global::Dpr.UI.SoftwareKeyboard.KeyboardMode keyboardMode;
+			public global::Dpr.UI.SoftwareKeyboard.Preset preset = global::Dpr.UI.SoftwareKeyboard.Preset.Custom;
+			public global::Dpr.UI.SoftwareKeyboard.KeyboardMode keyboardMode = global::Dpr.UI.SoftwareKeyboard.KeyboardMode.Auto;
 			public bool isPredictionEnabled;
 			public global::Dpr.UI.SoftwareKeyboard.InvalidChar invalidCharFlag;
 			public global::Dpr.UI.SoftwareKeyboard.InitialCursorPos initialCursorPos;
-			public int textMaxLength;
-			public int textMinLength;
+			public int textMaxLength = 16;
+			public int textMinLength = 1;
 			public global::Dpr.UI.SoftwareKeyboard.PasswordMode passwordMode;
 			public global::Dpr.UI.SoftwareKeyboard.InputFormMode inputFormMode;
 			public bool isUseNewLine;
-			public bool isUseBlurBackground;
+			public bool isUseBlurBackground = true;
 			public int[] separateTextPos;
 			public string text;
 			public string guideText;
@@ -303,7 +543,7 @@ namespace Dpr.UI
 			public string subText;
 			public string okText;
 			public int disableErrorChecks;
-			public Param() { /*@B 0x600AF0D*/ throw null; }
+			public Param() { }
 		}
 		public enum ErrorState
 		{
@@ -327,9 +567,23 @@ namespace Dpr.UI
 			public global::System.Threading.Thread thread;
 			public global::System.Threading.AutoResetEvent callEvent;
 			public bool isActived;
-			public void Create() { /*@B 0x600AF0E*/ throw null; }
-			public void Remove() { /*@B 0x600AF0F*/ throw null; }
-			public void Call() { /*@B 0x600AF10*/ throw null; }
+			public void Create() {
+                thread = new global::System.Threading.Thread(new global::System.Threading.ParameterizedThreadStart(WakerOpen));
+                callEvent = new global::System.Threading.AutoResetEvent(false);
+                thread.IsBackground = true;
+                thread.Priority = global::System.Threading.ThreadPriority.Lowest;
+                thread.Start(this);
+            }
+			public void Remove() {
+                // Shipped: the thread is taken from the static _threadParam, not this.
+                _threadParam.thread.Abort();
+                callEvent.Dispose();
+            }
+			public void Call() {
+                // Shipped: works on the static _threadParam, not this.
+                _threadParam.isActived = true;
+                _threadParam.callEvent.Set();
+            }
 			public ThreadParam() { }
 		}
 	}
