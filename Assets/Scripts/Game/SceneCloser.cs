@@ -4,7 +4,16 @@ public class SceneCloser : global::UnityEngine.MonoBehaviour
 {
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.RectTransform _rectTransform;
-	private void Start() { /*@B 0x60003B7*/ throw null; }
-	public void OnPointerClickDelegate(global::UnityEngine.EventSystems.PointerEventData data = null) { /*@B 0x60003B8*/ throw null; }
+	private void Start() {
+		global::UnityEngine.EventSystems.EventTrigger trigger = GetComponent<global::UnityEngine.EventSystems.EventTrigger>();
+		global::UnityEngine.EventSystems.EventTrigger.Entry entry = new global::UnityEngine.EventSystems.EventTrigger.Entry();
+		entry.eventID = global::UnityEngine.EventSystems.EventTriggerType.PointerClick;
+		entry.callback.AddListener(data => OnPointerClickDelegate((global::UnityEngine.EventSystems.PointerEventData)data));
+		trigger.triggers.Add(entry);
+	}
+	public void OnPointerClickDelegate(global::UnityEngine.EventSystems.PointerEventData data = null) {
+		if (_rectTransform == null)
+			global::SmartPoint.AssetAssistant.SceneBrowser.Close(this);
+	}
 	public SceneCloser() { }
 }

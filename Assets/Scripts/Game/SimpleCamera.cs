@@ -15,9 +15,9 @@ public class SimpleCamera : global::UnityEngine.MonoBehaviour
 	private global::UnityEngine.Transform _cameraTarget;
 	public global::UnityEngine.Transform dragTarget { set { this._dragTarget = value; } }
 	public global::UnityEngine.Transform cameraTarget { get { return this._cameraTarget; } set { this._cameraTarget = value; } }
-	public global::UnityEngine.BoundingSphere boundingSphere { get { /*@B 0x600151E*/ throw null; } set { /*@B 0x600151F*/ throw null; } }
-	public global::UnityEngine.Bounds bounds { get { /*@B 0x6001520*/ throw null; } set { /*@B 0x6001521*/ throw null; } }
-	public bool controllable { set { /*@B 0x6001522*/ throw null; } }
+	public global::UnityEngine.BoundingSphere boundingSphere { get { return _boundingSphere; } set { _boundingSphere = value; } }
+	public global::UnityEngine.Bounds bounds { get { return _bounds; } set { _bounds = value; } }
+	public bool controllable { set { _controllable = value; } }
 	private void OnEnable() {
 		// @019a9d80
 		_camera = Camera.main;
@@ -436,5 +436,5 @@ public class SimpleCamera : global::UnityEngine.MonoBehaviour
 		_camera.transform.position = worldCenter - _distance * _camera.transform.forward;
 		_interestPoint = worldCenter;
 	}
-	public SimpleCamera() { /*@B 0x6001530*/ throw null; }
+	public SimpleCamera() { }
 }

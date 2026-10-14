@@ -4,16 +4,16 @@ using UnityEngine;
 public sealed class SkyColorSettings : global::UnityEngine.MonoBehaviour
 {
 	public const int PERIODO_OF_TIME_NUM = 5;
-	private static bool _set_property_id;
-	private static readonly int _upper_color_id;
+	private static bool _set_property_id = false;
+	private static readonly int _upper_color_id = Shader.PropertyToID("_UpperColor");
 	private static readonly int _lower_color_id = Shader.PropertyToID("_LowerColor");
-	private static readonly int _starlight_power_id;
-	private static readonly int _starlight_st_id;
-	private static readonly int _scenery_color_id;
-	private static readonly int _cloud_color_id;
-	private static readonly int _shadow_color_id;
-	private static readonly int _near_speed_id;
-	private static readonly int _far_speed_id;
+	private static readonly int _starlight_power_id = Shader.PropertyToID("_StarlightPower");
+	private static readonly int _starlight_st_id = Shader.PropertyToID("_StarlightTex_ST");
+	private static readonly int _scenery_color_id = Shader.PropertyToID("_SceneryColor");
+	private static readonly int _cloud_color_id = Shader.PropertyToID("_CloudColor");
+	private static readonly int _shadow_color_id = Shader.PropertyToID("_ShadowColor");
+	private static readonly int _near_speed_id = Shader.PropertyToID("_NearCloudSpeed");
+	private static readonly int _far_speed_id = Shader.PropertyToID("_FarCloudSpeed");
 	[global::UnityEngine.SerializeField]
 	public global::UnityEngine.Renderer _renderer;
 	[global::UnityEngine.SerializeField]
@@ -27,35 +27,50 @@ public sealed class SkyColorSettings : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.SerializeField]
 	public global::SkyColorSettings.Property _midnight;
 	[global::UnityEngine.SerializeField]
-	public global::SkyColorSettings.Property[] _none;
+	public global::SkyColorSettings.Property[] _none = new global::SkyColorSettings.Property[5];
 	[global::UnityEngine.SerializeField]
-	public global::SkyColorSettings.Property[] _shine;
+	public global::SkyColorSettings.Property[] _shine = new global::SkyColorSettings.Property[5];
 	[global::UnityEngine.SerializeField]
-	public global::SkyColorSettings.Property[] _rain;
+	public global::SkyColorSettings.Property[] _rain = new global::SkyColorSettings.Property[5];
 	[global::UnityEngine.SerializeField]
-	public global::SkyColorSettings.Property[] _snow;
+	public global::SkyColorSettings.Property[] _snow = new global::SkyColorSettings.Property[5];
 	[global::UnityEngine.SerializeField]
-	public global::SkyColorSettings.Property[] _sand;
+	public global::SkyColorSettings.Property[] _sand = new global::SkyColorSettings.Property[5];
 	[global::UnityEngine.SerializeField]
-	public global::SkyColorSettings.Property[] _cloud;
+	public global::SkyColorSettings.Property[] _cloud = new global::SkyColorSettings.Property[5];
 	[global::UnityEngine.SerializeField]
 	private global::Dpr.Battle.View.Systems.BtlvWeather _currentWeather;
 	[global::UnityEngine.SerializeField]
 	private global::PeriodOfDay _periodOfDay;
 	[global::UnityEngine.RangeAttribute(0f, 1f)]
 	[global::UnityEngine.SerializeField]
-	private float _weight;
+	private float _weight = 1f;
 	private global::Dpr.Battle.Logic.BtlWeather _prevWeather;
-	private static global::UnityEngine.MaterialPropertyBlock _propertyBlock;
+	private static global::UnityEngine.MaterialPropertyBlock _propertyBlock = null;
 	public static global::SkyColorSettings global { get; set; }
 	public global::Dpr.Battle.View.Systems.BtlvWeather CurrentWeather { get { return this._currentWeather; } private set { this._currentWeather = value; } }
-	public float Weight { get { return this._weight; } set { /*@B 0x6000865*/ throw null; } }
+	public float Weight { get { return this._weight; } set { this._weight = Mathf.Clamp01(value); } }
 	private void OnValidate() {
 		// @0208daa0: plain null test (MaterialPropertyBlock is not a UnityEngine.Object)
 		if (_propertyBlock != null)
 			ChangeWeather(_currentWeather, _currentWeather, _periodOfDay, _weight);
 	}
-	private global::SkyColorSettings.Property QueryProperty() { /*@B 0x6000867*/ throw null; }
+	private global::SkyColorSettings.Property QueryProperty() {
+		_periodOfDay = GameManager.currentPeriodOfDay;
+		switch (GameManager.currentPeriodOfDay)
+		{
+			case PeriodOfDay.Morning:
+				return _morning;
+			case PeriodOfDay.Evening:
+				return _evening;
+			case PeriodOfDay.Night:
+				return _night;
+			case PeriodOfDay.Midnight:
+				return _midnight;
+			default:
+				return _daytime;
+		}
+	}
 	private void SetParameters() {
 		// @0208dd80: QueryProperty inlined (its flag 0x4cc0278 @0208dddc); intensity scales r/g/b only, alpha kept
 		Property property = QueryProperty();
@@ -181,8 +196,8 @@ public sealed class SkyColorSettings : global::UnityEngine.MonoBehaviour
 			DG.Tweening.DOVirtual.Float(0.0f, 1.0f, duration, x => ChangeWeather(_currentWeather, _currentWeather, periodOfDay, x)),
 			() => onComplete?.Invoke());
 	}
-	public SkyColorSettings() { /*@B 0x6000876*/ throw null; }
-	static SkyColorSettings() { /*@B 0x6000877*/ throw null; }
+	public SkyColorSettings() { }
+	static SkyColorSettings() { }
 	[global::System.Serializable]
 	public struct Property
 	{
