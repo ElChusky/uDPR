@@ -4,24 +4,101 @@ namespace Dpr.SequenceEditor
 	[global::System.Serializable]
 	public class Macro
 	{
-		public static global::Dpr.SequenceEditor.Macro Default;
+		public static global::Dpr.SequenceEditor.Macro Default = new global::Dpr.SequenceEditor.Macro();
 		public global::Dpr.SequenceEditor.CommandNo CommandNo;
 		public string Name;
 		public global::System.Collections.Generic.List<global::Dpr.SequenceEditor.Macro.Value> Values;
 		public global::Dpr.Battle.View.Playables.CameraFilePlayable CamFile;
 		private static global::System.Globalization.CultureInfo culture_us;
 		public Macro() { }
-		public Macro(global::Dpr.SequenceEditor.Macro other) { /*@B 0x6004B37*/ throw null; }
-		public global::Dpr.SequenceEditor.Macro.Value GetValue(string key) { /*@B 0x6004B38*/ throw null; }
-		public static string ParseString(global::Dpr.SequenceEditor.Macro.Value value, string def = "") { /*@B 0x6004B39*/ throw null; }
-		public static int ParseInt(global::Dpr.SequenceEditor.Macro.Value value, int def = -1) { /*@B 0x6004B3A*/ throw null; }
-		public static global::UnityEngine.Vector3 ParseVector3(global::Dpr.SequenceEditor.Macro.Value value, float def = 0f) { /*@B 0x6004B3B*/ throw null; }
-		public static global::UnityEngine.Vector3 ParseVector3(global::Dpr.SequenceEditor.Macro.Value value, float defX, float defY, float defZ = 0f) { /*@B 0x6004B3C*/ throw null; }
-		public static float ParseFloat(global::Dpr.SequenceEditor.Macro.Value value, float def = 0f) { /*@B 0x6004B3D*/ throw null; }
-		public static bool ParseBool(global::Dpr.SequenceEditor.Macro.Value value, bool def = false) { /*@B 0x6004B3E*/ throw null; }
-		public static bool ParseBool(global::Dpr.SequenceEditor.Macro.Value value, int def) { /*@B 0x6004B3F*/ throw null; }
-		public static bool[] ParseBoolArray(global::Dpr.SequenceEditor.Macro.Value value, bool def = true) { /*@B 0x6004B40*/ throw null; }
-		public static bool[] ParseBoolArray(global::Dpr.SequenceEditor.Macro.Value value, int def0, int def1, int def2) { /*@B 0x6004B41*/ throw null; }
+		public Macro(global::Dpr.SequenceEditor.Macro other) {
+			CommandNo = other.CommandNo;
+			Name = other.Name;
+			Values = other.Values;
+		}
+		public global::Dpr.SequenceEditor.Macro.Value GetValue(string key) {
+			return Values.Find(x => x.Name == key);
+		}
+		public static string ParseString(global::Dpr.SequenceEditor.Macro.Value value, string def = "") {
+			if (string.IsNullOrEmpty(value.Name))
+				return def;
+			return value[0];
+		}
+		public static int ParseInt(global::Dpr.SequenceEditor.Macro.Value value, int def = -1) {
+			if (string.IsNullOrEmpty(value.Name))
+				return def;
+			return int.Parse(value[0]);
+		}
+		public static global::UnityEngine.Vector3 ParseVector3(global::Dpr.SequenceEditor.Macro.Value value, float def = 0f) {
+			float x = def;
+			float y = def;
+			float z = def;
+			if (!string.IsNullOrEmpty(value.Name))
+			{
+				x = float_Parse(value[0]);
+				y = float_Parse(value[1]);
+				z = float_Parse(value[2]);
+			}
+			return new global::UnityEngine.Vector3(x, y, z);
+		}
+		public static global::UnityEngine.Vector3 ParseVector3(global::Dpr.SequenceEditor.Macro.Value value, float defX, float defY, float defZ = 0f) {
+			if (!string.IsNullOrEmpty(value.Name))
+			{
+				defX = float_Parse(value[0]);
+				defY = float_Parse(value[1]);
+				defZ = float_Parse(value[2]);
+			}
+			return new global::UnityEngine.Vector3(defX, defY, defZ);
+		}
+		public static float ParseFloat(global::Dpr.SequenceEditor.Macro.Value value, float def = 0f) {
+			if (string.IsNullOrEmpty(value.Name))
+				return def;
+			return float_Parse(value[0]);
+		}
+		public static bool ParseBool(global::Dpr.SequenceEditor.Macro.Value value, bool def = false) {
+			if (string.IsNullOrEmpty(value.Name))
+				return def;
+			return int.Parse(value[0]) == 1;
+		}
+		public static bool ParseBool(global::Dpr.SequenceEditor.Macro.Value value, int def) {
+			if (!string.IsNullOrEmpty(value.Name))
+				def = int.Parse(value[0]);
+			return def == 1;
+		}
+		public static bool[] ParseBoolArray(global::Dpr.SequenceEditor.Macro.Value value, bool def = true) {
+			bool isEmpty = string.IsNullOrEmpty(value.Name);
+			bool[] result = new bool[3];
+			if (isEmpty)
+			{
+				result[0] = def;
+				result[1] = def;
+				result[2] = def;
+			}
+			else
+			{
+				result[0] = int.Parse(value[0]) == 1;
+				result[1] = int.Parse(value[1]) == 1;
+				result[2] = int.Parse(value[2]) == 1;
+			}
+			return result;
+		}
+		public static bool[] ParseBoolArray(global::Dpr.SequenceEditor.Macro.Value value, int def0, int def1, int def2) {
+			bool isEmpty = string.IsNullOrEmpty(value.Name);
+			bool[] result = new bool[3];
+			if (isEmpty)
+			{
+				result[0] = def0 == 1;
+				result[1] = def1 == 1;
+				result[2] = def2 == 1;
+			}
+			else
+			{
+				result[0] = int.Parse(value[0]) == 1;
+				result[1] = int.Parse(value[1]) == 1;
+				result[2] = int.Parse(value[2]) == 1;
+			}
+			return result;
+		}
 		public static global::Dpr.SequenceEditor.CLUSTER_SPAWN Parse_CLUSTER_SPAWN(global::Dpr.SequenceEditor.Macro.Value value, global::Dpr.SequenceEditor.CLUSTER_SPAWN def = (global::Dpr.SequenceEditor.CLUSTER_SPAWN)(0)) {
             if (string.IsNullOrEmpty(value.Name))
                 return def;
@@ -1420,14 +1497,21 @@ namespace Dpr.SequenceEditor
 
             return def;
         }
-		public static float float_Parse(string s) { /*@B 0x6004B76*/ throw null; }
-		static Macro() { /*@B 0x6004B77*/ throw null; }
+		public static float float_Parse(string s) {
+			if (culture_us == null)
+				culture_us = global::System.Globalization.CultureInfo.CreateSpecificCulture("en-us");
+			float result = 0f;
+			if (float.TryParse(s, global::System.Globalization.NumberStyles.Float | global::System.Globalization.NumberStyles.AllowThousands, culture_us, out result))
+				return result;
+			return 0f;
+		}
+		static Macro() { }
 		[global::System.Serializable]
 		public struct Value
 		{
 			public string Name;
 			public global::System.Collections.Generic.List<string> Values;
-			public string this[int index] { get { /*@B 0x600A68E*/ throw null; } }
+			public string this[int index] { get { return Values[index]; } }
 		}
 	}
 }

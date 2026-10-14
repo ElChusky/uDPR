@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public bool isCapthre;
 		public global::Dpr.SequenceEditor.FADE_TYPE type;
 		public bool isCpuBoost;
-		public EffSpFadeOut(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A06*/ throw null; }
+		public EffSpFadeOut(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			col = Macro.ParseVector3(macro.GetValue("col"));
+			alpha = Macro.ParseFloat(macro.GetValue("alpha"), 255f);
+			isCapthre = Macro.ParseBool(macro.GetValue("isCapthre"), 0);
+			type = Macro.Parse_FADE_TYPE(macro.GetValue("type"));
+			isCpuBoost = Macro.ParseBool(macro.GetValue("isCpuBoost"), 0);
+		}
 	}
 }

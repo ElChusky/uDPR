@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class GroupOptionAttribute : global::System.Attribute
 	{
 		public global::System.Type GrpOptEnum { get; private set; }
-		public GroupOptionAttribute(global::System.Type enumType) { /*@B 0x6004901*/ throw null; }
+		public GroupOptionAttribute(global::System.Type enumType) {
+			GrpOptEnum = enumType;
+		}
 	}
 }

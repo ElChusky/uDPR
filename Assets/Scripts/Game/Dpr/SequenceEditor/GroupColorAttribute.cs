@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public byte BgColG;
 		public byte BgColB;
 		public byte BgColA;
-		public GroupColorAttribute(byte r, byte g, byte b, byte a = 255) { /*@B 0x60048FE*/ throw null; }
+		public GroupColorAttribute(byte r, byte g, byte b, byte a = 255) {
+			BgColR = r;
+			BgColG = g;
+			BgColB = b;
+			BgColA = a;
+		}
 	}
 }

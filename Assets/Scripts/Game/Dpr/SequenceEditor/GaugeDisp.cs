@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public bool visible;
 		public bool isUpdate;
-		public GaugeDisp(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049F8*/ throw null; }
+		public GaugeDisp(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			visible = Macro.ParseBool(macro.GetValue("visible"), 1);
+			isUpdate = Macro.ParseBool(macro.GetValue("isUpdate"), 0);
+		}
 	}
 }

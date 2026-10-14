@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(559638317), "lightblue", "", "")]
 	public class LabelDispUI : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelDispUI(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AF7*/ throw null; }
+		public LabelDispUI(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

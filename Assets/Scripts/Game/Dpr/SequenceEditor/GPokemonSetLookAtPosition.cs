@@ -11,6 +11,14 @@ namespace Dpr.SequenceEditor
 		public bool isRotPos;
 		public bool isFlip;
 		public bool[] enableElem;
-		public GPokemonSetLookAtPosition(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600496A*/ throw null; }
+		public GPokemonSetLookAtPosition(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			enable = Macro.ParseBool(macro.GetValue("enable"), 0);
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			relative = Macro.ParseBool(macro.GetValue("relative"), 0);
+			isRotPos = Macro.ParseBool(macro.GetValue("isRotPos"), 0);
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), 0);
+			enableElem = Macro.ParseBoolArray(macro.GetValue("enableElem"), 1, 1, 1);
+		}
 	}
 }

@@ -10,6 +10,13 @@ namespace Dpr.SequenceEditor
 		public bool changeLight;
 		public bool isAnimScl;
 		public bool isLocalScl;
-		public ModelAttachTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049CC*/ throw null; }
+		public ModelAttachTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), 1);
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			changeLight = Macro.ParseBool(macro.GetValue("changeLight"), 0);
+			isAnimScl = Macro.ParseBool(macro.GetValue("isAnimScl"), 0);
+			isLocalScl = Macro.ParseBool(macro.GetValue("isLocalScl"), 0);
+		}
 	}
 }

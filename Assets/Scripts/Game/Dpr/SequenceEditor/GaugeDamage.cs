@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public bool disable;
-		public GaugeDamage(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049FA*/ throw null; }
+		public GaugeDamage(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			disable = Macro.ParseBool(macro.GetValue("disable"), 0);
+		}
 	}
 }

@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public int landSpeed;
 		public int roraEffCnt;
-		public GPokemonIntroMotion(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004968*/ throw null; }
+		public GPokemonIntroMotion(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			landSpeed = Macro.ParseInt(macro.GetValue("landSpeed"), 5);
+			roraEffCnt = Macro.ParseInt(macro.GetValue("roraEffCnt"), 0x24);
+		}
 	}
 }

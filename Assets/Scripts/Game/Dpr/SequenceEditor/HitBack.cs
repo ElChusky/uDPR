@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public bool isDefault;
-		public HitBack(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049FC*/ throw null; }
+		public HitBack(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			isDefault = Macro.ParseBool(macro.GetValue("isDefault"), 0);
+		}
 	}
 }

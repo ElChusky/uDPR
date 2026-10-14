@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(1951393787), "blue", "", "")]
 	public class LabelOld3DSound : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelOld3DSound(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049E6*/ throw null; }
+		public LabelOld3DSound(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(803536596), "lightgreen", "one_frame", "")]
 	public class EffStencilBufferDisable : global::Dpr.SequenceEditor.Macro
 	{
-		public EffStencilBufferDisable(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A82*/ throw null; }
+		public EffStencilBufferDisable(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

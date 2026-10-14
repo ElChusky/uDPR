@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-766184491), "orange", "", "")]
 	public class LabelContestSpEffect : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelContestSpEffect(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B2F*/ throw null; }
+		public LabelContestSpEffect(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

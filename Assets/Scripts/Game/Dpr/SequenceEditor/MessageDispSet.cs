@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public int MsgId;
 		public int option;
-		public MessageDispSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A3D*/ throw null; }
+		public MessageDispSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			MsgId = Macro.ParseInt(macro.GetValue("MsgId"));
+			option = Macro.ParseInt(macro.GetValue("option"));
+		}
 	}
 }

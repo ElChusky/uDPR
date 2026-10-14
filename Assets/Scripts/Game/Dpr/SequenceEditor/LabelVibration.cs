@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-861048630), "blue", "", "")]
 	public class LabelVibration : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelVibration(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A21*/ throw null; }
+		public LabelVibration(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

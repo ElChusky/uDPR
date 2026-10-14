@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-545962017), "orange", "", "")]
 	public class LabelCluster : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelCluster(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A0E*/ throw null; }
+		public LabelCluster(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

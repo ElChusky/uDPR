@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class ModelCahngeAnimationState : global::Dpr.SequenceEditor.Macro
 	{
 		public string state;
-		public ModelCahngeAnimationState(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049D8*/ throw null; }
+		public ModelCahngeAnimationState(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			state = Macro.ParseString(macro.GetValue("state"));
+		}
 	}
 }

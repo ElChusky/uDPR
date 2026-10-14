@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public string MsgId1;
 		public string MsgId2;
 		public string MsgId3;
-		public MessageDispSelect(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A3F*/ throw null; }
+		public MessageDispSelect(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			MsgId1 = Macro.ParseString(macro.GetValue("MsgId1"));
+			MsgId2 = Macro.ParseString(macro.GetValue("MsgId2"));
+			MsgId3 = Macro.ParseString(macro.GetValue("MsgId3"));
+		}
 	}
 }

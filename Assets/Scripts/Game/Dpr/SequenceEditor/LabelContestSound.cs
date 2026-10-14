@@ -4,6 +4,6 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(-291405224), "orange", "", "")]
 	public class LabelContestSound : global::Dpr.SequenceEditor.Macro
 	{
-		public LabelContestSound(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B34*/ throw null; }
+		public LabelContestSound(global::Dpr.SequenceEditor.Macro macro) : base(macro) { }
 	}
 }

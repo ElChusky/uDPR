@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public bool enable;
-		public GPokemonFieldEffect(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004969*/ throw null; }
+		public GPokemonFieldEffect(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			enable = Macro.ParseBool(macro.GetValue("enable"), 0);
+		}
 	}
 }
