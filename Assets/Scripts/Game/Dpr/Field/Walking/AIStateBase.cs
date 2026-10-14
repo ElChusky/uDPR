@@ -3,33 +3,107 @@ namespace Dpr.Field.Walking
 {
 	public abstract class AIStateBase
 	{
-		public static float Speed;
+		public static float Speed = 1f;
 		private global::UnityEngine.Transform _lookTarget;
 		protected global::Dpr.Field.Walking.AIModel model;
-		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.ActionModel> ActionList;
+		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.ActionModel> ActionList = new global::System.Collections.Generic.List<global::Dpr.Field.Walking.ActionModel>();
 		protected global::Dpr.Field.Walking.ActionModel nowAction;
 		protected float downTime;
-		protected float ActionProbability;
-		public float ActionLotteryInterval;
+		protected float ActionProbability = 0.05f;
+		public float ActionLotteryInterval = 2f;
 		protected const float DefaultInterval = 2f;
 		protected const float DefaultProbability = 0.05f;
-		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.ActionModel> list;
-		public global::UnityEngine.Transform LookTarget { get { /*@B 0x6008A11*/ throw null; } set { this._lookTarget = value; } }
-		public global::Dpr.Field.Walking.CorSystem corSys { get { /*@B 0x6008A13*/ throw null; } }
+		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.ActionModel> list = new global::System.Collections.Generic.List<global::Dpr.Field.Walking.ActionModel>(10);
+		public global::UnityEngine.Transform LookTarget { get { if (_lookTarget == null) return player; return _lookTarget; } set { this._lookTarget = value; } }
+		public global::Dpr.Field.Walking.CorSystem corSys { get { return model.corSys; } }
 		protected bool isCanAction { get => !corSys.isPlaying && downTime <= 0.0f; }
-		protected float playerDistance { get { /*@B 0x6008A15*/ throw null; } }
+		protected float playerDistance { get { return model.playerDistance; } }
 		protected global::UnityEngine.Transform player { get => model.player; }
-		protected float deltaTime { get { /*@B 0x6008A17*/ throw null; } }
-		public AIStateBase(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008A18*/ throw null; }
+		protected float deltaTime { get { return global::SmartPoint.AssetAssistant.Sequencer.elapsedTime; } }
+		public AIStateBase(global::Dpr.Field.Walking.AIModel model)
+		{
+			this.model = model;
+		}
 		public virtual void Enter() { }
 		public virtual void Exit() { }
-		public virtual void CommonUpdate() { /*@B 0x6008A1B*/ throw null; }
+		public virtual void CommonUpdate()
+		{
+			list.Clear();
+			if (ActionLotteryInterval < 0f && global::UnityEngine.Random.Range(0f, 0.999f) < ActionProbability)
+			{
+				for (int i = 0; i < ActionList.Count; i++)
+				{
+					if (ActionList[i].lotteryType == ActionModel.Lottery_Normal && ActionList[i].IsUsable())
+					{
+						list.Add(ActionList[i]);
+					}
+				}
+			}
+			for (int i = 0; i < ActionList.Count; i++)
+			{
+				if (ActionList[i].lotteryType == ActionModel.Lottery_Force && ActionList[i].IsUsable())
+				{
+					list.Add(ActionList[i]);
+				}
+			}
+			if (list.Count == 0)
+			{
+				if (corSys.isPlaying)
+					return;
+				ActionLotteryInterval -= deltaTime;
+				downTime -= deltaTime;
+				StateUpdate();
+			}
+			else
+			{
+				if (nowAction != null)
+				{
+					list = list.FindAll(x => nowAction.priority < x.priority);
+				}
+				ActionModel action = list.GetRandomofMaxpriority();
+				if (action != null)
+				{
+					Play(action);
+				}
+			}
+		}
 		protected abstract void StateUpdate();
-		public void Play(global::Dpr.Field.Walking.ActionModel action, global::System.Action OnFinished = null) { /*@B 0x6008A1D*/ throw null; }
-		public void PlayAnim(int animID, global::System.Action OnFinished = null) { /*@B 0x6008A1E*/ throw null; }
-		protected global::Dpr.Field.Walking.ActionModel AddAction(global::Dpr.Field.Walking.ActionModel action) { /*@B 0x6008A1F*/ throw null; }
-		public void Destroy() { /*@B 0x6008A20*/ throw null; }
-		public void Cancel() { /*@B 0x6008A21*/ throw null; }
-		static AIStateBase() { /*@B 0x6008A22*/ throw null; }
+		public void Play(global::Dpr.Field.Walking.ActionModel action, global::System.Action OnFinished = null)
+		{
+			corSys.Cancel();
+			corSys.Play(action.DoAction(model));
+			corSys.onFinished += () =>
+			{
+				downTime = action.downTime;
+				nowAction = null;
+				OnFinished?.Invoke();
+			};
+			nowAction = action;
+		}
+		public void PlayAnim(int animID, global::System.Action OnFinished = null)
+		{
+			Play(new PlayAnim(animID, 0.2f, 0f), OnFinished);
+		}
+		protected global::Dpr.Field.Walking.ActionModel AddAction(global::Dpr.Field.Walking.ActionModel action)
+		{
+			ActionList.Add(action);
+			if (action.lotteryType == ActionModel.Lottery_Normal)
+			{
+				action.usables += () => isCanAction;
+			}
+			return action;
+		}
+		public void Destroy()
+		{
+			ActionList.Clear();
+			ActionList = null;
+			list.Clear();
+			list = null;
+		}
+		public void Cancel()
+		{
+			corSys?.Cancel();
+		}
+		static AIStateBase() { }
 	}
 }

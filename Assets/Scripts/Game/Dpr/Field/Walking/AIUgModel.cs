@@ -3,10 +3,14 @@ namespace Dpr.Field.Walking
 {
 	public class AIUgModel : global::Dpr.Field.Walking.AIModel
 	{
-		public global::System.Collections.Generic.List<global::UnityEngine.Vector3> entrancePosition;
+		public global::System.Collections.Generic.List<global::UnityEngine.Vector3> entrancePosition = new global::System.Collections.Generic.List<global::UnityEngine.Vector3>();
 		public global::UnityEngine.Vector3 InitPos;
 		public global::Ug.MoveType moveType;
-		public AIUgModel(global::Dpr.Field.Walking.UgPokeController controller) : base(default(global::Dpr.Field.Walking.WalkingCharacterController)) { /*@B 0x6008A03*/ throw null; }
-		public override void Destroy() { /*@B 0x6008A04*/ throw null; }
+		public AIUgModel(global::Dpr.Field.Walking.UgPokeController controller) : base(controller) { }
+		public override void Destroy()
+		{
+			base.Destroy();
+			entrancePosition.Clear();
+		}
 	}
 }

@@ -3,7 +3,7 @@ namespace Dpr.Field.Walking
 {
 	public abstract class ActionModel : global::Dpr.SubContents.IHaveWeight
 	{
-		public float priority;
+		public float priority = 1f;
 		public float coolTime;
 		public float downTime;
 		public float elapsedTime;
@@ -13,9 +13,19 @@ namespace Dpr.Field.Walking
 		public event global::Dpr.Field.Walking.EventHandler<int> OnNeedEffect;
 		public event global::Dpr.Field.Walking.ActionModel.Usable usables;
 		public float lotteryWeight { get; set; }
-		public virtual global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008A85*/ throw null; }
-		public ActionModel() { /*@B 0x6008A86*/ throw null; }
-		public bool IsUsable() { /*@B 0x6008A87*/ throw null; }
+		public virtual global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model)
+		{
+			yield return null;
+		}
+		public ActionModel()
+		{
+			usables = () => true;
+			lotteryWeight = 50f;
+		}
+		public bool IsUsable()
+		{
+			return usables();
+		}
 		public delegate bool Usable();
 	}
 }
