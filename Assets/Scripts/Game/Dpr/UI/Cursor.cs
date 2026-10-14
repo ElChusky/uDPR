@@ -7,22 +7,70 @@ namespace Dpr.UI
 		private global::UnityEngine.UI.Image[] _frameImages;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite[] _frameSprites;
-		public static readonly int animStateIn;
-		public static readonly int animStateOut;
-		public static readonly int animStateDecide;
-		public static readonly int animStateWait;
-		public static readonly int animStateNull;
+		public static readonly int animStateIn = global::UnityEngine.Animator.StringToHash("in");
+		public static readonly int animStateOut = global::UnityEngine.Animator.StringToHash("out");
+		public static readonly int animStateDecide = global::UnityEngine.Animator.StringToHash("decide");
+		public static readonly int animStateWait = global::UnityEngine.Animator.StringToHash("wait");
+		public static readonly int animStateNull = global::UnityEngine.Animator.StringToHash("null");
 		protected global::UnityEngine.Animator _animator;
 		protected global::UnityEngine.Coroutine _opPlay;
 		public global::UnityEngine.Animator animator { get { return this._animator; } }
-		private void Awake() { /*@B 0x60050A2*/ throw null; }
-		private void OnDestroy() { /*@B 0x60050A3*/ throw null; }
-		public void SetActive(bool enabled) { /*@B 0x60050A4*/ throw null; }
-		public bool IsActived() { /*@B 0x60050A5*/ throw null; }
-		public bool Play(int animState, int layer = 0, float startTime = 0f) { /*@B 0x60050A6*/ throw null; }
-		private global::System.Collections.IEnumerator OpPlay(int animState, int layer, float startTime) { /*@B 0x60050A7*/ throw null; }
-		public void SetFrameSprite(int index) { /*@B 0x60050A8*/ throw null; }
+		private void Awake() {
+			_animator = GetComponentInChildren<global::UnityEngine.Animator>(true);
+		}
+		private void OnDestroy() {
+			if (_opPlay != null)
+			{
+				global::SmartPoint.AssetAssistant.Sequencer.Stop(_opPlay);
+				_opPlay = null;
+			}
+		}
+		public void SetActive(bool enabled) {
+			if (enabled)
+			{
+				gameObject.SetActive(true);
+				Play(animStateIn, 0, 0f);
+			}
+			else if (IsActived())
+			{
+				gameObject.SetActive(true);
+				Play(animStateOut, 0, 0f);
+			}
+			else
+			{
+				gameObject.SetActive(false);
+			}
+		}
+		public bool IsActived() {
+			if (_animator == null)
+				return false;
+			global::UnityEngine.AnimatorStateInfo info = _animator.GetCurrentAnimatorStateInfo(0);
+			return info.shortNameHash == animStateIn || info.shortNameHash == animStateWait;
+		}
+		public bool Play(int animState, int layer = 0, float startTime = 0f) {
+			if (_animator == null)
+				return false;
+			if (_animator.GetCurrentAnimatorStateInfo(0).shortNameHash != animState)
+			{
+				if (_opPlay != null)
+					global::SmartPoint.AssetAssistant.Sequencer.Stop(_opPlay);
+				_opPlay = global::SmartPoint.AssetAssistant.Sequencer.Start(OpPlay(animState, layer, startTime));
+			}
+			return true;
+		}
+		private global::System.Collections.IEnumerator OpPlay(int animState, int layer, float startTime) {
+			while (!_animator.isActiveAndEnabled)
+				yield return null;
+			_animator.Play(animState, layer, startTime);
+			_opPlay = null;
+		}
+		public void SetFrameSprite(int index) {
+			for (int i = 0; i < _frameImages.Length; i++)
+			{
+				_frameImages[i].sprite = _frameSprites[index];
+			}
+		}
 		public Cursor() { }
-		static Cursor() { /*@B 0x60050AA*/ throw null; }
+		static Cursor() { }
 	}
 }
