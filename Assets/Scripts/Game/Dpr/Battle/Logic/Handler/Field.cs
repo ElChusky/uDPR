@@ -55,7 +55,16 @@ namespace Dpr.Battle.Logic.Handler
 				factor = next;
 			}
 		}
-		public static global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] ADD_Fld_Weather(byte sub_param) { /*@B 0x6008101*/ throw null; }
+		public static global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] ADD_Fld_Weather(byte sub_param) {
+			if (sub_param == (byte)BtlWeather.BTL_WEATHER_TURBULENCE)
+				return HandlerTable_Rankiryuu;
+			if (sub_param == (byte)BtlWeather.BTL_WEATHER_DAY)
+				return HandlerTable_Oohideri;
+			if (sub_param == (byte)BtlWeather.BTL_WEATHER_STORM)
+				return HandlerTable_Ooame;
+			// shipped default is DammyHandlerTable (static +0x90), not HandlerTable_Dammy
+			return DammyHandlerTable;
+		}
 		public static void handler_fld_Weather(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte subParam) {
 			// Empty in the binary (019023e0: ret).
 		}
@@ -299,13 +308,113 @@ namespace Dpr.Battle.Logic.Handler
 				strParam.AddArg(defPokeID);
 			}
 		}
-		static Field() { /*@B 0x6008124*/ throw null; }
+		static Field() {
+			getHandlerGetFuncTable = new GET_FUNC_TABLE_ELEM[]
+			{
+				new GET_FUNC_TABLE_ELEM(EffectType.EFF_WEATHER, ADD_Fld_Weather),
+				new GET_FUNC_TABLE_ELEM(EffectType.EFF_TRICKROOM, ADD_Fld_TrickRoom),
+				new GET_FUNC_TABLE_ELEM(EffectType.EFF_JURYOKU, ADD_Fld_Juryoku),
+				new GET_FUNC_TABLE_ELEM(EffectType.EFF_FUIN, ADD_Fld_Fuin),
+				new GET_FUNC_TABLE_ELEM(EffectType.EFF_WONDERROOM, ADD_Fld_WonderRoom),
+				new GET_FUNC_TABLE_ELEM(EffectType.EFF_MAGICROOM, ADD_Fld_MagicRoom),
+				new GET_FUNC_TABLE_ELEM(EffectType.EFF_FAIRY_LOCK, ADD_Fld_FairyLock),
+				new GET_FUNC_TABLE_ELEM(EffectType.EFF_PLASMASHOWER, ADD_Fld_PlasmaShower),
+				new GET_FUNC_TABLE_ELEM(EffectType.EFF_GROUND, ADD_Fld_Ground),
+				new GET_FUNC_TABLE_ELEM(EffectType.EFF_KAGAKUHENKAGAS, ADD_Fld_KagakuhenkaGas),
+			};
+			HandlerTable_Ooame = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_ooame_CheckExe),
+			};
+			HandlerTable_Oohideri = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_EXECUTE_CHECK_2ND, handler_oohideri_CheckExe),
+			};
+			HandlerTable_Rankiryuu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CHECK_AFFINITY, handler_rankiryuu_CheckAff),
+				new EventFactor.EventHandlerTable(EventID.CHECK_AFFINITY_ONLY_ATTACKER, handler_rankiryuu_CheckAff),
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC_END, handler_rankiryuu_AfterDamage),
+			};
+			HandlerTable_Dammy = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.INVALID, handler_fld_dummy),
+			};
+			HandlerTable_Fld_TrickRoom = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.CALC_AGILITY, handler_fld_TrickRoom),
+			};
+			HandlerTable_Fld_Juryoku = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_HIT_RATIO, handler_fld_Jyuryoku_AdjustDmg),
+				new EventFactor.EventHandlerTable(EventID.CHECK_AFFINITY, handler_fld_Jyuryoku_CheckAff),
+				new EventFactor.EventHandlerTable(EventID.CHECK_AFFINITY_ONLY_ATTACKER, handler_fld_Jyuryoku_CheckAff),
+			};
+			HandlerTable_Fld_Sawagu = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_DMG_PROC3, handler_fld_Weather),
+			};
+			HandlerTable_Fld_WonderRoom = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.DEFENDER_GUARD_PREV, handler_fld_WonderRoom),
+			};
+			HandlerTable_Fld_Fuin = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.INVALID, handler_fld_dummy),
+			};
+			HandlerTable_Fld_MagicRoom = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.INVALID, handler_fld_dummy),
+			};
+			HandlerTable_Fld_FairyLock = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.INVALID, handler_fld_dummy),
+			};
+			HandlerTable_Fld_PlasmaShower = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_PARAM_2ND, handler_plasma_shower),
+				new EventFactor.EventHandlerTable(EventID.CHANGE_G_WAZA, handler_plasmaShower_ChangeGWaza),
+			};
+			HandlerTable_Fld_KagakuhenkaGas = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.INVALID, handler_fld_dummy),
+			};
+			GrassHandlerTable = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_grass_power),
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_grass_turncheck),
+			};
+			MistHandlerTable = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_mist_power),
+				new EventFactor.EventHandlerTable(EventID.ADDSICK_CHECKFAIL, handler_mist_checkFail),
+				new EventFactor.EventHandlerTable(EventID.ADDSICK_FAILED, handler_mist_sickFailed),
+			};
+			ElecHandlerTable = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_elec_power),
+				new EventFactor.EventHandlerTable(EventID.ADDSICK_CHECKFAIL, handler_elec_checkFail),
+				new EventFactor.EventHandlerTable(EventID.ADDSICK_FAILED, handler_elec_sickFailed),
+			};
+			PhychoHandlerTable = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZA_POWER, handler_phycho_power),
+				new EventFactor.EventHandlerTable(EventID.NOEFFECT_CHECK_FIELD, handler_phycho_noEffectCheck),
+			};
+			DammyHandlerTable = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.INVALID, handler_fld_dummy),
+			};
+		}
 		public delegate global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] HandlerGetFunc(byte subParam);
 		private struct GET_FUNC_TABLE_ELEM
 		{
 			public global::Dpr.Battle.Logic.EffectType effect;
 			public global::Dpr.Battle.Logic.Handler.Field.HandlerGetFunc func;
-			public GET_FUNC_TABLE_ELEM(global::Dpr.Battle.Logic.EffectType effect, global::Dpr.Battle.Logic.Handler.Field.HandlerGetFunc func) { /*@B 0x600B767*/ throw null; }
+			public GET_FUNC_TABLE_ELEM(global::Dpr.Battle.Logic.EffectType effect, global::Dpr.Battle.Logic.Handler.Field.HandlerGetFunc func) {
+				this.effect = effect;
+				this.func = func;
+			}
 		}
 	}
 }
