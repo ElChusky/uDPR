@@ -218,14 +218,55 @@ namespace Dpr.Battle.Logic.Handler
 		private const int BOUGOPAD_WORK_INDEX_GUARD = 0;
 		private const int BOUGOPAD_WORK_INDEX_MESSAGE = 1;
 		private static readonly global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] HandlerTable_AtuzokoBoots;
-		public static global::Dpr.Battle.Logic.Handler.Item.HandlerGetFunc getHandlerGetFunc(global::Pml.ItemNo itemNo) { /*@B 0x6008125*/ throw null; }
-		public static global::Dpr.Battle.Logic.EventFactor addHandler(global::Dpr.Battle.Logic.EventSystem pEventSystem, global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, ushort itemNo) { /*@B 0x6008126*/ throw null; }
-		public static void Add(global::Dpr.Battle.Logic.EventSystem pEventSystem, global::Dpr.Battle.Logic.BTL_POKEPARAM bpp) { /*@B 0x6008127*/ throw null; }
-		public static void Remove(global::Dpr.Battle.Logic.EventSystem pEventSystem, global::Dpr.Battle.Logic.BTL_POKEPARAM bpp) { /*@B 0x6008128*/ throw null; }
-		public static global::Dpr.Battle.Logic.EventFactor TMP_Add(global::Dpr.Battle.Logic.EventSystem pEventSystem, global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, ushort itemNo) { /*@B 0x6008129*/ throw null; }
-		public static void TMP_Remove(global::Dpr.Battle.Logic.EventSystem pEventSystem, global::Dpr.Battle.Logic.EventFactor factor) { /*@B 0x600812A*/ throw null; }
-		public static bool isOccurPer(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte per) { /*@B 0x600812B*/ throw null; }
-		public static int common_GetItemParam(global::Dpr.Battle.Logic.EventFactor factor, global::Pml.Item.ItemData.PrmID paramID) { /*@B 0x600812C*/ throw null; }
+		public static global::Dpr.Battle.Logic.Handler.Item.HandlerGetFunc getHandlerGetFunc(global::Pml.ItemNo itemNo) {
+			for (int i = 0; i < GET_FUNC_TABLE.Length; i++)
+			{
+				if (GET_FUNC_TABLE[i].itemno == itemNo)
+					return GET_FUNC_TABLE[i].func;
+			}
+			return null;
+		}
+		public static global::Dpr.Battle.Logic.EventFactor addHandler(global::Dpr.Battle.Logic.EventSystem pEventSystem, global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, ushort itemNo) {
+			HandlerGetFunc func = getHandlerGetFunc((ItemNo)itemNo);
+			if (func == null)
+				return null;
+			EventFactor.EventHandlerTable[] handlerTable = func();
+			if (handlerTable == null)
+				return null;
+			// EventSystem.AddFactor inlined (container AddFactor with m_eventLevel) @01905910; subPri masked to 16 bits @01905900
+			uint subPri = (ushort)bpp.GetValue_Base(BTL_POKEPARAM.ValueID.BPP_AGILITY);
+			return pEventSystem.AddFactor(EventFactorType.ITEM, itemNo, EventPriority.ITEM, subPri, bpp.GetID(), handlerTable, (byte)handlerTable.Length);
+		}
+		public static void Add(global::Dpr.Battle.Logic.EventSystem pEventSystem, global::Dpr.Battle.Logic.BTL_POKEPARAM bpp) {
+			addHandler(pEventSystem, bpp, bpp.GetItem());
+		}
+		public static void Remove(global::Dpr.Battle.Logic.EventSystem pEventSystem, global::Dpr.Battle.Logic.BTL_POKEPARAM bpp) {
+			EventFactorContainer container = pEventSystem.GetFactorContainer();
+			EventFactor factor = container.SeekFactor(EventFactorType.ITEM, bpp.GetID());
+			while (factor != null)
+			{
+				EventFactor next = container.GetNextFactor(factor, false);
+				if (factor.GetWorkValue(WORKIDX_TMP_FLAG) == 0)
+					pEventSystem.RemoveFactor(factor); // inlined: exist / calling-flag tests, then container RemoveFactor
+				factor = next;
+			}
+		}
+		public static global::Dpr.Battle.Logic.EventFactor TMP_Add(global::Dpr.Battle.Logic.EventSystem pEventSystem, global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, ushort itemNo) {
+			if (itemNo == 0)
+				return null;
+			EventFactor factor = addHandler(pEventSystem, bpp, itemNo);
+			if (factor != null)
+			{
+				factor.SetTmpItemFlag();
+				factor.SetWorkValue(WORKIDX_TMP_FLAG, TRUE);
+			}
+			return factor;
+		}
+		public static void TMP_Remove(global::Dpr.Battle.Logic.EventSystem pEventSystem, global::Dpr.Battle.Logic.EventFactor factor) {
+			pEventSystem.RemoveFactor(factor);
+		}
+		public static bool isOccurPer(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte per) => calc.IsOccurPer(per);
+		public static int common_GetItemParam(global::Dpr.Battle.Logic.EventFactor factor, global::Pml.Item.ItemData.PrmID paramID) => calc.ITEM_GetParam(factor.GetSubID(), paramID);
 		public static int item_AttackValue_to_Ratio(global::Dpr.Battle.Logic.EventFactor factor) {
             // 01905de4..01905e28: inlined FX32.CONST(float) of (ATTACK + 100), then a signed int / 100
             return FX32.CONST((float)(common_GetItemParam(factor, Pml.Item.ItemData.PrmID.ATTACK) + 100)) / 100;
@@ -236,18 +277,18 @@ namespace Dpr.Battle.Logic.Handler
             desc.userPokeID = pokeID;
             Common.UseItem(args, desc);
         }
-		public static bool isPOKEID(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) { /*@B 0x600812F*/ throw null; }
-		public static bool isPOKEID_ATK(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) { /*@B 0x6008130*/ throw null; }
-		public static bool isPOKEID_DEF(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) { /*@B 0x6008131*/ throw null; }
-		public static byte getPOKEID_ATK(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args) { /*@B 0x6008132*/ throw null; }
-		public static byte getWAZA_TYPE(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args) { /*@B 0x6008133*/ throw null; }
-		public static bool getMIGAWARI_FLAG(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args) { /*@B 0x6008134*/ throw null; }
-		public static global::Pml.Battle.TypeAffinity.AffinityID getTYPEAFF(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args) { /*@B 0x6008135*/ throw null; }
+		public static bool isPOKEID(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) => Common.GetEventVar(args, EventVar.Label.POKEID) == pokeID;
+		public static bool isPOKEID_ATK(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) => Common.GetEventVar(args, EventVar.Label.POKEID_ATK) == pokeID;
+		public static bool isPOKEID_DEF(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) => Common.GetEventVar(args, EventVar.Label.POKEID_DEF) == pokeID;
+		public static byte getPOKEID_ATK(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args) => (byte)Common.GetEventVar(args, EventVar.Label.POKEID_ATK);
+		public static byte getWAZA_TYPE(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args) => (byte)Common.GetEventVar(args, EventVar.Label.WAZA_TYPE);
+		public static bool getMIGAWARI_FLAG(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args) => Common.GetEventVar(args, EventVar.Label.MIGAWARI_FLAG) != 0;
+		public static global::Pml.Battle.TypeAffinity.AffinityID getTYPEAFF(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args) => (Pml.Battle.TypeAffinity.AffinityID)Common.GetEventVar(args, EventVar.Label.TYPEAFF);
 		public static global::Dpr.Battle.Logic.BTL_SICKCONTOBJ getSickContAddress(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args) {
             // 019062f0: a failed type test raises InvalidCastException -> a cast, not `as`
             return (BTL_SICKCONTOBJ)Common.GetEventVarAddress(args, EventVar.Label.SICK_CONT_ADRS);
         }
-		public static bool isMonsNo(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID, ushort MonsNo) { /*@B 0x6008137*/ throw null; }
+		public static bool isMonsNo(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID, ushort MonsNo) => Common.GetPokeParam(args, pokeID).GetMonsNo() == MonsNo;
 		public static global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] ADD_KuraboNomi() => HandlerTable_KuraboNomi;
 		public static void handler_KuraboNomi(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) {
             common_sickReaction(args, pokeID, (WazaSickEx)WazaSick.WAZASICK_MAHI);
@@ -3113,19 +3154,28 @@ namespace Dpr.Battle.Logic.Handler
 		{
 			public global::Pml.ItemNo itemno;
 			public global::Dpr.Battle.Logic.Handler.Item.HandlerGetFunc func;
-			public GET_FUNC_TABLE_ELEM(global::Pml.ItemNo itemno, global::Dpr.Battle.Logic.Handler.Item.HandlerGetFunc func) { /*@B 0x600B76C*/ throw null; }
+			public GET_FUNC_TABLE_ELEM(global::Pml.ItemNo itemno, global::Dpr.Battle.Logic.Handler.Item.HandlerGetFunc func) {
+				this.itemno = itemno;
+				this.func = func;
+			}
 		}
 		private struct GuardTargetElem
 		{
 			public global::Dpr.Battle.Logic.DamageCause damageCause;
 			public bool messageEnable;
-			public GuardTargetElem(global::Dpr.Battle.Logic.DamageCause damageCause, bool messageEnable) { /*@B 0x600B76D*/ throw null; }
+			public GuardTargetElem(global::Dpr.Battle.Logic.DamageCause damageCause, bool messageEnable) {
+				this.damageCause = damageCause;
+				this.messageEnable = messageEnable;
+			}
 		}
 		private struct GuardTargetRankElem
 		{
 			public global::Dpr.Battle.Logic.RankEffectCause effectCause;
 			public bool messageEnable;
-			public GuardTargetRankElem(global::Dpr.Battle.Logic.RankEffectCause effectCause, bool messageEnable) { /*@B 0x600B76E*/ throw null; }
+			public GuardTargetRankElem(global::Dpr.Battle.Logic.RankEffectCause effectCause, bool messageEnable) {
+				this.effectCause = effectCause;
+				this.messageEnable = messageEnable;
+			}
 		}
 	}
 }
