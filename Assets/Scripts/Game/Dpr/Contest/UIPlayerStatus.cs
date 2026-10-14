@@ -10,11 +10,11 @@ namespace Dpr.Contest
 		private global::UnityEngine.Sprite[] tensionSprArray;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.GameObject[] statusIconObjArray;
-		private global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Sprite> tensionSprTable;
-		private global::System.Collections.Generic.List<global::UnityEngine.Coroutine> runningCoroutineList;
+		private global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Sprite> tensionSprTable = new global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Sprite>();
+		private global::System.Collections.Generic.List<global::UnityEngine.Coroutine> runningCoroutineList = new global::System.Collections.Generic.List<global::UnityEngine.Coroutine>();
 		private global::Effect.EffectInstance[] skillBgFxArray;
 		private global::Dpr.Contest.PlayerStatusIcon[] statusIconArray;
-		private global::Dpr.SubContents.EffectEmitter fxEmitter;
+		private global::Dpr.SubContents.EffectEmitter fxEmitter = new global::Dpr.SubContents.EffectEmitter();
 		private global::UnityEngine.WaitForSeconds waitWazaStartFx;
 		private float duration;
 		private float jumpPower;
@@ -117,6 +117,6 @@ namespace Dpr.Contest
 		public void ShowWazaMaskByIndex(int playerIndex) {
 			statusIconArray[playerIndex].ShowWazaMask();
 		}
-		public UIPlayerStatus() { /*@B 0x600454F*/ throw null; }
+		public UIPlayerStatus() { }
 	}
 }

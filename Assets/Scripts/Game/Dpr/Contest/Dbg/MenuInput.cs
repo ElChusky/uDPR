@@ -3,7 +3,7 @@ namespace Dpr.Contest.Dbg
 {
 	public class MenuInput
 	{
-		private global::GameController.LogicalInput localInput;
+		private global::GameController.LogicalInput localInput = new global::GameController.LogicalInput();
 		public void Initialize() {
 			AssignInputGoNextScene();
 			AssignInputOpenMenu();
@@ -27,7 +27,7 @@ namespace Dpr.Contest.Dbg
 		private bool IsButtonPush(int assignValue) {
 			return (localInput.push & assignValue) == assignValue;
 		}
-		public MenuInput() { /*@B 0x6004778*/ throw null; }
+		public MenuInput() { }
 		private enum KeyAssignId
 		{
 			GoNextScene = 0,

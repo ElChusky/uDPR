@@ -15,7 +15,7 @@ namespace Dpr.Contest
 		private int nowMonitorIndex;
 		private int loadCount;
 		private int loadedCount;
-		public bool IsLoading { get { /*@B 0x60043CC*/ throw null; } }
+		public bool IsLoading { get { return loadedCount < loadCount; } }
 		public int NowMonitorIndex { get { return this.nowMonitorIndex; } }
 		public void Initialize() {
 			fxManager = EffectManager.Instance;

@@ -3,10 +3,14 @@ namespace Dpr.Contest
 {
 	public class SkillBonusParam
 	{
-		public float addHeartGaugeBonus;
+		public float addHeartGaugeBonus = 1f;
 		public bool forceSuccess;
 		public bool keepTension;
-		public void Reset() { /*@B 0x6004388*/ throw null; }
-		public SkillBonusParam() { /*@B 0x6004389*/ throw null; }
+		public void Reset() {
+			addHeartGaugeBonus = 1f;
+			forceSuccess = false;
+			keepTension = false;
+		}
+		public SkillBonusParam() { }
 	}
 }

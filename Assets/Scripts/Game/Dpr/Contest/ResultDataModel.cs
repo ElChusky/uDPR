@@ -110,6 +110,6 @@ namespace Dpr.Contest
 		public void CreateVoiceEventName(global::Pml.MonsNo monsNo, uint formNo, int voiceNo) {
 			playVoiceEventName = string.Format("PLAY_PV_BTL_{0:d3}_{1:d2}_{2:d2}", (int)monsNo, formNo, voiceNo);
 		}
-		public ResultDataModel() { /*@B 0x6004332*/ throw null; }
+		public ResultDataModel() { }
 	}
 }

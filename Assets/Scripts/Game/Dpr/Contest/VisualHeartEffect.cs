@@ -5,7 +5,7 @@ namespace Dpr.Contest
 {
 	public class VisualHeartEffect : global::UnityEngine.MonoBehaviour
 	{
-		private static readonly global::UnityEngine.Vector3 INIT_POS;
+		private static readonly global::UnityEngine.Vector3 INIT_POS = new global::UnityEngine.Vector3(0f, -1000f, 0f);
 		private global::Effect.EffectManager fxManagerPtr;
 		private global::Effect.EffectData heartFxData;
 		private global::Effect.EffectInstance fxInst;
@@ -106,8 +106,13 @@ namespace Dpr.Contest
 			// SetGoActive(false) inlined @01ac56bc.
 			SetGoActive(false);
 		}
-		private void SetGoActive(bool active) { /*@B 0x60043F0*/ throw null; }
+		private void SetGoActive(bool active) {
+			if (gameObject.activeSelf != active)
+			{
+				gameObject.SetActive(active);
+			}
+		}
 		public VisualHeartEffect() { }
-		static VisualHeartEffect() { /*@B 0x60043F2*/ throw null; }
+		static VisualHeartEffect() { }
 	}
 }

@@ -3,7 +3,7 @@ namespace Dpr.Contest
 {
 	public class ResultTutorialMode
 	{
-		private global::Dpr.SubContents.ShowMessageWindow resultMsg;
+		private global::Dpr.SubContents.ShowMessageWindow resultMsg = new global::Dpr.SubContents.ShowMessageWindow();
 		private global::Dpr.Contest.ResultTutorialMode.State currentState;
 		private float waitMsgDuration;
 		private float timer;
@@ -67,7 +67,7 @@ namespace Dpr.Contest
 			}
 			currentState = nextState;
 		}
-		public ResultTutorialMode() { /*@B 0x60045B6*/ throw null; }
+		public ResultTutorialMode() { }
 		private enum State
 		{
 			None = 0,

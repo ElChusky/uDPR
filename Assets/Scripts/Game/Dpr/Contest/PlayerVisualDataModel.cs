@@ -3,8 +3,8 @@ namespace Dpr.Contest
 {
 	public class PlayerVisualDataModel : global::Dpr.Contest.PlayerVisualData
 	{
-		public bool IsEmitHeart { get { /*@B 0x6004367*/ throw null; } }
-		public int TotalHeartNum { get { /*@B 0x6004368*/ throw null; } }
+		public bool IsEmitHeart { get { return emitNormalHeartNum > 0 || emitLargeHeartNum > 0; } }
+		public int TotalHeartNum { get { return emitLargeHeartNum + emitNormalHeartNum; } }
 		public void SetScore(int stickerScore, int itemScore, int conditionScore, int checkLargetHeartCount) {
 			this.stickerScore = stickerScore;
 			this.itemScore = itemScore;
@@ -18,6 +18,6 @@ namespace Dpr.Contest
 		private int CalcHeartNum() {
 			return (int)((itemScore + stickerScore + conditionScore) / 100f);
 		}
-		public PlayerVisualDataModel() { /*@B 0x600436A*/ throw null; }
+		public PlayerVisualDataModel() { }
 	}
 }

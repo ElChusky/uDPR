@@ -5,7 +5,7 @@ namespace Dpr.Contest
 {
 	public class ResultTotalScores : global::UnityEngine.MonoBehaviour
 	{
-		private readonly int animHash;
+		private readonly int animHash = global::UnityEngine.Animator.StringToHash("ResultMedalRoll");
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Color toEnvLightColor;
 		[global::UnityEngine.SerializeField]
@@ -13,8 +13,8 @@ namespace Dpr.Contest
 		private global::Dpr.Contest.ResultPlayerDataModel[] playerDataArray;
 		private int[] playerScoreArray;
 		private global::Dpr.Contest.ResultTotalScores.EnvControllerAnimation envAnimation;
-		private global::Dpr.SubContents.ShowMessageWindow resultMsg;
-		private global::Dpr.MsgWindow.WaitTimer waitTimer;
+		private global::Dpr.SubContents.ShowMessageWindow resultMsg = new global::Dpr.SubContents.ShowMessageWindow();
+		private global::Dpr.MsgWindow.WaitTimer waitTimer = new global::Dpr.MsgWindow.WaitTimer();
 		private global::Dpr.Contest.ResultSettings settingsData;
 		private global::DG.Tweening.DOTweenAnimation fadeTween;
 		private global::Dpr.Contest.ResultTotalScores.StateID currentState;
@@ -233,7 +233,7 @@ namespace Dpr.Contest
 
 			ChangeState(nextStateID);
 		}
-		public ResultTotalScores() { /*@B 0x60045AA*/ throw null; }
+		public ResultTotalScores() { }
 		private enum StateID
 		{
 			Admission = 0,
@@ -250,7 +250,11 @@ namespace Dpr.Contest
 			private global::EnvironmentController envController;
 			private global::UnityEngine.Color toColor;
 			private global::UnityEngine.Color defaultColor;
-			public EnvControllerAnimation(global::EnvironmentController envController, global::UnityEngine.Color toColor) { /*@B 0x600A44E*/ throw null; }
+			public EnvControllerAnimation(global::EnvironmentController envController, global::UnityEngine.Color toColor) {
+				this.envController = envController;
+				this.toColor = toColor;
+				defaultColor = envController.parameters.LightColor;
+			}
 			public void DoForward() {
 				DOTween.To(() => envController.parameters.LightColor, color => envController.parameters.LightColor = color, toColor, LIGHT_TWEEN_DURATION);
 			}

@@ -6,8 +6,8 @@ namespace Dpr.Contest
 {
 	public class OpeningSection : global::UnityEngine.MonoBehaviour
 	{
-		private readonly int startAnimHash;
-		private readonly int endAnimHash;
+		private readonly int startAnimHash = global::UnityEngine.Animator.StringToHash("Opening");
+		private readonly int endAnimHash = global::UnityEngine.Animator.StringToHash("End");
 		private global::Effect.EffectInstance titleLogoFx;
 		private global::Effect.EffectData titleLogoFxData;
 		private global::UnityEngine.Animator openingAnimator;
@@ -17,7 +17,7 @@ namespace Dpr.Contest
 		private global::UnityEngine.UI.Image medalImage;
 		private global::UnityEngine.UI.Image categoryTitleImage;
 		private global::UnityEngine.UI.Image rankImage;
-		private global::UnityEngine.Vector3 logoFxPos;
+		private global::UnityEngine.Vector3 logoFxPos = global::UnityEngine.Vector3.zero;
 		private global::Dpr.Contest.OpeningSection.AnimState animState;
 		private bool bRunning;
 		private bool bReady;
@@ -168,7 +168,7 @@ namespace Dpr.Contest
 			if (titleLogoFx != null)
 				titleLogoFx.Stop(0f, false);
 		}
-		public OpeningSection() { /*@B 0x6004618*/ throw null; }
+		public OpeningSection() { }
 		private enum AnimState
 		{
 			WaitStartPlayAnim = 0,

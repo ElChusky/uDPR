@@ -14,9 +14,9 @@ namespace Dpr.Contest
 		private global::DG.Tweening.DOTweenAnimation rankGaugeFadeTween;
 		private global::UnityEngine.UI.Image rankGaugeImage;
 		private global::UnityEngine.UI.Image rankNumImage;
-		private global::Dpr.SubContents.EffectEmitter fxEmitter;
+		private global::Dpr.SubContents.EffectEmitter fxEmitter = new global::Dpr.SubContents.EffectEmitter();
 		private global::Dpr.Contest.RankGaugeData gaugeData;
-		private global::Dpr.SubContents.ShowMessageWindow resultMsg;
+		private global::Dpr.SubContents.ShowMessageWindow resultMsg = new global::Dpr.SubContents.ShowMessageWindow();
 		private global::Dpr.Contest.ResultSettings settingsData;
 		private global::UnityEngine.Sprite rankLogoSpr;
 		private global::Dpr.Contest.ResultAnnouncement.AnimStateID currentState;
@@ -28,7 +28,7 @@ namespace Dpr.Contest
 		private bool bRunning;
 		private bool isRankup;
 		private bool isMultiMode;
-		public bool IsReady { get { /*@B 0x6004565*/ throw null; } }
+		public bool IsReady { get { return fxEmitter.IsReady; } }
 		public void Initialize(global::Dpr.Contest.ResultSettings setting) {
 			settingsData = setting;
 			waitTimer = 0f;
@@ -261,7 +261,7 @@ namespace Dpr.Contest
 			SetGaugeAnimParam();
 			currentState = AnimStateID.GaugeAnim;
 		}
-		public ResultAnnouncement() { /*@B 0x6004579*/ throw null; }
+		public ResultAnnouncement() { }
 		private enum AnimStateID
 		{
 			TweenAnim = 0,

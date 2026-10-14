@@ -14,7 +14,7 @@ namespace Dpr.Contest
 		private global::Dpr.Contest.ResultPersonalPerformance.CameraAnimation cameraAnim;
 		private global::DG.Tweening.DOTweenAnimation moveFrameTween;
 		private global::Dpr.UI.Keyguide keyguide;
-		private global::Dpr.Contest.ContestInput input;
+		private global::Dpr.Contest.ContestInput input = new global::Dpr.Contest.ContestInput();
 		private global::XLSXContent.ContestConfigDatas.SheetResultMotion motionData;
 		private global::Dpr.Battle.View.Objects.BOPokemon userPokemon;
 		private global::UnityEngine.WaitForSeconds waitDelayMoveFrame;
@@ -185,7 +185,7 @@ namespace Dpr.Contest
 			if (userPokemon.CurrentRemaingTime <= motionData.duration)
 				userPokemon.ChangeAnimStatePoke((BattlePokemonEntity.AnimationState)motionData.waitAnim, motionData.duration, 0f);
 		}
-		public ResultPersonalPerformance() { /*@B 0x6004595*/ throw null; }
+		public ResultPersonalPerformance() { }
 		private enum State
 		{
 			WaitStart = 0,
@@ -199,7 +199,13 @@ namespace Dpr.Contest
 			private global::UnityEngine.Vector3 endPosValue;
 			private global::UnityEngine.Vector3 endAngleValue;
 			private float duration;
-			public CameraAnimation(global::UnityEngine.Camera targetCamera, float duration, global::UnityEngine.Vector3 endPosValue, global::UnityEngine.Vector3 endAngleValue) { /*@B 0x600A446*/ throw null; }
+			public CameraAnimation(global::UnityEngine.Camera targetCamera, float duration, global::UnityEngine.Vector3 endPosValue, global::UnityEngine.Vector3 endAngleValue) {
+				mainCamera = targetCamera;
+				cameraTransform = mainCamera.transform;
+				this.duration = duration;
+				this.endPosValue = endPosValue;
+				this.endAngleValue = endAngleValue;
+			}
 			public void DOPlayForward() {
 				cameraTransform.DOMove(endPosValue, duration, false);
 				cameraTransform.DORotate(endAngleValue, duration, RotateMode.Fast);

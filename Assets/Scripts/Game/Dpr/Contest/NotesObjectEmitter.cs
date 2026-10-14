@@ -5,12 +5,12 @@ namespace Dpr.Contest
 {
 	public class NotesObjectEmitter
 	{
-		private global::Dpr.Contest.ObjectPoolSystem<global::Dpr.Contest.NoteIcon> noteIconPool;
-		private global::Dpr.Contest.ObjectPoolSystem<global::Dpr.Contest.LongTapNotesBg> notesBgPool;
+		private global::Dpr.Contest.ObjectPoolSystem<global::Dpr.Contest.NoteIcon> noteIconPool = new global::Dpr.Contest.ObjectPoolSystem<global::Dpr.Contest.NoteIcon>();
+		private global::Dpr.Contest.ObjectPoolSystem<global::Dpr.Contest.LongTapNotesBg> notesBgPool = new global::Dpr.Contest.ObjectPoolSystem<global::Dpr.Contest.LongTapNotesBg>();
 		private float moveSpeed;
 		private float noteFadeDuration;
 		private int currentCreateNum;
-		public bool CanCreateNoteIcon { get { /*@B 0x60044DB*/ throw null; } }
+		public bool CanCreateNoteIcon { get { return currentCreateNum < 15; } }
 		public void Initialize(global::Dpr.Contest.NoteIcon noteComponent, global::UnityEngine.Transform noteParent, global::Dpr.Contest.LongTapNotesBg bgComponent, global::UnityEngine.Transform bgContent) {
 			noteIconPool.GeneratePoolFromPrefab(noteComponent, ContestDataConstants.INIT_CREATE_NOTE_POOL_NUM, noteParent);
 			notesBgPool.GeneratePoolFromPrefab(bgComponent, ContestDataConstants.INIT_CREATE_NOTE_BG_NUM, bgContent);
@@ -56,6 +56,6 @@ namespace Dpr.Contest
 			notesBg.Create(startNote, endNote, elapsedTime, moveSpeed);
 			return notesBg;
 		}
-		public NotesObjectEmitter() { /*@B 0x60044DF*/ throw null; }
+		public NotesObjectEmitter() { }
 	}
 }

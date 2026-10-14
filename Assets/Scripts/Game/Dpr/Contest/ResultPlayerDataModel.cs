@@ -6,6 +6,6 @@ namespace Dpr.Contest
 		public int GetTotalScore() {
 			return danceScore + visualScore + wazaScore;
 		}
-		public ResultPlayerDataModel() { /*@B 0x6004335*/ throw null; }
+		public ResultPlayerDataModel() { }
 	}
 }

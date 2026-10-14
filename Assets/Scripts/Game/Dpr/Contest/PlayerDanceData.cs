@@ -9,16 +9,16 @@ namespace Dpr.Contest
 		public int stackLiveScore;
 		public int skillScore;
 		public int danceScore;
-		public global::Dpr.Contest.TensionID tension;
+		public global::Dpr.Contest.TensionID tension = global::Dpr.Contest.TensionID.Normal;
 		public int successCount;
 		public int failedCount;
 		public int nextTensionUpCount;
 		public int nextTensionDownCount;
 		public int heartGaugeValue;
 		public global::Dpr.Contest.AContestSkillBase contestSkill;
-		protected global::Dpr.Contest.SkillBonusParam bonusParam;
+		protected global::Dpr.Contest.SkillBonusParam bonusParam = new global::Dpr.Contest.SkillBonusParam();
 		protected bool usedSkill;
-		protected bool canEmitHeart;
-		public PlayerDanceData() { /*@B 0x6004387*/ throw null; }
+		protected bool canEmitHeart = true;
+		public PlayerDanceData() { }
 	}
 }

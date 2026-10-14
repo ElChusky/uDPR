@@ -4,6 +4,6 @@ namespace Dpr.Contest
 	public class ResultScoreNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Contest.ResultScore>
 	{
 		public override byte GetDataID { get { return 10; } }
-		public ResultScoreNetData() { /*@B 0x600435A*/ throw null; }
+		public ResultScoreNetData() { }
 	}
 }

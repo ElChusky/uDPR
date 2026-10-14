@@ -7,8 +7,12 @@ namespace Dpr.Contest
 		public global::UnityEngine.GameObject modelObj;
 		private global::Dpr.Contest.AudienceGenerator generator;
 		private global::UnityEngine.Transform modelTransform;
-		public global::UnityEngine.Vector3 Position { get { /*@B 0x600430A*/ throw null; } }
-		public StageModelObject(global::UnityEngine.GameObject modelObj) { /*@B 0x600430B*/ throw null; }
+		public global::UnityEngine.Vector3 Position { get { return modelTransform.position; } }
+		public StageModelObject(global::UnityEngine.GameObject modelObj) {
+			this.modelObj = modelObj;
+			modelTransform = this.modelObj.transform;
+			generator = modelObj.GetComponent<global::Dpr.Contest.AudienceGenerator>();
+		}
 		public void MovePosition(float moveX, global::UnityEngine.Camera camera) {
 			Vector3 pos = modelTransform.localPosition;
 			pos.x += moveX;

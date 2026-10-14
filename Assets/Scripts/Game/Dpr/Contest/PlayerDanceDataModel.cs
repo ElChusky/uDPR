@@ -5,10 +5,12 @@ namespace Dpr.Contest
 	{
 		public int StackLiveScore { get { return this.stackLiveScore; } }
 		public bool IsAlreadyUseSkill { get { return this.usedSkill; } }
-		public bool IsActiveSkill { get { /*@B 0x600437D*/ throw null; } }
-		public bool IsForceSuccess { get { /*@B 0x600437E*/ throw null; } }
+		public bool IsActiveSkill { get { return contestSkill.IsActive; } }
+		public bool IsForceSuccess { get { return bonusParam.forceSuccess; } }
 		public bool CanEmitHeart { get { return this.canEmitHeart; } }
-		public PlayerDanceDataModel() { /*@B 0x600436C*/ throw null; }
+		public PlayerDanceDataModel() {
+			tapTimingCountArray = new int[5];
+		}
 		public void SetPlayerData(global::Dpr.Contest.PlayerDanceData data) {
 			currentNoteDataIndex = data.currentNoteDataIndex;
 			tension = data.tension;

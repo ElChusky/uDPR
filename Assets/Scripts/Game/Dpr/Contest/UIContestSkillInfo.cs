@@ -17,7 +17,7 @@ namespace Dpr.Contest
 		private global::UnityEngine.UI.Image acceptChainGaugeImage;
 		private global::DG.Tweening.DOTweenAnimation[] chainCountTweenArray;
 		private global::DG.Tweening.DOTweenAnimation[] commandAppealTween;
-		private global::Dpr.SubContents.EffectEmitter fxEmitter;
+		private global::Dpr.SubContents.EffectEmitter fxEmitter = new global::Dpr.SubContents.EffectEmitter();
 		private global::UnityEngine.GameObject chainCountObj;
 		private global::UnityEngine.UI.Image chainCountImage;
 		private global::UnityEngine.CanvasGroup appealCanvasGroup;
@@ -28,8 +28,8 @@ namespace Dpr.Contest
 		private bool bIsShowCommand;
 		private bool bIsShowChainCount;
 		private bool bPlayingCommandAppealTween;
-		public bool IsShowLog { get { /*@B 0x6004519*/ throw null; } }
-		private bool IsUpdateChainGauge { get { /*@B 0x600451E*/ throw null; } }
+		public bool IsShowLog { get { return showLogCount > 0; } }
+		private bool IsUpdateChainGauge { get { return acceptChainGaugeObj.activeSelf; } }
 		public void Initialize() {
 			showChainCountTimer = 0f;
 			bIsShowChainCount = false;
@@ -263,6 +263,6 @@ namespace Dpr.Contest
 			if (acceptChainGaugeObj.activeSelf != active)
 				acceptChainGaugeObj.SetActive(active);
 		}
-		public UIContestSkillInfo() { /*@B 0x6004523*/ throw null; }
+		public UIContestSkillInfo() { }
 	}
 }

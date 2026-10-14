@@ -15,12 +15,12 @@ namespace Dpr.Contest
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Color flashColor;
 		[global::UnityEngine.SerializeField]
-		private float flickDuration;
+		private float flickDuration = 360f;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Material gaugeMat;
-		private global::Dpr.SubContents.EffectEmitter fxEmitter;
-		private global::Dpr.Contest.LockPlayFx lockNormalFxTimer;
-		private global::Dpr.Contest.LockPlayFx lockLargeFxTimer;
+		private global::Dpr.SubContents.EffectEmitter fxEmitter = new global::Dpr.SubContents.EffectEmitter();
+		private global::Dpr.Contest.LockPlayFx lockNormalFxTimer = new global::Dpr.Contest.LockPlayFx();
+		private global::Dpr.Contest.LockPlayFx lockLargeFxTimer = new global::Dpr.Contest.LockPlayFx();
 		private global::UnityEngine.RectTransform leftFrameRect;
 		private global::UnityEngine.UI.Image leftGaugeImage;
 		private global::UnityEngine.UI.Image leftGaugeBgImage;
@@ -36,7 +36,7 @@ namespace Dpr.Contest
 		private float addFadeValue;
 		private float colorAngleValue;
 		private bool playingGaugeFlash;
-		public global::UnityEngine.Vector3 MarkCenterPos { get { /*@B 0x60044F0*/ throw null; } }
+		public global::UnityEngine.Vector3 MarkCenterPos { get { return markRect.position; } }
 		public void Initialize(float addValue, float lockTime) {
 			SetComponents();
 			gaugeMat.shader = SmartPoint.AssetAssistant.AssetManager.FindShader("Custom/Contest/ColorAdditve");
@@ -189,6 +189,6 @@ namespace Dpr.Contest
 		private float LerpColorFactor(float a, float b, float ratio) {
 			return (b - a) * ratio + a;
 		}
-		public ScoreGauge() { /*@B 0x6004501*/ throw null; }
+		public ScoreGauge() { }
 	}
 }

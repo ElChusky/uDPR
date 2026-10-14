@@ -22,9 +22,9 @@ namespace Dpr.Contest
 		private float addAngle;
 		private float beatSec;
 		private int jumpCount;
-		private bool moveLock;
-		private bool bIsActive;
-		public bool IsMoveEnd { get { /*@B 0x600452E*/ throw null; } }
+		private bool moveLock = true;
+		private bool bIsActive = true;
+		public bool IsMoveEnd { get { return animState == IconAnimState.End; } }
 		public bool IsActive { get { return this.bIsActive; } }
 		public void Initialize(global::Dpr.Contest.DanceSettings danceSettingData) {
 			bIsActive = true;
@@ -129,7 +129,7 @@ namespace Dpr.Contest
 		private void SetRotZ(float z) {
 			iconRect.localRotation = quat * Quaternion.AngleAxis(z, new Vector3(0f, 0f, 1f));
 		}
-		public UIMusicProgressBar() { /*@B 0x600453E*/ throw null; }
+		public UIMusicProgressBar() { }
 		private enum IconAnimState
 		{
 			None = 0,

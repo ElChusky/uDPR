@@ -7,7 +7,9 @@ namespace Dpr.Contest
 		public global::Dpr.Message.MessageEnumData.MsgLangId langID;
 		public global::Pml.Sex sex;
 		public global::XLSXContent.TrainerTable.SheetTrainerType trainerType;
-		public string LocalizeNickName() { /*@B 0x6004361*/ throw null; }
+		public string LocalizeNickName() {
+			return global::Dpr.Message.MessageHelper.SurroundFontTag(global::Dpr.Message.StringExtention.GetInvalidRichText(nickname), langID);
+		}
 		public PlayerInfo() { }
 	}
 }

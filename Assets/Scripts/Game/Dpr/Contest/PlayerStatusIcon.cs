@@ -15,7 +15,7 @@ namespace Dpr.Contest
 		private global::UnityEngine.UI.Image wazaTypeIconImage;
 		private global::UnityEngine.UI.Image wazaMaskObj;
 		private global::UnityEngine.UI.Image tensionIconImage;
-		private global::UnityEngine.Vector3 startPos;
+		private global::UnityEngine.Vector3 startPos = global::UnityEngine.Vector3.zero;
 		public global::UnityEngine.Transform GetTransform() {
 			return statusIconRect;
 		}
@@ -88,6 +88,6 @@ namespace Dpr.Contest
 			HideTension();
 			ShowWazaMask();
 		}
-		public PlayerStatusIcon() { /*@B 0x60044EF*/ throw null; }
+		public PlayerStatusIcon() { }
 	}
 }

@@ -4,6 +4,6 @@ namespace Dpr.Contest
 	public class NoticeNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Contest.ReadyData>
 	{
 		public override byte GetDataID { get { return 11; } }
-		public NoticeNetData() { /*@B 0x600435C*/ throw null; }
+		public NoticeNetData() { }
 	}
 }

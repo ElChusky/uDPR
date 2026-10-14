@@ -4,8 +4,8 @@ namespace Dpr.Demo
 	public class ConditionParam
 	{
 		public byte[] PrevCondition = new byte[6];
-		public byte[] NowCondition;
-		public byte[] AddCondition;
+		public byte[] NowCondition = new byte[6];
+		public byte[] AddCondition = new byte[6];
 		public global::Pml.PokePara.Taste taste;
 		public global::Pml.PokePara.TasteJudge tasteJudge;
 		public bool IsConditionUp(global::Pml.PokePara.Condition condition) {
@@ -15,6 +15,6 @@ namespace Dpr.Demo
 			// Shipped: tests the PREVIOUS value (@01ac6180), not NowCondition.
 			return PrevCondition[(int)condition] == 255;
 		}
-		public ConditionParam() { /*@B 0x6004887*/ throw null; }
+		public ConditionParam() { }
 	}
 }

@@ -6,8 +6,8 @@ namespace Dpr.Contest
 	public class UILaunchSkillLog : global::UnityEngine.MonoBehaviour
 	{
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector2 itemSize;
-		private readonly global::UnityEngine.Vector2 HIDE_POS;
+		private global::UnityEngine.Vector2 itemSize = global::UnityEngine.Vector2.zero;
+		private readonly global::UnityEngine.Vector2 HIDE_POS = new global::UnityEngine.Vector2(-500f, 0f);
 		private global::DG.Tweening.DOTweenAnimation moveTween;
 		private global::DG.Tweening.DOTweenAnimation fadeTween;
 		private global::UnityEngine.RectTransform rect;
@@ -90,6 +90,6 @@ namespace Dpr.Contest
 				fadeTween.DORestart();
 			}
 		}
-		public UILaunchSkillLog() { /*@B 0x600452D*/ throw null; }
+		public UILaunchSkillLog() { }
 	}
 }

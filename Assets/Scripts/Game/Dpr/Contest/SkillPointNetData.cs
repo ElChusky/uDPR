@@ -4,6 +4,6 @@ namespace Dpr.Contest
 	public class SkillPointNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Contest.SkillPointData>
 	{
 		public override byte GetDataID { get { return 2; } }
-		public SkillPointNetData() { /*@B 0x600434A*/ throw null; }
+		public SkillPointNetData() { }
 	}
 }

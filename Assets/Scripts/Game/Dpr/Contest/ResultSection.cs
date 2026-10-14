@@ -16,7 +16,7 @@ namespace Dpr.Contest
 		private bool isTutorial;
 		private global::UnityEngine.WaitForSeconds waitStartResult;
 		public bool IsRestart { get { return this.restartContest; } }
-		public bool IsReady { get { /*@B 0x600461F*/ throw null; } }
+		public bool IsReady { get { return resultAnnounce.IsReady; } }
 		public void SetScriptableObject(global::Dpr.Contest.ResultSettings resultSettings) {
 			this.resultSettings = resultSettings;
 		}

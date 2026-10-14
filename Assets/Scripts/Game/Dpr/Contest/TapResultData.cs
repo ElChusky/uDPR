@@ -8,7 +8,12 @@ namespace Dpr.Contest
 		public bool isChangeTension;
 		public bool isTensionUp;
 		public bool isOverGauge;
-		public void Reset() { /*@B 0x600438B*/ throw null; }
+		public void Reset() {
+			isChangeTension = false;
+			isTensionUp = false;
+			isOverGauge = false;
+			playerIndex = 0;
+		}
 		public TapResultData() { }
 	}
 }

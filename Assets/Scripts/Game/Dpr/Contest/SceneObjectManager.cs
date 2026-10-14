@@ -10,14 +10,14 @@ namespace Dpr.Contest
 	{
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.U2D.SpriteAtlas sceneGraphicTextAtlas;
-		private readonly string MAINCAMERA_TAG;
-		private readonly string UNTAGGED_NAME;
+		private readonly string MAINCAMERA_TAG = "MainCamera";
+		private readonly string UNTAGGED_NAME = "Untagged";
 		private global::Dpr.Contest.ContestSettings contestSetting;
 		private global::Dpr.Contest.ContestPlayerEntity[] playerEntityArray;
 		private global::UnityEngine.Sprite[] uiPlayerNumSprArray;
 		private global::UnityEngine.Sprite[] uiPlayerPlateSprArray;
 		private global::Dpr.Contest.StageModelObject stageModelObj;
-		private global::Dpr.Contest.StageEffect stageFx;
+		private global::Dpr.Contest.StageEffect stageFx = new global::Dpr.Contest.StageEffect();
 		private global::EnvironmentController envController;
 		private global::UnityEngine.Transform pokemonContent;
 		private global::UnityEngine.Transform mainCameraTransform;
@@ -27,7 +27,7 @@ namespace Dpr.Contest
 		private global::UnityEngine.Camera wazaCompositorCamera;
 		private global::Dpr.Contest.ContestViewSystem contestViewSystem;
 		private global::Dpr.Contest.ContestViewSystem wazaViewSystem;
-		private global::Dpr.Contest.ContestHeartEmitter heartEmitter;
+		private global::Dpr.Contest.ContestHeartEmitter heartEmitter = new global::Dpr.Contest.ContestHeartEmitter();
 		private global::Dpr.Battle.View.Objects.BOPokemon specialWazaModelPtr;
 		private global::Dpr.Battle.View.Objects.BOPokemon tempWazaModelPtr;
 		private global::UnityEngine.U2D.SpriteAtlas sceneUISpriteAtlas;
@@ -36,20 +36,20 @@ namespace Dpr.Contest
 		private bool bLoadedStage;
 		private bool bLoadedCharacter;
 		private bool bPlayingWazaAnim;
-		public bool IsReady { get { /*@B 0x600470F*/ throw null; } }
-		public bool IsLoadingFx { get { /*@B 0x6004710*/ throw null; } }
-		public global::UnityEngine.Vector3 StageModelPosition { get { /*@B 0x6004713*/ throw null; } }
+		public bool IsReady { get { return bLoadedStage && bLoadedCharacter && heartEmitter.IsLoaded; } }
+		public bool IsLoadingFx { get { return stageFx.IsLoading; } }
+		public global::UnityEngine.Vector3 StageModelPosition { get { return stageModelObj.Position; } }
 		public int UserIndex { get { return this.userIndex; } }
 		public global::Dpr.Battle.View.Objects.BOPokemon SpecialWazaModel { get { return this.specialWazaModelPtr; } }
 		public global::EnvironmentController EnvController { get { return this.envController; } }
-		public global::UnityEngine.Camera MainCamera { get { /*@B 0x6004731*/ throw null; } }
+		public global::UnityEngine.Camera MainCamera { get { return mainCamera.Camera; } }
 		public global::Dpr.Battle.View.Objects.BOCamera MainBOCamera { get { return this.mainCamera; } }
-		public global::UnityEngine.Camera WazaCamera { get { /*@B 0x6004733*/ throw null; } }
+		public global::UnityEngine.Camera WazaCamera { get { return wazaCamera.Camera; } }
 		public global::Dpr.Battle.View.Objects.BOCamera WazaBOCamera { get { return this.wazaCamera; } }
 		public global::Dpr.Contest.ContestViewSystem WazaViewSystem { get { return this.wazaViewSystem; } }
 		public bool IsPlayingUserWaza { get { return this.bPlayingWazaAnim; } }
-		public int NowMonitorIndex { get { /*@B 0x6004748*/ throw null; } }
-		public float NowMonitorPlayTime { get { /*@B 0x6004749*/ throw null; } }
+		public int NowMonitorIndex { get { return stageFx.NowMonitorIndex; } }
+		public float NowMonitorPlayTime { get { return stageFx.GetMonitorFxTime(); } }
 		public void SetScriptableObject(global::Dpr.Contest.ContestSettings contestSetting) {
 			this.contestSetting = contestSetting;
 		}
@@ -159,7 +159,22 @@ namespace Dpr.Contest
 		public void Stop() {
 			Sequencer.update -= heartEmitter.UpdateVisualHeart;
 		}
-		public void CreateStageModel(global::UnityEngine.Transform cluster, string path) { /*@B 0x6004711*/ throw null; }
+		public void CreateStageModel(global::UnityEngine.Transform cluster, string path) {
+			global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(path, true, (eventType, assetName, asset) =>
+			{
+				bLoadedStage = true;
+				if (eventType == global::SmartPoint.AssetAssistant.RequestEventType.Activated)
+				{
+					if (asset is global::UnityEngine.GameObject)
+					{
+						global::UnityEngine.GameObject modelObj = global::UnityEngine.Object.Instantiate(asset as global::UnityEngine.GameObject, cluster);
+						stageModelObj = new global::Dpr.Contest.StageModelObject(modelObj);
+						return;
+					}
+					global::Dpr.Contest.ContestUtils.EmitLog("Load Failed !!!! : " + assetName, global::UnityEngine.LogType.Error);
+				}
+			}, null);
+		}
 		public void CreatePlayerEntity(global::UnityEngine.Transform cluster, global::Dpr.Contest.AContestPlayerData playerData) {
 			if (playerEntityArray.IsNullOrEmpty())
 			{
@@ -494,6 +509,6 @@ namespace Dpr.Contest
 			pos.x += 100.0f;
 			wazaPoke.transform.localPosition = pos;
 		}
-		public SceneObjectManager() { /*@B 0x600474F*/ throw null; }
+		public SceneObjectManager() { }
 	}
 }

@@ -6,8 +6,8 @@ namespace Dpr.Contest
 {
 	public class UITimingGrade : global::UnityEngine.MonoBehaviour
 	{
-		private readonly global::UnityEngine.Vector3 INACTIVE_POS;
-		private readonly global::UnityEngine.Vector3 VECTOR_ONE;
+		private readonly global::UnityEngine.Vector3 INACTIVE_POS = new global::UnityEngine.Vector3(0f, -1500f, 0f);
+		private readonly global::UnityEngine.Vector3 VECTOR_ONE = new global::UnityEngine.Vector3(1f, 1f, 1f);
 		private global::DG.Tweening.DOTweenAnimation[] tweenArray;
 		private global::UnityEngine.UI.Image gardeImage;
 		private global::UnityEngine.RectTransform rect;
@@ -55,6 +55,6 @@ namespace Dpr.Contest
 			pos = INACTIVE_POS;
 			rect.localPosition = pos;
 		}
-		public UITimingGrade() { /*@B 0x6004555*/ throw null; }
+		public UITimingGrade() { }
 	}
 }

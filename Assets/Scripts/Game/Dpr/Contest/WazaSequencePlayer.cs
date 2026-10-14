@@ -12,7 +12,7 @@ namespace Dpr.Contest
 		private global::Dpr.Contest.WazaSequencePlayer.WazaSeqState seqState;
 		private int userIndex;
 		private bool hasRequestPlaySequence;
-		public bool IsRunning { get { /*@B 0x6004558*/ throw null; } }
+		public bool IsRunning { get { return seqState == WazaSeqState.Active || seqState == WazaSeqState.Playing; } }
 		public void SetupWazaSequence() {
 			hasRequestPlaySequence = false;
 			seqState = WazaSeqState.Wait;
