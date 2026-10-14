@@ -6,7 +6,7 @@ namespace Dpr.GMS
 {
 	public class UIPointMarkManager : global::UnityEngine.MonoBehaviour
 	{
-		private readonly global::UnityEngine.Vector3 VECTOR_ZERO;
+		private readonly global::UnityEngine.Vector3 VECTOR_ZERO = new global::UnityEngine.Vector3(0f, 0f, 0f);
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.GMS.UINetworkIcon uiNetworkIcon;
 		[global::UnityEngine.SerializeField]
@@ -15,7 +15,7 @@ namespace Dpr.GMS
 		private global::UnityEngine.Sprite[] pointMarkSprArray;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform cursorParentContent;
-		private global::Dpr.Contest.ObjectPoolSystem<global::Dpr.GMS.UIPointMark> markObjPool;
+		private global::Dpr.Contest.ObjectPoolSystem<global::Dpr.GMS.UIPointMark> markObjPool = new global::Dpr.Contest.ObjectPoolSystem<global::Dpr.GMS.UIPointMark>();
 		private global::Dpr.GMS.UIPointMark[] pointMarkArray;
 		private global::DG.Tweening.DOTweenAnimation[] cursorTweenArray;
 		private global::UnityEngine.UI.Image cursorEffImage;
@@ -24,14 +24,14 @@ namespace Dpr.GMS
 		private global::UnityEngine.GameObject template;
 		private global::UnityEngine.Transform poolParent;
 		private int nowShowIconNum;
-		private int currentSelectIndex;
+		private int currentSelectIndex = -1;
 		private int generatedCount;
 		private bool isGeneratedPool;
 		private bool isModeBrowsing;
 		private bool isMaxZoom;
 		private bool active;
 		public bool IsGeneratedPool { get { return this.isGeneratedPool; } }
-		private bool CanAddPool { get { /*@B 0x60040F1*/ throw null; } }
+		private bool CanAddPool { get { return nowShowIconNum < 355; } }
 		public void Initialize() {
 			nowShowIconNum = 0;
 			isGeneratedPool = false;
@@ -243,6 +243,6 @@ namespace Dpr.GMS
 				return;
 			mark.UpdateView();
 		}
-		public UIPointMarkManager() { /*@B 0x60040F4*/ throw null; }
+		public UIPointMarkManager() { }
 	}
 }

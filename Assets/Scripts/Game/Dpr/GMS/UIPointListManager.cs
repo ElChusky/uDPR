@@ -5,29 +5,29 @@ namespace Dpr.GMS
 {
 	public class UIPointListManager : global::UnityEngine.MonoBehaviour
 	{
-		private readonly global::UnityEngine.Vector2 HIDE_SCROLL_VIEW_POSITION;
+		private readonly global::UnityEngine.Vector2 HIDE_SCROLL_VIEW_POSITION = new global::UnityEngine.Vector2(1000f, -10f);
 		private global::Dpr.GMS.UIGMSPointDataScrollView tradePointScrollView;
 		private global::Dpr.GMS.UIGMSPointDataScrollView browsingPointScrollView;
 		private global::Dpr.GMS.UIGMSPointDataScrollView browsingPointHistoryScrollView;
 		private global::Dpr.GMS.GMSPointDataContainer dataContainerPtr;
-		private global::Dpr.GMS.UIPointListManager.ViewState viewState;
+		private global::Dpr.GMS.UIPointListManager.ViewState viewState = global::Dpr.GMS.UIPointListManager.ViewState.BrowsingPointView;
 		private global::Audio.AudioManager audioManager;
 		private global::UnityEngine.UI.Image listMaskImage;
-		private global::System.Text.StringBuilder markDataTitleSb;
-		private global::System.Text.StringBuilder emptyDataTitleSb;
-		private global::System.Text.StringBuilder emptyDataNameSb;
+		private global::System.Text.StringBuilder markDataTitleSb = new global::System.Text.StringBuilder();
+		private global::System.Text.StringBuilder emptyDataTitleSb = new global::System.Text.StringBuilder();
+		private global::System.Text.StringBuilder emptyDataNameSb = new global::System.Text.StringBuilder();
 		private global::System.Action<global::Dpr.GMS.PointHistoryDataModel> onSelectPointData;
 		private global::System.Action onReleaseInput;
 		private global::System.Action onCancelList;
-		private global::Dpr.GMS.GMSMode gmsMode;
+		private global::Dpr.GMS.GMSMode gmsMode = global::Dpr.GMS.GMSMode.Top;
 		private int currentBrowsingPointDataIndex;
-		private bool bIsShowPointHistoryView;
+		private bool bIsShowPointHistoryView = true;
 		public bool IsShowPointHistoryView { get { return this.bIsShowPointHistoryView; } }
-		public bool PlayingPointDataList { get { /*@B 0x60040A3*/ throw null; } }
-		public int TradePointListIndex { get { /*@B 0x60040A4*/ throw null; } }
-		public int BrowsingPointListIndex { get { /*@B 0x60040A5*/ throw null; } }
+		public bool PlayingPointDataList { get { return tradePointScrollView.IsPlayingInput || browsingPointScrollView.IsPlayingInput; } }
+		public int TradePointListIndex { get { return tradePointScrollView.CurrentSelectIndex; } }
+		public int BrowsingPointListIndex { get { return browsingPointScrollView.CurrentSelectIndex; } }
 		public int SelectPointDataIndex { get { return this.currentBrowsingPointDataIndex; } }
-		public int CurrentSelectPointHistoryIndex { get { /*@B 0x60040A7*/ throw null; } }
+		public int CurrentSelectPointHistoryIndex { get { return browsingPointHistoryScrollView.CurrentSelectIndex; } }
 		public void Initialize(global::System.Action<global::Dpr.GMS.PointHistoryDataModel> onSelectPointData, global::System.Action onReleaseInput, global::System.Action onCancelSelect) {
 			this.onSelectPointData = onSelectPointData;
 			this.onReleaseInput = onReleaseInput;
@@ -306,7 +306,7 @@ namespace Dpr.GMS
 			if (!bIsShowPointHistoryView)
 				onReleaseInput?.Invoke();
 		}
-		public UIPointListManager() { /*@B 0x60040C6*/ throw null; }
+		public UIPointListManager() { }
 		public enum ViewState
 		{
 			TradePointView = 0,

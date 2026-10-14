@@ -5,7 +5,7 @@ namespace Dpr.GMS
 {
 	public class GMSCamera : global::UnityEngine.MonoBehaviour
 	{
-		private readonly global::UnityEngine.Vector3 LOOK_AT_UP;
+		private readonly global::UnityEngine.Vector3 LOOK_AT_UP = new global::UnityEngine.Vector3(0f, 1f, 0f);
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Camera mainCamera;
 		private global::System.Action onStopMove;
@@ -30,20 +30,20 @@ namespace Dpr.GMS
 		private float speedUpCoefficient;
 		private int distanceLevel;
 		private int distanceLevelNum;
-		private int currentMovedIndex;
+		private int currentMovedIndex = -1;
 		private bool bIsInputMoving;
 		private bool bIsOverMaxSpeed;
 		private bool bLockOperation;
 		private bool isRunningDistanceTween;
 		private bool isRunningRotTween;
-		public bool IsMoving { get { /*@B 0x6003E90*/ throw null; } }
-		public bool HasInputMoveSpeed { get { /*@B 0x6003E91*/ throw null; } }
-		public bool RunningDistanceTween { get { /*@B 0x6003E92*/ throw null; } }
-		public bool RunningRotTween { get { /*@B 0x6003E93*/ throw null; } }
-		public global::UnityEngine.Vector3 CameraPosition { get { /*@B 0x6003E94*/ throw null; } }
-		public bool IsHighZoom { get { /*@B 0x6003E95*/ throw null; } }
+		public bool IsMoving { get { return distanceTween != null || rotTween != null || bIsInputMoving || addAngle > 0f; } }
+		public bool HasInputMoveSpeed { get { return addAngle > 0f; } }
+		public bool RunningDistanceTween { get { return distanceTween != null; } }
+		public bool RunningRotTween { get { return rotTween != null; } }
+		public global::UnityEngine.Vector3 CameraPosition { get { return cameraTransform.localPosition; } }
+		public bool IsHighZoom { get { return distanceLevel >= distanceLevelNum - 1; } }
 		public int DistanceLevelNum { get { return this.distanceLevelNum; } }
-		public bool CanInput { get { /*@B 0x6003E97*/ throw null; } }
+		public bool CanInput { get { return currentMode == global::Dpr.GMS.CameraMode.TracePoint; } }
 		public void Initialize(global::System.Action onStopMove) {
 			LockMove();
 			KillDistanceTween();
@@ -382,6 +382,6 @@ namespace Dpr.GMS
 			if (rotTween != null && !isRunningRotTween)
 				rotTween = null;
 		}
-		public GMSCamera() { /*@B 0x6003EB5*/ throw null; }
+		public GMSCamera() { }
 	}
 }

@@ -4,7 +4,7 @@ namespace Dpr.GMS
 {
 	public class UIPointMark : global::UnityEngine.MonoBehaviour, global::Dpr.Contest.IPoolObject
 	{
-		private static readonly global::UnityEngine.Vector3 ON_SELECT_SCALE;
+		private static readonly global::UnityEngine.Vector3 ON_SELECT_SCALE = new global::UnityEngine.Vector3(1.5f, 1.5f, 1.5f);
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.GameObject iconContent;
 		[global::UnityEngine.SerializeField]
@@ -148,6 +148,6 @@ namespace Dpr.GMS
 			rect.localPosition = refPointData.ScreenPos;
 		}
 		public UIPointMark() { }
-		static UIPointMark() { /*@B 0x60040D8*/ throw null; }
+		static UIPointMark() { }
 	}
 }

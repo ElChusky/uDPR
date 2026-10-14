@@ -6,7 +6,7 @@ namespace Dpr.GMS
 {
 	public class UIGMSPointDataScrollView : global::UnityEngine.MonoBehaviour
 	{
-		private readonly global::UnityEngine.Vector3 HIDE_POS;
+		private readonly global::UnityEngine.Vector3 HIDE_POS = new global::UnityEngine.Vector3(0f, 2000f);
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIScrollView scrollView;
 		[global::UnityEngine.SerializeField]
@@ -22,7 +22,7 @@ namespace Dpr.GMS
 		private global::Audio.AudioManager audioManager;
 		private global::Dpr.GMS.AUIGMSScrollItem lastSelectItem;
 		private global::UnityEngine.RectTransform scrollViewRect;
-		private global::UnityEngine.Vector2 defaultPosition;
+		private global::UnityEngine.Vector2 defaultPosition = global::UnityEngine.Vector2.zero;
 		private int maxIndex;
 		private int prevSelectIndex;
 		private int currentSelectIndex;
@@ -206,6 +206,6 @@ namespace Dpr.GMS
 				return;
 			item.UnSelect();
 		}
-		public UIGMSPointDataScrollView() { /*@B 0x600406F*/ throw null; }
+		public UIGMSPointDataScrollView() { }
 	}
 }

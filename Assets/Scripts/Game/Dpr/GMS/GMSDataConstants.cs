@@ -10,7 +10,7 @@ namespace Dpr.GMS
 		public const int GENERATE_POINT_MARK_SPAN = 30;
 		public const int MAX_POINT_NUM = 650;
 		public const int POINT_HISTORY_DATA_NUM = 5;
-		public static readonly global::UnityEngine.Vector3 CONTEXT_MENU_POS;
+		public static readonly global::UnityEngine.Vector3 CONTEXT_MENU_POS = new global::UnityEngine.Vector3(890f, 60f, 0f);
 		public const int LIMIT_POINT_HISTORY_DATA_NUM = 6;
 		public const float CONNECT_FX_FADE_TIME = 0f;
 		public const int EXIT_GMS_WORK_VALUE = 1;
@@ -19,6 +19,6 @@ namespace Dpr.GMS
 		public const string GRAPHIC_TEXT_SPRITE_ATLAS_AB_PATH = "gms/graphictext/gmsgraphictext";
 		public const string MASTERDATA_AB_PATH = "md/gms_masterdatas";
 		public GMSDataConstants() { }
-		static GMSDataConstants() { /*@B 0x6003F31*/ throw null; }
+		static GMSDataConstants() { }
 	}
 }

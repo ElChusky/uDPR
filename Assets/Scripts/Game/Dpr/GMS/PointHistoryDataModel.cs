@@ -7,8 +7,26 @@ namespace Dpr.GMS
 		public int DataIndex { get { return this.dataIndex; } }
 		public bool IsNew { get { return this.bIsNew; } }
 		public global::Dpr.GMS.IntermediatePointData GetPointData { get { return this.currentPointData; } }
-		public global::Pml.MonsNo ReceiveMonsNo { get { /*@B 0x6003FC2*/ throw null; } }
-		public uint ReceiveFormNo { get { /*@B 0x6003FC3*/ throw null; } }
+		public global::Pml.MonsNo ReceiveMonsNo {
+			get
+			{
+				if (currentPointData != null)
+				{
+					return currentPointData.receiveMonsNo;
+				}
+				return global::Pml.MonsNo.NULL;
+			}
+		}
+		public uint ReceiveFormNo {
+			get
+			{
+				if (currentPointData != null)
+				{
+					return currentPointData.receiveMonsFormNo;
+				}
+				return 0;
+			}
+		}
 		public void SetDataIndex(int dataIndex) {
 			this.dataIndex = dataIndex;
 		}
@@ -59,6 +77,6 @@ namespace Dpr.GMS
 			receiveMonsParentNameSb?.Clear();
 			dateTimeSb?.Clear();
 		}
-		public PointHistoryDataModel() { /*@B 0x6003FC6*/ throw null; }
+		public PointHistoryDataModel() { }
 	}
 }

@@ -9,8 +9,8 @@ namespace Dpr.GMS
 	public class GMSResourceContainer
 	{
 		private global::Dpr.UI.UIManager uiManagerPtr;
-		private global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Sprite> langIconSprTable;
-		private global::System.Collections.Generic.Dictionary<int, string> langIconDataTable;
+		private global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Sprite> langIconSprTable = new global::System.Collections.Generic.Dictionary<int, global::UnityEngine.Sprite>();
+		private global::System.Collections.Generic.Dictionary<int, string> langIconDataTable = new global::System.Collections.Generic.Dictionary<int, string>();
 		private global::Dpr.GMS.MonsIconData[] monsIconDataArray;
 		private global::UnityEngine.Sprite[] sexSprArray;
 		public void Initialize() {
@@ -90,6 +90,6 @@ namespace Dpr.GMS
 		private int ConvertMonsNoToIndex(global::Pml.MonsNo monsNo) {
 			return (int)monsNo - 1;
 		}
-		public GMSResourceContainer() { /*@B 0x6003F43*/ throw null; }
+		public GMSResourceContainer() { }
 	}
 }

@@ -6,7 +6,26 @@ namespace Dpr.GMS
 	public class GMSSoundPlayer
 	{
 		public static global::Dpr.GMS.GMSSoundPlayer player;
-		private readonly global::System.Collections.Generic.Dictionary<int, uint> PLAY_SE_TABLE;
+		private readonly global::System.Collections.Generic.Dictionary<int, uint> PLAY_SE_TABLE = new global::System.Collections.Generic.Dictionary<int, uint>
+		{
+			{ 0, 0x8DC61CA5u },
+			{ 1, 0x0D09F546u },
+			{ 2, 0x517B0FB3u },
+			{ 3, 0xAB4971E4u },
+			{ 4, 0x0D09F541u },
+			{ 5, 0x0D09F540u },
+			{ 6, 0x0D09F543u },
+			{ 7, 0x0D09F542u },
+			{ 8, 0x5D95F820u },
+			{ 9, 0xBF87C174u },
+			{ 10, 0xBB58CDD2u },
+			{ 11, 0x37E74D64u },
+			{ 12, 0x33F8F86Cu },
+			{ 13, 0x1285A980u },
+			{ 14, 0xC4A1FC8Du },
+			{ 15, 0xA4EB827Eu },
+			{ 16, 0xCB43FA54u },
+		};
 		private global::Audio.AudioManager audioManager;
 		private bool lockPlaySe;
 		private bool isPlayVoice;
@@ -68,7 +87,7 @@ namespace Dpr.GMS
 
 			audioManager.SetBgmEvent(enabled ? EVENTS.DUCKON_BGM : EVENTS.DUCKOFF_BGM);
 		}
-		public GMSSoundPlayer() { /*@B 0x600403B*/ throw null; }
+		public GMSSoundPlayer() { }
 		static GMSSoundPlayer() { }
 		public enum PlaySE_ID
 		{

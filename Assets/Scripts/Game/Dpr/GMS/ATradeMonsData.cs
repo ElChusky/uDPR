@@ -4,7 +4,7 @@ namespace Dpr.GMS
 	public class ATradeMonsData
 	{
 		public int pointIndex;
-		public byte[] coreData;
-		public ATradeMonsData() { /*@B 0x6003F57*/ throw null; }
+		public byte[] coreData = new byte[328];
+		public ATradeMonsData() { }
 	}
 }
