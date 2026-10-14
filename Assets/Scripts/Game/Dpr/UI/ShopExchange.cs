@@ -14,7 +14,7 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.ShopTradeItemDescriptionPanel _tradeItemDescriptionPanel;
 		private global::Dpr.UI.ShopExchange.Param _param;
-		private global::System.Collections.Generic.List<global::Dpr.UI.ShopExchangeItemItem.Param> _itemParams;
+		private global::System.Collections.Generic.List<global::Dpr.UI.ShopExchangeItemItem.Param> _itemParams = new global::System.Collections.Generic.List<global::Dpr.UI.ShopExchangeItemItem.Param>();
 		private global::Dpr.UI.ShopExchangeItemItem _selectShopItem;
 		public override void OnCreate() {
             base.OnCreate();
@@ -100,25 +100,207 @@ namespace Dpr.UI
             var item = button as ShopExchangeItemItem;
             item.Setup(_param.shopType, _itemParams[item.index]);
         }
-		private void OnSelectItemScrollViewItem(global::Dpr.UI.IUIButton button) { /*@B 0x6005B04*/ throw null; }
-		private void SetupKeyguide() { /*@B 0x6005B05*/ throw null; }
+		private void OnSelectItemScrollViewItem(global::Dpr.UI.IUIButton button) {
+			if (!button.GetActive())
+				return;
+
+			button.Select();
+			var shopItem = button as ShopExchangeItemItem;
+			_selectShopItem = shopItem;
+			_cursor.transform.SetParent(shopItem.transform, false);
+			_itemDescriptionPanel.Set(_param.shopType, shopItem);
+			_itemDescriptionPanel.SetWazaDescriptionType(_wazaItemDescriptionType);
+			_tradeItemDescriptionPanel.Setup(_param.shopType, shopItem.param);
+			SetupKeyguide();
+		}
+		private void SetupKeyguide() {
+			var keyguide = UIManager.Instance.GetKeyguide(null, true);
+			keyguide.transform.SetParent(transform, false);
+			var param = new Keyguide.Param();
+			param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.SHOP_FRIENDLY_DECIDE });
+			if (_selectShopItem.IsWazaMachine())
+				param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.SHOP_FRIENDLY_DESCRIPTION });
+			param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.SHOP_FRIENDLY_CANCEL });
+			keyguide.Open(param);
+		}
 		private void OnUnSelectItemScrollViewItem(global::Dpr.UI.IUIButton button) {
             button.UnSelect();
         }
 		public void Close(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_) {
             Sequencer.Start(OpClose(onClosed_));
         }
-		public global::System.Collections.IEnumerator OpClose(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_) { /*@B 0x6005B08*/ throw null; }
-		private void OnUpdate(float deltaTime) { /*@B 0x6005B09*/ throw null; }
-		private void SequenceExchange(int amount) { /*@B 0x6005B0A*/ throw null; }
-		protected override void OnAddContextMenuYesNoItemParams(global::System.Collections.Generic.List<global::Dpr.UI.ContextMenuItem.Param> contextMenuItemParams) { /*@B 0x6005B0B*/ throw null; }
-		public ShopExchange() { /*@B 0x6005B0C*/ throw null; }
+		public global::System.Collections.IEnumerator OpClose(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_) {
+			Sequencer.update -= OnUpdate;
+			yield return OpPlayCloseWindowAnimationAndWaiting(_prevWindowId);
+			AudioManager.Instance.SetBgmEvent(AK.EVENTS.DUCKOFF_BGM, false);
+			UIManager.Instance._ReleaseUIWindow(this);
+			onClosed_?.Invoke(this);
+			UIManager.Instance.ClearCachedSprites();
+		}
+		private void OnUpdate(float deltaTime) {
+			if (UIManager.Instance.GetCurrentUIWindow<UIWindow>() != this || IsActiveMessageWindow())
+				return;
+
+			if (_selectAmount.IsShow)
+			{
+				_selectAmount.OnUpdate();
+				return;
+			}
+
+			if (IsPushButton(UIManager.ButtonB))
+			{
+				_input.inputEnabled = false;
+				AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_CANCEL, null);
+				Close(onClosed);
+				return;
+			}
+
+			if (IsPushButton(UIManager.ButtonA))
+			{
+				_input.inputEnabled = false;
+				AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_DONE, null);
+				// bare sdiv in the binary (@01d4c834): no zero guard
+				int canTradeNum = ItemWork.GetItemInfo((int)_selectShopItem.param.tradeItemNo).count / _selectShopItem.param.price;
+				int numForAdd = _selectShopItem.GetNumForAdd();
+				int num = Mathf.Min(canTradeNum, numForAdd);
+				if (num > 1)
+				{
+					var (messageFile, messageLabel) = GetShopMessageData(_selectShopItem.IsWazaMachine() ? SHOP_MESSAGEID.EXCHANGE_WAZAMASCHINE_01 : SHOP_MESSAGEID.EXCHANGE_ITEM_01, _param.shopType, _param.GetFixedShopId());
+					_selectShopItem.SetMessageItemName(0, 1);
+					if (_selectShopItem.IsWazaMachine())
+						Dpr.Message.MessageWordSetHelper.SetWazaNameWord(2, Pml.Item.ItemData.GetWazaNo((ushort)_selectShopItem.GetItemInfo().Id));
+					var msgParam = new Dpr.MsgWindow.MsgWindowParam();
+					msgParam.useMsgFile = Dpr.Message.MessageManager.Instance.GetMsgFile(messageFile);
+					msgParam.labelName = messageLabel;
+					msgParam.inputEnabled = true;
+					msgParam.inputCloseEnabled = false;
+					msgParam.onFinishedShowAllMessage = () =>
+					{
+						_selectAmount.ShowSelectAmount(1, num, amount => SequenceExchange(amount), () =>
+						{
+							CloseMessageWindow();
+							_input.inputEnabled = true;
+						}, amount =>
+						{
+							Dpr.Message.MessageWordSetHelper.SetDigitWord(0, _selectShopItem.param.price * amount);
+							_selectAmount.SetSelectAmountDescriptionText(GetSelectAmountDescriptionText(_param.shopType, "ss_fld_shop"));
+						});
+					};
+					OpenMessageWindow(msgParam);
+				}
+				else if (num == 1)
+				{
+					SequenceExchange(1);
+				}
+				else if (numForAdd == 0)
+				{
+					var (messageFile, messageLabel) = GetShopMessageData(SHOP_MESSAGEID.FULL_ITEM, _param.shopType, _param.GetFixedShopId());
+					var msgParam = new Dpr.MsgWindow.MsgWindowParam();
+					msgParam.useMsgFile = Dpr.Message.MessageManager.Instance.GetMsgFile(messageFile);
+					msgParam.labelName = messageLabel;
+					msgParam.inputEnabled = true;
+					msgParam.inputCloseEnabled = true;
+					msgParam.onFinishedCloseWindow = () =>
+					{
+						_messageWindow = null;
+						_input.inputEnabled = true;
+					};
+					OpenMessageWindow(msgParam);
+				}
+				else
+				{
+					var (messageFile, messageLabel) = GetShopMessageData(SHOP_MESSAGEID.ENOUGH_MONEY, _param.shopType, _param.GetFixedShopId());
+					var msgParam = new Dpr.MsgWindow.MsgWindowParam();
+					msgParam.useMsgFile = Dpr.Message.MessageManager.Instance.GetMsgFile(messageFile);
+					msgParam.labelName = messageLabel;
+					msgParam.inputEnabled = true;
+					msgParam.inputCloseEnabled = true;
+					msgParam.onFinishedCloseWindow = () =>
+					{
+						_messageWindow = null;
+						_input.inputEnabled = true;
+					};
+					OpenMessageWindow(msgParam);
+				}
+				return;
+			}
+
+			UpdateWazaDescription(_selectShopItem.GetItemInfo());
+			UpdateSelect(deltaTime, 8, true);
+		}
+		private void SequenceExchange(int amount) {
+			Dpr.Item.ItemInfo tradeItem = ItemWork.GetItemInfo((int)_selectShopItem.param.tradeItemNo);
+			var (messageFile, messageLabel) = GetShopMessageData(_selectShopItem.IsWazaMachine() ? SHOP_MESSAGEID.EXCHANGE_WAZAMASCHINE_02 : SHOP_MESSAGEID.EXCHANGE_ITEM_02, _param.shopType, _param.GetFixedShopId());
+			_selectShopItem.SetMessageItemName(0, amount);
+			Dpr.Message.MessageWordSetHelper.SetDigitWord(1, amount);
+			if (_selectShopItem.IsWazaMachine())
+				Dpr.Message.MessageWordSetHelper.SetWazaNameWord(2, Pml.Item.ItemData.GetWazaNo((ushort)_selectShopItem.GetItemInfo().Id));
+			int tradeNum = _selectShopItem.param.price * amount;
+			_selectShopItem.SetMessageTradeItemName(3, tradeNum);
+			Dpr.Message.MessageWordSetHelper.SetDigitWord(4, tradeNum);
+			var msgParam = new Dpr.MsgWindow.MsgWindowParam();
+			msgParam.useMsgFile = Dpr.Message.MessageManager.Instance.GetMsgFile(messageFile);
+			msgParam.labelName = messageLabel;
+			msgParam.inputEnabled = true;
+			msgParam.inputCloseEnabled = false;
+			msgParam.onFinishedShowAllMessage = () =>
+			{
+				CreateContextMenuYesNo(contextMenuItem =>
+				{
+					AudioManager.Instance.PlaySe(contextMenuItem.param.menuId == ContextMenuID.FRIENDLYSHOP_YES ? 2892498320u : AK.EVENTS.UI_COMMON_DECIDE, null);
+					if (contextMenuItem.param.menuId == ContextMenuID.FRIENDLYSHOP_YES)
+					{
+						ItemWork.SubItem(tradeItem.Id, tradeNum);
+						_selectShopItem.AddItem(amount);
+						_itemDescriptionPanel.Set(_param.shopType, _selectShopItem);
+						_tradeItemDescriptionPanel.UpdateStockNum();
+						(messageFile, messageLabel) = GetShopMessageData(SHOP_MESSAGEID.EXCHANGE_DECISION_01, _param.shopType, _param.GetFixedShopId());
+						var msgParam2 = new Dpr.MsgWindow.MsgWindowParam();
+						msgParam2.useMsgFile = Dpr.Message.MessageManager.Instance.GetMsgFile(messageFile);
+						msgParam2.labelName = messageLabel;
+						msgParam2.inputEnabled = true;
+						msgParam2.inputCloseEnabled = true;
+						msgParam2.onFinishedCloseWindow = () =>
+						{
+							(messageFile, messageLabel) = GetShopMessageData(SHOP_MESSAGEID.EXCHANGE_DECISION_02, _param.shopType, _param.GetFixedShopId());
+							_selectShopItem.SetMessageItemName(0, amount);
+							Dpr.Message.MessageWordSetHelper.SetDigitWord(1, amount);
+							_selectShopItem.SetMessagePocketName(5);
+							var msgParam3 = new Dpr.MsgWindow.MsgWindowParam();
+							msgParam3.useMsgFile = Dpr.Message.MessageManager.Instance.GetMsgFile(messageFile);
+							msgParam3.labelName = messageLabel;
+							msgParam3.inputEnabled = true;
+							msgParam3.inputCloseEnabled = true;
+							msgParam3.onFinishedCloseWindow = () =>
+							{
+								_messageWindow = null;
+								_input.inputEnabled = true;
+							};
+							OpenMessageWindow(msgParam3);
+						};
+						OpenMessageWindow(msgParam2);
+					}
+					else
+					{
+						CloseMessageWindow();
+						_input.inputEnabled = true;
+					}
+					return true;
+				}, 0u);
+			};
+			OpenMessageWindow(msgParam);
+		}
+		protected override void OnAddContextMenuYesNoItemParams(global::System.Collections.Generic.List<global::Dpr.UI.ContextMenuItem.Param> contextMenuItemParams) {
+			contextMenuItemParams.Add(new ContextMenuItem.Param { menuId = ContextMenuID.FRIENDLYSHOP_YES });
+			contextMenuItemParams.Add(new ContextMenuItem.Param { menuId = ContextMenuID.FRIENDLYSHOP_NO });
+		}
+		public ShopExchange() { }
 		public class Param
 		{
-			public global::Dpr.UI.ShopBase.ShopType shopType;
+			public global::Dpr.UI.ShopBase.ShopType shopType = global::Dpr.UI.ShopBase.ShopType.Otenki;
 			public global::Dpr.UI.ShopExchange.Param.PalParkParam palParkParam;
 			public int GetFixedShopId() { return -1; }
-			public Param() { /*@B 0x600AED7*/ throw null; }
+			public Param() { }
 			public class PalParkParam
 			{
 				public int shopId;

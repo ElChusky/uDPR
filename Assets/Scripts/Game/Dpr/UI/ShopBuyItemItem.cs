@@ -10,7 +10,7 @@ namespace Dpr.UI
 	public class ShopBuyItemItem : global::Dpr.UI.ShopItemItem
 	{
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector2[] _iconSizes;
+		private global::UnityEngine.Vector2[] _iconSizes = new global::UnityEngine.Vector2[] { new global::UnityEngine.Vector2(80f, 80f), new global::UnityEngine.Vector2(40f, 40f) };
 		private global::Dpr.UI.ShopBuyItemItem.Param _param;
 		public global::Dpr.UI.ShopBuyItemItem.Param param { get { return this._param; } }
 		public void Setup(global::Dpr.UI.ShopBase.ShopType shopType, global::Dpr.UI.ShopBuyItemItem.Param param) {
@@ -110,13 +110,13 @@ namespace Dpr.UI
 					break;
 			}
 		}
-		public ShopBuyItemItem() { /*@B 0x6005AFF*/ throw null; }
+		public ShopBuyItemItem() { }
 		public class Param
 		{
 			public int itemId;
 			public int price;
-			public global::Pml.ItemNo GetItemNo() { /*@B 0x600AEC9*/ throw null; }
-			public global::SealID GetSealId() { /*@B 0x600AECA*/ throw null; }
+			public global::Pml.ItemNo GetItemNo() { return (global::Pml.ItemNo)itemId; }
+			public global::SealID GetSealId() { return (global::SealID)itemId; }
 			public int GetUgItemId() { return this.itemId; }
 			public Param() { }
 		}

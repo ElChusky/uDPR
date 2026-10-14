@@ -14,14 +14,60 @@ namespace Dpr.UI
 		private global::Dpr.UI.ShopBoutique.BoutiqueType _boutiqueType;
 		public global::Dpr.UI.ShopBoutiqueItemItem.Param param { get { return this._param; } }
 		public global::XLSXContent.CharacterDressData.SheetData characterDressData { get { return this._characterDressData; } }
-		public void Setup(global::Dpr.UI.ShopBoutique.BoutiqueType boutiqueType, global::Dpr.UI.ShopBoutiqueItemItem.Param param) { /*@B 0x6005ADB*/ throw null; }
-		private void SetupNameColor() { /*@B 0x6005ADC*/ throw null; }
-		private bool IsWaredDress() { /*@B 0x6005ADD*/ throw null; }
-		public void SetupWared() { /*@B 0x6005ADE*/ throw null; }
-		private bool IsShowPurchased() { /*@B 0x6005ADF*/ throw null; }
-		private void SetupPurchased() { /*@B 0x6005AE0*/ throw null; }
-		public override int GetNumForAdd() { /*@B 0x6005AE1*/ throw null; }
-		public void AddItem(int amount) { /*@B 0x6005AE2*/ throw null; }
+		public void Setup(global::Dpr.UI.ShopBoutique.BoutiqueType boutiqueType, global::Dpr.UI.ShopBoutiqueItemItem.Param param) {
+			_shopType = ShopBase.ShopType.Boutique;
+			_boutiqueType = boutiqueType;
+			_param = param;
+			if (_boutiqueType == ShopBoutique.BoutiqueType.Buy)
+			{
+				_characterDressData = global::GameData.DataManager.GetCharacterDressData(param.data.DressNo);
+				_price.gameObject.SetActive(true);
+				_price.SetFormattedText(() => global::Dpr.Message.MessageWordSetHelper.SetDigitWord(0, param.data.Price), null, null);
+			}
+			else
+			{
+				_characterDressData = param.dressData;
+				_price.gameObject.SetActive(false);
+			}
+			_name.SetupMessage(null, _characterDressData.MSLabel);
+			SetupWared();
+			SetupPurchased(); // inlined in the binary (@01d44378..01d443dc)
+		}
+		private void SetupNameColor() {
+			if (IsShowPurchased())
+				_name.color = _colors[1];
+			else if (IsWaredDress())
+				_name.color = _colors[2];
+			else
+				_name.color = _colors[0];
+		}
+		private bool IsWaredDress() {
+			if (_boutiqueType != ShopBoutique.BoutiqueType.Change)
+				return false;
+
+			return PlayerWork.playerFashion == _characterDressData.Index;
+		}
+		public void SetupWared() {
+			_waredIcon.gameObject.SetActive(IsWaredDress());
+			SetupNameColor();
+		}
+		private bool IsShowPurchased() {
+			if (_boutiqueType != ShopBoutique.BoutiqueType.Buy)
+				return false;
+
+			return FlagWork.GetFlag(_param.data.DressGet);
+		}
+		private void SetupPurchased() {
+			_purchased.root.gameObject.SetActive(IsShowPurchased());
+			SetupNameColor();
+		}
+		public override int GetNumForAdd() {
+			return FlagWork.GetFlag(_param.data.DressGet) ? 0 : 1;
+		}
+		public void AddItem(int amount) {
+			FlagWork.SetFlag(_param.data.DressGet, true);
+			SetupPurchased();
+		}
 		public ShopBoutiqueItemItem() { }
 		[global::System.Serializable]
 		private class Purchased
