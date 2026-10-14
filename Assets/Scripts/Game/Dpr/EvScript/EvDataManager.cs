@@ -298,8 +298,15 @@ namespace Dpr.EvScript
 		private const int _PoolLength = 100;
 		private global::System.Collections.Generic.Dictionary<int, global::UnityEngine.GameObject> _poolLoadObjects;
 		public event global::System.Action<global::Dpr.EvScript.EvDataManager.EntityParam> OnTalkStartCallBack;
-		public static global::Dpr.EvScript.EvDataManager Instanse { get { /*@B 0x6008B54*/ throw null; } }
-		public bool IsPosEventReserved { get { /*@B 0x6008B57*/ throw null; } }
+		public static global::Dpr.EvScript.EvDataManager Instanse { get {
+            if (_instanse == null)
+                _instanse = new EvDataManager();
+
+            return _instanse;
+        } }
+		public bool IsPosEventReserved { get {
+            return !string.IsNullOrEmpty(_posEventLabelReserve);
+        } }
 		public global::FieldObjectEntity _dummyPlayer { get; private set; }
 		public global::FieldPokemonCenter PokemonCenter { get; private set; }
 		public global::Telescope Telescope { get; private set; }
@@ -307,24 +314,113 @@ namespace Dpr.EvScript
 		public global::FieldWazaCutIn FieldWazaCutIn { get; private set; }
 		public global::InterviewWork InterviewWork { get; private set; }
 		public global::FieldShip FieldShip { get; private set; }
-		public bool IsContactDoor() { /*@B 0x6008B5A*/ throw null; }
+		public bool IsContactDoor() {
+            if (_doorEntity != null)
+                return true;
+
+            return _worpEventData.Entity != null;
+        }
 		private EvDataManager() { /*@B 0x6008B67*/ throw null; }
 		public void Destroy() {
             _instanse = null;
         }
-		public void SceneChangeRelease() { /*@B 0x6008B69*/ throw null; }
-		public void CacheSceneChangeRelease() { /*@B 0x6008B6A*/ throw null; }
+		public void SceneChangeRelease() {
+            _cacheZoneID_SceneChange = PlayerWork.zoneID;
+            _dummyPlayer = null;
+            _areaID = AreaID.UNKNOWN;
+            _warpList.Clear();
+            _warpData = null;
+            for (int i = 0; i < _entityParamList.Length; i++)
+                _entityParamList[i] = null;
+
+            FieldObjectMoveCodes.Clear();
+            for (int i = 0; i < _eyeEncountTarget.Length; i++)
+                _eyeEncountTarget[i] = null;
+
+            _updateDelegate = null;
+            _isCall_TrainerBtl = false;
+            _toUgInvisibleObjects.Reset();
+        }
+		public void CacheSceneChangeRelease() {
+            _cacheZoneID_SceneChange = PlayerWork.zoneID;
+            for (int i = 0; i < _eyeEncountTarget.Length; i++)
+                _eyeEncountTarget[i] = null;
+
+            _updateDelegate = null;
+            _isCall_TrainerBtl = false;
+            _toUgInvisibleObjects.Reset();
+        }
 		public bool UpdateStart() { /*@B 0x6008B6B*/ throw null; }
 		public void CallFieldWarpExitLabel() { /*@B 0x6008B6C*/ throw null; }
 		public void FieldZoneChange(bool walk = true) { /*@B 0x6008B6D*/ throw null; }
-		public void ResetVanishFlagObject() { /*@B 0x6008B6E*/ throw null; }
-		private void PendingInitScripts() { /*@B 0x6008B6F*/ throw null; }
-		private void WalkInit() { /*@B 0x6008B70*/ throw null; }
-		private void MapJumpInit() { /*@B 0x6008B71*/ throw null; }
+		public void ResetVanishFlagObject() {
+            foreach (var entity in _fieldObjectEntity)
+            {
+                if (entity == null)
+                    continue;
+
+                int flagNo = entity.EventParams.VanishFlagIndex;
+                if (flagNo > -1 && flagNo != (int)EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag((EvWork.FLAG_INDEX)flagNo))
+                    entity.SetActive(false);
+                else if (!entity.EventParams.IsInvalidVanishActive)
+                    entity.SetActive(true);
+            }
+        }
+		private void PendingInitScripts() {
+            if (!_pendingInitScripts)
+                return;
+
+            SpLabel_Init(PlayerWork.zoneID);
+            SpLabel_Obj(PlayerWork.zoneID);
+            SpLabel_Flag(PlayerWork.zoneID);
+            SpLabel_Scene(PlayerWork.zoneID);
+            _mistPlate.Setup(PlayerWork.zoneID);
+            _pendingInitScripts = false;
+        }
+		private void WalkInit() {
+            PlayerWork.WalkEncountCount = 0;
+            // ARRIVEDATA_SetArriveFlag is inlined here in the binary.
+            ARRIVEDATA_SetArriveFlag(PlayerWork.zoneID);
+            FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_KAIRIKI, false);
+        }
+		private void MapJumpInit() {
+            if (_isInitFirstMap)
+                FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_CYCLINGROAD, false);
+
+            _isInitFirstMap = true;
+            EvCmd__CAMERA_TARGET_HERO();
+            PlayerWork.WalkEncountCount = 0;
+            // ARRIVEDATA_SetArriveFlag is inlined here in the binary.
+            ARRIVEDATA_SetArriveFlag(PlayerWork.zoneID);
+            for (int i = 0; i < _se_datas.Length; i++)
+            {
+                _se_datas[i].AudioInstance = null;
+                _se_datas[i].playEventId = 0;
+                _se_datas[i].name = "";
+            }
+
+            for (int i = 0; i < _voice_datas.Length; i++)
+            {
+                _voice_datas[i].AudioInstance = null;
+                _voice_datas[i].playEventId = 0;
+                _voice_datas[i].name = "";
+            }
+
+            FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_KAIRIKI, false);
+            FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_CAMERA_REVERSAL, false);
+            FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.FLAG_STOP_EYE_ENCOUNT, false);
+            SetCommandUseTime();
+        }
 		public bool m_Update(float time) { /*@B 0x6008B72*/ throw null; }
 		public bool m_LateUpdate(float time) { /*@B 0x6008B73*/ throw null; }
-		private bool FindLabel(string label) { /*@B 0x6008B74*/ throw null; }
-		private bool CheckSceneChangeLabel() { /*@B 0x6008B75*/ throw null; }
+		private bool FindLabel(string label) {
+            return _findAllLabel.ContainsKey(label);
+        }
+		private bool CheckSceneChangeLabel() {
+            bool result = JumpLabel(_callLabel_SceneChange, null);
+            _callLabel_SceneChange = "";
+            return result;
+        }
 		private void SetBattleReturn() {
             FieldManager.Instance.SetAutoSaveState(FieldManager.AutoSaveState.Stop);
             SwayGrass.SwayGrass_InitSwayGrass();
@@ -336,7 +432,11 @@ namespace Dpr.EvScript
             SetEventListIndex(-1);
         }
 		private bool CheckBattleReturnLabel() { /*@B 0x6008B77*/ throw null; }
-		private bool CheckUpdateSPLabel() { /*@B 0x6008B78*/ throw null; }
+		private bool CheckUpdateSPLabel() {
+            bool result = JumpLabel(_callLabel_UpdateSP, null);
+            _callLabel_UpdateSP = "";
+            return result;
+        }
 		private bool CheckSafariEvent() {
             if (!PlayerWork.GetSytemFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_SAFARI_MODE))
                 return false;
@@ -451,7 +551,14 @@ namespace Dpr.EvScript
 		private void UpdateWait(float time) {
             // Empty in the binary (bare ret @02c468f0).
         }
-		public void OnOpenMenu() { /*@B 0x6008B86*/ throw null; }
+		public void OnOpenMenu() {
+            TairyouHasseiPokeManager.ForceStopObject();
+            TairyouHasseiPokeManager.ForceStop = true;
+            PlayerInputActive(false, true);
+            Cmd_ObjPauseAll();
+            SetSaveObj();
+            _updateDelegate = new UpdateDelegate(UpdateWait);
+        }
 		public void OnCloseMenu() {
             if (_updateDelegate == new UpdateDelegate(UpdateWait))
                 _updateDelegate = null;
@@ -516,7 +623,21 @@ namespace Dpr.EvScript
 
             return false;
         }
-		private void PlayerInputActive(bool active, bool animation = true) { /*@B 0x6008B8C*/ throw null; }
+		private void PlayerInputActive(bool active, bool animation = true) {
+            PlayerWork.isPlayerInputActive = active;
+            var player = EntityManager.activeFieldPlayer;
+            var evEntityCmd = player.EvEntityCmd;
+            if (active)
+            {
+                evEntityCmd.ScritpStopStateEnd();
+                return;
+            }
+
+            evEntityCmd.ScritpStopState();
+            player.StopBicycleDecelerate();
+            if (animation)
+                player.PlayIdle();
+        }
 		private void SetEventListIndex(int idx) {
             if (idx == -1)
                 SetCloudScaleEnd();
