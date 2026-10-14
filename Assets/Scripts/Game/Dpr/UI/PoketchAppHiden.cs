@@ -17,9 +17,9 @@ namespace Dpr.UI
 		private global::UnityEngine.Transform[] _cursorRoots;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.GameObject _cursor;
-		private int _currentIndex;
-		private int _preIndex;
-		private static readonly (global::FieldPoketch.HidenWazaType type, int index)[] _hidenTypes;
+		private int _currentIndex = -1;
+		private int _preIndex = -1;
+		private static readonly (global::FieldPoketch.HidenWazaType type, int index)[] _hidenTypes = new (global::FieldPoketch.HidenWazaType type, int index)[] { (global::FieldPoketch.HidenWazaType.Iwakudaki, 1), (global::FieldPoketch.HidenWazaType.Iaigiri, 5), (global::FieldPoketch.HidenWazaType.Kairiki, 2), (global::FieldPoketch.HidenWazaType.Sorawotobu, 6), (global::FieldPoketch.HidenWazaType.Kiribarai, 3), (global::FieldPoketch.HidenWazaType.Naminori, 7), (global::FieldPoketch.HidenWazaType.Rockclimb, 4), (global::FieldPoketch.HidenWazaType.Takinobori, 8) };
 		protected override void OnInitialize() {
 			AppID = POKETCH_APPID.HIDEN_WAZA;
 			for (int i = 0; i < Buttons.Length; i++)
@@ -195,7 +195,7 @@ namespace Dpr.UI
 				_wazaNameImage[i].color = isGetWaza ? Color.black : Color.gray;
 			}
 		}
-		public PoketchAppHiden() { /*@B 0x6005812*/ throw null; }
-		static PoketchAppHiden() { /*@B 0x6005813*/ throw null; }
+		public PoketchAppHiden() { }
+		static PoketchAppHiden() { }
 	}
 }

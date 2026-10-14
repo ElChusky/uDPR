@@ -54,6 +54,6 @@ namespace Dpr.UI
 				_poketchInstance.SetBackLight(false);
 			}
 		}
-		public PoketchAppDWatch() { /*@B 0x60057E4*/ throw null; }
+		public PoketchAppDWatch() { }
 	}
 }

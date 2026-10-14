@@ -39,7 +39,7 @@ namespace Dpr.UI
 		private global::UnityEngine.RectTransform _itemRoot;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.PokemonStatusMarkSetting _markSetting;
-		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusMark> _marks;
+		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusMark> _marks = new global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusMark>();
 		private bool _isMarkMode;
 		private void Awake() {
 			_marks.Clear();
@@ -230,6 +230,6 @@ namespace Dpr.UI
 			}
 			SetupMarks();
 		}
-		public PokemonStatusPanelBasicInfo() { /*@B 0x60056D2*/ throw null; }
+		public PokemonStatusPanelBasicInfo() { }
 	}
 }

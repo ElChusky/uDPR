@@ -16,11 +16,11 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image[] _hideMapImages;
 		[global::UnityEngine.SerializeField]
-		private float _blinkSpeed;
+		private float _blinkSpeed = 0.4f;
 		private int _gridSize;
-		private global::UnityEngine.Vector2 _grigBasePosition;
+		private global::UnityEngine.Vector2 _grigBasePosition = global::UnityEngine.Vector2.zero;
 		private global::XLSXContent.TownMapTable.SheetData[] _mapDatas;
-		private global::ZoneID[] _pokeZoneIDs;
+		private global::ZoneID[] _pokeZoneIDs = new global::ZoneID[2];
 		private float _blinkCount;
 		protected override void OnInitialize() {
 			AppID = POKETCH_APPID.MAP_MARKING;
@@ -142,6 +142,6 @@ namespace Dpr.UI
 					Buttons[i].SetImage(false);
 			}
 		}
-		public PoketchAppMapMarking() { /*@B 0x600583E*/ throw null; }
+		public PoketchAppMapMarking() { }
 	}
 }

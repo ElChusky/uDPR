@@ -113,8 +113,8 @@ namespace Dpr.UI
 		private class BodyParam
 		{
 			public global::UnityEngine.Sprite sprite;
-			public global::UnityEngine.Color nameColor;
-			public BodyParam() { /*@B 0x600ACE7*/ throw null; }
+			public global::UnityEngine.Color nameColor = global::UnityEngine.Color.white;
+			public BodyParam() { }
 		}
 	}
 }

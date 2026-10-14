@@ -13,14 +13,14 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Slider _hpGuage;
 		[global::UnityEngine.SerializeField]
-		private static global::UnityEngine.Vector3 _vibrationValue;
+		private static global::UnityEngine.Vector3 _vibrationValue = new global::UnityEngine.Vector3(0f, 12f, 0f);
 		[global::UnityEngine.SerializeField]
-		private static float _vibrationTime;
+		private static float _vibrationTime = 0.075f;
 		public global::Pml.PokePara.PokemonParam PokeParam;
 		private global::DG.Tweening.Sequence _sequence;
 		public global::Dpr.UI.PokemonIcon PokeIcon { get { return this._pokemonIcon; } }
 		public global::UnityEngine.UI.Slider HpGauge { get { return this._hpGuage; } }
-		public global::UnityEngine.UI.Image MonsIcon { get { /*@B 0x60058B4*/ throw null; } }
+		public global::UnityEngine.UI.Image MonsIcon { get { return _pokemonIcon.monsIcon; } }
 		public global::UnityEngine.UI.Image ItemIcon { get { return this._itemIcon; } }
 		public global::DG.Tweening.Sequence SetVibration() {
 			if (_sequence != null)
@@ -39,7 +39,7 @@ namespace Dpr.UI
 				_sequence = null;
 			}
 		}
-		public PoketchPokeListButton() { /*@B 0x60058B8*/ throw null; }
-		static PoketchPokeListButton() { /*@B 0x60058B9*/ throw null; }
+		public PoketchPokeListButton() { }
+		static PoketchPokeListButton() { }
 	}
 }

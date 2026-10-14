@@ -24,10 +24,10 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Color[] _colorUpDowns;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.AnimationCurve _curveAbility;
+		private global::UnityEngine.AnimationCurve _curveAbility = new global::UnityEngine.AnimationCurve(new global::UnityEngine.Keyframe[] { new global::UnityEngine.Keyframe(0f, 0f, 0f, 2.309923f), new global::UnityEngine.Keyframe(40f, 60f, 1.186237f, 1.186237f), new global::UnityEngine.Keyframe(70f, 90f, 0.782187f, 0.782187f), new global::UnityEngine.Keyframe(100f, 100f, 0.036548f, 0f) });
 		private int _selectRaderChartIndex;
-		private global::System.Collections.Generic.List<global::Effect.EffectInstance> _effects;
-		private global::Pml.PokePara.PowerID[] _powerIdMap;
+		private global::System.Collections.Generic.List<global::Effect.EffectInstance> _effects = new global::System.Collections.Generic.List<global::Effect.EffectInstance>();
+		private global::Pml.PokePara.PowerID[] _powerIdMap = new global::Pml.PokePara.PowerID[] { global::Pml.PokePara.PowerID.HP, global::Pml.PokePara.PowerID.ATK, global::Pml.PokePara.PowerID.DEF, global::Pml.PokePara.PowerID.AGI, global::Pml.PokePara.PowerID.SPDEF, global::Pml.PokePara.PowerID.SPATK };
 		private const float _minLength = 0.15f;
 		private void Awake() { }
 		private void OnDisable() {
@@ -196,7 +196,7 @@ namespace Dpr.UI
 			}
 			return false;
 		}
-		public PokemonStatusPanelAbility() { /*@B 0x60056C8*/ throw null; }
+		public PokemonStatusPanelAbility() { }
 		[global::System.Serializable]
 		private class ChartItem
 		{

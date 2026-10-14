@@ -7,7 +7,7 @@ namespace Dpr.UI
 	{
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.PokemonStatusPanelTrainerMemo.PanelParam[] _panels;
-		private global::Dpr.UI.PokemonStatusPanelTrainerMemo.EggStateParam[] _eggStateParams;
+		private global::Dpr.UI.PokemonStatusPanelTrainerMemo.EggStateParam[] _eggStateParams = new global::Dpr.UI.PokemonStatusPanelTrainerMemo.EggStateParam[] { new EggStateParam { value = 5, label = "SS_trainermemo_085" }, new EggStateParam { value = 10, label = "SS_trainermemo_086" }, new EggStateParam { value = 40, label = "SS_trainermemo_087" }, new EggStateParam { value = int.MaxValue, label = "SS_trainermemo_088" } };
 		private bool _isLayoutUpdate;
 		private void Awake() { }
 		public override void Setup(global::Pml.PokePara.PokemonParam pokemonParam) {
@@ -257,7 +257,7 @@ namespace Dpr.UI
 				return false;
 			return false;
 		}
-		public PokemonStatusPanelTrainerMemo() { /*@B 0x60056FA*/ throw null; }
+		public PokemonStatusPanelTrainerMemo() { }
 		[global::System.Serializable]
 		private class PanelParam
 		{

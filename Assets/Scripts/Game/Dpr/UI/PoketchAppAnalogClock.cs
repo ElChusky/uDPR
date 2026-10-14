@@ -39,6 +39,6 @@ namespace Dpr.UI
 			_hour.SetRotationZEuler((float)(hour % 12) / -12f * 360f + 1f + minuteRate * -30f);
 			_minutes.SetRotationZEuler(1f - minuteRate * 360f);
 		}
-		public PoketchAppAnalogClock() { /*@B 0x600577F*/ throw null; }
+		public PoketchAppAnalogClock() { }
 	}
 }

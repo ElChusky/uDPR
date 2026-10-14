@@ -15,11 +15,11 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image _blurImage;
 		[global::UnityEngine.SerializeField]
-		private float _inBlurTime;
+		private float _inBlurTime = 0.2f;
 		[global::UnityEngine.SerializeField]
-		private float _outBlurTime;
+		private float _outBlurTime = 0.2f;
 		[global::UnityEngine.SerializeField]
-		private float _maxBlurSize;
+		private float _maxBlurSize = 5f;
 		private global::Dpr.UI.PoketchAppEggChecker.EggCheckerState _state;
 		private float _blurTimeCount;
 		private global::UnityEngine.Material _matGrayScale;
@@ -99,7 +99,7 @@ namespace Dpr.UI
 				}
 			}
 		}
-		public PoketchAppEggChecker() { /*@B 0x6005806*/ throw null; }
+		public PoketchAppEggChecker() { }
 		private enum EggCheckerState
 		{
 			None = 0,

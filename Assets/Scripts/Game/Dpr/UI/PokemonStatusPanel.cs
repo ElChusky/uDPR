@@ -15,17 +15,17 @@ namespace Dpr.UI
 		public global::UnityEngine.Events.UnityAction<global::Dpr.MsgWindow.MsgWindowParam> onOpenMessageWindow;
 		public global::UnityEngine.Events.UnityAction onForceClosed;
 		public global::Pml.PokePara.PokemonParam pokemonParam { get { return this._pokemonParam; } }
-		private bool isFromBattle { get { /*@B 0x60056AC*/ throw null; } }
-		private bool isFromBoxOtherStatus { get { /*@B 0x60056AD*/ throw null; } }
-		private bool isFromBoxSelect { get { /*@B 0x60056AE*/ throw null; } }
-		private bool isFromZukanRegister { get { /*@B 0x60056AF*/ throw null; } }
-		private bool isFromFureai { get { /*@B 0x60056B0*/ throw null; } }
-		protected bool isLimitBag { get { /*@B 0x60056B1*/ throw null; } }
-		protected bool isLimitMarking { get { /*@B 0x60056B2*/ throw null; } }
-		protected bool isLimitWazaSwap { get { /*@B 0x60056B3*/ throw null; } }
-		protected bool isLimitWazaMachine { get { /*@B 0x60056B4*/ throw null; } }
-		protected bool isLimitPofin { get { /*@B 0x60056B5*/ throw null; } }
-		protected bool isLimitRibon { get { /*@B 0x60056B6*/ throw null; } }
+		private bool isFromBattle { get { return statusParam.limitType == PokemonStatusWindow.Param.LimitType.Battle; } }
+		private bool isFromBoxOtherStatus { get { return statusParam.limitType == PokemonStatusWindow.Param.LimitType.BoxOtherStatus; } }
+		private bool isFromBoxSelect { get { return statusParam.limitType == PokemonStatusWindow.Param.LimitType.BoxSelect; } }
+		private bool isFromZukanRegister { get { return statusParam.limitType == PokemonStatusWindow.Param.LimitType.ZukanRegister; } }
+		private bool isFromFureai { get { return UIManager.Instance.IsFureaiLimit(); } }
+		protected bool isLimitBag { get { return isFromBattle || isFromBoxOtherStatus || isFromBoxSelect || isFromZukanRegister || isFromFureai; } }
+		protected bool isLimitMarking { get { return isFromBoxOtherStatus || isFromZukanRegister || isFromBattle; } }
+		protected bool isLimitWazaSwap { get { return isFromBoxOtherStatus || isFromZukanRegister || isFromBattle; } }
+		protected bool isLimitWazaMachine { get { return isFromBattle || isFromBoxOtherStatus || isFromBoxSelect || isFromZukanRegister || isFromFureai; } }
+		protected bool isLimitPofin { get { return isFromBoxOtherStatus || isFromBoxSelect || isFromZukanRegister || isFromFureai || !FlagWork.GetFlag(global::Dpr.EvScript.EvWork.FLAG_INDEX.FE_C05R0201_ITEM_GET); } }
+		protected bool isLimitRibon { get { return statusParam.limitType == PokemonStatusWindow.Param.LimitType.ZukanRegister; } }
 		public virtual void Clear() {
             _pokemonParam = null;
         }

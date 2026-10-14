@@ -17,11 +17,11 @@ namespace Dpr.UI
 		private int[] _canvasColorIndexBuffer;
 		private const int TEXTURE_PIXEL_WIDTH = 32;
 		private const int TEXTURE_PIXEL_HEIGHT = 24;
-		private int _lastPosPixelX;
-		private int _lastPosPixelY;
-		private float _displayMargin;
+		private int _lastPosPixelX = -1;
+		private int _lastPosPixelY = -1;
+		private float _displayMargin = 30f;
 		private bool _isTouchOld;
-		private bool _isModified;
+		private bool _isModified = true;
 		protected override void OnInitialize() {
 			AppID = POKETCH_APPID.DOTART;
 			_canvasTexture = new Texture2D(TEXTURE_PIXEL_WIDTH, TEXTURE_PIXEL_HEIGHT, TextureFormat.RGBA32, false);
@@ -235,6 +235,6 @@ namespace Dpr.UI
 			poketchData.dotart_modified_flag = _isModified;
 			PlayerWork.PoketchData = poketchData;
 		}
-		public PoketchAppDotArt() { /*@B 0x60057F3*/ throw null; }
+		public PoketchAppDotArt() { }
 	}
 }

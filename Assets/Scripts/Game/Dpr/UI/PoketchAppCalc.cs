@@ -10,10 +10,10 @@ namespace Dpr.UI
 	{
 		private const int _maxDigit = 10;
 		private const string _defaultDisp = "0";
-		private static readonly (float x, float y) _cursorOffset;
+		private static readonly (float x, float y) _cursorOffset = (8f, -12f);
 		private const global::System.Globalization.NumberStyles ULongNumberStyles = (global::System.Globalization.NumberStyles)(7);
 		private const global::System.Globalization.NumberStyles DecimalNumberStyles = (global::System.Globalization.NumberStyles)(111);
-		private static readonly global::System.Globalization.CultureInfo TargetCulture;
+		private static readonly global::System.Globalization.CultureInfo TargetCulture = new global::System.Globalization.CultureInfo("en-US");
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("CalcCode順(Buttonsも同様)")]
 		private global::UnityEngine.Sprite[] _numSprite;
@@ -35,7 +35,7 @@ namespace Dpr.UI
 		private int _cursorX;
 		private int _cursorY;
 		private int _currentIndex;
-		private static readonly global::Dpr.UI.PoketchAppCalc.CalcCode[,] _buttonMap;
+		private static readonly global::Dpr.UI.PoketchAppCalc.CalcCode[,] _buttonMap = new global::Dpr.UI.PoketchAppCalc.CalcCode[4, 5] { { CalcCode.Num_7, CalcCode.Num_8, CalcCode.Num_9, CalcCode.Act_Clear, CalcCode.CalcCode_Null }, { CalcCode.Num_4, CalcCode.Num_5, CalcCode.Num_6, CalcCode.Act_Plus, CalcCode.Act_Minus }, { CalcCode.Num_1, CalcCode.Num_2, CalcCode.Num_3, CalcCode.Act_Mul, CalcCode.Act_Div }, { CalcCode.Num_0, CalcCode.CalcCode_Null, CalcCode.Num_Point, CalcCode.Act_Equrl, CalcCode.CalcCode_Null } };
 		private static readonly int _btmMapWidth;
 		private static readonly int _btnMapHeight;
 		protected override void OnInitialize() {
@@ -422,8 +422,11 @@ namespace Dpr.UI
 			if (status == GET_STATUS.SEE || status == GET_STATUS.GET)
 				_poketchInstance.PlayPokemonVoice((MonsNo)monsNo);
 		}
-		public PoketchAppCalc() { /*@B 0x60057A8*/ throw null; }
-		static PoketchAppCalc() { /*@B 0x60057A9*/ throw null; }
+		public PoketchAppCalc() { }
+		static PoketchAppCalc() {
+			_btmMapWidth = _buttonMap.GetLength(1);
+			_btnMapHeight = _buttonMap.GetLength(0);
+		}
 		private enum CalcCode
 		{
 			Num_0 = 0,

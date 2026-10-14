@@ -9,7 +9,7 @@ namespace Dpr.UI
 	public class PoketchAppPokeList : global::Dpr.UI.PoketchAppBase
 	{
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color32 _sickColor;
+		private global::UnityEngine.Color32 _sickColor = new global::UnityEngine.Color32(128, 128, 128, 0);
 		private const float _updateTime = 5000f;
 		private global::ZoneID _zoneId;
 		private global::UnityEngine.Material _matGrayScale;
@@ -101,6 +101,6 @@ namespace Dpr.UI
 				}
 			}
 		}
-		public PoketchAppPokeList() { /*@B 0x600587C*/ throw null; }
+		public PoketchAppPokeList() { }
 	}
 }

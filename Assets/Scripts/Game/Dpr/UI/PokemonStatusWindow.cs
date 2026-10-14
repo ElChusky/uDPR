@@ -22,14 +22,14 @@ namespace Dpr.UI
 		private global::Dpr.UI.PokemonModelView _modelView;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image[] _arrows;
-		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusTab> _activeTabs;
-		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusTab> _enableTabs;
-		private global::System.Collections.Generic.List<int> BattlePanelList;
+		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusTab> _activeTabs = new global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusTab>();
+		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusTab> _enableTabs = new global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusTab>();
+		private global::System.Collections.Generic.List<int> BattlePanelList = new global::System.Collections.Generic.List<int> { 0, 1, 2, 3 };
 		private int _selectIndex;
 		private int _selectTabIndex;
 		private global::Dpr.UI.PokemonStatusWindow.Param _param;
-		private static global::Dpr.Demo.ConditionParam _conditionParam;
-		private static bool _isClosedPofinEating;
+		private static global::Dpr.Demo.ConditionParam _conditionParam = null;
+		private static bool _isClosedPofinEating = true;
 		public int selectIndex { get { return this._selectIndex; } }
 		private void Awake() {
             _animator = GetComponentInChildren<Animator>(true);
@@ -348,7 +348,11 @@ namespace Dpr.UI
 		private void OnForceClosed() {
             Close(onClosed, _prevWindowId);
         }
-		protected override void OpenMessageWindow(global::Dpr.MsgWindow.MsgWindowParam messageParam) { /*@B 0x600573D*/ throw null; }
+		protected override void OpenMessageWindow(global::Dpr.MsgWindow.MsgWindowParam messageParam) {
+			base.OpenMessageWindow(messageParam);
+			if (_messageWindowRoot != null)
+				_messageWindow.transform.position = _messageWindowRoot.position;
+		}
 		private bool UpdateSelectTab(float deltaTime) {
             int count = _enableTabs.Count;
             if (count == 0)
@@ -426,8 +430,8 @@ namespace Dpr.UI
 		public static bool IsClosedPofinEating() {
             return _isClosedPofinEating;
         }
-		public PokemonStatusWindow() { /*@B 0x6005745*/ throw null; }
-		static PokemonStatusWindow() { /*@B 0x6005746*/ throw null; }
+		public PokemonStatusWindow() { }
+		static PokemonStatusWindow() { }
 		private enum PanelType
 		{
 			BasicInfo = 0,
@@ -440,18 +444,18 @@ namespace Dpr.UI
 		}
 		public class Param
 		{
-			public global::System.Collections.Generic.List<global::Pml.PokePara.PokemonParam> pokemonParams;
+			public global::System.Collections.Generic.List<global::Pml.PokePara.PokemonParam> pokemonParams = new global::System.Collections.Generic.List<global::Pml.PokePara.PokemonParam>();
 			public int selectIndex;
 			public int selectTabIndex;
 			public global::Dpr.UI.PokemonStatusWindow.Param.TrainingParam training;
 			public global::Dpr.UI.PokemonStatusWindow.Param.LimitType limitType;
 			public global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusWindow.Param.BoxParam> boxParams;
-			public Param() { /*@B 0x600ACF0*/ throw null; }
+			public Param() { }
 			public class TrainingParam
 			{
-				public global::Pml.ItemNo itemNo;
+				public global::Pml.ItemNo itemNo = global::Pml.ItemNo.GINNOOUKAN;
 				public global::UnityEngine.Events.UnityAction onTraining;
-				public TrainingParam() { /*@B 0x600BBAD*/ throw null; }
+				public TrainingParam() { }
 			}
 			public enum LimitType
 			{
@@ -463,10 +467,10 @@ namespace Dpr.UI
 			}
 			public class BoxParam
 			{
-				public int tray;
-				public int pos;
+				public int tray = -1;
+				public int pos = -1;
 				public bool isPrevExchangePartner;
-				public BoxParam() { /*@B 0x600BBAE*/ throw null; }
+				public BoxParam() { }
 			}
 		}
 	}

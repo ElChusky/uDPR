@@ -11,10 +11,10 @@ namespace Dpr.UI
 		private global::UnityEngine.UI.Image _monthImage10;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite[] _numberSprites;
-		private int _minDayIndex;
-		private int _maxDayIndex;
-		private int _currentMonth;
-		private global::System.Collections.Generic.List<int> _selectDaysList;
+		private int _minDayIndex = -1;
+		private int _maxDayIndex = -1;
+		private int _currentMonth = 1;
+		private global::System.Collections.Generic.List<int> _selectDaysList = new global::System.Collections.Generic.List<int>();
 		protected override void OnInitialize() {
 			AppID = POKETCH_APPID.CALENDER;
 			for (int i = 0; i < Buttons.Length; i++)
@@ -113,6 +113,6 @@ namespace Dpr.UI
 			_selectDaysList.Sort();
 			calenderDay.SetSelectDay(!calenderDay.IsSelect);
 		}
-		public PoketchAppCalender() { /*@B 0x60057B6*/ throw null; }
+		public PoketchAppCalender() { }
 	}
 }

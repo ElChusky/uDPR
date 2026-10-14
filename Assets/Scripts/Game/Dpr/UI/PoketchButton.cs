@@ -10,11 +10,11 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite _pressedSprite;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector2 _pressedOffset;
+		private global::UnityEngine.Vector2 _pressedOffset = global::UnityEngine.Vector2.zero;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector2 _pressedTransform;
+		private global::UnityEngine.Vector2 _pressedTransform = global::UnityEngine.Vector2.zero;
 		[global::UnityEngine.SerializeField]
-		private float _pressedScale;
+		private float _pressedScale = 1f;
 		[global::UnityEngine.SerializeField]
 		private bool _canDrag;
 		[global::UnityEngine.SerializeField]
@@ -22,9 +22,9 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private bool _enableRepeat;
 		[global::UnityEngine.SerializeField]
-		private float _firstRepeatTime;
+		private float _firstRepeatTime = 0.5f;
 		[global::UnityEngine.SerializeField]
-		private float _repeatTime;
+		private float _repeatTime = 0.2f;
 		private global::UnityEngine.Vector3 _basePosition;
 		private global::UnityEngine.Vector3 _pressedPosition;
 		private global::UnityEngine.Vector2 _baseDeltaSize;
@@ -122,6 +122,6 @@ namespace Dpr.UI
                 _image.rectTransform.sizeDelta = _baseDeltaSize;
             }
         }
-		public PoketchButton() { /*@B 0x60058AE*/ throw null; }
+		public PoketchButton() { }
 	}
 }

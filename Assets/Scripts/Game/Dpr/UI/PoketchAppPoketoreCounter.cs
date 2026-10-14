@@ -18,9 +18,9 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite[] _numberSprites;
 		[global::UnityEngine.SerializeField]
-		private static global::UnityEngine.Vector3 _jumpValue;
+		private static global::UnityEngine.Vector3 _jumpValue = new global::UnityEngine.Vector3(0f, 30f, 0f);
 		[global::UnityEngine.SerializeField]
-		private static float _jumpTime;
+		private static float _jumpTime = 0.1f;
 		private global::UnityEngine.Material _matGrayScale;
 		private global::Pml.MonsNo[] _monsNos;
 		private int _prevCount;
@@ -125,7 +125,7 @@ namespace Dpr.UI
 			_ranking[index]._sequence.Join(tween).SetLoops(2, LoopType.Yoyo).OnComplete(() => _ranking[index]._sequence = null).SetLink(_ranking[index]._root).Play();
 		}
 		public PoketchAppPoketoreCounter() { }
-		static PoketchAppPoketoreCounter() { /*@B 0x6005886*/ throw null; }
+		static PoketchAppPoketoreCounter() { }
 		[global::System.Serializable]
 		private struct PoketoreCounterImages
 		{

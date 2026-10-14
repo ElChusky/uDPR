@@ -17,7 +17,7 @@ namespace Dpr.UI
 		private global::UnityEngine.Vector2 _colisionSize;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("なついている判定のランク")]
-		private int _likeFriendShipRank;
+		private int _likeFriendShipRank = 3;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("なつき度毎の近づく/逃げる速度(1s)")]
 		private float[] _touchMoveSpeed;
@@ -346,7 +346,7 @@ namespace Dpr.UI
 			float scale = enableScale ? (transform as RectTransform).lossyScale.y : 1f;
 			return new Vector2(_position.x + _colisionSize.x * 0.5f * scale, _position.y + _colisionSize.y * 0.5f * scale);
 		}
-		public PoketchAppNatsukiCheckerIcon() { /*@B 0x6005868*/ throw null; }
+		public PoketchAppNatsukiCheckerIcon() { }
 		private enum NatsukiCheckerIconState
 		{
 			Idle = 0,
