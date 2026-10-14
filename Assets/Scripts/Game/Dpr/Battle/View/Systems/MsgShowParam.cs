@@ -6,7 +6,10 @@ namespace Dpr.Battle.View.Systems
 		public static readonly global::Dpr.Battle.View.Systems.MsgShowParam Default;
 		public int MsgAfterglow;
 		public bool IsKeyWait;
-		public MsgShowParam(bool isKeyWait, int wait = 12) { /*@B 0x60065B9*/ throw null; }
+		public MsgShowParam(bool isKeyWait, int wait = 12) {
+            IsKeyWait = isKeyWait;
+            MsgAfterglow = wait;
+        }
 		static MsgShowParam() { }
 	}
 }

@@ -212,7 +212,17 @@ namespace Dpr.Battle.View.Systems
 			public float lightPower;
 			public int time;
 			public int shortTime;
-			public void SetParam(global::Dpr.Battle.View.Systems.BattleWeatherSystem.WeatherParam param) { /*@B 0x600B3E6*/ throw null; }
+			public void SetParam(global::Dpr.Battle.View.Systems.BattleWeatherSystem.WeatherParam param) {
+                weather = param.weather;
+                mainFileName = param.mainFileName;
+                cameraFileName = param.cameraFileName;
+                rangeFileName = param.rangeFileName;
+                registerName = param.registerName;
+                cameraEffctScale = param.cameraEffctScale;
+                lightPower = param.lightPower;
+                time = param.time;
+                shortTime = param.shortTime;
+            }
 			public WeatherParam() { }
 		}
 	}
