@@ -17,6 +17,6 @@ namespace Dpr.SecretBase
 			AddItem(msgFile.GetSimpleMessage("DLP_underground_545"));
 			AddItem(msgFile.GetSimpleMessage("DLP_underground_546"));
 		}
-		public FillterWindow() { /*@B 0x6003655*/ throw null; }
+		public FillterWindow() { }
 	}
 }

@@ -5,7 +5,7 @@ namespace Dpr.SecretBase
 	public class RotatePedestal : global::UnityEngine.MonoBehaviour
 	{
 		[global::UnityEngine.SerializeField]
-		private float speed;
+		private float speed = 0.5f;
 		private float time;
 		private global::UnityEngine.Transform rotateNode;
 		private void Update() {
@@ -20,6 +20,6 @@ namespace Dpr.SecretBase
 		public void SetSpeed(float speed) {
 			this.speed = speed;
 		}
-		public RotatePedestal() { /*@B 0x60035BA*/ throw null; }
+		public RotatePedestal() { }
 	}
 }

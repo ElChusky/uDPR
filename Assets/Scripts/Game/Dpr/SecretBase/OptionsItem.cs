@@ -18,6 +18,6 @@ namespace Dpr.SecretBase
 			if (disable != null)
 				disable.SetActive(isDisable);
 		}
-		public OptionsItem() { /*@B 0x6003676*/ throw null; }
+		public OptionsItem() { }
 	}
 }

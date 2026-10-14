@@ -6,9 +6,19 @@ namespace Dpr.SecretBase
 {
 	public class SecretBaseAudioManager : global::UnityEngine.MonoBehaviour
 	{
-		private readonly global::System.Collections.Generic.List<string> seNames;
-		private readonly global::System.Collections.Generic.List<uint> seIds;
-		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.SecretBase.SecretBaseAudioManager.SeId, global::UnityEngine.Coroutine> delayBuffer;
+		private readonly global::System.Collections.Generic.List<string> seNames = new global::System.Collections.Generic.List<string>
+		{
+			"s_und003",
+			"UI_common_decide",
+			"UI_common_menu_open",
+			"UI_common_menu_close",
+			"UI_common_select",
+			"s_und_beep",
+			"UI_common_beep",
+			"UI_common_cancel",
+		};
+		private readonly global::System.Collections.Generic.List<uint> seIds = new global::System.Collections.Generic.List<uint>();
+		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.SecretBase.SecretBaseAudioManager.SeId, global::UnityEngine.Coroutine> delayBuffer = new global::System.Collections.Generic.Dictionary<global::Dpr.SecretBase.SecretBaseAudioManager.SeId, global::UnityEngine.Coroutine>();
 		public void Initialize() {
 			foreach (var seName in seNames)
 				seIds.Add(Audio.AudioManager.Instance.GetIdByName(seName));
@@ -46,7 +56,7 @@ namespace Dpr.SecretBase
 			// StopDelaySe inlined (flag 0x4cbc808 @019ca798): stops and forgets this very coroutine
 			StopDelaySe(id);
 		}
-		public SecretBaseAudioManager() { /*@B 0x6003528*/ throw null; }
+		public SecretBaseAudioManager() { }
 		public enum SeId
 		{
 			PlacementStatue = 0,

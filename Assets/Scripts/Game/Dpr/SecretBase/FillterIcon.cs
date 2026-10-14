@@ -24,6 +24,6 @@ namespace Dpr.SecretBase
 		public int GetIndex() {
 			return index;
 		}
-		public FillterIcon() { /*@B 0x6003647*/ throw null; }
+		public FillterIcon() { }
 	}
 }

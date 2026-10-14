@@ -12,8 +12,8 @@ namespace Dpr.SecretBase
 		private global::UnityEngine.Transform left;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Transform right;
-		public int Width { get; private set; }
-		public int Height { get; private set; }
+		public int Width { get; private set; } = 1;
+		public int Height { get; private set; } = 1;
 		public void SetSize(int width, int height) {
 			Width = width;
 			Height = height;
@@ -57,6 +57,6 @@ namespace Dpr.SecretBase
 			right.localPosition = new Vector3(-0.45f, 0.0f, centerZ) + Vector3.left * wave;
 			right.localScale = new Vector3(0.1f, wave * 2.0f + Width, 1.0f);
 		}
-		public FieldCursorGrid() { /*@B 0x6003571*/ throw null; }
+		public FieldCursorGrid() { }
 	}
 }

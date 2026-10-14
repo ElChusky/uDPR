@@ -42,6 +42,6 @@ namespace Dpr.SecretBase
 
 			return false;
 		}
-		public PedestalIcon() { /*@B 0x600367B*/ throw null; }
+		public PedestalIcon() { }
 	}
 }

@@ -53,6 +53,6 @@ namespace Dpr.SecretBase
 
 			return false;
 		}
-		public PedestalWindow() { /*@B 0x6003683*/ throw null; }
+		public PedestalWindow() { }
 	}
 }
