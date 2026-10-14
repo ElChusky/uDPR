@@ -9,6 +9,13 @@ namespace Dpr.Battle.View
 		public bool IsFollowRot { get; set; }
 		public bool IsFollowScl { get; set; }
 		public bool IsFollowAnimRot { get; set; }
-		public PokeFollowInfo(global::Dpr.Battle.View.Objects.BOPokemon pokemon, global::Dpr.SequenceEditor.SEQ_DEF_NODE node, bool isFollowPos, bool isFollowRot, bool isFollowScl, bool isFollowAnimRot) { /*@B 0x6005F82*/ throw null; }
+		public PokeFollowInfo(global::Dpr.Battle.View.Objects.BOPokemon pokemon, global::Dpr.SequenceEditor.SEQ_DEF_NODE node, bool isFollowPos, bool isFollowRot, bool isFollowScl, bool isFollowAnimRot) {
+			Pokemon = pokemon;
+			IsFollowPos = isFollowPos;
+			IsFollowRot = isFollowRot;
+			IsFollowScl = isFollowScl;
+			Node = node;
+			IsFollowAnimRot = isFollowAnimRot;
+		}
 	}
 }

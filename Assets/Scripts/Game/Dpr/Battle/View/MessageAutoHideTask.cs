@@ -4,9 +4,16 @@ namespace Dpr.Battle.View
 	public sealed class MessageAutoHideTask : global::Dpr.Battle.View.Task
 	{
 		private global::Dpr.SequenceEditor.ISequenceViewSystem _iPtrBtlvSystem;
-		protected override bool IsFinishCondition { get { /*@B 0x6006056*/ throw null; } }
-		public MessageAutoHideTask(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem) { /*@B 0x6006057*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006058*/ throw null; }
+		protected override bool IsFinishCondition { get {
+				return _frame >= _lifeTime;
+			} }
+		public MessageAutoHideTask(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem) {
+			_iPtrBtlvSystem = pBtlvSystem;
+			_lifeTime = 10;
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _iPtrBtlvSystem);
+		}
 		protected override void OnFinishTask() { }
 	}
 }

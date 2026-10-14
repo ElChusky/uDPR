@@ -188,6 +188,12 @@ namespace Dpr.Battle.View
 				}
 			}
 		}
-		static BattleViewAssetManager() { /*@B 0x6005F07*/ throw null; }
+		static BattleViewAssetManager() {
+			CachedAssetBundle = new global::System.Collections.Generic.Dictionary<string, global::UnityEngine.Object>();
+			CachedEffectData = new global::System.Collections.Generic.List<global::System.Tuple<string, global::Effect.EffectData>>();
+			CachedModelData = new global::System.Collections.Generic.List<global::System.Tuple<string, global::Dpr.ObjectEntity>>();
+			CachedCameraFilePlayables = new global::System.Collections.Generic.Dictionary<string, global::Dpr.Battle.View.Playables.CameraFilePlayable>();
+			NeedDestroyObjects = new global::System.Collections.Generic.List<global::UnityEngine.Object>();
+		}
 	}
 }

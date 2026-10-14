@@ -8,7 +8,7 @@ namespace Dpr.Battle.View
 {
 	public static class Extensions
 	{
-		private static global::Dpr.Battle.View.ComparerMotionReplaceData _comparerCatalog;
+		private static global::Dpr.Battle.View.ComparerMotionReplaceData _comparerCatalog = new ComparerMotionReplaceData();
 		public static void SetRotation(this global::UnityEngine.Transform self, global::Dpr.Battle.View.Axis axis, float value) {
             Vector3 euler = self.rotation.eulerAngles;
             switch (axis)
@@ -61,8 +61,28 @@ namespace Dpr.Battle.View
 		public static global::DG.Tweening.Tweener DOVector(this global::UnityEngine.Vector3 self, global::UnityEngine.Vector3 endValue, float duration) {
             return DOTween.To(() => self, x => self = x, endValue, duration);
         }
-		public static global::XLSXContent.BattleDefaultPlacementData.SheetDefaultCharaPlacementData GetTrainerPlacementData(this global::XLSXContent.BattleDefaultPlacementData self, global::Dpr.Battle.Logic.BtlRule rule, global::Dpr.Battle.Logic.BtlvPos vPos, global::Pml.PokePara.Size pokeSize, global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT placement, out global::UnityEngine.Vector3 pos, out int rotY) { /*@B 0x6005F21*/ throw null; }
-		public static global::XLSXContent.BattleDefaultPlacementData.SheetDefaultCharaPlacementData GetPokemonPlacement(this global::XLSXContent.BattleDefaultPlacementData self, global::Dpr.Battle.Logic.BtlRule rule, global::Dpr.Battle.Logic.BtlvPos vPos, global::Pml.PokePara.Size size, global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT placement, out global::UnityEngine.Vector3 pos, out int rotY) { /*@B 0x6005F22*/ throw null; }
+		public static global::XLSXContent.BattleDefaultPlacementData.SheetDefaultCharaPlacementData GetTrainerPlacementData(this global::XLSXContent.BattleDefaultPlacementData self, global::Dpr.Battle.Logic.BtlRule rule, global::Dpr.Battle.Logic.BtlvPos vPos, global::Pml.PokePara.Size pokeSize, global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT placement, out global::UnityEngine.Vector3 pos, out int rotY) {
+            pos = global::UnityEngine.Vector3.zero;
+            rotY = 0;
+            var data = System.Array.Find(self.DefaultCharaPlacementData, x => x.BtlRule == rule && x.BtlvPos == vPos && x.Size == pokeSize && x.UseSituation == placement);
+            if (data != null)
+            {
+                pos = data.TrainerPos;
+                rotY = data.RotY;
+            }
+            return data;
+        }
+		public static global::XLSXContent.BattleDefaultPlacementData.SheetDefaultCharaPlacementData GetPokemonPlacement(this global::XLSXContent.BattleDefaultPlacementData self, global::Dpr.Battle.Logic.BtlRule rule, global::Dpr.Battle.Logic.BtlvPos vPos, global::Pml.PokePara.Size size, global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT placement, out global::UnityEngine.Vector3 pos, out int rotY) {
+            pos = global::UnityEngine.Vector3.zero;
+            rotY = 0;
+            var data = System.Array.Find(self.DefaultCharaPlacementData, x => x.BtlRule == rule && x.BtlvPos == vPos && x.Size == size && x.UseSituation == placement);
+            if (data != null)
+            {
+                pos = data.PokePos;
+                rotY = data.RotY;
+            }
+            return data;
+        }
 		public static global::XLSXContent.BattleDefaultPlacementData.SheetDefaultCameraPlacementData GetDefaultCameraPlacementData(this global::XLSXContent.BattleDefaultPlacementData self, global::Dpr.Battle.Logic.BtlRule rule, global::Pml.PokePara.Size pokePlayer, global::Pml.PokePara.Size pokeEnemy) {
             return System.Array.Find(self.DefaultCameraPlacementData, x => x.BtlRule == rule && x.PokeSizeP == pokePlayer && x.PokeSizeE == pokeEnemy);
         }
@@ -164,17 +184,47 @@ namespace Dpr.Battle.View
 		public static string GetBattleConstantString(this global::XLSXContent.BattleDataTable self, global::Dpr.Battle.View.BattleConstantKey key) {
             return self.BattleConstant[(int)key].StringValue;
         }
-		public static global::XLSXContent.BattleDataTable.SheetMotionTimingData GetMotionTimingData(this global::XLSXContent.BattleDataTable self, global::Pml.MonsNo monsNo, int formNo, global::Pml.Sex sex) { /*@B 0x6005F30*/ throw null; }
-		public static global::XLSXContent.BattleDataTable.SheetMotionReplaceData GetMotionReplaceData(this global::XLSXContent.BattleDataTable self, int uniqueId) { /*@B 0x6005F31*/ throw null; }
+		public static global::XLSXContent.BattleDataTable.SheetMotionTimingData GetMotionTimingData(this global::XLSXContent.BattleDataTable self, global::Pml.MonsNo monsNo, int formNo, global::Pml.Sex sex) {
+            return System.Linq.Enumerable.FirstOrDefault(self.MotionTimingData, x => x.MonsNo == (int)monsNo && x.FormNo == formNo && x.Sex == (int)sex);
+        }
+		public static global::XLSXContent.BattleDataTable.SheetMotionReplaceData GetMotionReplaceData(this global::XLSXContent.BattleDataTable self, int uniqueId) {
+            for (int i = 0; i < self.MotionReplaceData.Length; i++)
+            {
+                if (self.MotionReplaceData[i].UniqueID == uniqueId)
+                    return self.MotionReplaceData[i];
+            }
+            return null;
+        }
 		public static global::XLSXContent.BattleDataTable.SheetPokemonEntryMotionData GetPokemonEntryMotionData(this global::XLSXContent.BattleDataTable self, int index) {
             if (index < self.PokemonEntryMotionData.Length)
                 return self.PokemonEntryMotionData[index];
 
             return null;
         }
-		public static global::XLSXContent.BattleDataTable.SheetAgeEyeBlink GetAgeEyeBlinkData(this global::XLSXContent.BattleDataTable self, global::Dpr.Trainer.TrainerAge age) { /*@B 0x6005F33*/ throw null; }
-		public static global::XLSXContent.BattleDataTable.SheetDisableBlinkPokemon GetDisableBlinkPokemon(this global::XLSXContent.BattleDataTable self, global::Pml.MonsNo no) { /*@B 0x6005F34*/ throw null; }
-		public static global::XLSXContent.BattleDataTable.SheetPokemonMotionBlendTime GetPokemonMotionBlendTime(this global::XLSXContent.BattleDataTable self, global::Pml.MonsNo no) { /*@B 0x6005F35*/ throw null; }
+		public static global::XLSXContent.BattleDataTable.SheetAgeEyeBlink GetAgeEyeBlinkData(this global::XLSXContent.BattleDataTable self, global::Dpr.Trainer.TrainerAge age) {
+            for (int i = 0; i < self.AgeEyeBlink.Length; i++)
+            {
+                if (self.AgeEyeBlink[i].age == age)
+                    return self.AgeEyeBlink[i];
+            }
+            return null;
+        }
+		public static global::XLSXContent.BattleDataTable.SheetDisableBlinkPokemon GetDisableBlinkPokemon(this global::XLSXContent.BattleDataTable self, global::Pml.MonsNo no) {
+            for (int i = 0; i < self.DisableBlinkPokemon.Length; i++)
+            {
+                if (self.DisableBlinkPokemon[i].MonsNo == no)
+                    return self.DisableBlinkPokemon[i];
+            }
+            return null;
+        }
+		public static global::XLSXContent.BattleDataTable.SheetPokemonMotionBlendTime GetPokemonMotionBlendTime(this global::XLSXContent.BattleDataTable self, global::Pml.MonsNo no) {
+            for (int i = 0; i < self.PokemonMotionBlendTime.Length; i++)
+            {
+                if (self.PokemonMotionBlendTime[i].MonsNo == no)
+                    return self.PokemonMotionBlendTime[i];
+            }
+            return null;
+        }
 		public static global::XLSXContent.BattleDataTable.SheetInterpolationSequence GetInterpolationSequence(this global::XLSXContent.BattleDataTable self, string seqName) {
             foreach (var seq in self.InterpolationSequence)
             {
@@ -333,6 +383,6 @@ namespace Dpr.Battle.View
 		public static T Back<T>(this global::System.Collections.Generic.IList<T> self) {
             return self[self.Count - 1];
         }
-		static Extensions() { /*@B 0x6005F46*/ throw null; }
+		static Extensions() { }
 	}
 }

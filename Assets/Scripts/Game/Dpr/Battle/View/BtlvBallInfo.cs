@@ -3,14 +3,23 @@ namespace Dpr.Battle.View
 {
 	public struct BtlvBallInfo
 	{
-		public static readonly global::Dpr.Battle.View.BtlvBallInfo Default;
+		public static readonly global::Dpr.Battle.View.BtlvBallInfo Default = new BtlvBallInfo { ballId = global::Pml.BallId.MONSUTAABOORU, hasCapsule = false, isStrangeBall = false, affixSealDatas = null, sealCnt = 0 };
 		public global::Pml.BallId ballId;
 		public bool hasCapsule;
 		public bool isStrangeBall;
 		public global::Dpr.BallDeco.AffixSealData[] affixSealDatas;
 		public byte sealCnt;
-		public bool HasBallSeal { get { /*@B 0x6005EEB*/ throw null; } }
-		public void Clear() { /*@B 0x6005EEC*/ throw null; }
-		static BtlvBallInfo() { /*@B 0x6005EED*/ throw null; }
+		public bool HasBallSeal { get {
+				if (affixSealDatas != null)
+					return sealCnt != 0;
+				return false;
+			} }
+		public void Clear() {
+			ballId = 0;
+			isStrangeBall = false;
+			affixSealDatas = null;
+			sealCnt = 0;
+		}
+		static BtlvBallInfo() { }
 	}
 }

@@ -13,8 +13,32 @@ namespace Dpr.Battle.View
 		private bool _isPlayPinchSound;
 		private global::System.Action _onComplete;
 		private bool _isFinishLoad;
-		public PokeReloadTask(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem, global::Dpr.Battle.Logic.BtlvPos vPos, global::System.Action onComplete) { /*@B 0x6005FFE*/ throw null; }
-		public PokeReloadTask(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem, global::Dpr.Battle.Logic.BtlvPos vPos, global::Dpr.Battle.Logic.BtlvPos vPosTarget, global::System.Action onComplete) { /*@B 0x6005FFF*/ throw null; }
+		public PokeReloadTask(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem, global::Dpr.Battle.Logic.BtlvPos vPos, global::System.Action onComplete) {
+			_iPtrBtlvSystem = pBtlvSystem;
+			_seq = Sequence.START_DELETE;
+			_vPos = vPos;
+			_vPosTarget = vPos;
+			_isMetamorphosus = false;
+			_isSimpleParam = false;
+			_simpleParam = default;
+			bool isPlayPinchSound = _iPtrBtlvSystem.GetPokeModel(vPos).GetIsPlayPinchSound();
+			_onComplete = onComplete;
+			_isPlayPinchSound = isPlayPinchSound;
+			_isFinishLoad = false;
+		}
+		public PokeReloadTask(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem, global::Dpr.Battle.Logic.BtlvPos vPos, global::Dpr.Battle.Logic.BtlvPos vPosTarget, global::System.Action onComplete) {
+			_iPtrBtlvSystem = pBtlvSystem;
+			_seq = Sequence.START_DELETE;
+			_vPos = vPos;
+			_vPosTarget = vPosTarget;
+			_isMetamorphosus = true;
+			_isSimpleParam = false;
+			_simpleParam = default;
+			bool isPlayPinchSound = _iPtrBtlvSystem.GetPokeModel(vPos).GetIsPlayPinchSound();
+			_onComplete = onComplete;
+			_isPlayPinchSound = isPlayPinchSound;
+			_isFinishLoad = false;
+		}
 		public override void Update(float deltaTime, float currentSeqeunceTime, int step) {
 			Objects.BOPokemon pokeModel = _iPtrBtlvSystem.GetPokeModel(_vPos);
 			Systems.BattleCharacterSystem system = _iPtrBtlvSystem.GetCharacterSystem();

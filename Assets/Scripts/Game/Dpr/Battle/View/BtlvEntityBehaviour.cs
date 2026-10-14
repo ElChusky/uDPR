@@ -13,6 +13,6 @@ namespace Dpr.Battle.View
 		}
 		protected virtual void OnUpdate(float deltaTime) { }
 		protected virtual void OnLateUpdate(float deltaTime) { }
-		protected BtlvEntityBehaviour() { /*@B 0x6006075*/ throw null; }
+		protected BtlvEntityBehaviour() { }
 	}
 }

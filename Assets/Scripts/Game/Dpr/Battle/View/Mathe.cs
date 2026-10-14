@@ -4,9 +4,19 @@ namespace Dpr.Battle.View
 {
 	public static class Mathe
 	{
-		public static int Rewind(in int value, in int min, in int max) { /*@B 0x6005F84*/ throw null; }
-		public static float FrameToSecond(in int frame) { /*@B 0x6005F85*/ throw null; }
-		public static float FrameToSecond(in int frame, in int fps = 30) { /*@B 0x6005F86*/ throw null; }
+		public static int Rewind(in int value, in int min, in int max) {
+            if (value < min)
+                return max;
+            if (value > max)
+                return min;
+            return value;
+        }
+		public static float FrameToSecond(in int frame) {
+            return 1.0f / global::UnityEngine.Application.targetFrameRate * frame;
+        }
+		public static float FrameToSecond(in int frame, in int fps = 30) {
+            return 1.0f / fps * frame;
+        }
 		public static int SecondToFrame(in float time) {
             // @01e509dc: `time` is loaded BEFORE get_targetFrameRate and the method has its own flag (0x4cbed6b, the
             // two-argument overload's 0x4cbed6c is not tested) = the expression written here, not a call of the overload.
@@ -16,60 +26,169 @@ namespace Dpr.Battle.View
             return (int)Math.Round(time / (1.0f / Application.targetFrameRate));
 #endif
         }
-		public static int SecondToFrame(in float time, in int fps = 30) { /*@B 0x6005F88*/ throw null; }
-		public static bool Limit(in int value, in int limit) { /*@B 0x6005F89*/ throw null; }
-		public static float Inverse(float val) { /*@B 0x6005F8A*/ throw null; }
-		public static int Inverse(int val) { /*@B 0x6005F8B*/ throw null; }
-		public static global::UnityEngine.Vector3 Inverse(global::UnityEngine.Vector3 vec) { /*@B 0x6005F8C*/ throw null; }
-		public static void SinCosRad(ref float sin, ref float cos, in float radian) { /*@B 0x6005F8D*/ throw null; }
-		public static void SinCosDeg(ref float sin, ref float cos, in float degree) { /*@B 0x6005F8E*/ throw null; }
-		public static float SinDeg(in float degree) { /*@B 0x6005F8F*/ throw null; }
+		public static int SecondToFrame(in float time, in int fps = 30) {
+            return (int)Math.Round(time / (1.0f / fps));
+        }
+		public static bool Limit(in int value, in int limit) {
+            return value > limit;
+        }
+		public static float Inverse(float val) {
+            return -val;
+        }
+		public static int Inverse(int val) {
+            return -val;
+        }
+		public static global::UnityEngine.Vector3 Inverse(global::UnityEngine.Vector3 vec) {
+            return -vec;
+        }
+		public static void SinCosRad(ref float sin, ref float cos, in float radian) {
+            sin = (float)Math.Sin(radian);
+            cos = (float)Math.Cos(radian);
+        }
+		public static void SinCosDeg(ref float sin, ref float cos, in float degree) {
+            sin = (float)Math.Sin(DegreeToRadian(degree));
+            cos = (float)Math.Cos(DegreeToRadian(degree));
+        }
+		public static float SinDeg(in float degree) {
+            return (float)Math.Sin(DegreeToRadian(degree));
+        }
 		public static float DegreeToRadian(in float degree) {
             // FIX (b234, debt b076 / brief lesson 27): @01e50de0 multiplies by 0x3c8efa35 = 0.017453292f
             // (the base code's 0.01745329f is 0x3c8efa34, one ULP low); every inlined copy (SinDeg, SinCosDeg, Btlv.RotDeg / RotDegXZ) uses 0x3c8efa35 too.
             return degree * 0.017453292f;
         }
-		public static float Atan2(in float y, in float x) { /*@B 0x6005F91*/ throw null; }
-		public static float Atan2Deg(in float y, in float x) { /*@B 0x6005F92*/ throw null; }
-		public static float Length(in float x, in float y) { /*@B 0x6005F93*/ throw null; }
-		public static float Rate(in int value) { /*@B 0x6005F94*/ throw null; }
-		public static global::UnityEngine.Vector3 Offset(in global::UnityEngine.Vector3 from, in global::UnityEngine.Vector3 to) { /*@B 0x6005F95*/ throw null; }
-		public static global::UnityEngine.Vector3 VectorMulPerElem(in global::UnityEngine.Vector3 vec1, in global::UnityEngine.Vector3 vec2) { /*@B 0x6005F96*/ throw null; }
-		public static global::UnityEngine.Vector4 VectorMulPerElem(in global::UnityEngine.Vector4 vec1, in global::UnityEngine.Vector4 vec2) { /*@B 0x6005F97*/ throw null; }
-		public static float CM2M(in float val) { /*@B 0x6005F98*/ throw null; }
-		public static global::UnityEngine.Vector3 CM2M(in global::UnityEngine.Vector3 vec) { /*@B 0x6005F99*/ throw null; }
-		public static global::UnityEngine.Vector3 M2CM(in global::UnityEngine.Vector3 vec) { /*@B 0x6005F9A*/ throw null; }
-		public static global::UnityEngine.Vector3 CoordinateAdjust(global::UnityEngine.Vector3 vec, bool toSWSH = false) { /*@B 0x6005F9B*/ throw null; }
-		public static global::UnityEngine.Vector3 RotationAdjust(global::UnityEngine.Vector3 vec) { /*@B 0x6005F9C*/ throw null; }
-		public static void RotationAdjust360(ref float value) { /*@B 0x6005F9D*/ throw null; }
-		public static int Bool2Int(bool value) { /*@B 0x6005F9E*/ throw null; }
+		public static float Atan2(in float y, in float x) {
+            return (float)Math.Atan2(y, x);
+        }
+		public static float Atan2Deg(in float y, in float x) {
+            return (float)Math.Atan2(y, x) * 57.29578f;
+        }
+		public static float Length(in float x, in float y) {
+            return (float)Math.Sqrt(x * x + y * y);
+        }
+		public static float Rate(in int value) {
+            return value * 0.01f;
+        }
+		public static global::UnityEngine.Vector3 Offset(in global::UnityEngine.Vector3 from, in global::UnityEngine.Vector3 to) {
+            return new global::UnityEngine.Vector3(from.x - to.x, from.y - to.y, from.z - to.z);
+        }
+		public static global::UnityEngine.Vector3 VectorMulPerElem(in global::UnityEngine.Vector3 vec1, in global::UnityEngine.Vector3 vec2) {
+            return new global::UnityEngine.Vector3(vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z);
+        }
+		public static global::UnityEngine.Vector4 VectorMulPerElem(in global::UnityEngine.Vector4 vec1, in global::UnityEngine.Vector4 vec2) {
+            return new global::UnityEngine.Vector4(vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z, vec1.w * vec2.w);
+        }
+		public static float CM2M(in float val) {
+            return val * 0.01f;
+        }
+		public static global::UnityEngine.Vector3 CM2M(in global::UnityEngine.Vector3 vec) {
+            return new global::UnityEngine.Vector3(vec.x * 0.01f, vec.y * 0.01f, vec.z * 0.01f);
+        }
+		public static global::UnityEngine.Vector3 M2CM(in global::UnityEngine.Vector3 vec) {
+            return new global::UnityEngine.Vector3(vec.x * 100f, vec.y * 100f, vec.z * 100f);
+        }
+		public static global::UnityEngine.Vector3 CoordinateAdjust(global::UnityEngine.Vector3 vec, bool toSWSH = false) {
+            if (toSWSH)
+                return new global::UnityEngine.Vector3(vec.x * -100f, vec.y * 100f, vec.z * 100f);
+            return new global::UnityEngine.Vector3(vec.x * -0.01f, vec.y * 0.01f, vec.z * 0.01f);
+        }
+		public static global::UnityEngine.Vector3 RotationAdjust(global::UnityEngine.Vector3 vec) {
+            vec.y = -vec.y;
+            return vec;
+        }
+		public static void RotationAdjust360(ref float value) {
+            if (value > 180f)
+                value -= 360f;
+            else if (value < -180f)
+                value += 360f;
+        }
+		public static int Bool2Int(bool value) {
+            return value ? 1 : 0;
+        }
 		public static bool Int2Bool(int value) { return value == 1; }
-		public static int Max(in int a, in int b) { /*@B 0x6005FA0*/ throw null; }
+		public static int Max(in int a, in int b) {
+            return a > b ? a : b;
+        }
 		public static float Min(in float a, in float b) {
             // FIX (NaN polarity) @01e5130c `fcsel s0, a, b, mi` = a < b ? a : b (the base code's `b <= a ? b : a` returned a for NaN).
             return a < b ? a : b;
         }
-		public static int Min(in int a, in int b) { /*@B 0x6005FA2*/ throw null; }
-		public static float Raito(in int a, in int b) { /*@B 0x6005FA3*/ throw null; }
-		public static float Raito(in float mn, in float mx, in float nw) { /*@B 0x6005FA4*/ throw null; }
-		public static int ClampMin(in int val, in int min = 0) { /*@B 0x6005FA5*/ throw null; }
+		public static int Min(in int a, in int b) {
+            return a < b ? a : b;
+        }
+		public static float Raito(in int a, in int b) {
+            return (float)a / (float)b;
+        }
+		public static float Raito(in float mn, in float mx, in float nw) {
+            return (nw - mn) / (mx - mn);
+        }
+		public static int ClampMin(in int val, in int min = 0) {
+            return val < min ? min : val;
+        }
 		public static float ClampMin(in float val, in float min = 0f) {
             // FIX (NaN polarity) @01e513ac `fcsel s0, min, val, mi` = val < min ? min : val (the base code's `min <= val ? val : min` returned min for a NaN val).
             return val < min ? min : val;
         }
-		public static void SetVectorSelectElem(ref global::UnityEngine.Vector3 retVec, ref global::UnityEngine.Vector3 vec, in bool[] enableFlags) { /*@B 0x6005FA7*/ throw null; }
+		public static void SetVectorSelectElem(ref global::UnityEngine.Vector3 retVec, ref global::UnityEngine.Vector3 vec, in bool[] enableFlags) {
+            if (enableFlags[0])
+                retVec.x = vec.x;
+            if (enableFlags[1])
+                retVec.y = vec.y;
+            if (enableFlags[2])
+                retVec.z = vec.z;
+        }
 		public static void Swap<T>(ref T a, ref T b) { /*@B 0x6005FA8*/ throw null; }
 		public static class Easing
 		{
-			public static global::UnityEngine.Vector4 EasedValue(global::UnityEngine.Vector4 from, global::UnityEngine.Vector4 to, float raito, global::DG.Tweening.Ease easingType) { /*@B 0x600B1B9*/ throw null; }
-			public static float EasedValue(float from, float to, float raito, global::DG.Tweening.Ease easingType) { /*@B 0x600B1BA*/ throw null; }
+			public static global::UnityEngine.Vector4 EasedValue(global::UnityEngine.Vector4 from, global::UnityEngine.Vector4 to, float raito, global::DG.Tweening.Ease easingType) {
+				float x = DG.Tweening.DOVirtual.EasedValue(from.x, to.x, raito, easingType);
+				float y = DG.Tweening.DOVirtual.EasedValue(from.y, to.y, raito, easingType);
+				float z = DG.Tweening.DOVirtual.EasedValue(from.z, to.z, raito, easingType);
+				float w = DG.Tweening.DOVirtual.EasedValue(from.w, to.w, raito, easingType);
+				return new global::UnityEngine.Vector4(x, y, z, w);
+			}
+			public static float EasedValue(float from, float to, float raito, global::DG.Tweening.Ease easingType) {
+				return DG.Tweening.DOVirtual.EasedValue(from, to, raito, easingType);
+			}
 		}
 		public static class Btlv
 		{
-			public static void RotRad(ref float x, ref float z, in float rad) { /*@B 0x600B1BB*/ throw null; }
-			public static void RotDeg(ref float x, ref float z, in float deg) { /*@B 0x600B1BC*/ throw null; }
-			public static void RotDegXZ(ref global::UnityEngine.Vector3 vec, in float deg) { /*@B 0x600B1BD*/ throw null; }
-			public static global::UnityEngine.Vector3 Rotate(in global::UnityEngine.Vector3 origin, in global::UnityEngine.Quaternion rotation) { /*@B 0x600B1BE*/ throw null; }
+			public static void RotRad(ref float x, ref float z, in float rad) {
+				float px = x;
+				float pz = z;
+				float sin = (float)Math.Sin(rad);
+				float cos = (float)Math.Cos(rad);
+				x = px * cos - pz * sin;
+				z = px * sin + pz * cos;
+			}
+			public static void RotDeg(ref float x, ref float z, in float deg) {
+				float px = x;
+				float pz = z;
+				float sin = (float)Math.Sin(DegreeToRadian(deg));
+				float cos = (float)Math.Cos(DegreeToRadian(deg));
+				x = px * cos - pz * sin;
+				z = px * sin + pz * cos;
+			}
+			public static void RotDegXZ(ref global::UnityEngine.Vector3 vec, in float deg) {
+				float px = vec.x;
+				float pz = vec.z;
+				float sin = (float)Math.Sin(DegreeToRadian(deg));
+				float cos = (float)Math.Cos(DegreeToRadian(deg));
+				vec.x = px * cos - pz * sin;
+				vec.z = px * sin + pz * cos;
+			}
+			public static global::UnityEngine.Vector3 Rotate(in global::UnityEngine.Vector3 origin, in global::UnityEngine.Quaternion rotation) {
+				// 01e516d0: Vector3.zero is fetched, then q * (v, 0) * conj(q) is expanded field by field (no Unity operator calls)
+				global::UnityEngine.Vector3 result = global::UnityEngine.Vector3.zero;
+				float a = origin.x * rotation.w - origin.y * rotation.z + origin.z * rotation.y;
+				float b = rotation.w * origin.y + origin.x * rotation.z - origin.z * rotation.x;
+				float c = rotation.z * origin.z + (origin.y * rotation.y + origin.x * rotation.x);
+				float d = rotation.w * origin.z + (origin.y * rotation.x - origin.x * rotation.y);
+				result.x = rotation.y * d + (rotation.w * a + rotation.x * c) - rotation.z * b;
+				result.y = rotation.z * a + (rotation.y * c + (rotation.w * b - rotation.x * d));
+				result.z = rotation.z * c + (rotation.x * b + rotation.w * d - rotation.y * a);
+				return result;
+			}
 		}
 	}
 }

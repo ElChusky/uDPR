@@ -67,6 +67,6 @@ namespace Dpr.Battle.View
                 });
             }
         }
-		public BattleViewCore() { /*@B 0x6005F18*/ throw null; }
+		public BattleViewCore() { }
 	}
 }

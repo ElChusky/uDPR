@@ -4,7 +4,9 @@ namespace Dpr.Battle.View
 	public abstract class BtlvBehaviour : global::UnityEngine.MonoBehaviour
 	{
 		private global::UnityEngine.Transform _cachedTransform;
-		public global::UnityEngine.Transform transform { get { /*@B 0x600606F*/ throw null; } }
+		public global::UnityEngine.Transform transform { get {
+				return this.GetComponentThis(ref _cachedTransform);
+			} }
 		protected BtlvBehaviour() { }
 	}
 }
