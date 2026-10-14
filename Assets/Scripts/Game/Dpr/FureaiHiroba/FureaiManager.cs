@@ -18,8 +18,8 @@ namespace Dpr.FureaiHiroba
 	{
 		public bool isUpdateStop;
 		public int TalkPokeIndex;
-		public int TalkItemNo;
-		public int TalkSealNo;
+		public int TalkItemNo = -1;
+		public int TalkSealNo = -1;
 		public bool isCreatingPoke;
 		public bool isSyuugouPoke;
 		public bool isKaisanPoke;
@@ -37,28 +37,28 @@ namespace Dpr.FureaiHiroba
 		private global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> fureaiPokeModels = new List<FureaiPokeModel>(6);
 		private global::System.Collections.IEnumerator AddPokeCor;
 		[global::UnityEngine.SerializeField]
-		private int MaxPitch;
+		private int MaxPitch = 60;
 		[global::UnityEngine.SerializeField]
-		private int MinPitch;
+		private int MinPitch = 20;
 		[global::UnityEngine.SerializeField]
-		private int MaxFov;
+		private int MaxFov = 26;
 		[global::UnityEngine.SerializeField]
-		private int MinFov;
+		private int MinFov = 10;
 		[global::UnityEngine.SerializeField]
-		private float pitch;
+		private float pitch = 45.0f;
 		[global::UnityEngine.SerializeField]
-		private float fov;
+		private float fov = 20.0f;
 		[global::UnityEngine.SerializeField]
-		private float far;
+		private float far = 30.0f;
 		private global::DG.Tweening.Tweener Tw_CamPitch;
 		private global::DG.Tweening.Tweener Tw_CamFov;
-		public static global::System.Collections.Generic.List<int> MemoryDebugList;
+		public static global::System.Collections.Generic.List<int> MemoryDebugList = new List<int>();
 		private bool isAlreadyKutibue;
-		public int AnimID;
-		private static readonly global::UnityEngine.Vector2Int[] EnterPosArrayLeft;
-		private static readonly global::UnityEngine.Vector2Int[] EnterPosArrayRight;
-		public static readonly int[] HappyAnimID;
-		private static readonly global::EffectFieldID[] effectFieldIDs;
+		public int AnimID = 45;
+		private static readonly global::UnityEngine.Vector2Int[] EnterPosArrayLeft = new Vector2Int[] { new Vector2Int(10, 43), new Vector2Int(13, 43), new Vector2Int(16, 45), new Vector2Int(12, 41), new Vector2Int(16, 42) };
+		private static readonly global::UnityEngine.Vector2Int[] EnterPosArrayRight = new Vector2Int[] { new Vector2Int(51, 44), new Vector2Int(53, 43), new Vector2Int(51, 42), new Vector2Int(53, 41), new Vector2Int(49, 41) };
+		public static readonly int[] HappyAnimID = new int[] { FieldPokemonEntity.Animation.Happy02, FieldPokemonEntity.Animation.Happy03, FieldPokemonEntity.Animation.Happy01 };
+		private static readonly global::EffectFieldID[] effectFieldIDs = new EffectFieldID[] { EffectFieldID.EF_F_TRADE_BG_01, EffectFieldID.EF_F_TRADE_BG_02, EffectFieldID.EF_F_TRADE_TRANSBALL_01, EffectFieldID.EF_F_TRADE_BALL01, EffectFieldID.EF_F_TRADE_TRAIL_01, EffectFieldID.EF_F_TRADE_SLOWTRAIL_01 };
 		private int effIndex;
 		private global::Dpr.FureaiHiroba.FureaiPokeModel firstMod;
 		[global::Dpr.SubContents.ButtonAttribute("DebugSE", "DebugSE", new object[] {  })]
@@ -131,14 +131,42 @@ namespace Dpr.FureaiHiroba
 		public int button27;
 		[global::Dpr.SubContents.ButtonAttribute("_DebugAddPoke", "グレイシア", new object[] { (global::Pml.MonsNo)(471) })]
 		public int button28;
-		public bool isCanCreatePoke { get { /*@B 0x600342B*/ throw null; } }
+		public bool isCanCreatePoke { get { return !isCreatingPoke && pokeFactory.PokeList.Count == 0; } }
 		public bool isCanSyuugou { get => !isSyuugouPoke && pokeFactory.PokeList.Count != 0; }
-		public bool isCanKaisan { get { /*@B 0x600342D*/ throw null; } }
-		private bool isOn_PulsOrMinus { get { /*@B 0x600342E*/ throw null; } }
-		private bool isRelease_PulsOrMinus { get { /*@B 0x600342F*/ throw null; } }
-		private global::System.Collections.IEnumerator Start() { /*@B 0x6003430*/ throw null; }
+		public bool isCanKaisan { get { return !isKaisanPoke && isEntering; } }
+		private bool isOn_PulsOrMinus { get { return (GameController.on & GameController.ButtonMask.Plus) != 0 || (GameController.on & GameController.ButtonMask.Minus) != 0; } }
+		private bool isRelease_PulsOrMinus { get { return (GameController.release & GameController.ButtonMask.Plus) != 0 || (GameController.release & GameController.ButtonMask.Minus) != 0; } }
+		private global::System.Collections.IEnumerator Start() {
+            pitch = 40.0f;
+            fov = 18.0f;
+            yield return fureaiDataManager.LoadMD();
+
+            yield return fureaiDataManager.Init();
+
+            yield return UIManager.Instance.OpLoadWindows(new List<UIWindowID>() { UIWindowID.FUREAI_POKESELECT }, true);
+
+            yield return new WaitForEndOfFrame();
+
+            pokeFactory.Init(fureaiDataManager);
+            pokeWalkMng.Init(fureaiDataManager, pokeFactory.PokeList);
+
+            Sequencer.update += MyUpdate;
+            Sequencer.lateUpdate += MyLateUpdate;
+
+            _EnterHirobaCreate = FureaiEnterPokeCreate;
+            _EnterHirobaKaisan = HirobaEnterKaisan;
+            _ExitHirobaSyuugou = HirobaExitSyuugou;
+
+            FieldManager.fwMng.isEvent = false;
+            FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_PAIR, false);
+        }
 		public void SetDataManager(global::Dpr.FureaiHiroba.FureaiDataManager dataManager) { this.fureaiDataManager = dataManager; }
-		public bool IsEnterble(int monsNo) { /*@B 0x6003432*/ throw null; }
+		public bool IsEnterble(int monsNo) {
+            if (monsNo == 0)
+                return false;
+
+            return fureaiDataManager.EnterblePokeList.FindIndex(x => monsNo == x) != -1;
+        }
 		private void MyUpdate(float deltaTime) {
             pokeWalkMng.MyUpdate(deltaTime);
             pokeFactory.PokeList.RemoveAll(x => x.GetEntity() == null);
@@ -224,18 +252,262 @@ namespace Dpr.FureaiHiroba
                 }
             }
         }
-		private bool CheckLongPush(float duration) { /*@B 0x6003434*/ throw null; }
-		private bool KutibueInput() { /*@B 0x6003435*/ throw null; }
-		private void Kutibue_Yobiyose() { /*@B 0x6003436*/ throw null; }
-		private void Kutibue_Kaisan() { /*@B 0x6003437*/ throw null; }
-		private global::DG.Tweening.Tweener ToCameraDefault(float duration = 0.5f) { /*@B 0x6003438*/ throw null; }
-		private void MyLateUpdate(float deltaTime) { /*@B 0x6003439*/ throw null; }
-		public void WalkCountClear(int TemotiNo) { /*@B 0x600343A*/ throw null; }
-		public global::FieldObjectEntity GetPokeEntityByTemotiNo(int temotiNo) { /*@B 0x600343B*/ throw null; }
-		public void DelPoke(global::Dpr.FureaiHiroba.FureaiPokeModel model) { /*@B 0x600343C*/ throw null; }
-		public void Destroy() { /*@B 0x600343D*/ throw null; }
-		private void FureaiEnterPokeCreate(uint SelectTemotiNo) { /*@B 0x600343E*/ throw null; }
-		private global::System.Collections.IEnumerator CreatePokeForFureaiEnter(uint SelectPoke_TemotiNo) { /*@B 0x600343F*/ throw null; }
+		private bool CheckLongPush(float duration) {
+            long now = DateTime.Now.Ticks;
+            return duration * 10000000.0f < (float)(now - Math.Max(GameController.times[GameController.ButtonIndex.Plus], GameController.times[GameController.ButtonIndex.Minus]));
+        }
+		private bool KutibueInput() {
+            if (isOn_PulsOrMinus)
+            {
+                if (CheckLongPush(0.5f))
+                    Kutibue_Kaisan();
+            }
+            else if (isRelease_PulsOrMinus)
+            {
+                Kutibue_Yobiyose();
+            }
+            else
+            {
+                isAlreadyKutibue = false;
+                return false;
+            }
+            return true;
+        }
+		private void Kutibue_Yobiyose() {
+            if (!PlayerWork.isPlayerInputActive || isAlreadyKutibue)
+                return;
+
+            Vector3 pos = EntityManager.activeFieldPlayer.transform.position;
+            List<FureaiPokeModel> list = pokeFactory.PokeList.FindAll(x =>
+            {
+                if (!x.CheckState<SanpoState>() && !x.CheckState<SanpoPairState>())
+                    return false;
+                return Vector3.Distance(pos, x.walkData.entity.transform.position) < 12.0f;
+            });
+
+            PlayerWork.isPlayerInputActive = false;
+            EntityManager.activeFieldPlayer.GetAnimationPlayer().Play(0, 0.2f, 0.0f);
+
+            Transform playerTra = EntityManager.activeFieldPlayer.transform;
+            Sequencer.Start(Utils.LoadEffect(EffectContestID.EF_SU_AMITY_WHISTLE_CALL, eff =>
+            {
+                global::Effect.EffectManager.Instance.Play(eff, playerTra.position, playerTra.rotation, null, null);
+            }));
+
+            DOVirtual.DelayedCall(0.2f, () =>
+            {
+                float maxDelay = 0.0f;
+                list.ForEach(x =>
+                {
+                    float delay = Vector3.Distance(pos, x.walkData.entity.transform.position) / 20.0f;
+                    if (maxDelay < delay)
+                        maxDelay = delay;
+
+                    DOVirtual.DelayedCall(delay, () =>
+                    {
+                        x.controller.emoticon.Enter(0, false);
+                        x.controller.emoticon.PlaySeAmbient(0);
+                        x.sanpoModel.actionModel.corSystem.Cancel();
+                        x.AI.GetNowState().Cancel();
+                        x.AI.ChangeState(typeof(ReturnState));
+                        x.AI.GetNowState().Play(new LookAtPlayer(0.8f, 0.02f), null);
+                        Utils.PlayVoicePikaBui_Yobiyose(x.monsNo, x.controller.voicePlayer);
+                    }, true);
+                });
+
+                DOVirtual.DelayedCall(Mathf.Clamp(maxDelay + 0.2f, 1.0f, 3.0f), () =>
+                {
+                    list.ForEach(x => x.controller.OnPlayerNear += model => pokeWalkMng.AddPoke(model));
+                    PlayerWork.isPlayerInputActive = true;
+                }, true);
+            }, true);
+
+            AudioManager.Instance.PlaySe(AK.EVENTS.S_OPE001, null);
+        }
+		private void Kutibue_Kaisan() {
+            if (!PlayerWork.isPlayerInputActive || isAlreadyKutibue)
+                return;
+
+            isAlreadyKutibue = true;
+
+            FureaiPokeModel model = pokeWalkMng.GetPokeWalkers().Find(x => x.isSelectPoke);
+            List<FureaiPokeModel> list = pokeFactory.PokeList.FindAll(x => x != model && x.CheckState<PokeWalkingState>());
+            pokeFactory.CreatePositionNoList(list.Count);
+            List<FureaiPokeModel> randomList = list.OrderBy(i => Guid.NewGuid()).ToList();
+
+            pokeWalkMng.AllSubPoke(model);
+            EntityManager.activeFieldPlayer.GetAnimationPlayer().Play(0, 0.2f, 0.0f);
+            PlayerWork.isPlayerInputActive = false;
+            AudioManager.Instance.PlaySe(AK.EVENTS.S_OPE002, null);
+
+            Transform playerTra = EntityManager.activeFieldPlayer.transform;
+            Sequencer.Start(Utils.LoadEffect(EffectContestID.EF_SU_AMITY_WHISTLE_LEAVE, eff =>
+            {
+                global::Effect.EffectManager.Instance.Play(eff, playerTra.position, playerTra.rotation, null, null);
+            }));
+
+            for (int i = 0; i < randomList.Count; i++)
+            {
+                FureaiPokeModel x = randomList[i];
+                DOVirtual.DelayedCall(x.controller.walkModel.order * 0.1f + 0.2f, () =>
+                {
+                    x.controller.emoticon.Enter(3, false);
+                    x.controller.emoticon.PlaySeAmbient(3);
+                    x.walkData.actionModel.corSystem.Cancel();
+                    x.sanpoModel.actionModel.corSystem.Cancel();
+                    x.sanpoModel.PairModel = null;
+                    x.sanpoModel.isPairEnd = false;
+                    x.controller.model.route = null;
+                    pokeFactory.SetPokePosition(false, null, x, default(Vector2Int));
+                    pokeFactory.SetPairModel(x);
+                    x.CreateRoute(x.sanpoModel.InitPos, 60);
+                    x.AI.ChangeState(typeof(GotoSanpoState));
+                    x.AI.GetNowState().Play(new LookAtNextRoute(5.0f, 1.0f), null);
+                    Utils.PlayVoicePikaBui_Kaisan(x.monsNo, x.controller.voicePlayer);
+                }, true);
+            }
+
+            DOVirtual.DelayedCall(1.5f, () => PlayerWork.isPlayerInputActive = true, true);
+        }
+		private global::DG.Tweening.Tweener ToCameraDefault(float duration = 0.5f) {
+            Tw_CamFov = DOTween.To(() => fov, x => fov = x, 20.0f, duration);
+            Tw_CamPitch = DOTween.To(() => pitch, x => pitch = x, 45.0f, duration);
+            return Tw_CamFov;
+        }
+		private void MyLateUpdate(float deltaTime) {
+            bool isNoneActionMember = pokeFactory.PokeList.Find(x => x.walkData.actionModel.IsAction) == null;
+            bool isNoneStrayMember = pokeFactory.PokeList.Find(x => x.CheckState<ReturnState>()) == null;
+
+            foreach (var poke in pokeFactory.PokeList)
+            {
+                poke.walkData.actionModel.isNoneActionMember = isNoneActionMember;
+                poke.walkData.actionModel.isNoneStrayMember = isNoneStrayMember;
+            }
+        }
+		public void WalkCountClear(int TemotiNo) {
+            FureaiPokeModel poke = pokeFactory.PokeList.Find(x => x.TemotiNo == TemotiNo);
+            poke.walkData.totalMoveDistance = 0.0f;
+            poke.MonohiroiItemNo = -1;
+            poke.MonohiroiSealNo = -1;
+        }
+		public global::FieldObjectEntity GetPokeEntityByTemotiNo(int temotiNo) {
+            return pokeFactory.PokeList.Find(x => x.TemotiNo == temotiNo).GetEntity();
+        }
+		public void DelPoke(global::Dpr.FureaiHiroba.FureaiPokeModel model) {
+            UnityEngine.Object.Destroy(model.walkData.entity.transform.gameObject);
+            pokeWalkMng.GetPokeWalkers().Remove(model);
+            EvDataManager.Instanse.FieldObjectEntityRemove(model.GetEntity());
+            model.controller.OnPlayerNear -= pokeWalkMng.AddPoke;
+            pokeFactory.PokeList.Remove(model);
+            EntityManager.Remove(model.GetEntity());
+            EntityManager.BuildFieldEntities();
+            model.Destroy();
+        }
+		public void Destroy() {
+            UnityEngine.Object.Destroy(fureaiDataManager.gameObject);
+            UnityEngine.Object.Destroy(gameObject);
+        }
+		private void FureaiEnterPokeCreate(uint SelectTemotiNo) {
+            isEntering = true;
+            isCreatingPoke = true;
+            fureaiDataManager.GetMD<XLSXContent.HirobaEnterablePoke>();
+            Sequencer.Start(CreatePokeForFureaiEnter(SelectTemotiNo));
+        }
+		private global::System.Collections.IEnumerator CreatePokeForFureaiEnter(uint SelectPoke_TemotiNo) {
+            var pokePara = PlayerWork.playerParty.GetMemberPointer(SelectPoke_TemotiNo);
+            Dpr.Field.Walking.WalkingCharacterModel mod = null;
+
+            global::UnityEngine.Vector2Int[] posArray;
+            int initX;
+            if (EntityManager.activeFieldPlayer.worldPosition.x <= -45.0f)
+            {
+                posArray = EnterPosArrayRight;
+                initX = 51;
+            }
+            else
+            {
+                posArray = EnterPosArrayLeft;
+                initX = 12;
+            }
+
+            AddPokeCor = pokeFactory.AddPoke(pokePara, model =>
+            {
+                model.controller.OnPlayerNear += pokeWalkMng.AddPoke;
+                model.OnWarp = pokeWalkMng.OnWarp;
+                AddPokeCor = null;
+                model.CreateWarpEffect();
+                mod = model;
+                model.GetEntity().SetYawAngleDirect(180.0f);
+                model.isSelectPoke = true;
+                model.AI.ChangeState(typeof(WaitState));
+            }, true, new Vector2Int(initX, 47));
+            yield return Sequencer.Start(AddPokeCor);
+
+            pokeFactory.PokeList.ForEach(x => x.controller.getWalkingCharacters = pokeWalkMng.GetPokeWalkers);
+            firstMod = (FureaiPokeModel)mod;
+            yield return new WaitForEndOfFrame();
+
+            AudioManager.Instance.PlaySe(AK.EVENTS.PLAY_BA_SYS_POKE_APPERANCE_FIELD, null);
+            mod.CreateWarpEffect();
+
+            uint num = PlayerWork.playerParty.GetMemberCount();
+            Coroutine cor = Sequencer.Start(new MyWaitForSeconds(0.6f));
+            int enablePokeNum = 1;
+
+            for (uint i = 0; i < num; i++)
+            {
+                var p = PlayerWork.playerParty.GetMemberPointer(i);
+                if (IsEnterble((int)p.GetMonsNo()) && !p.IsEgg(EggCheckType.BOTH_EGG))
+                    yield return FureaiDataManager.LoadPokeAsset(p.GetMonsNo(), fureaiDataManager.PokeAssets, p.GetFormNo(), p.GetSex(), p.IsRare(), 1);
+            }
+
+            yield return cor;
+
+            int count = 0;
+            for (int i = 0; i < num; i++)
+            {
+                if (i == SelectPoke_TemotiNo)
+                    continue;
+
+                var p = PlayerWork.playerParty.GetMemberPointer((uint)i);
+                if (!IsEnterble((int)p.GetMonsNo()) || p.IsEgg(EggCheckType.BOTH_EGG))
+                    continue;
+
+                enablePokeNum++;
+                AddPokeCor = pokeFactory.AddPoke(p, model =>
+                {
+                    model.controller.OnPlayerNear += pokeWalkMng.AddPoke;
+                    model.OnWarp = pokeWalkMng.OnWarp;
+                    AddPokeCor = null;
+                    mod = model;
+                    model.isSelectPoke = false;
+                }, true, posArray[count]);
+                count++;
+
+                cor = Sequencer.Start(new MyWaitForSeconds(0.3f));
+                yield return Sequencer.Start(AddPokeCor);
+
+                yield return new WaitForEndOfFrame();
+
+                AudioManager.Instance.PlaySe(AK.EVENTS.PLAY_BA_SYS_POKE_APPERANCE_FIELD, null);
+                if (mod != null)
+                    mod.CreateWarpEffect();
+
+                yield return cor;
+            }
+
+            isInHiroba = true;
+            isCreatingPoke = false;
+
+            pokeFactory.PokeList.ForEach(x =>
+            {
+                x.GetWalkers = () => pokeFactory.PokeList.Select(walker => walker.walkData.entity).ToArray();
+                x.GetHirobaPokes = () => pokeFactory.PokeList;
+            });
+
+            if (enablePokeNum == 1)
+                AddFirstPoke();
+        }
 		public void HirobaEnterKaisan() {
             isKaisanPoke = true;
 
@@ -305,7 +577,10 @@ namespace Dpr.FureaiHiroba
             isEntering = false;
             AddFirstPoke();
         }
-		private void AddFirstPoke() { /*@B 0x6003444*/ throw null; }
+		private void AddFirstPoke() {
+            pokeWalkMng.AddPoke(firstMod);
+            firstMod = null;
+        }
 		public void SetSelectWalkingPoke(uint temotiNo) {
             var select = pokeFactory.PokeList.Find(x => x.isSelectPoke);
             if (select != null)
@@ -426,7 +701,10 @@ namespace Dpr.FureaiHiroba
 
             Sequencer.Start(AddPokeCor);
         }
-		public void DelPoke() { /*@B 0x6003451*/ throw null; }
+		public void DelPoke() {
+            if (pokeWalkMng.GetPokeWalkers().Count != 0)
+                DelPoke(pokeWalkMng.GetDelPoke());
+        }
 		public void SubPoke() {
             if (pokeWalkMng.GetPokeWalkers().Count != 0)
             {
@@ -434,7 +712,9 @@ namespace Dpr.FureaiHiroba
                 pokeWalkMng.SubPoke(last);
             }
         }
-		private void Debug_EnterPokeCreate() { /*@B 0x6003453*/ throw null; }
+		private void Debug_EnterPokeCreate() {
+            FureaiEnterPokeCreate(1);
+        }
 		public void _DebugGetNearEmptyPosition() {
             WalkingAIManager.GetNearEmptyPosition(EntityManager.activeFieldPlayer.gridPosition);
         }
@@ -442,7 +722,7 @@ namespace Dpr.FureaiHiroba
             Sequencer.isSuspendUpdate = !Sequencer.isSuspendUpdate;
         }
 		public void DebugCreatePoke() { }
-		public FureaiManager() { /*@B 0x6003457*/ throw null; }
-		static FureaiManager() { /*@B 0x6003458*/ throw null; }
+		public FureaiManager() { }
+		static FureaiManager() { }
 	}
 }
