@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public int index;
 		public int grpNo;
 		public global::Dpr.SequenceEditor.SEQ_DEF_PARTICLE_DELETE deleteType;
-		public DprParticleCreateSeal(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AD4*/ throw null; }
+		public DprParticleCreateSeal(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			index = Macro.ParseInt(macro.GetValue("index"));
+			grpNo = Macro.ParseInt(macro.GetValue("grpNo"));
+			deleteType = (SEQ_DEF_PARTICLE_DELETE)Macro.ParseInt(macro.GetValue("deleteType"), 0);
+		}
 	}
 }

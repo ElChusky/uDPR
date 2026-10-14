@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public bool reset;
 		public global::UnityEngine.Vector3 col;
-		public EffBackGroundLightColor(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A02*/ throw null; }
+		public EffBackGroundLightColor(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			reset = Macro.ParseBool(macro.GetValue("reset"));
+			col = Macro.ParseVector3(macro.GetValue("col"));
+		}
 	}
 }

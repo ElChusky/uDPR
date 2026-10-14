@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER trg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_PARTICLE_DELETE deleteType;
-		public DprParticleCreateCutSceneTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AD5*/ throw null; }
+		public DprParticleCreateCutSceneTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			deleteType = (SEQ_DEF_PARTICLE_DELETE)Macro.ParseInt(macro.GetValue("deleteType"), 0);
+		}
 	}
 }

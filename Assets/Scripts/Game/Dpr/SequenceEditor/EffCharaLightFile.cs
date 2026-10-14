@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER trg;
 		public string envfile;
 		public bool enable;
-		public EffCharaLightFile(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A0A*/ throw null; }
+		public EffCharaLightFile(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			envfile = Macro.ParseString(macro.GetValue("envfile"));
+			enable = Macro.ParseBool(macro.GetValue("enable"), 1);
+		}
 	}
 }

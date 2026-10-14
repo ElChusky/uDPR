@@ -15,6 +15,18 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool subCamera;
 		public bool isReset;
-		public EffColorCorrectionSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A89*/ throw null; }
+		public EffColorCorrectionSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			colorScale = Macro.ParseVector3(macro.GetValue("colorScale"), 1f, 1f, 1f);
+			colorBias = Macro.ParseVector3(macro.GetValue("colorBias"), 0f, 0f, 0f);
+			brightness = Macro.ParseFloat(macro.GetValue("brightness"), 1f);
+			saturation = Macro.ParseFloat(macro.GetValue("saturation"), 1f);
+			contrast = Macro.ParseFloat(macro.GetValue("contrast"), 1f);
+			temperature = Macro.ParseFloat(macro.GetValue("temperature"), 6500f);
+			sepiaTone = Macro.ParseFloat(macro.GetValue("sepiaTone"));
+			inversion = Macro.ParseBool(macro.GetValue("inversion"), 0);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+			isReset = Macro.ParseBool(macro.GetValue("isReset"), 0);
+		}
 	}
 }

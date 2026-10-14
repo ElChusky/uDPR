@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public int grpNo;
 		public int level;
-		public EffCascadeLevelSetModel(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A9F*/ throw null; }
+		public EffCascadeLevelSetModel(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			grpNo = Macro.ParseInt(macro.GetValue("grpNo"));
+			level = Macro.ParseInt(macro.GetValue("level"), 2);
+		}
 	}
 }

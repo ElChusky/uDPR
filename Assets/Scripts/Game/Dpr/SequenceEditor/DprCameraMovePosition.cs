@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool relative;
 		public bool[] enableElemPos;
-		public DprCameraMovePosition(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004ABE*/ throw null; }
+		public DprCameraMovePosition(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			enableElemPos = Macro.ParseBoolArray(macro.GetValue("enableElemPos"), 1, 1, 1);
+		}
 	}
 }

@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER_ADD trg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_DEFAULT_PLACEMENT place;
-		public DprTrainerMoveReset(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AB8*/ throw null; }
+		public DprTrainerMoveReset(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER_ADD(macro.GetValue("trg"));
+			place = Macro.Parse_SEQ_DEF_DEFAULT_PLACEMENT(macro.GetValue("place"));
+		}
 	}
 }

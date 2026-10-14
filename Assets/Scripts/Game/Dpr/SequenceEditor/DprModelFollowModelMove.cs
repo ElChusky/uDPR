@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public int grpNo;
 		public int nodeIndex;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public DprModelFollowModelMove(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AD9*/ throw null; }
+		public DprModelFollowModelMove(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			grpNo = Macro.ParseInt(macro.GetValue("grpNo"));
+			nodeIndex = Macro.ParseInt(macro.GetValue("nodeIndex"), 0);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

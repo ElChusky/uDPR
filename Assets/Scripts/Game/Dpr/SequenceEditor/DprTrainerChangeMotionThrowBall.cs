@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER_ADD trg;
 		public float duration;
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER_MOTION_THROW_BALL ballThrowType;
-		public DprTrainerChangeMotionThrowBall(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004ABB*/ throw null; }
+		public DprTrainerChangeMotionThrowBall(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER_ADD(macro.GetValue("trg"));
+			duration = Macro.ParseFloat(macro.GetValue("duration"));
+			ballThrowType = (SEQ_DEF_TRAINER_MOTION_THROW_BALL)Macro.ParseInt(macro.GetValue("ballThrowType"));
+		}
 	}
 }

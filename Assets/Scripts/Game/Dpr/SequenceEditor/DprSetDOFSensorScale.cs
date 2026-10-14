@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public float scale;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public DprSetDOFSensorScale(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004ACB*/ throw null; }
+		public DprSetDOFSensorScale(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			scale = Macro.ParseFloat(macro.GetValue("scale"), 1f);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

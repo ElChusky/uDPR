@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public int trg;
 		public bool visible;
-		public DprPokemonVisibleOther(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AB4*/ throw null; }
+		public DprPokemonVisibleOther(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.ParseInt(macro.GetValue("trg"), 0);
+			visible = Macro.ParseBool(macro.GetValue("visible"));
+		}
 	}
 }

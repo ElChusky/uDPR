@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class DprDispTrainerReflection : global::Dpr.SequenceEditor.Macro
 	{
 		public bool isDisp;
-		public DprDispTrainerReflection(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004ACC*/ throw null; }
+		public DprDispTrainerReflection(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isDisp = Macro.ParseBool(macro.GetValue("isDisp"), 0);
+		}
 	}
 }
