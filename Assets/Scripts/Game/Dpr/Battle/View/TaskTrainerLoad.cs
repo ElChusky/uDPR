@@ -7,8 +7,15 @@ namespace Dpr.Battle.View
 		private global::Dpr.Battle.Logic.BtlvPos _vPos;
 		private string _name;
 		private global::Dpr.Battle.View.TaskTrainerLoad.Sequence _seq;
-		public TaskTrainerLoad(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem, global::Dpr.Battle.Logic.BtlvPos vPos, string name) { /*@B 0x600602F*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006030*/ throw null; }
+		public TaskTrainerLoad(global::Dpr.SequenceEditor.ISequenceViewSystem pBtlvSystem, global::Dpr.Battle.Logic.BtlvPos vPos, string name) {
+			_iPtrBtlvSystem = pBtlvSystem;
+			_name = name;
+			_vPos = vPos;
+			_seq = Sequence.START_LOAD;
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _iPtrBtlvSystem);
+		}
 		public override void Update(float deltaTime, float currentSequenceTime, int step) {
 			// Both results are never used in the shipped body (01e8b4f8 / 01e8b55c: the interface calls stay, nothing reads x0).
 			Objects.BattleViewCharacter trainer = _iPtrBtlvSystem.GetTrainerModel(_vPos);

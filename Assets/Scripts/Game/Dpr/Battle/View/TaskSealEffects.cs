@@ -8,7 +8,7 @@ namespace Dpr.Battle.View
 		private global::Dpr.ObjectEntity _ballEntity;
 		private global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BtlvEffectInstance> _ballEffectInstances;
 		private global::Dpr.Battle.View.FromToPair<global::UnityEngine.Vector3>[] _ballPositions;
-		protected override bool IsFinishCondition { get { /*@B 0x6006034*/ throw null; } }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
 		public TaskSealEffects(global::Dpr.ObjectEntity entity, global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BtlvEffectInstance> sealEffects, float adjustHeight, int frame, bool isContest) {
 			_ballEntity = entity;
 			_ballEffectInstances = sealEffects;

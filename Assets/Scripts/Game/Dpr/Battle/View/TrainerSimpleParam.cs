@@ -15,6 +15,22 @@ namespace Dpr.Battle.View
 		public int blinkIntervalMin;
 		public int blinkIntervalMax;
 		public int blinkTwiceRate;
-		public static global::Dpr.Battle.View.TrainerSimpleParam Factory(global::Dpr.Trainer.TrainerType trainerType) { /*@B 0x6005EE8*/ throw null; }
+		public static global::Dpr.Battle.View.TrainerSimpleParam Factory(global::Dpr.Trainer.TrainerType trainerType) {
+			// 01e8b8b0: colorID / hatVariation / shoesVariation stay 0
+			var trainerTypeData = TrainerSystem.GetTrainerType(trainerType);
+			var eyeBlink = global::Dpr.Battle.Logic.BattleDataTableManager.Instance.BattleDataTable.GetAgeEyeBlinkData(trainerTypeData.Age);
+			return new TrainerSimpleParam
+			{
+				trainerType = trainerType,
+				modelID = trainerTypeData.ModelID,
+				dominanceHand = trainerTypeData.Hand,
+				holdBallHand = trainerTypeData.HoldBallHand,
+				loseLoopTime = trainerTypeData.LoseLoopTime,
+				trainerAge = trainerTypeData.Age,
+				blinkIntervalMin = eyeBlink.min,
+				blinkIntervalMax = eyeBlink.max,
+				blinkTwiceRate = eyeBlink.twiceRate,
+			};
+		}
 	}
 }
