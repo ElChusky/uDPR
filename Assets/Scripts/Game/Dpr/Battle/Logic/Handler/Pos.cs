@@ -301,13 +301,47 @@ namespace Dpr.Battle.Logic.Handler
 			Common.BattonTouch(args, desc);
 			common_removePosEffect(args, myPos);
 		}
-		static Pos() { /*@B 0x600834D*/ throw null; }
+		static Pos() {
+			GET_FUNC_TABLE = new GET_FUNC_TABLE_ELEM[]
+			{
+				new GET_FUNC_TABLE_ELEM(BtlPosEffect.BTL_POSEFF_NEGAIGOTO, ADD_Negaigoto),
+				new GET_FUNC_TABLE_ELEM(BtlPosEffect.BTL_POSEFF_MIKADUKINOMAI, ADD_MikadukiNoMai),
+				new GET_FUNC_TABLE_ELEM(BtlPosEffect.BTL_POSEFF_IYASINONEGAI, ADD_IyasiNoNegai),
+				new GET_FUNC_TABLE_ELEM(BtlPosEffect.BTL_POSEFF_DELAY_ATTACK, ADD_DelayAttack),
+				new GET_FUNC_TABLE_ELEM(BtlPosEffect.BTL_POSEFF_BATONTOUCH, ADD_BatonTouch),
+			};
+			HandlerTable_Negaigoto = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_pos_Negaigoto),
+			};
+			HandlerTable_MikadukiNoMai = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.MEMBER_IN, handler_pos_MikadukiNoMai),
+				new EventFactor.EventHandlerTable(EventID.AFTER_MOVE, handler_pos_MikadukiNoMai),
+			};
+			HandlerTable_IyasiNoNegai = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.MEMBER_IN, handler_pos_IyasiNoNegai),
+				new EventFactor.EventHandlerTable(EventID.AFTER_MOVE, handler_pos_IyasiNoNegai),
+			};
+			HandlerTable_DelayAttack = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.TURNCHECK_BEGIN, handler_pos_DelayAttack),
+			};
+			HandlerTable_BatonTouch = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.MEMBER_IN_BATONTOUCH, handler_pos_BatonTouch),
+			};
+		}
 		public delegate global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] HandlerGetFunc();
 		private struct GET_FUNC_TABLE_ELEM
 		{
 			public global::Dpr.Battle.Logic.BtlPosEffect eff;
 			public global::Dpr.Battle.Logic.Handler.Pos.HandlerGetFunc func;
-			public GET_FUNC_TABLE_ELEM(global::Dpr.Battle.Logic.BtlPosEffect eff, global::Dpr.Battle.Logic.Handler.Pos.HandlerGetFunc func) { /*@B 0x600B773*/ throw null; }
+			public GET_FUNC_TABLE_ELEM(global::Dpr.Battle.Logic.BtlPosEffect eff, global::Dpr.Battle.Logic.Handler.Pos.HandlerGetFunc func) {
+				this.eff = eff;
+				this.func = func;
+			}
 		}
 	}
 }

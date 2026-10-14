@@ -10,7 +10,17 @@ namespace Dpr.Battle.Logic.Handler
 		public const int NUM_WIDX = 4;
 		private static readonly global::Dpr.Battle.Logic.Handler.RaidBoss.GET_FUNC_TABLE_ELEM[] GET_FUNC_TABLE;
 		private static readonly global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] HandlerTable_Reinforce;
-		public static global::Dpr.Battle.Logic.Handler.RaidBoss.HandlerGetFunc getHandlerGetFunc(global::Dpr.Battle.Logic.RaidBossHandlerType handlerType) { /*@B 0x600834E*/ throw null; }
+		public static global::Dpr.Battle.Logic.Handler.RaidBoss.HandlerGetFunc getHandlerGetFunc(global::Dpr.Battle.Logic.RaidBossHandlerType handlerType) {
+			// 01937960: no not-found return - the loop breaks on a match, then indexes the table (out of range throws, as shipped)
+			int i;
+			for (i = 0; i < GET_FUNC_TABLE.Length; i++)
+			{
+				if (GET_FUNC_TABLE[i].type == handlerType)
+					break;
+			}
+
+			return GET_FUNC_TABLE[i].func;
+		}
 		public static global::Dpr.Battle.Logic.EventFactor Add(global::Dpr.Battle.Logic.EventSystem eventSystem, global::Dpr.Battle.Logic.BTL_POKEPARAM poke, global::Dpr.Battle.Logic.RaidBossHandlerType handlerType) {
             HandlerGetFunc func = getHandlerGetFunc(handlerType);
             if (func == null)
@@ -56,7 +66,9 @@ namespace Dpr.Battle.Logic.Handler
                 factor = container.SeekFactor(EventFactorType.RAIDBOSS, dependID);
             }
         }
-		public static global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] ADD_Reinforce() { /*@B 0x6008352*/ throw null; }
+		public static global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] ADD_Reinforce() {
+			return HandlerTable_Reinforce;
+		}
 		public static void handler_Reinforce_Start(in global::Dpr.Battle.Logic.EventFactor.EventHandlerArgs args, byte pokeID) {
             if (Common.GetEventVar(args, EventVar.Label.POKEID_ATK) != pokeID)
                 return;
@@ -77,13 +89,26 @@ namespace Dpr.Battle.Logic.Handler
             Common.DetachSkipCheckHandler(args);
             Common.SetWorkValue(args, WIDX0, 0);
         }
-		static RaidBoss() { /*@B 0x6008355*/ throw null; }
+		static RaidBoss() {
+			GET_FUNC_TABLE = new GET_FUNC_TABLE_ELEM[]
+			{
+				new GET_FUNC_TABLE_ELEM(RaidBossHandlerType.RREINFORCE, ADD_Reinforce),
+			};
+			HandlerTable_Reinforce = new EventFactor.EventHandlerTable[]
+			{
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_START, handler_Reinforce_Start),
+				new EventFactor.EventHandlerTable(EventID.WAZASEQ_END, handler_Reinforce_End),
+			};
+		}
 		public delegate global::Dpr.Battle.Logic.EventFactor.EventHandlerTable[] HandlerGetFunc();
 		private struct GET_FUNC_TABLE_ELEM
 		{
 			public global::Dpr.Battle.Logic.RaidBossHandlerType type;
 			public global::Dpr.Battle.Logic.Handler.RaidBoss.HandlerGetFunc func;
-			public GET_FUNC_TABLE_ELEM(global::Dpr.Battle.Logic.RaidBossHandlerType type, global::Dpr.Battle.Logic.Handler.RaidBoss.HandlerGetFunc func) { /*@B 0x600B778*/ throw null; }
+			public GET_FUNC_TABLE_ELEM(global::Dpr.Battle.Logic.RaidBossHandlerType type, global::Dpr.Battle.Logic.Handler.RaidBoss.HandlerGetFunc func) {
+				this.type = type;
+				this.func = func;
+			}
 		}
 	}
 }
