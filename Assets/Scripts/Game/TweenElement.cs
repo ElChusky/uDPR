@@ -3,18 +3,18 @@
 public class TweenElement
 {
 	[global::UnityEngine.SerializeField]
-	public global::AnimationType animationType;
+	public global::AnimationType animationType = global::AnimationType.Move;
 	[global::UnityEngine.SerializeField]
 	public global::UnityEngine.Transform target;
 	[global::UnityEngine.SerializeField]
-	public global::DG.Tweening.Ease easeType;
+	public global::DG.Tweening.Ease easeType = global::DG.Tweening.Ease.OutQuad;
 	[global::UnityEngine.SerializeField]
 	public global::UnityEngine.Vector3 value;
 	[global::UnityEngine.SerializeField]
 	public float delay;
 	[global::UnityEngine.SerializeField]
-	public float duration;
+	public float duration = 1f;
 	[global::System.NonSerialized]
 	public global::DG.Tweening.Tween tween;
-	public TweenElement() { /*@B 0x6000678*/ throw null; }
+	public TweenElement() { }
 }

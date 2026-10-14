@@ -9,7 +9,7 @@ public class UgFatherResourceManager
 	private static bool _isDataLoadEnd;
 	private static global::System.Action _onPostLoaded;
 	public static global::Dpr.UnderGround.UgFather.UgFatherManager UgFather { get; private set; }
-	public static bool IsDataLoadEnd { get { /*@B 0x6000F28*/ throw null; } }
+	public static bool IsDataLoadEnd { get { return ugFatherManagerPrefab != null; } }
 	public static void UnLoad() {
         ugFatherManagerPrefab = null;
         if (UgFather != null)

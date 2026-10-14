@@ -2,7 +2,7 @@
 using Dpr.NetworkUtils;
 public class UgOpcController : global::OpcController
 {
-	private global::Dpr.FieldObjectMove _fieldObjectMove;
+	private global::Dpr.FieldObjectMove _fieldObjectMove = new global::Dpr.FieldObjectMove();
 	public global::System.Action OnStartFinished;
 	private bool isSwim;
 	private void Awake() {
@@ -104,5 +104,5 @@ public class UgOpcController : global::OpcController
 		base.OnDestroy();
 		OnStartFinished = null;
 	}
-	public UgOpcController() { /*@B 0x6000FDD*/ throw null; }
+	public UgOpcController() { }
 }

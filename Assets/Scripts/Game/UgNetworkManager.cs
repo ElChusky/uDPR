@@ -18,13 +18,13 @@ public class UgNetworkManager : global::Dpr.SubContents.NetUseManager<global::Ug
 	private int Debug_Sec;
 	[global::UnityEngine.SerializeField]
 	private int Debug_KousekiNum;
-	public static global::INL1.IlcaNetSessionNetworkType connectType;
+	public static global::INL1.IlcaNetSessionNetworkType connectType = global::INL1.IlcaNetSessionNetworkType.Lan;
 	public static global::Dpr.NetworkUtils.MatchingType matchingType;
 	public static string password;
-	public bool isJustJoin;
-	private int MyStationIndex;
+	public bool isJustJoin = true;
+	private int MyStationIndex = -1;
 	private bool IsDigTableReady;
-	private global::System.Collections.Generic.List<int> IgnoreSendList;
+	private global::System.Collections.Generic.List<int> IgnoreSendList = new global::System.Collections.Generic.List<int>();
 	public global::System.Action<global::Dpr.NetworkUtils.INetData> OnReceiveDigFossilNetData;
 	public global::System.Action<int> OnDigEndOtherPlayer;
 	public global::System.Action<int> OnLeaveOther;
@@ -32,35 +32,35 @@ public class UgNetworkManager : global::Dpr.SubContents.NetUseManager<global::Ug
 	public global::System.Action<bool> OnDigFossilJoinPermission;
 	private int DigJoinMemberCount;
 	public global::System.Action<global::Dpr.NetworkUtils.NetSecretBaseData> OnSecretBaseEnter;
-	public global::System.Collections.Generic.List<global::System.ValueTuple<int, global::UnityEngine.Vector2Int>> tonarihoriList;
+	public global::System.Collections.Generic.List<global::System.ValueTuple<int, global::UnityEngine.Vector2Int>> tonarihoriList = new global::System.Collections.Generic.List<global::System.ValueTuple<int, global::UnityEngine.Vector2Int>>();
 	public bool isMainKasekihori;
-	public global::System.Collections.Generic.List<global::UgNetworkManager.UgOnlinePlayerData> ugOnlinePlayerDatas;
+	public global::System.Collections.Generic.List<global::UgNetworkManager.UgOnlinePlayerData> ugOnlinePlayerDatas = new global::System.Collections.Generic.List<global::UgNetworkManager.UgOnlinePlayerData>(8);
 	private bool isSwim;
-	private global::Dpr.NetworkUtils.NetDigAttackData netDigAttackData;
-	private global::Dpr.NetworkUtils.NetUgJoinData netJoinData;
-	private global::Dpr.NetworkUtils.NetSecretBaseData netSecretBaseData;
-	private global::Dpr.NetworkUtils.NetSecretBaseInfo netSecretBaseInfo;
-	private global::Dpr.NetworkUtils.NetSecretBaseUpdate netSecretBaseUpdate;
-	private global::Dpr.NetworkUtils.NetDigData netDigData;
-	private global::Dpr.NetworkUtils.NetDigJoinData netDigJoinData;
-	private global::Dpr.NetworkUtils.NetJoinDigPermission netJoinDigPermission;
-	private global::Dpr.NetworkUtils.NetDigEndData netDigEndData;
-	private global::Dpr.NetworkUtils.NetDigJoinMemberCount netDigJoinMemberCount;
-	private global::Dpr.NetworkUtils.NetRequestData netReqData;
-	private global::Dpr.NetworkUtils.NetCharacterStateData netStateData;
-	private global::Dpr.NetworkUtils.NetPlayerNameData netPlayerNameData;
-	private global::Dpr.NetworkUtils.NetPosData netPosData;
-	private global::Dpr.NetworkUtils.NetPosZoneData netPosZoneData;
-	private global::Dpr.NetworkUtils.NetZoneData netZoneData;
-	private global::Dpr.NetworkUtils.NetKousekiAdd netKousekiAdd;
-	private global::Dpr.NetworkUtils.NetBonusStart netBonusStart;
-	private global::Dpr.NetworkUtils.NetRemainBonusTime netRemainBonusTime;
-	private global::Dpr.NetworkUtils.NetKousekiCount netKousekiCount;
-	private global::Dpr.NetworkUtils.NetNaminoriData netNaminoriData;
-	private global::Dpr.NetworkUtils.NetDigTableData netDigTableData;
-	private global::OpcState.OnlineState ReserveState;
+	private global::Dpr.NetworkUtils.NetDigAttackData netDigAttackData = new global::Dpr.NetworkUtils.NetDigAttackData();
+	private global::Dpr.NetworkUtils.NetUgJoinData netJoinData = new global::Dpr.NetworkUtils.NetUgJoinData();
+	private global::Dpr.NetworkUtils.NetSecretBaseData netSecretBaseData = new global::Dpr.NetworkUtils.NetSecretBaseData();
+	private global::Dpr.NetworkUtils.NetSecretBaseInfo netSecretBaseInfo = new global::Dpr.NetworkUtils.NetSecretBaseInfo();
+	private global::Dpr.NetworkUtils.NetSecretBaseUpdate netSecretBaseUpdate = new global::Dpr.NetworkUtils.NetSecretBaseUpdate();
+	private global::Dpr.NetworkUtils.NetDigData netDigData = new global::Dpr.NetworkUtils.NetDigData();
+	private global::Dpr.NetworkUtils.NetDigJoinData netDigJoinData = new global::Dpr.NetworkUtils.NetDigJoinData();
+	private global::Dpr.NetworkUtils.NetJoinDigPermission netJoinDigPermission = new global::Dpr.NetworkUtils.NetJoinDigPermission();
+	private global::Dpr.NetworkUtils.NetDigEndData netDigEndData = new global::Dpr.NetworkUtils.NetDigEndData();
+	private global::Dpr.NetworkUtils.NetDigJoinMemberCount netDigJoinMemberCount = new global::Dpr.NetworkUtils.NetDigJoinMemberCount();
+	private global::Dpr.NetworkUtils.NetRequestData netReqData = new global::Dpr.NetworkUtils.NetRequestData();
+	private global::Dpr.NetworkUtils.NetCharacterStateData netStateData = new global::Dpr.NetworkUtils.NetCharacterStateData();
+	private global::Dpr.NetworkUtils.NetPlayerNameData netPlayerNameData = new global::Dpr.NetworkUtils.NetPlayerNameData();
+	private global::Dpr.NetworkUtils.NetPosData netPosData = new global::Dpr.NetworkUtils.NetPosData();
+	private global::Dpr.NetworkUtils.NetPosZoneData netPosZoneData = new global::Dpr.NetworkUtils.NetPosZoneData();
+	private global::Dpr.NetworkUtils.NetZoneData netZoneData = new global::Dpr.NetworkUtils.NetZoneData();
+	private global::Dpr.NetworkUtils.NetKousekiAdd netKousekiAdd = new global::Dpr.NetworkUtils.NetKousekiAdd();
+	private global::Dpr.NetworkUtils.NetBonusStart netBonusStart = new global::Dpr.NetworkUtils.NetBonusStart();
+	private global::Dpr.NetworkUtils.NetRemainBonusTime netRemainBonusTime = new global::Dpr.NetworkUtils.NetRemainBonusTime();
+	private global::Dpr.NetworkUtils.NetKousekiCount netKousekiCount = new global::Dpr.NetworkUtils.NetKousekiCount();
+	private global::Dpr.NetworkUtils.NetNaminoriData netNaminoriData = new global::Dpr.NetworkUtils.NetNaminoriData();
+	private global::Dpr.NetworkUtils.NetDigTableData netDigTableData = new global::Dpr.NetworkUtils.NetDigTableData();
+	private global::OpcState.OnlineState ReserveState = global::OpcState.OnlineState._NULL;
 	[global::UnityEngine.SerializeField]
-	private int _Debug_SecBase_StationIdx;
+	private int _Debug_SecBase_StationIdx = 1;
 	[global::Dpr.SubContents.ButtonAttribute("Debug_OnReceiveSecretBase_Info", "秘密基地生成", new object[] {  })]
 	public int Button01;
 	[global::Dpr.SubContents.ButtonAttribute("Debug_OnReceivePlayerNameData", "名前情報受信", new object[] {  })]
@@ -991,20 +991,35 @@ public class UgNetworkManager : global::Dpr.SubContents.NetUseManager<global::Ug
 		netData._Debug_ChangeFromStarionIndex(_Debug_SecBase_StationIdx);
 		OnReceiveData(netData);
 	}
-	public UgNetworkManager() { /*@B 0x6000F8D*/ throw null; }
-	static UgNetworkManager() { /*@B 0x6000F8E*/ throw null; }
+	public UgNetworkManager() { }
+	static UgNetworkManager() { }
 	public class UgOnlinePlayerData
 	{
 		public global::ZoneID nowZoneID;
 		public global::UnityEngine.Vector3 position;
 		public global::Dpr.NetworkUtils.PosZoneData secretBaseInfo;
-		public global::Dpr.Message.PlayerNameData playerNameData;
+		public global::Dpr.Message.PlayerNameData playerNameData = new global::Dpr.Message.PlayerNameData();
 		public global::OpcState.OnlineState onlineState;
 		public bool isNaminori;
 		public bool isJoinTonarihori;
 		public bool isEnteredSecretBase;
-		public bool isNull { get { /*@B 0x60096E9*/ throw null; } }
-		public UgOnlinePlayerData() { /*@B 0x60096EA*/ throw null; }
-		public void Clear() { /*@B 0x60096EB*/ throw null; }
+		public bool isNull { get { return nowZoneID == (global::ZoneID)0; } }
+		public UgOnlinePlayerData()
+		{
+			Clear();
+		}
+		public void Clear()
+		{
+			nowZoneID = (global::ZoneID)0;
+			secretBaseInfo.zoneID = 0;
+			playerNameData.nickName = "";
+			playerNameData.genderid = 0;
+			playerNameData.lanugageId = 0;
+			position = global::UnityEngine.Vector3.zero;
+			onlineState = global::OpcState.OnlineState.NONE;
+			isNaminori = false;
+			isJoinTonarihori = false;
+			isEnteredSecretBase = false;
+		}
 	}
 }

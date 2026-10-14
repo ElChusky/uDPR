@@ -2,6 +2,6 @@
 [global::UnityEngine.CreateAssetMenuAttribute]
 public class UgAllDigFossilePos : global::UnityEngine.ScriptableObject
 {
-	public global::System.Collections.Generic.List<global::UgAllDigFossilePosData> list;
-	public UgAllDigFossilePos() { /*@B 0x6000F2F*/ throw null; }
+	public global::System.Collections.Generic.List<global::UgAllDigFossilePosData> list = new global::System.Collections.Generic.List<global::UgAllDigFossilePosData>();
+	public UgAllDigFossilePos() { }
 }

@@ -9,14 +9,42 @@ using Ug;
 using UnityEngine;
 public class UgMainProc
 {
-	private global::System.Collections.Generic.List<global::UgMainProc.SimbolMons> _ugMons;
-	public static global::Dpr.Field.Walking.UgWalkingAIManager walkingManager;
-	public static bool isEntering;
-	private global::System.Collections.Generic.List<global::Dpr.Field.Walking.AIUgModel> ugAIs;
+	private global::System.Collections.Generic.List<global::UgMainProc.SimbolMons> _ugMons = new global::System.Collections.Generic.List<global::UgMainProc.SimbolMons>();
+	public static global::Dpr.Field.Walking.UgWalkingAIManager walkingManager = new global::Dpr.Field.Walking.UgWalkingAIManager();
+	public static bool isEntering = false;
+	private global::System.Collections.Generic.List<global::Dpr.Field.Walking.AIUgModel> ugAIs = new global::System.Collections.Generic.List<global::Dpr.Field.Walking.AIUgModel>();
 	private float NoHitTime;
-	private static global::UgMainProc.CheckFormParam[] _checkFormParams;
-	public void Init() { /*@B 0x6000FC4*/ throw null; }
-	private void OnSceneInit() { /*@B 0x6000FC5*/ throw null; }
+	private static global::UgMainProc.CheckFormParam[] _checkFormParams = new global::UgMainProc.CheckFormParam[]
+	{
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)201, maxFormNo = 28 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)351, maxFormNo = 4 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)386, maxFormNo = 4 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)412, maxFormNo = 3 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)413, maxFormNo = 3 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)414, maxFormNo = 3 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)421, maxFormNo = 2 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)422, maxFormNo = 2 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)423, maxFormNo = 2 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)479, maxFormNo = 6 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)487, maxFormNo = 2 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)492, maxFormNo = 2 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)493, maxFormNo = 18 },
+		new global::UgMainProc.CheckFormParam { monsNo = (MonsNo)494, maxFormNo = 2 },
+	};
+	public void Init()
+	{
+		FieldManager.Instance.OnZoneChangeEvent += OnZoneChange;
+		FieldManager.Instance.OnSceneInitEvent += OnSceneInit;
+	}
+	private void OnSceneInit()
+	{
+		for (int i = 0; i < _ugMons.Count; i++)
+		{
+			var go = _ugMons[i].gameObject;
+			if (go != null && go.activeInHierarchy && !_ugMons[i].Active)
+				_ugMons[i].gameObject.SetActive(false);
+		}
+	}
 	public void EncountMonsLot(int randmark) {
         // @018d2c40
         List<KeyValuePair<int, Vector3>> PositionDatas;
@@ -88,9 +116,64 @@ public class UgMainProc
             Dpr.EvScript.EvDataManager.Instanse.JumpLabel("ev_uga_kakurega_fast", () => walkingManager.StopAll(false));
         }
     }
-	public void CreatePoke(global::Pml.PokePara.PokemonParam param, global::UnityEngine.Vector3 pos) { /*@B 0x6000FC7*/ throw null; }
-	public global::System.Collections.IEnumerator CreateObject() { /*@B 0x6000FC8*/ throw null; }
-	private void OnZoneChange() { /*@B 0x6000FC9*/ throw null; }
+	public void CreatePoke(global::Pml.PokePara.PokemonParam param, global::UnityEngine.Vector3 pos)
+	{
+		MonsNo monsNo = param.GetMonsNo();
+		if (monsNo == MonsNo.TAMAGO)
+			return;
+		MoveType moveType = UgResManager.GetUgPokeData(monsNo).movetype;
+		SimbolMons sm = new SimbolMons();
+		sm.pokeParam = param;
+		sm.catalog = Dpr.SubContents.Utils.GetPokemonCatalog(param);
+		sm.defaultPos = pos;
+		sm.moveType = moveType;
+		sm.Active = true;
+		_ugMons.Add(sm);
+		UgResManager.AppendAsset(param, gmo =>
+		{
+			if (sm.isLoaded)
+				return;
+			sm.isLoaded = true;
+			sm.gameObject = UnityEngine.Object.Instantiate<GameObject>(gmo);
+			sm.transform = sm.gameObject.GetComponent<Transform>();
+			sm.transform.position = sm.defaultPos;
+			var catalog = GameData.DataManager.GetPokemonCatalog(param.GetMonsNo(), param.GetFormNo(), param.GetSex(), false, false);
+			sm.transform.localScale = Vector3.one * catalog.FieldChikaScale;
+			param.IsRare(); // result unused (@018d5ef8)
+			sm.entity = sm.gameObject.GetComponent<FieldPokemonEntity>();
+			sm.entity.EventParams.SaveObject = false;
+			var chara = walkingManager.ToWalkingCharacter(sm.entity);
+			chara.model.collisionModel.isIgnoreCollision = true;
+			chara.model.SetPokemonParam(sm.pokeParam);
+			var ai = (Dpr.Field.Walking.AIUgModel)chara.model.AI.aiModel;
+			ai.moveType = moveType;
+			ugAIs.Add(ai);
+			ai.InitPos = sm.defaultPos;
+			chara.view.isWaitMotionMove = catalog.Waitmoving;
+			var patcheel = sm.gameObject.GetComponent<Dpr.PatcheelPattern>();
+			if (patcheel != null)
+				patcheel.SetPattern(sm.pokeParam.GetPersonalRnd());
+		});
+	}
+	public global::System.Collections.IEnumerator CreateObject()
+	{
+		yield return UgResManager.DispathAsset();
+		yield return null;
+		UgFieldManager.Instance.OnDestroyCallBack = () => Destroy();
+	}
+	private void OnZoneChange()
+	{
+		Dpr.SubContents.Utils.WaitFrame(3, () =>
+		{
+			IEnumerable<Vector3> doors = EntityManager.fieldDoorObjects.Where(x => x != null).Select(x => x.transform.position);
+			ugAIs.ForEach(x =>
+			{
+				x.entrancePosition.Clear();
+				x.entrancePosition.AddRange(doors);
+			});
+			OnSceneInit();
+		});
+	}
 	public void SaveSymbols() {
         // @018d3a10
         DPData.UgSaveData saveData = PlayerWork.ugSaveData;
@@ -153,7 +236,23 @@ public class UgMainProc
         // @018d409c: CreateObject() inlined (its init flag 0x4cbbe73 + the <CreateObject>d__10 construction)
         SmartPoint.AssetAssistant.Sequencer.Start(CreateObject());
     }
-	private static bool CheckFormNo(global::Pml.MonsNo monsNo, ushort formNo) { /*@B 0x6000FCC*/ throw null; }
+	private static bool CheckFormNo(global::Pml.MonsNo monsNo, ushort formNo)
+	{
+		if (formNo > 27)
+			return false;
+		CheckFormParam param = null;
+		for (int i = 0; i < _checkFormParams.Length; i++)
+		{
+			if (_checkFormParams[i].monsNo == monsNo)
+			{
+				param = _checkFormParams[i];
+				break;
+			}
+		}
+		if (param == null)
+			return formNo == 0;
+		return formNo < param.maxFormNo;
+	}
 	public bool update(float time) {
         // @018d4270
         NoHitTime -= time;
@@ -201,10 +300,29 @@ public class UgMainProc
         walkingManager.StopAll(false);
         return true;
     }
-	private bool IsPlayerHit(global::UnityEngine.Vector3 pos, global::UgMainProc.SimbolMons mons) { /*@B 0x6000FCE*/ throw null; }
-	public void Destroy() { /*@B 0x6000FCF*/ throw null; }
-	public UgMainProc() { /*@B 0x6000FD0*/ throw null; }
-	static UgMainProc() { /*@B 0x6000FD1*/ throw null; }
+	private bool IsPlayerHit(global::UnityEngine.Vector3 pos, global::UgMainProc.SimbolMons mons)
+	{
+		var player = EntityManager.activeFieldPlayer;
+		if (player.IsSwim() && mons.moveType != MoveType.Water)
+			return false;
+		if (!player.IsSwim() && mons.moveType == MoveType.Water)
+			return false;
+		// TO CHECK: `fadd s6, BodySize, 0` - a zero offset added to the body size in the binary
+		return Dpr.SubContents.Utils.IsInDistance(new Vector3(player.worldPosition.x, 0f, player.worldPosition.z), new Vector3(pos.x, 0f, pos.z), mons.catalog.BodySize + 0f);
+	}
+	public void Destroy()
+	{
+		walkingManager.Destroy(true);
+		ugAIs.ForEach(x => x.Destroy());
+		_ugMons.ForEach(x => x.Destroy());
+		ugAIs.Clear();
+		_ugMons.Clear();
+		UgResManager.AssetBundleUnload();
+		FieldManager.Instance.OnZoneChangeEvent -= OnZoneChange;
+		FieldManager.Instance.OnSceneInitEvent -= OnSceneInit;
+	}
+	public UgMainProc() { }
+	static UgMainProc() { }
 	private class SimbolMons
 	{
 		public global::Pml.PokePara.PokemonParam pokeParam;
@@ -216,7 +334,14 @@ public class UgMainProc
 		public global::UnityEngine.GameObject gameObject;
 		public global::UnityEngine.Transform transform;
 		public global::FieldPokemonEntity entity;
-		public void Destroy() { /*@B 0x600971C*/ throw null; }
+		public void Destroy()
+		{
+			pokeParam = null;
+			catalog = null;
+			gameObject = null;
+			transform = null;
+			entity = null;
+		}
 		public SimbolMons() { }
 	}
 	private class CheckFormParam

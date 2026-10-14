@@ -5,7 +5,12 @@ public class UgItemWork
 {
 	private static global::UgItemWork _instance;
 	private global::Dpr.Item.UgItemInfo[] _items;
-	public static void Create() { /*@B 0x6000D55*/ throw null; }
+	public static void Create()
+	{
+		if (_instance != null)
+			return;
+		_instance = new global::UgItemWork();
+	}
 	private static int AddItem(int itemno, int num = 1) {
         return _instance._items[itemno].AddItem(num);
     }
@@ -79,6 +84,11 @@ public class UgItemWork
         }
         return num;
     }
-	private UgItemWork() { /*@B 0x6000D61*/ throw null; }
+	private UgItemWork()
+	{
+		_items = new global::Dpr.Item.UgItemInfo[999];
+		for (ushort i = 0; i < _items.Length; i++)
+			_items[i] = new global::Dpr.Item.UgItemInfo(i);
+	}
 	static UgItemWork() { }
 }
