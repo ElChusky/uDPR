@@ -30,7 +30,7 @@ namespace Dpr.Contest
 		public float dofTargetPosZ;
 		public int monitorIndex;
 		public float monitorPlayTime;
-		public global::Dpr.Contest.WazaEffectData[] wazaEffectDatas;
-		public CaptureData() { /*@B 0x6004322*/ throw null; }
+		public global::Dpr.Contest.WazaEffectData[] wazaEffectDatas = new global::Dpr.Contest.WazaEffectData[5];
+		public CaptureData() { }
 	}
 }

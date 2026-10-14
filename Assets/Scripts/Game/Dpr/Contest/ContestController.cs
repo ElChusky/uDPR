@@ -10,11 +10,11 @@ namespace Dpr.Contest
 	{
 		private const float LIMIT_TIMEOUT = 10f;
 		private global::Dpr.Contest.ReceivedPlayerResultScore[] receivedScores;
-		private global::Dpr.Contest.ContestMatchingNetwork network;
+		private global::Dpr.Contest.ContestMatchingNetwork network = new global::Dpr.Contest.ContestMatchingNetwork();
 		private global::Dpr.MsgWindow.WaitTimer waitTimer;
 		private bool bCanStartContest;
 		private bool bIsRecieveWaitTime;
-		private bool canSectionUpdate;
+		private bool canSectionUpdate = true;
 		private bool bIsStartMultiContest;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Camera wazaCamera;
@@ -23,15 +23,15 @@ namespace Dpr.Contest
 		private global::Dpr.Contest.VisualSection visualSection;
 		private global::Dpr.Contest.DanceSection danceSection;
 		private global::Dpr.Contest.ResultSection resultSection;
-		private global::Dpr.Contest.ContestDataModel dataModel;
-		private global::Dpr.Contest.SceneResourceLoader resourceLoader;
-		private global::Dpr.Contest.ContestViewSystem contestViewSystem;
-		private global::Dpr.Contest.ContestViewSystem wazaViewSystem;
+		private global::Dpr.Contest.ContestDataModel dataModel = new global::Dpr.Contest.ContestDataModel();
+		private global::Dpr.Contest.SceneResourceLoader resourceLoader = new global::Dpr.Contest.SceneResourceLoader();
+		private global::Dpr.Contest.ContestViewSystem contestViewSystem = new global::Dpr.Contest.ContestViewSystem();
+		private global::Dpr.Contest.ContestViewSystem wazaViewSystem = new global::Dpr.Contest.ContestViewSystem();
 		private global::Dpr.Contest.SectionID currentSectionID;
 		private global::Dpr.Contest.SectionID nextSectionID;
 		private global::Dpr.Contest.ResultDataModel resultDataModel;
 		private bool hasRequestChangeSectionID;
-		private bool IsCompleteSection { get { /*@B 0x600428F*/ throw null; } }
+		private bool IsCompleteSection { get { return currentSectionID == SectionID.End; } }
 		private void InitMultiMode() {
 			if (ContestWork.IsMultiMode)
 			{
@@ -741,7 +741,20 @@ namespace Dpr.Contest
 			nextSectionID = newSectionId;
 			hasRequestChangeSectionID = true;
 		}
-		private void OnFindCommand(global::Dpr.SequenceEditor.CommandNo commandNo, global::Dpr.Contest.ContestViewSystem viewSystem) { /*@B 0x600429C*/ throw null; }
+		private void OnFindCommand(global::Dpr.SequenceEditor.CommandNo commandNo, global::Dpr.Contest.ContestViewSystem viewSystem) {
+			switch (commandNo)
+			{
+				case CommandNo.ContestHensin:
+					objectManagerPtr.OnFindSeqCommand_ContestHensin();
+					break;
+				case CommandNo.ContestCaptureScene:
+					dataModel.OnFindCaptureCommand(viewSystem);
+					break;
+				case CommandNo.SpecialMigawariVisible:
+					resourceLoader.LoadMigawariModel(null);
+					break;
+			}
+		}
 		private void LoadMigawariModel() {
 			resourceLoader.LoadMigawariModel(null);
 		}
@@ -820,6 +833,6 @@ namespace Dpr.Contest
 			resultSection.ResetParam();
 			objectManagerPtr.ResetParam(dataModel.CreateInitMainCameraDofTargetPos(), dataModel.CreateInitWazaCameraDofTargetPos());
 		}
-		public ContestController() { /*@B 0x60042A4*/ throw null; }
+		public ContestController() { }
 	}
 }

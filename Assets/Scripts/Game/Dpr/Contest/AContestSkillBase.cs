@@ -11,7 +11,7 @@ namespace Dpr.Contest
 		protected bool active;
 		private global::System.Action onFinished;
 		public bool IsActive { get { return this.active; } }
-		public global::Dpr.Contest.SkillTypeID SkillType { get { /*@B 0x60046AF*/ throw null; } }
+		public global::Dpr.Contest.SkillTypeID SkillType { get { return (global::Dpr.Contest.SkillTypeID)skillData.wazaType; } }
 		public global::Pml.PokeType WazaType { get { return this.wazaType; } }
 		public void Reset() {
 			active = false;

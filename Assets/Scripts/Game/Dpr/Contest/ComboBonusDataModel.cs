@@ -5,7 +5,10 @@ namespace Dpr.Contest
 	public sealed class ComboBonusDataModel : global::Dpr.Contest.ComboBonusData
 	{
 		public global::Pml.PokeType PrevWazaType { get { return this.prevWazaType; } }
-		public ComboBonusDataModel(global::XLSXContent.ContestConfigDatas.SheetComboBonusData[] bonusDataArray) { /*@B 0x6004311*/ throw null; }
+		public ComboBonusDataModel(global::XLSXContent.ContestConfigDatas.SheetComboBonusData[] bonusDataArray) {
+			this.bonusDataArray = bonusDataArray;
+			prevWazaType = PokeType.NULL;
+		}
 		public void Reset() {
 			prevWazaType = PokeType.NULL;
 		}

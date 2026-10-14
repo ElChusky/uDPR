@@ -20,7 +20,7 @@ namespace Dpr.Contest
 		public const string NOTES_DATA_FILE_PATH = "music/{0}";
 		public const string PLAYER_MODEL_PATH = "persons/battle/pc00{0:D2}_{1:D2}";
 		public const string BALL_MODEL_PATH = "objects/ob02{0:D2}_00";
-		public static readonly ushort[] CONTEST_DRESS_ID_ARRAY;
+		public static readonly ushort[] CONTEST_DRESS_ID_ARRAY = new ushort[] { 1, 101 };
 		public const string MEDAL_TEX_PATH = "textures/rank/{0}";
 		public const string WAZA_TYPE_TEX_FILE_NAME = "cnt_waza_type_{0:D2}";
 		public const string CONT_TITLE_TEX_NAME = "cnt_title_logo";
@@ -43,7 +43,7 @@ namespace Dpr.Contest
 		public const float RECEPTION_COMBO_DURATION = 6f;
 		public const float POSITION_OFFSET_ON_LAUNCH_WAZA = 100f;
 		public const int ADD_SCORE_ON_GAUGEMAX = 1;
-		public static readonly int[] SKILL_APPEAL_POINT_ARRAY;
+		public static readonly int[] SKILL_APPEAL_POINT_ARRAY = new int[] { 5, 4, 3, 2, 1 };
 		public const int PHOTO_PERSENT = 1000;
 		public const uint MAX_REC_ENTRY_CNT = 9999u;
 		public const uint MAX_REC_WIN_CNT = 9999u;
@@ -55,6 +55,6 @@ namespace Dpr.Contest
 		public const int UI_PLAYER_STATUS_FX_POOL_COUNT = 5;
 		public const int UI_SAME_TYPE_FX_POOL_COUNT = 4;
 		public const int RANK_UP_POOL_COUNT = 2;
-		static ContestDataConstants() { /*@B 0x6004306*/ throw null; }
+		static ContestDataConstants() { }
 	}
 }

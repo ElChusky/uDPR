@@ -3,9 +3,9 @@ namespace Dpr.Contest
 {
 	public abstract class ADancePlayer
 	{
-		protected global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> notesDataList;
+		protected global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> notesDataList = new global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel>();
 		protected global::Dpr.Contest.PlayerDanceDataModel danceData;
-		protected global::Dpr.Contest.PlayerType playerType;
+		protected global::Dpr.Contest.PlayerType playerType = global::Dpr.Contest.PlayerType.NPC;
 		protected global::System.Action<global::Dpr.Contest.ADancePlayer> onLockSkill;
 		protected global::Dpr.Contest.ADancePlayer.ActionID currentActionID;
 		protected double currentElapsedTime;
@@ -23,7 +23,13 @@ namespace Dpr.Contest
 		public int PlayerIndex { get { return this.playerIndex; } }
 		public global::Dpr.Contest.ADancePlayer.ActionID CurrentActionID { get { return this.currentActionID; } }
 		public global::Dpr.Contest.PlayerType PlayerType { get { return this.playerType; } }
-		public ADancePlayer(int playerIndex, global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> notesDataList, global::System.Action<global::Dpr.Contest.ADancePlayer> onLockSkill) { /*@B 0x6004400*/ throw null; }
+		public ADancePlayer(int playerIndex, global::System.Collections.Generic.List<global::Dpr.Contest.NotesDataModel> notesDataList, global::System.Action<global::Dpr.Contest.ADancePlayer> onLockSkill) {
+			this.playerIndex = playerIndex;
+			this.notesDataList = notesDataList;
+			this.onLockSkill = onLockSkill;
+			lastNoteArriveTime = this.notesDataList[this.notesDataList.Count - 1].arriveSec;
+			bIsMultiMode = false;
+		}
 		private float CalcLastNoteArriveTime() {
 			return notesDataList[notesDataList.Count - 1].arriveSec;
 		}

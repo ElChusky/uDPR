@@ -4,6 +4,6 @@ namespace Dpr.Contest
 	public class ChoiceNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Contest.ChoiceData>
 	{
 		public override byte GetDataID { get { return 3; } }
-		public ChoiceNetData() { /*@B 0x600434C*/ throw null; }
+		public ChoiceNetData() { }
 	}
 }

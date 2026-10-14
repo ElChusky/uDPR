@@ -3,6 +3,6 @@ namespace Dpr.Contest
 {
 	public class ContestOtherUserData : global::Dpr.Contest.ContestNPCData
 	{
-		public ContestOtherUserData() { /*@B 0x600435F*/ throw null; }
+		public ContestOtherUserData() { }
 	}
 }

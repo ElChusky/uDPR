@@ -22,7 +22,19 @@ namespace Dpr.Contest
 
 			return playerSex == Sex.MALE ? TrainerType.BOY : TrainerType.GIRL;
 		}
-		public static global::Dpr.Battle.View.TrainerSimpleParam CreateTrainerSimpleParam(global::Dpr.Trainer.TrainerType trainerType, int colorID) { /*@B 0x60046D9*/ throw null; }
+		public static global::Dpr.Battle.View.TrainerSimpleParam CreateTrainerSimpleParam(global::Dpr.Trainer.TrainerType trainerType, int colorID) {
+			var trainerTypeData = TrainerSystem.GetTrainerType(trainerType);
+			var eyeBlink = global::Dpr.Battle.Logic.BattleDataTableManager.Instance.BattleDataTable.GetAgeEyeBlinkData(trainerTypeData.Age);
+			return new TrainerSimpleParam
+			{
+				trainerType = trainerType,
+				colorID = colorID,
+				trainerAge = trainerTypeData.Age,
+				blinkIntervalMin = eyeBlink.min,
+				blinkIntervalMax = eyeBlink.max,
+				blinkTwiceRate = eyeBlink.twiceRate,
+			};
+		}
 		public static global::XLSXContent.ContestMasterDatas.SheetRankData FindRankData(int rankPoint, global::XLSXContent.ContestMasterDatas contestMasterDatas) {
 			var rankDatas = contestMasterDatas.RankData;
 			ContestMasterDatas.SheetRankData rankData = null;

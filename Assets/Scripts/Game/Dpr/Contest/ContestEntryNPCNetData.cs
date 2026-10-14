@@ -4,6 +4,6 @@ namespace Dpr.Contest
 	public class ContestEntryNPCNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Contest.ContestEntryNPCData>
 	{
 		public override byte GetDataID { get { return 5; } }
-		public ContestEntryNPCNetData() { /*@B 0x6004350*/ throw null; }
+		public ContestEntryNPCNetData() { }
 	}
 }

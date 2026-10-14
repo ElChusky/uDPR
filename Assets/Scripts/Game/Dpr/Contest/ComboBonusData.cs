@@ -4,7 +4,7 @@ namespace Dpr.Contest
 	public class ComboBonusData
 	{
 		protected global::XLSXContent.ContestConfigDatas.SheetComboBonusData[] bonusDataArray;
-		protected global::Pml.PokeType prevWazaType;
-		public ComboBonusData() { /*@B 0x6004317*/ throw null; }
+		protected global::Pml.PokeType prevWazaType = global::Pml.PokeType.NULL;
+		public ComboBonusData() { }
 	}
 }

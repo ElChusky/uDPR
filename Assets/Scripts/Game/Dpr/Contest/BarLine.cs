@@ -45,7 +45,10 @@ namespace Dpr.Contest
 			iconPos.x = moveSpeed * lifeTime;
 			rect.localPosition = iconPos;
 		}
-		private void SetActive(bool active) { /*@B 0x600441D*/ throw null; }
+		private void SetActive(bool active) {
+			if (gameObject.activeSelf != active)
+				gameObject.SetActive(active);
+		}
 		public BarLine() { }
 	}
 }
