@@ -5,7 +5,7 @@ namespace Dpr.FureaiHiroba
 	{
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.FureaiHiroba.PokeWalkerDebug pokeWalkerDebug;
-		public global::System.Collections.Generic.List<string> Animations;
+		public global::System.Collections.Generic.List<string> Animations = new global::System.Collections.Generic.List<string>();
 		[global::UnityEngine.SerializeField]
 		private string _DebugNowState;
 		private bool isStep01;
@@ -21,19 +21,89 @@ namespace Dpr.FureaiHiroba
 		public event global::Dpr.Field.Walking.EventHandler<global::Dpr.FureaiHiroba.FureaiPokeModel> OnGotoSanpo;
 		public event global::Dpr.Field.Walking.EventHandler<global::Dpr.FureaiHiroba.FureaiPokeModel> OnReturn;
 		public global::Dpr.FureaiHiroba.FureaiPokeModel model { get => (FureaiPokeModel)base.model; }
-		public global::Dpr.Field.Walking.WalkData walkModel { get { /*@B 0x60033BA*/ throw null; } }
+		public global::Dpr.Field.Walking.WalkData walkModel { get { return model.walkData; } }
 		public global::Dpr.FureaiHiroba.FureaiPokeView view { get => (FureaiPokeView)base.view; }
-		public override void SetModel(global::Dpr.Field.Walking.WalkingCharacterModel model) { /*@B 0x60033C4*/ throw null; }
-		public override global::Dpr.Field.Walking.AIModel CreateAIModel() { /*@B 0x60033C5*/ throw null; }
-		public override void AISetting() { /*@B 0x60033C6*/ throw null; }
-		public void SetDebugDrawActive(bool isActive) { /*@B 0x60033C7*/ throw null; }
-		protected override void ModelUpdate(float deltaTime) { /*@B 0x60033C8*/ throw null; }
-		public override void MyUpdate(float deltaTime) { /*@B 0x60033C9*/ throw null; }
-		public void PlayerNear() { /*@B 0x60033CA*/ throw null; }
-		protected override global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> GetWalkingCharacters() { /*@B 0x60033CB*/ throw null; }
-		public void Amity() { /*@B 0x60033CC*/ throw null; }
-		private void Tes() { /*@B 0x60033CD*/ throw null; }
-		private void Tes2() { /*@B 0x60033CE*/ throw null; }
-		public FureaiPokeController() { /*@B 0x60033CF*/ throw null; }
+		public override void SetModel(global::Dpr.Field.Walking.WalkingCharacterModel model) {
+			base.SetModel(model);
+			pokeWalkerDebug = new global::Dpr.FureaiHiroba.PokeWalkerDebug(model);
+			pokeWalkerDebug.CreateTrackPoint();
+			isFureai = true;
+		}
+		public override global::Dpr.Field.Walking.AIModel CreateAIModel() {
+			return new global::Dpr.Field.Walking.AIFureaiModel(this);
+		}
+		public override void AISetting() {
+			AI.AddState<global::Dpr.Field.Walking.WaitState>();
+			AI.AddState<global::Dpr.Field.Walking.SanpoState>();
+			AI.AddState<global::Dpr.Field.Walking.PokeWalkingState>();
+			AI.AddState<global::Dpr.Field.Walking.ReturnState>();
+			AI.AddState<global::Dpr.Field.Walking.GotoSanpoState>();
+			AI.AddState<global::Dpr.Field.Walking.SanpoPairState>();
+			AI.AddState<global::Dpr.Field.Walking.FureaiExitState>();
+			OnPlayerNear += (global::Dpr.FureaiHiroba.FureaiPokeModel m) => {
+				AI.ChangeState(typeof(global::Dpr.Field.Walking.PokeWalkingState));
+			};
+		}
+		public void SetDebugDrawActive(bool isActive) {
+			pokeWalkerDebug.SetActive(isActive);
+		}
+		protected override void ModelUpdate(float deltaTime) {
+			model.walkData.Update(deltaTime);
+		}
+		public override void MyUpdate(float deltaTime) {
+			base.MyUpdate(deltaTime);
+			var walkData = model.walkData;
+			walkData.totalMoveDistance += walkData.moveVec.magnitude;
+			if (model.walkData.totalMoveDistance >= 400f) {
+				model.LottMonohiroiItemID();
+			}
+		}
+		public void PlayerNear() {
+			OnPlayerNear(model);
+		}
+		protected override global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> GetWalkingCharacters() {
+			return global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.FureaiHiroba.FureaiManager>.Instance.GetWalkingPokes();
+		}
+		public void Amity() {
+			if (!model.CheckState<global::Dpr.Field.Walking.ReturnState>() && !model.CheckState<global::Dpr.Field.Walking.SanpoState>()) {
+				if (isStep01) {
+					Eff_Step01.Stop(0f, false);
+					isStep01 = false;
+				}
+				if (isStep02) {
+					Eff_Step02.Stop(0f, false);
+					isStep02 = false;
+				}
+				return;
+			}
+			if (!(model.walkData.moveVec.magnitude <= 0.1f)) {
+				if (isStep02) {
+					Eff_Step02.Stop(0f, false);
+					isStep02 = false;
+				}
+				if (!isStep01) {
+					Eff_Step01.Play(null);
+					isStep01 = true;
+				}
+			}
+			else {
+				if (!isStep01) {
+					Eff_Step02.Play(null);
+					isStep02 = true;
+				}
+				else if (!isStep02) {
+					return;
+				}
+				Eff_Step01.Stop(0f, false);
+				isStep01 = false;
+			}
+		}
+		private void Tes() {
+			global::FieldManager.Instance.CallEffect(global::EffectFieldID.EF_F_AMITY_STEP_01, transform, null, null);
+		}
+		private void Tes2() {
+			global::FieldManager.Instance.CallEffect(global::EffectFieldID.EF_F_AMITY_STEP_02, transform, null, null);
+		}
+		public FureaiPokeController() { }
 	}
 }

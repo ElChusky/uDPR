@@ -30,21 +30,21 @@ namespace Dpr.FureaiHiroba
 		private global::PofinPlayingPokeManager pokeManager;
 		private global::System.Collections.Generic.List<global::Dpr.Item.ItemInfo> kinomiList;
 		[global::UnityEngine.SerializeField]
-		private float PofinHeightMin;
+		private float PofinHeightMin = 0.9f;
 		[global::UnityEngine.SerializeField]
-		private float PofinHeightMax;
+		private float PofinHeightMax = 0.95f;
 		[global::UnityEngine.SerializeField]
-		private float PofinScaleMin;
+		private float PofinScaleMin = 0.9f;
 		[global::UnityEngine.SerializeField]
-		private float PofinScaleMax;
+		private float PofinScaleMax = 1.1f;
 		private float BlendValue;
 		private global::UnityEngine.Material pofinMat;
 		private global::UnityEngine.Material LEDMat;
 		private global::UnityEngine.Color nowLEDColor;
 		private global::Audio.AudioInstance kakimazeSE;
-		private static readonly global::UnityEngine.Color[] LEDColors;
+		private static readonly global::UnityEngine.Color[] LEDColors = new global::UnityEngine.Color[] { global::UnityEngine.Color.gray, global::UnityEngine.Color.red, global::UnityEngine.Color.yellow, global::UnityEngine.Color.blue };
 		[global::UnityEngine.SerializeField]
-		private global::PofinGameCalc calc;
+		private global::PofinGameCalc calc = new global::PofinGameCalc();
 		public global::System.Action OnEndPofinPlaying;
 		private bool isEnableUpdate;
 		[global::UnityEngine.SerializeField]
@@ -52,8 +52,8 @@ namespace Dpr.FureaiHiroba
 		[global::UnityEngine.SerializeField]
 		private global::DG.Tweening.Ease ease;
 		private global::PofinEffectManager effectMng;
-		private float KakimazeSE_Interval;
-		public float DebugTime;
+		private float KakimazeSE_Interval = 1f;
+		public float DebugTime = 40f;
 		private bool isSEPlaying;
 		[global::Dpr.SubContents.ButtonAttribute("CameraMove", "CameraMove", new object[] {  })]
 		public int Button03;
@@ -283,7 +283,7 @@ namespace Dpr.FureaiHiroba
 			}
 			return list.ToArray();
 		}
-		public PofinManager() { /*@B 0x60034BD*/ throw null; }
-		static PofinManager() { /*@B 0x60034BE*/ throw null; }
+		public PofinManager() { }
+		static PofinManager() { }
 	}
 }

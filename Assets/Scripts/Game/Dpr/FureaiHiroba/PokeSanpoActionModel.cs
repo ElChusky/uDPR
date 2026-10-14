@@ -4,11 +4,30 @@ namespace Dpr.FureaiHiroba
 	public sealed class PokeSanpoActionModel : global::Dpr.FureaiHiroba.PokeFureaiActionModel
 	{
 		private global::Dpr.FureaiHiroba.PokeSanpoActionModel.PokeAction PrevAction;
-		private static readonly global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.List<int>> ActionFlow;
+		private static readonly global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.List<int>> ActionFlow = new global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.List<int>>() {
+			{ 0, new global::System.Collections.Generic.List<int>() { 0, 1, 2, 3 } },
+			{ 1, new global::System.Collections.Generic.List<int>() { 0, 1, 2 } },
+			{ 2, new global::System.Collections.Generic.List<int>() { 0, 1, 2 } },
+			{ 3, new global::System.Collections.Generic.List<int>() { 0 } },
+		};
 		private global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.PokeActionWhight> pokeActionWhights;
-		public PokeSanpoActionModel(global::XLSXContent.FreeSanpoActionProbability.SheetSheet1 actionProbability) { /*@B 0x6003488*/ throw null; }
-		public void Destroy() { /*@B 0x6003489*/ throw null; }
-		static PokeSanpoActionModel() { /*@B 0x600348A*/ throw null; }
+		public PokeSanpoActionModel(global::XLSXContent.FreeSanpoActionProbability.SheetSheet1 actionProbability) {
+			Init();
+			IntervalTime = 0f;
+			pokeActionWhights = new global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.PokeActionWhight>() {
+				new global::Dpr.FureaiHiroba.PokeActionWhight("Kyoro", (int)PokeAction.WaitKyoro, actionProbability.Kyoro),
+				new global::Dpr.FureaiHiroba.PokeActionWhight("Uro", (int)PokeAction.UroUro, actionProbability.UroUro),
+				new global::Dpr.FureaiHiroba.PokeActionWhight("Run", (int)PokeAction.Run, actionProbability.Run),
+				new global::Dpr.FureaiHiroba.PokeActionWhight("Sleep", (int)PokeAction.Sleep, actionProbability.Sleep),
+			};
+		}
+		public void Destroy() {
+			if (pokeActionWhights != null) {
+				pokeActionWhights.Clear();
+			}
+			pokeActionWhights = null;
+		}
+		static PokeSanpoActionModel() { }
 		public enum PokeAction
 		{
 			WaitKyoro = 0,
