@@ -3,19 +3,64 @@ namespace Dpr.Field.Walking
 {
 	public class AI
 	{
-		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.AIStateBase> AIStates;
+		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.AIStateBase> AIStates = new global::System.Collections.Generic.List<global::Dpr.Field.Walking.AIStateBase>();
 		private global::Dpr.Field.Walking.AIStateBase nowState;
-		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.StateChecker> stateCheckers;
+		private global::System.Collections.Generic.List<global::Dpr.Field.Walking.StateChecker> stateCheckers = new global::System.Collections.Generic.List<global::Dpr.Field.Walking.StateChecker>();
 		public int abs;
 		public global::Dpr.Field.Walking.AIModel aiModel { get; private set; }
-		public AI(global::Dpr.Field.Walking.WalkingCharacterController controller) { /*@B 0x6008A07*/ throw null; }
-		public AI() { /*@B 0x6008A08*/ throw null; }
-		public void Update() { /*@B 0x6008A09*/ throw null; }
-		public void Destroy() { /*@B 0x6008A0A*/ throw null; }
+		public AI(global::Dpr.Field.Walking.WalkingCharacterController controller) {
+			aiModel = controller.CreateAIModel();
+		}
+		public AI() { }
+		public void Update() {
+			for (int i = 0; i < stateCheckers.Count; i++)
+			{
+				global::System.Type next = stateCheckers[i].Check(aiModel);
+				if (next != null && next != nowState.GetType())
+				{
+					ChangeState(next);
+				}
+			}
+			nowState.CommonUpdate();
+		}
+		public void Destroy() {
+			for (int i = 0; i < AIStates.Count; i++)
+			{
+				AIStates[i].Destroy();
+			}
+			AIStates.Clear();
+			AIStates = null;
+			for (int i = 0; i < stateCheckers.Count; i++)
+			{
+				stateCheckers[i].Destroy();
+			}
+			stateCheckers.Clear();
+			stateCheckers = null;
+			nowState = null;
+			aiModel = null;
+		}
 		public T AddState<T>() where T : global::Dpr.Field.Walking.AIStateBase { /*@B 0x6008A0B*/ throw null; }
 		public void AddStateChecker<T>(global::Dpr.Field.Walking.StateChecker.Condition Condition) where T : global::Dpr.Field.Walking.AIStateBase { /*@B 0x6008A0C*/ throw null; }
-		public global::Dpr.Field.Walking.AIStateBase ChangeState(global::System.Type type) { /*@B 0x6008A0D*/ throw null; }
-		public global::System.Type GetNowStateType() { /*@B 0x6008A0E*/ throw null; }
+		public global::Dpr.Field.Walking.AIStateBase ChangeState(global::System.Type type) {
+			global::Dpr.Field.Walking.AIStateBase state = AIStates.Find(x => x.GetType() == type);
+			global::Dpr.Field.Walking.CorSystem corSys = state.corSys;
+			if (corSys != null)
+			{
+				corSys.Cancel();
+			}
+			if (nowState != null)
+			{
+				nowState.Exit();
+			}
+			nowState = state;
+			nowState.Enter();
+			aiModel.charaModel.walkData.nowSpeed = 0f;
+			aiModel.view.AnimPlay(0, 0.2f, 0f);
+			return nowState;
+		}
+		public global::System.Type GetNowStateType() {
+			return nowState.GetType();
+		}
 		public global::Dpr.Field.Walking.AIStateBase GetNowState() { return this.nowState; }
 		public global::Dpr.Field.Walking.AIStateBase GetState<T>() where T : global::Dpr.Field.Walking.AIStateBase { /*@B 0x6008A10*/ throw null; }
 	}
