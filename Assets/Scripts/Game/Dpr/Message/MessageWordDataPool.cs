@@ -3,12 +3,33 @@ namespace Dpr.Message
 {
 	public class MessageWordDataPool
 	{
-		private global::System.Collections.Generic.List<global::Dpr.Message.WordDataModel> dataPool;
-		public void GeneratePool(int generateNum) { /*@B 0x6003CC3*/ throw null; }
-		~MessageWordDataPool() { /*@B 0x6003CC4*/ throw null; }
-		private global::Dpr.Message.WordDataModel AddPoolData() { /*@B 0x6003CC5*/ throw null; }
-		public global::Dpr.Message.WordDataModel Get() { /*@B 0x6003CC6*/ throw null; }
-		public void Dispose() { /*@B 0x6003CC7*/ throw null; }
-		public MessageWordDataPool() { /*@B 0x6003CC8*/ throw null; }
+		private global::System.Collections.Generic.List<global::Dpr.Message.WordDataModel> dataPool = new global::System.Collections.Generic.List<global::Dpr.Message.WordDataModel>();
+		public void GeneratePool(int generateNum) {
+            for (int i = 0; i < generateNum; i++)
+                AddPoolData();
+        }
+		~MessageWordDataPool() {
+            dataPool.Clear();
+            dataPool = null;
+        }
+		private global::Dpr.Message.WordDataModel AddPoolData() {
+            var wordData = new WordDataModel();
+            dataPool.Add(wordData);
+            return wordData;
+        }
+		public global::Dpr.Message.WordDataModel Get() {
+            var wordData = dataPool.Find(x => !x.isUse);
+            if (wordData == null)
+            {
+                MessageHelper.EmitLog("Add WordDataModel", global::UnityEngine.LogType.Log);
+                wordData = AddPoolData();
+            }
+            wordData.isUse = true;
+            return wordData;
+        }
+		public void Dispose() {
+            dataPool.Clear();
+        }
+		public MessageWordDataPool() { }
 	}
 }
