@@ -14,7 +14,7 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		protected global::Dpr.UI.IndexSelector indexSelector;
 		public bool IsShow { get; protected set; }
-		public int CurrentAmount { get { /*@B 0x60050D8*/ throw null; } }
+		public int CurrentAmount { get { return indexSelector.CurrentIndex; } }
 		public void Show() {
             gameObject.SetActive(true);
             IsShow = true;

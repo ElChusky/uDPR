@@ -4,7 +4,7 @@ namespace Dpr.UI
 	public class GiftMenuItem : global::UnityEngine.MonoBehaviour
 	{
 		[global::UnityEngine.SerializeField]
-		public global::Dpr.UI.GiftMainMenuWindow.MenuType ItemMenuType;
+		public global::Dpr.UI.GiftMainMenuWindow.MenuType ItemMenuType = global::Dpr.UI.GiftMainMenuWindow.MenuType.None;
 		[global::UnityEngine.SerializeField]
 		public global::UnityEngine.GameObject buttonEffectObject;
 		public void Select() {
@@ -13,6 +13,6 @@ namespace Dpr.UI
 		public void Unselect() {
 			buttonEffectObject.SetActive(false);
 		}
-		public GiftMenuItem() { /*@B 0x6005476*/ throw null; }
+		public GiftMenuItem() { }
 	}
 }

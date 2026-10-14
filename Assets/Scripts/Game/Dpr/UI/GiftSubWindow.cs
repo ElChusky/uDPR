@@ -25,6 +25,6 @@ namespace Dpr.UI
 			}
 			keyguide.Open(param);
 		}
-		protected GiftSubWindow() { /*@B 0x6005496*/ throw null; }
+		protected GiftSubWindow() { }
 	}
 }

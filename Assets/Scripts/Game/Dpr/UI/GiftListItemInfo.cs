@@ -6,10 +6,12 @@ namespace Dpr.UI
 	public class GiftListItemInfo
 	{
 		private global::DPData.MysteryGiftData giftData;
-		public global::DPData.MysteryGiftData GiftData { get { /*@B 0x6005451*/ throw null; } }
+		public global::DPData.MysteryGiftData GiftData { get { return giftData; } }
 		public global::DPData.MysteryGift.RecvData RecvData { get; private set; }
 		public global::DPData.MysteryGift.ConvertResult ConvertResult { get; private set; }
-		public GiftListItemInfo(byte[] data) { /*@B 0x6005456*/ throw null; }
+		public GiftListItemInfo(byte[] data) {
+			Create(data);
+		}
 		public global::DPData.MysteryGift.CanReceiveResult CanReceive() {
 			return MysteryGiftWork.CanReceive(giftData.commonData);
 		}

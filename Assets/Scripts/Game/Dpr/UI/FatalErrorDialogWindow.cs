@@ -17,6 +17,6 @@ namespace Dpr.UI
             base.OnOpen(prevWindowId); // <>n__0 inlined: UIWindow.OnOpen non-virtual @01ec384c
             yield return OpPlayOpenWindowAnimation(prevWindowId, null); // vslot +0x1d0 @01ec3860
         }
-		public FatalErrorDialogWindow() { /*@B 0x6005388*/ throw null; }
+		public FatalErrorDialogWindow() { }
 	}
 }

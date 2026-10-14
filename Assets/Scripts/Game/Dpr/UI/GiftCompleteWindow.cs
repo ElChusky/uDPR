@@ -3,7 +3,7 @@ namespace Dpr.UI
 {
 	public class GiftCompleteWindow : global::Dpr.UI.GiftSubWindow
 	{
-		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos;
+		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos = new global::UnityEngine.Vector2(0f, 100f);
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.GiftContentsPanel contentsPanel;
 		protected override void OnInitialize() { }
@@ -34,6 +34,6 @@ namespace Dpr.UI
 			OpenMessageWindow(messageParam);
 		}
 		public GiftCompleteWindow() { }
-		static GiftCompleteWindow() { /*@B 0x600542D*/ throw null; }
+		static GiftCompleteWindow() { }
 	}
 }

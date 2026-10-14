@@ -7,20 +7,24 @@ namespace Dpr.UI
 	{
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("インデックスの範囲外になった場合に始端・終端で止める")]
-		private bool IsStopInEnd;
+		private bool IsStopInEnd = true;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("インデックスの範囲外になった場合にリピート移動を止める")]
-		private bool IsStopRepeatMovingWhenOutOfRanges;
+		private bool IsStopRepeatMovingWhenOutOfRanges = true;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("インデックスの範囲外になった場合にループする")]
-		private bool IsLoop;
+		private bool IsLoop = true;
 		private global::Dpr.UI.IndexSelector.MoveState moveState;
 		public int CurrentIndex { get; private set; }
 		public int MinCount { get; private set; }
 		public int MaxCount { get; private set; }
 		public bool IsLooping { get; private set; }
-		public IndexSelector() { /*@B 0x60050C5*/ throw null; }
-		public IndexSelector(bool isStopInEnd, bool isStopRepeatMovingWhenOutOfRange, bool isLoop) { /*@B 0x60050C6*/ throw null; }
+		public IndexSelector() { }
+		public IndexSelector(bool isStopInEnd, bool isStopRepeatMovingWhenOutOfRange, bool isLoop) {
+			IsStopInEnd = isStopInEnd;
+			IsStopRepeatMovingWhenOutOfRanges = isStopRepeatMovingWhenOutOfRange;
+			IsLoop = isLoop;
+		}
 		public void Setup(int minCount, int maxCount) {
             MinCount = minCount;
             MaxCount = maxCount;

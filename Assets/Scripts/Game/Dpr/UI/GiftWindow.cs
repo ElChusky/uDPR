@@ -5,7 +5,7 @@ namespace Dpr.UI
 {
 	public class GiftWindow : global::Dpr.UI.UIWindow
 	{
-		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos;
+		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos = new global::UnityEngine.Vector2(0f, 100f);
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.GiftNetworkController networkController;
 		[global::UnityEngine.SerializeField]
@@ -523,7 +523,7 @@ namespace Dpr.UI
 				downloadWindow.Step(1);
 			}
 		}
-		public GiftWindow() { /*@B 0x60054B1*/ throw null; }
-		static GiftWindow() { /*@B 0x60054B2*/ throw null; }
+		public GiftWindow() { }
+		static GiftWindow() { }
 	}
 }
