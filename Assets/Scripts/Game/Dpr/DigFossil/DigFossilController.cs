@@ -9,58 +9,58 @@ namespace Dpr.DigFossil
 	{
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("ゲーム開始メッセージ表示までの待機時間(秒)")]
-		private float startMessageWaitTime;
+		private float startMessageWaitTime = 0.8f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("ほりボーナスの最小回数")]
-		private int horiBonusMinCount;
+		private int horiBonusMinCount = 5;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("ほりボーナスの最大回数")]
-		private int horiBonusMaxCount;
+		private int horiBonusMaxCount = 8;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("ほりボーナスのゲージ増加値")]
-		private int horiGaugeBonus;
+		private int horiGaugeBonus = 20;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("壁が崩れた時のカメラ揺れ時間(秒)")]
-		private float cameraShakeDuration;
+		private float cameraShakeDuration = 3f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("全てアイテムを掘り出した時のリザルトまでの待機時間(秒)")]
-		private float waitingTimeToDigOutAllItemsResult;
+		private float waitingTimeToDigOutAllItemsResult = 1f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("カメラの揺れ強度 要素数分段階が増えます")]
-		private global::System.Collections.Generic.List<float> cameraShakeStrength;
+		private global::System.Collections.Generic.List<float> cameraShakeStrength = new global::System.Collections.Generic.List<float>();
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("追加で炊く崩れかけエフェクトの発火数 要素数分段階が増えます")]
-		private global::System.Collections.Generic.List<int> crumblingEffectNum;
+		private global::System.Collections.Generic.List<int> crumblingEffectNum = new global::System.Collections.Generic.List<int>();
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("ゲーム画面からリザルト遷移のブラックアウト開始までの待機時間(x)と、フェードの時間(y)")]
-		private global::UnityEngine.Vector2 toResultBlackOut;
+		private global::UnityEngine.Vector2 toResultBlackOut = new global::UnityEngine.Vector2(1f, 1f);
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("ゲーム画面からリザルト遷移のブラックイン開始までの待機時間(x)と、フェードの時間(y)")]
-		private global::UnityEngine.Vector2 toResultBlackIn;
+		private global::UnityEngine.Vector2 toResultBlackIn = new global::UnityEngine.Vector2(1f, 1f);
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("アイテムリザルトから石の箱リザルト遷移のブラックアウト開始までの待機時間(x)と、フェードの時間(y)")]
-		private global::UnityEngine.Vector2 toBoxResultBlackOut;
+		private global::UnityEngine.Vector2 toBoxResultBlackOut = new global::UnityEngine.Vector2(1f, 1f);
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("アイテムリザルトから石の箱リザルト遷移のブラックイン開始までの待機時間(x)と、フェードの時間(y)")]
-		private global::UnityEngine.Vector2 toBoxResultBlackIn;
+		private global::UnityEngine.Vector2 toBoxResultBlackIn = new global::UnityEngine.Vector2(1f, 1f);
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("宝箱ひらくモーションの再生速度")]
-		private float boxOpenMotionSpeed;
+		private float boxOpenMotionSpeed = 1f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("宝箱ひらくモーションが再生されてから、エフェクト再生までの待機時間")]
-		private float boxOpenEffectDelay;
+		private float boxOpenEffectDelay = 1f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("石の箱エフェクト再生してからホワイトアウト開始までの待機時間(x)と、フェードの時間(y)")]
-		private global::UnityEngine.Vector2 toAppearStatueWhiteOut;
+		private global::UnityEngine.Vector2 toAppearStatueWhiteOut = new global::UnityEngine.Vector2(1f, 1f);
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("石の箱ホワイトアウトからホワイトイン開始までの待機時間(x)と、フェードの時間(y)")]
-		private global::UnityEngine.Vector2 toAppearStatueWhiteIn;
+		private global::UnityEngine.Vector2 toAppearStatueWhiteIn = new global::UnityEngine.Vector2(1f, 1f);
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("となりほりの所持数の少ない石像出現率の一人あたりの増加率")]
-		private float tonariModeDropUpCorrection;
+		private float tonariModeDropUpCorrection = 0.1f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("となりほりのほりゲージの消費の一人あたりの低下率")]
-		private float tonariModeGaugeDownCorrection;
+		private float tonariModeGaugeDownCorrection = 0.1f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("デバッグ用、抽選される石像のID: 0:指定しない 1～石像のID")]
 		private int debugLotStatueId;
@@ -119,18 +119,18 @@ namespace Dpr.DigFossil
 		private const int COST_DIG_HUMMER = 8;
 		private const int COST_DIG_PIC = 4;
 		private const int DIG_GAUGE_START = 196;
-		private readonly global::Dpr.DigFossil.IDigMessage message;
+		private readonly global::Dpr.DigFossil.IDigMessage message = new global::Dpr.DigFossil.DigMessage();
 		private float digGauge;
 		private int digGaugeMax;
 		private global::Effect.EffectInstance directionEffectInstance;
 		private global::Dpr.DigFossil.DigDepositViewManager.PlacementInfo stoneBoxData;
-		private readonly global::Dpr.DigFossil.IDigStoneBoxResult stoneBoxResult;
+		private readonly global::Dpr.DigFossil.IDigStoneBoxResult stoneBoxResult = new global::Dpr.DigFossil.DigStoneBoxResult();
 		private global::Dpr.DigFossil.DigFossilController.GameState gameState;
-		private bool isDisplayDebugInfo;
+		private bool isDisplayDebugInfo = true;
 		private global::UgNetworkManager ugNetworkManager;
-		private global::System.Collections.Generic.Dictionary<int, global::Dpr.DigFossil.DigCursor> tonariCursorDic;
-		private global::Dpr.DigFossil.DigFossilController.DigParam digParam;
-		private bool isHost { get { /*@B 0x6003767*/ throw null; } }
+		private global::System.Collections.Generic.Dictionary<int, global::Dpr.DigFossil.DigCursor> tonariCursorDic = new global::System.Collections.Generic.Dictionary<int, global::Dpr.DigFossil.DigCursor>();
+		private global::Dpr.DigFossil.DigFossilController.DigParam digParam = new global::Dpr.DigFossil.DigFossilController.DigParam();
+		private bool isHost { get { return !global::Dpr.UnderGround.UgFieldManager.isOnline || ugNetworkManager.digFossileMainPlayerStationIndex < 0; } }
 		public global::System.Collections.IEnumerator ActivateOperation() {
 			SetState(GameState.Init);
 			SystemInitialize();
@@ -484,12 +484,12 @@ namespace Dpr.DigFossil
 			board.Dig(data.data.position, !data.data.isHammer, false, data.FromStationIndex);
 			buildupViewManager.ApplyDurability(board.BuildupMap);
 		}
-		public DigFossilController() { /*@B 0x600377F*/ throw null; }
+		public DigFossilController() { }
 		public class DigParam
 		{
 			public int NumOfOtherParticipants;
 			public float DropUpCorrection;
-			public float Bonus { get { /*@B 0x600A209*/ throw null; } }
+			public float Bonus { get { return DropUpCorrection * NumOfOtherParticipants + 1f; } }
 			public DigParam() { }
 		}
 		private enum GameState

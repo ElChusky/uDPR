@@ -62,6 +62,6 @@ namespace Dpr.DigFossil
 				return (GameController.push & GameController.ButtonMask.Y) != 0
 					|| Input.GetKeyDown(KeyCode.R);
 			} }
-		private static bool IsEasyInput() { /*@B 0x600379D*/ throw null; }
+		private static bool IsEasyInput() { return PlayerWork.config.input_mode != global::DPData.INPUTMODE.INPUTMODE_NORMAL; }
 	}
 }

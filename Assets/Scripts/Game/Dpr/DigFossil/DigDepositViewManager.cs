@@ -63,7 +63,14 @@ namespace Dpr.DigFossil
 			public int dugOutOrder;
 			public global::Dpr.DigFossil.IDigDeposit view;
 			public bool bIsFound;
-			public PlacementInfo(global::Dpr.DigFossil.DigMasterDataManager.IDeposit deposit, int column, int row) { /*@B 0x600A1E4*/ throw null; }
+			public PlacementInfo(global::Dpr.DigFossil.DigMasterDataManager.IDeposit deposit, int column, int row) {
+				this.deposit = deposit;
+				view = null;
+				this.column = column;
+				this.row = row;
+				dugOutOrder = 0;
+				bIsFound = false;
+			}
 		}
 	}
 }

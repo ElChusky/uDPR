@@ -7,7 +7,7 @@ namespace Dpr.DigFossil
 	{
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 100f)]
-		private int boxRatio;
+		private int boxRatio = 50;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.GridLayoutGroup grid;
 		[global::UnityEngine.SerializeField]
@@ -29,9 +29,9 @@ namespace Dpr.DigFossil
 		public global::UnityEngine.Vector2 GridSize { get; private set; }
 		public global::UnityEngine.Vector2 FieldSize { get; private set; }
 		public global::UnityEngine.Vector2 FieldOffset { get; private set; }
-		public int[,] BuildupMap { get; }
-		public int[,] DepositMap { get; }
-		public global::System.Collections.Generic.List<global::Dpr.DigFossil.DigDepositViewManager.PlacementInfo> DepositPlacementInfos { get; }
+		public int[,] BuildupMap { get; } = new int[10, 13];
+		public int[,] DepositMap { get; } = new int[10, 13];
+		public global::System.Collections.Generic.List<global::Dpr.DigFossil.DigDepositViewManager.PlacementInfo> DepositPlacementInfos { get; } = new global::System.Collections.Generic.List<global::Dpr.DigFossil.DigDepositViewManager.PlacementInfo>();
 		public global::Dpr.DigFossil.DigMasterDataManager.RatioId RatioId { get; private set; }
 		public void Initialize() {
             // @0197f430: op_Inequality on grid, grid.cellSize (+0x60) read once
@@ -498,6 +498,6 @@ namespace Dpr.DigFossil
 				}
 			}
 		}
-		public DigBoard() { /*@B 0x6003707*/ throw null; }
+		public DigBoard() { }
 	}
 }

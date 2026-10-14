@@ -19,7 +19,7 @@ namespace Dpr.DigFossil
 		private global::Dpr.DigFossil.DigAudioManager audioManager;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.DigFossil.DigFade fade;
-		private readonly global::System.Collections.Generic.List<global::Dpr.DigFossil.IDigResultItem> resultItems;
+		private readonly global::System.Collections.Generic.List<global::Dpr.DigFossil.IDigResultItem> resultItems = new global::System.Collections.Generic.List<global::Dpr.DigFossil.IDigResultItem>();
 		public void Initialize(global::Dpr.DigFossil.IDigMessage message) {
 			this.message = message;
 			DestroyResultItems();
@@ -110,6 +110,6 @@ namespace Dpr.DigFossil
 				Destroy(child.gameObject);
 			resultItems.Clear();
 		}
-		public DigItemResult() { /*@B 0x60037A1*/ throw null; }
+		public DigItemResult() { }
 	}
 }

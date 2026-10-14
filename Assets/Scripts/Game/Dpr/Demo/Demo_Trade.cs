@@ -21,8 +21,14 @@ namespace Dpr.Demo
 		public bool UsePreGetCheck;
 		public bool IsGetMonsNo;
 		public bool IsGetEvolvedMonsNo;
-		private float[] displayTime;
-		public Demo_Trade() { /*@B 0x6004892*/ throw null; }
+		private float[] displayTime = new float[] { 3f, 3.5f, 1.5f };
+		public Demo_Trade() {
+			UseCamera = true;
+			FadeColor = global::UnityEngine.Color.black;
+			DisableEnvironmentController = false;
+			isDisablePostProcess = true;
+			isDisableMainCamera = true;
+		}
 		public override void Destroy() {
 			base.Destroy();
 			timeLine = null;

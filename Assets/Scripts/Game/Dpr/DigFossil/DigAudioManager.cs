@@ -6,9 +6,9 @@ namespace Dpr.DigFossil
 {
 	public class DigAudioManager : global::UnityEngine.MonoBehaviour, global::Dpr.DigFossil.IDigAudioManager
 	{
-		private readonly global::System.Collections.Generic.List<string> seNames;
-		private readonly global::System.Collections.Generic.List<uint> seIds;
-		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.DigFossil.DigAudioManager.SeId, global::UnityEngine.Coroutine> delayBuffer;
+		private readonly global::System.Collections.Generic.List<string> seNames = new global::System.Collections.Generic.List<string> { "s_und012", "s_und005", "s_und006", "s_und007", "s_und008", "s_und009", "s_und010", "s_und011", "UI_common_decide", "s_und014" };
+		private readonly global::System.Collections.Generic.List<uint> seIds = new global::System.Collections.Generic.List<uint>();
+		private readonly global::System.Collections.Generic.Dictionary<global::Dpr.DigFossil.DigAudioManager.SeId, global::UnityEngine.Coroutine> delayBuffer = new global::System.Collections.Generic.Dictionary<global::Dpr.DigFossil.DigAudioManager.SeId, global::UnityEngine.Coroutine>();
 		public void Initialize() {
 			foreach (var seName in seNames)
 				seIds.Add(Audio.AudioManager.Instance.GetIdByName(seName));
@@ -46,7 +46,7 @@ namespace Dpr.DigFossil
 			// StopDelaySe inlined (flag 0x4cbc581 @0197f268): stops and forgets this very coroutine
 			StopDelaySe(id);
 		}
-		public DigAudioManager() { /*@B 0x60036D4*/ throw null; }
+		public DigAudioManager() { }
 		public enum SeId
 		{
 			Beacon = 0,
