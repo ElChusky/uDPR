@@ -3,7 +3,7 @@ using Pml;
 using UnityEngine;
 public class PokemonSelector : global::UnityEngine.MonoBehaviour
 {
-	public int pokemonID;
+	public int pokemonID = 25;
 	public void Apply() { }
 	public void Update() {
 		if (Input.GetKeyDown(KeyCode.Z))
@@ -19,5 +19,6 @@ public class PokemonSelector : global::UnityEngine.MonoBehaviour
 				pokemonID += (int)MonsNo.END;
 		}
 	}
-	public PokemonSelector() { /*@B 0x6000B58*/ throw null; }
+	public PokemonSelector() {
+	}
 }

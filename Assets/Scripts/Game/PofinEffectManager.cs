@@ -15,7 +15,14 @@ public class PofinEffectManager
 	private global::Effect.EffectInstance kogeInstance;
 	private int kogeCount;
 	private const int kogeMaxCount = 7;
-	public PofinEffectManager(global::UnityEngine.Transform koge, global::UnityEngine.Transform kobore, global::UnityEngine.Transform smoke) { /*@B 0x6000EA4*/ throw null; }
+	public PofinEffectManager(global::UnityEngine.Transform koge, global::UnityEngine.Transform kobore, global::UnityEngine.Transform smoke) {
+		kogeEffTra = koge;
+		koboreEffTra = kobore;
+		smokeEffTra = smoke;
+		kogeEffTra.localPosition = new Vector3(0.0f, 0.06f, 0.0f);
+		smokeEffTra.localPosition = new Vector3(0.0f, 0.06f, 0.0f);
+		koboreEffTra.localPosition = new Vector3(0.0f, 1.0f, 0.0f);
+	}
 	public void KogeEffect() {
 		// @01993ca0
 		if (kogeCount >= kogeMaxCount)

@@ -311,7 +311,8 @@ public class RecodeMatching : global::Dpr.UI.UIWindow
 		_playingSE = false;
 		_seProgressTime = 0.0f;
 	}
-	public RecodeMatching() { /*@B 0x6001489*/ throw null; }
+	public RecodeMatching() {
+	}
 	private struct RecodeData
 	{
 		public int staIndex;

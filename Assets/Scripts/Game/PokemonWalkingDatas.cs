@@ -17,38 +17,52 @@ public class PokemonWalkingDatas : global::UnityEngine.ScriptableObject
 	public int currentIndex;
 	[global::System.NonSerialized]
 	public bool debugBoundsEnable;
-	public global::PokemonWalkingDatas.Parameters currentData { get { /*@B 0x6000B59*/ throw null; } }
-	public global::PokemonWalkingDatas.Preset GetPreset(int size) { /*@B 0x6000B5A*/ throw null; }
+	public global::PokemonWalkingDatas.Parameters currentData { get { return list[currentIndex]; } }
+	public global::PokemonWalkingDatas.Preset GetPreset(int size) {
+		switch (size)
+		{
+			case 1:
+				return presetM;
+			case 2:
+				return presetL;
+			case 3:
+				return presetLL;
+			default:
+				return presetS;
+		}
+	}
 	public PokemonWalkingDatas() { }
 	[global::System.Serializable]
 	public class Preset
 	{
-		public float scale;
-		public float radius;
-		public float falloffNear;
-		public float falloffFar;
-		public float walkSpeed;
-		public float runSpeed;
-		public float walkThreshold;
-		public float runThreshold;
-		public float eraseThreshold;
-		public Preset() { /*@B 0x6009613*/ throw null; }
+		public float scale = 1.0f;
+		public float radius = 1.0f;
+		public float falloffNear = 1.25f;
+		public float falloffFar = 1.75f;
+		public float walkSpeed = 0.4f;
+		public float runSpeed = 0.6f;
+		public float walkThreshold = 2.5f;
+		public float runThreshold = 3.75f;
+		public float eraseThreshold = 8.5f;
+		public Preset() {
+		}
 	}
 	[global::System.Serializable]
 	public class Parameters
 	{
 		public int index;
-		public int size;
-		public float scale;
-		public float radius;
-		public float falloffNear;
-		public float falloffFar;
-		public float walkSpeed;
-		public float runSpeed;
-		public float walkThreshold;
-		public float runThreshold;
-		public float eraseThreshold;
+		public int size = 1;
+		public float scale = 1.0f;
+		public float radius = 1.0f;
+		public float falloffNear = 1.25f;
+		public float falloffFar = 1.75f;
+		public float walkSpeed = 0.4f;
+		public float runSpeed = 0.6f;
+		public float walkThreshold = 2.5f;
+		public float runThreshold = 3.75f;
+		public float eraseThreshold = 8.5f;
 		public bool footEffectEnable;
-		public Parameters() { /*@B 0x6009614*/ throw null; }
+		public Parameters() {
+		}
 	}
 }

@@ -6,22 +6,22 @@ using UnityEngine;
 [global::System.Serializable]
 public class PofinGameCalc
 {
-	private global::System.Tuple<int, int>[] RotSpeedTarget;
+	private global::System.Tuple<int, int>[] RotSpeedTarget = new global::System.Tuple<int, int>[] { new global::System.Tuple<int, int>(1, 7), new global::System.Tuple<int, int>(3, 7), new global::System.Tuple<int, int>(6, 9) };
 	public bool isRotRight;
 	public int SearCount;
 	public int SpillCount;
 	public float NamerakasaHosei;
-	public int MAX_ROTATE_SPEED;
-	public float DOWN_SPEED;
-	public float ACCEL_POWER;
+	public int MAX_ROTATE_SPEED = 2500;
+	public float DOWN_SPEED = 40.0f;
+	public float ACCEL_POWER = 1.2f;
 	public float accel;
-	public float prevAngleR;
-	public float prevAngleL;
-	public float rotateTime;
+	public float prevAngleR = -1.0f;
+	public float prevAngleL = -1.0f;
+	public float rotateTime = 99.0f;
 	public float PlayingTime;
-	public float EndTime;
+	public float EndTime = 60.0f;
 	public float RotCount;
-	public int[] NeedPhaseChangeRotCounts;
+	public int[] NeedPhaseChangeRotCounts = new int[] { 15, 16, 16 };
 	public int CookPhase;
 	public float deltaAccel;
 	private float searTime;
@@ -36,7 +36,7 @@ public class PofinGameCalc
 	public int SpeedVal;
 	public float BlendHoten;
 	private float NoMissTime;
-	private float RotMagni;
+	private float RotMagni = 0.8f;
 	private global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> pokeModels;
 	public bool isGameEnd { get => PlayingTime >= EndTime || CookPhase > 2; }
 	public float SpeedHosei { get => accel > 0.0f ? DOWN_SPEED : -DOWN_SPEED; }
@@ -219,5 +219,6 @@ public class PofinGameCalc
 		float angle = Mathf.Atan2(input.y, input.x) * Mathf.Rad2Deg;
 		return angle < 0.0f ? angle + 360.0f : angle;
 	}
-	public PofinGameCalc() { /*@B 0x6000EA3*/ throw null; }
+	public PofinGameCalc() {
+	}
 }

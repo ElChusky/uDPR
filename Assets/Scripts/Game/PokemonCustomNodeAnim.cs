@@ -2,16 +2,50 @@
 public class PokemonCustomNodeAnim : global::UnityEngine.MonoBehaviour
 {
 	[global::UnityEngine.HeaderAttribute("Debug")]
-	public bool debugKey;
+	public bool debugKey = true;
 	[global::UnityEngine.HeaderAttribute("Material")]
 	public global::CustomNodeMaterial[] mCustomNodeMaterials;
 	[global::UnityEngine.HeaderAttribute("Visibility")]
 	public global::CustomNodeVisibility[] mCNViss;
-	public bool isAutoUpdate;
+	public bool isAutoUpdate = true;
 	private bool _isSetup;
-	private void Start() { /*@B 0x6000E02*/ throw null; }
-	private void SetUp() { /*@B 0x6000E03*/ throw null; }
-	public void UpdateCusAnimNode() { /*@B 0x6000E04*/ throw null; }
-	private void LateUpdate() { /*@B 0x6000E05*/ throw null; }
-	public PokemonCustomNodeAnim() { /*@B 0x6000E06*/ throw null; }
+	private void Start() {
+		SetUp();
+	}
+	private void SetUp() {
+		_isSetup = true;
+		float lossyScale = transform.lossyScale.x;
+		for (int i = 0; i < mCustomNodeMaterials.Length; i++)
+		{
+			CustomNodeMaterial material = mCustomNodeMaterials[i];
+			material.Start();
+			material.Update(lossyScale);
+		}
+		if (mCNViss.Length > 0)
+		{
+			for (int i = 0; i < mCNViss.Length; i++)
+			{
+				if (mCNViss[i] != null)
+					mCNViss[i].Update();
+			}
+		}
+	}
+	public void UpdateCusAnimNode() {
+		if (!_isSetup)
+			return;
+		float lossyScale = transform.lossyScale.x;
+		for (int i = 0; i < mCustomNodeMaterials.Length; i++)
+			mCustomNodeMaterials[i].Update(lossyScale);
+		if (mCNViss.Length > 0)
+		{
+			for (int i = 0; i < mCNViss.Length; i++)
+				mCNViss[i].Update();
+		}
+	}
+	private void LateUpdate() {
+		if (isAutoUpdate)
+			UpdateCusAnimNode();
+	}
+	public PokemonCustomNodeAnim() {
+	}
 }

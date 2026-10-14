@@ -5,47 +5,47 @@ using UnityEngine;
 [global::UnityEngine.RequireComponent(typeof(global::UnityEngine.MeshRenderer), typeof(global::UnityEngine.MeshFilter))]
 public class ProceduralPlane : global::UnityEngine.MonoBehaviour
 {
-	protected static readonly int ID_MAIN_TEX;
-	protected static readonly int ID_SUBDUCTION;
-	protected static readonly int ID_DYNAMIC_NORMALMAP;
-	protected static readonly int ID_FIELD_RT;
-	protected static readonly int ID_RCP_GRIDSIZE;
-	protected static readonly int ID_GRID_X;
-	protected static readonly int ID_GRID_Y;
-	protected static readonly int ID_FOOT_ANGLE;
-	protected static readonly int ID_FOOT_SCALE;
+	protected static readonly int ID_MAIN_TEX = global::UnityEngine.Shader.PropertyToID("_MainTex");
+	protected static readonly int ID_SUBDUCTION = global::UnityEngine.Shader.PropertyToID("_Subduction");
+	protected static readonly int ID_DYNAMIC_NORMALMAP = global::UnityEngine.Shader.PropertyToID("_DynamicNormalMap");
+	protected static readonly int ID_FIELD_RT = global::UnityEngine.Shader.PropertyToID("_TemporaryFieldRT");
+	protected static readonly int ID_RCP_GRIDSIZE = global::UnityEngine.Shader.PropertyToID("_RcpGridSize");
+	protected static readonly int ID_GRID_X = global::UnityEngine.Shader.PropertyToID("_GridX");
+	protected static readonly int ID_GRID_Y = global::UnityEngine.Shader.PropertyToID("_GridY");
+	protected static readonly int ID_FOOT_ANGLE = global::UnityEngine.Shader.PropertyToID("_FootAngle");
+	protected static readonly int ID_FOOT_SCALE = global::UnityEngine.Shader.PropertyToID("_FootScale");
 	[global::UnityEngine.SerializeField]
-	protected string _proceduralPlaneName;
+	protected string _proceduralPlaneName = "ProceduralPlane";
 	[global::UnityEngine.SerializeField]
-	protected global::UnityEngine.Color _initialColor;
+	protected global::UnityEngine.Color _initialColor = global::UnityEngine.Color.black;
 	[global::UnityEngine.SerializeField]
-	protected int _textureWidth;
+	protected int _textureWidth = 512;
 	[global::UnityEngine.SerializeField]
-	protected int _textureHeight;
+	protected int _textureHeight = 512;
 	[global::UnityEngine.SerializeField]
-	protected global::UnityEngine.RenderTextureFormat _textureFormat;
+	protected global::UnityEngine.RenderTextureFormat _textureFormat = global::UnityEngine.RenderTextureFormat.R8;
 	[global::UnityEngine.SerializeField]
-	protected global::UnityEngine.TextureWrapMode _textureWrapMode;
+	protected global::UnityEngine.TextureWrapMode _textureWrapMode = global::UnityEngine.TextureWrapMode.Clamp;
 	[global::UnityEngine.SerializeField]
 	protected global::UnityEngine.Material _footprintMaterial;
 	[global::UnityEngine.SerializeField]
 	protected global::UnityEngine.Material _transferMaterial;
 	[global::UnityEngine.SerializeField]
-	protected global::UnityEngine.RenderTextureFormat _dynamicNormalMapFormat;
+	protected global::UnityEngine.RenderTextureFormat _dynamicNormalMapFormat = global::UnityEngine.RenderTextureFormat.RG16;
 	[global::UnityEngine.SerializeField]
 	protected global::UnityEngine.Material _dynamicNormalMapMaterial;
 	[global::UnityEngine.SerializeField]
-	protected float _subduction;
+	protected float _subduction = 1.0f;
 	[global::UnityEngine.SerializeField]
-	protected int _gridSize;
+	protected int _gridSize = 21;
 	[global::UnityEngine.SerializeField]
-	protected float _gridScale;
+	protected float _gridScale = 1.0f;
 	[global::UnityEngine.SerializeField]
-	protected int _gridDivision;
+	protected int _gridDivision = 10;
 	[global::UnityEngine.SerializeField]
-	protected float _planeElevation;
+	protected float _planeElevation = 0.75f;
 	[global::UnityEngine.SerializeField]
-	protected float _swingWidth;
+	protected float _swingWidth = 0.2f;
 	[global::UnityEngine.SerializeField]
 	protected global::UnityEngine.UI.RawImage _debugDisplay;
 	protected global::UnityEngine.RenderTexture _renderTexture;
@@ -57,8 +57,8 @@ public class ProceduralPlane : global::UnityEngine.MonoBehaviour
 	protected global::UnityEngine.MeshRenderer _meshRenderer;
 	protected global::UnityEngine.MeshFilter _meshFilter;
 	protected global::UnityEngine.MaterialPropertyBlock _propertyBlock;
-	protected global::System.Collections.Generic.Dictionary<global::UnityEngine.Transform, global::System.ValueTuple<global::UnityEngine.Vector3, global::UnityEngine.Quaternion>> _hipTrails;
-	public float planeElevation { get { return this._planeElevation; } set { /*@B 0x6000E5A*/ throw null; } }
+	protected global::System.Collections.Generic.Dictionary<global::UnityEngine.Transform, global::System.ValueTuple<global::UnityEngine.Vector3, global::UnityEngine.Quaternion>> _hipTrails = new global::System.Collections.Generic.Dictionary<global::UnityEngine.Transform, global::System.ValueTuple<global::UnityEngine.Vector3, global::UnityEngine.Quaternion>>();
+	public float planeElevation { get { return this._planeElevation; } set { _planeElevation = value; } }
 	protected void CreateAssets() {
         _commandBuffer = new CommandBuffer();
         _commandBuffer.name = name;
@@ -202,6 +202,8 @@ public class ProceduralPlane : global::UnityEngine.MonoBehaviour
         mesh.RecalculateBounds();
         return mesh;
     }
-	public ProceduralPlane() { /*@B 0x6000E64*/ throw null; }
-	static ProceduralPlane() { /*@B 0x6000E65*/ throw null; }
+	public ProceduralPlane() {
+	}
+	static ProceduralPlane() {
+	}
 }

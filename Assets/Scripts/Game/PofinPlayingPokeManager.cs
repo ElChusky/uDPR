@@ -10,11 +10,17 @@ public class PofinPlayingPokeManager
 	private global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> fureaiPokes;
 	private global::System.Collections.Generic.List<global::UnityEngine.Transform> pokePositions;
 	private global::UnityEngine.Transform LookAtTarget;
-	private global::System.Collections.Generic.List<global::UnityEngine.Vector3> ReturnPositions;
+	private global::System.Collections.Generic.List<global::UnityEngine.Vector3> ReturnPositions = new global::System.Collections.Generic.List<global::UnityEngine.Vector3>();
 	private global::PofinPokePosition pokePositionManager;
-	public static readonly int[] SuperMaroyakaAnimID;
-	public static readonly int[] LikeAnimID;
-	public PofinPlayingPokeManager(global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> fureaiPokes, global::System.Collections.Generic.List<global::UnityEngine.Transform> pokePositions, global::UnityEngine.Transform LookAtTarget) { /*@B 0x6000E7F*/ throw null; }
+	public static readonly int[] SuperMaroyakaAnimID = new int[] { 43, 44 };
+	public static readonly int[] LikeAnimID = new int[] { 44, 45 };
+	public PofinPlayingPokeManager(global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> fureaiPokes, global::System.Collections.Generic.List<global::UnityEngine.Transform> pokePositions, global::UnityEngine.Transform LookAtTarget) {
+		this.fureaiPokes = fureaiPokes;
+		this.pokePositions = pokePositions;
+		this.LookAtTarget = LookAtTarget;
+		pokePositionManager = LookAtTarget.parent.GetComponent<PofinPokePosition>();
+		PokeConfiguration();
+	}
 	public void EndPofinMake() {
 		// @01995f70
 		PokeAddWalking();
@@ -90,5 +96,6 @@ public class PofinPlayingPokeManager
 		for (int i = 0; i < fureaiPokes.Count; i++)
 			fureaiPokes[i].AI.ChangeState(typeof(PokeWalkingState));
 	}
-	static PofinPlayingPokeManager() { /*@B 0x6000E89*/ throw null; }
+	static PofinPlayingPokeManager() {
+	}
 }

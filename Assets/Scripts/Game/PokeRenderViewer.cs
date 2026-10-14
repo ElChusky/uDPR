@@ -7,18 +7,18 @@ using UnityEngine;
 public class PokeRenderViewer : global::UnityEngine.MonoBehaviour
 {
 	private global::UnityEngine.RectTransform rectTra;
-	private global::System.Collections.Generic.List<global::DG.Tweening.Tweener> Tws;
+	private global::System.Collections.Generic.List<global::DG.Tweening.Tweener> Tws = new global::System.Collections.Generic.List<global::DG.Tweening.Tweener>();
 	public global::FieldPokemonEntity entity;
 	private global::UnityEngine.Coroutine PokeAnimationUpdateCor;
 	private global::UnityEngine.Transform PositionTra;
 	private global::UnityEngine.Transform Waist;
-	public int AnimationID;
+	public int AnimationID = -1;
 	private global::UnityEngine.RenderTexture tex;
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.Sprite[] CircleImages;
 	public global::UnityEngine.UI.Image CircleUI;
 	public global::UnityEngine.UI.RawImage PokeImage;
-	private static readonly global::UnityEngine.Color ClearColor;
+	private static readonly global::UnityEngine.Color ClearColor = new global::UnityEngine.Color(1.0f, 1.0f, 1.0f, 0.0f);
 	[global::Dpr.SubContents.ButtonAttribute("StopMotion", "StopMotion", new object[] {  })]
 	public int Button01;
 	private void Awake() {
@@ -137,6 +137,8 @@ public class PokeRenderViewer : global::UnityEngine.MonoBehaviour
 		Waist = null;
 		System.Array.Clear(CircleImages, 0, CircleImages.Length);
 	}
-	public PokeRenderViewer() { /*@B 0x6000935*/ throw null; }
-	static PokeRenderViewer() { /*@B 0x6000936*/ throw null; }
+	public PokeRenderViewer() {
+	}
+	static PokeRenderViewer() {
+	}
 }
