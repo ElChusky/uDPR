@@ -4,6 +4,13 @@ namespace Dpr.Field.Walking
 	public class SanpoPairEngi : global::Dpr.Field.Walking.ActionModel
 	{
 		public SanpoPairEngi() { }
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008AA3*/ throw null; }
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) 
+		{
+			global::Dpr.Field.Walking.AIFureaiModel fureaiModel = (global::Dpr.Field.Walking.AIFureaiModel)model;
+			int masterAnim = fureaiModel.sanpoModel.PairModel.masterPoke.GetAnimRandom();
+			int slaveAnim = fureaiModel.sanpoModel.PairModel.slavePoke.GetAnimRandom();
+			global::Dpr.Field.Walking.CorSystem sub = model.corSys.AddSub("");
+			yield return sub.Play(new global::Dpr.Field.Walking.SanpoPairActionCommon(masterAnim, slaveAnim, true).DoAction(model));
+		}
 	}
 }

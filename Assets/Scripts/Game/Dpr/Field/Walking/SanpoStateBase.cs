@@ -3,14 +3,50 @@ namespace Dpr.Field.Walking
 {
 	public abstract class SanpoStateBase : global::Dpr.Field.Walking.AIStateBase
 	{
-		private static readonly int[] RankToEmoticonNo;
+		private static readonly int[] RankToEmoticonNo = new int[] { 0, 0, 0, 3, 3, 2 };
 		protected global::Dpr.Field.Walking.AIFureaiModel model { get => (AIFureaiModel)base.model; }
-		protected global::Dpr.FureaiHiroba.PokeSanpoModel sanpoModel { get { /*@B 0x6008A34*/ throw null; } }
-		protected global::Dpr.Field.Walking.WalkData walkModel { get { /*@B 0x6008A35*/ throw null; } }
-		public SanpoStateBase(global::Dpr.Field.Walking.AIFureaiModel model) : base(default(global::Dpr.Field.Walking.AIModel)) { /*@B 0x6008A36*/ throw null; }
-		protected bool CheckAddWalking() { /*@B 0x6008A37*/ throw null; }
-		protected bool LookPlayer() { /*@B 0x6008A38*/ throw null; }
+		protected global::Dpr.FureaiHiroba.PokeSanpoModel sanpoModel { get { return model.sanpoModel; } }
+		protected global::Dpr.Field.Walking.WalkData walkModel { get { return model.walkData; } }
+		public SanpoStateBase(global::Dpr.Field.Walking.AIFureaiModel model) : base(model) { }
+		protected bool CheckAddWalking()
+		{
+			if (!model.sanpoModel.isAddWalking)
+			{
+				return false;
+			}
+			int rank = global::Dpr.SubContents.Utils.GetNakayoshiRank(model.fureaiModel.nakayoshi);
+			model.emoticon.Enter(RankToEmoticonNo[rank], false);
+			global::Pml.PokePara.PokemonParam param = model.fureaiModel.GetPokeParam();
+			global::Pml.MonsNo monsNo = param.GetMonsNo();
+			if (global::Dpr.SubContents.Utils.IsPikaV(monsNo))
+			{
+				int friendRank = global::Dpr.SubContents.Utils.GetNakayoshiRank(param.GetFriendship());
+				global::Dpr.SubContents.Utils.PlayVoicePikaBui_Notice(monsNo, friendRank, model.charaModel.controller.voicePlayer);
+			}
+			else
+			{
+				global::Dpr.SubContents.Utils.PlayVoice(param.GetMonsNo(), param.GetFormNo(), 0, model.charaModel.controller.voicePlayer);
+			}
+			corSys.Cancel();
+			model.AI.ChangeState(typeof(global::Dpr.Field.Walking.ReturnState));
+			return true;
+		}
+		protected bool LookPlayer()
+		{
+			global::UnityEngine.Transform player = global::EntityManager.activeFieldPlayer.transform;
+			if (!model.sanpoModel.isLookPlayer)
+			{
+				return false;
+			}
+			if (!model.charaModel.isForceAnimation)
+			{
+				corSys.Cancel();
+				model.walkData.nowSpeed = 0f;
+				model.walkData.LookAtTarget(player.position, deltaTime, 3f);
+			}
+			return true;
+		}
 		protected override void StateUpdate() { }
-		static SanpoStateBase() { /*@B 0x6008A3A*/ throw null; }
+		static SanpoStateBase() { }
 	}
 }

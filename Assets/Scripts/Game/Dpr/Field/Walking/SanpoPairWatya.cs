@@ -3,7 +3,10 @@ namespace Dpr.Field.Walking
 {
 	public class SanpoPairWatya : global::Dpr.Field.Walking.ActionModel
 	{
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008AA8*/ throw null; }
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) 
+		{
+			yield return null;
+		}
 		public SanpoPairWatya() { }
 	}
 }

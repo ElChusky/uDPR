@@ -4,6 +4,10 @@ namespace Dpr.Field.Walking
 	public class SanpoPairHoe : global::Dpr.Field.Walking.ActionModel
 	{
 		public SanpoPairHoe() { }
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008AA7*/ throw null; }
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) 
+		{
+			global::Dpr.Field.Walking.CorSystem sub = model.walkData.actionModel.corSystem.AddSub("");
+			yield return sub.Play(new global::Dpr.Field.Walking.SanpoPairActionCommon(9, 9, false).DoAction(model));
+		}
 	}
 }

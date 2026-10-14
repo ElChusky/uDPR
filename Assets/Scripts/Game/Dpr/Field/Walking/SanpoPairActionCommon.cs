@@ -6,9 +6,73 @@ namespace Dpr.Field.Walking
 		private int masterAnim;
 		private int slaveAnim;
 		private bool isCanSameTime;
-		public SanpoPairActionCommon(int masterAnim, int slaveAnim, bool isCanSameTime = false) { /*@B 0x6008A9F*/ throw null; }
-		private global::System.Collections.IEnumerator WaitFrame(int count) { /*@B 0x6008AA0*/ throw null; }
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel m) { /*@B 0x6008AA1*/ throw null; }
+		public SanpoPairActionCommon(int masterAnim, int slaveAnim, bool isCanSameTime = false)
+		{
+			this.masterAnim = masterAnim;
+			this.slaveAnim = slaveAnim;
+			this.isCanSameTime = isCanSameTime;
+		}
+		private global::System.Collections.IEnumerator WaitFrame(int count)
+		{
+			for (int i = 0; i < count; i++)
+			{
+				yield return null;
+			}
+		}
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel m)
+		{
+			global::Dpr.Field.Walking.AIFureaiModel model = (global::Dpr.Field.Walking.AIFureaiModel)m;
+			global::Dpr.FureaiHiroba.FureaiPokeModel master = model.sanpoModel.PairModel.masterPoke;
+			global::Dpr.FureaiHiroba.FureaiPokeModel slave = model.sanpoModel.PairModel.slavePoke;
+			global::Dpr.Field.Walking.CorSystem masterCorSys = master.AI.GetNowState().corSys;
+			global::Dpr.Field.Walking.CorSystem slaveCorSys = slave.AI.GetNowState().corSys;
+			deleCor dele1 = () =>
+			{
+				if (global::Dpr.SubContents.Utils.IsPikaV(master.controller.model.monsNo) && masterAnim == 9)
+				{
+					global::Dpr.SubContents.Utils.PlayVoicePikaBui_Roar(master.controller.model.monsNo, master.controller.voicePlayer);
+				}
+				global::Dpr.Field.Walking.CorSystem sub = master.controller.view.AnimPlayForce(masterAnim, masterCorSys, master, 0.2f, 0f);
+				return sub.Play(master.WaitforAnimationFinish(() => sub.isPlaying));
+			};
+			deleCor dele2 = () =>
+			{
+				if (global::Dpr.SubContents.Utils.IsPikaV(slave.controller.model.monsNo) && slaveAnim == 9)
+				{
+					global::Dpr.SubContents.Utils.PlayVoicePikaBui_Roar(slave.controller.model.monsNo, slave.controller.voicePlayer);
+				}
+				global::Dpr.Field.Walking.CorSystem sub = slave.controller.view.AnimPlayForce(slaveAnim, slaveCorSys, slave, 0.2f, 0f);
+				return sub.Play(slave.WaitforAnimationFinish(() => sub.isPlaying));
+			};
+			int rand = global::UnityEngine.Random.Range(0, 2);
+			if (rand == 0)
+			{
+				if (isCanSameTime)
+				{
+					dele1();
+					yield return WaitFrame(global::UnityEngine.Random.Range(0, 45));
+				}
+				else
+				{
+					yield return dele1();
+				}
+				yield return dele2();
+			}
+			else if (rand == 1)
+			{
+				if (isCanSameTime)
+				{
+					dele2();
+					yield return WaitFrame(global::UnityEngine.Random.Range(0, 45));
+				}
+				else
+				{
+					yield return dele2();
+				}
+				yield return dele1();
+			}
+			yield return WaitFrame(90);
+		}
 		private delegate global::UnityEngine.Coroutine deleCor();
 	}
 }

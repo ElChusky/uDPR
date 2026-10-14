@@ -4,7 +4,35 @@ namespace Dpr.Field.Walking
 	public class SanpoRun : global::Dpr.Field.Walking.ActionModel
 	{
 		public SanpoRun() { }
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel m) { /*@B 0x6008A97*/ throw null; }
-		private float GetNormalizeTime(float elapsedTime, float duration) { /*@B 0x6008A98*/ throw null; }
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel m)
+		{
+			global::Dpr.Field.Walking.AIFureaiModel model = (global::Dpr.Field.Walking.AIFureaiModel)m;
+			float elapsedTime = 0f;
+			global::UnityEngine.Vector3 RotY = global::UnityEngine.Vector3.up * global::UnityEngine.Random.Range(30, 60);
+			if (global::UnityEngine.Random.Range(0, 2) == 0)
+			{
+				RotY = -RotY;
+			}
+			float RunTime = global::UnityEngine.Random.Range(0.5f, 1.5f);
+			while (elapsedTime < RunTime && !m.charaModel.isDestroyed)
+			{
+				float deltaTime = global::SmartPoint.AssetAssistant.Sequencer.elapsedTime;
+				m.walkData.isNeedRun = true;
+				model.walkData.Move(deltaTime, 10f, 1.8f, 0f);
+				elapsedTime += deltaTime;
+				float angle = model.walkData.GetAngle(model.sanpoModel.InitPos);
+				model.transform.eulerAngles += (RotY + angle * global::UnityEngine.Vector3.up * model.sanpoModel.CollidedRotValue) * deltaTime;
+				yield return new global::UnityEngine.WaitForEndOfFrame();
+			}
+			yield return null;
+		}
+		private float GetNormalizeTime(float elapsedTime, float duration)
+		{
+			if (duration == 0f)
+			{
+				return 1f;
+			}
+			return global::UnityEngine.Mathf.Clamp(elapsedTime / duration, 0f, 1f);
+		}
 	}
 }
