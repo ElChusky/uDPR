@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CalcActionPriority : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CalcActionPriority(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D82*/ throw null; }
+		public Section_CalcActionPriority(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CalcActionPriority.Result pResult, in global::Dpr.Battle.Logic.Section_CalcActionPriority.Description description) {
             PokeAction action = description.pokeAction;
             if (action.actionCategory == PokeActionCategory.RecPlay_TimeOver)
@@ -89,7 +89,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.PokeAction pokeAction;
 			public global::Dpr.Battle.Logic.DominantPriority dominantPriority;
 			public global::Dpr.Battle.Logic.BtlSpecialPri specialPriority;
-			public Description() { /*@B 0x600B4B3*/ throw null; }
+			public Description() {
+				pokeAction = null;
+				dominantPriority = DominantPriority.DEFAULT;
+				specialPriority = BtlSpecialPri.BTL_SPPRI_DEFAULT;
+			}
 		}
 		public class Result
 		{

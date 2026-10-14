@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FightDamageSide_MigawariDamage : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FightDamageSide_MigawariDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E7E*/ throw null; }
+		public Section_FightDamageSide_MigawariDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FightDamageSide_MigawariDamage.Result pResult, in global::Dpr.Battle.Logic.Section_FightDamageSide_MigawariDamage.Description description) {
 			DamageProcParams damageProcParams = new DamageProcParams();
 			byte hitCount = (byte)storeMigawariHitInfo(damageProcParams, description.damageRecord);
@@ -51,7 +51,13 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.PokeSet pDamagedPokeSet;
-			public Description() { /*@B 0x600B513*/ throw null; }
+			public Description() {
+				damageRecord = null;
+				actionDesc = null;
+				wazaParam = null;
+				attacker = null;
+				pDamagedPokeSet = null;
+			}
 		}
 		public class Result
 		{

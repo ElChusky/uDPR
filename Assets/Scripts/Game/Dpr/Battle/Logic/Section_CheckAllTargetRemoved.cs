@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckAllTargetRemoved : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckAllTargetRemoved(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DA1*/ throw null; }
+		public Section_CheckAllTargetRemoved(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckAllTargetRemoved.Result pResult, in global::Dpr.Battle.Logic.Section_CheckAllTargetRemoved.Description description) {
             pResult.isFailed = false;
             if (description.targets.IsRemovedAll() && !GetEventLauncher().Event_IsRemoveAllFailCancel(description.attacker, description.wazaParam))
@@ -14,7 +14,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public global::Dpr.Battle.Logic.PokeSet targets;
-			public Description() { /*@B 0x600B4C5*/ throw null; }
+			public Description() {
+				attacker = null;
+				wazaParam = null;
+				targets = null;
+			}
 		}
 		public class Result
 		{

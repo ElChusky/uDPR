@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CureSick : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CureSick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E2A*/ throw null; }
+		public Section_CureSick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CureSick.Result result, in global::Dpr.Battle.Logic.Section_CureSick.Description desc) {
             result.isCured = false;
             for (byte i = 0; i < result.isPokeCured.Length; i++)
@@ -109,13 +109,20 @@ namespace Dpr.Battle.Logic
 			public bool isDisplayTokuseiWindow;
 			public bool isStandardMessageDisable;
 			public global::Dpr.Battle.Logic.StrParam successSpMessage = new StrParam();
-			public Description() { /*@B 0x600B4F8*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+				sick = WazaSickEx.POKEFULL;
+				targetPokeCount = 0;
+				itemID = 0;
+				isDisplayTokuseiWindow = false;
+				isStandardMessageDisable = false;
+			}
 		}
 		public class Result
 		{
 			public bool isCured;
 			public bool[] isPokeCured = new bool[DefineConstants.BTL_PARTY_MEMBER_MAX * (int)BtlSide.BTL_SIDE_NUM];
-			public Result() { /*@B 0x600B4F9*/ throw null; }
+			public Result() { }
 		}
 	}
 }

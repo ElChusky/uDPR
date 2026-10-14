@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FightDamage_PluralCount : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FightDamage_PluralCount(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E96*/ throw null; }
+		public Section_FightDamage_PluralCount(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FightDamage_PluralCount.Result pResult, in global::Dpr.Battle.Logic.Section_FightDamage_PluralCount.Description description) {
             bool isFriendshipActive;
             pResult.dmgSum = 0;
@@ -191,14 +191,22 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.PokeSet targets;
 			public global::Dpr.Battle.Logic.PokeSet damagedPokeSet;
 			public global::Dpr.Battle.Logic.HITCHECK_PARAM hitCheckParam;
-			public Description() { /*@B 0x600B519*/ throw null; }
+			public Description() {
+				attacker = null;
+				actionDesc = null;
+				wazaParam = null;
+				affRec = null;
+				targets = null;
+				damagedPokeSet = null;
+				hitCheckParam = null;
+			}
 		}
 		public class Result
 		{
 			public uint dmgSum;
-			public global::Dpr.Battle.Logic.SectionUtil.GWallUpdateResult gWallUpdateResult;
-			public global::Dpr.Battle.Logic.WazaEffectReservedPos wazaEffectReservePos;
-			public Result() { /*@B 0x600B51A*/ throw null; }
+			public global::Dpr.Battle.Logic.SectionUtil.GWallUpdateResult gWallUpdateResult = new SectionUtil.GWallUpdateResult();
+			public global::Dpr.Battle.Logic.WazaEffectReservedPos wazaEffectReservePos = new WazaEffectReservedPos();
+			public Result() { }
 		}
 	}
 }

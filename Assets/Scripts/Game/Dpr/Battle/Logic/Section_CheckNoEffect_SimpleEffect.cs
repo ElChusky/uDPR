@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckNoEffect_SimpleEffect : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckNoEffect_SimpleEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DBA*/ throw null; }
+		public Section_CheckNoEffect_SimpleEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckNoEffect_SimpleEffect.Result pResult, in global::Dpr.Battle.Logic.Section_CheckNoEffect_SimpleEffect.Description description) {
 			uint targetCount = description.targets.GetCount();
 			removeNoEffectTarget(description.actionDesc, description.wazaParam, description.attacker, description.targets);
@@ -77,7 +77,12 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.PokeSet targets;
-			public Description() { /*@B 0x600B4D3*/ throw null; }
+			public Description() {
+				actionDesc = null;
+				wazaParam = null;
+				attacker = null;
+				targets = null;
+			}
 		}
 		public class Result
 		{

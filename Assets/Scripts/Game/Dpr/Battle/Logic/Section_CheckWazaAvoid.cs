@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckWazaAvoid : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckWazaAvoid(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DFA*/ throw null; }
+		public Section_CheckWazaAvoid(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckWazaAvoid.Result pResult, in global::Dpr.Battle.Logic.Section_CheckWazaAvoid.Description description) {
             if (description.targets.GetCount() == 0)
                 return;
@@ -52,7 +52,13 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.PokeSet targets;
 			public global::Dpr.Battle.Logic.ActionRecorder actionRecorder;
 			public bool isDelayAttack;
-			public Description() { /*@B 0x600B4E7*/ throw null; }
+			public Description() {
+				attacker = null;
+				wazaParam = null;
+				targets = null;
+				actionRecorder = null;
+				isDelayAttack = false;
+			}
 		}
 		public class Result
 		{

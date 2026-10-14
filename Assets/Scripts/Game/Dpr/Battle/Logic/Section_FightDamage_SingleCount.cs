@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FightDamage_SingleCount : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FightDamage_SingleCount(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EB8*/ throw null; }
+		public Section_FightDamage_SingleCount(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FightDamage_SingleCount.Result pResult, in global::Dpr.Battle.Logic.Section_FightDamage_SingleCount.Description description) {
 			bool isPluralHitWaza = description.pTargets.GetCount() > 1;
 			int damageRatio = getDamageRatioByTargetCount(description.pTargets);
@@ -85,8 +85,10 @@ namespace Dpr.Battle.Logic
 		public class Result
 		{
 			public uint dmgSum;
-			public global::Dpr.Battle.Logic.SectionUtil.GWallUpdateResult gWallUpdateResult;
-			public Result() { /*@B 0x600B520*/ throw null; }
+			public global::Dpr.Battle.Logic.SectionUtil.GWallUpdateResult gWallUpdateResult = new SectionUtil.GWallUpdateResult();
+			public Result() {
+				dmgSum = 0;
+			}
 		}
 	}
 }

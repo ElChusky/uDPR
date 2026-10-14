@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FightDamage_ToRecover : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FightDamage_ToRecover(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EBF*/ throw null; }
+		public Section_FightDamage_ToRecover(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FightDamage_ToRecover.Result pResult, in global::Dpr.Battle.Logic.Section_FightDamage_ToRecover.Description description) {
 			description.targets.SeekStart();
 			BTL_POKEPARAM defender;
@@ -22,7 +22,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public global::Dpr.Battle.Logic.PokeSet targets;
-			public Description() { /*@B 0x600B521*/ throw null; }
+			public Description() {
+				attacker = null;
+				wazaParam = null;
+				targets = null;
+			}
 		}
 		public class Result
 		{

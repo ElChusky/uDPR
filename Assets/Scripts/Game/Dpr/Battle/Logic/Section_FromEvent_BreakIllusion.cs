@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_BreakIllusion : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_BreakIllusion(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006ED2*/ throw null; }
+		public Section_FromEvent_BreakIllusion(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_BreakIllusion.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_BreakIllusion.Description description) {
 			BTL_POKEPARAM target = null;
 			result.isSucceeded = false;
@@ -29,8 +29,10 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public byte targetPokeID;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B52B*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				targetPokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FightDamage_Kickback : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FightDamage_Kickback(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E91*/ throw null; }
+		public Section_FightDamage_Kickback(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FightDamage_Kickback.Result pResult, in global::Dpr.Battle.Logic.Section_FightDamage_Kickback.Description description) {
 			bool isMustEnable = false;
 			byte attackerID = description.pAttacker.GetID();
@@ -54,7 +54,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM pAttacker;
 			public global::Dpr.Battle.Logic.WazaParam pWazaParam;
 			public uint damageSum;
-			public Description() { /*@B 0x600B517*/ throw null; }
+			public Description() {
+				pAttacker = null;
+				pWazaParam = null;
+				damageSum = 0;
+			}
 		}
 		public class Result
 		{

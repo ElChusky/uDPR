@@ -4,8 +4,8 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Cheer : global::Dpr.Battle.Logic.Section
 	{
-		private static readonly global::Dpr.Battle.Logic.Section_Cheer.decideRankUpEffectTableElem[] decideRankUpEffectTable;
-		public Section_Cheer(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E06*/ throw null; }
+		private static readonly global::Dpr.Battle.Logic.Section_Cheer.decideRankUpEffectTableElem[] decideRankUpEffectTable = new decideRankUpEffectTableElem[] { new decideRankUpEffectTableElem(WazaRankEffect.ATTACK, 2), new decideRankUpEffectTableElem(WazaRankEffect.DEFENCE, 2), new decideRankUpEffectTableElem(WazaRankEffect.SP_ATTACK, 2), new decideRankUpEffectTableElem(WazaRankEffect.SP_DEFENCE, 2), new decideRankUpEffectTableElem(WazaRankEffect.AGILITY, 2), new decideRankUpEffectTableElem(WazaRankEffect.AVOID, 1), new decideRankUpEffectTableElem(WazaRankEffect.CRITICAL_RATIO, 1) };
+		public Section_Cheer(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Cheer.Result pResult, in global::Dpr.Battle.Logic.Section_Cheer.Description desc) {
 			if (GetRule() != BtlRule.BTL_RULE_RAID)
 				return;
@@ -188,12 +188,15 @@ namespace Dpr.Battle.Logic
 		private bool isCheerTarget(global::Dpr.Battle.Logic.BTL_POKEPARAM poke, global::Dpr.Battle.Logic.BTL_CLIENT_ID cheerClientID) {
 			return GetMainModule().IsFriendClientID(MainModule.PokeIDtoClientID(poke.GetID()), (byte)cheerClientID);
 		}
-		static Section_Cheer() { /*@B 0x6006E15*/ throw null; }
+		static Section_Cheer() { }
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.BTL_CLIENT_ID cheerClientID;
 			public uint actionSerialNo;
-			public Description() { /*@B 0x600B4ED*/ throw null; }
+			public Description() {
+				cheerClientID = BTL_CLIENT_ID.BTL_CLIENT_NULL;
+				actionSerialNo = 0;
+			}
 		}
 		public class Result
 		{
@@ -203,7 +206,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Pml.WazaData.WazaRankEffect effect;
 			public byte volume;
-			public decideRankUpEffectTableElem(global::Pml.WazaData.WazaRankEffect effect, byte volume) { /*@B 0x600B4EF*/ throw null; }
+			public decideRankUpEffectTableElem(global::Pml.WazaData.WazaRankEffect effect, byte volume) {
+				this.effect = effect;
+				this.volume = volume;
+			}
 		}
 	}
 }

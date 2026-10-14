@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Escape_Sub : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Escape_Sub(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E4B*/ throw null; }
+		public Section_Escape_Sub(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Escape_Sub.Result pResult, in global::Dpr.Battle.Logic.Section_Escape_Sub.Description description) {
             bool isForceSuccess = false;
             bool isSkipAgiCheck = false;
@@ -75,12 +75,18 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM escapePoke;
 			public bool isSkipAgiCheck;
 			public bool isForceSuccess;
-			public Description() { /*@B 0x600B508*/ throw null; }
+			public Description() {
+				escapePoke = null;
+				isSkipAgiCheck = false;
+				isForceSuccess = false;
+			}
 		}
 		public class Result
 		{
 			public bool isSucceeded;
-			public Result() { /*@B 0x600B509*/ throw null; }
+			public Result() {
+				isSucceeded = false;
+			}
 		}
 	}
 }

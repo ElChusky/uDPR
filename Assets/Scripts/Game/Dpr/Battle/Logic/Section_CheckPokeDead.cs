@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckPokeDead : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckPokeDead(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DE0*/ throw null; }
+		public Section_CheckPokeDead(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckPokeDead.Result pResult, in global::Dpr.Battle.Logic.Section_CheckPokeDead.Description description) {
 			pResult.isDead = false;
 			DeadRec deadRec = GetBattleEnv().GetDeadRec();
@@ -173,7 +173,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
 			public bool isDeadMessageDisplay;
 			public global::Dpr.Battle.Logic.PGLRecord.RecParam pPglParam;
-			public Description() { /*@B 0x600B4E1*/ throw null; }
+			public Description() {
+				poke = null;
+				pPglParam = null;
+				isDeadMessageDisplay = false;
+			}
 		}
 		public class Result
 		{

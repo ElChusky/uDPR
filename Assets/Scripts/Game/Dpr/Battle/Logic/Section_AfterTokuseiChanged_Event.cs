@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_AfterTokuseiChanged_Event : global::Dpr.Battle.Logic.Section
 	{
-		public Section_AfterTokuseiChanged_Event(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D7A*/ throw null; }
+		public Section_AfterTokuseiChanged_Event(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_AfterTokuseiChanged_Event.Result pResult, in global::Dpr.Battle.Logic.Section_AfterTokuseiChanged_Event.Description desc) {
             GetEventLauncher().Event_ChangeTokuseiAfter(desc.poke.GetID());
         }

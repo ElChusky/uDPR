@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_DamageDrain_Core : global::Dpr.Battle.Logic.Section
 	{
-		public Section_DamageDrain_Core(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E3A*/ throw null; }
+		public Section_DamageDrain_Core(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_DamageDrain_Core.Result pResult, in global::Dpr.Battle.Logic.Section_DamageDrain_Core.Description description) {
             pResult.isHpRecovered = false;
             ushort drainHP = recalcDrainVolume(description.attacker, description.target, description.drainHP);
@@ -31,7 +31,12 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM target;
 			public ushort drainHP;
 			public bool skipSpFailCheck;
-			public Description() { /*@B 0x600B4FE*/ throw null; }
+			public Description() {
+				attacker = null;
+				target = null;
+				drainHP = 0;
+				skipSpFailCheck = false;
+			}
 		}
 		public class Result
 		{

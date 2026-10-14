@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Escape : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Escape(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E40*/ throw null; }
+		public Section_Escape(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Escape.Result pResult, in global::Dpr.Battle.Logic.Section_Escape.Description description) {
             pResult.isSucceeded = escape(description.poke);
             if (pResult.isSucceeded)
@@ -34,7 +34,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
-			public Description() { /*@B 0x600B502*/ throw null; }
+			public Description() {
+				poke = null;
+			}
 		}
 		public class Result
 		{

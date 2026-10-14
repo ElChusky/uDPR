@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FreeFall_Release : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FreeFall_Release(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EC7*/ throw null; }
+		public Section_FreeFall_Release(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FreeFall_Release.Result pResult, in global::Dpr.Battle.Logic.Section_FreeFall_Release.Description description) {
             BTL_POKEPARAM capturedPoke = getCapturedPoke(description.attacker);
             if (capturedPoke == null)
@@ -55,7 +55,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public bool canAppearSelf;
 			public bool canAppearTarget;
-			public Description() { /*@B 0x600B525*/ throw null; }
+			public Description() {
+				attacker = null;
+				canAppearSelf = false;
+				canAppearTarget = false;
+			}
 		}
 		public class Result
 		{

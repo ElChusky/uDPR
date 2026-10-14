@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckNoEffect_Sub : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckNoEffect_Sub(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DC5*/ throw null; }
+		public Section_CheckNoEffect_Sub(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckNoEffect_Sub.Result pResult, in global::Dpr.Battle.Logic.Section_CheckNoEffect_Sub.Description description) {
 			description.targets.SeekStart();
 			BTL_POKEPARAM target;
@@ -37,7 +37,14 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.DmgAffRec affinityRecorder;
 			public global::Dpr.Battle.Logic.EventID eventID;
 			public bool isMustHitEnable;
-			public Description() { /*@B 0x600B4D7*/ throw null; }
+			public Description() {
+				wazaParam = null;
+				attacker = null;
+				targets = null;
+				affinityRecorder = null;
+				eventID = EventID.INVALID;
+				isMustHitEnable = false;
+			}
 		}
 		public class Result
 		{

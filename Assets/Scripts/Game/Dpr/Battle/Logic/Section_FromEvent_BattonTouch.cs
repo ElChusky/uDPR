@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_BattonTouch : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_BattonTouch(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006ED0*/ throw null; }
+		public Section_FromEvent_BattonTouch(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_BattonTouch.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_BattonTouch.Description description) {
             BTL_POKEPARAM user = GetPokeParam(description.userPokeID);
             BTL_POKEPARAM target = GetPokeParam(description.targetPokeID);
@@ -20,7 +20,10 @@ namespace Dpr.Battle.Logic
 		{
 			public byte userPokeID;
 			public byte targetPokeID;
-			public Description() { /*@B 0x600B529*/ throw null; }
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				targetPokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

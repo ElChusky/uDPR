@@ -3,14 +3,16 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_ChangeWeather_After : global::Dpr.Battle.Logic.Section
 	{
-		public Section_ChangeWeather_After(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D98*/ throw null; }
+		public Section_ChangeWeather_After(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ChangeWeather_After.Result pResult, in global::Dpr.Battle.Logic.Section_ChangeWeather_After.Description description) {
             GetEventLauncher().Event_AfterChangeWeather(description.weather);
         }
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.BtlWeather weather;
-			public Description() { /*@B 0x600B4BF*/ throw null; }
+			public Description() {
+				weather = BtlWeather.BTL_WEATHER_NONE;
+			}
 		}
 		public class Result
 		{

@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FightDamage_Ichigeki : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FightDamage_Ichigeki(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E82*/ throw null; }
+		public Section_FightDamage_Ichigeki(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FightDamage_Ichigeki.Result pResult, in global::Dpr.Battle.Logic.Section_FightDamage_Ichigeki.Description description) {
 			BTL_POKEPARAM target;
 			for (uint i = 0; (target = description.pTargets.Get(i)) != null; i++)
@@ -152,12 +152,18 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM pAttacker;
 			public global::Dpr.Battle.Logic.PokeSet pTargets;
 			public global::Dpr.Battle.Logic.PokeSet pDamagedPokeSet;
-			public Description() { /*@B 0x600B515*/ throw null; }
+			public Description() {
+				pAffinityRecorder = null;
+				pWazaParam = null;
+				pAttacker = null;
+				pTargets = null;
+				pDamagedPokeSet = null;
+			}
 		}
 		public class Result
 		{
-			public global::Dpr.Battle.Logic.SectionUtil.GWallUpdateResult gWallUpdateResult;
-			public Result() { /*@B 0x600B516*/ throw null; }
+			public global::Dpr.Battle.Logic.SectionUtil.GWallUpdateResult gWallUpdateResult = new SectionUtil.GWallUpdateResult();
+			public Result() { }
 		}
 	}
 }

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_ChangeWeather_Check : global::Dpr.Battle.Logic.Section
 	{
-		public Section_ChangeWeather_Check(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D9A*/ throw null; }
+		public Section_ChangeWeather_Check(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ChangeWeather_Check.Result pResult, in global::Dpr.Battle.Logic.Section_ChangeWeather_Check.Description description) {
             pResult.result = ChangeWeatherResult.FAIL;
             if (description.weather >= BtlWeather.BTL_WEATHER_MAX)
@@ -27,7 +27,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BtlWeather weather;
 			public byte turn;
-			public Description() { /*@B 0x600B4C1*/ throw null; }
+			public Description() {
+				weather = BtlWeather.BTL_WEATHER_NONE;
+				turn = 0;
+			}
 		}
 		public class Result
 		{

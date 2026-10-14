@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckNoEffect_Core : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckNoEffect_Core(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DB7*/ throw null; }
+		public Section_CheckNoEffect_Core(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckNoEffect_Core.Result pResult, in global::Dpr.Battle.Logic.Section_CheckNoEffect_Core.Description description) {
 			pResult.isNoEffect = false;
 			StrParam customMessage = new StrParam();
@@ -49,7 +49,14 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.DmgAffRec affinityRecorder;
 			public global::Dpr.Battle.Logic.EventID eventID;
 			public bool fEnableMessage;
-			public Description() { /*@B 0x600B4D1*/ throw null; }
+			public Description() {
+				wazaParam = null;
+				attacker = null;
+				target = null;
+				affinityRecorder = null;
+				eventID = EventID.INVALID;
+				fEnableMessage = true;
+			}
 		}
 		public class Result
 		{

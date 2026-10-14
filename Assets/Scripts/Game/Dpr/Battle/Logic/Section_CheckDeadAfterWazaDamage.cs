@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckDeadAfterWazaDamage : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckDeadAfterWazaDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DA6*/ throw null; }
+		public Section_CheckDeadAfterWazaDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckDeadAfterWazaDamage.Result pResult, in global::Dpr.Battle.Logic.Section_CheckDeadAfterWazaDamage.Description description) {
             checkAttackerDead_Before(description.attacker, description.wazaParam);
 
@@ -43,7 +43,13 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.HITCHECK_PARAM hitCheckParam;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public byte hitPokeCount;
-			public Description() { /*@B 0x600B4C9*/ throw null; }
+			public Description() {
+				damageParams = null;
+				wazaParam = null;
+				hitCheckParam = null;
+				attacker = null;
+				hitPokeCount = 0;
+			}
 		}
 		public class Result
 		{

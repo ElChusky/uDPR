@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_ChangeGround : global::Dpr.Battle.Logic.Section
 	{
-		public Section_ChangeGround(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D8F*/ throw null; }
+		public Section_ChangeGround(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ChangeGround.Result pResult, in global::Dpr.Battle.Logic.Section_ChangeGround.Description description) {
             pResult.isChanged = false;
             if (!GetServerCommandPutter().ChangeGround((byte)description.ground, description.contParam))
@@ -28,7 +28,12 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BtlGround ground;
 			public global::Dpr.Battle.Logic.BTL_SICKCONT contParam;
 			public global::Dpr.Battle.Logic.ChangeGroundCause cause;
-			public Description() { /*@B 0x600B4B9*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+				ground = BtlGround.BTL_GROUND_NONE;
+				contParam.raw = 0;
+				cause = ChangeGroundCause.OTHERS;
+			}
 		}
 		public class Result
 		{

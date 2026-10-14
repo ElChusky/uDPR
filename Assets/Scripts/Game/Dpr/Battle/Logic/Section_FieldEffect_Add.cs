@@ -3,8 +3,8 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FieldEffect_Add : global::Dpr.Battle.Logic.Section
 	{
-		private static readonly global::Dpr.Battle.Logic.Section_FieldEffect_Add.getDefaultSuccessMessage_GroundTableElem[] STR_TABLE;
-		public Section_FieldEffect_Add(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E51*/ throw null; }
+		private static readonly global::Dpr.Battle.Logic.Section_FieldEffect_Add.getDefaultSuccessMessage_GroundTableElem[] STR_TABLE = new getDefaultSuccessMessage_GroundTableElem[] { new getDefaultSuccessMessage_GroundTableElem(BtlGround.BTL_GROUND_GRASS, 222, 499), new getDefaultSuccessMessage_GroundTableElem(BtlGround.BTL_GROUND_MIST, 224, 500), new getDefaultSuccessMessage_GroundTableElem(BtlGround.BTL_GROUND_ELEKI, 226, 501), new getDefaultSuccessMessage_GroundTableElem(BtlGround.BTL_GROUND_PHYCHO, 346, 502) };
+		public Section_FieldEffect_Add(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FieldEffect_Add.Result result, in global::Dpr.Battle.Logic.Section_FieldEffect_Add.Description description) {
             BTL_SICKCONT cont;
             result.isSuccessed = false;
@@ -150,7 +150,7 @@ namespace Dpr.Battle.Logic
 			Section_FromEvent_CheckJuryoku.Result result = new Section_FromEvent_CheckJuryoku.Result();
 			GetSectionContainer().GetSection_FromEvent_CheckJuryoku().Execute(result, desc);
 		}
-		static Section_FieldEffect_Add() { /*@B 0x6006E5B*/ throw null; }
+		static Section_FieldEffect_Add() { }
 		public class Description
 		{
 			public byte pokeID;
@@ -162,7 +162,17 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.StrParam successMessage;
 			public bool isAddDependPoke;
 			public bool isDisplayTokuseiWindow;
-			public Description() { /*@B 0x600B50A*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+				effect = EffectType.EFF_NULL;
+				ground = BtlGround.BTL_GROUND_NONE;
+				ground_cause = ChangeGroundCause.OTHERS;
+				cont.raw = 0;
+				successEffectNo = 234;
+				successMessage = new StrParam();
+				isAddDependPoke = false;
+				isDisplayTokuseiWindow = false;
+			}
 		}
 		public class Result
 		{
@@ -174,7 +184,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BtlGround ground;
 			public int strID_others;
 			public int strID_onBattleStart;
-			public getDefaultSuccessMessage_GroundTableElem(global::Dpr.Battle.Logic.BtlGround ground, int strID_others, int strID_onBattleStart) { /*@B 0x600B50C*/ throw null; }
+			public getDefaultSuccessMessage_GroundTableElem(global::Dpr.Battle.Logic.BtlGround ground, int strID_others, int strID_onBattleStart) {
+				this.ground = ground;
+				this.strID_others = strID_others;
+				this.strID_onBattleStart = strID_onBattleStart;
+			}
 		}
 	}
 }

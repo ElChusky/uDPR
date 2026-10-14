@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_AppearFreeFallTarget : global::Dpr.Battle.Logic.Section
 	{
-		public Section_AppearFreeFallTarget(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D80*/ throw null; }
+		public Section_AppearFreeFallTarget(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_AppearFreeFallTarget.Result pResult, in global::Dpr.Battle.Logic.Section_AppearFreeFallTarget.Description description) {
             if (!GetBattleEnv().GetPosPoke().IsExist(description.targetPokeID))
                 return;
@@ -15,7 +15,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public byte targetPokeID;
-			public Description() { /*@B 0x600B4B1*/ throw null; }
+			public Description() {
+				targetPokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

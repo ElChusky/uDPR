@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_ClearPokeDependEffect : global::Dpr.Battle.Logic.Section
 	{
-		public Section_ClearPokeDependEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E16*/ throw null; }
+		public Section_ClearPokeDependEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ClearPokeDependEffect.Result pResult, in global::Dpr.Battle.Logic.Section_ClearPokeDependEffect.Description description) {
 			GetEventLauncher().Event_BeforeDead(description.poke);
 			releaseFreeFall(description.poke);
@@ -56,7 +56,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
-			public Description() { /*@B 0x600B4F0*/ throw null; }
+			public Description() {
+				poke = null;
+			}
 		}
 		public class Result
 		{

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FightDamageSide : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FightDamageSide(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E70*/ throw null; }
+		public Section_FightDamageSide(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FightDamageSide.Result pResult, in global::Dpr.Battle.Logic.Section_FightDamageSide.Description description) {
 			pResult.dmgSum = 0;
 			if (description.pDmgRec.GetTargetCount() == 0)

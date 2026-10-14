@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_ChangeItem : global::Dpr.Battle.Logic.Section
 	{
-		public Section_ChangeItem(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D92*/ throw null; }
+		public Section_ChangeItem(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ChangeItem.Result pResult, in global::Dpr.Battle.Logic.Section_ChangeItem.Description description) {
             ushort prevItemID = description.poke.GetItem();
             ushort nextItemID = description.nextItemID;
@@ -33,7 +33,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
 			public ushort nextItemID;
 			public bool isPrevItemConsumed;
-			public Description() { /*@B 0x600B4BB*/ throw null; }
+			public Description() {
+				poke = null;
+				nextItemID = 0;
+				isPrevItemConsumed = false;
+			}
 		}
 		public class Result
 		{

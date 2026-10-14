@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckFloating : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckFloating(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DB3*/ throw null; }
+		public Section_CheckFloating(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckFloating.Result pResult, in global::Dpr.Battle.Logic.Section_CheckFloating.Description description) {
             pResult.isFloating = false;
             if (!GetBattleEnv().GetFieldStatus().CheckEffect(EffectType.EFF_JURYOKU) && GetEventLauncher().Event_CheckFloating(description.target, description.isIncludeHikouType))
@@ -13,7 +13,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM target;
 			public bool isIncludeHikouType;
-			public Description() { /*@B 0x600B4CD*/ throw null; }
+			public Description() {
+				target = null;
+				isIncludeHikouType = false;
+			}
 		}
 		public class Result
 		{

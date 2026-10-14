@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_DecrementPP : global::Dpr.Battle.Logic.Section
 	{
-		public Section_DecrementPP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006E3E*/ throw null; }
+		public Section_DecrementPP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_DecrementPP.Result pResult, in global::Dpr.Battle.Logic.Section_DecrementPP.Description description) {
             pResult.isDecrement = false;
             if (description.poke.IsRaidBoss())
@@ -28,12 +28,18 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
 			public byte wazaIndex;
 			public byte volume;
-			public Description() { /*@B 0x600B500*/ throw null; }
+			public Description() {
+				poke = null;
+				wazaIndex = 0;
+				volume = 0;
+			}
 		}
 		public class Result
 		{
 			public bool isDecrement;
-			public Result() { /*@B 0x600B501*/ throw null; }
+			public Result() {
+				isDecrement = false;
+			}
 		}
 	}
 }

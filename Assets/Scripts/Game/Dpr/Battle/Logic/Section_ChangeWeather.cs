@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_ChangeWeather : global::Dpr.Battle.Logic.Section
 	{
-		public Section_ChangeWeather(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006D94*/ throw null; }
+		public Section_ChangeWeather(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ChangeWeather.Result pResult, in global::Dpr.Battle.Logic.Section_ChangeWeather.Description description) {
             pResult.changeResult = checkWeatherChangeEnable(description.weather, description.turn);
             if (pResult.changeResult == ChangeWeatherResult.OK)
@@ -34,7 +34,13 @@ namespace Dpr.Battle.Logic
 			public byte turnUpCount;
 			public byte causePokeID;
 			public global::Dpr.Battle.Logic.ChangeWeatherCause cause;
-			public Description() { /*@B 0x600B4BD*/ throw null; }
+			public Description() {
+				weather = BtlWeather.BTL_WEATHER_NONE;
+				turn = 0;
+				turnUpCount = 0;
+				causePokeID = PokeID.INVALID;
+				cause = ChangeWeatherCause.OTHERS;
+			}
 		}
 		public class Result
 		{

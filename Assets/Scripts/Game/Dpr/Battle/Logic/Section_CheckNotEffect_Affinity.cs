@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_CheckNotEffect_Affinity : global::Dpr.Battle.Logic.Section
 	{
-		public Section_CheckNotEffect_Affinity(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006DCE*/ throw null; }
+		public Section_CheckNotEffect_Affinity(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_CheckNotEffect_Affinity.Result pResult, in global::Dpr.Battle.Logic.Section_CheckNotEffect_Affinity.Description description) {
 			checkNoEffect_Lv1(description.attacker, description.wazaParam, description.affinityRecorder, description.targets);
 			checkNoEffect_Lv2(description.attacker, description.wazaParam, description.affinityRecorder, description.targets);
@@ -66,7 +66,12 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public global::Dpr.Battle.Logic.DmgAffRec affinityRecorder;
 			public global::Dpr.Battle.Logic.PokeSet targets;
-			public Description() { /*@B 0x600B4DB*/ throw null; }
+			public Description() {
+				attacker = null;
+				wazaParam = null;
+				affinityRecorder = null;
+				targets = null;
+			}
 		}
 		public class Result
 		{
