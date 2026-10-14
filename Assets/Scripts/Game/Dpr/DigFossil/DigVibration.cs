@@ -18,14 +18,14 @@ namespace Dpr.DigFossil
 		private const int vibrationDeviceCountMax = 2;
 		private int vibrationDeviceCount;
 		private global::UnityEngine.Coroutine vibHandler;
-		private readonly global::nn.hid.VibrationDeviceHandle[] vibrationDeviceHandles;
-		private readonly global::nn.hid.VibrationDeviceInfo[] vibrationDeviceInfos;
-		private global::nn.hid.VibrationValue vibrationHighValue;
-		private global::nn.hid.VibrationValue vibrationLowValue;
-		private global::nn.hid.VibrationValue vibrationStopValue;
-		private global::nn.hid.NpadId currentNpadId;
-		private global::nn.hid.NpadStyle currentNpadStyle;
-		private global::nn.hid.VibrationValue vibrationValue;
+		private readonly global::nn.hid.VibrationDeviceHandle[] vibrationDeviceHandles = new global::nn.hid.VibrationDeviceHandle[vibrationDeviceCountMax];
+		private readonly global::nn.hid.VibrationDeviceInfo[] vibrationDeviceInfos = new global::nn.hid.VibrationDeviceInfo[vibrationDeviceCountMax];
+		private global::nn.hid.VibrationValue vibrationHighValue = global::nn.hid.VibrationValue.Make();
+		private global::nn.hid.VibrationValue vibrationLowValue = global::nn.hid.VibrationValue.Make();
+		private global::nn.hid.VibrationValue vibrationStopValue = global::nn.hid.VibrationValue.Make();
+		private global::nn.hid.NpadId currentNpadId = global::nn.hid.NpadId.Invalid;
+		private global::nn.hid.NpadStyle currentNpadStyle = global::nn.hid.NpadStyle.Invalid;
+		private global::nn.hid.VibrationValue vibrationValue = global::nn.hid.VibrationValue.Make();
 		private void Start() {
 			vibrationHighValue.amplitudeLow = 0f;
 			vibrationHighValue.amplitudeHigh = 0.5f;
@@ -83,6 +83,6 @@ namespace Dpr.DigFossil
 				Vibration.GetDeviceInfo(ref vibrationDeviceInfos[i], vibrationDeviceHandles[i]);
 			}
 		}
-		public DigVibration() { /*@B 0x60037F4*/ throw null; }
+		public DigVibration() { }
 	}
 }
