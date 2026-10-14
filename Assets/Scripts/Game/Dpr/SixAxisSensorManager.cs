@@ -30,7 +30,8 @@ namespace Dpr
 		{
 			if (!_enableSensor)
 				return null;
-			if (index >= _handlesCount) { } // shipped: the test is evaluated, both outcomes fall through
+			if (index >= _handlesCount)
+				return null; // @01b0a6f4 b.le -> 01b0a774 mov x0, xzr; ret
 			return _states[index];
 		}
 		private static void OnUpdate(float deltaTime)
