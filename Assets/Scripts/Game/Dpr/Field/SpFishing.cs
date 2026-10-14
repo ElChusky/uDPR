@@ -52,10 +52,29 @@ namespace Dpr.Field
                 }
             }
         }
-		public static void SpFishing_GetMaxMinLv(out int outMaxLv, out int outMinLv) { /*@B 0x6008957*/ throw null; }
-		public static void SpFishing_GetMonsNo(out global::Pml.MonsNo outMonsNo) { /*@B 0x6008958*/ throw null; }
-		public static global::System.Collections.IEnumerator LoadFishingData() { /*@B 0x6008959*/ throw null; }
-		public static void UnloadFishngData() { /*@B 0x600895A*/ throw null; }
+		public static void SpFishing_GetMaxMinLv(out int outMaxLv, out int outMinLv) {
+            outMaxLv = SP_FISH_LV_MAX;
+            outMinLv = SP_FISH_LV_MIN;
+        }
+		public static void SpFishing_GetMonsNo(out global::Pml.MonsNo outMonsNo) {
+            outMonsNo = SP_MONS_NO;
+        }
+		public static global::System.Collections.IEnumerator LoadFishingData() {
+            if (_rareFishTable == null)
+            {
+                global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest("spfishing", true, null, null);
+                yield return global::SmartPoint.AssetAssistant.AssetManager.DispatchRequests((eventType, name, asset) =>
+                {
+                    if (asset is global::XLSXContent.RareFishTable)
+                        _rareFishTable = asset as global::XLSXContent.RareFishTable;
+                });
+                // 019baed4: the binary re-tests _rareFishTable == null after the yield and returns either way (empty if).
+                if (_rareFishTable == null) { }
+            }
+        }
+		public static void UnloadFishngData() {
+            _rareFishTable = null;
+        }
 		static SpFishing() { }
 	}
 }

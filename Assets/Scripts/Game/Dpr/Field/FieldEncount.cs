@@ -233,7 +233,21 @@ namespace Dpr.Field
                 prob = (uint)data.encRate_gr;
             }
         }
-		private static void GetEncountProbFishing(global::FishingRod inRodType, global::XLSXContent.FieldEncountTable.Sheettable data, out uint prob) { /*@B 0x6008921*/ throw null; }
+		private static void GetEncountProbFishing(global::FishingRod inRodType, global::XLSXContent.FieldEncountTable.Sheettable data, out uint prob) {
+            prob = 0;
+            switch (inRodType)
+            {
+                case FishingRod.SugoiTurizao:
+                    prob = (uint)data.encRate_sugoi;
+                    break;
+                case FishingRod.IiTurizao:
+                    prob = (uint)data.encRate_turi_ii;
+                    break;
+                case FishingRod.BoroiTurizao:
+                    prob = (uint)data.encRate_turi_boro;
+                    break;
+            }
+        }
 		public static global::Dpr.Field.EncountResult SetFishingEncount(global::FishingRod inRodType, global::UnityEngine.Vector2Int position) {
             var data = GameManager.GetFieldEncountData(PlayerWork.zoneID);
             if (data == null)
@@ -447,7 +461,22 @@ namespace Dpr.Field
                 enc_data[AGB_ENC_2] = data.gbaLeaf[1];
             }
         }
-		private static int GetMaxLvMonsTblNo(global::MonsLv[] inEncCommonData, global::Dpr.Field.FieldEncount.ENC_FLD_SPA inFldSpa, int inTblNo) { /*@B 0x6008926*/ throw null; }
+		private static int GetMaxLvMonsTblNo(global::MonsLv[] inEncCommonData, global::Dpr.Field.FieldEncount.ENC_FLD_SPA inFldSpa, int inTblNo) {
+            if (inFldSpa.Egg)
+                return inTblNo;
+            if (inFldSpa.Spa != TokuseiNo.PURESSYAA && inFldSpa.Spa != TokuseiNo.HARIKIRI && inFldSpa.Spa != TokuseiNo.YARUKI)
+                return inTblNo;
+            if (RandomGroupWork.RandomValue(2) == 0)
+                return inTblNo;
+
+            // 019b6694..019b69f0: unrolled over 12 entries
+            for (int i = 0; i < 12; i++)
+            {
+                if (inEncCommonData[i].monsNo == inEncCommonData[inTblNo].monsNo && inEncCommonData[i].maxlv > inEncCommonData[inTblNo].maxlv)
+                    inTblNo = i;
+            }
+            return inTblNo;
+        }
 		private static void SetSpaStruct(global::Pml.PokePara.PokemonParam inPokeParam, global::XLSXContent.FieldEncountTable.Sheettable inData, ref global::Dpr.Field.FieldEncount.ENC_FLD_SPA outSpa) {
             if (inPokeParam.IsEgg(EggCheckType.BOTH_EGG))
             {
@@ -666,7 +695,43 @@ namespace Dpr.Field
                 return 3;
             return 4;
         }
-		private static int RandomPokeSetFishing(global::FishingRod inFishingRod) { /*@B 0x6008935*/ throw null; }
+		private static int RandomPokeSetFishing(global::FishingRod inFishingRod) {
+            int rand = RandomGroupWork.RandomValue(100);
+            switch (inFishingRod)
+            {
+                case FishingRod.SugoiTurizao:
+                    if (rand < 40)
+                        return 0;
+                    if (rand < 80)
+                        return 1;
+                    if (rand < 95)
+                        return 2;
+                    if (rand < 99)
+                        return 3;
+                    return 4;
+                case FishingRod.IiTurizao:
+                    if (rand < 40)
+                        return 0;
+                    if (rand < 80)
+                        return 1;
+                    if (rand < 95)
+                        return 2;
+                    if (rand < 99)
+                        return 3;
+                    return 4;
+                case FishingRod.BoroiTurizao:
+                    if (rand < 60)
+                        return 0;
+                    if (rand < 90)
+                        return 1;
+                    if (rand < 95)
+                        return 2;
+                    if (rand < 99)
+                        return 3;
+                    return 4;
+            }
+            return 0;
+        }
 		private static bool SetEncountData(global::Pml.PokePara.PokemonParam param, global::FishingRod inRodType, global::Dpr.Field.FieldEncount.ENC_FLD_SPA inFldSpa, global::MonsLv[] inData, int location, global::Dpr.Battle.Logic.BTL_CLIENT_ID inTarget, ref global::Dpr.Field.EncountResult outBattleParam) {
             int no = 0;
             // The six CheckFixTypeEcnt calls are inlined (019b6e54..019b7148). LTO dropped their unused inListNum argument
@@ -792,7 +857,29 @@ namespace Dpr.Field
             outNo = list[RandomGroupWork.RandomValue(10000) % count];
             return true;
         }
-		private static int SetEncountPokeLv(global::MonsLv inData, global::Dpr.Field.FieldEncount.ENC_FLD_SPA inFldSpa) { /*@B 0x600893B*/ throw null; }
+		private static int SetEncountPokeLv(global::MonsLv inData, global::Dpr.Field.FieldEncount.ENC_FLD_SPA inFldSpa) {
+            int maxLv;
+            int minLv;
+            if (inData.maxlv < inData.minlv)
+            {
+                maxLv = inData.minlv;
+                minLv = inData.maxlv;
+            }
+            else
+            {
+                maxLv = inData.maxlv;
+                minLv = inData.minlv;
+            }
+
+            int lv = RandomGroupWork.RandomValue(10000) % (maxLv - minLv + 1);
+
+            if (!inFldSpa.Egg && (inFldSpa.Spa == TokuseiNo.PURESSYAA || inFldSpa.Spa == TokuseiNo.HARIKIRI || inFldSpa.Spa == TokuseiNo.YARUKI))
+            {
+                if (RandomGroupWork.RandomValue(2) != 0)
+                    return maxLv;
+            }
+            return lv + minLv;
+        }
 		private static void EncountParamSetRare(global::Pml.MonsNo poke, int lv, global::Dpr.Battle.Logic.BTL_CLIENT_ID inTarget, global::Dpr.Field.FieldEncount.ENC_FLD_SPA inFldSpa, global::Pml.PokePara.PokemonParam inPokeParam, ref global::Dpr.Field.EncountResult outBattleParam) {
             int index = (int)inTarget - 1;
             Seikaku seikaku = Seikaku.NUM;

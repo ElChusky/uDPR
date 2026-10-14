@@ -4,12 +4,40 @@ namespace Dpr.Field
 {
 	public static class FieldCalc
 	{
-		public static float Cross(ref global::UnityEngine.Vector2 a, ref global::UnityEngine.Vector2 b) { /*@B 0x600891A*/ throw null; }
+		public static float Cross(ref global::UnityEngine.Vector2 a, ref global::UnityEngine.Vector2 b) {
+            return a.x * b.y - b.x * a.y;
+        }
 		public static float SubtendedAngle(ref global::UnityEngine.Vector2 lhs, ref global::UnityEngine.Vector2 rhs) {
             // b237: @019b2e90 multiplies acosf by 0x42652ee1 = Mathf.Rad2Deg (the base code: * 180f / PI, different rounding)
             return Mathf.Acos(Vector2.Dot(lhs.normalized, rhs.normalized)) * Mathf.Rad2Deg;
         }
-		public static float DiffAngle(float angleA, float angleB) { /*@B 0x600891C*/ throw null; }
-		public static int LineCross(ref global::UnityEngine.Vector2 start1, ref global::UnityEngine.Vector2 vectol1, ref global::UnityEngine.Vector2 start2, ref global::UnityEngine.Vector2 vectol2, out global::UnityEngine.Vector2 hitPosition) { /*@B 0x600891D*/ throw null; }
+		public static float DiffAngle(float angleA, float angleB) {
+            float diff = angleA - angleB;
+            if (diff < 0f)
+                diff += 360f;
+            diff %= 360f;
+            if (diff > 180f)
+                diff -= 360f;
+            return diff;
+        }
+		public static int LineCross(ref global::UnityEngine.Vector2 start1, ref global::UnityEngine.Vector2 vectol1, ref global::UnityEngine.Vector2 start2, ref global::UnityEngine.Vector2 vectol2, out global::UnityEngine.Vector2 hitPosition) {
+            hitPosition = Vector2.zero;
+
+            float cross = Cross(ref vectol1, ref vectol2);
+            if (cross == 0f)
+                return 1;
+
+            Vector2 v = start2 - start1;
+            float t2 = Cross(ref v, ref vectol1) / cross;
+            if (t2 > 1f || t2 < 0f)
+                return 2;
+
+            float t1 = Cross(ref v, ref vectol2) / cross;
+            if (t1 < 0f || t1 > 1f)
+                return 2;
+
+            hitPosition = start1 + vectol1 * t1;
+            return 0;
+        }
 	}
 }
