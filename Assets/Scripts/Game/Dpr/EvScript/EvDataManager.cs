@@ -15900,22 +15900,469 @@ namespace Dpr.EvScript
                     ambient.SetSwitch(AK.SWITCHES.SWEETTREE.GROUP, state);
             }
         }
-		private void CreateWorpPoint() { /*@B 0x6009110*/ throw null; }
-		private global::FieldEventDoorEntity CreateWarpEntity(global::XLSXContent.MapWarp.SheetData data, int[] index, global::UnityEngine.Vector2 size, int[] locator) { /*@B 0x6009111*/ throw null; }
-		public global::System.Collections.IEnumerator RequestAssetSetUp(global::AreaID areaid) { /*@B 0x6009112*/ throw null; }
-		public global::System.Collections.IEnumerator PreRequestAssetSetUp(global::AreaID areaid) { /*@B 0x6009113*/ throw null; }
-		private void SetSaveDataParam(ref global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) { /*@B 0x6009114*/ throw null; }
-		public void SetCreateParent(global::UnityEngine.Transform parent) { /*@B 0x6009115*/ throw null; }
-		public void SortLoadObjectData(global::UnityEngine.Vector2Int grid) { /*@B 0x6009116*/ throw null; }
-		public global::System.Collections.IEnumerator StartUpCreate() { /*@B 0x6009117*/ throw null; }
-		public void UpdateCreate() { /*@B 0x6009118*/ throw null; }
+		private void CreateWorpPoint() {
+            if (_warpRoot == null)
+            {
+                _warpRoot = new UnityEngine.GameObject();
+                _warpRoot.name = "WarpObjectRoot";
+            }
+            UnityEngine.Transform root = _warpRoot.transform;
+            int childCount = root.childCount;
+            for (int i = 0; i < childCount; i++)
+                UnityEngine.Object.Destroy(root.GetChild(i).gameObject);
+            _warpList.Clear();
+            _warpData = null;
+            string key = string.Format("MapWarp_{0}", _areaID);
+            if (!DataManager.MapWarpData.ContainsKey(key))
+                return;
+            _warpData = DataManager.MapWarpData[key];
+            var groups = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<CreateWarp>>(50);
+            for (int i = 0; i < _warpData.Data.Length; i++)
+            {
+                var cw = new CreateWarp();
+                cw.data = _warpData.Data[i];
+                cw.index = i;
+                int groupId = cw.data.GruopID;
+                if (groups.ContainsKey(groupId))
+                {
+                    groups[groupId].Add(cw);
+                }
+                else
+                {
+                    var list = new System.Collections.Generic.List<CreateWarp>(30);
+                    list.Add(cw);
+                    groups.Add(groupId, list);
+                }
+            }
+            foreach (var kv in groups)
+            {
+                var list = kv.Value;
+                if (kv.Key == -1 || kv.Key == 0)
+                {
+                    foreach (var cw in list)
+                    {
+                        var data = cw.data;
+                        int[] index = new int[1];
+                        index[0] = cw.index;
+                        UnityEngine.Vector2 size = data.Size;
+                        int[] locator = new int[1];
+                        locator[0] = data.WarpIndex;
+                        _warpList.Add(CreateWarpEntity(data, index, size, locator));
+                    }
+                }
+                else
+                {
+                    var first = list[0].data;
+                    UnityEngine.Vector2 size = first.Size;
+                    UnityEngine.Vector2 pos = new UnityEngine.Vector2(first.Position.x, first.Position.z);
+                    int[] locator = new int[list.Count];
+                    locator[0] = first.WarpIndex;
+                    int[] index = new int[list.Count];
+                    index[0] = list[0].index;
+                    for (int i = 1; i < list.Count; i++)
+                    {
+                        var data = list[i].data;
+                        locator[i] = data.WarpIndex;
+                        index[i] = list[i].index;
+                        size.x += data.Position.x - pos.x;
+                        size.y += data.Position.z - pos.y;
+                        pos.x = data.Position.x;
+                        pos.y = data.Position.z;
+                    }
+                    _warpList.Add(CreateWarpEntity(first, index, size, locator));
+                }
+            }
+        }
+		private global::FieldEventDoorEntity CreateWarpEntity(global::XLSXContent.MapWarp.SheetData data, int[] index, global::UnityEngine.Vector2 size, int[] locator) {
+            UnityEngine.Vector3 position = new UnityEngine.Vector3(-data.Position.x, data.Position.y, data.Position.z);
+            UnityEngine.GameObject go = new UnityEngine.GameObject();
+            go.name = string.Format("{0}_W{1:D2}", _areaID, index[0]);
+            global::FieldEventDoorEntity entity = go.AddComponent<global::FieldEventDoorEntity>();
+            entity.transform.SetParent(_warpRoot.transform);
+            entity.transform.localPosition = position;
+            entity.EventParams.IsContact = false;
+            entity.mdIndexArray = index;
+            entity.EventParams.Type = EntityType.Warp;
+            entity.entityEname = go.name;
+            float sx = size.x > 0f ? size.x : 1f;
+            float sy = size.y > 0f ? size.y : 1f;
+            entity.size.x = sx;
+            entity.shapeType = global::FieldEventEntity.ShapeType.Box;
+            entity.size.y = sy;
+            entity.offset.x = sx < 1f ? sx * -0.5f : -0.5f;
+            entity.offset.y = sy < 1f ? sy * 0.5f : sy + -0.5f;
+            switch (data.InputDir)
+            {
+                case 0: entity.startVectol = global::FieldDoor.StartVectol.Up; break;
+                case 1: entity.startVectol = global::FieldDoor.StartVectol.Left; break;
+                case 2: entity.startVectol = global::FieldDoor.StartVectol.Down; break;
+                case 3: entity.startVectol = global::FieldDoor.StartVectol.Right; break;
+                case 4: entity.startVectol = global::FieldDoor.StartVectol.All; break;
+            }
+            entity.transitionZone = data.WarpZone == global::ZoneID.D05R0115 ? global::ZoneID.D05R0114 : data.WarpZone;
+            entity.locatorIndex = data.WarpIndex;
+            entity.locatorArray = locator;
+            entity.callLabel = data.ScriptLabel;
+            entity.exitLabel = data.ExitLabel;
+            entity.connectionName = data.ConnectionName;
+            switch (entity.startVectol)
+            {
+                case global::FieldDoor.StartVectol.Up: entity.offset.y += -1f; break;
+                case global::FieldDoor.StartVectol.Down: entity.offset.y += 1f; break;
+                case global::FieldDoor.StartVectol.Left: entity.offset.x += -1f; break;
+                case global::FieldDoor.StartVectol.Right: entity.offset.x += 1f; break;
+            }
+            return entity;
+        }
+		public global::System.Collections.IEnumerator RequestAssetSetUp(global::AreaID areaid) {
+            while (!DataManager.IsLoaded())
+                yield return null;
+            if (_isScriptLoad)
+            {
+                InitScriptLoad();
+                while (!InitScriptLoadWait())
+                    yield return null;
+                InitScriptEnd();
+            }
+            if (PlayerWork.Warp == PlayerWork.WarpType.None && areaid == _areaID && !GameManager.mapInfo[(int)PlayerWork.transitionZoneID].Reload)
+                yield break;
+            _areaID = areaid;
+            if (areaid == global::AreaID.UNKNOWN)
+                yield break;
+            if (FieldObjectMoveCodes == null)
+                FieldObjectMoveCodes = new System.Collections.Generic.List<global::FieldObjectMoveCode>(200);
+            FieldObjectMoveCodes.Clear();
+            _fieldObjectEntity.Clear();
+            _FieldKinomiGrowEntity.Clear();
+            _loadObjectList.Clear();
+            _loadObjectIndex = 0;
+            _AssetReqOpeList.RemoveAll(val => val == null);
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+                _AssetReqOpeList[i].RefCount = 0;
+            string key = "PlaceData_" + _areaID.ToString();
+            if (!DataManager.PlaceData.ContainsKey(key))
+                yield break;
+            global::XLSXContent.PlaceData placeData = DataManager.PlaceData[key];
+            if (placeData.Data.Length > 0)
+            {
+                int graphicsCount = DataManager.CharacterGraphics.Data.Length;
+                for (int i = 0; i < placeData.Data.Length; i++)
+                {
+                    global::XLSXContent.PlaceData.SheetData pd = placeData.Data[i];
+                    if (pd == null)
+                        continue;
+                    if (pd.DoNotLoad != EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag(pd.DoNotLoad))
+                        continue;
+                    LoadObjectData lod = new LoadObjectData();
+                    lod.IsLoadFast = pd.LoadFirst;
+                    lod.ObjectName = pd.ID;
+                    lod.PlaceData = placeData.Data[i];
+                    lod.Position = pd.Position;
+                    lod.Height = pd.HeightLayer;
+                    lod.IsCreated = false;
+                    lod.Angle = pd.Rotation;
+                    lod.MoveCode = pd.MoveCode;
+                    lod.MoveDirHead = global::FieldObjectEntity.GetDir(pd.Rotation);
+                    lod.MoveParam0 = pd.MoveParam0;
+                    lod.MoveParam1 = pd.MoveParam1;
+                    lod.MoveParam2 = pd.MoveParam2;
+                    lod.MoveLimitX = (int)pd.MoveLimit.x;
+                    lod.MoveLimitZ = (int)pd.MoveLimit.y;
+                    lod.Ev_Type = pd.EventType;
+                    lod.mv_old_dir = (int)lod.MoveDirHead;
+                    lod.mv_dir = (int)lod.MoveDirHead;
+                    SetSaveDataParam(ref lod);
+                    int graphic = pd.ObjectGraphicIndex;
+                    if (_areaID == global::AreaID.D31R0205 || _areaID == global::AreaID.D31R0206)
+                    {
+                        int mode = BtlTowerWork.GetMode();
+                        int rank = BtlTowerWork.GetRank(mode);
+                        int trainerIndex = 0;
+                        int round = 0;
+                        if (pd.ID == "TOWER_PLAYER_01_01") { trainerIndex = 0; round = 1; }
+                        else if (pd.ID == "TOWER_PLAYER_02_01") { trainerIndex = 0; round = 2; }
+                        else if (pd.ID == "TOWER_PLAYER_03_01") { trainerIndex = 0; round = 3; }
+                        else if (pd.ID == "TOWER_PLAYER_04_01") { trainerIndex = 0; round = 4; }
+                        else if (pd.ID == "TOWER_PLAYER_05_01") { trainerIndex = 0; round = 5; }
+                        else if (pd.ID == "TOWER_PLAYER_06_01") { trainerIndex = 0; round = 6; }
+                        else if (pd.ID == "TOWER_PLAYER_07_01") { trainerIndex = 0; round = 7; }
+                        else if (mode == 3)
+                        {
+                            if (pd.ID == "TOWER_PLAYER_01_02") { trainerIndex = 1; round = 1; }
+                            else if (pd.ID == "TOWER_PLAYER_02_02") { trainerIndex = 1; round = 2; }
+                            else if (pd.ID == "TOWER_PLAYER_03_02") { trainerIndex = 1; round = 3; }
+                            else if (pd.ID == "TOWER_PLAYER_04_02") { trainerIndex = 1; round = 4; }
+                            else if (pd.ID == "TOWER_PLAYER_05_02") { trainerIndex = 1; round = 5; }
+                            else if (pd.ID == "TOWER_PLAYER_06_02") { trainerIndex = 1; round = 6; }
+                            else if (pd.ID == "TOWER_PLAYER_07_02") { trainerIndex = 1; round = 7; }
+                        }
+                        if (round != 0)
+                        {
+                            BtlTowerWork.GetNowModeEnum(out global::TowerLotRule lotRule, out global::TowerLotCls lotCls);
+                            ulong seed = BtlTowerWork.GetTrainerRand(round - 1);
+                            graphic = TrainerSystem.CreateTowerLotResult(lotRule, lotCls, rank, round, seed).GetTrainerData(trainerIndex).fldGraphic;
+                            lod.replaceGraphicIndex = graphic;
+                        }
+                    }
+                    if (graphic < 0)
+                    {
+                        lod.AssetReqIndex = -1;
+                    }
+                    else
+                    {
+                        string path = "";
+                        if (graphic == 4)
+                            graphic = PlayerWork.playerSex ? 140 : 139;
+                        if (graphic >= Graphic_Poke)
+                        {
+                            path = string.Format("{0}pm{1:D4}_{2:D2}_{3:D2}", Path_Poke_Model, graphic / 10000, graphic / 100 % 100, graphic % 100);
+                        }
+                        else if (graphic >= Graphic_Gimmick && graphic < Graphic_Gimmick + 500)
+                        {
+                            path = DataManager.GimmickGraphics.Data[graphic - Graphic_Gimmick].AssetPath;
+                        }
+                        else if (graphic >= Graphic_SekiZou && graphic < Graphic_SekiZouMAX)
+                        {
+                            path = string.Format("pokemons/statue/{0}", graphic - Graphic_SekiZou);
+                        }
+                        else if (graphic >= 0 && graphic < graphicsCount)
+                        {
+                            path = Path_Parsons + DataManager.CharacterGraphics.Data[graphic].FieldGraphic;
+                        }
+                        if (string.IsNullOrEmpty(path))
+                            continue;
+                        int reqIndex = -1;
+                        for (int j = 0; j < _AssetReqOpeList.Count; j++)
+                        {
+                            if (_AssetReqOpeList[j].ReqOpe.assetBundleRequest.uri == path)
+                            {
+                                _AssetReqOpeList[j].RefCount = 1;
+                                reqIndex = j;
+                                break;
+                            }
+                        }
+                        if (reqIndex < 0)
+                        {
+                            AssetReqOpeRef reqOpe = new AssetReqOpeRef();
+                            reqOpe.RefCount = 1;
+                            reqOpe.ReqOpe = AssetManager.AppendAssetBundleRequest(path, true, null, null);
+                            _AssetReqOpeList.Add(reqOpe);
+                            reqIndex = _AssetReqOpeList.Count - 1;
+                        }
+                        lod.AssetReqIndex = reqIndex;
+                    }
+                    _loadObjectList.Add(lod);
+                }
+            }
+            string log = "fieldasset request \n";
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+            {
+                if (_AssetReqOpeList[i] != null)
+                    log += string.Format("[{0}]{1}  [{2}]\n", i, _AssetReqOpeList[i].isEnd, _AssetReqOpeList[i].ReqOpe.assetBundleRequest.uri);
+            }
+            AssetManager.DispatchRequests(null);
+        }
+		public global::System.Collections.IEnumerator PreRequestAssetSetUp(global::AreaID areaid) {
+            while (!DataManager.IsLoaded())
+                yield return null;
+            if (areaid == global::AreaID.UNKNOWN)
+                yield break;
+            string key = "PlaceData_" + areaid.ToString();
+            if (!DataManager.PlaceData.ContainsKey(key))
+                yield break;
+            global::XLSXContent.PlaceData place = DataManager.PlaceData[key];
+            int length = DataManager.CharacterGraphics.Data.Length;
+            for (int i = 0; i < place.Data.Length; i++)
+            {
+                global::XLSXContent.PlaceData.SheetData pd = place.Data[i];
+                if (pd == null)
+                    continue;
+                if (pd.DoNotLoad != EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag(pd.DoNotLoad))
+                    continue;
+                int graphic = pd.ObjectGraphicIndex;
+                if (graphic < 0)
+                    continue;
+                string path;
+                if (graphic == 4)
+                    graphic = PlayerWork.playerSex ? 140 : 139;
+                if (graphic >= Graphic_Poke)
+                {
+                    path = string.Format("{0}pm{1:D4}_{2:D2}_{3:D2}", Path_Poke_Model, graphic / 10000, graphic / 100 % 100, graphic % 100);
+                }
+                else if (graphic >= Graphic_Gimmick && graphic < Graphic_Gimmick + 500)
+                {
+                    path = DataManager.GimmickGraphics.Data[graphic - Graphic_Gimmick].AssetPath;
+                }
+                else if (graphic >= Graphic_SekiZou && graphic < Graphic_SekiZouMAX)
+                {
+                    path = string.Format("pokemons/statue/{0}", graphic - Graphic_SekiZou);
+                }
+                else
+                {
+                    path = "";
+                    if (graphic < length)
+                        path = Path_Parsons + DataManager.CharacterGraphics.Data[graphic].FieldGraphic;
+                }
+                yield return global::Dpr.Title.AssetPreloader.LoadAssetBundle(path);
+            }
+        }
+		private void SetSaveDataParam(ref global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) {
+            FIELD_OBJ_SAVE_DATA data = FieldObjWork.Get(lodata.ObjectName.GetHashCode(), out bool flag);
+            if (flag)
+            {
+                lodata.Position.x = data.grid_x;
+                lodata.Position.y = data.grid_y;
+                lodata.Height = data.height;
+                lodata.Angle = data.angle;
+                lodata.MoveCode = data.movecode;
+                lodata.MoveParam0 = data.mvParam0;
+                lodata.MoveParam1 = data.mvParam1;
+                lodata.MoveParam2 = data.mvParam2;
+                lodata.MoveLimitX = data.limitX;
+                lodata.MoveLimitZ = data.limitZ;
+                lodata.Ev_Type = data.ev_type;
+                lodata.mv_old_dir = data.mv_old_dir;
+                lodata.mv_dir = data.mv_dir;
+                lodata.useloadData = true;
+            }
+            else
+            {
+                lodata.useloadData = false;
+            }
+        }
+		public void SetCreateParent(global::UnityEngine.Transform parent) {
+            _loadObjectParent = parent;
+        }
+		public void SortLoadObjectData(global::UnityEngine.Vector2Int grid) {
+            for (int i = 0; i < _loadObjectList.Count; i++)
+            {
+                if (_loadObjectList[i].IsCreated || _loadObjectList[i].IsLoadFast)
+                {
+                    _loadObjectList[i].Distance = 0;
+                }
+                else
+                {
+                    float x = UnityEngine.Mathf.Abs(_loadObjectList[i].Position.x);
+                    float dx = UnityEngine.Mathf.Abs(grid.x - x);
+                    float dz = UnityEngine.Mathf.Abs(grid.y - _loadObjectList[i].Position.y);
+                    _loadObjectList[i].Distance = (dx > 32f || dz > 32f) ? (int)(dx + dz) : 0;
+                }
+            }
+            _loadObjectList.Sort((a, b) => a.Distance - b.Distance);
+        }
+		public global::System.Collections.IEnumerator StartUpCreate() {
+            while (!IsLoadAssetBundle())
+                yield return null;
+            if (_dummyPlayer == null)
+            {
+                UnityEngine.GameObject dummy = new UnityEngine.GameObject();
+                dummy.name = "ev_dummy";
+                _dummyPlayer = dummy.AddComponent<global::FieldObjectEntity>();
+            }
+            DailyEventWork.UpdateEvent();
+            PokeWork.CheckTimeChangeLandformSheimi();
+            if (FieldWazaCutIn != null)
+                FieldWazaCutIn.Initialize();
+            HoneyWork.UpdateTime();
+            for (_loadObjectIndex = 0; _loadObjectIndex < _loadObjectList.Count; _loadObjectIndex++)
+            {
+                if (_loadObjectList[_loadObjectIndex].IsCreated)
+                    continue;
+                if (_loadObjectList[_loadObjectIndex].Distance != 0)
+                    break;
+                LoadObjectData lod = _loadObjectList[_loadObjectIndex];
+                lod.IsCreated = true;
+                LoadObjectCreate(lod);
+            }
+            KinomiWork.UpdateGrowTime();
+            global::XLSXContent.KinomiPlaceData.SheetSheet1[] kinomiPlaces = KinomiWork.GetPlaceDataByAreaId(_areaID);
+            for (int i = 0; i < kinomiPlaces.Length; i++)
+                LoadObjectCreate_KinomiGrow(kinomiPlaces[i]);
+            if (_stopRoot == null)
+            {
+                _stopRoot = new UnityEngine.GameObject();
+                _stopRoot.name = "stop_root";
+            }
+            for (int i = 0; i < _stopRoot.transform.childCount; i++)
+                UnityEngine.Object.Destroy(_stopRoot.transform.GetChild(i).gameObject);
+            if (_entityParamList == null)
+                _entityParamList = new EntityParam[50];
+            for (int i = 0; i < _entityParamList.Length; i++)
+                _entityParamList[i] = null;
+            string key = string.Format("StopData_{0}", _areaID);
+            if (DataManager.StopData.ContainsKey(key))
+            {
+                global::XLSXContent.StopData stopData = DataManager.StopData[key];
+                int count = stopData.Data.Length;
+                _entityParamList = new EntityParam[count];
+                for (int i = 0; i < count; i++)
+                {
+                    global::XLSXContent.StopData.SheetData sd = stopData.Data[i];
+                    if (sd == null)
+                        continue;
+                    UnityEngine.Vector3 position = new UnityEngine.Vector3(-sd.Position.x, sd.HeightLayer, sd.Position.y);
+                    UnityEngine.Vector2Int grid = new UnityEngine.Vector2Int((int)sd.Position.x, (int)sd.Position.y);
+                    EntityParam param = new EntityParam();
+                    param.ContactLabel = sd.ContactLabel;
+                    param.IsContact = false;
+                    param.WorkIndex = sd.Work;
+                    param.WorkValue = sd.Param;
+                    param.StopGridArea = new UnityEngine.RectInt(grid.x, grid.y, (int)sd.Size.x - 1, (int)sd.Size.y - 1);
+                    _entityParamList[i] = param;
+                }
+            }
+        }
+		public void UpdateCreate() {
+            if (_loadObjectList.Count > _loadObjectIndex && !_nowInstantiate)
+            {
+                if (!_loadObjectList[_loadObjectIndex].IsCreated)
+                {
+                    LoadObjectData lod = _loadObjectList[_loadObjectIndex];
+                    lod.IsCreated = true;
+                    _nowInstantiate = true;
+                    if (lod.AssetReqIndex == -1)
+                        LoadObjectCreate_BOX(lod);
+                    else
+                        LoadObjectCreate_Asset(lod);
+                }
+                _loadObjectIndex++;
+                EntityManager.BuildFieldEntities();
+            }
+        }
 		public void Init_PokemonCenter() {
             PokemonCenter.ReleaseAll();
         }
 		public void Init_FieldShip() {
             FieldShip.Terminate();
         }
-		public bool RefCountZeroUnload() { /*@B 0x600911B*/ throw null; }
+		public bool RefCountZeroUnload() {
+            if (_nowInstantiate)
+                return false;
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+            {
+                if (_AssetReqOpeList[i] != null && !_AssetReqOpeList[i].isEnd)
+                    return false;
+            }
+            string log = "fieldasset unload\n";
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+            {
+                if (_AssetReqOpeList[i] != null && _AssetReqOpeList[i].RefCount <= 0)
+                {
+                    AssetManager.UnloadAssetBundle(_AssetReqOpeList[i].ReqOpe.assetBundleRequest.uri);
+                    log += string.Format("[{0}]{1}  [{2}]\n", i, _AssetReqOpeList[i].isEnd, _AssetReqOpeList[i].ReqOpe.assetBundleRequest.uri);
+                    _AssetReqOpeList[i] = null;
+                }
+            }
+            log = "fieldasset cache \n";
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+            {
+                if (_AssetReqOpeList[i] == null)
+                    log += string.Format("[{0}] null\n", i);
+                else
+                    log += string.Format("[{0}]{1}  [{2}]\n", i, _AssetReqOpeList[i].isEnd, _AssetReqOpeList[i].ReqOpe.assetBundleRequest.uri);
+            }
+            return true;
+        }
 		public bool ForceUnload() { /*@B 0x600911C*/ throw null; }
 		public bool IsLoadAssetBundle() { /*@B 0x600911D*/ throw null; }
 		private void LoadObjectCreate(global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) { /*@B 0x600911E*/ throw null; }
