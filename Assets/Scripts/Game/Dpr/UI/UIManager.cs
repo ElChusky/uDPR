@@ -879,9 +879,19 @@ namespace Dpr.UI
 		public global::XLSXContent.UIDatabase.SheetContextMenu GetContextMenuData(global::ContextMenuID contextMenuId) {
             return _mdUis.ContextMenu[(int)contextMenuId];
         }
-		public static global::System.ValueTuple<string, string> GetLanguageMessage(uint langId) { /*@B 0x6005C10*/ throw null; }
-		public static string GetCurrentIetfCode() { /*@B 0x6005C11*/ throw null; }
-		public static global::Dpr.Message.MessageEnumData.MsgLangId GetMessageLangIdFromIetfCode(string ietfCode) { /*@B 0x6005C12*/ throw null; }
+		public static global::System.ValueTuple<string, string> GetLanguageMessage(uint langId) {
+            return new ValueTuple<string, string>("ss_status", _langParams.FirstOrDefault(x => (uint)x.langId == langId).label);
+        }
+		public static string GetCurrentIetfCode() {
+            return nn.oe.Language.GetDesired();
+        }
+		public static global::Dpr.Message.MessageEnumData.MsgLangId GetMessageLangIdFromIetfCode(string ietfCode) {
+            LangParam langParam = _langParams.FirstOrDefault(x => x.ietfTags.FirstOrDefault(y => y == ietfCode) != null);
+            if (langParam != null)
+                return langParam.langId;
+
+            return global::Dpr.Message.MessageEnumData.MsgLangId.USA;
+        }
 		public global::UnityEngine.Sprite GetSpriteMonsterBall(global::Pml.BallId ballId) {
             _spriteMonsterBallDict.TryGetValue(ballId, out MonsterBallParam param);
             if (param != null)
@@ -910,14 +920,53 @@ namespace Dpr.UI
             digitNum = 6;
             return id % 1000000;
         }
-		public static void SetMessageWordParentId(int argIndex, global::Pml.PokePara.PokemonParam pokemonParam) { /*@B 0x6005C17*/ throw null; }
+		public static void SetMessageWordParentId(int argIndex, global::Pml.PokePara.PokemonParam pokemonParam) {
+            uint id = pokemonParam.GetID();
+            if (pokemonParam.GetCassetteVersion() < CassetVersion.SUN)
+                MessageWordSetHelper.SetStringWord(argIndex, string.Format("{0:d5}", id & 0xFFFF));
+            else
+                MessageWordSetHelper.SetStringWord(argIndex, string.Format("{0:d6}", id % 1000000));
+        }
 		public global::UnityEngine.Sprite GetSpritePokemonType(int typeNo) {
             return GetAtlasSprite(SpriteAtlasID.COMMON_LANG, _mdUis.CommonSprite[typeNo].SpriteName);
         }
 		public global::UnityEngine.Sprite GetSpritePokemonTypeZukan(int typeNo, global::Dpr.Message.MessageEnumData.MsgLangId langId) {
             return GetAtlasSprite(SpriteAtlasID.ZUKAN, string.Format("dex_ico_type_01_{0:D2}_{1}", typeNo, MessageHelper.GetLanguageVariant(langId)));
         }
-		public global::UnityEngine.Sprite GetSpritePokemonLanguage(global::Dpr.Message.MessageEnumData.MsgLangId langId) { /*@B 0x6005C1A*/ throw null; }
+		public global::UnityEngine.Sprite GetSpritePokemonLanguage(global::Dpr.Message.MessageEnumData.MsgLangId langId) {
+            string langName = null;
+            switch (langId)
+            {
+                case global::Dpr.Message.MessageEnumData.MsgLangId.JPN:
+                    langName = "jpn";
+                    break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.USA:
+                    langName = "eng";
+                    break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.FRA:
+                    langName = "fra";
+                    break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.ITA:
+                    langName = "ita";
+                    break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.DEU:
+                    langName = "ger";
+                    break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.ESP:
+                    langName = "spa";
+                    break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.KOR:
+                    langName = "kor";
+                    break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.SCH:
+                    langName = "chs";
+                    break;
+                case global::Dpr.Message.MessageEnumData.MsgLangId.TCH:
+                    langName = "cht";
+                    break;
+            }
+            return GetAtlasSprite(SpriteAtlasID.COMMON_LANG, "cmn_ico_txt_lang_" + langName + "_00");
+        }
 		public global::UnityEngine.Sprite GetSpritePlaceMark(uint cassetVersion) {
             // @017c2830: `_mdUis.PlaceMark` is re-read every outer iteration; the LAST matching row wins (break only leaves the inner loop)
             Sprite sprite = null;
@@ -994,9 +1043,21 @@ namespace Dpr.UI
 
             return true;
         }
-		public global::Dpr.UI.Keyguide GetKeyguide(global::UnityEngine.Transform transform = null, bool isCreate = true) { /*@B 0x6005C27*/ throw null; }
-		internal void _ClearKeyguide() { /*@B 0x6005C28*/ throw null; }
-		public global::XLSXContent.UIDatabase.SheetKeyguide GetKeyguideData(global::KeyguideID keyguideId) { /*@B 0x6005C29*/ throw null; }
+		public global::Dpr.UI.Keyguide GetKeyguide(global::UnityEngine.Transform transform = null, bool isCreate = true) {
+            if (isCreate && (_keyguide == null || _keyguide.gameObject == null))
+                _keyguide = Instance.CreateUIWindow<Keyguide>(UIWindowID.KEYGUIDE);
+
+            if (transform != null)
+                _keyguide.transform.SetParent(transform, false);
+
+            return _keyguide;
+        }
+		internal void _ClearKeyguide() {
+            _keyguide = null;
+        }
+		public global::XLSXContent.UIDatabase.SheetKeyguide GetKeyguideData(global::KeyguideID keyguideId) {
+            return _mdUis.Keyguide[(int)keyguideId];
+        }
 		public void ReleaseKeyguide() { }
 		public static global::Pml.PokePara.Taste GetLikeTaste(global::Pml.PokePara.PokemonParam pokemonParam) {
             for (Taste taste = Taste.KARAI; taste < Taste.MAX; taste++)
@@ -1015,9 +1076,26 @@ namespace Dpr.UI
 		public static global::Pml.PokePara.PokemonParam ToPokemonParamBySrcData(global::Pml.PokePara.PokemonParam pokemonParam) {
             return _pokemonParamMappings.FirstOrDefault(x => x.battlePokemonParam.GetSrcData() == pokemonParam)?.pokemonParam;
         }
-		public static bool IsMyParty(global::Pml.PokePara.PokemonParam pokemonParam) { /*@B 0x6005C2F*/ throw null; }
-		public static int GetFriendPartyFirstIndex() { /*@B 0x6005C30*/ throw null; }
-		public static void SetTrainerName(int tagIndex, global::Pml.PokePara.PokemonParam pokemonParam) { /*@B 0x6005C31*/ throw null; }
+		public static bool IsMyParty(global::Pml.PokePara.PokemonParam pokemonParam) {
+            return !_pokemonParamMappings.FirstOrDefault(x => x.pokemonParam == pokemonParam).isFriend;
+        }
+		public static int GetFriendPartyFirstIndex() {
+            return _pokemonParamMappings.FindIndex(x => x.clientId != BattleViewCore.Instance.ViewSystem.GetClientID());
+        }
+		public static void SetTrainerName(int tagIndex, global::Pml.PokePara.PokemonParam pokemonParam) {
+            PokemonParamMapping mapping = _pokemonParamMappings.FirstOrDefault(x => x.pokemonParam == pokemonParam);
+            string labelName = BattleViewCore.Instance.ViewSystem.GetTrainerNameLabel(mapping.clientId);
+            if (labelName != null)
+            {
+                MessageWordSetHelper.SetTrainerNameWord(tagIndex, labelName);
+                return;
+            }
+
+            global::Dpr.Message.MessageEnumData.MsgLangId langId = BattleViewCore.Instance.ViewSystem.GetMainModule().GetClientPlayerData(mapping.clientId).lang;
+            string trainerName = BattleViewCore.Instance.ViewSystem.GetTrainerName(mapping.clientId);
+            if (trainerName != null)
+                MessageWordSetHelper.SetStringWord(tagIndex, trainerName, langId);
+        }
 		public static global::Dpr.Battle.Logic.BTL_PARTY GetMultiPlayerFriendParty() {
             if (!BattleViewCore.Instance.ViewSystem.IsFriendExist() || BattleViewCore.Instance.ViewSystem.GetMainModule().IsScenarioMultiBattle())
                 return null;
@@ -1081,10 +1159,44 @@ namespace Dpr.UI
             }
             return pokemonParam;
         }
-		public static global::Pml.PokePara.PokemonParam GetTeamPokemon(int team, int pos) { /*@B 0x6005C35*/ throw null; }
-		public static bool TryGetTeamPokemonTrayIndex(int team, int pos, out int tray, out int index) { /*@B 0x6005C36*/ throw null; }
-		public static bool IsFieldWaza(global::Pml.WazaNo wazaNo) { /*@B 0x6005C37*/ throw null; }
-		public static void ReturnItemInBag(global::Pml.PokePara.PokemonParam pokemonParam) { /*@B 0x6005C38*/ throw null; }
+		public static global::Pml.PokePara.PokemonParam GetTeamPokemon(int team, int pos) {
+            int tray = global::Dpr.Box.BoxWork.GetTeamPokeBoxTray(team, pos);
+            if (tray == 0xFF)
+                return null;
+
+            int boxPos = global::Dpr.Box.BoxWork.GetTeamPokeBoxPos(team, pos);
+            if (boxPos == 0xFF)
+                return null;
+
+            return global::Dpr.Box.BoxPokemonWork.GetPokemon(tray, boxPos);
+        }
+		public static bool TryGetTeamPokemonTrayIndex(int team, int pos, out int tray, out int index) {
+            tray = global::Dpr.Box.BoxWork.GetTeamPokeBoxTray(team, pos);
+            index = -1;
+            if (tray == 0xFF)
+                return false;
+
+            index = global::Dpr.Box.BoxWork.GetTeamPokeBoxPos(team, pos);
+            return index != 0xFF;
+        }
+		public static bool IsFieldWaza(global::Pml.WazaNo wazaNo) {
+            // one bit-mask test for the low range in the binary (@017c3d6c: no - 91 < 45, mask 0x100000000201)
+            switch (wazaNo)
+            {
+                case WazaNo.ANAWOHORU:
+                case WazaNo.TEREPOOTO:
+                case WazaNo.TAMAGOUMI:
+                case WazaNo.HURASSYU:
+                case WazaNo.MIRUKUNOMI:
+                case WazaNo.AMAIKAORI:
+                    return true;
+            }
+            return false;
+        }
+		public static void ReturnItemInBag(global::Pml.PokePara.PokemonParam pokemonParam) {
+            ItemWork.AddItem(pokemonParam.GetItem(), 1);
+            pokemonParam.RemoveItem();
+        }
 		public void LoadSpritePokemon(global::Pml.PokePara.PokemonParam pokemonParam, global::UnityEngine.Events.UnityAction<global::UnityEngine.Sprite> onComplete) {
             LoadSpritePokemon(pokemonParam.GetMonsNo(), pokemonParam.GetFormNo(), pokemonParam.GetSex(), pokemonParam.GetRareType(), pokemonParam.IsEgg(EggCheckType.BOTH_EGG), onComplete);
         }
@@ -1158,27 +1270,138 @@ namespace Dpr.UI
 		public void LoadSpritePokemonDot(global::Pml.PokePara.PokemonParam pokemonParam, global::UnityEngine.Events.UnityAction<global::UnityEngine.Sprite> onComplete) {
             LoadSpritePokemonDot(pokemonParam.GetMonsNo(), pokemonParam.GetFormNo(), pokemonParam.GetSex(), pokemonParam.GetRareType(), pokemonParam.IsEgg(EggCheckType.BOTH_EGG), onComplete);
         }
-		public void LoadSpritePokemonDot(global::Pml.MonsNo monsNo, ushort formNo, global::Pml.Sex sex, global::Pml.PokePara.RareType rareType, bool isEgg, global::UnityEngine.Events.UnityAction<global::UnityEngine.Sprite> onComplete) { /*@B 0x6005C3F*/ throw null; }
+		public void LoadSpritePokemonDot(global::Pml.MonsNo monsNo, ushort formNo, global::Pml.Sex sex, global::Pml.PokePara.RareType rareType, bool isEgg, global::UnityEngine.Events.UnityAction<global::UnityEngine.Sprite> onComplete) {
+            // the unique id is computed and discarded (@017c4760)
+            DataManager.GetUniqueID(monsNo, formNo, sex, rareType, isEgg);
+            string assetBundleName = Instance.GetPokemonIconData(monsNo, formNo, sex, rareType, isEgg).AssetBundleNameDP;
+            if (AssetManager.IsExistAssetBundle(assetBundleName))
+            {
+                AssetManager.AppendAssetBundleRequest(assetBundleName, true, null, null);
+                AssetManager.DispatchRequests((eventType, name, asset) =>
+                {
+                    if (eventType == RequestEventType.Complete)
+                    {
+                        AssetManager.UnloadAssetBundle(assetBundleName);
+                        return;
+                    }
+
+                    if (eventType == RequestEventType.Activated)
+                    {
+                        Texture2D texture = asset as Texture2D;
+                        if (texture != null)
+                            onComplete.Invoke(Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero));
+                    }
+                });
+                return;
+            }
+
+            onComplete.Invoke(null);
+        }
 		public void LoadSpriteItem(global::Pml.ItemNo itemNo, global::UnityEngine.Events.UnityAction<global::UnityEngine.Sprite> onComplete) {
             ItemInfo.LoadItemIcon((int)itemNo, sprite => onComplete.Invoke(sprite), true, false);
         }
-		public static int Repeat(int value, int start, int end) { /*@B 0x6005C41*/ throw null; }
+		public static int Repeat(int value, int start, int end) {
+            int range = end - start + 1;
+            return (value - start + range) % range + start;
+        }
 		public static void ScreenScaled(ref global::UnityEngine.Vector2 v) {
             float scaleX = Screen.width / 1280.0f;
             float scaleY = Screen.height / 720.0f;
             v.x *= scaleX;
             v.y *= scaleY;
         }
-		public static global::UnityEngine.Vector2 ComputeLocalCornerPosition(global::UnityEngine.RectTransform rectTrans, int cornerIndex, global::UnityEngine.RectTransform baseRectTrans = null, global::UnityEngine.Camera canvasCamera = null) { /*@B 0x6005C43*/ throw null; }
-		public static global::System.Collections.Generic.List<global::Dpr.UI.UIManager.DuplicateImageMaterialParam> DuplicateImageMaterials(global::UnityEngine.Transform trans) { /*@B 0x6005C44*/ throw null; }
-		public static void RestoreDuplicateImageMaterials(global::System.Collections.Generic.List<global::Dpr.UI.UIManager.DuplicateImageMaterialParam> duplicateImageMaterialParams) { /*@B 0x6005C45*/ throw null; }
-		public static void DestroyCanvasRendererMaterials(global::UnityEngine.GameObject gameObj) { /*@B 0x6005C46*/ throw null; }
-		public void Grayscale(global::UnityEngine.Transform trans, float value) { /*@B 0x6005C47*/ throw null; }
+		public static global::UnityEngine.Vector2 ComputeLocalCornerPosition(global::UnityEngine.RectTransform rectTrans, int cornerIndex, global::UnityEngine.RectTransform baseRectTrans = null, global::UnityEngine.Camera canvasCamera = null) {
+            Vector3[] corners = new Vector3[4];
+            rectTrans.GetWorldCorners(corners);
+            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(canvasCamera, corners[cornerIndex]);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(baseRectTrans, screenPoint, canvasCamera, out Vector2 localPoint);
+            return localPoint;
+        }
+		public static global::System.Collections.Generic.List<global::Dpr.UI.UIManager.DuplicateImageMaterialParam> DuplicateImageMaterials(global::UnityEngine.Transform trans) {
+            List<DuplicateImageMaterialParam> duplicateImageMaterialParams = new List<DuplicateImageMaterialParam>();
+            global::UnityEngine.UI.Image[] images = trans.GetComponentsInChildren<global::UnityEngine.UI.Image>(true);
+            for (int i = 0; i < images.Length; i++)
+            {
+                global::UnityEngine.UI.Image image = images[i];
+                if (image.material == null)
+                    continue;
+
+                if (image.material.shader.name == "UI-Default")
+                    continue;
+
+                duplicateImageMaterialParams.Add(new DuplicateImageMaterialParam
+                {
+                    image = image,
+                    material = image.material,
+                });
+                image.material = new Material(image.material);
+            }
+            return duplicateImageMaterialParams;
+        }
+		public static void RestoreDuplicateImageMaterials(global::System.Collections.Generic.List<global::Dpr.UI.UIManager.DuplicateImageMaterialParam> duplicateImageMaterialParams) {
+            if (duplicateImageMaterialParams == null)
+                return;
+
+            for (int i = 0; i < duplicateImageMaterialParams.Count; i++)
+            {
+                DuplicateImageMaterialParam param = duplicateImageMaterialParams[i];
+                UnityEngine.Object.Destroy(param.image.material);
+                param.image.material = param.material;
+            }
+            duplicateImageMaterialParams.Clear();
+        }
+		public static void DestroyCanvasRendererMaterials(global::UnityEngine.GameObject gameObj) {
+            if (gameObj == null)
+                return;
+
+            CanvasRenderer[] canvasRenderers = gameObj.GetComponentsInChildren<CanvasRenderer>();
+            for (int i = 0; i < canvasRenderers.Length; i++)
+            {
+                CanvasRenderer canvasRenderer = canvasRenderers[i];
+                for (int j = canvasRenderer.materialCount - 1; j >= 0; j--)
+                    UnityEngine.Object.Destroy(canvasRenderer.GetMaterial(j));
+            }
+        }
+		public void Grayscale(global::UnityEngine.Transform trans, float value) {
+            global::UnityEngine.UI.Image[] images = trans.GetComponentsInChildren<global::UnityEngine.UI.Image>(true);
+            for (int i = 0; i < images.Length; i++)
+            {
+                global::UnityEngine.UI.Image image = images[i];
+                if (image.material == null)
+                    continue;
+
+                if (image.material.shader.name == "UI-Default")
+                    continue;
+
+                image.material.SetFloat(_id_GrayscaleAmount, value);
+            }
+        }
 		public void SetOnCloseXMenu(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_) { this.onXMenuClosed = onClosed_; }
-		public void CloseXMenu(global::UnityEngine.Events.UnityAction<global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow>> onCall) { /*@B 0x6005C49*/ throw null; }
-		public global::XLSXContent.TownMapGuideTable.SheetGuide SetupCurrentTownmapGuideMessage() { /*@B 0x6005C4A*/ throw null; }
-		public global::XLSXContent.TownMapGuideTable.SheetGuide GetCurrentTownmapGuideData() { /*@B 0x6005C4B*/ throw null; }
-		public global::XLSXContent.TownMapGuideTable.SheetGuide GetTownmapGuideData(int guideId) { /*@B 0x6005C4C*/ throw null; }
+		public void CloseXMenu(global::UnityEngine.Events.UnityAction<global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow>> onCall) {
+            // GetUIWindowCount is inlined (init flag 0x48d); both results are discarded (same tail as SetupSortOrder)
+            int windowCount = Instance.GetUIWindowCount();
+            UIWindow currentWindow = Instance.GetCurrentUIWindow<UIWindow>();
+            Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_TOP_XCLOSE, null);
+            onCall.Invoke(onXMenuClosed);
+            // FadeoutBlurBg(0.5f, null) is inlined here (@017c5300, flag-less, same stores as @017abc30)
+            FadeoutBlurBg();
+            _pokemonParamMappings.Clear();
+        }
+		public global::XLSXContent.TownMapGuideTable.SheetGuide SetupCurrentTownmapGuideMessage() {
+            TownMapGuideTable.SheetGuide guideData = GetTownmapGuideData(FlagWork.GetWork(EvWork.WORK_INDEX.TOWNMAP_GUIDE_SEQUENCE));
+            MessageWordSetHelper.SetRivalNickNameWord(1);
+            MessageWordSetHelper.SetSupporterName(2);
+            return guideData;
+        }
+		public global::XLSXContent.TownMapGuideTable.SheetGuide GetCurrentTownmapGuideData() {
+            return GetTownmapGuideData(FlagWork.GetWork(EvWork.WORK_INDEX.TOWNMAP_GUIDE_SEQUENCE));
+        }
+		public global::XLSXContent.TownMapGuideTable.SheetGuide GetTownmapGuideData(int guideId) {
+            int searchResult = Array.BinarySearch(_mdTownmapGuide.Guide, guideId, _comparerTownMapGuide);
+            if (searchResult < 0) searchResult = 0;
+
+            return _mdTownmapGuide.Guide[searchResult];
+        }
 		public global::XLSXContent.PlaceNameTable.SheetDprPlaceName GetPlaceNameData(global::ZoneID zoneId) {
             return GetPlaceNameData((int)zoneId);
         }
