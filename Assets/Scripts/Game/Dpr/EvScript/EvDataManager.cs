@@ -15900,8 +15900,120 @@ namespace Dpr.EvScript
                     ambient.SetSwitch(AK.SWITCHES.SWEETTREE.GROUP, state);
             }
         }
-		private void CreateWorpPoint() { /*@B 0x6009110*/ throw null; }
-		private global::FieldEventDoorEntity CreateWarpEntity(global::XLSXContent.MapWarp.SheetData data, int[] index, global::UnityEngine.Vector2 size, int[] locator) { /*@B 0x6009111*/ throw null; }
+		private void CreateWorpPoint() {
+            if (_warpRoot == null)
+            {
+                _warpRoot = new UnityEngine.GameObject();
+                _warpRoot.name = "WarpObjectRoot";
+            }
+            UnityEngine.Transform root = _warpRoot.transform;
+            int childCount = root.childCount;
+            for (int i = 0; i < childCount; i++)
+                UnityEngine.Object.Destroy(root.GetChild(i).gameObject);
+            _warpList.Clear();
+            _warpData = null;
+            string key = string.Format("MapWarp_{0}", _areaID);
+            if (!DataManager.MapWarpData.ContainsKey(key))
+                return;
+            _warpData = DataManager.MapWarpData[key];
+            var groups = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<CreateWarp>>(50);
+            for (int i = 0; i < _warpData.Data.Length; i++)
+            {
+                var cw = new CreateWarp();
+                cw.data = _warpData.Data[i];
+                cw.index = i;
+                int groupId = cw.data.GruopID;
+                if (groups.ContainsKey(groupId))
+                {
+                    groups[groupId].Add(cw);
+                }
+                else
+                {
+                    var list = new System.Collections.Generic.List<CreateWarp>(30);
+                    list.Add(cw);
+                    groups.Add(groupId, list);
+                }
+            }
+            foreach (var kv in groups)
+            {
+                var list = kv.Value;
+                if (kv.Key == -1 || kv.Key == 0)
+                {
+                    foreach (var cw in list)
+                    {
+                        var data = cw.data;
+                        int[] index = new int[1];
+                        index[0] = cw.index;
+                        UnityEngine.Vector2 size = data.Size;
+                        int[] locator = new int[1];
+                        locator[0] = data.WarpIndex;
+                        _warpList.Add(CreateWarpEntity(data, index, size, locator));
+                    }
+                }
+                else
+                {
+                    var first = list[0].data;
+                    UnityEngine.Vector2 size = first.Size;
+                    UnityEngine.Vector2 pos = new UnityEngine.Vector2(first.Position.x, first.Position.z);
+                    int[] locator = new int[list.Count];
+                    locator[0] = first.WarpIndex;
+                    int[] index = new int[list.Count];
+                    index[0] = list[0].index;
+                    for (int i = 1; i < list.Count; i++)
+                    {
+                        var data = list[i].data;
+                        locator[i] = data.WarpIndex;
+                        index[i] = list[i].index;
+                        size.x += data.Position.x - pos.x;
+                        size.y += data.Position.z - pos.y;
+                        pos.x = data.Position.x;
+                        pos.y = data.Position.z;
+                    }
+                    _warpList.Add(CreateWarpEntity(first, index, size, locator));
+                }
+            }
+        }
+		private global::FieldEventDoorEntity CreateWarpEntity(global::XLSXContent.MapWarp.SheetData data, int[] index, global::UnityEngine.Vector2 size, int[] locator) {
+            UnityEngine.Vector3 position = new UnityEngine.Vector3(-data.Position.x, data.Position.y, data.Position.z);
+            UnityEngine.GameObject go = new UnityEngine.GameObject();
+            go.name = string.Format("{0}_W{1:D2}", _areaID, index[0]);
+            global::FieldEventDoorEntity entity = go.AddComponent<global::FieldEventDoorEntity>();
+            entity.transform.SetParent(_warpRoot.transform);
+            entity.transform.localPosition = position;
+            entity.EventParams.IsContact = false;
+            entity.mdIndexArray = index;
+            entity.EventParams.Type = EntityType.Warp;
+            entity.entityEname = go.name;
+            float sx = size.x > 0f ? size.x : 1f;
+            float sy = size.y > 0f ? size.y : 1f;
+            entity.size.x = sx;
+            entity.shapeType = global::FieldEventEntity.ShapeType.Box;
+            entity.size.y = sy;
+            entity.offset.x = sx < 1f ? sx * -0.5f : -0.5f;
+            entity.offset.y = sy < 1f ? sy * 0.5f : sy + -0.5f;
+            switch (data.InputDir)
+            {
+                case 0: entity.startVectol = global::FieldDoor.StartVectol.Up; break;
+                case 1: entity.startVectol = global::FieldDoor.StartVectol.Left; break;
+                case 2: entity.startVectol = global::FieldDoor.StartVectol.Down; break;
+                case 3: entity.startVectol = global::FieldDoor.StartVectol.Right; break;
+                case 4: entity.startVectol = global::FieldDoor.StartVectol.All; break;
+            }
+            entity.transitionZone = data.WarpZone == global::ZoneID.D05R0115 ? global::ZoneID.D05R0114 : data.WarpZone;
+            entity.locatorIndex = data.WarpIndex;
+            entity.locatorArray = locator;
+            entity.callLabel = data.ScriptLabel;
+            entity.exitLabel = data.ExitLabel;
+            entity.connectionName = data.ConnectionName;
+            switch (entity.startVectol)
+            {
+                case global::FieldDoor.StartVectol.Up: entity.offset.y += -1f; break;
+                case global::FieldDoor.StartVectol.Down: entity.offset.y += 1f; break;
+                case global::FieldDoor.StartVectol.Left: entity.offset.x += -1f; break;
+                case global::FieldDoor.StartVectol.Right: entity.offset.x += 1f; break;
+            }
+            return entity;
+        }
 		public global::System.Collections.IEnumerator RequestAssetSetUp(global::AreaID areaid) { /*@B 0x6009112*/ throw null; }
 		public global::System.Collections.IEnumerator PreRequestAssetSetUp(global::AreaID areaid) { /*@B 0x6009113*/ throw null; }
 		private void SetSaveDataParam(ref global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) { /*@B 0x6009114*/ throw null; }
