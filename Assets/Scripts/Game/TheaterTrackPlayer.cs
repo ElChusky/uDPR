@@ -6,7 +6,7 @@ using UnityEngine;
 [global::UnityEngine.RequireComponent(typeof(global::UnityEngine.Animator))]
 public class TheaterTrackPlayer : global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::TheaterTrackPlayer>
 {
-	public global::AnimationPlayer animationPlayer;
+	public global::AnimationPlayer animationPlayer = new global::AnimationPlayer();
 	public string trackName;
 	public bool takeover;
 	public int colorIndex;
@@ -29,12 +29,12 @@ public class TheaterTrackPlayer : global::SmartPoint.AssetAssistant.SingletonMon
 	private global::UnityEngine.Transform dofTarget;
 	private global::UnityEngine.Camera dofCamera;
 	private float dofSensorScale;
-	private global::System.Collections.Generic.Dictionary<string, global::FieldEventEntity> eventEntityMap;
+	private global::System.Collections.Generic.Dictionary<string, global::FieldEventEntity> eventEntityMap = new global::System.Collections.Generic.Dictionary<string, global::FieldEventEntity>();
 	public global::TheaterTrackPlayer.OnStartPlaying onStart;
-	private global::System.Collections.Generic.List<global::UnityEngine.Transform> actors;
-	private global::System.Collections.Generic.Dictionary<string, global::UnityEngine.GameObject> objectTable;
-	private global::System.Collections.Generic.List<global::UnityEngine.Renderer> shadowRenderers;
-	private global::System.Collections.Generic.List<global::TheaterTrackPlayer.SaveGameObject> saveGameObjects;
+	private global::System.Collections.Generic.List<global::UnityEngine.Transform> actors = new global::System.Collections.Generic.List<global::UnityEngine.Transform>();
+	private global::System.Collections.Generic.Dictionary<string, global::UnityEngine.GameObject> objectTable = new global::System.Collections.Generic.Dictionary<string, global::UnityEngine.GameObject>();
+	private global::System.Collections.Generic.List<global::UnityEngine.Renderer> shadowRenderers = new global::System.Collections.Generic.List<global::UnityEngine.Renderer>();
+	private global::System.Collections.Generic.List<global::TheaterTrackPlayer.SaveGameObject> saveGameObjects = new global::System.Collections.Generic.List<global::TheaterTrackPlayer.SaveGameObject>();
 	public static global::TheaterTrackPlayer Instance { get {
 			TheaterTrackPlayer instance = SingletonMonoBehaviour<TheaterTrackPlayer>.Instance;
 			if (instance == null)
@@ -332,7 +332,7 @@ public class TheaterTrackPlayer : global::SmartPoint.AssetAssistant.SingletonMon
 		if (SmartPoint.Rendering.DepthOfField.instance != null)
 			SmartPoint.Rendering.DepthOfField.instance.distance = Vector3.Distance(center + new Vector3(0.0f, 0.5f), mainCamera.transform.position);
 	}
-	public TheaterTrackPlayer() { /*@B 0x60015AF*/ throw null; }
+	public TheaterTrackPlayer() { }
 	private class SaveGameObject
 	{
 		public global::UnityEngine.Behaviour behaviour;
@@ -341,8 +341,28 @@ public class TheaterTrackPlayer : global::SmartPoint.AssetAssistant.SingletonMon
 		public global::UnityEngine.Vector3 position;
 		public global::UnityEngine.Vector3 angles;
 		public global::UnityEngine.Vector3 scale;
-		public SaveGameObject(global::UnityEngine.Transform target, global::UnityEngine.Transform parent) { /*@B 0x60098B9*/ throw null; }
-		public SaveGameObject(global::UnityEngine.Behaviour behaviour, global::UnityEngine.Transform parent) { /*@B 0x60098BA*/ throw null; }
+		public SaveGameObject(global::UnityEngine.Transform target, global::UnityEngine.Transform parent)
+		{
+			this.behaviour = null;
+			this.target = target;
+			this.parent = target.parent;
+			this.position = target.localPosition;
+			this.angles = target.localEulerAngles;
+			this.scale = target.localScale;
+			target.SetParent(parent, false);
+		}
+		public SaveGameObject(global::UnityEngine.Behaviour behaviour, global::UnityEngine.Transform parent)
+		{
+			global::UnityEngine.Transform transform = behaviour.transform;
+			this.behaviour = behaviour;
+			this.target = transform;
+			this.parent = transform.parent;
+			this.position = transform.localPosition;
+			this.angles = transform.localEulerAngles;
+			this.scale = transform.localScale;
+			behaviour.enabled = false;
+			transform.SetParent(parent, false);
+		}
 		public void Resume() {
 			if (behaviour != null)
 			{

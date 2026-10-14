@@ -24,6 +24,6 @@ public class TheaterTrack : global::UnityEngine.ScriptableObject
 		public string assetBundleName;
 		[global::UnityEngine.SerializeField]
 		public string[] instanceNames;
-		public ExtraData(string assetBundleName, string[] instanceNames) { /*@B 0x60098B8*/ throw null; }
+		public ExtraData(string assetBundleName, string[] instanceNames) { this.assetBundleName = assetBundleName; this.instanceNames = instanceNames; }
 	}
 }

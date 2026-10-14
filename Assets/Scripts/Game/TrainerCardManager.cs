@@ -2,7 +2,7 @@
 public class TrainerCardManager : global::UnityEngine.MonoBehaviour
 {
 	[global::UnityEngine.SerializeField]
-	private int a;
+	private int a = PlayerWork.GetMoney();
 	[global::UnityEngine.SerializeField]
 	private global::TrainerCardManager.TrainerCard myData;
 	private void Start() {
@@ -14,7 +14,7 @@ public class TrainerCardManager : global::UnityEngine.MonoBehaviour
 	public void CatchTrainerCardData(global::TrainerCardManager.TrainerCard data) {
 		// empty in the binary (bare `ret` @02cbfba0)
 	}
-	public TrainerCardManager() { /*@B 0x60012C7*/ throw null; }
+	public TrainerCardManager() { }
 	public struct TrainerCard
 	{
 		public uint id;

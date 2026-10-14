@@ -5,8 +5,8 @@ public class TowerLotResult
 {
 	public int matchingID;
 	public uint stockID;
-	public global::TowerTrID[] trainerID;
-	public ulong[] personalRand;
+	public global::TowerTrID[] trainerID = new global::TowerTrID[] { global::TowerTrID.NONE, global::TowerTrID.NONE };
+	public ulong[] personalRand = new ulong[4];
 	public global::TowerTrID GetTrainerID(int index) {
         return trainerID[index];
     }
@@ -134,5 +134,5 @@ public class TowerLotResult
             winBGM = stock.WinBGM;
         }
     }
-	public TowerLotResult() { /*@B 0x60003E6*/ throw null; }
+	public TowerLotResult() { }
 }

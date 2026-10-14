@@ -82,5 +82,5 @@ public class TradeParentStateModel : global::TradeStateModel
 				break;
 		}
 	}
-	public TradeParentStateModel() { /*@B 0x6001252*/ throw null; }
+	public TradeParentStateModel() { }
 }

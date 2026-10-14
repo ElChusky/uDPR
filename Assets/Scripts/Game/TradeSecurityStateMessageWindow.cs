@@ -5,10 +5,10 @@ public class TradeSecurityStateMessageWindow
 	private const int NET_WAITING_MESSAGE_INDEX = 0;
 	private const int NET_ERORR_TRADE_MESSAGE_INDEX = 1;
 	public global::Dpr.MsgWindow.MsgWindow msgWindow;
-	private global::System.Collections.Generic.List<global::Dpr.MsgWindow.MsgWindowParam> messageParamList;
+	private global::System.Collections.Generic.List<global::Dpr.MsgWindow.MsgWindowParam> messageParamList = new global::System.Collections.Generic.List<global::Dpr.MsgWindow.MsgWindowParam>();
 	private int messageIndex;
 	private global::System.Action _Error;
-	public TradeSecurityStateMessageWindow() { /*@B 0x6001268*/ throw null; }
+	public TradeSecurityStateMessageWindow() { }
 	public void InitMessage() {
 		messageParamList.Clear();
 		msgWindow = null;

@@ -7,8 +7,8 @@ public class TelescopeNagisa
 {
 	private global::TelescopeNagisa.ScopePhase Phase;
 	private global::UnityEngine.Vector2Int EventPos;
-	private global::Dpr.FieldFloatMove Time;
-	public bool IsBusy { get { /*@B 0x6000372*/ throw null; } }
+	private global::Dpr.FieldFloatMove Time = new global::Dpr.FieldFloatMove();
+	public bool IsBusy { get { return Phase != ScopePhase.None; } }
 	public void Start(global::UnityEngine.Vector2Int eventPos) {
 		EventPos = eventPos;
 		PlayerWork.Telescope = true;
@@ -72,7 +72,7 @@ public class TelescopeNagisa
 				break;
 		}
 	}
-	public TelescopeNagisa() { /*@B 0x6000375*/ throw null; }
+	public TelescopeNagisa() { }
 	private enum ScopePhase
 	{
 		None = 0,

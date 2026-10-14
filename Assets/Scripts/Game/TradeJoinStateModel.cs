@@ -6,7 +6,7 @@ public class TradeJoinStateModel : global::NetStateModel
 	public int sexId { get; set; }
 	public global::OnlinePlayerCharacter opcCharacter { get; set; }
 	public global::UnionTradeContextMenu contextMenu { get; set; }
-	public TradeJoinStateModel() { /*@B 0x60011EF*/ throw null; }
+	public TradeJoinStateModel() { contextMenu = new UnionTradeContextMenu(); contextMenu.TradeJoinStateModel = this; contextMenu.SetTransitionType(); }
 	protected override void Start() {
 		base.Start();
 		contextMenu = new UnionTradeContextMenu();

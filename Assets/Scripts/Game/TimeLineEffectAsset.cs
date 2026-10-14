@@ -3,6 +3,6 @@ public class TimeLineEffectAsset : global::UnityEngine.Playables.PlayableAsset
 {
 	[global::UnityEngine.SerializeField]
 	public int mIntSample;
-	public override global::UnityEngine.Playables.Playable CreatePlayable(global::UnityEngine.Playables.PlayableGraph graph, global::UnityEngine.GameObject game_object) { /*@B 0x6000F1E*/ throw null; }
+	public override global::UnityEngine.Playables.Playable CreatePlayable(global::UnityEngine.Playables.PlayableGraph graph, global::UnityEngine.GameObject game_object) { return global::UnityEngine.Playables.ScriptPlayable<global::TimelineEffectBehaviour>.Create(graph, new global::TimelineEffectBehaviour(), 0); }
 	public TimeLineEffectAsset() { }
 }
