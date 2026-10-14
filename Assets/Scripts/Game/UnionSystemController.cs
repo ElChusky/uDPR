@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class UnionSystemController
 {
 	private const int TRADE_OK_MEMBER_POKE_COUNT = 2;
-	public global::UnionMsgSystemWindow unionMsgSystemWindow;
+	public global::UnionMsgSystemWindow unionMsgSystemWindow = new global::UnionMsgSystemWindow();
 	public global::UnionContextMenu contextMenu;
 	public global::OnlinePlayerCharacter onlinePlayer;
 	private global::OpcState.OnlineState onlinePlayerSelectState;
@@ -19,7 +19,7 @@ public class UnionSystemController
 	public global::System.Action<int, byte> _requestNetData;
 	private global::System.Action<int> _setDefaltCancelFunc;
 	private global::System.Action<int> _startGreetingsFunc;
-	private int targetStationIndex;
+	private int targetStationIndex = -1;
 	public int targetSexId;
 	public bool isRecuruiment;
 	public global::UnionSystemController.CommunicationTargetData targetData;
@@ -47,7 +47,10 @@ public class UnionSystemController
 	public int GetTargetStationIndex() {
 		return targetStationIndex;
 	}
-	public UnionSystemController() { /*@B 0x60013D8*/ throw null; }
+	public UnionSystemController() {
+		// @017de090 — the shipped ctor creates the window a second time after the initialiser
+		unionMsgSystemWindow = new global::UnionMsgSystemWindow();
+	}
 	public void Clear() {
 		if (unionMsgSystemWindow != null && unionMsgSystemWindow.IsOpen())
 			unionMsgSystemWindow.CloseWindow();
@@ -385,6 +388,12 @@ public class UnionSystemController
 		public global::OpcState.OnlineState state;
 		public int sexId;
 		public bool isRecruiment;
-		public CommunicationTargetData(int index, global::OpcState.OnlineState opcState, int sexID, bool isRec) { /*@B 0x60097CB*/ throw null; }
+		public CommunicationTargetData(int index, global::OpcState.OnlineState opcState, int sexID, bool isRec) {
+			// @017de2e0
+			stationIndex = index;
+			state = opcState;
+			sexId = sexID;
+			isRecruiment = isRec;
+		}
 	}
 }

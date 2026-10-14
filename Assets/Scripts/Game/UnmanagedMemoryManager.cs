@@ -5,7 +5,7 @@ using System.Text;
 using System;
 public class UnmanagedMemoryManager
 {
-	public static global::System.Collections.Generic.List<global::UnmanagedMemoryManager.AllocInfo> s_NeedFreeList;
+	public static global::System.Collections.Generic.List<global::UnmanagedMemoryManager.AllocInfo> s_NeedFreeList = new global::System.Collections.Generic.List<global::UnmanagedMemoryManager.AllocInfo>();
 	public static global::System.IntPtr Alloc(int size) {
 		// @017eb000: AllocHGlobal and the null test sit OUTSIDE the try (LSDA call-site table: only 017eb030..034 / 017eb04c..07c have the landing pads);
 		// the test's result is discarded (an erased [Conditional] body) — shipped.
@@ -232,11 +232,15 @@ public class UnmanagedMemoryManager
 		}
 	}
 	public UnmanagedMemoryManager() { }
-	static UnmanagedMemoryManager() { /*@B 0x6000528*/ throw null; }
+	static UnmanagedMemoryManager() { }
 	public class AllocInfo
 	{
 		public global::System.IntPtr ptr { get; private set; }
 		public int size { get; private set; }
-		public AllocInfo(global::System.IntPtr _ptr, int _size) { /*@B 0x6009519*/ throw null; }
+		public AllocInfo(global::System.IntPtr _ptr, int _size) {
+			// @017eb120
+			ptr = _ptr;
+			size = _size;
+		}
 	}
 }

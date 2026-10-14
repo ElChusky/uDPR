@@ -10,7 +10,11 @@ public class UnionStartPointCollision : global::EnterCollision
 		isExit = false;
 		isLandStartPoint = false;
 	}
-	public void CloseMessage() { /*@B 0x6001335*/ throw null; }
+	public void CloseMessage() {
+		// @019e7660
+		if (_messageWindow != null)
+			_messageWindow.CloseWindow();
+	}
 	protected override void OnUpdate(float deltaTime) {
 		if (MsgWindowManager.IsOpen || !IsInCircleUnion() || !isExit || isEnter)
 			return;
@@ -70,6 +74,25 @@ public class UnionStartPointCollision : global::EnterCollision
 		param.onFinishedShowAllMessage = OpenContextMenu;
 		_messageWindow = MsgWindowManager.OpenMsg(param);
 	}
-	private void OpenContextMenu() { /*@B 0x6001339*/ throw null; }
+	private void OpenContextMenu() {
+		// @019ee3f0
+		MsgWindowManager.OpenYesNoMenu(selectIndex =>
+		{
+			// <OpenContextMenu>b__8_0 @019ee4a0 — UnionWork.SetIsGaming inlined (static +0x3c store)
+			if (selectIndex != 0)
+			{
+				PlayerWork.isPlayerInputActive = true;
+				_messageWindow.CloseWindow();
+				UnionWork.SetIsGaming(true);
+				isEnter = false;
+				isExit = false;
+				return;
+			}
+
+			PlayerWork.isPlayerInputActive = true;
+			_OnEnterCallBack?.Invoke();
+			_messageWindow.CloseWindow();
+		}, (global::Dpr.UI.ContextMenuWindow.CursorType)1, true, true, null, 1570109472u);
+	}
 	public UnionStartPointCollision() { }
 }

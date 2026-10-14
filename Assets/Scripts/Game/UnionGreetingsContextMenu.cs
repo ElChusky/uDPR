@@ -40,6 +40,6 @@ public class UnionGreetingsContextMenu : global::UnionContextMenu
 	public int GetTagIndex() {
 		return TAG_INDEX;
 	}
-	public UnionGreetingsContextMenu() { /*@B 0x60010DE*/ throw null; }
+	public UnionGreetingsContextMenu() { }
 	static UnionGreetingsContextMenu() { }
 }

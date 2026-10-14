@@ -2,7 +2,7 @@
 public class UnionHostEmoticonController : global::UnityEngine.MonoBehaviour
 {
 	[global::UnityEngine.SerializeField]
-	private int updateFrame;
+	private int updateFrame = 2;
 	public int GetUpdateFrame() { return this.updateFrame; }
-	public UnionHostEmoticonController() { /*@B 0x60012E2*/ throw null; }
+	public UnionHostEmoticonController() { }
 }

@@ -4,13 +4,19 @@ using Dpr.MsgWindow;
 using INL1;
 public class UnionBaseMsgWindow
 {
-	protected global::System.Collections.Generic.List<global::Dpr.MsgWindow.MsgWindowParam> Messages;
-	protected global::System.Collections.Generic.Dictionary<int, global::Dpr.MsgWindow.MsgWindowParam> DefMessages;
+	protected global::System.Collections.Generic.List<global::Dpr.MsgWindow.MsgWindowParam> Messages = new global::System.Collections.Generic.List<global::Dpr.MsgWindow.MsgWindowParam>();
+	protected global::System.Collections.Generic.Dictionary<int, global::Dpr.MsgWindow.MsgWindowParam> DefMessages = new global::System.Collections.Generic.Dictionary<int, global::Dpr.MsgWindow.MsgWindowParam>();
 	protected global::Dpr.MsgWindow.MsgWindow _messageWindow;
 	protected int nowMessageNo;
 	protected global::Dpr.MsgWindow.MsgWindowParam openDefMessage;
 	public int sexId;
-	protected bool isMessageFinished { get { /*@B 0x600148F*/ throw null; } }
+	protected bool isMessageFinished { get {
+			// @01b1db90
+			if (_messageWindow == null)
+				return true;
+
+			return _messageWindow.MsgState == global::Dpr.MsgWindow.MsgWindowDataModel.MsgWindowState.FinishedShowMessage;
+		} }
 	protected global::Dpr.MsgWindow.MsgWindowParam nowMSG { get {
 			// @01b1dc30
 			if (nowMessageNo < Messages.Count)
@@ -18,7 +24,13 @@ public class UnionBaseMsgWindow
 
 			return null;
 		} }
-	protected bool isEnableInput { get { /*@B 0x6001491*/ throw null; } }
+	protected bool isEnableInput { get {
+			// @01b1dcb0 — nowMSG inlined twice
+			if (nowMSG != null && !nowMSG.inputEnabled)
+				return false;
+
+			return isMessageFinished;
+		} }
 	public virtual void Init() {
 		// @01b1de20 — empty in the binary
 	}
@@ -127,7 +139,7 @@ public class UnionBaseMsgWindow
 
 		return string.Empty;
 	}
-	public UnionBaseMsgWindow() { /*@B 0x60014A2*/ throw null; }
+	public UnionBaseMsgWindow() { }
 	public enum TagIndexType
 	{
 		OTHER_NICKNAME_TAG_INDEX = 0,

@@ -9,26 +9,26 @@ using System;
 using UnityEngine;
 public static class UnionWork
 {
-	public static byte COMMUNITY_MAX_PLAYER_NUM;
-	public static byte GLOBAL_MAX_PLAYER_NUM;
-	public static byte COLISEUM_MAX_PLAYER_NUM_NOT_MULTI;
-	public static byte COLISEUM_MAX_PLAYER_NUM_MULTI;
-	public static global::UnityEngine.Vector3 startPos;
-	public static global::UnityEngine.Vector3 startPosGlobal;
-	public static global::UnityEngine.Vector3 startPosColiseum;
+	public static byte COMMUNITY_MAX_PLAYER_NUM = 8;
+	public static byte GLOBAL_MAX_PLAYER_NUM = 16;
+	public static byte COLISEUM_MAX_PLAYER_NUM_NOT_MULTI = 2;
+	public static byte COLISEUM_MAX_PLAYER_NUM_MULTI = 4;
+	public static global::UnityEngine.Vector3 startPos = new global::UnityEngine.Vector3(-7f, 0f, 10.5f);
+	public static global::UnityEngine.Vector3 startPosGlobal = new global::UnityEngine.Vector3(-14.5f, 0f, 19.5f);
+	public static global::UnityEngine.Vector3 startPosColiseum = new global::UnityEngine.Vector3(-8f, 0f, 10f);
 	public static global::UnityEngine.Vector3 fallStartPos = new Vector3(-7.0f, 10.0f, 10.0f);
 	public const int PENARTY_COUNTER = 30;
 	public const float GURUGURU_HEIGHT_UP = 10f;
 	public const int DEFAULT_LOCATOR_INDEX = 1;
-	public static global::UnityEngine.Vector2Int RETURN_DEFAULT_GRID_POSITION;
-	public static bool isGaming;
-	public static int tvRecodeTopicCount;
+	public static global::UnityEngine.Vector2Int RETURN_DEFAULT_GRID_POSITION = new global::UnityEngine.Vector2Int(7, 6);
+	public static bool isGaming = false;
+	public static int tvRecodeTopicCount = 5;
 	public const int matchMemberMax = 5;
 	public static int hostIndex;
-	public static global::Dpr.NetworkUtils.BattleModeID battleMode;
+	public static global::Dpr.NetworkUtils.BattleModeID battleMode = global::Dpr.NetworkUtils.BattleModeID.Single;
 	public static global::OpcState.OnlineState targetOpcState;
 	private static global::UnionWork.BoxState boxState;
-	private static bool isBoxError;
+	private static bool isBoxError = false;
 	public static global::ZoneID returnZoneID;
 	public static global::UnityEngine.Vector3 position;
 	public static global::UnityEngine.Vector2Int returnGridPos;
@@ -38,11 +38,11 @@ public static class UnionWork
 	public static global::UnionWork.CommunicationState communicationState;
 	private static bool isRecruiment;
 	private static bool isTalking;
-	private static bool isMatchWait;
+	private static bool isMatchWait = false;
 	public static int nowTargetStationIndex;
 	public static int nowTargetCassetVersion;
 	public const float MaxPenaltyTime = 1800f;
-	private static float PenaltyTime;
+	private static float PenaltyTime = 0f;
 	public static global::FieldPlayerEntity player { get { return EntityManager.activeFieldPlayer; } }
 	public static void SetBoxState(global::UnionWork.BoxState state) {
         boxState = state;
@@ -552,7 +552,7 @@ public static class UnionWork
 	public static float GetPenaltyTime() {
         return PenaltyTime;
     }
-	static UnionWork() { /*@B 0x6001451*/ throw null; }
+	static UnionWork() { }
 	public enum LeaveState
 	{
 		LEAVE = 0,

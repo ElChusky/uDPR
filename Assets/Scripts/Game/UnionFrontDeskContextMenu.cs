@@ -3,9 +3,9 @@ using Dpr.UI;
 using System.Collections.Generic;
 public class UnionFrontDeskContextMenu
 {
-	protected static readonly global::UnityEngine.Vector2 CONTEXT_BATTLE_MENU_POSITION;
+	protected static readonly global::UnityEngine.Vector2 CONTEXT_BATTLE_MENU_POSITION = new global::UnityEngine.Vector2(680f, 280f);
 	private global::Dpr.UI.ContextMenuWindow contextMenuWindow;
-	private global::System.Collections.Generic.List<string> messgaeList;
+	private global::System.Collections.Generic.List<string> messgaeList = new global::System.Collections.Generic.List<string>();
 	public global::System.Action<int> _selectRequirementsMenu;
 	public global::System.Action<int> _selectDescriptionMenu;
 	public global::System.Action<int> _selectInternetModeMenu;
@@ -182,6 +182,6 @@ public class UnionFrontDeskContextMenu
 		}
 		contextMenuWindow.Close(null);
 	}
-	public UnionFrontDeskContextMenu() { /*@B 0x60010CF*/ throw null; }
-	static UnionFrontDeskContextMenu() { /*@B 0x60010D0*/ throw null; }
+	public UnionFrontDeskContextMenu() { }
+	static UnionFrontDeskContextMenu() { }
 }

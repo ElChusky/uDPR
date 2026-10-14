@@ -4,24 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 public class UnionContextMenu
 {
-	protected static readonly global::UnityEngine.Vector2 CONTEXT_RECRUITMENT_MENU_POSITION;
-	protected static readonly global::UnityEngine.Vector2 CONTEXT_BATTLE_MENU_POSITION;
-	protected static readonly global::UnityEngine.Vector2 CONTEXT_START_MENU_POSITION;
-	private static int UNION_MSG_INDEX;
+	protected static readonly global::UnityEngine.Vector2 CONTEXT_RECRUITMENT_MENU_POSITION = new global::UnityEngine.Vector2(720f, 260f);
+	protected static readonly global::UnityEngine.Vector2 CONTEXT_BATTLE_MENU_POSITION = new global::UnityEngine.Vector2(680f, 280f);
+	protected static readonly global::UnityEngine.Vector2 CONTEXT_START_MENU_POSITION = new global::UnityEngine.Vector2(680f, 280f);
+	private static int UNION_MSG_INDEX = 1;
 	public global::System.Action<int> _UnionMenuSelect;
 	public global::System.Action<int, int> _BattleRuleSelect;
 	public global::System.Action _Fade;
 	public global::System.Action _LeaveUnion;
 	public global::System.Action<global::OpcState.OnlineState, global::NetStateModel.StateModelType> _CreateStateModel;
 	protected string messageFileName;
-	protected global::System.Collections.Generic.List<string> _menuMessageList;
+	protected global::System.Collections.Generic.List<string> _menuMessageList = new global::System.Collections.Generic.List<string>();
 	protected global::Dpr.UI.ContextMenuWindow contextMenuWindow;
 	protected int transitionType;
 	private bool isContextOpen;
 	private global::ZoneID zoneID;
 	private global::UnityEngine.Vector3 returnPosition;
 	public global::UnionSystemController systemController { get; set; }
-	public UnionContextMenu() { /*@B 0x60012CF*/ throw null; }
+	public UnionContextMenu() { }
 	public void Clear() {
 		messageFileName = "";
 		_menuMessageList.Clear();
@@ -334,7 +334,7 @@ public class UnionContextMenu
 			PlayerWork.isPlayerInputActive = true;
 		}
 	}
-	static UnionContextMenu() { /*@B 0x60012E0*/ throw null; }
+	static UnionContextMenu() { }
 	public struct ContextMenuData
 	{
 		public string messageFileName;

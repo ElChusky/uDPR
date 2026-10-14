@@ -50,6 +50,8 @@ public class UnionBallDecoContextMenu : global::UnionContextMenu
 		// @01b1d6b0
 		return TAG_INDEX;
 	}
-	public UnionBallDecoContextMenu() { /*@B 0x60010B6*/ throw null; }
+	public UnionBallDecoContextMenu() {
+		// @01b1d720 — base UnionContextMenu ctor inlined (its _menuMessageList initialiser)
+	}
 	static UnionBallDecoContextMenu() { }
 }
