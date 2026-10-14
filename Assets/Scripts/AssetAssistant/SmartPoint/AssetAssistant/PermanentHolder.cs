@@ -5,8 +5,8 @@ namespace SmartPoint.AssetAssistant
 	{
 		private static global::SmartPoint.AssetAssistant.PermanentHolder _instance;
 		public global::UnityEngine.Object[] _objects;
-		public static global::UnityEngine.Object[] objects { get { /*@B AssetAssistant:0x600012C*/ throw null; } set { /*@B AssetAssistant:0x600012D*/ throw null; } }
-		private void Awake() { /*@B AssetAssistant:0x600012B*/ throw null; }
+		public static global::UnityEngine.Object[] objects { get { return _instance._objects; } set { _instance._objects = value; } }
+		private void Awake() { _instance = this; }
 		public PermanentHolder() { }
 	}
 }

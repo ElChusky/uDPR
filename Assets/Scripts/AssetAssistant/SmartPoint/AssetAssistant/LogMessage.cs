@@ -4,14 +4,22 @@ namespace SmartPoint.AssetAssistant
 	public class LogMessage
 	{
 		public const int MaxLogCount = 256;
-		public static int lastID;
-		public static int nextID;
+		public static int lastID = -1;
+		public static int nextID = 0;
 		public int id;
 		public string condition;
 		public string stackTrace;
 		public global::UnityEngine.LogType type;
-		public LogMessage(int id) { /*@B AssetAssistant:0x6000182*/ throw null; }
-		public void AdvanceAndSet(string condition, string stackTrace, global::UnityEngine.LogType type) { /*@B AssetAssistant:0x6000183*/ throw null; }
-		static LogMessage() { /*@B AssetAssistant:0x6000184*/ throw null; }
+		public LogMessage(int id) {
+			this.id = id;
+		}
+		public void AdvanceAndSet(string condition, string stackTrace, global::UnityEngine.LogType type) {
+			lastID = nextID++;
+			nextID %= MaxLogCount;
+			this.condition = condition;
+			this.stackTrace = stackTrace;
+			this.type = type;
+		}
+		static LogMessage() { }
 	}
 }

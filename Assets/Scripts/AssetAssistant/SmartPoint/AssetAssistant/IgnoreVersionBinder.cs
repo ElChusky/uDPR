@@ -3,7 +3,11 @@ namespace SmartPoint.AssetAssistant
 {
 	public class IgnoreVersionBinder : global::System.Runtime.Serialization.SerializationBinder
 	{
-		public override global::System.Type BindToType(string assemblyName, string typeName) { /*@B AssetAssistant:0x6000117*/ throw null; }
+		public override global::System.Type BindToType(string assemblyName, string typeName) {
+			// One call: il2cpp expands Type.GetType(string, bool) into il2cpp_codegen_get_type (try the name qualified with the
+			// calling assembly "AssetAssistant", then the plain name) - that pair is the compiler's, not two source calls.
+			return global::System.Type.GetType(typeName, false);
+		}
 		public IgnoreVersionBinder() { }
 	}
 }

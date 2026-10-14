@@ -8,6 +8,9 @@ namespace SmartPoint.AssetAssistant
 		public string assetBundleName;
 		[global::UnityEngine.SerializeField]
 		public bool loadAllAssets;
-		public PreloadRequest(string assetBundleName, bool loadAllAssets) { /*@B AssetAssistant:0x60001C1*/ throw null; }
+		public PreloadRequest(string assetBundleName, bool loadAllAssets) {
+			this.assetBundleName = assetBundleName;
+			this.loadAllAssets = loadAllAssets;
+		}
 	}
 }

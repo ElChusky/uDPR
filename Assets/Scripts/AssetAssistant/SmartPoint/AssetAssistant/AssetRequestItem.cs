@@ -3,8 +3,14 @@ namespace SmartPoint.AssetAssistant
 {
 	public class AssetRequestItem : global::SmartPoint.AssetAssistant.IAssetRequestItem
 	{
-		public global::UnityEngine.Object asset { get { /*@B AssetAssistant:0x60000EF*/ throw null; } }
-		public bool isComplete { get { /*@B AssetAssistant:0x60000F0*/ throw null; } }
+		public global::UnityEngine.Object asset { get {
+			if (resourceRequest is global::UnityEngine.AssetBundleRequest)
+				return ((global::UnityEngine.AssetBundleRequest)resourceRequest).asset;
+			if (resourceRequest is global::UnityEngine.ResourceRequest)
+				return ((global::UnityEngine.ResourceRequest)resourceRequest).asset;
+			return null;
+		} }
+		public bool isComplete { get { return status == global::SmartPoint.AssetAssistant.RequestStatus.Complete; } }
 		public global::SmartPoint.AssetAssistant.RequestStatus status { get; set; }
 		public global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest manifest { get; set; }
 		public string uri { get; set; }
@@ -12,6 +18,11 @@ namespace SmartPoint.AssetAssistant
 		public global::UnityEngine.AsyncOperation resourceRequest { get; set; }
 		public global::SmartPoint.AssetAssistant.RequestEventCallback callback { get; set; }
 		public string error { get; set; }
-		public AssetRequestItem(global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest _manifest, string _assetName) { /*@B AssetAssistant:0x60000EE*/ throw null; }
+		public AssetRequestItem(global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest _manifest, string _assetName) {
+			uri = _assetName;
+			manifest = _manifest;
+			assetBundleName = null;
+			status = global::SmartPoint.AssetAssistant.RequestStatus.ResolveDependencies;
+		}
 	}
 }

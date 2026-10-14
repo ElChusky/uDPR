@@ -11,9 +11,25 @@ namespace SmartPoint.AssetAssistant
 		public long totalSize { get; set; }
 		public global::SmartPoint.AssetAssistant.RequestEventCallback callback { get; set; }
 		public string error { get; set; }
-		public bool isComplete { get { /*@B AssetAssistant:0x60000D0*/ throw null; } }
-		public float progress { get { /*@B AssetAssistant:0x60000D1*/ throw null; } }
-		public InstallRequestItem(global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest _cacheManifest, string _uri) { /*@B AssetAssistant:0x60000BF*/ throw null; }
+		public bool isComplete { get { return status == global::SmartPoint.AssetAssistant.RequestStatus.Complete; } }
+		public float progress { get {
+			if (status == global::SmartPoint.AssetAssistant.RequestStatus.Complete)
+				return 1f;
+			global::SmartPoint.AssetAssistant.InstallRequestItem.InstallItem[] array = items;
+			long size = installSize;
+			for (int i = 0; i < array.Length; i++)
+			{
+				global::SmartPoint.AssetAssistant.InstallRequestItem.InstallItem item = array[i];
+				if (item.webRequest != null && !item.webRequest.isDone)
+					size += global::System.Math.Max((long)item.webRequest.downloadedBytes, 0L);
+			}
+			return (float)size / (float)totalSize;
+		} }
+		public InstallRequestItem(global::SmartPoint.AssetAssistant.AssetBundleDownloadManifest _cacheManifest, string _uri) {
+			manifest = _cacheManifest;
+			uri = _uri;
+			status = global::SmartPoint.AssetAssistant.RequestStatus.RequestInstallation;
+		}
 		public class InstallItem
 		{
 			public global::SmartPoint.AssetAssistant.AssetBundleRecord record;
