@@ -3,10 +3,17 @@ namespace Dpr.DigFossil.Dbg
 {
 	public class DebugDigMenuInput
 	{
-		private global::GameController.LogicalInput localInput;
-		public void Initialize() { /*@B 0x6003804*/ throw null; }
-		public void OnFinalize() { /*@B 0x6003805*/ throw null; }
-		private void AssignInputGoContestScene() { /*@B 0x6003806*/ throw null; }
+		private global::GameController.LogicalInput localInput = new global::GameController.LogicalInput();
+		public void Initialize() {
+			AssignInputGoContestScene();
+			global::GameController.Subscribe(localInput);
+		}
+		public void OnFinalize() {
+			global::GameController.Remove(localInput);
+		}
+		private void AssignInputGoContestScene() {
+			localInput.Assign((int)KeyAssignId.GoDigFossilScene, 0x800);
+		}
 		public bool IsInputOnKeywaitButtonPush() {
 			// IsButtonPush inlined (@0197e8a0: push & 1)
 			return IsButtonPush(KeyAssignValue.GoDigFossilScene);
@@ -15,7 +22,7 @@ namespace Dpr.DigFossil.Dbg
 			// bics wzr, w1, push ; cset eq (@0197e8b0)
 			return (localInput.push & assignValue) == assignValue;
 		}
-		public DebugDigMenuInput() { /*@B 0x6003809*/ throw null; }
+		public DebugDigMenuInput() { }
 		private enum KeyAssignId
 		{
 			GoDigFossilScene = 0,
