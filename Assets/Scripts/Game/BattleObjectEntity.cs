@@ -84,7 +84,7 @@ public abstract class BattleObjectEntity : global::BaseEntity
 	{
 		public const global::BattleObjectEntity.CharaAutomaticBlinkProcess.EyeType EYE_TYPE_NEUTRAL = (global::BattleObjectEntity.CharaAutomaticBlinkProcess.EyeType)(0);
 		public const float BLINKING_TIME_MAX = 2f;
-		private static readonly global::BattleObjectEntity.CharaAutomaticBlinkProcess.EyeType[] EYE_BLINK_TABLE = new EyeType[] { EyeType.HalfClosed, EyeType.Closed, EyeType.HalfClosed, EyeType.Normal }; // TO CHECK: InitializeArray blob (16 bytes) lives in global-metadata, not readable here - values guessed
+		private static readonly global::BattleObjectEntity.CharaAutomaticBlinkProcess.EyeType[] EYE_BLINK_TABLE = new EyeType[] { EyeType.HalfClosed, EyeType.Closed, EyeType.HalfClosed, EyeType.Normal }; // InitializeArray blob: global-metadata.dat @0x666640 = int32 {1, 2, 1, 0} (tools/clean/blob.py)
 		[global::UnityEngine.SerializeField]
 		private global::BattleObjectEntity.CharaAutomaticBlinkProcess.BlinkType _blinkType = BlinkType.Unknown;
 		[global::UnityEngine.SerializeField]
