@@ -2,23 +2,42 @@
 using Dpr.EvScript;
 public static class FlagWork
 {
-	public static bool GetFlag(int flagNo) { /*@B 0x6000C49*/ throw null; }
-	public static bool GetFlag(global::Dpr.EvScript.EvWork.FLAG_INDEX flagNo) { /*@B 0x6000C4A*/ throw null; }
-	public static void SetFlag(int flagNo, bool value) { /*@B 0x6000C4B*/ throw null; }
-	public static void SetFlag(global::Dpr.EvScript.EvWork.FLAG_INDEX flagNo, bool value) { /*@B 0x6000C4C*/ throw null; }
-	public static void ResetFlag(int flagNo) { /*@B 0x6000C4D*/ throw null; }
-	public static void ResetFlag(global::Dpr.EvScript.EvWork.FLAG_INDEX flagNo) { /*@B 0x6000C4E*/ throw null; }
-	public static bool GetVanishFlag(int flagNo) { /*@B 0x6000C4F*/ throw null; }
-	public static void SetVanishFlag(int flagNo, bool value) { /*@B 0x6000C50*/ throw null; }
-	public static void ResetVanishFlag(int flagNo) { /*@B 0x6000C51*/ throw null; }
-	public static bool GetSysFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX flagNo) { /*@B 0x6000C52*/ throw null; }
-	public static void SetSysFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX flagNo, bool value) { /*@B 0x6000C53*/ throw null; }
-	public static void ResetSysFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX flagNo) { /*@B 0x6000C54*/ throw null; }
-	public static int GetWork(int workNo) { /*@B 0x6000C55*/ throw null; }
-	public static int GetWork(global::Dpr.EvScript.EvWork.WORK_INDEX workNo) { /*@B 0x6000C56*/ throw null; }
-	public static void SetWork(int workNo, int value) { /*@B 0x6000C57*/ throw null; }
-	public static void SetWork(global::Dpr.EvScript.EvWork.WORK_INDEX workNo, int value) { /*@B 0x6000C58*/ throw null; }
-	public static void ResetWork(int workNo) { /*@B 0x6000C59*/ throw null; }
+	public static bool GetFlag(int flagNo) { return PlayerWork.GetBool((EvWork.FLAG_INDEX)flagNo); }
+	public static bool GetFlag(global::Dpr.EvScript.EvWork.FLAG_INDEX flagNo) { return PlayerWork.GetBool(flagNo); }
+	public static void SetFlag(int flagNo, bool value) { PlayerWork.SetBool((EvWork.FLAG_INDEX)flagNo, value); }
+	public static void SetFlag(global::Dpr.EvScript.EvWork.FLAG_INDEX flagNo, bool value) { PlayerWork.SetBool(flagNo, value); }
+	public static void ResetFlag(int flagNo) { PlayerWork.SetBool((EvWork.FLAG_INDEX)flagNo, false); }
+	public static void ResetFlag(global::Dpr.EvScript.EvWork.FLAG_INDEX flagNo) { PlayerWork.SetBool(flagNo, false); }
+	public static bool GetVanishFlag(int flagNo) {
+        int index = flagNo + 314;
+        if (index < 603)
+        {
+            return PlayerWork.GetBool((EvWork.FLAG_INDEX)index);
+        }
+        return false;
+    }
+	public static void SetVanishFlag(int flagNo, bool value) {
+        int index = flagNo + 314;
+        if (index < 603)
+        {
+            PlayerWork.SetBool((EvWork.FLAG_INDEX)index, value);
+        }
+    }
+	public static void ResetVanishFlag(int flagNo) {
+        int index = flagNo + 314;
+        if (index < 603)
+        {
+            PlayerWork.SetBool((EvWork.FLAG_INDEX)index, false);
+        }
+    }
+	public static bool GetSysFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX flagNo) { return PlayerWork.GetSytemFlag(flagNo); }
+	public static void SetSysFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX flagNo, bool value) { PlayerWork.SetSytemFlag(flagNo, value); }
+	public static void ResetSysFlag(global::Dpr.EvScript.EvWork.SYSFLAG_INDEX flagNo) { PlayerWork.SetSytemFlag(flagNo, false); }
+	public static int GetWork(int workNo) { return PlayerWork.GetInt((EvWork.WORK_INDEX)workNo); }
+	public static int GetWork(global::Dpr.EvScript.EvWork.WORK_INDEX workNo) { return PlayerWork.GetInt(workNo); }
+	public static void SetWork(int workNo, int value) { PlayerWork.SetInt((EvWork.WORK_INDEX)workNo, value); }
+	public static void SetWork(global::Dpr.EvScript.EvWork.WORK_INDEX workNo, int value) { PlayerWork.SetInt(workNo, value); }
+	public static void ResetWork(int workNo) { PlayerWork.SetInt((EvWork.WORK_INDEX)workNo, 0); }
 	public static float GetFloatWork(int workNo) {
         // @02ccae80: `bl PlayerWork.GetInt ; fmov s0, w0` — the work word's BITS are returned as a float (no scvtf);
         // The base code converted the int value.

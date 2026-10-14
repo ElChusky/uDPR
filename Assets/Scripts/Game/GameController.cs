@@ -7,28 +7,107 @@ public class GameController
 	public static global::UnityEngine.Vector2 analogStickL;
 	public static global::UnityEngine.Vector2 analogStickR;
 	public static global::UnityEngine.Vector2 digitalPad;
-	public static int on;
-	public static int push;
-	public static int release;
-	public static int accel;
-	public static long[] times;
-	public static int repeat;
-	private static long start;
-	private static long interval;
-	private static long limit_intarval;
-	private static long required_time;
-	private static long prevTicks;
-	private static global::System.Collections.Generic.HashSet<global::GameController.LogicalInput> logicalInputs;
-	private static readonly global::nn.hid.NpadId[] npadIds;
+	public static int on = 0;
+	public static int push = 0;
+	public static int release = 0;
+	public static int accel = 0;
+	public static long[] times = new long[28];
+	public static int repeat = 0;
+	private static long start = 5000000L;
+	private static long interval = 1250000L;
+	private static long limit_intarval = 250000L;
+	private static long required_time = 10000000L;
+	private static long prevTicks = 0L;
+	private static global::System.Collections.Generic.HashSet<global::GameController.LogicalInput> logicalInputs = new global::System.Collections.Generic.HashSet<global::GameController.LogicalInput>();
+	private static readonly global::nn.hid.NpadId[] npadIds = new global::nn.hid.NpadId[] { global::nn.hid.NpadId.No1, global::nn.hid.NpadId.Handheld };
 	public static global::nn.hid.NpadState npadState = new NpadState();
-	public static global::nn.hid.NpadId npadId;
-	public static global::nn.hid.NpadStyle npadStyle;
-	private static int[] _analogStickLButtonMasks;
-	private static int[] _analogStickRButtonMasks;
+	public static global::nn.hid.NpadId npadId = global::nn.hid.NpadId.Invalid;
+	public static global::nn.hid.NpadStyle npadStyle = global::nn.hid.NpadStyle.Invalid;
+	private static int[] _analogStickLButtonMasks = new int[] { 131072, 393216, 262144, 786432, 524288, 589824, 65536, 196608 };
+	private static int[] _analogStickRButtonMasks = new int[] { 2097152, 6291456, 4194304, 12582912, 8388608, 9437184, 1048576, 3145728 };
 	[global::UnityEngine.RuntimeInitializeOnLoadMethodAttribute((global::UnityEngine.RuntimeInitializeLoadType)(1))]
-	private static void OnApplicationPlaying() { /*@B 0x600083C*/ throw null; }
-	private static void Shutdown() { /*@B 0x600083D*/ throw null; }
-	private static void Update(float deltaTime) { /*@B 0x600083E*/ throw null; }
+	private static void OnApplicationPlaying() {
+        Npad.Initialize();
+        Npad.SetSupportedIdType(npadIds);
+        Npad.SetSupportedStyleSet(NpadStyle.FullKey | NpadStyle.Handheld | NpadStyle.JoyDual);
+        global::SmartPoint.AssetAssistant.Sequencer.SubscribeUpdate(-10000, Update);
+        global::SmartPoint.AssetAssistant.Sequencer.onDestroy += Shutdown;
+    }
+	private static void Shutdown() {
+        global::SmartPoint.AssetAssistant.Sequencer.UnsubscribeUpdate(Update);
+        logicalInputs.Clear();
+    }
+	private static void Update(float deltaTime) {
+        int mask = 0;
+        if (UpdateNpadState())
+        {
+            analogStickL = CalcNpadAnalogValue(npadState.analogStickL, 0.2f);
+            analogStickR = CalcNpadAnalogValue(npadState.analogStickR, 0.2f);
+            digitalPad.x = npadState.GetButton(NpadButton.Right) ? 1f : (npadState.GetButton(NpadButton.Left) ? -1f : 0f);
+            digitalPad.y = npadState.GetButton(NpadButton.Up) ? 1f : (npadState.GetButton(NpadButton.Down) ? -1f : 0f);
+            mask = (npadState.GetButton(NpadButton.ZR) ? ButtonMask.ZR : 0)
+                | (npadState.GetButton(NpadButton.ZL) ? ButtonMask.ZL : 0)
+                | (npadState.GetButton(NpadButton.Minus) ? ButtonMask.Minus : 0)
+                | (npadState.GetButton(NpadButton.Plus) ? ButtonMask.Plus : 0)
+                | (npadState.GetButton(NpadButton.L) ? ButtonMask.L : 0)
+                | (npadState.GetButton(NpadButton.R) ? ButtonMask.R : 0)
+                | (npadState.GetButton(NpadButton.A) ? ButtonMask.A : 0)
+                | (npadState.GetButton(NpadButton.B) ? ButtonMask.B : 0)
+                | (npadState.GetButton(NpadButton.X) ? ButtonMask.X : 0)
+                | (npadState.GetButton(NpadButton.Y) ? ButtonMask.Y : 0)
+                | (npadState.GetButton(NpadButton.StickL) ? ButtonMask.StickL : 0)
+                | (npadState.GetButton(NpadButton.StickR) ? ButtonMask.StickR : 0);
+        }
+        // digitalPad / sticks keep their last values when no pad updated (shipped behaviour)
+        mask |= digitalPad.x > 0.01f ? ButtonMask.Right : 0;
+        mask |= digitalPad.x < -0.01f ? ButtonMask.Left : 0;
+        mask |= digitalPad.y > 0.01f ? ButtonMask.Up : 0;
+        mask |= digitalPad.y < -0.01f ? ButtonMask.Down : 0;
+
+        int index = GetAnalogStickButtonIndex(analogStickL);
+        int stickL = index < 0 ? 0 : _analogStickLButtonMasks[index];
+        index = GetAnalogStickButtonIndex(analogStickR);
+        mask |= stickL | (index < 0 ? 0 : _analogStickRButtonMasks[index]);
+
+        push = mask & ~on;
+        release = on & ~mask;
+        on = mask;
+
+        long ticks = DateTime.Now.Ticks;
+        repeat = 0;
+        accel = 0;
+        for (int i = 0; i < ButtonIndex.Count; i++)
+        {
+            int bit = 1 << i;
+            if ((on & bit) == 0)
+            {
+                times[i] = 0;
+            }
+            else if (times[i] == 0)
+            {
+                times[i] = ticks;
+            }
+            else
+            {
+                long elapsed = ticks - times[i] - start;
+                if (elapsed >= 0)
+                {
+                    long prevElapsed = prevTicks - times[i] - start;
+                    repeat |= (elapsed / interval != prevElapsed / interval) ? bit : 0;
+                    double rate = Math.Min((double)prevElapsed / (double)required_time, 1.0);
+                    long accelInterval = (long)(rate * (double)(limit_intarval - interval) + (double)interval);
+                    accel |= (elapsed / accelInterval != prevElapsed / accelInterval) ? bit : 0;
+                }
+            }
+        }
+        repeat |= push;
+        accel |= push;
+        prevTicks = ticks;
+        foreach (LogicalInput logicalInput in logicalInputs)
+        {
+            logicalInput.Remap();
+        }
+    }
 	private static bool UpdateNpadState() {
         bool isUpdated = false;
         for (int i = 0; i < npadIds.Length; i++)
@@ -72,11 +151,21 @@ public class GameController
         value.y = Math.Abs(value.y) > dead ? value.y : 0.0f;
         return value;
     }
-	private static int GetAnalogStickButtonIndex(global::UnityEngine.Vector2 analogStick) { /*@B 0x6000841*/ throw null; }
-	public static void Subscribe(global::GameController.LogicalInput logicalInput) { /*@B 0x6000842*/ throw null; }
-	public static void Remove(global::GameController.LogicalInput logicalInput) { /*@B 0x6000843*/ throw null; }
+	private static int GetAnalogStickButtonIndex(global::UnityEngine.Vector2 analogStick) {
+        // b.mi: a NaN magnitude falls through to the angle path
+        if (analogStick.sqrMagnitude < 0.25f)
+            return -1;
+        float angle = Mathf.Atan2(-analogStick.x, -analogStick.y) * Mathf.Rad2Deg + 180f + 360f - 22.5f;
+        return (int)(Mathf.Repeat(angle, 360f) / 45f + 1f) % 8;
+    }
+	public static void Subscribe(global::GameController.LogicalInput logicalInput) {
+        logicalInputs.Add(logicalInput);
+    }
+	public static void Remove(global::GameController.LogicalInput logicalInput) {
+        logicalInputs.Remove(logicalInput);
+    }
 	public GameController() { }
-	static GameController() { /*@B 0x6000845*/ throw null; }
+	static GameController() { }
 	public class LogicalInput
 	{
 		public int on;
@@ -84,11 +173,53 @@ public class GameController
 		public int release;
 		public int repeat;
 		public int accel;
-		private global::System.ValueTuple<int, global::GameController.LogicalInput.Condition>[] maps;
-		public LogicalInput() { /*@B 0x6009560*/ throw null; }
-		public void Assign(int index, int mask, global::GameController.LogicalInput.Condition condition = (global::GameController.LogicalInput.Condition)(0)) { /*@B 0x6009561*/ throw null; }
-		public void Clear() { /*@B 0x6009562*/ throw null; }
-		internal void Remap() { /*@B 0x6009563*/ throw null; }
+		private global::System.ValueTuple<int, global::GameController.LogicalInput.Condition>[] maps = new global::System.ValueTuple<int, global::GameController.LogicalInput.Condition>[32];
+		public LogicalInput() {
+			for (int i = 0; i < 32; i++)
+			{
+				maps[i] = new global::System.ValueTuple<int, global::GameController.LogicalInput.Condition>(0, Condition.Any);
+			}
+		}
+		public void Assign(int index, int mask, global::GameController.LogicalInput.Condition condition = (global::GameController.LogicalInput.Condition)(0)) {
+			maps[index] = new global::System.ValueTuple<int, global::GameController.LogicalInput.Condition>(mask, condition);
+		}
+		public void Clear() {
+			for (int i = 0; i < 32; i++)
+			{
+				maps[i] = new global::System.ValueTuple<int, global::GameController.LogicalInput.Condition>(0, Condition.Any);
+			}
+		}
+		internal void Remap() {
+			on = 0;
+			push = 0;
+			accel = 0;
+			release = 0;
+			repeat = 0;
+			for (int i = 0; i < 32; i++)
+			{
+				global::System.ValueTuple<int, global::GameController.LogicalInput.Condition> map = maps[i];
+				int mask = map.Item1;
+				if (mask == 0)
+					continue;
+				int bit = 1 << i;
+				if (map.Item2 == Condition.All)
+				{
+					on |= (GameController.on & mask) == mask ? bit : 0;
+					push |= (GameController.push & mask) == mask ? bit : 0;
+					release |= (GameController.release & mask) == mask ? bit : 0;
+					repeat |= (GameController.repeat & mask) == mask ? bit : 0;
+					accel |= (GameController.accel & mask) == mask ? bit : 0;
+				}
+				else
+				{
+					on |= (GameController.on & mask) != 0 ? bit : 0;
+					push |= (GameController.push & mask) != 0 ? bit : 0;
+					release |= (GameController.release & mask) != 0 ? bit : 0;
+					repeat |= (GameController.repeat & mask) != 0 ? bit : 0;
+					accel |= (GameController.accel & mask) != 0 ? bit : 0;
+				}
+			}
+		}
 		public enum Condition
 		{
 			Any = 0,

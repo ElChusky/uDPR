@@ -5,13 +5,50 @@ public class FieldTvRedGyaradosEntity : global::FieldEventEntity
 	protected static readonly int ID_SCROLLSPEED;
 	protected static readonly int ID_LINEALPHA;
 	private global::UnityEngine.Material MonitorMaterial;
-	protected override void Awake() { /*@B 0x600082A*/ throw null; }
-	protected override void OnEnable() { /*@B 0x600082B*/ throw null; }
-	protected override void OnDisable() { /*@B 0x600082C*/ throw null; }
-	protected override void OnDestroy() { /*@B 0x600082D*/ throw null; }
-	public static global::FieldTvRedGyaradosEntity GetTvRedGyarados() { /*@B 0x600082E*/ throw null; }
-	public void SetActive(bool active) { /*@B 0x600082F*/ throw null; }
-	private void SetMaterialProperty(int property, float value) { /*@B 0x6000830*/ throw null; }
+	protected override void Awake() {
+		base.Awake();
+		SetActive(false);
+	}
+	protected override void OnEnable() {
+		base.OnEnable();
+		if (MonitorMaterial == null)
+		{
+			MonitorMaterial = GetComponent<global::UnityEngine.MeshRenderer>().material;
+		}
+	}
+	protected override void OnDisable() {
+		base.OnDisable();
+	}
+	protected override void OnDestroy() {
+		base.OnDestroy();
+		global::UnityEngine.Object.Destroy(MonitorMaterial);
+		MonitorMaterial = null;
+	}
+	public static global::FieldTvRedGyaradosEntity GetTvRedGyarados() {
+		global::UnityEngine.GameObject go = global::UnityEngine.GameObject.Find("P_RO_001_Machine_01");
+		if (go != null)
+		{
+			return go.GetComponent<global::FieldTvRedGyaradosEntity>();
+		}
+		return null;
+	}
+	public void SetActive(bool active) {
+		if (MonitorMaterial == null)
+		{
+			return;
+		}
+		// SetMaterialProperty inlined three times
+		SetMaterialProperty(ID_BLINKCYCLE, active ? 1.5f : 0f);
+		SetMaterialProperty(ID_SCROLLSPEED, active ? 0.05f : 0f);
+		SetMaterialProperty(ID_LINEALPHA, active ? 0.04f : 0f);
+	}
+	private void SetMaterialProperty(int property, float value) {
+		MonitorMaterial.SetFloat(property, value);
+	}
 	public FieldTvRedGyaradosEntity() { }
-	static FieldTvRedGyaradosEntity() { /*@B 0x6000832*/ throw null; }
+	static FieldTvRedGyaradosEntity() {
+		ID_BLINKCYCLE = global::UnityEngine.Shader.PropertyToID("_BlinkCycle");
+		ID_SCROLLSPEED = global::UnityEngine.Shader.PropertyToID("_ScrollSpeed");
+		ID_LINEALPHA = global::UnityEngine.Shader.PropertyToID("_LineAlpha");
+	}
 }
