@@ -19,45 +19,45 @@ namespace Dpr.SubContents
 		public const int GAME_FPS = 30;
 		public const float GURUGURU_HEIGHT_UNION = 10f;
 		public const float GURUGURU_HEIGHT_OTHER = 20f;
-		private static readonly int[] RandMotions;
-		private static readonly int[] pikaRandomVoices;
-		private static readonly int[] evRandomVoices;
-		private static readonly int[] pikaRankVoices;
-		private static readonly int[] evRankVoices;
-		private static readonly int[] pikaNoticeVoice;
-		private static readonly int[] evNoticeVoice;
-		private static readonly int[] FT_motionIndex;
-		private static readonly int[] Pffin_motionIndex;
-		private static readonly int[] pikaPoffinVoice;
-		private static readonly int[] evPoffinVoice;
-		private static readonly int[] pikaDrowseVoice;
-		private static readonly int[] evDrowseVoice;
-		public static readonly global::UnityEngine.Vector2Int[] directList;
-		private static readonly global::DIR[] dirs;
+		private static readonly int[] RandMotions = new int[] { 46, 47, 48, 49 };
+		private static readonly int[] pikaRandomVoices = new int[] { 19, 20, 22, 22 };
+		private static readonly int[] evRandomVoices = new int[] { 22, 22, 23, 23 };
+		private static readonly int[] pikaRankVoices = new int[] { 24, 23, 18, 17 };
+		private static readonly int[] evRankVoices = new int[] { 25, 24, 20, 19 };
+		private static readonly int[] pikaNoticeVoice = new int[] { 29, 27, 26 };
+		private static readonly int[] evNoticeVoice = new int[] { 32, 30, 28 };
+		private static readonly int[] FT_motionIndex = new int[] { 44, 41, 6, 7, 36, 9 };
+		private static readonly int[] Pffin_motionIndex = new int[] { 54, 44, 41, 32 };
+		private static readonly int[] pikaPoffinVoice = new int[] { 13, 14, 15, 16 };
+		private static readonly int[] evPoffinVoice = new int[] { 15, 16, 17, 18 };
+		private static readonly int[] pikaDrowseVoice = new int[] { 9, 10, 11 };
+		private static readonly int[] evDrowseVoice = new int[] { 9, 10, 11 };
+		public static readonly global::UnityEngine.Vector2Int[] directList = new global::UnityEngine.Vector2Int[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+		private static readonly global::DIR[] dirs = new global::DIR[] { global::DIR.DIR_DOWN, global::DIR.DIR_UP, global::DIR.DIR_RIGHT, global::DIR.DIR_LEFT };
 		private const int GROUP_NAME_LNGTH = 5;
 		private const int POKE_RARITY_VERY_RARE = 3;
 		private const int POKE_RARITY_LEGEND_RARE = 2;
 		private const int POKE_RARITY_SUB_LEGEND_RARE = 1;
-		public static readonly global::Pml.MonsNo[] very_rare_monsno;
-		public static readonly global::Pml.MonsNo[] legend_rare_monsno;
-		public static readonly global::Pml.MonsNo[] sub_legend_rare_monsno;
-		public static bool PushA { get { /*@B 0x60032C4*/ throw null; } }
-		public static bool PushB { get { /*@B 0x60032C5*/ throw null; } }
-		public static bool PushX { get { /*@B 0x60032C6*/ throw null; } }
-		public static bool PushY { get { /*@B 0x60032C7*/ throw null; } }
-		public static bool PushR { get { /*@B 0x60032C8*/ throw null; } }
-		public static bool PushL { get { /*@B 0x60032C9*/ throw null; } }
-		public static bool PushZL { get { /*@B 0x60032CA*/ throw null; } }
-		public static bool PushZR { get { /*@B 0x60032CB*/ throw null; } }
-		public static bool PushPulsMinus { get { /*@B 0x60032CC*/ throw null; } }
-		public static bool PushRStick { get { /*@B 0x60032CD*/ throw null; } }
-		public static bool PushAorB { get { /*@B 0x60032CE*/ throw null; } }
-		public static bool PressA { get { /*@B 0x60032CF*/ throw null; } }
-		public static bool PressB { get { /*@B 0x60032D0*/ throw null; } }
-		public static bool PressX { get { /*@B 0x60032D1*/ throw null; } }
-		public static bool PressY { get { /*@B 0x60032D2*/ throw null; } }
-		public static bool PressR { get { /*@B 0x60032D3*/ throw null; } }
-		public static bool PressL { get { /*@B 0x60032D4*/ throw null; } }
+		public static readonly global::Pml.MonsNo[] very_rare_monsno = new global::Pml.MonsNo[] { MonsNo.MYUU, MonsNo.SEREBHI, MonsNo.ZIRAATI, MonsNo.DEOKISISU, MonsNo.FIONE, MonsNo.MANAFI, MonsNo.DAAKURAI, MonsNo.SHEIMI, MonsNo.ARUSEUSU };
+		public static readonly global::Pml.MonsNo[] legend_rare_monsno = new global::Pml.MonsNo[] { MonsNo.MYUUTUU, MonsNo.RUGIA, MonsNo.HOUOU, MonsNo.KAIOOGA, MonsNo.GURAADON, MonsNo.REKKUUZA, MonsNo.DHIARUGA, MonsNo.PARUKIA, MonsNo.GIRATHINA };
+		public static readonly global::Pml.MonsNo[] sub_legend_rare_monsno = new global::Pml.MonsNo[] { MonsNo.HURIIZAA, MonsNo.SANDAA, MonsNo.FAIYAA, MonsNo.RAIKOU, MonsNo.ENTEI, MonsNo.SUIKUN, MonsNo.REZIROKKU, MonsNo.REZIAISU, MonsNo.REZISUTIRU, MonsNo.RATHIASU, MonsNo.RATHIOSU, MonsNo.YUKUSII, MonsNo.EMURITTO, MonsNo.AGUNOMU, MonsNo.HIIDORAN, MonsNo.REZIGIGASU, MonsNo.KURESERIA };
+		public static bool PushA { get { return (GameController.ButtonMask.A & GameController.push) != 0 || PushZL || PushZR; } }
+		public static bool PushB { get { return (GameController.ButtonMask.B & GameController.push) != 0; } }
+		public static bool PushX { get { return (GameController.ButtonMask.X & GameController.push) != 0; } }
+		public static bool PushY { get { return (GameController.ButtonMask.Y & GameController.push) != 0; } }
+		public static bool PushR { get { return (GameController.ButtonMask.R & GameController.push) != 0; } }
+		public static bool PushL { get { return (GameController.ButtonMask.L & GameController.push) != 0; } }
+		public static bool PushZL { get { return (GameController.ButtonMask.ZL & GameController.push) != 0; } }
+		public static bool PushZR { get { return (GameController.ButtonMask.ZR & GameController.push) != 0; } }
+		public static bool PushPulsMinus { get { return (GameController.ButtonMask.Plus & GameController.push) != 0 || (GameController.ButtonMask.Minus & GameController.push) != 0; } }
+		public static bool PushRStick { get { return (GameController.ButtonMask.StickR & GameController.push) != 0; } }
+		public static bool PushAorB { get { return PushA || PushB; } }
+		public static bool PressA { get { return (GameController.ButtonMask.A & GameController.on) != 0 || PressZL || PressZR; } }
+		public static bool PressB { get { return (GameController.ButtonMask.B & GameController.on) != 0; } }
+		public static bool PressX { get { return (GameController.ButtonMask.X & GameController.on) != 0; } }
+		public static bool PressY { get { return (GameController.ButtonMask.Y & GameController.on) != 0; } }
+		public static bool PressR { get { return (GameController.ButtonMask.R & GameController.on) != 0; } }
+		public static bool PressL { get { return (GameController.ButtonMask.L & GameController.on) != 0; } }
 		public static bool PressZR { get => (GameController.ButtonMask.ZR & GameController.on) != 0; }
 		public static bool PressZL { get => (GameController.ButtonMask.ZL & GameController.on) != 0; }
 		public static bool KeyLeft { get => (GameController.push & UIManager.StickLLeft) != 0; }
@@ -76,9 +76,22 @@ namespace Dpr.SubContents
             var loadParam = EffectManager.Instance.dbEffects.ContestEffectData[(int)id];
             yield return EffectManager.Instance.OpLoad(new EffectManager.LoadParam[] { loadParam }, (effectData, isAllLoaded) => OnLoad.Invoke(effectData));
         }
-		public static global::System.Collections.IEnumerator LoadAsset(string path, global::System.Action<global::UnityEngine.Object> OnLoad, bool isVariant = false, bool useAssetUnloader = true, int id = 0) { /*@B 0x60032DE*/ throw null; }
-		public static string GetPokemonAssetbundleName(string AssetBundleName) { /*@B 0x60032DF*/ throw null; }
-		public static string GetBattlePokemonAssetbundleName(string AssetBundleName) { /*@B 0x60032E0*/ throw null; }
+		public static global::System.Collections.IEnumerator LoadAsset(string path, global::System.Action<global::UnityEngine.Object> OnLoad, bool isVariant = false, bool useAssetUnloader = true, int id = 0) {
+			string[] variants = isVariant ? MessageHelper.GetLocalizeVariants() : null;
+			AssetManager.AppendAssetBundleRequest(path, true, null, variants);
+			FieldManager.abUnloader.AddPath(path, id, useAssetUnloader);
+			yield return AssetManager.DispatchRequests((eventType, name, asset) =>
+			{
+				if (eventType == RequestEventType.Activated)
+					OnLoad.Invoke(asset);
+			});
+		}
+		public static string GetPokemonAssetbundleName(string AssetBundleName) {
+			return "pokemons/field/" + AssetBundleName;
+		}
+		public static string GetBattlePokemonAssetbundleName(string AssetBundleName) {
+			return "pokemons/battle/" + AssetBundleName;
+		}
 		public static string GetAssetNamebyPath(string AssetBundlePath) {
             string[] names = AssetBundlePath.Split(new char[] { '/' });
             return names[names.Length - 1];
@@ -109,7 +122,14 @@ namespace Dpr.SubContents
                 window.ReplaceMessage(param);
             }
         }
-		public static global::Dpr.MsgWindow.MsgWindowParam CreateMsgWindowParam(string msgFileName, string labelName, bool inputClose = false, bool inputEnable = false) { /*@B 0x60032E5*/ throw null; }
+		public static global::Dpr.MsgWindow.MsgWindowParam CreateMsgWindowParam(string msgFileName, string labelName, bool inputClose = false, bool inputEnable = false) {
+			MsgWindowParam param = new MsgWindowParam();
+			param.useMsgFile = MessageManager.Instance.GetMsgFile(msgFileName);
+			param.labelName = labelName;
+			param.inputCloseEnabled = inputClose;
+			param.inputEnabled = inputEnable;
+			return param;
+		}
 		public static int GetUISortingOrderMax() {
             int count = UIManager.Instance.GetUIWindowCount();
             int max = 100;
@@ -121,7 +141,11 @@ namespace Dpr.SubContents
             }
             return max;
         }
-		public static int KinomiID_to_ItemID(int kinomiID) { /*@B 0x60032E7*/ throw null; }
+		public static int KinomiID_to_ItemID(int kinomiID) {
+			if (kinomiID == 686)
+				return 1307;
+			return kinomiID + 148;
+		}
 		public static global::System.Collections.IEnumerator ZukanTouroku(global::Pml.PokePara.PokemonParam p, global::Dpr.Demo.DemoSceneManager manager) {
             yield return ZukanTouroku(p, manager, ZukanWork.IsGet((uint)p.GetMonsNo()));
         }
@@ -303,7 +327,12 @@ namespace Dpr.SubContents
                 return 3;
             return friendship < 255 ? 4 : 5;
         }
-		public static void ArrayDestroy(object[] objects) { /*@B 0x6003301*/ throw null; }
+		public static void ArrayDestroy(object[] objects) {
+			if (objects == null)
+				return;
+			for (int i = 0; i < objects.Length; i++)
+				objects[i] = null;
+		}
 		public static float Vector2ToAngle(global::UnityEngine.Vector2 input, float offset) {
             float angle = Mathf.Atan2(input.x, input.y) * Mathf.Rad2Deg - offset;
             if (angle < 0f)
@@ -335,12 +364,38 @@ namespace Dpr.SubContents
 		public static bool IsAdjacent(global::UnityEngine.Vector2Int pos, global::UnityEngine.Vector2Int targetPos) {
             return Mathf.Abs(pos.x - targetPos.x) + Mathf.Abs(pos.y - targetPos.y) < 2;
         }
-		public static global::Dpr.SubContents.Utils.MoveTypeResult isEnterbleAttribute(global::UnityEngine.Vector3 pos, global::Ug.MoveType moveType, bool isFureai = false) { /*@B 0x6003309*/ throw null; }
-		public static global::Dpr.SubContents.Utils.MoveTypeResult isEnterbleAttribute(int code, int stop, global::Ug.MoveType moveType) { /*@B 0x600330A*/ throw null; }
+		public static global::Dpr.SubContents.Utils.MoveTypeResult isEnterbleAttribute(global::UnityEngine.Vector3 pos, global::Ug.MoveType moveType, bool isFureai = false) {
+			GetAttribute(pos, out int code, out int stop);
+			if (isFureai)
+			{
+				Vector2Int grid = FieldObjectEntity.PositionToGrid(pos);
+				if (Array.Exists(Dpr.FureaiHiroba.FureaiDataManager.DontEnterPoints, x => x == grid))
+					return MoveTypeResult.CantEnter;
+			}
+			return isEnterbleAttribute(code, stop, moveType);
+		}
+		public static global::Dpr.SubContents.Utils.MoveTypeResult isEnterbleAttribute(int code, int stop, global::Ug.MoveType moveType) {
+			if (stop == 128 && !AttributeID.MATR_IsJumpDown(code) && !AttributeID.MATR_IsJumpUp(code) &&
+				!AttributeID.MATR_IsJumpRight(code) && !AttributeID.MATR_IsJumpLeft(code))
+				return MoveTypeResult.CantEnter;
+			if (GameManager.GetAttributeTable(code).Water)
+			{
+				if (code == 115 || moveType == global::Ug.MoveType.Water)
+					return MoveTypeResult.OK;
+				return MoveTypeResult.CantMoveType;
+			}
+			if (moveType == global::Ug.MoveType.Water)
+				return MoveTypeResult.CantMoveType;
+			return MoveTypeResult.OK;
+		}
 		public static bool isNotExistsCollision(global::UnityEngine.Vector3 pos) {
             return !Physics.Raycast(new Ray(pos + Vector3.up * 10f, Vector3.down), out RaycastHit hitInfo, 20f);
         }
-		public static void GuruguruRisingStart() { /*@B 0x600330C*/ throw null; }
+		public static void GuruguruRisingStart() {
+			EvDataManager.Instanse._dummyPlayer.transform.position = EntityManager.activeFieldPlayer.transform.position;
+			Sequencer.update += PlayerGuruguru;
+			Sequencer.update += PlayerRising;
+		}
 		public static void GuruguruFallStart() {
             var player = EntityManager.activeFieldPlayer;
             Vector3 position = player.transform.position;
@@ -349,14 +404,143 @@ namespace Dpr.SubContents
             Sequencer.update += PlayerGuruguru;
             Sequencer.update += PlayerFall;
         }
-		public static global::System.Collections.IEnumerator PlayerGuruguruStop(float angle, float height, bool isRising, global::System.Action OnComplete) { /*@B 0x600330E*/ throw null; }
-		public static global::System.Collections.IEnumerator PlayerFallStop(float height, bool isRising, global::System.Action OnComplete) { /*@B 0x600330F*/ throw null; }
-		public static global::System.Collections.IEnumerator OtherPlayerRising(float height, global::FieldObjectEntity entity, global::System.Action OnComplete) { /*@B 0x6003310*/ throw null; }
-		public static void PlayerGuruguru(float deltaTime) { /*@B 0x6003311*/ throw null; }
-		public static void PlayerRising(float deltaTime) { /*@B 0x6003312*/ throw null; }
-		public static void PlayerFall(float deltaTime) { /*@B 0x6003313*/ throw null; }
-		public static float GetGuruGuruHeight(global::ZoneID zoneID) { /*@B 0x6003314*/ throw null; }
-		public static void PlayGuruguruSE(bool isRising) { /*@B 0x6003315*/ throw null; }
+		public static global::System.Collections.IEnumerator PlayerGuruguruStop(float angle, float height, bool isRising, global::System.Action OnComplete) {
+			FieldPlayerEntity player = EntityManager.activeFieldPlayer;
+			bool isTargetHeight = false;
+			while (!isTargetHeight)
+			{
+				if (CheckHeight())
+				{
+					isTargetHeight = true;
+					Sequencer.update -= PlayerRising;
+					Sequencer.update -= PlayerFall;
+					Sequencer.update -= EvDataManager.Instanse.PlayerRising;
+					Sequencer.update -= EvDataManager.Instanse.PlayerFall;
+				}
+				yield return null;
+			}
+			player.worldPosition = new Vector3(player.worldPosition.x, height, player.worldPosition.z);
+			angle += 360f;
+			float angleMin = angle - 20f;
+			bool isTargetAngle = false;
+			float angleMax = angle + 20f;
+			while (!isTargetAngle)
+			{
+				if (angleMin <= player.yawAngle && player.yawAngle <= angleMax)
+				{
+					isTargetAngle = true;
+					Sequencer.update -= PlayerGuruguru;
+				}
+				yield return null;
+			}
+			player.yawAngle = angle;
+			PlayerWork.isPlayerInputActive = true;
+			if (!isRising)
+				GameManager.fieldCamera.Target = player.transform;
+			OnComplete?.Invoke();
+
+			bool CheckHeight()
+			{
+				if (isRising)
+					return height <= player.worldPosition.y;
+				return player.worldPosition.y <= height;
+			}
+		}
+		public static global::System.Collections.IEnumerator PlayerFallStop(float height, bool isRising, global::System.Action OnComplete) {
+			FieldPlayerEntity player = EntityManager.activeFieldPlayer;
+			bool isTargetHeight = false;
+			bool playedJumpEnd = false;
+			while (!isTargetHeight)
+			{
+				if (!isRising && !playedJumpEnd)
+				{
+					if (player.worldPosition.y - height <= 0.5f)
+					{
+						player.PlaySquat();
+						playedJumpEnd = true;
+					}
+					else
+					{
+						player.PlayJumpLoop();
+					}
+				}
+				if (CheckHeight())
+				{
+					isTargetHeight = true;
+					Sequencer.update -= PlayerRising;
+					Sequencer.update -= PlayerFall;
+					Sequencer.update -= EvDataManager.Instanse.PlayerRising;
+					Sequencer.update -= EvDataManager.Instanse.PlayerFall;
+				}
+				yield return null;
+			}
+			if (!isRising)
+				yield return new WaitForSeconds(0.2f);
+			player.PlayIdle();
+			player.worldPosition = new Vector3(player.worldPosition.x, height, player.worldPosition.z);
+			player.isLanding = true;
+			PlayerWork.isPlayerInputActive = true;
+			if (!isRising)
+				GameManager.fieldCamera.Target = player.transform;
+			OnComplete?.Invoke();
+
+			bool CheckHeight()
+			{
+				if (isRising)
+				{
+					if (player.worldPosition.y > height)
+						player.worldPosition.y = height;
+					return height <= player.worldPosition.y;
+				}
+				if (player.worldPosition.y < height)
+					player.worldPosition.y = height;
+				return player.worldPosition.y <= height;
+			}
+		}
+		public static global::System.Collections.IEnumerator OtherPlayerRising(float height, global::FieldObjectEntity entity, global::System.Action OnComplete) {
+			entity.isLanding = false;
+			float speed = 10f;
+			while (!CheckHeight())
+			{
+				speed += 0.5f;
+				float elapsedTime = Sequencer.elapsedTime;
+				entity.worldPosition = new Vector3(entity.worldPosition.x, elapsedTime * speed + entity.worldPosition.y, entity.worldPosition.z);
+				entity.yawAngle = elapsedTime * 1050f + entity.yawAngle;
+				yield return null;
+			}
+			OnComplete?.Invoke();
+
+			bool CheckHeight()
+			{
+				return height <= entity.worldPosition.y;
+			}
+		}
+		public static void PlayerGuruguru(float deltaTime) {
+			var player = EntityManager.activeFieldPlayer;
+			player.yawAngle = deltaTime * 1050f + player.yawAngle;
+			player.GetAnimationPlayer().Play(0, 0f, 0f);
+			PlayerWork.isPlayerInputActive = false;
+		}
+		public static void PlayerRising(float deltaTime) {
+			GameManager.fieldCamera.Target = EvDataManager.Instanse._dummyPlayer.transform;
+			var player = EntityManager.activeFieldPlayer;
+			player.isLanding = false;
+			player.worldPosition = new Vector3(player.worldPosition.x, deltaTime * 8f + player.worldPosition.y, player.worldPosition.z);
+			PlayerWork.isPlayerInputActive = false;
+		}
+		public static void PlayerFall(float deltaTime) {
+			GameManager.fieldCamera.Target = EvDataManager.Instanse._dummyPlayer.transform;
+			var player = EntityManager.activeFieldPlayer;
+			player.worldPosition = new Vector3(player.worldPosition.x, player.worldPosition.y + deltaTime * -8f, player.worldPosition.z);
+			PlayerWork.isPlayerInputActive = false;
+		}
+		public static float GetGuruGuruHeight(global::ZoneID zoneID) {
+			return zoneID == ZoneID.UNION01 ? GURUGURU_HEIGHT_UNION : GURUGURU_HEIGHT_OTHER;
+		}
+		public static void PlayGuruguruSE(bool isRising) {
+			if (PlayerWork.zoneID == ZoneID.UNION01 || PlayerWork.zoneID == ZoneID.UNION02 || PlayerWork.zoneID == ZoneID.UNION03)
+				AudioManager.Instance.PlaySe(isRising ? AK.EVENTS.S_FI103 : AK.EVENTS.S_FI104, null);
+		}
 		public static global::System.Collections.IEnumerator CreateNPC(global::UnityEngine.Vector2Int grid, string assetPath, global::System.Action<global::FieldObjectEntity> OnLoad, int id = 0) {
             string name = GetAssetNamebyPath(assetPath);
             yield return LoadAsset(assetPath, asset =>
@@ -504,17 +688,32 @@ namespace Dpr.SubContents
             poketool.poke_memo.poketool_poke_memo.SetGetLevel(updateParam);
             return updateParam;
         }
-		static Utils() { /*@B 0x6003328*/ throw null; }
+		static Utils() { }
 		public class AssetUnloader
 		{
 			public const int ID_FUREAI = 1;
 			public const int ID_FIELD_TUREARUKI = 2;
 			public const int ID_DEMO = 0;
 			public const int ID_UG_COMMON = 4;
-			private global::System.Collections.Generic.List<global::System.ValueTuple<string, int, bool>> paths;
-			public void AddPath(string path, int id = 0, bool useAssetUnloader = true) { /*@B 0x6009F7E*/ throw null; }
-			public void Unload(int id = 0) { /*@B 0x6009F7F*/ throw null; }
-			public AssetUnloader() { /*@B 0x6009F80*/ throw null; }
+			private global::System.Collections.Generic.List<global::System.ValueTuple<string, int, bool>> paths = new global::System.Collections.Generic.List<global::System.ValueTuple<string, int, bool>>();
+			public void AddPath(string path, int id = 0, bool useAssetUnloader = true) {
+				if (!string.IsNullOrEmpty(path))
+					paths.Add((path, id, useAssetUnloader));
+			}
+			public void Unload(int id = 0) {
+				paths.ForEach(x =>
+				{
+					if (x.Item2 == id)
+					{
+						if (x.Item3)
+							new global::Dpr.AssetBundleUnloader { assetBundleName = x.Item1, isUnloadAllLoadedObjects = true }.Release();
+						else
+							AssetManager.UnloadAssetBundle(x.Item1);
+					}
+				});
+				paths.RemoveAll(x => x.Item2 == id);
+			}
+			public AssetUnloader() { }
 		}
 		public enum MoveTypeResult
 		{
