@@ -5,10 +5,10 @@ namespace Dpr.UI
 {
 	public class CardAnimationController : global::UnityEngine.MonoBehaviour
 	{
-		private readonly int AnimParamFromCardId;
-		private readonly int AnimParamToCardId;
-		private readonly int AnimParamFromCaseId;
-		private readonly int AnimParamToCaseId;
+		private readonly int AnimParamFromCardId = Animator.StringToHash("FromCardId");
+		private readonly int AnimParamToCardId = Animator.StringToHash("ToCardId");
+		private readonly int AnimParamFromCaseId = Animator.StringToHash("FromCaseId");
+		private readonly int AnimParamToCaseId = Animator.StringToHash("ToCaseId");
 		private global::System.Collections.Generic.List<global::UnityEngine.Animator> animators;
 		private global::UnityEngine.Animator mainAnimator;
 		private global::Dpr.UI.CardModelViewController cardModelViewController;
@@ -16,7 +16,7 @@ namespace Dpr.UI
 		public bool IsShowBadgeCase { get; private set; }
 		public bool IsCardFront { get; private set; }
 		public bool IsOpen { get; private set; }
-		public bool IsAnimation { get { /*@B 0x6004FF9*/ throw null; } }
+		public bool IsAnimation { get { return mainAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f; } }
 		public bool IsAnimationAll { get {
 				foreach (var animator in animators)
 				{
@@ -81,6 +81,6 @@ namespace Dpr.UI
 			if (toCase >= 0)
 				IsOpen = toCase == 1;
 		}
-		public CardAnimationController() { /*@B 0x6005006*/ throw null; }
+		public CardAnimationController() { }
 	}
 }

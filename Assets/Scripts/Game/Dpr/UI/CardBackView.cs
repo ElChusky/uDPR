@@ -34,7 +34,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.UIText fossilCountText;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIText statueCountText;
-		public bool IsShow { get { /*@B 0x6005007*/ throw null; } }
+		public bool IsShow { get { return gameObject.activeSelf; } }
 		public void Initialize() {
 			SetContestTexts(RecordWork.Get(DPData.RECORD_ID.RECID_CONTEST_STYLE_RANK), RecordWork.Get(DPData.RECORD_ID.RECID_CONTEST_BEATIFUL_RANK),
 				RecordWork.Get(DPData.RECORD_ID.RECID_CONTEST_CUTE_RANK), RecordWork.Get(DPData.RECORD_ID.RECID_CONTEST_CLEVER_RANK),

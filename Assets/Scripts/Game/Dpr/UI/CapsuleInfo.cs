@@ -10,14 +10,23 @@ namespace Dpr.UI
 		public global::Dpr.BallDeco.CapsuleData Data { get; private set; }
 		public global::Pml.PokePara.PokemonParam AttachPokemonParam { get; private set; }
 		public global::Pml.PokePara.PokemonParam PreviewPokemonParam { get; set; }
-		public bool Is3DEditMode { get { /*@B 0x600595B*/ throw null; } }
-		public bool IsAppliedTemplate { get { /*@B 0x600595C*/ throw null; } }
-		public bool IsAffixedSeal { get { /*@B 0x600595D*/ throw null; } }
-		public bool IsAffixSealMaxCount { get { /*@B 0x600595E*/ throw null; } }
+		public bool Is3DEditMode { get { return Data.Is3DEditMode; } }
+		public bool IsAppliedTemplate { get { return Data.IsAppliedTemplate; } }
+		public bool IsAffixedSeal { get { return Data.AffixSealCount != 0; } }
+		public bool IsAffixSealMaxCount { get { return Data.AffixSealCount == BallDecoWork.AffixSealMaxCount; } }
 		public int AttachTray { get; private set; }
 		public int AttachPosition { get; private set; }
-		public CapsuleInfo(int id) { /*@B 0x6005963*/ throw null; }
-		public CapsuleInfo(global::Dpr.BallDeco.CapsuleData data, global::Pml.PokePara.PokemonParam pokemonParam = null) { /*@B 0x6005964*/ throw null; }
+		public CapsuleInfo(int id) {
+			capsuleId = id;
+			RefreshData();
+		}
+		public CapsuleInfo(global::Dpr.BallDeco.CapsuleData data, global::Pml.PokePara.PokemonParam pokemonParam = null) {
+			capsuleId = -1;
+			Data = data;
+			RefreshData();
+			if (pokemonParam != null)
+				AttachPokemonParam = pokemonParam;
+		}
 		public void RefreshData() {
 			// @01a2ad80: one 64-bit -1 store covers AttachTray (+0x40) and AttachPosition (+0x44)
 			AttachTray = -1;

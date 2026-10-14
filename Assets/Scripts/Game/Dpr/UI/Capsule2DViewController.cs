@@ -12,11 +12,11 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform gridRootRectTransfrom;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color gridFrontColor;
+		private global::UnityEngine.Color gridFrontColor = Color.clear;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color gridBackColor;
+		private global::UnityEngine.Color gridBackColor = Color.clear;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color affixedSealGridColor;
+		private global::UnityEngine.Color affixedSealGridColor = Color.clear;
 		private global::Dpr.UI.Capsule2DGridCell[] gridCells;
 		private global::Dpr.UI.Capsule2DGridCell currentGridCell;
 		private bool isFrontView;
@@ -154,6 +154,6 @@ namespace Dpr.UI
 				}
 			}
 		}
-		public Capsule2DViewController() { /*@B 0x6005933*/ throw null; }
+		public Capsule2DViewController() { }
 	}
 }
