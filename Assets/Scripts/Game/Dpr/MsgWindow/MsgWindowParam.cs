@@ -3,32 +3,48 @@ namespace Dpr.MsgWindow
 {
 	public class MsgWindowParam
 	{
-		public string labelName;
-		public int labelIndex;
+		public string labelName = string.Empty;
+		public int labelIndex = -1;
 		public global::Dpr.Message.MessageMsgFile useMsgFile;
 		public global::Dpr.Message.MessageTextParseDataModel textDataModel;
 		public bool bBatchDisplay;
 		public int dataValue;
-		public bool inputEnabled;
+		public bool inputEnabled = true;
 		public bool inputCloseEnabled;
 		public bool playTextFeedSe;
-		public global::Dpr.MsgWindow.MsgWindowDataModel.WindowFrameType frameTypeIndex;
+		public global::Dpr.MsgWindow.MsgWindowDataModel.WindowFrameType frameTypeIndex = global::Dpr.MsgWindow.MsgWindowDataModel.WindowFrameType.Default;
 		public global::System.Nullable<global::UnityEngine.Vector2> wndAnchorPos;
-		public int sortingOrder;
-		public global::DPData.MSGSPEED forceSetMsgSpeed;
-		public string originalSpeakerName;
+		public int sortingOrder = -1;
+		public global::DPData.MSGSPEED forceSetMsgSpeed = global::DPData.MSGSPEED.MSGSPEED_MAX;
+		public string originalSpeakerName = string.Empty;
 		public bool showLastKeywaitIcon;
 		public bool isNetwork;
 		public bool showLoadingIcon;
 		public global::System.Action onFinishedOpenWindow;
 		public global::System.Action onFinishedCloseWindow;
 		public global::System.Action onFinishedShowAllMessage;
-		public bool HasLabelName { get { /*@B 0x6003B62*/ throw null; } }
-		public global::Dpr.Message.MessageTextParseDataModel GetTextParseDataModel() { /*@B 0x6003B63*/ throw null; }
-		public string SDMessageGetLabelName() { /*@B 0x6003B64*/ throw null; }
+		public bool HasLabelName { get { return !string.IsNullOrEmpty(labelName); } }
+		public global::Dpr.Message.MessageTextParseDataModel GetTextParseDataModel() {
+            if (useMsgFile == null)
+            {
+                global::Dpr.Message.MessageHelper.EmitLog("Failed Format Message.Because useMsgFile is null", global::UnityEngine.LogType.Error);
+                return null;
+            }
+            if (!string.IsNullOrEmpty(labelName))
+                return useMsgFile.GetTextDataModel(labelName);
+            if (labelIndex >= 0)
+                return useMsgFile.GetTextDataModelByIndex(labelIndex);
+            global::Dpr.Message.MessageHelper.EmitLog("Failed GetTextDataModel : Index not setting", global::UnityEngine.LogType.Error);
+            return null;
+        }
+		public string SDMessageGetLabelName() {
+            if (textDataModel != null)
+                return textDataModel.LabelName;
+            return string.Empty;
+        }
 		public bool IsPlayTextFeedSe() {
             return inputEnabled && playTextFeedSe;
         }
-		public MsgWindowParam() { /*@B 0x6003B66*/ throw null; }
+		public MsgWindowParam() { }
 	}
 }

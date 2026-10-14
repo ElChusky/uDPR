@@ -5,10 +5,33 @@ namespace Dpr.MsgWindow
 	{
 		private global::TMPro.TextMeshProUGUI speakerNameText;
 		private global::UnityEngine.GameObject speakerContent;
-		public void Setup(global::UnityEngine.GameObject speakerContent, global::Dpr.MsgWindow.MsgWindowDataModel dataModel, float speakerFrameWidthOffset, global::UnityEngine.Sprite frameSpr) { /*@B 0x6003AB5*/ throw null; }
-		public void SetSpeakerName(string speakerName) { /*@B 0x6003AB6*/ throw null; }
-		public void SetSpeakerNameActive(bool active) { /*@B 0x6003AB7*/ throw null; }
-		public void SetSpeakerNameFontAsset(global::TMPro.TMP_FontAsset fontAsset) { /*@B 0x6003AB8*/ throw null; }
+		public void Setup(global::UnityEngine.GameObject speakerContent, global::Dpr.MsgWindow.MsgWindowDataModel dataModel, float speakerFrameWidthOffset, global::UnityEngine.Sprite frameSpr) {
+            this.speakerContent = speakerContent;
+            float aspectScale = global::Dpr.Message.MessageDataConstants.ASPECT_SCALE.x;
+            float frameWidth = (dataModel.SpeakerFrameWidth + speakerFrameWidthOffset) * aspectScale;
+            float fontSize = dataModel.SpeakerNameFontSize * aspectScale;
+            var speakerFrame = global::GameObjectExtensions.FindDeep(speakerContent, "SpeakerFrame", true);
+            var frameRect = speakerFrame.GetComponent<global::UnityEngine.RectTransform>();
+            frameRect.sizeDelta = new global::UnityEngine.Vector2(frameWidth, frameRect.sizeDelta.y);
+            speakerNameText = global::GameObjectExtensions.FindDeep(speakerContent, "NameText", true).GetComponent<global::TMPro.TextMeshProUGUI>();
+            float textHeight = speakerNameText.rectTransform.sizeDelta.y;
+            speakerNameText.rectTransform.sizeDelta = new global::UnityEngine.Vector2(frameWidth, textHeight);
+            speakerNameText.fontSize = fontSize;
+            speakerFrame.GetComponent<global::UnityEngine.UI.Image>().sprite = frameSpr;
+            global::Dpr.Message.FontManager.Instance.ChangeFontMaterial(speakerNameText, 0);
+            SetSpeakerNameActive(false);
+        }
+		public void SetSpeakerName(string speakerName) { speakerNameText.text = speakerName; }
+		public void SetSpeakerNameActive(bool active) {
+            if (speakerContent.activeSelf != active)
+                speakerContent.SetActive(active);
+        }
+		public void SetSpeakerNameFontAsset(global::TMPro.TMP_FontAsset fontAsset) {
+            if (speakerNameText.font == fontAsset)
+                return;
+            speakerNameText.font = fontAsset;
+            speakerNameText.UpdateFontAsset();
+        }
 		public UISpeakerName() { }
 	}
 }

@@ -6,10 +6,31 @@ namespace Dpr.MsgWindow
 		private global::UnityEngine.GameObject roadsignContent;
 		private global::UnityEngine.RectTransform roadsignImageRect;
 		private global::UnityEngine.UI.Image roadsignImage;
-		public void Setup(global::UnityEngine.GameObject roadsignContent) { /*@B 0x6003AAB*/ throw null; }
-		public void ShowRoadsignIcon(global::Dpr.MsgWindow.RoadsignViewData viewData) { /*@B 0x6003AAC*/ throw null; }
-		public void HideRoadsignIcon() { /*@B 0x6003AAD*/ throw null; }
-		private void SetRoadsignActive(bool active) { /*@B 0x6003AAE*/ throw null; }
+		public void Setup(global::UnityEngine.GameObject roadsignContent) {
+            this.roadsignContent = roadsignContent;
+            roadsignImage = global::GameObjectExtensions.FindDeep(roadsignContent, "RoadsignImage", true).GetComponent<global::UnityEngine.UI.Image>();
+            roadsignImageRect = roadsignImage.rectTransform;
+            HideRoadsignIcon();
+        }
+		public void ShowRoadsignIcon(global::Dpr.MsgWindow.RoadsignViewData viewData) {
+            roadsignImageRect.localPosition = viewData.position;
+            roadsignImageRect.localRotation = global::UnityEngine.Quaternion.AngleAxis(viewData.rotZ, global::UnityEngine.Vector3.forward);
+            if (roadsignImage.sprite != viewData.spritePtr)
+            {
+                roadsignImage.sprite = viewData.spritePtr;
+                roadsignImageRect.sizeDelta = viewData.texSize;
+            }
+            SetRoadsignActive(true);
+        }
+		public void HideRoadsignIcon() {
+            roadsignImageRect.localPosition = global::UnityEngine.Vector3.zero;
+            roadsignImageRect.localRotation = global::UnityEngine.Quaternion.identity;
+            SetRoadsignActive(false);
+        }
+		private void SetRoadsignActive(bool active) {
+            if (roadsignContent.activeSelf != active)
+                roadsignContent.SetActive(active);
+        }
 		public UIRoadsign() { }
 	}
 }

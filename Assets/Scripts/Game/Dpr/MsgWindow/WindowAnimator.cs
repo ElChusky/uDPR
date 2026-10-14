@@ -13,19 +13,106 @@ namespace Dpr.MsgWindow
 		private bool bIsAnimation;
 		public bool IsAnimation { get { return this.bIsAnimation; } }
 		public global::Dpr.MsgWindow.WindowAnimator.AnimState CurrentState { get { return this.currentState; } }
-		public void Initialize(global::Dpr.MsgWindow.WindowAnimator.AnimType wndAnimType, global::UnityEngine.GameObject frameObj, global::UnityEngine.GameObject contentObj) { /*@B 0x6003A3E*/ throw null; }
-		public void ResetAnim() { /*@B 0x6003A3F*/ throw null; }
+		public void Initialize(global::Dpr.MsgWindow.WindowAnimator.AnimType wndAnimType, global::UnityEngine.GameObject frameObj, global::UnityEngine.GameObject contentObj) {
+            this.wndAnimType = wndAnimType;
+            canvasGroup = frameObj.GetComponent<global::UnityEngine.CanvasGroup>();
+            contentRect = contentObj.GetComponent<global::UnityEngine.RectTransform>();
+            canvasFadeTween = frameObj.GetComponent<global::DG.Tweening.DOTweenAnimation>();
+            openAnimTween = contentObj.GetComponent<global::DG.Tweening.DOTweenAnimation>();
+            ResetAnim();
+        }
+		public void ResetAnim() {
+            bIsAnimation = false;
+            currentState = AnimState.Wait;
+            timer = 0f;
+            canvasGroup.alpha = 0f;
+            contentRect.localScale = global::UnityEngine.Vector3.one;
+            contentRect.localPosition = global::UnityEngine.Vector3.zero;
+        }
 		public void SetAnimType(global::Dpr.MsgWindow.WindowAnimator.AnimType openAnimType) { this.wndAnimType = openAnimType; }
-		public void OpenWindow() { /*@B 0x6003A43*/ throw null; }
-		public void CloseWindow() { /*@B 0x6003A44*/ throw null; }
-		private void DoPlayScalingAnimation(bool forward) { /*@B 0x6003A45*/ throw null; }
-		private void DOPlayForward() { /*@B 0x6003A46*/ throw null; }
-		private void DOPlayBackwards() { /*@B 0x6003A47*/ throw null; }
-		private void DoPlayImmediateAnimation(bool forward) { /*@B 0x6003A48*/ throw null; }
-		public void ChangeTweenAnimationEnd() { /*@B 0x6003A49*/ throw null; }
-		public void OnUpdate(float deltaTime) { /*@B 0x6003A4A*/ throw null; }
-		public void OnCompletedOpen() { /*@B 0x6003A4B*/ throw null; }
-		public void OnCompletedClose() { /*@B 0x6003A4C*/ throw null; }
+		public void OpenWindow() {
+            currentState = AnimState.Open;
+            timer = 0f;
+            bIsAnimation = true;
+            switch (wndAnimType)
+            {
+                case AnimType.Immediate:
+                    DoPlayImmediateAnimation(true);
+                    break;
+                case AnimType.Scaling:
+                    DoPlayScalingAnimation(true);
+                    break;
+            }
+        }
+		public void CloseWindow() {
+            currentState = AnimState.Close;
+            timer = 0f;
+            bIsAnimation = true;
+            switch (wndAnimType)
+            {
+                case AnimType.Immediate:
+                    DoPlayImmediateAnimation(false);
+                    break;
+                case AnimType.Scaling:
+                    DoPlayScalingAnimation(false);
+                    break;
+            }
+        }
+		private void DoPlayScalingAnimation(bool forward) {
+            if (forward)
+            {
+                canvasGroup.alpha = 0f;
+                contentRect.localScale = global::UnityEngine.Vector3.zero;
+                DOPlayForward();
+                return;
+            }
+            DOPlayBackwards();
+        }
+		private void DOPlayForward() {
+            openAnimTween.DORestart();
+            canvasFadeTween.DORestart();
+        }
+		private void DOPlayBackwards() {
+            openAnimTween.DOPlayBackwards();
+            canvasFadeTween.DOPlayBackwards();
+        }
+		private void DoPlayImmediateAnimation(bool forward) {
+            bIsAnimation = false;
+            contentRect.localScale = forward ? global::UnityEngine.Vector3.one : global::UnityEngine.Vector3.zero;
+            canvasGroup.alpha = forward ? 1f : 0f;
+            currentState = forward ? AnimState.FinishedOpen : AnimState.FinishedClose;
+        }
+		public void ChangeTweenAnimationEnd() {
+            openAnimTween.DOComplete();
+            canvasFadeTween.DOComplete();
+        }
+		public void OnUpdate(float deltaTime) {
+            if (!bIsAnimation)
+                return;
+            timer += deltaTime;
+            if (currentState == AnimState.Close)
+            {
+                if (timer < canvasFadeTween.duration)
+                    return;
+                OnCompletedClose();
+            }
+            else if (currentState == AnimState.Open)
+            {
+                if (timer < canvasFadeTween.duration)
+                    return;
+                OnCompletedOpen();
+            }
+        }
+		public void OnCompletedOpen() {
+            bIsAnimation = false;
+            currentState = AnimState.FinishedOpen;
+            timer = 0f;
+        }
+		public void OnCompletedClose() {
+            bIsAnimation = false;
+            currentState = AnimState.FinishedClose;
+            timer = 0f;
+        }
 		public WindowAnimator() { }
 		public enum AnimType
 		{
