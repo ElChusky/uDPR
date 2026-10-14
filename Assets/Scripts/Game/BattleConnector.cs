@@ -12,15 +12,15 @@ using UnityEngine;
 using XLSXContent;
 public sealed class BattleConnector : global::SceneConnector
 {
-	private static global::SmartPoint.AssetAssistant.AssetRequestOperation bgRequestOperatioin;
-	private static global::SmartPoint.AssetAssistant.AssetRequestOperation skyRequestOperatioin;
+	private static global::SmartPoint.AssetAssistant.AssetRequestOperation bgRequestOperatioin = null;
+	private static global::SmartPoint.AssetAssistant.AssetRequestOperation skyRequestOperatioin = null;
 	private static global::System.Collections.Generic.List<global::SmartPoint.AssetAssistant.AssetRequestOperation> prefetchAssetBundleList = new List<AssetRequestOperation>(0x20);
-	public static bool isKeepSetup;
-	private static global::XLSXContent.ArenaInfo.SheetArenaData _currentArenaData;
-	private static global::XLSXContent.ArenaInfo.SheetArenaData _prevArenaData;
-	private static global::UnityEngine.GameObject _cachedBackgroundObject;
-	private static global::UnityEngine.GameObject _cachedSkyObject;
-	private static global::Dpr.Battle.View.Objects.BattleFieldObject _battleFieldObject;
+	public static bool isKeepSetup = false;
+	private static global::XLSXContent.ArenaInfo.SheetArenaData _currentArenaData = null;
+	private static global::XLSXContent.ArenaInfo.SheetArenaData _prevArenaData = null;
+	private static global::UnityEngine.GameObject _cachedBackgroundObject = null;
+	private static global::UnityEngine.GameObject _cachedSkyObject = null;
+	private static global::Dpr.Battle.View.Objects.BattleFieldObject _battleFieldObject = null;
 	public static int arenaIndex { get; set; }
 	public static global::XLSXContent.ArenaInfo.SheetArenaData currentArenaData { get => _currentArenaData; private set => _currentArenaData = value; }
 	public global::UnityEngine.GameObject cachedBackgroundObject { get => _cachedBackgroundObject; }
@@ -231,5 +231,6 @@ public sealed class BattleConnector : global::SceneConnector
 		return false;
 	}
 	public BattleConnector() { }
-	static BattleConnector() { /*@B 0x600090C*/ throw null; }
+	static BattleConnector() {
+	}
 }

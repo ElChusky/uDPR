@@ -7,7 +7,11 @@ public class BallDecoRecruitmentStateModel : global::NetStateModel
 	public int sexId { get; set; }
 	public global::OnlinePlayerCharacter opcCharacter { get; set; }
 	public global::UnionBallDecoContextMenu contextMenu { get; set; }
-	public BallDecoRecruitmentStateModel() { /*@B 0x6001148*/ throw null; }
+	public BallDecoRecruitmentStateModel() {
+		contextMenu = new global::UnionBallDecoContextMenu();
+		contextMenu.ballDecoRecruitmentModel = this;
+		contextMenu.SetTransitionType();
+	}
 	protected override void Start() {
 		base.Start();
 		contextMenu = new UnionBallDecoContextMenu();

@@ -7,11 +7,24 @@ public struct AzukariyaData
 	public bool eggExist;
 	public ulong eggSeed;
 	public int eggStepCount;
-	public void Get(global::Pml.PokePara.PokemonParam pp, int index) { /*@B 0x600001C*/ throw null; }
-	public global::Pml.PokePara.PokemonParam Get(int index) { /*@B 0x600001D*/ throw null; }
+	public void Get(global::Pml.PokePara.PokemonParam pp, int index) {
+		pp.Deserialize_Full(in pokemonParam[index]);
+	}
+	public global::Pml.PokePara.PokemonParam Get(int index) {
+		global::Pml.PokePara.PokemonParam pp = new global::Pml.PokePara.PokemonParam();
+		pp.Deserialize_Full(in pokemonParam[index]);
+		return pp;
+	}
 	public void Set(int index, global::Pml.PokePara.PokemonParam pp) {
         pp.Serialize_Full(ref pokemonParam[index]);
     }
-	public void Clear() { /*@B 0x600001F*/ throw null; }
-	public void Initialize() { /*@B 0x6000020*/ throw null; }
+	public void Clear() {
+		pokemonParam = new global::Pml.PokePara.SerializedPokemonFull[2];
+		for (int i = 0; i < pokemonParam.Length; i++) {
+			pokemonParam[i].CreateWorkIfNeed();
+		}
+	}
+	public void Initialize() {
+		Clear();
+	}
 }

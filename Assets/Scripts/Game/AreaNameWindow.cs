@@ -4,36 +4,163 @@ public class AreaNameWindow : global::UnityEngine.MonoBehaviour
 	private const string FRAME_SPR_NAME = "cmn_wd_areaname_01";
 	private const int CAPACITY = 32;
 	[global::UnityEngine.SerializeField]
-	private float showTime;
+	private float showTime = 1f;
 	[global::UnityEngine.SerializeField]
 	private global::TMPro.TextMeshProUGUI nameText;
 	private global::DG.Tweening.DOTweenAnimation moveTween;
 	private global::Dpr.Message.MessageManager msgManagerPtr;
 	private global::Dpr.Message.MessageMsgFile useMsgFile;
-	private global::System.Text.StringBuilder showingLabelName;
-	private global::System.Text.StringBuilder reservLabelName;
-	private global::Dpr.Message.MessageEnumData.MsgLangId prevLangID;
+	private global::System.Text.StringBuilder showingLabelName = new global::System.Text.StringBuilder(32);
+	private global::System.Text.StringBuilder reservLabelName = new global::System.Text.StringBuilder(32);
+	private global::Dpr.Message.MessageEnumData.MsgLangId prevLangID = global::Dpr.Message.MessageEnumData.MsgLangId.JPN;
 	private bool isKanji;
 	private float timer;
 	private int showLabelHash;
 	private int lastShowLabelHash;
 	private bool showing;
-	public void Initialize() { /*@B 0x6000252*/ throw null; }
-	private void SetActive(bool active) { /*@B 0x6000253*/ throw null; }
-	private void OnDestroy() { /*@B 0x6000254*/ throw null; }
-	public void OnEnableFieldCanvas() { /*@B 0x6000255*/ throw null; }
-	public void OnDisableFieldCanvas() { /*@B 0x6000256*/ throw null; }
-	public void ResetParam() { /*@B 0x6000257*/ throw null; }
-	public void Open(string labelName) { /*@B 0x6000258*/ throw null; }
-	public void ImmidiateClose() { /*@B 0x6000259*/ throw null; }
-	private bool IsSameShowingLabel(string nextLabelName) { /*@B 0x600025A*/ throw null; }
-	private bool IsSameLastShowingLabel(string nextLabelName) { /*@B 0x600025B*/ throw null; }
-	private void PerformShowAreaName(string labelName) { /*@B 0x600025C*/ throw null; }
-	private void SetNameText(string labelName) { /*@B 0x600025D*/ throw null; }
-	private void CheckUseMsgFile() { /*@B 0x600025E*/ throw null; }
-	private void DoMoveWindow() { /*@B 0x600025F*/ throw null; }
-	public void OnComplete() { /*@B 0x6000260*/ throw null; }
-	public void OnRewind() { /*@B 0x6000261*/ throw null; }
-	private void OnUpdate(float deltaTime) { /*@B 0x6000262*/ throw null; }
-	public AreaNameWindow() { /*@B 0x6000263*/ throw null; }
+	public void Initialize() {
+		this.FindDeep("Frame", true).GetComponent<global::UnityEngine.UI.Image>().sprite = global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.UI.UIManager>.Instance.GetAtlasSprite(global::SpriteAtlasID.SHAREDUI, "cmn_wd_areaname_01");
+		moveTween = this.FindDeep("Content", true).GetComponent<global::DG.Tweening.DOTweenAnimation>();
+		transform.SetSiblingIndex(transform.parent.childCount - 1);
+		msgManagerPtr = global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.Message.MessageManager>.Instance;
+		prevLangID = msgManagerPtr.UserLanguageID;
+		isKanji = msgManagerPtr.IsKanji;
+		nameText.font = global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.Message.FontManager>.Instance.GetFontAsset();
+		nameText.UpdateFontAsset();
+		if (gameObject.activeSelf) {
+			gameObject.SetActive(false);
+		}
+	}
+	private void SetActive(bool active) {
+		if (gameObject.activeSelf != active) {
+			gameObject.SetActive(active);
+		}
+	}
+	private void OnDestroy() {
+		global::UnityEngine.Object.Destroy(this.FindDeep("Frame", true).GetComponent<global::UnityEngine.UI.Image>().sprite);
+	}
+	public void OnEnableFieldCanvas() {
+		if (msgManagerPtr == null) {
+			return;
+		}
+		useMsgFile = msgManagerPtr.GetMsgFile("dp_fld_areaname_display");
+	}
+	public void OnDisableFieldCanvas() {
+		useMsgFile = null;
+	}
+	public void ResetParam() {
+		showLabelHash = 0;
+		lastShowLabelHash = 0;
+		showingLabelName.Clear();
+		reservLabelName.Clear();
+	}
+	public void Open(string labelName) {
+		if (!showing) {
+			if (lastShowLabelHash == 0 || labelName.GetHashCode() != lastShowLabelHash) {
+				if (!gameObject.activeSelf) {
+					gameObject.SetActive(true);
+				}
+				PerformShowAreaName(labelName);
+			}
+		}
+		else {
+			if (showingLabelName.Length > 0 && labelName.GetHashCode() == showLabelHash) {
+				reservLabelName.Clear();
+				return;
+			}
+			if (reservLabelName.Length < 1) {
+				reservLabelName.Append(labelName);
+			}
+		}
+	}
+	public void ImmidiateClose() {
+		if (showing) {
+			showLabelHash = 0;
+			lastShowLabelHash = 0;
+			showingLabelName.Clear();
+			reservLabelName.Clear();
+			global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+			moveTween.DORewind();
+		}
+	}
+	private bool IsSameShowingLabel(string nextLabelName) {
+		if (showingLabelName.Length > 0) {
+			return nextLabelName.GetHashCode() == showLabelHash;
+		}
+		return false;
+	}
+	private bool IsSameLastShowingLabel(string nextLabelName) {
+		if (lastShowLabelHash != 0) {
+			return nextLabelName.GetHashCode() == lastShowLabelHash;
+		}
+		return false;
+	}
+	private void PerformShowAreaName(string labelName) {
+		if (useMsgFile == null || !useMsgFile.IsValidData()) {
+			useMsgFile = msgManagerPtr.GetMsgFile("dp_fld_areaname_display");
+			if (useMsgFile == null) {
+				return;
+			}
+		}
+		timer = 0f;
+		showing = true;
+		SetNameText(labelName);
+		moveTween.DOPlayForward();
+	}
+	private void SetNameText(string labelName) {
+		CheckUseMsgFile();
+		showingLabelName.Clear();
+		showingLabelName.Append(labelName);
+		int hash = labelName.GetHashCode();
+		showLabelHash = hash;
+		lastShowLabelHash = hash;
+		if (string.IsNullOrEmpty(labelName)) {
+			global::Dpr.Message.LabelData[] labels = useMsgFile.GetAllLabelDataArray();
+			nameText.text = labels.Length == 0 ? string.Empty : useMsgFile.GetNameStr(labels[0].labelName);
+		}
+		else {
+			nameText.text = useMsgFile.GetNameStr(labelName);
+		}
+	}
+	private void CheckUseMsgFile() {
+		global::Dpr.Message.MessageEnumData.MsgLangId langId = msgManagerPtr.UserLanguageID;
+		if (prevLangID == langId && (langId != global::Dpr.Message.MessageEnumData.MsgLangId.JPN || isKanji == msgManagerPtr.IsKanji)) {
+			return;
+		}
+		prevLangID = langId;
+		isKanji = msgManagerPtr.IsKanji;
+		useMsgFile = msgManagerPtr.GetMsgFile("dp_fld_areaname_display");
+		nameText.font = global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.Message.FontManager>.Instance.GetFontAsset();
+		nameText.UpdateFontAsset();
+	}
+	private void DoMoveWindow() {
+		moveTween.DOPlayForward();
+	}
+	public void OnComplete() {
+		global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+		global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+	}
+	public void OnRewind() {
+		if (reservLabelName.Length > 0) {
+			PerformShowAreaName(reservLabelName.ToString());
+			reservLabelName.Clear();
+			return;
+		}
+		showLabelHash = 0;
+		showingLabelName.Clear();
+		showing = false;
+		if (gameObject.activeSelf) {
+			gameObject.SetActive(false);
+		}
+	}
+	private void OnUpdate(float deltaTime) {
+		timer += deltaTime;
+		if (timer < showTime) {
+			return;
+		}
+		global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+		moveTween.DOPlayBackwards();
+	}
+	public AreaNameWindow() {
+	}
 }

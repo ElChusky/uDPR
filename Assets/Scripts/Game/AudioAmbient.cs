@@ -6,7 +6,7 @@ public class AudioAmbient : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.SerializeField]
 	private uint _playEventId;
 	[global::UnityEngine.SerializeField]
-	private global::System.Collections.Generic.List<global::UnityEngine.Vector3> _positions;
+	private global::System.Collections.Generic.List<global::UnityEngine.Vector3> _positions = new global::System.Collections.Generic.List<global::UnityEngine.Vector3> { global::UnityEngine.Vector3.zero };
 	protected global::Audio.AudioInstance _audioInstance;
 	protected virtual void Start() {
 		Play();
@@ -74,5 +74,7 @@ public class AudioAmbient : global::UnityEngine.MonoBehaviour
 	public void SetSwitch(uint groupId, uint state) {
 		_audioInstance.SetSwitch(groupId, state);
 	}
-	public AudioAmbient() { /*@B 0x60008E1*/ throw null; }
+	public AudioAmbient() {
+		
+	}
 }
