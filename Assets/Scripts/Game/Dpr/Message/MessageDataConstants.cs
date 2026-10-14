@@ -4,9 +4,31 @@ namespace Dpr.Message
 	public static class MessageDataConstants
 	{
 		public const string COMMON_ASSETNAME = "common_msbt";
-		public static readonly string JPN_KANJI_ASSET_FOLDER_NAME;
-		public static readonly global::System.Collections.Generic.Dictionary<int, string> ASSET_FOLDER_NAME_TABLE;
-		public static readonly global::System.Collections.Generic.Dictionary<int, string> ROOT_FOLDER_NAME_TABLE;
+		public static readonly string JPN_KANJI_ASSET_FOLDER_NAME = "jpn_kanji";
+		public static readonly global::System.Collections.Generic.Dictionary<int, string> ASSET_FOLDER_NAME_TABLE = new global::System.Collections.Generic.Dictionary<int, string>()
+		{
+			{ 1, "jpn" },
+			{ 2, "english" },
+			{ 3, "french" },
+			{ 4, "italian" },
+			{ 5, "german" },
+			{ 7, "spanish" },
+			{ 8, "korean" },
+			{ 9, "simp_chinese" },
+			{ 10, "trad_chinese" },
+		};
+		public static readonly global::System.Collections.Generic.Dictionary<int, string> ROOT_FOLDER_NAME_TABLE = new global::System.Collections.Generic.Dictionary<int, string>()
+		{
+			{ 1, "JP" },
+			{ 2, "En" },
+			{ 3, "Fr" },
+			{ 4, "It" },
+			{ 5, "Ge" },
+			{ 7, "Sp" },
+			{ 8, "Ko" },
+			{ 9, "Si" },
+			{ 10, "Tr" },
+		};
 		public const int TEXT_CAPACITY_SIZE = 64;
 		public const char TAG_CHAR = '|';
 		public const string NEW_LINE_STR = "\n";
@@ -20,8 +42,8 @@ namespace Dpr.Message
 		public const int ZERO_SPACE_CODE = 8203;
 		public const int WAIT_FINISH_SOUND_VALUE = 1;
 		public const int EXCEPTION_PATCHIM_CODE = 8;
-		public static readonly int[] EXCLUDE_CODES;
-		public static readonly char[] NEWLINE_CHAR_CODES;
+		public static readonly int[] EXCLUDE_CODES = new int[] { 10, 123, 125 };
+		public static readonly char[] NEWLINE_CHAR_CODES = new char[] { '\u000D', '\u25BD', '\u25BC' };
 		public const int SINGLE_QUOTATION_CODE = 39;
 		public const int DOUBLE_QUOTATION_CODE = 34;
 		public const int AFTER_SINGLE_QUOTATION_CODE = 8217;
@@ -39,9 +61,9 @@ namespace Dpr.Message
 		public const string WOMAN_SUPPORTER_NAME_LABEL = "DP_CHARACTERS_205";
 		public const string MAN_SUPPORTER_NAME_LABEL = "DP_CHARACTERS_204";
 		public const float UNKNOWN_MSG_FONT_SIZE = 80f;
-		public static readonly global::UnityEngine.Vector2 DIGIT_UNICODE_RANGE;
-		public static int CHECK_FOUR_DIGIT_VALUE;
-		public static int GENERATE_POOL_NUM;
+		public static readonly global::UnityEngine.Vector2 DIGIT_UNICODE_RANGE = new global::UnityEngine.Vector2Int(48, 57);
+		public static int CHECK_FOUR_DIGIT_VALUE = 10000;
+		public static int GENERATE_POOL_NUM = 300;
 		public const string ITEM_FILE_NAME = "ss_itemname";
 		public const string ITEM_PLURAL_FILE_NAME = "ss_itemname_plural";
 		public const string ITEM_CLASSIFIED_FILE_NAME = "ss_itemname_classified";
@@ -80,7 +102,15 @@ namespace Dpr.Message
 		public const string POFFIN_NAME_PLURAL_MSBT_FILE = "dlp_poffin_name_plural";
 		public const string STYLE_NAME_MSBT_FILE = "ss_fld_dressup_item_name";
 		public const string BAG_FILE_NAME = "ss_bag";
-		public static readonly global::System.Collections.Generic.Dictionary<int, string> POKE_POWER_NAME_LABEL_ARRAY;
+		public static readonly global::System.Collections.Generic.Dictionary<int, string> POKE_POWER_NAME_LABEL_ARRAY = new global::System.Collections.Generic.Dictionary<int, string>()
+		{
+			{ 0, "SS_bag_160" },
+			{ 1, "SS_bag_153" },
+			{ 2, "SS_bag_154" },
+			{ 3, "SS_bag_155" },
+			{ 4, "SS_bag_156" },
+			{ 5, "SS_bag_157" },
+		};
 		public const string NG_TRAINER_NAME_DPR_B = "DP_CHARACTERS_206";
 		public const string NG_TRAINER_NAME_DPR_S = "DP_CHARACTERS_247";
 		public const int EXTERNAL_POKE_DOLLAR = 58112;
@@ -89,12 +119,50 @@ namespace Dpr.Message
 		public const int EXTERNAL_RIGHT_DIRECTION = 57602;
 		public const int EXTERNAL_DOWN_DIRECTION = 57603;
 		public const int EXTERNAL_SPARKLES = 57604;
-		public static readonly global::System.Collections.Generic.Dictionary<int, int> CHARACTER1_CODE_TABLE;
-		public static readonly global::System.Collections.Generic.Dictionary<int, int> CHARACTER2_CODE_TABLE;
-		public static readonly char[] VOWEL_TABLE;
-		public static readonly char[] VOWEL_FR_TABLE;
-		public static readonly char[] VOWEL_E_IT_TABLE;
-		public static readonly int[] NUM_PATCHIM_CODE_ARRAY;
+		public static readonly global::System.Collections.Generic.Dictionary<int, int> CHARACTER1_CODE_TABLE = new global::System.Collections.Generic.Dictionary<int, int>()
+		{
+			{ 0, 0x2665 },
+			{ 1, 0x266A },
+			{ 2, 0x2642 },
+			{ 3, 0x2640 },
+			{ 4, 0xE300 },
+			{ 5, 0x2190 },
+			{ 6, 0x2191 },
+			{ 7, 0x2192 },
+			{ 8, 0x2193 },
+			{ 19, 0xE100 },
+			{ 20, 0xE101 },
+			{ 21, 0xE102 },
+			{ 22, 0xE103 },
+			{ 23, 0xE104 },
+		};
+		public static readonly global::System.Collections.Generic.Dictionary<int, int> CHARACTER2_CODE_TABLE = new global::System.Collections.Generic.Dictionary<int, int>()
+		{
+			{ 0, 0x2018 },
+			{ 1, 0x2019 },
+			{ 2, 0x201C },
+			{ 3, 0x201D },
+			{ 4, 0x201E },
+			{ 5, 0x201C },
+			{ 6, 0x0027 },
+			{ 7, 0x0022 },
+			{ 8, 0x0020 },
+			{ 9, 0x202F },
+			{ 12, 0x02B3 },
+			{ 13, 0x1D49 },
+			{ 14, 0x00AA },
+			{ 15, 0x2026 },
+			{ 16, 0xFF65 },
+			{ 19, 0x1D3C },
+			{ 20, 0x2006 },
+		};
+		public static readonly char[] VOWEL_TABLE = new char[] { '\u0041', '\u0049', '\u0055', '\u0045', '\u004F', '\u0061', '\u0069', '\u0075', '\u0065', '\u006F' };
+		public static readonly char[] VOWEL_FR_TABLE = new char[]
+		{
+			'\u00C0', '\u00C1', '\u00C2', '\u00C3', '\u00C4', '\u00C5', '\u00C8', '\u00C9', '\u00CA', '\u00CB', '\u0152', '\u00CC', '\u00CD', '\u00CE', '\u00CF', '\u00D2', '\u00D3', '\u00D4', '\u00D5', '\u00D6', '\u00D8', '\u00D9', '\u00DA', '\u00DB', '\u00DC', '\u00E0', '\u00E1', '\u00E2', '\u00E3', '\u00E4', '\u00E5', '\u00E8', '\u00E9', '\u00EA', '\u00EB', '\u0153', '\u00EC', '\u00ED', '\u00EE', '\u00EF', '\u00F2', '\u00F3', '\u00F4', '\u00F5', '\u00F6', '\u00F8', '\u00F9', '\u00FA', '\u00FB', '\u00FC'
+		};
+		public static readonly char[] VOWEL_E_IT_TABLE = new char[] { '\u0045', '\u00C8', '\u00C9', '\u0065', '\u00E8', '\u00E9', '\u00EA', '\u00EB' };
+		public static readonly int[] NUM_PATCHIM_CODE_ARRAY = new int[] { 1, 8, 0, 1, 0, 0, 1, 8, 8, 0 };
 		public const int EXTERNAL_POCKET_HEAL = 57344;
 		public const int EXTERNAL_POCKET_BALL = 57345;
 		public const int EXTERNAL_POCKET_BATTLE = 57346;
@@ -103,16 +171,50 @@ namespace Dpr.Message
 		public const int EXTERNAL_POCKET_WAZAMACHINE = 57349;
 		public const int EXTERNAL_POCKET_TREASURE = 57350;
 		public const int EXTERNAL_POCKET_IMPORTANTE = 57352;
-		public static readonly global::System.Collections.Generic.Dictionary<int, int> POCKET_ICON_CODE_TABLE;
-		public static readonly global::System.Collections.Generic.Dictionary<int, string> POCKET_NAME_LABEL_TABLE;
+		public static readonly global::System.Collections.Generic.Dictionary<int, int> POCKET_ICON_CODE_TABLE = new global::System.Collections.Generic.Dictionary<int, int>()
+		{
+			{ 0, 0xE000 },
+			{ 1, 0xE001 },
+			{ 2, 0xE002 },
+			{ 3, 0xE003 },
+			{ 4, 0xE004 },
+			{ 5, 0xE005 },
+			{ 6, 0xE006 },
+			{ 8, 0xE008 },
+		};
+		public static readonly global::System.Collections.Generic.Dictionary<int, string> POCKET_NAME_LABEL_TABLE = new global::System.Collections.Generic.Dictionary<int, string>()
+		{
+			{ 0, "SS_bag_pocket_001" },
+			{ 1, "SS_bag_pocket_002" },
+			{ 2, "SS_bag_pocket_003" },
+			{ 3, "SS_bag_pocket_004" },
+			{ 4, "SS_bag_pocket_005" },
+			{ 5, "SS_bag_pocket_006" },
+			{ 6, "SS_bag_pocket_007" },
+			{ 8, "SS_bag_pocket_008" },
+		};
 		public const float CONVERT_FEET_COEFFICIENT = 2.54f;
 		public const int FEET_BASE_NUMBER = 12;
 		public const int STD_BASE_NUMBER = 10;
 		public const string START_FONT_TAG_STR = "<font=";
 		public const string END_FONT_TAG_STR = "</font>";
-		public static readonly global::UnityEngine.Vector2 ASPECT_SCALE;
+		public static readonly global::UnityEngine.Vector2 ASPECT_SCALE = new global::UnityEngine.Vector2(0.6666667f, 0.6666667f);
 		public const string SDCARD_MOUNT_NAME = "sd";
-		public static readonly global::System.Collections.Generic.Dictionary<int, global::Dpr.Message.MessageEnumData.MsgLangId> CONVERT_LANG_ID_TABLE;
-		static MessageDataConstants() { /*@B 0x6003BB2*/ throw null; }
+		public static readonly global::System.Collections.Generic.Dictionary<int, global::Dpr.Message.MessageEnumData.MsgLangId> CONVERT_LANG_ID_TABLE = new global::System.Collections.Generic.Dictionary<int, global::Dpr.Message.MessageEnumData.MsgLangId>()
+		{
+			{ 1, global::Dpr.Message.MessageEnumData.MsgLangId.JPN },
+			{ 2, global::Dpr.Message.MessageEnumData.MsgLangId.USA },
+			{ 3, global::Dpr.Message.MessageEnumData.MsgLangId.FRA },
+			{ 4, global::Dpr.Message.MessageEnumData.MsgLangId.ITA },
+			{ 5, global::Dpr.Message.MessageEnumData.MsgLangId.DEU },
+			{ 7, global::Dpr.Message.MessageEnumData.MsgLangId.ESP },
+			{ 8, global::Dpr.Message.MessageEnumData.MsgLangId.KOR },
+			{ 9, global::Dpr.Message.MessageEnumData.MsgLangId.SCH },
+			{ 10, global::Dpr.Message.MessageEnumData.MsgLangId.TCH },
+		};
+		static MessageDataConstants() {
+            // @02102150: every store is a field initialiser in declaration order (blobs D7A84751, 64A149CC, DDA78818, 827EE820,
+            // 79AD78E9, 30A6CA8F read with blob.py).
+        }
 	}
 }

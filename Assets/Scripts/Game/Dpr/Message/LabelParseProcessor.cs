@@ -4,10 +4,10 @@ namespace Dpr.Message
 {
 	public class LabelParseProcessor : global::Nintendo.MessageStudio.Lib.TagProcessorBase
 	{
-		private global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataModelList;
-		private global::System.Collections.Generic.List<string> strList;
-		private global::Dpr.Message.MessageTagAnalyzer tagAnalyzer;
-		private global::System.Text.StringBuilder strBuilder;
+		private global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataModelList = new global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel>();
+		private global::System.Collections.Generic.List<string> strList = new global::System.Collections.Generic.List<string>();
+		private global::Dpr.Message.MessageTagAnalyzer tagAnalyzer = new global::Dpr.Message.MessageTagAnalyzer();
+		private global::System.Text.StringBuilder strBuilder = new global::System.Text.StringBuilder(64);
 		private char charSingleQuotation;
 		private char charDoubleQuotation;
 		private char charAfterSingleQuotation;
@@ -33,7 +33,11 @@ namespace Dpr.Message
 
             return parseDataModel;
         }
-		public void Reset() { /*@B 0x6003C55*/ throw null; }
+		public void Reset() {
+            tagDataModelList.Clear();
+            strList.Clear();
+            isCallReset = true;
+        }
 		protected override void ProcessChar(char c) {
             if (IsExcludeChar(c))
                 return;
@@ -66,7 +70,20 @@ namespace Dpr.Message
 		private bool IsNewLineChar(char c) {
             return MessageHelper.CheckNewLineCharCode(c);
         }
-		public bool IsReplaceCharacter(char c, out char afterChar) { /*@B 0x6003C5A*/ throw null; }
+		public bool IsReplaceCharacter(char c, out char afterChar) {
+            afterChar = c;
+            if (charSingleQuotation == c)
+            {
+                afterChar = charAfterSingleQuotation;
+                return true;
+            }
+            if (charDoubleQuotation == c)
+            {
+                afterChar = charAfterDoubleQuotation;
+                return true;
+            }
+            return false;
+        }
 		private void AddCurrentMessage() {
             if (strBuilder.Length > 0)
             {
@@ -115,6 +132,6 @@ namespace Dpr.Message
             tagDataModelList.Add(tagDataModel);
             AddCurrentMessage();
         }
-		public LabelParseProcessor() { /*@B 0x6003C63*/ throw null; }
+		public LabelParseProcessor() { }
 	}
 }

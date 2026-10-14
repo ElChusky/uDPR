@@ -70,6 +70,6 @@ namespace Dpr.Message
 
             MessageHelper.EmitLog("label : " + label + " - Not Found AttrinuteData");
         }
-		public MessageAttributeDataModel() { /*@B 0x6003BB0*/ throw null; }
+		public MessageAttributeDataModel() { }
 	}
 }
