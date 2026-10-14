@@ -3,12 +3,107 @@ namespace Dpr.UI
 {
 	public class ShopBoutiqueChange : global::Dpr.UI.ShopBoutique
 	{
-		public override global::System.Collections.IEnumerator OpOpen() { /*@B 0x6005ACE*/ throw null; }
-		protected override void SetupScrollViewItemParams() { /*@B 0x6005ACF*/ throw null; }
-		public static int SetupBoutiqueItemParams(global::System.Collections.Generic.List<global::Dpr.UI.ShopBoutiqueItemItem.Param> itemParams) { /*@B 0x6005AD0*/ throw null; }
-		protected override void OnCancel() { /*@B 0x6005AD1*/ throw null; }
-		protected override void OnDecidedSelectItem() { /*@B 0x6005AD2*/ throw null; }
-		public ShopBoutiqueChange() { /*@B 0x6005AD3*/ throw null; }
+		public override global::System.Collections.IEnumerator OpOpen() {
+            _boutiqueType = BoutiqueType.Change;
+            yield return base.OpOpen();
+        }
+		protected override void SetupScrollViewItemParams() {
+            _selectIndex = SetupBoutiqueItemParams(_itemParams);
+        }
+		public static int SetupBoutiqueItemParams(global::System.Collections.Generic.List<global::Dpr.UI.ShopBoutiqueItemItem.Param> itemParams) {
+            itemParams.Clear();
+            var dressData = global::GameData.DataManager.CharacterDressData.Data;
+            bool playerSex = PlayerWork.playerSex;
+            int selectIndex = 0;
+            for (int i = 0; i < dressData.Length; i++)
+            {
+                var data = dressData[i];
+                int dressId = data.Index;
+                if (playerSex != IsMaleDress(dressId))
+                    continue;
+                switch ((DressType)(dressId % 100))
+                {
+                    case DressType.Default:
+                        break;
+                    case DressType.Contest:
+                    case DressType.Bicycle:
+                        continue;
+                    case DressType.Platinum:
+                        if (!FlagWork.GetFlag(global::Dpr.EvScript.EvWork.FLAG_INDEX.FE_STAYLE_003))
+                            continue;
+                        break;
+                    case DressType.Summer:
+                        if (!PlayerWork.playerData.mystatus.dp_clear)
+                            continue;
+                        break;
+                    default:
+                        {
+                            var shopData = global::GameData.DataManager.GetBoutiqueShopData(dressId);
+                            if (shopData != null && !FlagWork.GetFlag(shopData.DressGet))
+                                continue;
+                        }
+                        break;
+                }
+                itemParams.Add(new ShopBoutiqueItemItem.Param() { dressData = data });
+                if (PlayerWork.playerFashion == data.Index)
+                    selectIndex = itemParams.Count - 1;
+            }
+            return selectIndex;
+        }
+		protected override void OnCancel() {
+            global::Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_CANCEL);
+            _input.inputEnabled = false;
+            var param = new global::Dpr.MsgWindow.MsgWindowParam();
+            param.useMsgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile("ss_fld_dressup");
+            param.labelName = "SS_fld_dressup_021";
+            param.inputEnabled = true;
+            param.inputCloseEnabled = false;
+            param.onFinishedShowAllMessage = () =>
+            {
+                CreateContextMenuYesNo(contextMenuItem_ =>
+                {
+                    CloseMessageWindow();
+                    _input.inputEnabled = true;
+                    if (contextMenuItem_.param.menuId == global::ContextMenuID.FRIENDLYSHOP_YES)
+                        Close(onClosed);
+                    return true;
+                });
+            };
+            OpenMessageWindow(param);
+        }
+		protected override void OnDecidedSelectItem() {
+            global::Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_DONE);
+            if (PlayerWork.playerFashion == _selectShopItem.characterDressData.Index)
+                return;
+            _input.inputEnabled = false;
+            var param = new global::Dpr.MsgWindow.MsgWindowParam();
+            param.useMsgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile("ss_fld_dressup");
+            param.labelName = "SS_fld_dressup_018";
+            param.inputEnabled = true;
+            param.inputCloseEnabled = false;
+            param.onFinishedShowAllMessage = () =>
+            {
+                var contextMenuParam = CreateContextMenuYesNoParam();
+                contextMenuParam.seDecide = 0;
+                CreateContextMenuYesNo(contextMenuItem_ =>
+                {
+                    if (contextMenuItem_.param.menuId == global::ContextMenuID.FRIENDLYSHOP_YES)
+                    {
+                        global::Audio.AudioManager.Instance.PlaySe(AK.EVENTS.S_BOU001);
+                        ChangeDress();
+                    }
+                    else
+                    {
+                        global::Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_DECIDE);
+                    }
+                    CloseMessageWindow();
+                    _input.inputEnabled = true;
+                    return true;
+                }, contextMenuParam);
+            };
+            OpenMessageWindow(param);
+        }
+		public ShopBoutiqueChange() { }
 		public enum DressType
 		{
 			Default = 0,

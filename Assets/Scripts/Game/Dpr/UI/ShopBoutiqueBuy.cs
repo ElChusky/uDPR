@@ -3,11 +3,126 @@ namespace Dpr.UI
 {
 	public class ShopBoutiqueBuy : global::Dpr.UI.ShopBoutique
 	{
-		public override global::System.Collections.IEnumerator OpOpen() { /*@B 0x6005AC5*/ throw null; }
-		protected override void SetupScrollViewItemParams() { /*@B 0x6005AC6*/ throw null; }
-		protected override void OnCancel() { /*@B 0x6005AC7*/ throw null; }
-		protected override void OnDecidedSelectItem() { /*@B 0x6005AC8*/ throw null; }
-		private void SequencePurchase(int amount) { /*@B 0x6005AC9*/ throw null; }
-		public ShopBoutiqueBuy() { /*@B 0x6005ACA*/ throw null; }
+		public override global::System.Collections.IEnumerator OpOpen() {
+            _boutiqueType = BoutiqueType.Buy;
+            yield return base.OpOpen();
+        }
+		protected override void SetupScrollViewItemParams() {
+            _itemParams.Clear();
+            var boutiqueShop = global::GameData.DataManager.ShopTable.BoutiqueShop;
+            bool playerSex = PlayerWork.playerSex;
+            for (int i = 0; i < boutiqueShop.Length; i++)
+            {
+                var data = boutiqueShop[i];
+                if ((data.OpenDress >= global::Dpr.EvScript.EvWork.SYSFLAG_INDEX.SYSFLAG_END || FlagWork.GetSysFlag(data.OpenDress)) && playerSex == IsMaleDress(data.DressNo))
+                    _itemParams.Add(new ShopBoutiqueItemItem.Param() { data = data });
+            }
+        }
+		protected override void OnCancel() {
+            _input.inputEnabled = false;
+            global::Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_CANCEL);
+            Close(onClosed);
+        }
+		protected override void OnDecidedSelectItem() {
+            _input.inputEnabled = false;
+            global::Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_DONE);
+            int charge = MoneyWork.Get();
+            int price = _selectShopItem.param.data.Price;
+            int numForAdd = _selectShopItem.GetNumForAdd();
+            int amount = global::UnityEngine.Mathf.Min(charge / price, numForAdd);
+            if (amount > 0)
+            {
+                SequencePurchase(1);
+                return;
+            }
+            if (numForAdd == 0)
+            {
+                var (messageFile, messageLabel) = GetShopMessageData(global::SHOP_MESSAGEID.FULL_ITEM, ShopType.Boutique, 0);
+                var param = new global::Dpr.MsgWindow.MsgWindowParam();
+                param.useMsgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile(messageFile);
+                param.labelName = messageLabel;
+                param.inputEnabled = true;
+                param.inputCloseEnabled = true;
+                param.onFinishedCloseWindow = () =>
+                {
+                    _messageWindow = null;
+                    _input.inputEnabled = true;
+                };
+                OpenMessageWindow(param);
+            }
+            else
+            {
+                var (messageFile, messageLabel) = GetShopMessageData(global::SHOP_MESSAGEID.ENOUGH_MONEY, ShopType.Boutique, 0);
+                var param = new global::Dpr.MsgWindow.MsgWindowParam();
+                param.useMsgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile(messageFile);
+                param.labelName = messageLabel;
+                param.inputEnabled = true;
+                param.inputCloseEnabled = true;
+                param.onFinishedCloseWindow = () =>
+                {
+                    _messageWindow = null;
+                    _input.inputEnabled = true;
+                };
+                OpenMessageWindow(param);
+            }
+        }
+		private void SequencePurchase(int amount) {
+            var (messageFile, messageLabel) = GetShopMessageData(global::SHOP_MESSAGEID.PURCHASE_ITEM_02, ShopType.Boutique, 0);
+            int subCharge = amount * _selectShopItem.param.data.Price;
+            global::Dpr.Message.MessageWordSetHelper.SetDigitWord(0, subCharge);
+            var param = new global::Dpr.MsgWindow.MsgWindowParam();
+            param.useMsgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile(messageFile);
+            param.labelName = messageLabel;
+            param.inputEnabled = true;
+            param.inputCloseEnabled = false;
+            param.onFinishedShowAllMessage = () =>
+            {
+                CreateContextMenuYesNo(contextMenuItem =>
+                {
+                    global::Audio.AudioManager.Instance.PlaySe(contextMenuItem.param.menuId == global::ContextMenuID.FRIENDLYSHOP_YES ? AK.EVENTS.S_ME050 : AK.EVENTS.UI_COMMON_DECIDE);
+                    if (contextMenuItem.param.menuId == global::ContextMenuID.FRIENDLYSHOP_YES)
+                    {
+                        MoneyWork.Sub(subCharge);
+                        _selectShopItem.AddItem(amount);
+                        SetupCharge();
+                        (messageFile, messageLabel) = GetShopMessageData(global::SHOP_MESSAGEID.PURCHASE_ITEM_DECISION_01, ShopType.Boutique, 0);
+                        var param2 = new global::Dpr.MsgWindow.MsgWindowParam();
+                        param2.useMsgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile(messageFile);
+                        param2.labelName = messageLabel;
+                        param2.inputEnabled = true;
+                        param2.inputCloseEnabled = false;
+                        param2.onFinishedShowAllMessage = () =>
+                        {
+                            var contextMenuParam = CreateContextMenuYesNoParam();
+                            contextMenuParam.seDecide = 0;
+                            CreateContextMenuYesNo(contextMenuItem_ =>
+                            {
+                                if (contextMenuItem_.param.menuId == global::ContextMenuID.FRIENDLYSHOP_YES)
+                                {
+                                    global::Audio.AudioManager.Instance.PlaySe(AK.EVENTS.S_BOU001);
+                                    ChangeDress();
+                                }
+                                else
+                                {
+                                    global::Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_DECIDE);
+                                }
+                                CloseMessageWindow();
+                                _input.inputEnabled = true;
+                                return true;
+                            }, contextMenuParam);
+                        };
+                        OpenMessageWindow(param2);
+                    }
+                    else
+                    {
+                        CloseMessageWindow();
+                        _input.inputEnabled = true;
+                    }
+                    return true;
+                }, 0u);
+            };
+            OpenMessageWindow(param);
+        }
+		public ShopBoutiqueBuy() { }
 	}
 }
