@@ -6,23 +6,95 @@ namespace Dpr.SubContents
 		private global::BattlePlayerEntity playerEntity;
 		private global::BattlePokemonEntity pokeEntity;
 		private global::Dpr.Battle.View.Objects.BOPokemon boPokemon;
-		public global::UnityEngine.Color AddColor;
+		public global::UnityEngine.Color AddColor = global::UnityEngine.Color.white;
 		private float LoopSec;
 		private global::UnityEngine.Transform Waist;
-		private global::System.Collections.Generic.List<float> heightList;
+		private global::System.Collections.Generic.List<float> heightList = new global::System.Collections.Generic.List<float>();
 		public float HeightLimit = 1.0f;
 		public uint Pattern;
 		public bool updatePattern;
-		private float prevScale;
+		private float prevScale = -1f;
 		public int DebugIndex;
 		[global::Dpr.SubContents.ButtonAttribute("Test", "Test", new object[] {  })]
 		public int Button01;
-		private void OnDestroy() { /*@B 0x600337C*/ throw null; }
-		public void CallMotion(int AnimID) { /*@B 0x600337D*/ throw null; }
-		public void SetLoopSec(float sec) { /*@B 0x600337E*/ throw null; }
-		private void SetEntity() { /*@B 0x600337F*/ throw null; }
-		public void Update() { /*@B 0x6003380*/ throw null; }
-		public void Test() { /*@B 0x6003381*/ throw null; }
-		public TimeLineMotion() { /*@B 0x6003382*/ throw null; }
+		private void OnDestroy() {
+			playerEntity = null;
+			pokeEntity = null;
+			boPokemon = null;
+			Waist = null;
+			heightList = null;
+		}
+		public void CallMotion(int AnimID) {
+			SetEntity();
+			if (playerEntity != null)
+			{
+				playerEntity.GetAnimationPlayer().GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).Play(AnimID, 0.001f, 0f);
+				playerEntity.GetAnimationPlayer().GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.EyeLayer).AnimationSpeed = 0f;
+			}
+			if (pokeEntity != null && pokeEntity.GetAnimationPlayer().currentIndex != AnimID)
+				pokeEntity.GetAnimationPlayer().Play(AnimID, 0.001f, 0f);
+		}
+		public void SetLoopSec(float sec) {
+			LoopSec = sec;
+		}
+		private void SetEntity() {
+			if (playerEntity == null && pokeEntity == null)
+			{
+				int childCount = transform.childCount;
+				if (childCount != 0)
+				{
+					global::UnityEngine.Transform child = transform.GetChild(childCount - 1);
+					playerEntity = child.GetComponent<global::BattlePlayerEntity>();
+					pokeEntity = child.GetComponent<global::BattlePokemonEntity>();
+					if (pokeEntity != null)
+						Waist = pokeEntity.transform.Find("Origin").GetChild(0);
+				}
+			}
+		}
+		public void Update() {
+			SetEntity();
+			if (updatePattern)
+			{
+				updatePattern = false;
+				int childCount = transform.childCount;
+				if (childCount == 0)
+					return;
+				global::Dpr.PatcheelPattern pattern = transform.GetChild(childCount - 1).GetComponent<global::Dpr.PatcheelPattern>();
+				if (pattern != null)
+					pattern.SetPattern(Pattern);
+			}
+			if (pokeEntity != null)
+			{
+				if (pokeEntity.GetAnimationPlayer().IsValidCurrentPlayable)
+				{
+					if (pokeEntity.GetAnimationPlayer().IsPlayingEnd && pokeEntity.GetAnimationPlayer().currentIndex != 0)
+						pokeEntity.GetAnimationPlayer().Play(0, 0.001f, 0f);
+					pokeEntity.SetBlinkEnabled(true);
+				}
+				pokeEntity.FixMultiplierColor = AddColor;
+				if (prevScale != -1f && prevScale == pokeEntity.transform.localScale.y)
+				{
+					float height = Waist.localPosition.y;
+					heightList.Add(height * pokeEntity.transform.localScale.y);
+					if (heightList.Count > 30)
+						heightList.RemoveAt(0);
+					float average = global::System.Linq.Enumerable.Average(heightList);
+					if (average > 1f)
+						pokeEntity.gameObject.transform.localPosition = global::UnityEngine.Vector3.down * (average - 1f);
+				}
+				prevScale = pokeEntity.transform.localScale.y;
+				pokeEntity.GetPokeAnimSound().Enable = false;
+			}
+		}
+		public void Test() {
+			if (playerEntity != null)
+			{
+				playerEntity.GetAnimationPlayer().GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).Play(DebugIndex, 0f, 0f);
+				return;
+			}
+			if (pokeEntity != null)
+				pokeEntity.GetAnimationPlayer().Play(DebugIndex, 0f, 0f);
+		}
+		public TimeLineMotion() { }
 	}
 }
