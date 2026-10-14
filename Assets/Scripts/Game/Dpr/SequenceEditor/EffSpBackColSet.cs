@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 col;
 		public float alpha;
 		public bool subCamera;
-		public EffSpBackColSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A7A*/ throw null; }
+		public EffSpBackColSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			col = Macro.ParseVector3(macro.GetValue("col"));
+			alpha = Macro.ParseFloat(macro.GetValue("alpha"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

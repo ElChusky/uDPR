@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 minVec;
 		public global::UnityEngine.Vector3 maxVec;
 		public bool rerative;
-		public EffShadowBox(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A68*/ throw null; }
+		public EffShadowBox(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			minVec = Macro.ParseVector3(macro.GetValue("minVec"));
+			maxVec = Macro.ParseVector3(macro.GetValue("maxVec"));
+			rerative = Macro.ParseBool(macro.GetValue("rerative"), 1);
+		}
 	}
 }

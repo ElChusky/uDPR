@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public float focusDistance;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool subCamera;
-		public EffDepthOfFieldSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A9E*/ throw null; }
+		public EffDepthOfFieldSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			autoFocus = Macro.ParseBool(macro.GetValue("autoFocus"), 0);
+			fNum = Macro.ParseFloat(macro.GetValue("fNum"), 2f);
+			focusDistance = Macro.ParseFloat(macro.GetValue("focusDistance"), 100f);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

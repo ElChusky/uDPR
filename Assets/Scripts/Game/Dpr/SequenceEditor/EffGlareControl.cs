@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public float threshold;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool subCamera;
-		public EffGlareControl(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A0D*/ throw null; }
+		public EffGlareControl(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			reset = Macro.ParseBool(macro.GetValue("reset"), 0);
+			luminance = Macro.ParseFloat(macro.GetValue("luminance"));
+			threshold = Macro.ParseFloat(macro.GetValue("threshold"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

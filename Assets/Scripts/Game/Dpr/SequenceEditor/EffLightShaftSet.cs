@@ -18,6 +18,21 @@ namespace Dpr.SequenceEditor
 		public float ringAttenua;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool subCamera;
-		public EffLightShaftSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A9A*/ throw null; }
+		public EffLightShaftSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			intensity = Macro.ParseFloat(macro.GetValue("intensity"), 1f);
+			lsColor = Macro.ParseVector3(macro.GetValue("lsColor"), 1f, 1f, 1f);
+			srcPos = Macro.ParseVector3(macro.GetValue("srcPos"));
+			length = Macro.ParseFloat(macro.GetValue("length"), 1f);
+			glareRatio = Macro.ParseFloat(macro.GetValue("glareRatio"), 0.25f);
+			attenuation = Macro.ParseFloat(macro.GetValue("attenuation"), 1f);
+			noiseMask = Macro.ParseFloat(macro.GetValue("noiseMask"), 1f);
+			noiseMaskFrequency = Macro.ParseFloat(macro.GetValue("noiseMaskFrequency"), 1f);
+			ringIntensity = Macro.ParseFloat(macro.GetValue("ringIntensity"), 0.5f);
+			ringOutClr = Macro.ParseVector3(macro.GetValue("ringOutClr"), 1f, 1f, 1f);
+			ringRadius = Macro.ParseFloat(macro.GetValue("ringRadius"), 15f);
+			ringAttenua = Macro.ParseFloat(macro.GetValue("ringAttenua"), 0.5f);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

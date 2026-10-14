@@ -11,6 +11,14 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 colorScale;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool subCamera;
-		public EffFogSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A8F*/ throw null; }
+		public EffFogSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			mode = Macro.Parse_SEQ_DEF_FOG_MODE(macro.GetValue("mode"));
+			nearLen = Macro.ParseFloat(macro.GetValue("nearLen"), 32f);
+			maxLen = Macro.ParseFloat(macro.GetValue("maxLen"), 6000f);
+			strength = Macro.ParseFloat(macro.GetValue("strength"), 1f);
+			colorScale = Macro.ParseVector3(macro.GetValue("colorScale"), 1f, 1f, 1f);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

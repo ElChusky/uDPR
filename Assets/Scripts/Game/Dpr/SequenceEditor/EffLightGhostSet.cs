@@ -15,6 +15,18 @@ namespace Dpr.SequenceEditor
 		public float distortion;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool subCamera;
-		public EffLightGhostSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A9C*/ throw null; }
+		public EffLightGhostSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			lumFactor = Macro.Parse_SEQ_DEF_LG_LUM(macro.GetValue("lumFactor"));
+			lightGhostShape = Macro.Parse_SEQ_DEF_LG_SHAPE(macro.GetValue("lightGhostShape"));
+			srcPos = Macro.ParseVector3(macro.GetValue("srcPos"));
+			lgColor = Macro.ParseVector3(macro.GetValue("lgColor"), 1f, 1f, 1f);
+			intensity = Macro.ParseFloat(macro.GetValue("intensity"), 1f);
+			sizeScale = Macro.ParseFloat(macro.GetValue("sizeScale"), 1f);
+			distScale = Macro.ParseFloat(macro.GetValue("distScale"), 1f);
+			vignette = Macro.ParseFloat(macro.GetValue("vignette"), 1f);
+			distortion = Macro.ParseFloat(macro.GetValue("distortion"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

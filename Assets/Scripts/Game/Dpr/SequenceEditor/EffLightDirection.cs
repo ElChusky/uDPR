@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class EffLightDirection : global::Dpr.SequenceEditor.Macro
 	{
 		public global::UnityEngine.Vector3 dir;
-		public EffLightDirection(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A07*/ throw null; }
+		public EffLightDirection(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			dir = Macro.ParseVector3(macro.GetValue("dir"));
+		}
 	}
 }

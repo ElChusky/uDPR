@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public bool visible;
 		public bool subCamera;
-		public EffMagnificationFlg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A8A*/ throw null; }
+		public EffMagnificationFlg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			visible = Macro.ParseBool(macro.GetValue("visible"), 1);
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

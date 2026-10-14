@@ -12,6 +12,15 @@ namespace Dpr.SequenceEditor
 		public float endParam;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public global::Dpr.SequenceEditor.SEQ_DEF_FIXPARAM_CALC calc;
-		public EffFixParamSetFloat(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A92*/ throw null; }
+		public EffFixParamSetFloat(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			trgPoke = Macro.ParseBool(macro.GetValue("trgPoke"), 1);
+			trgTra = Macro.ParseBool(macro.GetValue("trgTra"), 0);
+			name = Macro.ParseString(macro.GetValue("name"));
+			startParam = Macro.ParseFloat(macro.GetValue("startParam"));
+			endParam = Macro.ParseFloat(macro.GetValue("endParam"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			calc = Macro.Parse_SEQ_DEF_FIXPARAM_CALC(macro.GetValue("calc"));
+		}
 	}
 }
