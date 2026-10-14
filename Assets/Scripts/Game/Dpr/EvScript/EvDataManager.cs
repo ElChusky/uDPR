@@ -1103,13 +1103,90 @@ namespace Dpr.EvScript
 
             _eventListIndex = idx;
         }
-		private void CloudScaleReset() { /*@B 0x6008B8E*/ throw null; }
-		private void SetCloudScaleStart() { /*@B 0x6008B8F*/ throw null; }
-		private void SetCloudScaleEnd() { /*@B 0x6008B90*/ throw null; }
-		private void EnvironmentControllerCallBack(global::EnvironmentController controller, float deltaTime) { /*@B 0x6008B91*/ throw null; }
-		public bool JumpLabel(string label, global::Dpr.EvScript.EvDataManager.EventEndDelegate callback = null) { /*@B 0x6008B92*/ throw null; }
-		public bool CallLabel(string label) { /*@B 0x6008B93*/ throw null; }
-		public bool ReturnEvData() { /*@B 0x6008B94*/ throw null; }
+		private void CloudScaleReset() {
+            _cloudTime = _const_cloudTime;
+            EnvironmentController.global.callback -= EnvironmentControllerCallBack;
+        }
+		private void SetCloudScaleStart() {
+            if (EnvironmentController.global == null)
+                return;
+
+            _cloudSpeed = -1.0f;
+            EnvironmentController.global.callback -= EnvironmentControllerCallBack;
+            EnvironmentController.global.callback += EnvironmentControllerCallBack;
+        }
+		private void SetCloudScaleEnd() {
+            if (EnvironmentController.global == null)
+                return;
+
+            _cloudSpeed = 1.0f;
+            EnvironmentController.global.callback -= EnvironmentControllerCallBack;
+            EnvironmentController.global.callback += EnvironmentControllerCallBack;
+        }
+		private void EnvironmentControllerCallBack(global::EnvironmentController controller, float deltaTime) {
+            _cloudTime += _cloudSpeed * deltaTime;
+
+            float rate;
+            if (_cloudTime <= 0.0f)
+            {
+                _cloudTime = 0.0f;
+                rate = 0.0f;
+            }
+            else if (_cloudTime >= _const_cloudTime)
+            {
+                _cloudTime = _const_cloudTime;
+                EnvironmentController.global.callback -= EnvironmentControllerCallBack;
+                rate = 1.0f;
+            }
+            else
+            {
+                rate = _cloudTime / _const_cloudTime;
+            }
+
+            controller._CloudShadowScale = rate * controller.latestParameters.CloudShadowScale;
+        }
+		public bool JumpLabel(string label, global::Dpr.EvScript.EvDataManager.EventEndDelegate callback = null) {
+            if (string.IsNullOrEmpty(label) || !_findAllLabel.ContainsKey(label))
+                return false;
+
+            SetEventListIndex(_findAllLabel[label][0]);
+            _eventList[_eventListIndex].LabelIndex = _findAllLabel[label][1];
+            _eventList[_eventListIndex].CommandIndex = 0;
+
+            XMenuTop.CloseForce();
+            BoxWindow.CloseForce();
+
+            if (callback != null)
+                _eventEndDelegate += callback;
+
+            return true;
+        }
+		public bool CallLabel(string label) {
+            if (string.IsNullOrEmpty(label) || !_findAllLabel.ContainsKey(label))
+                return false;
+
+            _callQueue.Push(new EvCallData
+            {
+                EventListIndex = _eventListIndex,
+                LabelIndex = _eventList[_eventListIndex].LabelIndex,
+                CommandIndex = _eventList[_eventListIndex].CommandIndex + 1,
+            });
+
+            SetEventListIndex(_findAllLabel[label][0]);
+            _eventList[_eventListIndex].LabelIndex = _findAllLabel[label][1];
+            _eventList[_eventListIndex].CommandIndex = 0;
+            return true;
+        }
+		public bool ReturnEvData() {
+            if (_callQueue.Count <= 0)
+                return false;
+
+            EvCallData data = _callQueue.Pop();
+            SetEventListIndex(data.EventListIndex);
+            _eventList[data.EventListIndex].LabelIndex = data.LabelIndex;
+            _eventList[_eventListIndex].CommandIndex = data.CommandIndex;
+            return true;
+        }
 		private global::FieldCharacterEntity GetFieldCharacterEntity(string id) {
             if (id == "HERO")
                 return EntityManager.activeFieldPlayer;
@@ -1125,7 +1202,21 @@ namespace Dpr.EvScript
 
             return null;
         }
-		private global::FieldObjectEntity Find_fieldObjectEntity(string id) { /*@B 0x6008B96*/ throw null; }
+		private global::FieldObjectEntity Find_fieldObjectEntity(string id) {
+            if (id == "HERO")
+                return EntityManager.activeFieldPlayer;
+
+            foreach (FieldObjectEntity entity in _fieldObjectEntity)
+            {
+                if (entity == null)
+                    continue;
+
+                if (entity.gameObject.name == id)
+                    return entity;
+            }
+
+            return null;
+        }
 		public global::FieldObjectEntity GetFieldObject(string id) {
             if (id == "HERO")
                 return EntityManager.activeFieldPlayer;
@@ -1159,8 +1250,174 @@ namespace Dpr.EvScript
 
             return null;
         }
-		private bool IsMoveEnd(string id = "") { /*@B 0x6008B9A*/ throw null; }
-		private bool ScriptStartCheck(float time) { /*@B 0x6008B9B*/ throw null; }
+		private bool IsMoveEnd(string id = "") {
+            if (!string.IsNullOrEmpty(id))
+            {
+                if (id == "HERO" && EntityManager.activeFieldPlayer.gameObject.activeInHierarchy)
+                    return EntityManager.activeFieldPlayer.EvEntityCmd.IsScriptMoveEnd();
+
+                for (int i = 0; i < EntityManager.fieldObjects.Length; i++)
+                {
+                    FieldObjectEntity entity = EntityManager.fieldObjects[i];
+                    if (entity == null || entity.gameObject == null || !entity.gameObject.activeInHierarchy)
+                        continue;
+
+                    if (entity.gameObject.name != id)
+                        continue;
+
+                    // Shipped quirk: the named object's result is inverted (eor w8, w0, #1 @02c498c8).
+                    return !entity.EvEntityCmd.IsScriptMoveEnd();
+                }
+
+                return true;
+            }
+
+            if (EntityManager.activeFieldPlayer.gameObject.activeInHierarchy && !EntityManager.activeFieldPlayer.EvEntityCmd.IsScriptMoveEnd())
+                return false;
+
+            for (int i = 0; i < EntityManager.fieldObjects.Length; i++)
+            {
+                FieldObjectEntity entity = EntityManager.fieldObjects[i];
+                if (entity == null || entity.gameObject == null || !entity.gameObject.activeInHierarchy)
+                    continue;
+
+                if (!entity.EvEntityCmd.IsScriptMoveEnd())
+                    return false;
+            }
+
+            return true;
+        }
+		private bool ScriptStartCheck(float time) {
+            if (EntityManager.activeFieldPlayer == null)
+                return false;
+
+            if (PlayerWork.Telescope)
+                return false;
+
+            if (IsPlayingUgEnterOrExit())
+                return false;
+
+            bool pushA = FieldInput.PushA() && !FieldPoketch.IsControlPoketch();
+            bool inputActive = PlayerWork.isPlayerInputActive;
+
+            if (CheckSafariEvent())
+                return true;
+
+            if (_posEventLabelReserve != null)
+            {
+                StartAdjustHeroPos(time, _posEventLabelReserve);
+                _posEventLabelReserve = null;
+                return true;
+            }
+
+            if (_tobariGymWallEntity != null)
+            {
+                JumpLabel(_tobariGymWallEntity.GymWallPushEventLabel, null);
+                return true;
+            }
+
+            Vector3 playerpos = EntityManager.activeFieldPlayer.worldPosition;
+            for (int i = 0; i < _fieldObjectEntity.Count; i++)
+            {
+                FieldObjectEntity entity = _fieldObjectEntity[i];
+                if (entity == null)
+                    continue;
+
+                entity.EventParams.isTalkHit = false;
+                EntityParam param = entity.EventParams;
+                if (param.IsEventRunning)
+                    continue;
+
+                param.isTalkHit = CanContact2(entity, playerpos);
+            }
+
+            float minAngle = 999.0f;
+            int index = -1;
+            for (int i = 0; i < _fieldObjectEntity.Count; i++)
+            {
+                FieldObjectEntity entity = _fieldObjectEntity[i];
+                if (entity == null)
+                    continue;
+
+                if (!entity.EventParams.isTalkHit)
+                    continue;
+
+                if (entity.EventParams.TalkAngle < minAngle)
+                {
+                    minAngle = entity.EventParams.TalkAngle;
+                    index = i;
+                }
+            }
+
+            if (index != -1)
+            {
+                EntityParam hitParam = _fieldObjectEntity[index].EventParams;
+                string label;
+                if (pushA & inputActive)
+                {
+                    if (UIManager.IsFieldOpenMenu())
+                        return false;
+
+                    label = hitParam.TalkLabel;
+                    if (string.IsNullOrEmpty(label))
+                        label = hitParam.ContactLabel;
+
+                    FieldCharacterEntity character = _fieldObjectEntity[index] as FieldCharacterEntity;
+                    if (character != null)
+                    {
+                        _talkTrinerIndex[0] = -1;
+                        TrainerID trainerID = character.EventParams.TrainerID;
+                        if (trainerID != TrainerID.NONE && trainerID != TrainerID.MAX)
+                            _talkTrinerIndex[0] = (int)trainerID;
+                    }
+
+                    OnTalkStartCallBack?.Invoke(hitParam);
+
+                    _hit_position.x = _fieldObjectEntity[index].worldPosition.x;
+                    _hit_position.z = _fieldObjectEntity[index].worldPosition.z;
+                }
+                else
+                {
+                    label = hitParam.ContactLabel;
+                }
+
+                bool talkOK = true;
+                FieldPokemonEntity pokemon = _fieldObjectEntity[index] as FieldPokemonEntity;
+                if (pokemon != null && FieldManager.fwMng != null)
+                {
+                    var partner = FieldManager.fwMng.GetPartnerPokeController();
+                    if (partner != null && !partner.IsEventTalkOK(pokemon))
+                        talkOK = false;
+                }
+
+                if (talkOK && RunObjectEvent(index, _fieldObjectEntity[index], label))
+                    return true;
+            }
+
+            if (WarpListCheck())
+                return true;
+
+            if (_doorEntity != null && !_warpList.Contains(_doorEntity) && WarpHit(_doorEntity))
+                return true;
+
+            if (_liftEntity != null && IsLiftHit(_liftEntity))
+                return true;
+
+            if (_nagisaGymGearEntity != null && IsNagisaGymGearHit(_nagisaGymGearEntity))
+                return true;
+
+            if (_nomoseGymSwitchEntity != null && IsNomoseGymSwitchHit(_nomoseGymSwitchEntity))
+                return true;
+
+            // IsEyePaintingHit inlined; its result is not used (falls through to the embankment test).
+            if (_eyePaintingEntity != null)
+                IsEyePaintingHit(_eyePaintingEntity);
+
+            if (_embankmentEntity != null && IsEmbankmentHit(_embankmentEntity))
+                return true;
+
+            return false;
+        }
 		public global::UnityEngine.Vector3 CalcContactCheckPos() {
             Vector3 position = EntityManager.activeFieldPlayer.worldPosition;
             float rad = EntityManager.activeFieldPlayer.yawAngle * Mathf.Deg2Rad;
@@ -1168,9 +1425,150 @@ namespace Dpr.EvScript
             position.z += Mathf.Cos(rad) * 0.5f;
             return position;
         }
-		public bool CanContact(global::FieldObjectEntity obj, global::UnityEngine.Vector3 playerpos) { /*@B 0x6008B9D*/ throw null; }
-		public bool CanContact2(global::FieldObjectEntity obj, global::UnityEngine.Vector3 playerpos) { /*@B 0x6008B9E*/ throw null; }
-		public void ClearPlayerMoveVector() { /*@B 0x6008B9F*/ throw null; }
+		public bool CanContact(global::FieldObjectEntity obj, global::UnityEngine.Vector3 playerpos) {
+            // Tail jump in the binary (b CanContact2 @02c4b850).
+            return CanContact2(obj, playerpos);
+        }
+		public bool CanContact2(global::FieldObjectEntity obj, global::UnityEngine.Vector3 playerpos) {
+            FieldPlayerEntity player = EntityManager.activeFieldPlayer;
+            if (obj == null)
+                return false;
+
+            if (player == obj)
+                return false;
+
+            if (!obj.gameObject.activeInHierarchy)
+                return false;
+
+            EntityParam param = obj.EventParams;
+            if (param.ContactLabel == "" && param.TalkLabel == "")
+                return false;
+
+            if (param.VanishFlagIndex > -1 && param.VanishFlagIndex != (int)EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag((EvWork.FLAG_INDEX)param.VanishFlagIndex))
+                return false;
+
+            if (param.WorkIndex != EvWork.WORK_INDEX.SCWK_WK_SAVE_SIZE && FlagWork.GetWork(param.WorkIndex) != param.WorkValue)
+                return false;
+
+            if (obj.EventParams.Rockclimb && !player.CheckRockClimbing(obj))
+                return false;
+
+            if (!obj.EventParams.HeightIgnore)
+            {
+                float playerY = playerpos.y;
+                float heightRange = 0.3f;
+                if (player.IsSwim())
+                {
+                    playerY = playerpos.y - 0.6f;
+                    heightRange = 0.6f;
+                }
+
+                if (obj.EventParams.Kairiki)
+                    heightRange = 0.6f;
+
+                if (heightRange < Math.Abs(playerY - obj.Height))
+                    return false;
+            }
+
+            if (obj.EventParams.IsContactCenter && IsHit(playerpos, obj.worldPosition, obj.EventParams.ContactSize, true))
+                return true;
+
+            Vector2 player2D = new Vector2(playerpos.x, playerpos.z);
+            Vector2 segA = new Vector2(obj.worldPosition.x, obj.worldPosition.z);
+            Vector2 segB = segA + obj.EventParams.TalkSegment;
+            float radius = obj.EventParams.TalkRange;
+
+            // b.ls / b.hi: NaN counts as "too far".
+            if (!(new Vector2(segA.x - player2D.x, segA.y - player2D.y).sqrMagnitude <= 100.0f) &&
+                !(new Vector2(segB.x - player2D.x, segB.y - player2D.y).sqrMagnitude <= 100.0f))
+                return false;
+
+            float angleAT;
+            float angleBT;
+            float distance;
+            int hitstatus;
+            SegmentHit(ref segA, ref segB, ref player2D, radius, out angleAT, out angleBT, out distance, out hitstatus);
+
+            if (hitstatus == 0)
+            {
+                if (!obj.EventParams.Rockclimb)
+                    return false;
+
+                Vector3 anotherPos = player.CalcRockClimbingAnotherTalkPosition(obj);
+                segA = new Vector2(anotherPos.x, anotherPos.z);
+                segB = segA + obj.EventParams.TalkSegment;
+                SegmentHit(ref segA, ref segB, ref player2D, radius, out angleAT, out angleBT, out distance, out hitstatus);
+
+                if (hitstatus == 0)
+                    return false;
+
+                Vector2 rockHitPos;
+                if (hitstatus == 2)
+                {
+                    rockHitPos = segA;
+                }
+                else if (hitstatus == 1)
+                {
+                    Vector2 rockDir = (segB - segA).normalized;
+                    rockDir = new Vector2(-rockDir.y, rockDir.x);
+                    rockHitPos = player2D - rockDir * distance;
+                }
+                else
+                {
+                    rockHitPos = segB;
+                }
+
+                Vector2 rockDiff = new Vector2(rockHitPos.x - player2D.x, rockHitPos.y - player2D.y);
+                float rockAngle = PlayerDiffAngle(ref rockDiff);
+                if (rockAngle <= DataManager.FieldCommonParam[(int)ParamIndx.TalkAngleLimit].param)
+                {
+                    obj.EventParams.TalkAngle = rockAngle;
+                    _hit_position.x = rockHitPos.x;
+                    _hit_position.y = obj.Height;
+                    _hit_position.z = rockHitPos.y;
+                    return true;
+                }
+
+                obj.EventParams.TalkAngle = -1.0f;
+                return false;
+            }
+
+            Vector2 hitPos;
+            if (hitstatus == 2)
+            {
+                hitPos = segA;
+            }
+            else if (hitstatus == 1)
+            {
+                Vector2 dir = (segB - segA).normalized;
+                dir = new Vector2(-dir.y, dir.x);
+                hitPos = player2D - dir * distance;
+            }
+            else
+            {
+                hitPos = segB;
+            }
+
+            if (!IsTalkBitMask(ref player2D, ref hitPos, obj.EventParams.TalkBit))
+                return false;
+
+            Vector2 diff = new Vector2(hitPos.x - player2D.x, hitPos.y - player2D.y);
+            float angle = PlayerDiffAngle(ref diff);
+            if (angle > DataManager.FieldCommonParam[(int)ParamIndx.TalkAngleLimit].param)
+            {
+                obj.EventParams.TalkAngle = -1.0f;
+                return false;
+            }
+
+            obj.EventParams.TalkAngle = angle;
+            _hit_position.x = hitPos.x;
+            _hit_position.y = obj.Height;
+            _hit_position.z = hitPos.y;
+            return true;
+        }
+		public void ClearPlayerMoveVector() {
+            EntityManager.activeFieldPlayer.moveVector = Vector3.zero;
+        }
 		public bool RunObjectEvent(int idx, global::FieldObjectEntity obj, string label) {
             if (string.IsNullOrEmpty(label))
                 return false;
@@ -1248,15 +1646,129 @@ namespace Dpr.EvScript
                     return false;
             }
         }
-		private bool IsHit(global::UnityEngine.Vector3 traA, global::UnityEngine.Vector3 traB, global::UnityEngine.Vector2 rangB, bool center) { /*@B 0x6008BA2*/ throw null; }
+		private bool IsHit(global::UnityEngine.Vector3 traA, global::UnityEngine.Vector3 traB, global::UnityEngine.Vector2 rangB, bool center) {
+            if (center)
+                return Math.Abs(traA.x - traB.x) < rangB.x && Math.Abs(traA.z - traB.z) < rangB.y;
+
+            Rect rect = new Rect(Math.Abs(traB.x) - 0.5f, Math.Abs(traB.z) - 0.5f, rangB.x, rangB.y);
+            return rect.Contains(new Vector2(Math.Abs(traA.x), Math.Abs(traA.z)));
+        }
 		private float PlayerDiffAngle(ref global::UnityEngine.Vector2 diff) {
             var forward = new Vector2(EntityManager.activeFieldPlayer.transform.forward.x, EntityManager.activeFieldPlayer.transform.forward.z);
             return Vector2.Angle(forward, diff);
         }
-		private bool IsCircleHit(ref global::UnityEngine.Vector2 v1, ref global::UnityEngine.Vector2 v2, float range, out float outAngle) { /*@B 0x6008BA4*/ throw null; }
-		private bool IsCircleHit(ref global::UnityEngine.Vector2 v1, ref global::UnityEngine.Vector2 v2, float range) { /*@B 0x6008BA5*/ throw null; }
-		private bool WarpListCheck() { /*@B 0x6008BA6*/ throw null; }
-		private void EvCmdCmpMain(global::Dpr.EvScript.EvWork.WORK_INDEX r1, global::Dpr.EvScript.EvWork.WORK_INDEX r2) { /*@B 0x6008BA7*/ throw null; }
+		private bool IsCircleHit(ref global::UnityEngine.Vector2 v1, ref global::UnityEngine.Vector2 v2, float range, out float outAngle) {
+            Vector2 diff = new Vector2(v2.x - v1.x, v2.y - v1.y);
+            outAngle = PlayerDiffAngle(ref diff);
+            if (outAngle > DataManager.FieldCommonParam[(int)ParamIndx.TalkAngleLimit].param)
+                return false;
+
+            return new Vector2(v2.x - v1.x, v2.y - v1.y).sqrMagnitude <= range * range;
+        }
+		private bool IsCircleHit(ref global::UnityEngine.Vector2 v1, ref global::UnityEngine.Vector2 v2, float range) {
+            return new Vector2(v2.x - v1.x, v2.y - v1.y).sqrMagnitude <= range * range;
+        }
+		private bool WarpListCheck() {
+            if (IsPlayingUgEnterOrExit())
+                return false;
+
+            Vector3 playerPos = EntityManager.activeFieldPlayer.worldPosition;
+            FieldEventDoorEntity[] doors = EntityManager.fieldDoorObjects;
+            for (int i = 0; i < doors.Length; i++)
+            {
+                FieldEventDoorEntity entity = doors[i];
+                if (entity == null || !entity.doorEnable)
+                    continue;
+
+                int warpIndex = entity.EventParams.WorkValue;
+                if (warpIndex >= 0)
+                {
+                    EvWork.FLAG_INDEX flagIndex = _warpData.Data[warpIndex].FlagIndex;
+                    if (flagIndex != EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag(flagIndex))
+                        continue;
+                }
+
+                // fcmp / fccmp le / b.le: a NaN distance passes, as shipped.
+                float dx = playerPos.x - entity.worldPosition.x;
+                float dy = playerPos.y - entity.worldPosition.y;
+                float dz = playerPos.z - entity.worldPosition.z;
+                if (dy * dy > 1.0f || dx * dx + dz * dz > 36.0f)
+                    continue;
+
+                Vector3 resultPosition;
+                float subtendedAngle;
+                float lineDistance;
+                if (!WarpSegmentHitCheck(entity, out resultPosition, out subtendedAngle, out lineDistance, DataManager.FieldCommonParam[(int)ParamIndx.WarpSegmentRadius].param))
+                    continue;
+
+                Vector3 inputMove = EntityManager.activeFieldPlayer.InputMoveVector;
+                if (inputMove.x == 0.0f && inputMove.z == 0.0f)
+                    continue;
+
+                Vector2 toResult = new Vector2(resultPosition.x - EntityManager.activeFieldPlayer.worldPosition.x, resultPosition.z - EntityManager.activeFieldPlayer.worldPosition.z);
+                Vector2 inputDir = new Vector2(inputMove.x, inputMove.z);
+                if (!(FieldCalc.SubtendedAngle(ref toResult, ref inputDir) < 60.0f) || !(subtendedAngle < 60.0f))
+                    continue;
+
+                if (IsPosEventOverWarp(ref entity.worldPosition))
+                    return false;
+
+                if (IsPosEventOverWarp(ref playerPos))
+                    return false;
+
+                switch (entity.startVectol)
+                {
+                    case global::FieldDoor.StartVectol.Up:
+                        if (resultPosition.z > playerPos.z)
+                            continue;
+                        break;
+                    case global::FieldDoor.StartVectol.Down:
+                        if (resultPosition.z < playerPos.z)
+                            continue;
+                        break;
+                    case global::FieldDoor.StartVectol.Left:
+                        if (resultPosition.x < playerPos.x)
+                            continue;
+                        break;
+                    case global::FieldDoor.StartVectol.Right:
+                        if (resultPosition.x > playerPos.x)
+                            continue;
+                        break;
+                    case global::FieldDoor.StartVectol.All:
+                        if (EntityManager.activeFieldPlayer.gridPosition != entity.gridPosition)
+                            continue;
+                        break;
+                }
+
+                float angle;
+                if (entity.startVectol == global::FieldDoor.StartVectol.All)
+                    angle = EntityManager.activeFieldPlayer.yawAngle;
+                else
+                    angle = CorrectionDirAngle(entity);
+
+                EntityManager.activeFieldPlayer.SetEventCorrectionMove(resultPosition, angle);
+                _worpEventData.Entity = entity;
+                _worpEventData.State = 0;
+                PlayerWork.isPlayerInputActive = false;
+                _updateDelegate = WarpUpdate;
+                // WarpUpdate never reads its time argument (no s0 set before the call @02c4ad88).
+                WarpUpdate(0.0f);
+                return true;
+            }
+
+            return false;
+        }
+		private void EvCmdCmpMain(global::Dpr.EvScript.EvWork.WORK_INDEX r1, global::Dpr.EvScript.EvWork.WORK_INDEX r2) {
+            int a = FlagWork.GetWork(r1);
+            int b = FlagWork.GetWork(r2);
+            if (a < b)
+                _cmp_flag = CmpResult.MINUS;
+            else if (a == b)
+                _cmp_flag = CmpResult.EQUAL;
+
+            // Shipped quirk: the unconditional store below always wins (str w8=2 @02c4cce4).
+            _cmp_flag = CmpResult.PLUS;
+        }
 		public void OnEventEnter(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x6008BA8*/ throw null; }
 		public void OnEventStay(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x6008BA9*/ throw null; }
 		public void OnEventLeave(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x6008BAA*/ throw null; }
