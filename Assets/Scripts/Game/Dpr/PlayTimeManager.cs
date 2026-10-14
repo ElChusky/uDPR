@@ -4,11 +4,13 @@ namespace Dpr
 {
 	public static class PlayTimeManager
 	{
-		private static bool _isInitialized;
+		private static bool _isInitialized = false;
 		private static global::System.DateTime _prevDateTime;
-		private static int _limitSec;
-		private static int _limitAddSec;
-		public static bool isInitialized { get { /*@B 0x6003116*/ throw null; } }
+		private static int _limitSec = 3599999;
+		private static int _limitAddSec = 1;
+		public static bool isInitialized { get {
+				return _isInitialized;
+			} }
 		public static void Initialize() {
             if (_isInitialized)
                 return;
@@ -40,6 +42,6 @@ namespace Dpr
             playtime.second = (byte)(sec % 60);
             PlayerWork.playerData.playtime = playtime;
         }
-		static PlayTimeManager() { /*@B 0x6003119*/ throw null; }
+		static PlayTimeManager() { }
 	}
 }

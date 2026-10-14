@@ -12,23 +12,23 @@ namespace Dpr
 	public class ObjectEntity : global::BaseEntity, global::Dpr.Battle.View.ITranslationObject
 	{
 		public const int BALL_LIGHT_EFFECT_INDEX = -1;
-		private static global::System.Collections.Generic.Dictionary<string, global::Effect.EffectData> _sealEffectDataDic;
+		private static global::System.Collections.Generic.Dictionary<string, global::Effect.EffectData> _sealEffectDataDic = new global::System.Collections.Generic.Dictionary<string, global::Effect.EffectData>();
 		[global::UnityEngine.SerializeField]
-		private global::AnimationPlayer _animationPlayer;
+		private global::AnimationPlayer _animationPlayer = new global::AnimationPlayer();
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Transform[] _locators;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.Battle.View.Objects.BattleModelParticleEntity[] _modelParticleEntities;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Playables.DirectorUpdateMode _updateMode;
-		private global::UnityEngine.Vector3 _translation;
-		private global::UnityEngine.Vector3 _translationOffset;
-		private global::UnityEngine.Vector3 _scale;
-		private global::UnityEngine.Vector3 _scaleOffset;
-		private global::UnityEngine.Vector3 _rotVec;
-		private global::UnityEngine.Vector3 _rotVecOffset;
+		private global::UnityEngine.Playables.DirectorUpdateMode _updateMode = global::UnityEngine.Playables.DirectorUpdateMode.GameTime;
+		private global::UnityEngine.Vector3 _translation = global::UnityEngine.Vector3.zero;
+		private global::UnityEngine.Vector3 _translationOffset = global::UnityEngine.Vector3.zero;
+		private global::UnityEngine.Vector3 _scale = global::UnityEngine.Vector3.one;
+		private global::UnityEngine.Vector3 _scaleOffset = global::UnityEngine.Vector3.one;
+		private global::UnityEngine.Vector3 _rotVec = global::UnityEngine.Vector3.zero;
+		private global::UnityEngine.Vector3 _rotVecOffset = global::UnityEngine.Vector3.zero;
 		private global::Dpr.Battle.View.BtlvObjectFollowInfo _objectFollowInfo;
-		private global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BtlvEffectInstance> _sealEffectInstances;
+		private global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BtlvEffectInstance> _sealEffectInstances = new global::System.Collections.Generic.List<global::Dpr.Battle.View.Objects.BtlvEffectInstance>();
 		public override string entityType { get => "ObjectEntity"; }
 		public bool IsSuspendUpdate { get; set; }
 		public bool IsEffectLoaded { get {
@@ -50,7 +50,13 @@ namespace Dpr
 			base.Awake();
 			BattleJobSystem.Add(this);
 		}
-		protected override void OnDestroy() { /*@B 0x60030C6*/ throw null; }
+		protected override void OnDestroy() {
+			_animationPlayer = null;
+			_modelParticleEntities = null;
+			_sealEffectInstances = null;
+			BattleJobSystem.Remove(this);
+			base.OnDestroy();
+		}
 		protected override void OnEnable() {
 			base.OnEnable();
 			_animationPlayer.InitializePlayables(GetComponent<Animator>());
@@ -333,7 +339,7 @@ namespace Dpr
 			if (_objectFollowInfo != null)
 				_objectFollowInfo = null;
 		}
-		public ObjectEntity() { /*@B 0x60030ED*/ throw null; }
-		static ObjectEntity() { /*@B 0x60030EE*/ throw null; }
+		public ObjectEntity() { }
+		static ObjectEntity() { }
 	}
 }

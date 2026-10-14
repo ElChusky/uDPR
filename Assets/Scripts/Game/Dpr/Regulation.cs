@@ -24,10 +24,27 @@ namespace Dpr
 			private const int bitsA0_mask = 1;
 			private const int bitsA1_mask = 2;
 			private const int bitsA2_mask = 4;
-			public bool enable_legend { get { /*@B 0x6009E47*/ throw null; } set { /*@B 0x6009E48*/ throw null; } }
-			public bool enable_same_poke { get { /*@B 0x6009E49*/ throw null; } set { /*@B 0x6009E4A*/ throw null; } }
-			public bool enable_same_item { get { /*@B 0x6009E4B*/ throw null; } set { /*@B 0x6009E4C*/ throw null; } }
-			public Data(byte pokeNumMin, byte pokeNumMax, global::Dpr.Regulation.LevelRangeType levelRange = (global::Dpr.Regulation.LevelRangeType)(0), bool isEnableLegend = true, bool isEnableSamePoke = true, bool isEnableSameItem = true) { /*@B 0x6009E46*/ throw null; }
+			public bool enable_legend { get {
+					return (_bitsA & bitsA0_mask) != 0;
+				} set {
+					_bitsA = (byte)((_bitsA & ~bitsA0_mask) | (value ? 1 : 0));
+				} }
+			public bool enable_same_poke { get {
+					return ((_bitsA >> bitsA1_loc) & bitsA0_mask) != 0;
+				} set {
+					_bitsA = (byte)((_bitsA & ~bitsA1_mask) | (value ? bitsA1_mask : 0));
+				} }
+			public bool enable_same_item { get {
+					return ((_bitsA >> bitsA2_loc) & bitsA0_mask) != 0;
+				} set {
+					_bitsA = (byte)((_bitsA & ~bitsA2_mask) | (value ? bitsA2_mask : 0));
+				} }
+			public Data(byte pokeNumMin, byte pokeNumMax, global::Dpr.Regulation.LevelRangeType levelRange = (global::Dpr.Regulation.LevelRangeType)(0), bool isEnableLegend = true, bool isEnableSamePoke = true, bool isEnableSameItem = true) {
+				select_num_lo = pokeNumMin;
+				select_num_hi = pokeNumMax;
+				level_range = levelRange;
+				_bitsA = (byte)((isEnableLegend ? 1 : 0) | (isEnableSamePoke ? bitsA1_mask : 0) | (isEnableSameItem ? bitsA2_mask : 0));
+			}
 		}
 	}
 }
