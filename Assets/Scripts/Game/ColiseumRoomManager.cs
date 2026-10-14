@@ -52,7 +52,7 @@ public class ColiseumRoomManager : global::Dpr.SubContents.NetUseManager<global:
 	private global::Dpr.NetworkUtils.BattleModeID battleModeID;
 	private bool isEnableInput;
 	private bool isCalledFadeOut;
-	private readonly global::EffectFieldID[] LOAD_EFFECT_IDS = new global::EffectFieldID[] { global::EffectFieldID.EF_F_MARK_SQUARE_BLUE_01, global::EffectFieldID.EF_F_MARK_SQUARE_BLUE_02, global::EffectFieldID.EF_F_MARK_SQUARE_RED_01, global::EffectFieldID.EF_F_MARK_SQUARE_RED_02 }; // TO CHECK: InitializeArray blob not readable; only this order of 240..243 exists as a 16-byte run in main_flat.bin
+	private readonly global::EffectFieldID[] LOAD_EFFECT_IDS = new global::EffectFieldID[] { global::EffectFieldID.EF_F_MARK_SQUARE_BLUE_01, global::EffectFieldID.EF_F_MARK_SQUARE_BLUE_02, global::EffectFieldID.EF_F_MARK_SQUARE_RED_01, global::EffectFieldID.EF_F_MARK_SQUARE_RED_02 }; // InitializeArray blob: global-metadata.dat @0x665F6A = int32 {240, 241, 242, 243} (tools/clean/blob.py)
 	private global::System.Collections.Generic.Dictionary<int, global::Effect.EffectData> effectDataTable = new global::System.Collections.Generic.Dictionary<int, global::Effect.EffectData>();
 	private global::BattleMatchingManager battleMatchingManager;
 	private bool isNetworkError;
