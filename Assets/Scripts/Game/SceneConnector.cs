@@ -2,9 +2,9 @@
 public class SceneConnector : global::UnityEngine.MonoBehaviour
 {
 	[global::UnityEngine.SerializeField]
-	public global::SceneID sceneID;
+	public global::SceneID sceneID = global::SceneID.Title;
 	[global::UnityEngine.SerializeField]
-	public string scenePath;
+	public string scenePath = string.Empty;
 	[global::UnityEngine.SerializeField]
 	public global::UnityEngine.Camera mainCamera;
 	[global::UnityEngine.SerializeField]
@@ -14,23 +14,120 @@ public class SceneConnector : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.SerializeField]
 	protected global::UnityEngine.Transform _characterCacheObjects;
 	private global::PeriodOfDay _fixedPeriodOfDay;
-	public bool IsEnableUpdate;
+	public bool IsEnableUpdate = true;
 	private bool IsRenderSettingsDirty;
 	public global::EnvironmentSettings renderSettings;
 	public global::EnvironmentController environmentController;
 	public global::UnityEngine.SceneManagement.Scene scene { get; set; }
 	public global::UnityEngine.Transform bgCacheObjects { get { return this._bgCacheObjects; } }
 	public global::UnityEngine.Transform characterCacheObjects { get { return this._characterCacheObjects; } }
-	public virtual global::System.Collections.IEnumerator PrepareOperation() { /*@B 0x6000B61*/ throw null; }
-	public virtual global::System.Collections.IEnumerator SetupOperation() { /*@B 0x6000B62*/ throw null; }
-	public virtual bool SwitchingOperation(global::SceneID target) { /*@B 0x6000B63*/ throw null; }
+	public virtual global::System.Collections.IEnumerator PrepareOperation() {
+		yield return null;
+	}
+	public virtual global::System.Collections.IEnumerator SetupOperation() {
+		ClearBGCache();
+		ClearCharacterCache();
+		yield return null;
+	}
+	public virtual bool SwitchingOperation(global::SceneID target) => sceneID != target;
 	[global::SmartPoint.AssetAssistant.SceneBeforeActivateOperationMethodAttribute]
-	private global::System.Collections.IEnumerator ActivateOperation(global::UnityEngine.Transform cluster) { /*@B 0x6000B68*/ throw null; }
-	public virtual void OnEnable() { /*@B 0x6000B69*/ throw null; }
-	public void ResetLight(bool isForceCurrentPeriodOfDay = true) { /*@B 0x6000B6A*/ throw null; }
-	public virtual void OnDisable() { /*@B 0x6000B6B*/ throw null; }
-	public virtual void OnUpdate(float deltaTime) { /*@B 0x6000B6C*/ throw null; }
-	public void ClearBGCache() { /*@B 0x6000B6D*/ throw null; }
-	public void ClearCharacterCache() { /*@B 0x6000B6E*/ throw null; }
-	public SceneConnector() { /*@B 0x6000B6F*/ throw null; }
+	private global::System.Collections.IEnumerator ActivateOperation(global::UnityEngine.Transform cluster) {
+		scene = cluster.gameObject.scene;
+		environmentController = cluster.GetComponentInChildren<global::EnvironmentController>(true);
+		global::GameManager.connector = this;
+		global::SmartPoint.Components.Fader.valid = false;
+		yield return null;
+	}
+	public virtual void OnEnable() {
+		global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+		_fixedPeriodOfDay = global::GameManager.currentPeriodOfDay;
+		if (renderSettings != null && sceneID == global::SceneID.Battle)
+			global::EnvironmentController.global.SetLight(renderSettings, global::GameManager.currentPeriodOfDay, 0f, 0f);
+		global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+	}
+	public void ResetLight(bool isForceCurrentPeriodOfDay = true) {
+		if (renderSettings == null)
+			return;
+		if (sceneID == global::SceneID.Battle)
+		{
+			if (isForceCurrentPeriodOfDay)
+			{
+				global::EnvironmentController.global.SetLight(renderSettings, global::GameManager.currentPeriodOfDay, 0f, 0f);
+				_fixedPeriodOfDay = global::GameManager.currentPeriodOfDay;
+			}
+			else
+			{
+				global::EnvironmentController.global.SetLight(renderSettings, _fixedPeriodOfDay, 0f, 0f);
+			}
+		}
+		else
+		{
+			global::EnvironmentController.global.SetLight(renderSettings, global::GameManager.currentPeriodOfDay, 0f, 0f);
+		}
+	}
+	public virtual void OnDisable() {
+		global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+	}
+	public virtual void OnUpdate(float deltaTime) {
+		if (!IsEnableUpdate)
+			return;
+		if (renderSettings == null)
+			return;
+		(global::PeriodOfDay periodOfDay, float progress, float weight) = global::GameManager.currentPeriodOfDayEx;
+		if (sceneID == global::SceneID.Field && global::PlayerWork.zoneID != global::ZoneID.UNKNOWN)
+		{
+			global::XLSXContent.MapInfo.SheetZoneData zoneData = global::GameManager.mapInfo[(int)global::PlayerWork.zoneID];
+			if (global::FieldManager.Instance != null)
+			{
+				bool isCutIn = false;
+				if (global::Dpr.EvScript.EvDataManager.Instanse.FieldWazaCutIn.IsBusy && global::Dpr.EvScript.EvDataManager.Instanse.FieldWazaCutIn.IsOverrideEnvironmentSettings)
+				{
+					renderSettings = global::Dpr.EvScript.EvDataManager.Instanse.FieldWazaCutIn.GetEnvironmentSettings();
+					isCutIn = true;
+					periodOfDay = global::PeriodOfDay.Daytime;
+				}
+				if (!isCutIn && global::FieldManager.Instance.MistWork.IsEnable)
+				{
+					global::FieldManager.Instance.MistWork.Update(deltaTime);
+					renderSettings = global::FieldManager.Instance.MistWork.GetCurrentSetting();
+					IsRenderSettingsDirty = true;
+				}
+				else if (isCutIn)
+				{
+					IsRenderSettingsDirty = true;
+				}
+				else if (IsRenderSettingsDirty)
+				{
+					renderSettings = zoneData.RenderSettings;
+					IsRenderSettingsDirty = false;
+				}
+			}
+			if (zoneData.FixedTime)
+			{
+				global::EnvironmentController.global.SetLight(renderSettings, global::PeriodOfDay.Daytime, 0f, 0f);
+				global::EnvironmentController.global._EmissionThreshold = (progress + (float)periodOfDay) * 0.2f;
+			}
+			else
+			{
+				global::EnvironmentController.global.SetLight(renderSettings, periodOfDay, progress, weight);
+			}
+		}
+		else if (sceneID == global::SceneID.Battle)
+		{
+			ResetLight(false);
+		}
+	}
+	public void ClearBGCache() {
+		if (_bgCacheObjects == null)
+			return;
+		foreach (global::UnityEngine.Transform child in _bgCacheObjects)
+			global::UnityEngine.Object.Destroy(child.gameObject);
+	}
+	public void ClearCharacterCache() {
+		if (_characterCacheObjects == null)
+			return;
+		foreach (global::UnityEngine.Transform child in _characterCacheObjects)
+			global::UnityEngine.Object.Destroy(child.gameObject);
+	}
+	public SceneConnector() { }
 }

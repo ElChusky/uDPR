@@ -3,5 +3,9 @@ public struct RendererInfo
 {
 	public global::UnityEngine.Renderer Renderer { get; private set; }
 	public int MaterialCount { get; private set; }
-	public RendererInfo(global::UnityEngine.Renderer renderer) { /*@B 0x60005A4*/ throw null; }
+	public RendererInfo(global::UnityEngine.Renderer renderer) {
+		this = default;
+		Renderer = renderer;
+		MaterialCount = renderer.sharedMaterials.Length;
+	}
 }

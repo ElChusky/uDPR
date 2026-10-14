@@ -61,7 +61,19 @@ public class RenkeiData
 		param.EndFastMode(param.StartFastMode());
 		return param;
 	}
-	private static global::Pml.PokePara.PokemonParam Get_3() { /*@B 0x600035B*/ throw null; }
+	private static global::Pml.PokePara.PokemonParam Get_3() {
+		ushort seikaku = 0;
+		InitialSpec spec = new InitialSpec();
+		spec.monsno = MonsNo.IIBUI;
+		spec.level = 5;
+		if (OtherSinkuro(out seikaku))
+			spec.seikaku = seikaku;
+
+		PokemonParam param = new PokemonParam(spec);
+		poketool_poke_memo.SetFromCapture(param, PlayerWork.playerStatus, PlayerWork.zoneID);
+		param.EndFastMode(param.StartFastMode());
+		return param;
+	}
 	private static bool OtherSinkuro(out ushort seikaku) {
 		seikaku = 0;
 		CoreParam param = PlayerWork.playerParty.GetMemberPointer(0);

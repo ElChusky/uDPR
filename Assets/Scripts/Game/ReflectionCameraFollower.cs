@@ -5,7 +5,7 @@ public class ReflectionCameraFollower : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.Camera _target;
 	[global::UnityEngine.SerializeField]
-	private float _fovScale;
+	private float _fovScale = 1.5f;
 	private global::UnityEngine.Camera _camera;
 	private global::UnityEngine.Transform _targetTransform;
 	private global::UnityEngine.Transform _cameraTransform;
@@ -14,9 +14,73 @@ public class ReflectionCameraFollower : global::UnityEngine.MonoBehaviour
 	private global::UnityEngine.RenderTexture _targetTexture;
 	private int customWidth;
 	private int customHeight;
-	private void OnEnable() { /*@B 0x6000B5C*/ throw null; }
-	private void OnDisable() { /*@B 0x6000B5D*/ throw null; }
-	private void LateUpdate() { /*@B 0x6000B5E*/ throw null; }
-	public void SetCustomResolution(int width, int height) { /*@B 0x6000B5F*/ throw null; }
-	public ReflectionCameraFollower() { /*@B 0x6000B60*/ throw null; }
+	private void OnEnable() {
+		if (global::UnityEngine.Screen.width == 0 || global::UnityEngine.Screen.height == 0)
+			return;
+		if (_camera == null)
+			_camera = GetComponent<global::UnityEngine.Camera>();
+		_cameraTransform = _camera.transform;
+		_cameraTransform = _camera.transform;
+		if (_targetTexture == null)
+		{
+			_targetTexture = new global::UnityEngine.RenderTexture(global::UnityEngine.Screen.width, global::UnityEngine.Screen.height, 24, global::UnityEngine.RenderTextureFormat.ARGB32, 6);
+			_targetTexture.useMipMap = true;
+			_targetTexture.autoGenerateMips = true;
+		}
+		_camera.targetTexture = _targetTexture;
+		_ReflectionTexID = global::UnityEngine.Shader.PropertyToID("_ReflectionTex");
+		_ReflectionVP = global::UnityEngine.Shader.PropertyToID("_ReflectionVP");
+		global::UnityEngine.Shader.SetGlobalTexture(_ReflectionTexID, _camera.targetTexture);
+	}
+	private void OnDisable() {
+		if (_camera != null)
+			_camera.targetTexture = null;
+		if (_targetTexture != null)
+			global::UnityEngine.Object.DestroyImmediate(_targetTexture);
+	}
+	private void LateUpdate() {
+		if (_target == null || _ReflectionTexID == 0)
+			return;
+		if (_targetTransform == null)
+			_targetTransform = _target.transform;
+		if (_camera == null)
+		{
+			_camera = GetComponent<global::UnityEngine.Camera>();
+			_cameraTransform = _camera.transform;
+		}
+		if (_camera.targetTexture == null)
+			return;
+		global::UnityEngine.Vector3 position = _targetTransform.position;
+		global::UnityEngine.Vector3 euler = _targetTransform.rotation.eulerAngles;
+		_cameraTransform.position = new global::UnityEngine.Vector3(position.x, -position.y, position.z);
+		_cameraTransform.rotation = global::UnityEngine.Quaternion.Euler(-euler.x, euler.y, -euler.z);
+		_camera.fieldOfView = _target.fieldOfView * _fovScale;
+		global::UnityEngine.Matrix4x4 view = _camera.worldToCameraMatrix;
+		global::UnityEngine.Matrix4x4 proj = global::UnityEngine.GL.GetGPUProjectionMatrix(_camera.projectionMatrix, false);
+		global::UnityEngine.Shader.SetGlobalMatrix(_ReflectionVP, proj * view);
+		if (_targetTexture != null)
+		{
+			int width = customWidth;
+			if (width < 1)
+				width = global::UnityEngine.Screen.width;
+			int height = customHeight;
+			if (height < 1)
+				height = global::UnityEngine.Screen.height;
+			if (width != _targetTexture.width || height != _targetTexture.height)
+			{
+				_camera.targetTexture = null;
+				global::UnityEngine.Object.DestroyImmediate(_targetTexture);
+				_targetTexture = new global::UnityEngine.RenderTexture(width, height, 24, global::UnityEngine.RenderTextureFormat.ARGB32, 6);
+				_targetTexture.useMipMap = true;
+				_targetTexture.autoGenerateMips = true;
+				_camera.targetTexture = _targetTexture;
+			}
+		}
+		global::UnityEngine.Shader.SetGlobalTexture(_ReflectionTexID, _camera.targetTexture);
+	}
+	public void SetCustomResolution(int width, int height) {
+		customWidth = width;
+		customHeight = height;
+	}
+	public ReflectionCameraFollower() { }
 }
