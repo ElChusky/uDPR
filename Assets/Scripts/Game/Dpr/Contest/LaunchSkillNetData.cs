@@ -4,6 +4,6 @@ namespace Dpr.Contest
 	public class LaunchSkillNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Contest.LaunchSkillData>
 	{
 		public override byte GetDataID { get { return 9; } }
-		public LaunchSkillNetData() { /*@B 0x6004358*/ throw null; }
+		public LaunchSkillNetData() { }
 	}
 }

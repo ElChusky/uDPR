@@ -5,7 +5,7 @@ namespace Dpr.Contest
 	public class NPCHeartParam
 	{
 		public global::DG.Tweening.Ease easeType;
-		public float duration;
-		public NPCHeartParam() { /*@B 0x60043B7*/ throw null; }
+		public float duration = 1f;
+		public NPCHeartParam() { }
 	}
 }

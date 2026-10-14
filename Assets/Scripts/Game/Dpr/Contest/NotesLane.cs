@@ -7,7 +7,12 @@ namespace Dpr.Contest
 {
 	public class NotesLane : global::UnityEngine.MonoBehaviour
 	{
-		private readonly global::Dpr.SubContents.EmitEffectParam[] COMMON_TAP_GRADE_FX;
+		private readonly global::Dpr.SubContents.EmitEffectParam[] COMMON_TAP_GRADE_FX = new global::Dpr.SubContents.EmitEffectParam[]
+		{
+			new global::Dpr.SubContents.EmitEffectParam { fxID = global::EffectContestID.EF_SU_CONTEST_RHYTHM_GREAT, poolCount = 6 },
+			new global::Dpr.SubContents.EmitEffectParam { fxID = global::EffectContestID.EF_SU_CONTEST_RHYTHM_NICE, poolCount = 6 },
+			new global::Dpr.SubContents.EmitEffectParam { fxID = global::EffectContestID.EF_SU_CONTEST_RHYTHM_FAST, poolCount = 6 },
+		};
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.GameObject barLineObj;
 		[global::UnityEngine.SerializeField]
@@ -15,12 +20,12 @@ namespace Dpr.Contest
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.GameObject longTapBgObj;
 		private global::UnityEngine.Sprite[] tapGradeSprArray;
-		private global::System.Collections.Generic.List<global::Dpr.Contest.NoteIcon> currentUseNoteList;
-		private global::System.Collections.Generic.List<global::Dpr.Contest.LongTapNotesBg> currentNotesBgList;
-		private global::System.Collections.Generic.List<global::Dpr.Contest.BarLine> currentBarLineList;
+		private global::System.Collections.Generic.List<global::Dpr.Contest.NoteIcon> currentUseNoteList = new global::System.Collections.Generic.List<global::Dpr.Contest.NoteIcon>(15);
+		private global::System.Collections.Generic.List<global::Dpr.Contest.LongTapNotesBg> currentNotesBgList = new global::System.Collections.Generic.List<global::Dpr.Contest.LongTapNotesBg>(5);
+		private global::System.Collections.Generic.List<global::Dpr.Contest.BarLine> currentBarLineList = new global::System.Collections.Generic.List<global::Dpr.Contest.BarLine>();
 		private global::Dpr.Contest.UITimingGrade[] uiTimingGradeArray;
-		private global::Dpr.Contest.NotesObjectEmitter noteObjEmitter;
-		private global::Dpr.SubContents.EffectEmitter fxEmitter;
+		private global::Dpr.Contest.NotesObjectEmitter noteObjEmitter = new global::Dpr.Contest.NotesObjectEmitter();
+		private global::Dpr.SubContents.EffectEmitter fxEmitter = new global::Dpr.SubContents.EffectEmitter();
 		private global::Effect.EffectInstance holdFxInst;
 		private global::DG.Tweening.DOTweenAnimation uiMusicFadeTween;
 		private global::Dpr.Contest.NoteIcon longStartNote;
@@ -35,8 +40,8 @@ namespace Dpr.Contest
 		private global::System.Action<global::Dpr.Contest.NoteTypeID> onFailedTap;
 		private global::System.Action<global::Dpr.Contest.NoteIcon> onDeactiveNote;
 		private global::System.Action onStopHoldFx;
-		public global::UnityEngine.Vector3 TapIconCenterPos { get { /*@B 0x60044AE*/ throw null; } }
-		public bool CanCreateNote { get { /*@B 0x60044BB*/ throw null; } }
+		public global::UnityEngine.Vector3 TapIconCenterPos { get { return tapIconRect.position; } }
+		public bool CanCreateNote { get { return noteObjEmitter.CanCreateNoteIcon; } }
 		public void Initialize(global::System.Action<global::Dpr.Contest.NoteTypeID> onFailedTap, global::System.Action<global::Dpr.Contest.NoteIcon> onDeactiveNote, global::System.Action onStopHoldFx) {
 			this.onFailedTap = onFailedTap;
 			this.onDeactiveNote = onDeactiveNote;
@@ -494,6 +499,6 @@ namespace Dpr.Contest
 			else
 				uiMusicFadeTween.DOPlayBackwards();
 		}
-		public NotesLane() { /*@B 0x60044D6*/ throw null; }
+		public NotesLane() { }
 	}
 }

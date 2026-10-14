@@ -38,7 +38,10 @@ namespace Dpr.Contest
 			active = false;
 			SetActive(false);
 		}
-		private void SetActive(bool active) { /*@B 0x6004490*/ throw null; }
+		private void SetActive(bool active) {
+			if (gameObject.activeSelf != active)
+				gameObject.SetActive(active);
+		}
 		private void CalcWidth(float startSecTime, float endSecTime) {
 			// both products are formed before the sizeDelta getter (@01e1ac80) -> locals
 			float startPos = moveSpeed * startSecTime;

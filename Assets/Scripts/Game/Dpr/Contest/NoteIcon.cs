@@ -5,7 +5,7 @@ namespace Dpr.Contest
 {
 	public class NoteIcon : global::UnityEngine.MonoBehaviour, global::Dpr.Contest.IPoolObject
 	{
-		private static readonly global::UnityEngine.Vector3 HIDE_NOTE_POS;
+		private static readonly global::UnityEngine.Vector3 HIDE_NOTE_POS = new global::UnityEngine.Vector3(2000f, 0f, 0f);
 		private global::UnityEngine.UI.Image iconImage;
 		private global::UnityEngine.RectTransform rect;
 		private global::Dpr.Contest.NotesDataModel noteData;
@@ -20,12 +20,12 @@ namespace Dpr.Contest
 		private bool isTap;
 		private bool active;
 		public global::Dpr.Contest.NotesDataModel NoteData { get { return this.noteData; } }
-		public global::Dpr.Contest.NoteTypeID NoteType { get { /*@B 0x6004497*/ throw null; } }
-		public float arriveSec { get { /*@B 0x6004498*/ throw null; } }
+		public global::Dpr.Contest.NoteTypeID NoteType { get { return noteData.notesType; } }
+		public float arriveSec { get { return noteData.arriveSec; } }
 		public global::Dpr.Contest.NoteIcon.NoteStatusID StatusID { get { return this.statusID; } }
 		public float LifeTime { get { return this.lifeTime; } }
 		public float AbsLifeTime { get => lifeTime < 0.0f ? -lifeTime : lifeTime; }
-		public bool CanTap { get { /*@B 0x60044A8*/ throw null; } }
+		public bool CanTap { get { return noteData.notesType != NoteTypeID.LongEnd && canTap; } }
 		public bool IsActive() {
 			return active;
 		}
@@ -58,7 +58,10 @@ namespace Dpr.Contest
 			iconPos = HIDE_NOTE_POS;
 			rect.localPosition = iconPos;
 		}
-		private void SetActive(bool active) { /*@B 0x600449F*/ throw null; }
+		private void SetActive(bool active) {
+			if (gameObject.activeSelf != active)
+				gameObject.SetActive(active);
+		}
 		public void OnUpdate(float elapsedTime) {
 			if (!active)
 				return;
@@ -168,7 +171,7 @@ namespace Dpr.Contest
 			canTap = false;
 		}
 		public NoteIcon() { }
-		static NoteIcon() { /*@B 0x60044AD*/ throw null; }
+		static NoteIcon() { }
 		public enum NoteStatusID
 		{
 			Move = 0,
