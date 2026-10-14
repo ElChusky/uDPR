@@ -217,7 +217,88 @@ namespace Dpr.Demo
 				CloseWindow();
 			}
 		}
-		private global::System.Collections.IEnumerator RivalSelect() { /*@B 0x6004855*/ throw null; }
+		private global::System.Collections.IEnumerator RivalSelect() {
+			bool isFinished = false;
+			while (!isFinished) {
+				bool isAnySelected;
+				bool isSelectMyself;
+				bool isRivalSelected;
+				bool isSelect;
+				DrawNextMessage();
+				yield return WaitMessageWindow(true, 0f);
+				isRivalSelected = false;
+				global::Dpr.Message.MessageMsgFile msgFile = global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.Message.MessageManager>.Instance.GetMsgFile("dp_scenario1");
+				global::Dpr.UI.ContextMenuWindow.Param param = new global::Dpr.UI.ContextMenuWindow.Param();
+				param.itemParams = new global::Dpr.UI.ContextMenuItem.Param[5];
+				string[] names = global::PlayerWork.cassetVersion == 0x30 ? RIVAL_NAMES_D : RIVAL_NAMES_P;
+				for (int i = 0; i < 5; i++) {
+					param.itemParams[i] = new global::Dpr.UI.ContextMenuItem.Param();
+					param.itemParams[i].text = msgFile.GetFormattedMessage(names[i]);
+					param.itemParams[i].messageIndex = i;
+				}
+				param.position = new global::UnityEngine.Vector2(160f, 300f);
+				param.minItemWidth = 122f;
+				param.useCancel = false;
+				param.useLoopAndRepeat = false;
+				global::Dpr.UI.ContextMenuWindow window = global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.UI.UIManager>.Instance.CreateUIWindow<global::Dpr.UI.ContextMenuWindow>(global::UIWindowID.CONTEXTMENU);
+				isSelectMyself = false;
+				isAnySelected = false;
+				window.onClicked = item => {
+					isAnySelected = true;
+					if (item.param.messageIndex == 0)
+						isSelectMyself = true;
+					else
+						global::PlayerWork.rivalName = item.param.text;
+					return true;
+				};
+				window.Open(param);
+				while (!isAnySelected)
+					yield return null;
+				if (isSelectMyself) {
+					if (openingController != null) {
+						openingController.OnFinishedCallBack = () => {
+							isRivalSelected = true;
+						};
+						openingController.OpenKeyboardByRivalName();
+					}
+					else {
+						isRivalSelected = true;
+					}
+				}
+				else {
+					isRivalSelected = true;
+				}
+				while (!isRivalSelected)
+					yield return null;
+				if (global::PlayerWork.rivalName == "") {
+					nowMessageNo--;
+					continue;
+				}
+				global::Dpr.Message.MessageWordSetHelper.SetPlayerNickNameWord(0);
+				global::Dpr.Message.MessageWordSetHelper.SetRivalNickNameWord(1);
+				DrawNextMessage();
+				global::Dpr.MsgWindow.MsgWindowParam msgParam = nowMSG;
+				isSelect = false;
+				msgParam.onFinishedShowAllMessage = () => {
+					global::Dpr.MsgWindow.MsgWindowManager.OpenYesNoMenu(selectIndex => {
+						if (selectIndex != 0) {
+							nowMessageNo--;
+							nowMessageNo--;
+							isSelect = true;
+							return;
+						}
+						isFinished = true;
+						isSelect = true;
+					}, global::Dpr.UI.ContextMenuWindow.CursorType.Arrow, true, true, null, global::AK.EVENTS.UI_COMMON_DECIDE);
+				};
+				while (!isSelect)
+					yield return null;
+				CloseWindow();
+				yield return new global::UnityEngine.WaitForSeconds(0.5f);
+				if (isFinished)
+					cam.GetComponent<global::UnityEngine.Animator>().enabled = true;
+			}
+		}
 		public override void LightUpdate() {
             // FIX (b236): @01ad2750 — no base call: environmentSettings[1] (indexer-checked, no Count guard) with PeriodOfDay 1
             manager.MyEnvironmentController.SetLight(cameraController.environmentSettings[1], PeriodOfDay.Daytime, 0.0f, 0.0f);
