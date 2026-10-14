@@ -21,11 +21,11 @@ namespace Dpr.MsgWindow
 		[global::UnityEngine.HeaderAttribute("行送りにかかる時間")]
 		public float scrollTextDuration;
 		[global::UnityEngine.HeaderAttribute("メッセージ再生終了後の待機フレーム")]
-		public int waitAfterFinishMsgFrame;
+		public int waitAfterFinishMsgFrame = 4;
 		[global::UnityEngine.HeaderAttribute("メッセージの行幅補正値")]
 		public float textLinePaddingOffset;
 		[global::UnityEngine.HeaderAttribute("開閉時のTweenAnimation")]
 		public global::Dpr.MsgWindow.WindowAnimator.AnimType wndAnimType;
-		public MsgWindowConfig() { /*@B 0x6003AF6*/ throw null; }
+		public MsgWindowConfig() { }
 	}
 }
