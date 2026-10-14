@@ -4,7 +4,7 @@
 public class EnvironmentSettings : global::UnityEngine.ScriptableObject
 {
 	[global::UnityEngine.SerializeField]
-	public bool CloudShadowEnable;
+	public bool CloudShadowEnable = true;
 	[global::UnityEngine.SerializeField]
 	private global::EnvironmentSettings.Parameters Morning;
 	[global::UnityEngine.SerializeField]
@@ -18,10 +18,20 @@ public class EnvironmentSettings : global::UnityEngine.ScriptableObject
 	[global::UnityEngine.SerializeField]
 	private bool FixedTime;
 	[global::UnityEngine.SerializeField]
-	public global::UnityEngine.FogMode FogMode;
+	public global::UnityEngine.FogMode FogMode = global::UnityEngine.FogMode.Linear;
 	[global::System.NonSerialized]
-	private global::EnvironmentSettings.Parameters Temporary;
-	public global::EnvironmentSettings.Parameters this[global::PeriodOfDay periodOfDay] { get { /*@B 0x6000836*/ throw null; } }
+	private global::EnvironmentSettings.Parameters Temporary = new global::EnvironmentSettings.Parameters();
+	public global::EnvironmentSettings.Parameters this[global::PeriodOfDay periodOfDay] { get {
+			switch (periodOfDay)
+			{
+				case PeriodOfDay.Morning: return Morning;
+				case PeriodOfDay.Daytime: return Daytime;
+				case PeriodOfDay.Evening: return Evening;
+				case PeriodOfDay.Night: return Night;
+				case PeriodOfDay.Midnight: return Midnight;
+				default: return null;
+			}
+		}  }
 	// FIX (b264): @01f10f70 = `add w8, w0, #4 ; … % 5` — the base code had swapped GetPrevious / GetNext.
 	public static global::PeriodOfDay GetPrevious(global::PeriodOfDay periodOfDay) {
         return (PeriodOfDay)(((int)periodOfDay + 4) % 5);
@@ -30,80 +40,183 @@ public class EnvironmentSettings : global::UnityEngine.ScriptableObject
 	public static global::PeriodOfDay GetNext(global::PeriodOfDay periodOfDay) {
         return (PeriodOfDay)(((int)periodOfDay + 1) % 5);
     }
-	public global::EnvironmentSettings.Parameters GetTransition(global::PeriodOfDay periodOfDay, float weight) { /*@B 0x6000839*/ throw null; }
-	public global::EnvironmentSettings Clone() { /*@B 0x600083A*/ throw null; }
-	public EnvironmentSettings() { /*@B 0x600083B*/ throw null; }
+	public global::EnvironmentSettings.Parameters GetTransition(global::PeriodOfDay periodOfDay, float weight) {
+		if (weight < 0.0001f)
+			return this[periodOfDay];
+		if (weight > 0.9999f)
+			return this[GetNext(periodOfDay)];
+		Parameters from = this[periodOfDay];
+		Parameters to = this[GetNext(periodOfDay)];
+		Temporary.LightColor = global::UnityEngine.Color.Lerp(from.LightColor, to.LightColor, weight);
+		Temporary.LightIntensity = global::UnityEngine.Mathf.Lerp(from.LightIntensity, to.LightIntensity, weight);
+		Temporary.ReflectorColor = global::UnityEngine.Color.Lerp(from.ReflectorColor, to.ReflectorColor, weight);
+		Temporary.CharacterLightColor = global::UnityEngine.Color.Lerp(from.CharacterLightColor, to.CharacterLightColor, weight);
+		Temporary.CharacterLightIntensity = global::UnityEngine.Mathf.Lerp(from.CharacterLightIntensity, to.CharacterLightIntensity, weight);
+		Temporary.CharacterReflectorColor = global::UnityEngine.Color.Lerp(from.CharacterReflectorColor, to.CharacterReflectorColor, weight);
+		Temporary.PokeLightColor = global::UnityEngine.Color.Lerp(from.PokeLightColor, to.PokeLightColor, weight);
+		Temporary.PokeLightIntensity = global::UnityEngine.Mathf.Lerp(from.PokeLightIntensity, to.PokeLightIntensity, weight);
+		Temporary.PokeReflectorColor = global::UnityEngine.Color.Lerp(from.PokeReflectorColor, to.PokeReflectorColor, weight);
+		Temporary.VertexColorScale = global::UnityEngine.Mathf.Lerp(from.VertexColorScale, to.VertexColorScale, weight);
+		Temporary.BloomThreshold = global::UnityEngine.Mathf.Lerp(from.BloomThreshold, to.BloomThreshold, weight);
+		Temporary.ShadowColor = global::UnityEngine.Color.Lerp(from.ShadowColor, to.ShadowColor, weight);
+		float yawDelta = to.LightYaw - from.LightYaw;
+		Temporary.LightYaw = from.LightYaw + (yawDelta - (int)(yawDelta * (1f / 360f) + (yawDelta < 0f ? -0.5f : 0.5f)) * 360f) * weight;
+		float pitchDelta = to.LightPitch - from.LightPitch;
+		Temporary.LightPitch = from.LightPitch + (pitchDelta - (int)(pitchDelta * (1f / 360f) + (pitchDelta < 0f ? -0.5f : 0.5f)) * 360f) * weight;
+		Temporary.CloudShadowScale = global::UnityEngine.Mathf.Lerp(from.CloudShadowScale, to.CloudShadowScale, weight);
+		Temporary.Blurry = global::UnityEngine.Mathf.Lerp(from.Blurry, to.Blurry, weight);
+		if (from.FogEnable)
+		{
+			Temporary.FogEnable = true;
+			Temporary.FogStart = from.FogStart;
+			Temporary.FogEnd = from.FogEnd;
+			Temporary.FogDensity = from.FogDensity;
+			Temporary.FogNearColor = from.FogNearColor;
+			Temporary.FogFarColor = from.FogFarColor;
+			if (to.FogEnable)
+			{
+				Temporary.FogStart = Temporary.FogStart + (to.FogStart - Temporary.FogStart) * weight;
+				Temporary.FogEnd = Temporary.FogEnd + (to.FogEnd - Temporary.FogEnd) * weight;
+				Temporary.FogDensity = Temporary.FogDensity + (to.FogDensity - Temporary.FogDensity) * weight;
+				Temporary.FogNearColor = Temporary.FogNearColor + weight * (to.FogNearColor - Temporary.FogNearColor);
+				Temporary.FogFarColor = Temporary.FogFarColor + weight * (to.FogFarColor - Temporary.FogFarColor);
+			}
+			else
+			{
+				Temporary.FogNearColor.a = (1f - weight) * Temporary.FogNearColor.a;
+				Temporary.FogFarColor.a = (1f - weight) * Temporary.FogFarColor.a;
+			}
+		}
+		else if (to.FogEnable)
+		{
+			Temporary.FogEnable = true;
+			Temporary.FogStart = to.FogStart;
+			Temporary.FogEnd = to.FogEnd;
+			Temporary.FogDensity = to.FogDensity;
+			Temporary.FogNearColor = to.FogNearColor;
+			Temporary.FogFarColor = to.FogFarColor;
+			Temporary.FogNearColor.a = Temporary.FogNearColor.a * weight;
+			Temporary.FogFarColor.a = Temporary.FogFarColor.a * weight;
+		}
+		else
+		{
+			Temporary.FogEnable = false;
+		}
+		if (from.ColorGradingEnable)
+		{
+			Temporary.ColorGradingEnable = true;
+			Temporary.ColorGradingLookup = from.ColorGradingLookup;
+			if (to.ColorGradingEnable)
+			{
+				Temporary.ColorGradingInfluence = Temporary.ColorGradingInfluence + (to.ColorGradingInfluence - Temporary.ColorGradingInfluence) * weight;
+				Temporary.ColorGradingBlendWeight = weight;
+				Temporary.NexColorGradingLookup = to.NexColorGradingLookup; // TO CHECK: binary reads to+0x98 (NexColorGradingLookup), not to.ColorGradingLookup - kept as shipped
+			}
+			else
+			{
+				Temporary.ColorGradingInfluence = 1f - weight;
+				Temporary.NexColorGradingLookup = null;
+			}
+		}
+		else if (to.ColorGradingEnable)
+		{
+			Temporary.ColorGradingEnable = true;
+			Temporary.ColorGradingLookup = to.ColorGradingLookup;
+			Temporary.ColorGradingInfluence = to.ColorGradingInfluence * weight;
+			Temporary.NexColorGradingLookup = null;
+		}
+		else
+		{
+			Temporary.ColorGradingLookup = null;
+			Temporary.NexColorGradingLookup = null;
+			Temporary.ColorGradingEnable = false;
+		}
+		return Temporary;
+	}
+	public global::EnvironmentSettings Clone() {
+		EnvironmentSettings obj = (EnvironmentSettings)MemberwiseClone();
+		obj.Morning = Morning.Clone();
+		obj.Daytime = Daytime.Clone();
+		obj.Evening = Evening.Clone();
+		obj.Night = Night.Clone();
+		obj.Midnight = Midnight.Clone();
+		obj.Temporary = Temporary.Clone();
+		return obj;
+	}
+	public EnvironmentSettings() {
+	}
 	[global::System.Serializable]
 	public class Parameters
 	{
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(-180f, 180f)]
-		public float LightYaw;
+		public float LightYaw = -30f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(10f, 90f)]
-		public float LightPitch;
+		public float LightPitch = 70f;
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color LightColor;
-		[global::UnityEngine.SerializeField]
-		[global::UnityEngine.RangeAttribute(0.1f, 5f)]
-		public float LightIntensity;
-		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color ReflectorColor;
-		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color CharacterLightColor;
+		public global::UnityEngine.Color LightColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0.1f, 5f)]
-		public float CharacterLightIntensity;
+		public float LightIntensity = 1.2f;
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color CharacterReflectorColor;
+		public global::UnityEngine.Color ReflectorColor = global::UnityEngine.Color.gray;
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color PokeLightColor;
+		public global::UnityEngine.Color CharacterLightColor = global::UnityEngine.Color.white;
+		[global::UnityEngine.SerializeField]
+		[global::UnityEngine.RangeAttribute(0.1f, 5f)]
+		public float CharacterLightIntensity = 1.2f;
+		[global::UnityEngine.SerializeField]
+		public global::UnityEngine.Color CharacterReflectorColor = global::UnityEngine.Color.gray;
+		[global::UnityEngine.SerializeField]
+		public global::UnityEngine.Color PokeLightColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0.1f, 5f)]
 		public float PokeLightIntensity = 1.0f;
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color PokeReflectorColor;
+		public global::UnityEngine.Color PokeReflectorColor = global::UnityEngine.Color.gray;
 		[global::UnityEngine.SerializeField]
 		public bool ColorGradingEnable;
 		[global::UnityEngine.SerializeField]
 		public global::UnityEngine.Texture2D ColorGradingLookup;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 1f)]
-		public float ColorGradingInfluence;
+		public float ColorGradingInfluence = 1f;
 		[global::System.NonSerialized]
 		public global::UnityEngine.Texture2D NexColorGradingLookup;
 		[global::System.NonSerialized]
-		public float ColorGradingBlendWeight;
+		public float ColorGradingBlendWeight = 1f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 1f)]
-		public float VertexColorScale;
+		public float VertexColorScale = 1f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 4f)]
-		public float BloomThreshold;
+		public float BloomThreshold = 1f;
 		[global::UnityEngine.SerializeField]
 		public bool FogEnable;
 		[global::UnityEngine.SerializeField]
-		public float FogStart;
+		public float FogStart = 1f;
 		[global::UnityEngine.SerializeField]
-		public float FogEnd;
-		[global::UnityEngine.SerializeField]
-		[global::UnityEngine.RangeAttribute(0f, 10f)]
-		public float FogDensity;
-		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color FogNearColor;
-		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color FogFarColor;
-		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color ShadowColor;
+		public float FogEnd = 50f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 10f)]
-		public float CloudShadowScale;
+		public float FogDensity = 0.66f;
+		[global::UnityEngine.SerializeField]
+		public global::UnityEngine.Color FogNearColor = global::UnityEngine.Color.white;
+		[global::UnityEngine.SerializeField]
+		public global::UnityEngine.Color FogFarColor = global::UnityEngine.Color.white;
+		[global::UnityEngine.SerializeField]
+		public global::UnityEngine.Color ShadowColor = global::UnityEngine.Color.gray;
+		[global::UnityEngine.SerializeField]
+		[global::UnityEngine.RangeAttribute(0f, 10f)]
+		public float CloudShadowScale = 1f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 1f)]
-		public float Blurry;
+		public float Blurry = 1f;
 		public global::EnvironmentSettings.Parameters Clone() {
             return (Parameters)MemberwiseClone(); // castclass @01f11380
         }
-		public Parameters() { /*@B 0x600955F*/ throw null; }
+		public Parameters() {
+		}
 	}
 }
