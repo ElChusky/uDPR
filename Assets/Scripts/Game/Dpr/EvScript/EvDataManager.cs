@@ -1769,10 +1769,48 @@ namespace Dpr.EvScript
             // Shipped quirk: the unconditional store below always wins (str w8=2 @02c4cce4).
             _cmp_flag = CmpResult.PLUS;
         }
-		public void OnEventEnter(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x6008BA8*/ throw null; }
-		public void OnEventStay(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x6008BA9*/ throw null; }
-		public void OnEventLeave(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x6008BAA*/ throw null; }
-		public void ResetGimmickEntityRef() { /*@B 0x6008BAB*/ throw null; }
+		public void OnEventEnter(float deltaTime, global::FieldEventEntity eventEntity) {
+            if (EntityManager.activeFieldPlayer.currentSequence != FieldObjectEntity.SequenceID.Active)
+                return;
+
+            if (_liftEntity == null)
+                _liftEntity = eventEntity as FieldEventLiftEntity;
+
+            _nagisaGymGearEntity = eventEntity as FieldNagisaGymGearEntity;
+            _nomoseGymSwitchEntity = eventEntity as FieldNomoseGymSwitchEntity;
+            _eyePaintingEntity = eventEntity as FieldEyePaintingEntity;
+            _embankmentEntity = eventEntity as FieldEmbankmentEntity;
+            _doorEntity = eventEntity as FieldEventDoorEntity;
+        }
+		public void OnEventStay(float deltaTime, global::FieldEventEntity eventEntity) {
+            if (EntityManager.activeFieldPlayer.currentSequence != FieldObjectEntity.SequenceID.Active)
+                return;
+
+            if (_liftEntity == null)
+                _liftEntity = eventEntity as FieldEventLiftEntity;
+
+            _nagisaGymGearEntity = eventEntity as FieldNagisaGymGearEntity;
+            _nomoseGymSwitchEntity = eventEntity as FieldNomoseGymSwitchEntity;
+            _eyePaintingEntity = eventEntity as FieldEyePaintingEntity;
+            _embankmentEntity = eventEntity as FieldEmbankmentEntity;
+            _doorEntity = eventEntity as FieldEventDoorEntity;
+        }
+		public void OnEventLeave(float deltaTime, global::FieldEventEntity eventEntity) {
+            _doorEntity = null;
+            _liftEntity = null;
+            _nagisaGymGearEntity = null;
+            _nomoseGymSwitchEntity = null;
+            _eyePaintingEntity = null;
+            _embankmentEntity = null;
+        }
+		public void ResetGimmickEntityRef() {
+            _liftEntity = null;
+            _tobariGymWallEntity = null;
+            _nagisaGymGearEntity = null;
+            _nomoseGymSwitchEntity = null;
+            _eyePaintingEntity = null;
+            _embankmentEntity = null;
+        }
 		public bool IsDowsingEnable(global::FieldObjectEntity entity) {
             if (entity.EventParams.Dowsing == 0)
                 return false;
@@ -1790,11 +1828,89 @@ namespace Dpr.EvScript
 
             return false;
         }
-		private bool WarpHit(global::FieldEventDoorEntity eventEntity) { /*@B 0x6008BAD*/ throw null; }
-		private void CorrectionEventEntityWait(float deltatime) { /*@B 0x6008BAE*/ throw null; }
+		private bool WarpHit(global::FieldEventDoorEntity eventEntity) {
+            if (EntityManager.activeFieldPlayer.IsInputStop())
+                return false;
+
+            Vector2 stick = GameController.analogStickL;
+            float sqrLength = stick.sqrMagnitude;
+            if (sqrLength < 0.01f)
+            {
+                stick = GameController.digitalPad;
+                sqrLength = stick.sqrMagnitude;
+            }
+
+            if (sqrLength < 0.01f)
+                return false;
+
+            if (!IsWorpHit(eventEntity) || !eventEntity.doorEnable || _isEqZoneWorp)
+                return false;
+
+            int warpIndex = eventEntity.EventParams.WorkValue;
+            if (warpIndex >= 0)
+            {
+                EvWork.FLAG_INDEX flagIndex = _warpData.Data[warpIndex].FlagIndex;
+                if (flagIndex != EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag(flagIndex))
+                    return false;
+            }
+
+            float angle = Mathf.Atan2(stick.x, stick.y) * Mathf.Rad2Deg;
+            if (angle < 0f)
+                angle += 360f;
+
+            // Jump table @0x3ddab23 {Up, Down, Left, Right}; All (and anything else) always passes. NaN passes every range.
+            switch (eventEntity.startVectol)
+            {
+                case global::FieldDoor.StartVectol.Up:
+                    if (angle > 45f && angle < 315f)
+                        return false;
+                    break;
+                case global::FieldDoor.StartVectol.Down:
+                    if (angle < 135f || angle > 225f)
+                        return false;
+                    break;
+                case global::FieldDoor.StartVectol.Left:
+                    if (angle < 225f || angle > 315f)
+                        return false;
+                    break;
+                case global::FieldDoor.StartVectol.Right:
+                    if (angle < 45f || angle > 135f)
+                        return false;
+                    break;
+            }
+
+            _worpEventData.Entity = eventEntity;
+            _worpEventData.State = 0;
+            PlayerInputActive(false, true);
+            _updateDelegate = WarpUpdate;
+            // WarpUpdate never reads its time argument (no s0 set before the call @02c4b0dc).
+            WarpUpdate(0.0f);
+            return true;
+        }
+		private void CorrectionEventEntityWait(float deltatime) {
+            if (!EntityManager.activeFieldPlayer.IsEventCorrectionMoveEnd())
+                return;
+
+            EntityManager.activeFieldPlayer.nextSequence = FieldObjectEntity.SequenceID.Active;
+            PlayerWork.isPlayerInputActive = false;
+            _updateDelegate = WarpUpdate;
+            WarpUpdate(deltatime);
+        }
 		private bool CorrectionDirCheck(global::FieldEventEntity eventEntity) { return true; }
-		private void CorrectionDirSegment(global::FieldEventEntity eventEntity, out global::UnityEngine.Vector2 segStart, out global::UnityEngine.Vector2 segEnd) { /*@B 0x6008BB0*/ throw null; }
-		private float CorrectionDirAngle(global::FieldEventEntity eventEntity) { /*@B 0x6008BB1*/ throw null; }
+		private void CorrectionDirSegment(global::FieldEventEntity eventEntity, out global::UnityEngine.Vector2 segStart, out global::UnityEngine.Vector2 segEnd) {
+            segStart.x = eventEntity.worldPosition.x - 0.5f - eventEntity.offset.x;
+            segStart.y = eventEntity.worldPosition.z - 0.5f + eventEntity.offset.y;
+            segEnd.x = eventEntity.worldPosition.x + 0.5f - eventEntity.offset.x - eventEntity.size.x;
+            segEnd.y = eventEntity.worldPosition.z + 0.5f + eventEntity.offset.y - eventEntity.size.y;
+        }
+		private float CorrectionDirAngle(global::FieldEventEntity eventEntity) {
+            float[] angles = new float[] { 180f, 0f, 90f, 270f };
+            FieldEventDoorEntity door = eventEntity as FieldEventDoorEntity;
+            if (door != null)
+                return angles[(int)door.startVectol];
+
+            return angles[(int)eventEntity.correctionDir];
+        }
 		private bool IsLiftHit(global::FieldEventLiftEntity liftEntity) {
             if (!liftEntity.MoveAfterWalk && _eventEndPosition == EntityManager.activeFieldPlayer.gridPosition)
                 return false;
@@ -1848,10 +1964,179 @@ namespace Dpr.EvScript
 
             return embankmentEntity.CharacterOut(true);
         }
-		private bool IsEventHit(global::FieldEventEntity eventEntity) { /*@B 0x6008BB7*/ throw null; }
-		private bool IsWorpHit(global::FieldEventEntity eventEntity) { /*@B 0x6008BB8*/ throw null; }
-		private void WarpUpdate(float time) { /*@B 0x6008BB9*/ throw null; }
-		private void WarpUpdateEnd() { /*@B 0x6008BBA*/ throw null; }
+		private bool IsEventHit(global::FieldEventEntity eventEntity) {
+            if (_hit_object != null)
+                return false;
+
+            if (_eventEndPosition == EntityManager.activeFieldPlayer.gridPosition)
+                return false;
+
+            _eventEndPosition = Vector2Int.zero;
+
+            if (!eventEntity.gameObject.activeInHierarchy)
+                return false;
+
+            var vanishFlag = (EvWork.FLAG_INDEX)eventEntity.EventParams.VanishFlagIndex;
+            if ((int)vanishFlag > -1 && vanishFlag != EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag(vanishFlag))
+                return false;
+
+            var workIndex = eventEntity.EventParams.WorkIndex;
+            if (workIndex == EvWork.WORK_INDEX.SCWK_WK_SAVE_SIZE || FlagWork.GetWork(workIndex) == eventEntity.EventParams.WorkValue)
+                return true;
+
+            return false;
+        }
+		private bool IsWorpHit(global::FieldEventEntity eventEntity) {
+            if (eventEntity == null)
+                return false;
+
+            if (!eventEntity.gameObject.activeInHierarchy)
+                return false;
+
+            var vanishFlag = (EvWork.FLAG_INDEX)eventEntity.EventParams.VanishFlagIndex;
+            if ((int)vanishFlag > -1 && vanishFlag != EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag(vanishFlag))
+                return false;
+
+            var workIndex = eventEntity.EventParams.WorkIndex;
+            if (workIndex == EvWork.WORK_INDEX.SCWK_WK_SAVE_SIZE || FlagWork.GetWork(workIndex) == eventEntity.EventParams.WorkValue)
+                return true;
+
+            return false;
+        }
+		private void WarpUpdate(float time) {
+            if (_worpEventData.Entity.callLabel == global::FieldDoor.CallLabel.none)
+            {
+                Cmd_ObjPauseAll();
+                WarpUpdateEnd();
+                return;
+            }
+
+            if (_worpEventData.State != 0)
+                return;
+
+            Cmd_ObjPauseAll();
+            if (JumpLabel(_worpEventData.Entity.callLabel.ToString(), WarpUpdateEnd))
+            {
+                _updateDelegate = null;
+                _worpEventData.State++;
+                return;
+            }
+
+            WarpUpdateEnd();
+        }
+		private void WarpUpdateEnd() {
+            PlayerWork.FieldWorpLabel = _worpEventData.Entity.exitLabel == global::FieldDoor.ExitLabel.none ? "" : _worpEventData.Entity.exitLabel.ToString();
+            PlayerWork.FieldWorpLinkName = _worpEventData.Entity.connectionName;
+
+            float size;
+            float playerPos;
+            float doorPos;
+            if (_worpEventData.Entity.size.x < _worpEventData.Entity.size.y)
+            {
+                size = _worpEventData.Entity.size.y;
+                playerPos = EntityManager.activeFieldPlayer.worldPosition.z;
+                doorPos = _worpEventData.Entity.worldPosition.z;
+            }
+            else
+            {
+                size = _worpEventData.Entity.size.x;
+                playerPos = EntityManager.activeFieldPlayer.worldPosition.x;
+                doorPos = _worpEventData.Entity.worldPosition.x;
+            }
+
+            int count = (int)size;
+            int index = 0;
+            for (int i = 0; i < count; i++)
+            {
+                if (Math.Abs(doorPos) + i <= Math.Abs(playerPos) && Math.Abs(playerPos) < Math.Abs(doorPos) + i + 1.0f)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            ZoneID zoneID = _worpEventData.Entity.transitionZone;
+            if (zoneID == ZoneID.D05R0115)
+                zoneID = ZoneID.D05R0114;
+
+            int locatorIndex;
+            if (_worpEventData.Entity.locatorArray != null && _worpEventData.Entity.locatorArray.Length != 0 && index < _worpEventData.Entity.locatorArray.Length)
+            {
+                FieldManager.Instance.ResetSaveZoneBgm();
+                locatorIndex = _worpEventData.Entity.locatorArray[index];
+            }
+            else
+            {
+                FieldManager.Instance.ResetSaveZoneBgm();
+                locatorIndex = _worpEventData.Entity.locatorIndex;
+            }
+
+            PlayerWork.SetTransitionZone(zoneID, locatorIndex);
+
+            if (ZoneWork.IsPokecen(zoneID))
+            {
+                if (!ZoneWork.IsPokecen(FieldManager.Instance.zoneID))
+                {
+                    DPData.PLAYER_SAVE_DATA saveData = PlayerWork.PlayerSaveData;
+                    saveData.worpPoint.teleport.zoneID = (int)FieldManager.Instance.zoneID;
+                    saveData.worpPoint.teleport.dir = _worpEventData.Entity.locatorIndex;
+                    PlayerWork.PlayerSaveData = saveData;
+                }
+            }
+            else if (ZoneWork.IsDungeon(zoneID) && !ZoneWork.IsDungeon(FieldManager.Instance.zoneID))
+            {
+                DPData.PLAYER_SAVE_DATA saveData = PlayerWork.PlayerSaveData;
+                float playerX = Mathf.Round(EntityManager.activeFieldPlayer.worldPosition.x);
+                float playerZ = Mathf.Round(EntityManager.activeFieldPlayer.worldPosition.z);
+                float doorX = Mathf.Round(_worpEventData.Entity.worldPosition.x);
+                float doorY = _worpEventData.Entity.worldPosition.y;
+                float doorZ = Mathf.Round(_worpEventData.Entity.worldPosition.z);
+
+                float x;
+                float z;
+                int dir;
+                switch (_worpEventData.Entity.startVectol)
+                {
+                    case global::FieldDoor.StartVectol.Up:
+                        x = playerX;
+                        z = doorZ;
+                        dir = 1;
+                        break;
+                    case global::FieldDoor.StartVectol.Left:
+                        x = doorX;
+                        z = playerZ;
+                        dir = 3;
+                        break;
+                    case global::FieldDoor.StartVectol.Right:
+                        x = doorX;
+                        z = playerZ;
+                        dir = 2;
+                        break;
+                    default:
+                        x = playerX;
+                        z = doorZ;
+                        dir = 0;
+                        break;
+                }
+
+                saveData.worpPoint.ananuke = new DPData.LOCATION_WORK { zoneID = (int)FieldManager.Instance.zoneID, posX = -x, posY = doorY, posZ = z, dir = dir };
+                PlayerWork.PlayerSaveData = saveData;
+            }
+
+            if (zoneID == FieldManager.Instance.zoneID)
+            {
+                _isEqZoneWorp = true;
+                _updateDelegate = EqualZoneWarp;
+            }
+            else
+            {
+                _updateDelegate = null;
+            }
+
+            _worpEventData.Entity = null;
+            _worpEventData.State = 0;
+            _worpEventData.Time = 0f;
+        }
 		private void EqualZoneWarp(float time) {
             if (PlayerWork.transitionZoneID != ZoneID.UNKNOWN)
                 return;
@@ -1913,10 +2198,42 @@ namespace Dpr.EvScript
 		public int GetSysFlag(int index) {
             return FlagWork.GetSysFlag((EvWork.SYSFLAG_INDEX)index) ? 1 : 0;
         }
-		public int GetArgInt(global::EvData.Aregment arg) { /*@B 0x6008BC8*/ throw null; }
-		public float GetArgFloat(global::EvData.Aregment arg) { /*@B 0x6008BC9*/ throw null; }
-		public string GetArgString(global::Dpr.EvScript.EvScriptData ev, global::EvData.Aregment arg) { /*@B 0x6008BCA*/ throw null; }
-		public int GetBadgeCount() { /*@B 0x6008BCB*/ throw null; }
+		public int GetArgInt(global::EvData.Aregment arg) {
+            if (arg.argType == global::EvData.ArgType.Work)
+                return FlagWork.GetWork((EvWork.WORK_INDEX)arg.data);
+
+            if (arg.argType == global::EvData.ArgType.Float)
+                return (int)SmartPoint.AssetAssistant.UnityExtensions.FloatBits.ToFloat(arg.data);
+
+            return 0;
+        }
+		public float GetArgFloat(global::EvData.Aregment arg) {
+            if (arg.argType == global::EvData.ArgType.Work)
+                return FlagWork.GetWork((EvWork.WORK_INDEX)arg.data);
+
+            if (arg.argType == global::EvData.ArgType.Float)
+                return SmartPoint.AssetAssistant.UnityExtensions.FloatBits.ToFloat(arg.data);
+
+            return 0f;
+        }
+		public string GetArgString(global::Dpr.EvScript.EvScriptData ev, global::EvData.Aregment arg) {
+            if (arg.argType == global::EvData.ArgType.String)
+                return ev.EvData.GetString(arg.data);
+
+            return "";
+        }
+		public int GetBadgeCount() {
+            int count = 0;
+            count += FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.BADGE_ID_C02) ? 1 : 0;
+            count += FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.BADGE_ID_C03) ? 1 : 0;
+            count += FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.BADGE_ID_C04) ? 1 : 0;
+            count += FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.BADGE_ID_C05) ? 1 : 0;
+            count += FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.BADGE_ID_C06) ? 1 : 0;
+            count += FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.BADGE_ID_C07) ? 1 : 0;
+            count += FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.BADGE_ID_C08) ? 1 : 0;
+            count += FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.BADGE_ID_C09) ? 1 : 0;
+            return count;
+        }
 		private string GetTrainerMsg(int tr_id, int kind) {
             var trainer = GetTrainer((int)TrainerWork.RematchTrainerID((TrainerID)tr_id));
             switch (kind)
@@ -1957,7 +2274,53 @@ namespace Dpr.EvScript
                     return "";
             }
         }
-		private bool PlaySe(string name) { /*@B 0x6008BCE*/ throw null; }
+		private bool PlaySe(string name) {
+            int freeIndex;
+            for (freeIndex = 0; freeIndex < _se_datas.Length; freeIndex++)
+            {
+                if (string.IsNullOrEmpty(_se_datas[freeIndex].name))
+                    break;
+            }
+
+            if (freeIndex >= _se_datas.Length)
+                freeIndex = 0;
+
+            string upperName = name.ToUpper();
+            uint eventID = AudioManager.Instance.GetIdByName(upperName);
+            _se_datas[freeIndex].AudioInstance = AudioManager.Instance.CreateSe(eventID, 0);
+            _se_datas[freeIndex].name = upperName;
+
+            if (_se_datas[freeIndex].AudioInstance == null)
+            {
+                _se_datas[freeIndex].AudioInstance = null;
+                _se_datas[freeIndex].name = "";
+                _se_datas[freeIndex].playEventId = 0;
+            }
+            else
+            {
+                _se_datas[freeIndex].playEventId = _se_datas[freeIndex].AudioInstance.playEventId;
+                _se_datas[freeIndex].AudioInstance.Play(instance =>
+                {
+                    for (int i = 0; i < _se_datas.Length; i++)
+                    {
+                        if (_se_datas[i].AudioInstance != null && _se_datas[i].playEventId == instance.playEventId)
+                        {
+                            _se_datas[i].playEventId = 0;
+                            _se_datas[i].name = "";
+                            _se_datas[i].AudioInstance = null;
+                        }
+                    }
+                }, false);
+
+                if (_se_datas[freeIndex].AudioInstance != null && _se_datas[freeIndex].AudioInstance.postEventNumber == 0)
+                {
+                    _se_datas[freeIndex].AudioInstance = null;
+                    _se_datas[freeIndex].name = "";
+                }
+            }
+
+            return true;
+        }
 		private bool PlayVoice(string name) {
             int freeIndex;
             for (freeIndex = 0; freeIndex < _voice_datas.Length; freeIndex++)
@@ -2019,7 +2382,20 @@ namespace Dpr.EvScript
 
             return false;
         }
-		private bool StopVoice(string name) { /*@B 0x6008BD1*/ throw null; }
+		private bool StopVoice(string name) {
+            for (int i = 0; i < _voice_datas.Length; i++)
+            {
+                if (name == _voice_datas[i].name)
+                {
+                    _voice_datas[i].AudioInstance?.Stop();
+                    _voice_datas[i].name = "";
+                    _voice_datas[i].AudioInstance = null;
+                    return true;
+                }
+            }
+
+            return false;
+        }
 		private bool IsPlayingSe(string name = "") {
             bool isAll = string.IsNullOrEmpty(name);
             for (int i = 0; i < _se_datas.Length; i++)
@@ -2060,11 +2436,29 @@ namespace Dpr.EvScript
 		public void PlayVoiceUI(int monsNo, int formNo, int voiceType) {
             PlayVoice(string.Format("PLAY_PV_{0:d3}_{1:d2}_{2:d2}", monsNo, formNo, voiceType));
         }
-		private void SpLabel_Init(global::ZoneID id) { /*@B 0x6008BD6*/ throw null; }
-		private void SpLabel_Obj(global::ZoneID id) { /*@B 0x6008BD7*/ throw null; }
-		public void SpLabel_Scene(global::ZoneID id) { /*@B 0x6008BD8*/ throw null; }
-		private void SpLabel_Flag(global::ZoneID id) { /*@B 0x6008BD9*/ throw null; }
-		public void Jump_InitScr() { /*@B 0x6008BDA*/ throw null; }
+		private void SpLabel_Init(global::ZoneID id) {
+            JumpLabel("SP_" + id.ToString() + "_INIT", null);
+            UpdateEvdata(0f, true);
+        }
+		private void SpLabel_Obj(global::ZoneID id) {
+            JumpLabel("SP_" + id.ToString() + "_OBJ", null);
+            UpdateEvdata(0f, true);
+        }
+		public void SpLabel_Scene(global::ZoneID id) {
+            _callLabel_UpdateSP = "SP_" + id.ToString() + "_SCENE";
+        }
+		private void SpLabel_Flag(global::ZoneID id) {
+            JumpLabel("SP_" + id.ToString() + "_FLAG", null);
+            UpdateEvdata(0f, true);
+        }
+		public void Jump_InitScr() {
+            if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.FIRST_SAVE))
+                return;
+
+            JumpLabel("ev_init_script", null);
+            UpdateEvdata(0f, true);
+            FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.FIRST_SAVE, true);
+        }
 		private void FindTrainerIndex(int index, global::Dpr.Trainer.TrainerID id) {
             _talkTrinerIndex[index] = -1;
             if (id != TrainerID.NONE && id != TrainerID.MAX)
