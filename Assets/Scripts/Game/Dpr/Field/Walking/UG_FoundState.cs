@@ -4,8 +4,28 @@ namespace Dpr.Field.Walking
 	public class UG_FoundState : global::Dpr.Field.Walking.UGBaseState
 	{
 		protected global::Balloon balloon;
-		public UG_FoundState(global::Dpr.Field.Walking.AIModel model) : base(default(global::Dpr.Field.Walking.AIModel)) { /*@B 0x6008A60*/ throw null; }
-		public override void Enter() { /*@B 0x6008A61*/ throw null; }
-		protected override void StateUpdate() { /*@B 0x6008A62*/ throw null; }
+		public UG_FoundState(global::Dpr.Field.Walking.AIModel model) : base(model) { }
+		public override void Enter() {
+			balloon = model.charaModel.controller.emoticon.Show(0, false);
+			model.charaModel.controller.emoticon.PlaySeDirect(global::AK.EVENTS.UI_EMOTIONAL_EXCLAMATION3);
+		}
+		protected override void StateUpdate() {
+			bool isDontEnter = isDontEnterArea(player.position, 3f);
+			if (isDontEnter)
+			{
+				model.AI.ChangeState(typeof(global::Dpr.Field.Walking.UG_NormalState));
+				((global::Dpr.Field.Walking.UG_NormalState)model.AI.GetState<global::Dpr.Field.Walking.UG_NormalState>()).searchWait = 2f;
+				model.charaModel.controller.emoticon.Delete();
+			}
+			else
+			{
+				model.walkData.isNeedRun = true;
+				float rate = global::UnityEngine.Mathf.Clamp01((model.walkData.TrackTarget.position - model.transform.position).sqrMagnitude / 1.5f);
+				float rot = global::UnityEngine.Mathf.Lerp(3f, 3f, rate);
+				float speed = global::UnityEngine.Mathf.Lerp(2f, 2f, rate);
+				Move(speed, 10f);
+				LookAtTarget(player.position, rot);
+			}
+		}
 	}
 }

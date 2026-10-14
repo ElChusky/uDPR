@@ -5,9 +5,19 @@ namespace Dpr.Field.Walking
 	{
 		private global::Dpr.Field.Walking.StateChecker.Condition condition;
 		private global::System.Type NextState;
-		public StateChecker(global::Dpr.Field.Walking.StateChecker.Condition condition, global::System.Type type) { /*@B 0x6008A25*/ throw null; }
-		public global::System.Type Check(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008A26*/ throw null; }
-		public void Destroy() { /*@B 0x6008A27*/ throw null; }
+		public StateChecker(global::Dpr.Field.Walking.StateChecker.Condition condition, global::System.Type type) {
+			this.condition = condition;
+			NextState = type;
+		}
+		public global::System.Type Check(global::Dpr.Field.Walking.AIModel model) {
+			if (condition(model))
+				return NextState;
+			return null;
+		}
+		public void Destroy() {
+			condition = null;
+			NextState = null;
+		}
 		public delegate bool Condition(global::Dpr.Field.Walking.AIModel model);
 	}
 }

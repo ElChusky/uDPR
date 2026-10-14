@@ -4,6 +4,26 @@ namespace Dpr.Field.Walking
 	public class SanpoUroUro : global::Dpr.Field.Walking.ActionModel
 	{
 		public SanpoUroUro() { }
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel m) { /*@B 0x6008A93*/ throw null; }
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel m) {
+			float elapsedTime = 0f;
+			global::UnityEngine.Vector3 RotY = global::UnityEngine.Vector3.up * global::UnityEngine.Random.Range(0, 90);
+			if (global::UnityEngine.Random.Range(0, 2) == 0)
+				RotY = -RotY;
+			float duration = global::UnityEngine.Random.Range(2f, 3f);
+			yield return m.Loop(() => elapsedTime < duration, () =>
+			{
+				float dt = global::SmartPoint.AssetAssistant.Sequencer.elapsedTime;
+				m.walkData.isNeedRun = false;
+				m.walkData.Move(dt, 10f, 2.5f, 0f);
+				elapsedTime += dt;
+				if (m.GetType() == typeof(global::Dpr.Field.Walking.AIFureaiModel))
+				{
+					global::Dpr.Field.Walking.AIFureaiModel model = (global::Dpr.Field.Walking.AIFureaiModel)m;
+					float angle = model.walkData.GetAngle(model.sanpoModel.InitPos + model.sanpoModel.RandomOffsetPos);
+					global::UnityEngine.Transform transform = m.transform;
+					transform.eulerAngles = transform.eulerAngles +(RotY + angle * global::UnityEngine.Vector3.up * model.sanpoModel.CollidedRotValue) * dt;
+				}
+			});
+		}
 	}
 }

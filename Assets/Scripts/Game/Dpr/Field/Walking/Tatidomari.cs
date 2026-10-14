@@ -3,7 +3,11 @@ namespace Dpr.Field.Walking
 {
 	public class Tatidomari : global::Dpr.Field.Walking.ActionModel
 	{
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008A9B*/ throw null; }
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) {
+			yield return model.walkData.actionModel.corSystem.AddSub("").Play(new global::Dpr.Field.Walking.SpeedDownStop().DoAction(model));
+			yield return new global::Dpr.Field.Walking.MyWaitForSeconds(3f);
+			model.AI.ChangeState(typeof(global::Dpr.Field.Walking.ReturnState));
+		}
 		public Tatidomari() { }
 	}
 }
