@@ -12,7 +12,7 @@ namespace Dpr.Demo
 		[global::UnityEngine.SerializeField]
 		private int DebugLeapPosIndex1;
 		[global::UnityEngine.SerializeField]
-		private int DebugLeapPosIndex2;
+		private int DebugLeapPosIndex2 = 1;
 		public const int RenderSettings_Gosanke = 0;
 		public const int RenderSettings_Hakase = 1;
 		public const int RenderSettings_DemoCommon = 2;
@@ -24,9 +24,9 @@ namespace Dpr.Demo
 		private global::UnityEngine.Animator animator;
 		public global::SmartPoint.Rendering.PostProcessFilter postProcessFilter;
 		[global::UnityEngine.SerializeField]
-		private float DebugDuration;
+		private float DebugDuration = 1f;
 		[global::UnityEngine.SerializeField]
-		private global::DG.Tweening.Ease DebugEase;
+		private global::DG.Tweening.Ease DebugEase = global::DG.Tweening.Ease.OutSine;
 		[global::Dpr.SubContents.ButtonAttribute("DebugMove", "DebugMove", new object[] {  })]
 		public int Button01;
 		private global::UnityEngine.AnimationClip _nowClip;
@@ -34,28 +34,98 @@ namespace Dpr.Demo
 		public string DebugAnimName;
 		[global::Dpr.SubContents.ButtonAttribute("_DebugPlay", "_DebugPlay", new object[] {  })]
 		public int Button02;
-		private global::UnityEngine.AnimationClip nowClip { get { /*@B 0x60047F4*/ throw null; } }
-		private void Awake() { /*@B 0x60047EC*/ throw null; }
-		public global::UnityEngine.RenderTexture CreateRenderTex(bool isUseAlpha, bool isSetCamera = true) { /*@B 0x60047ED*/ throw null; }
-		private void OnValidate() { /*@B 0x60047EE*/ throw null; }
-		private void OnDestroy() { /*@B 0x60047EF*/ throw null; }
-		private void LeapMove(global::UnityEngine.Transform tra1, global::UnityEngine.Transform tra2) { /*@B 0x60047F0*/ throw null; }
+		private global::UnityEngine.AnimationClip nowClip { get {
+                if (_nowClip == null)
+                    _nowClip = animator.GetCurrentAnimatorClipInfo(0)[0].clip;
+                return _nowClip;
+            } }
+		private void Awake() {
+            postProcessFilter = GetComponent<global::SmartPoint.Rendering.PostProcessFilter>();
+        }
+		public global::UnityEngine.RenderTexture CreateRenderTex(bool isUseAlpha, bool isSetCamera = true) {
+            if (tex != null)
+                tex.Release();
+            tex = null;
+            tex = new global::UnityEngine.RenderTexture(1280, 720, 24, isUseAlpha ? global::UnityEngine.RenderTextureFormat.ARGBHalf : global::UnityEngine.RenderTextureFormat.RGB111110Float);
+            tex.antiAliasing = 4;
+            cam.targetTexture = null;
+            if (isSetCamera)
+                cam.targetTexture = tex;
+            return tex;
+        }
+		private void OnValidate() {
+            if (cam == null)
+                cam = GetComponent<global::UnityEngine.Camera>();
+            if (CameraPosList.Count >= 2 && DebugLeapPosIndex1 < CameraPosList.Count && DebugLeapPosIndex2 < CameraPosList.Count)
+                LeapMove(CameraPosList[DebugLeapPosIndex1], CameraPosList[DebugLeapPosIndex2]);
+        }
+		private void OnDestroy() {
+            if (tex != null)
+                tex.Release();
+            tex = null;
+            cam = null;
+            CameraPosList.Clear();
+            CameraPosList = null;
+            environmentSettings.Clear();
+            environmentSettings = null;
+            animator = null;
+            postProcessFilter = null;
+            _nowClip = null;
+        }
+		private void LeapMove(global::UnityEngine.Transform tra1, global::UnityEngine.Transform tra2) {
+            if (tra1 == null || tra2 == null)
+                return;
+            cam.transform.position = global::UnityEngine.Vector3.Lerp(tra1.position, tra2.position, LeapValue);
+            cam.transform.localEulerAngles = global::UnityEngine.Vector3.Lerp(tra1.localEulerAngles, tra2.localEulerAngles, LeapValue);
+        }
 		public void TweenMove(int PosIndex1, int PosIndex2, float duration) {
             DOTween.To(() => LeapValue, x => LeapValue = x, 1.0f, duration)
                 .OnUpdate(() => LeapMove(CameraPosList[PosIndex1], CameraPosList[PosIndex2]))
                 .SetEase(Ease.InOutQuart);
         }
-		public void DebugMove() { /*@B 0x60047F2*/ throw null; }
-		public void SetAnimatorController(global::UnityEngine.RuntimeAnimatorController controller) { /*@B 0x60047F3*/ throw null; }
-		public void PlayAnim(string animName, float time = 0f) { /*@B 0x60047F5*/ throw null; }
-		public void PauseAnim() { /*@B 0x60047F6*/ throw null; }
-		public void ResumeAnim() { /*@B 0x60047F7*/ throw null; }
-		public void SetPauseTargetFrame(int i_frame) { /*@B 0x60047F8*/ throw null; }
-		public void UnSetPause() { /*@B 0x60047F9*/ throw null; }
-		private void TargetFramePause(float deltaTime) { /*@B 0x60047FA*/ throw null; }
-		public void PlayTargetFrame(int i_frame, string animName) { /*@B 0x60047FB*/ throw null; }
-		public void _DebugPlay() { /*@B 0x60047FC*/ throw null; }
-		public void ResetPostProcess() { /*@B 0x60047FD*/ throw null; }
-		public DemoCamera() { /*@B 0x60047FE*/ throw null; }
+		public void DebugMove() {
+            TweenMove(0, 1, DebugDuration);
+        }
+		public void SetAnimatorController(global::UnityEngine.RuntimeAnimatorController controller) {
+            animator = gameObject.AddComponent<global::UnityEngine.Animator>();
+            animator.runtimeAnimatorController = controller;
+        }
+		public void PlayAnim(string animName, float time = 0f) {
+            animator.Play(animName, 0, time);
+            animator.speed = 1f;
+        }
+		public void PauseAnim() {
+            animator.speed = 0f;
+        }
+		public void ResumeAnim() {
+            animator.speed = 1f;
+        }
+		public void SetPauseTargetFrame(int i_frame) {
+            TargetFrame = i_frame;
+            global::SmartPoint.AssetAssistant.Sequencer.update += TargetFramePause;
+        }
+		public void UnSetPause() {
+            global::SmartPoint.AssetAssistant.Sequencer.update -= TargetFramePause;
+        }
+		private void TargetFramePause(float deltaTime) {
+            if ((float)TargetFrame / nowClip.frameRate / nowClip.length < animator.GetCurrentAnimatorStateInfo(0).normalizedTime)
+            {
+                animator.speed = 0f;
+                global::SmartPoint.AssetAssistant.Sequencer.update -= TargetFramePause;
+            }
+        }
+		public void PlayTargetFrame(int i_frame, string animName) {
+            // shipped quirk: uses the stored TargetFrame, not i_frame
+            animator.Play(animName, 0, (float)TargetFrame / nowClip.frameRate / nowClip.length);
+            animator.speed = 1f;
+        }
+		public void _DebugPlay() {
+            animator.Play(DebugAnimName, 0, 0f);
+            animator.speed = 1f;
+        }
+		public void ResetPostProcess() {
+            postProcessFilter.Reset();
+        }
+		public DemoCamera() { }
 	}
 }
