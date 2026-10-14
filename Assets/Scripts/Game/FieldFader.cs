@@ -13,11 +13,64 @@ public class FieldFader : global::UnityEngine.MonoBehaviour
 	private float _progressTime;
 	private global::UnityEngine.Animator _animator;
 	public bool IsBusy { get { return this._isPlaying; } }
-	public void OnUpdate(float deltaTime) { /*@B 0x60002BE*/ throw null; }
-	public void FadeOut(global::FieldFader.FieldFadeType type, float time = 0.5f) { /*@B 0x60002BF*/ throw null; }
-	public void FadeIn(global::FieldFader.FieldFadeType type, float time = 0.5f) { /*@B 0x60002C0*/ throw null; }
-	private void PlayAnimation(global::FieldFader.FieldFadeType type, float time) { /*@B 0x60002C1*/ throw null; }
-	private void SetActiveFade(global::FieldFader.FieldFadeType type) { /*@B 0x60002C2*/ throw null; }
+	public void OnUpdate(float deltaTime) {
+		if (!_isPlaying) return;
+		_progressTime += deltaTime;
+		if (_time <= _progressTime)
+		{
+			if (_isFadeOut)
+			{
+				global::SmartPoint.Components.Fader.fillColor = global::UnityEngine.Color.black;
+				global::SmartPoint.Components.Fader.FadeOut(0f);
+			}
+			_isPlaying = false;
+			_dungeonFade.SetActive(false);
+			_buildingFade.SetActive(false);
+			_areaFade.SetActive(false);
+			gameObject.SetActive(false);
+		}
+	}
+	public void FadeOut(global::FieldFader.FieldFadeType type, float time = 0.5f) {
+		_isFadeOut = true;
+		gameObject.SetActive(true);
+		SetActiveFade(type);
+		PlayAnimation(type, time);
+	}
+	public void FadeIn(global::FieldFader.FieldFadeType type, float time = 0.5f) {
+		_isFadeOut = false;
+		global::SmartPoint.Components.Fader.fillColor = global::UnityEngine.Color.black;
+		global::SmartPoint.Components.Fader.FadeIn(0f);
+		gameObject.SetActive(true);
+		SetActiveFade(type);
+		PlayAnimation(type, time);
+	}
+	private void PlayAnimation(global::FieldFader.FieldFadeType type, float time) {
+		if (_animator == null)
+			_animator = GetComponent<global::UnityEngine.Animator>();
+		if (_animator == null) return;
+		string name;
+		switch (type)
+		{
+			case FieldFadeType.DUNGEON: name = "fieldfader_hole"; break;
+			case FieldFadeType.BUILDING: name = "fieldfader_updown"; break;
+			case FieldFadeType.AREA_UP: name = "fieldfader_up"; break;
+			case FieldFadeType.AREA_DOWN: name = "fieldfader_down"; break;
+			case FieldFadeType.AREA_LEFT: name = "fieldfader_left"; break;
+			case FieldFadeType.AREA_RIGHT: name = "fieldfader_right"; break;
+			default: name = ""; break;
+		}
+		string stateName = name + (_isFadeOut ? "_out" : "_in");
+		_isPlaying = true;
+		_time = time;
+		_progressTime = 0f;
+		_animator.Play(stateName, 0);
+		_animator.speed = 1f / time;
+	}
+	private void SetActiveFade(global::FieldFader.FieldFadeType type) {
+		_dungeonFade.SetActive(type == FieldFadeType.DUNGEON);
+		_buildingFade.SetActive(type == FieldFadeType.BUILDING);
+		_areaFade.SetActive(type >= FieldFadeType.AREA_UP && type <= FieldFadeType.AREA_RIGHT);
+	}
 	public FieldFader() { }
 	public enum FieldFadeType
 	{

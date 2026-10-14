@@ -4,7 +4,7 @@ using UnityEngine;
 public class FieldKinomiGrowEntity : global::FieldEventEntity
 {
 	public int KinomiPlaceIndex;
-	private global::KinomiWork.GrowPhase NowGrowPhase;
+	private global::KinomiWork.GrowPhase NowGrowPhase = global::KinomiWork.GrowPhase.Invalid;
 	private bool NowWet;
 	private global::KinomiObject KinomiObject;
 	protected override void Awake() {
@@ -63,5 +63,5 @@ public class FieldKinomiGrowEntity : global::FieldEventEntity
             KinomiObject.SetGrowPhase(NowGrowPhase, grow.wet);
         }
     }
-	public FieldKinomiGrowEntity() { /*@B 0x60006B1*/ throw null; }
+	public FieldKinomiGrowEntity() { }
 }

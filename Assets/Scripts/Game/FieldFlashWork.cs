@@ -3,15 +3,75 @@ public class FieldFlashWork
 {
 	private global::SmartPoint.AssetAssistant.AssetRequestOperation LoadRequest;
 	private global::UnityEngine.GameObject LoadedDarkObject;
-	private global::Dpr.FieldFloatMove DarkRate;
-	public bool IsValid { get { /*@B 0x60000A6*/ throw null; } }
-	public bool IsEnable { get { /*@B 0x60000A7*/ throw null; } }
-	public static bool CheckFlashWeather() { /*@B 0x60000A2*/ throw null; }
-	public static bool AvailableFlash() { /*@B 0x60000A3*/ throw null; }
-	public void Load() { /*@B 0x60000A4*/ throw null; }
-	public void Release() { /*@B 0x60000A5*/ throw null; }
-	public void Update(float deltaTime) { /*@B 0x60000A8*/ throw null; }
-	public void ChangeDark(float target, float time = 0f) { /*@B 0x60000A9*/ throw null; }
-	private void UpdateDark() { /*@B 0x60000AA*/ throw null; }
-	public FieldFlashWork() { /*@B 0x60000AB*/ throw null; }
+	private global::Dpr.FieldFloatMove DarkRate = new global::Dpr.FieldFloatMove();
+	public bool IsValid { get { return LoadedDarkObject != null; } }
+	public bool IsEnable { get {
+		if (LoadedDarkObject != null)
+		{
+			if (DarkRate.IsBusy) return true;
+			return DarkRate.CurrentValue > 0f;
+		}
+		return false;
+	} }
+	public static bool CheckFlashWeather() { return WeatherWork.WeatherID == global::SYS_WEATHER.FLASH; }
+	public static bool AvailableFlash() {
+		if (WeatherWork.WeatherID == global::SYS_WEATHER.FLASH)
+			return !PlayerWork.Flash;
+		return false;
+	}
+	public void Load() {
+		DarkRate.EaseFunc = global::Dpr.FieldFloatMove.EaseInOutSin;
+		if (LoadRequest != null) return;
+		LoadRequest = global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest("gimmick/obj0013_01", true, (type, name, content) =>
+		{
+			if (type == global::SmartPoint.AssetAssistant.RequestEventType.Activated)
+				LoadedDarkObject = content as global::UnityEngine.GameObject;
+		}, null);
+		global::SmartPoint.AssetAssistant.AssetManager.DispatchRequests(null);
+	}
+	public void Release() {
+		if (GameManager.fieldCamera != null)
+			GameManager.fieldCamera.DestroyDarkWindow();
+		if (LoadRequest != null)
+		{
+			global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(LoadRequest.assetBundleRequest.uri);
+			LoadRequest = null;
+		}
+	}
+	public void Update(float deltaTime) {
+		if (DarkRate.IsBusy)
+		{
+			DarkRate.Update(deltaTime);
+			UpdateDark();
+		}
+	}
+	public void ChangeDark(float target, float time = 0f) {
+		if (time > 0f)
+		{
+			DarkRate.MoveTime(target, time);
+			return;
+		}
+		DarkRate.SetValue(target);
+		UpdateDark();
+	}
+	private void UpdateDark() {
+		float rate = DarkRate.CurrentValue;
+		global::UnityEngine.GameObject dark = GameManager.fieldCamera.GetDarkWindow();
+		if (dark == null)
+		{
+			GameManager.fieldCamera.InstantiateDarkWindow(LoadedDarkObject);
+			dark = GameManager.fieldCamera.GetDarkWindow();
+		}
+		if (rate > 0f)
+		{
+			dark.SetActive(true);
+			float a = global::GameData.DataManager.FieldCommonParam[(int)global::FieldCommon.ParamIndx.FlashDark_FlashScale].param;
+			float b = global::GameData.DataManager.FieldCommonParam[(int)global::FieldCommon.ParamIndx.FlashDark_DarkScale].param;
+			float s = global::UnityEngine.Mathf.Lerp(a, b, rate);
+			dark.transform.localScale = new global::UnityEngine.Vector3(s, 1f, s);
+			return;
+		}
+		dark.SetActive(false);
+	}
+	public FieldFlashWork() { }
 }
