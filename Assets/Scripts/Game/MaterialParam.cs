@@ -4,6 +4,23 @@ public class MaterialParam
 {
 	public global::UnityEngine.Material mat;
 	public global::MaterialUsing[] usings;
-	public void SetUpUsing(global::UnityEngine.Renderer[] renderers) { /*@B 0x6000DF1*/ throw null; }
+	public void SetUpUsing(global::UnityEngine.Renderer[] renderers) {
+		var list = new global::System.Collections.ArrayList();
+		for (int i = 0; i < renderers.Length; i++)
+		{
+			var renderer = renderers[i];
+			for (int j = 0; j < renderer.sharedMaterials.Length; j++)
+			{
+				if (renderer.sharedMaterials[j] == null)
+					continue;
+				if (renderer.sharedMaterials[j] == mat)
+				{
+					list.Add(new MaterialUsing { renderer = renderer, index = j });
+					break;
+				}
+			}
+		}
+		usings = (MaterialUsing[])list.ToArray(typeof(MaterialUsing));
+	}
 	public MaterialParam() { }
 }

@@ -13,7 +13,11 @@ public class ItemWork
 	private global::Dpr.Item.ItemListMemory[] _itemListMemories;
 	private bool _bagIconSex;
 	private bool _isShowWazaName;
-	public static void Create() { /*@B 0x6000C5F*/ throw null; }
+	public static void Create() {
+		if (_instance != null)
+			return;
+		_instance = new ItemWork(false);
+	}
 	public static void EnableDummyWork() {
         if (_temp_instance != null)
             return;
@@ -28,7 +32,9 @@ public class ItemWork
             _temp_instance = null;
         }
     }
-	public static int AddItem(int itemno, int num = 1) { /*@B 0x6000C62*/ throw null; }
+	public static int AddItem(int itemno, int num = 1) {
+		return _instance._items[itemno].AddItem(num);
+	}
 	public static int SubItem(int itemno, int num = 1) {
         return _instance._items[itemno].SubItem(num);
     }
@@ -143,7 +149,25 @@ public class ItemWork
 	public static void SetBagIconSex(bool sex) {
         _instance._bagIconSex = sex;
     }
-	public static bool IsUseSpray(out global::Pml.ItemNo itemno) { /*@B 0x6000C78*/ throw null; }
+	public static bool IsUseSpray(out global::Pml.ItemNo itemno) {
+		DPData.ENC_SV_DATA data = PlayerWork.Enc_SV_Data;
+		itemno = ItemNo.DUMMY_DATA;
+		switch (data.SprayType)
+		{
+			case 0:
+				return false;
+			case 1:
+				itemno = ItemNo.MUSIYOKESUPUREE;
+				break;
+			case 2:
+				itemno = ItemNo.SIRUBAASUPUREE;
+				break;
+			case 3:
+				itemno = ItemNo.GOORUDOSUPUREE;
+				break;
+		}
+		return true;
+	}
 	public static void SetSpray(global::Pml.ItemNo itemno, short value) {
         DPData.ENC_SV_DATA data = PlayerWork.Enc_SV_Data;
         byte type;
@@ -190,6 +214,46 @@ public class ItemWork
 	public static bool IsShowWazaName() {
         return _instance._isShowWazaName;
     }
-	private ItemWork(bool isDummy = false) { /*@B 0x6000C80*/ throw null; }
+	private ItemWork(bool isDummy = false) {
+		_items = new ItemInfo[3000];
+		_categorizedItems = new List<ItemInfo>[9];
+		for (int i = 0; i < _categorizedItems.Length; i++)
+			_categorizedItems[i] = new List<ItemInfo>();
+		for (int i = 0; i < _items.Length; i++)
+		{
+			_items[i] = new ItemInfo((ushort)i, isDummy);
+			_categorizedItems[(int)_items[i].Category].Add(_items[i]);
+		}
+		var itemNames = Dpr.UI.UIManager.Instance.searchIndexData.ItemName;
+		for (int i = 0; i < itemNames.Length; i++)
+		{
+			string[] parts = itemNames[i].MessageID.Split('_');
+			if (int.TryParse(parts[1], out int itemId))
+				_items[itemId].NameSortOrder = i;
+		}
+		var wazaNames = Dpr.UI.UIManager.Instance.searchIndexData.WazaName;
+		var wazaSortOrders = new Dictionary<int, int>();
+		for (int i = 0; i < wazaNames.Length; i++)
+		{
+			string[] parts = wazaNames[i].MessageID.Split('_');
+			if (int.TryParse(parts[1], out int wazaId))
+				wazaSortOrders.Add(wazaId, i);
+		}
+		_isShowWazaName = false;
+		List<ItemInfo> wazaMachines = _categorizedItems[(int)ItemInfo.CategoryType.WazaMachine];
+		for (int i = 0; i < wazaMachines.Count; i++)
+		{
+			if (wazaSortOrders.TryGetValue((int)ItemData.GetWazaNo((ushort)wazaMachines[i].Id), out int sortOrder))
+				wazaMachines[i].NameSortOrder = sortOrder;
+			if (!_isShowWazaName)
+				_isShowWazaName = wazaMachines[i].IsShowWazaName;
+		}
+		for (int i = 0; i < _categorizedItems.Length; i++)
+			_categorizedItems[i].Sort((x, y) => x.SaveSortNumber.CompareTo(y.SaveSortNumber));
+		_itemListMemories = new ItemListMemory[8];
+		for (int i = 0; i < _itemListMemories.Length; i++)
+			_itemListMemories[i] = new ItemListMemory();
+		_bagIconSex = PlayerWork.playerSex;
+	}
 	static ItemWork() { }
 }

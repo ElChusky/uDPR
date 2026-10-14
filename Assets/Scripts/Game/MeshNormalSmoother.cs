@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 public class MeshNormalSmoother
 {
-	private static global::System.Collections.Generic.List<global::UnityEngine.Mesh> _meshes;
-	private static global::System.Collections.Generic.Dictionary<global::MeshNormalSmoother.VectorKey, global::MeshNormalSmoother.SharedVertex> _vertexLookup;
+	private static global::System.Collections.Generic.List<global::UnityEngine.Mesh> _meshes = new List<Mesh>();
+	private static global::System.Collections.Generic.Dictionary<global::MeshNormalSmoother.VectorKey, global::MeshNormalSmoother.SharedVertex> _vertexLookup = new Dictionary<VectorKey, SharedVertex>();
 	public static void Clear() {
 		_meshes.Clear();
 		_vertexLookup.Clear();
@@ -89,12 +89,16 @@ public class MeshNormalSmoother
 		Clear();
 	}
 	public MeshNormalSmoother() { }
-	static MeshNormalSmoother() { /*@B 0x60003B3*/ throw null; }
+	static MeshNormalSmoother() {
+	}
 	public class SharedVertex
 	{
 		public global::System.Collections.Generic.Dictionary<global::UnityEngine.Mesh, global::System.Collections.Generic.List<int>> indexLookup;
 		public global::UnityEngine.Vector3 compositeNormal;
-		public SharedVertex(global::UnityEngine.Mesh mesh, int index, global::UnityEngine.Vector3 normal) { /*@B 0x6009337*/ throw null; }
+		public SharedVertex(global::UnityEngine.Mesh mesh, int index, global::UnityEngine.Vector3 normal) {
+			indexLookup = new Dictionary<Mesh, List<int>> { { mesh, new List<int> { index } } };
+			compositeNormal = normal;
+		}
 		public global::System.Collections.Generic.List<int> GetIndicesByMesh(global::UnityEngine.Mesh mesh) {
 			if (indexLookup.TryGetValue(mesh, out List<int> indices))
 				return indices;
@@ -116,8 +120,15 @@ public class MeshNormalSmoother
 		private readonly long y;
 		private readonly long z;
 		private const int _tolerance = 100000;
-		public VectorKey(in global::UnityEngine.Vector3 V) { /*@B 0x600933A*/ throw null; }
-		public override bool Equals(object rhs) { /*@B 0x600933B*/ throw null; }
+		public VectorKey(in global::UnityEngine.Vector3 V) {
+			x = (long)global::System.Math.Round(V.x * _tolerance);
+			y = (long)global::System.Math.Round(V.y * _tolerance);
+			z = (long)global::System.Math.Round(V.z * _tolerance);
+		}
+		public override bool Equals(object rhs) {
+			VectorKey other = (VectorKey)rhs;
+			return x == other.x && y == other.y && z == other.z;
+		}
 		public override int GetHashCode() {
 			return (x * 7 ^ y * 13 ^ z * 27).GetHashCode();
 		}

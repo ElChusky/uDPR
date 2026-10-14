@@ -5,7 +5,11 @@ public class KeyguideItem : global::UnityEngine.MonoBehaviour
 	private global::UnityEngine.UI.Image _button;
 	[global::UnityEngine.SerializeField]
 	private global::Dpr.UI.UIText _text;
-	public void Setup(global::KeyguideItem.Param param) { /*@B 0x6000BC1*/ throw null; }
+	public void Setup(global::KeyguideItem.Param param) {
+		var data = global::Dpr.UI.UIManager.Instance.GetKeyguideData(param.keyguideId);
+		_button.sprite = global::Dpr.UI.UIManager.Instance.GetSharedSprite(data.ButtonSpriteId);
+		_text.SetupMessage(data.MessageFile, data.MessageLabel);
+	}
 	public KeyguideItem() { }
 	public class Param
 	{

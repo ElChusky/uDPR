@@ -8,7 +8,7 @@ using Pml;
 using System.Linq;
 public class InterviewWork
 {
-	private static global::System.Collections.Generic.Dictionary<int, int> TypeToProgramDict;
+	private static global::System.Collections.Generic.Dictionary<int, int> TypeToProgramDict = new global::System.Collections.Generic.Dictionary<int, int> { { 2, 0 }, { 4, 1 }, { 6, 2 }, { 7, 3 }, { 10, 4 }, { 11, 5 }, { 13, 6 }, { 14, 7 } };
 	private static global::DPData.TV_PROGRAM TypeToProgram(global::InterviewWork.Type type) {
         if (TypeToProgramDict.TryGetValue((int)type, out int program))
             return (TV_PROGRAM)program;
@@ -201,7 +201,8 @@ public class InterviewWork
             SetInterviewBranchData(program, UnityEngine.Random.Range(1, itemNo != ItemNo.DUMMY_DATA ? 4 : 3));
     }
 	public InterviewWork() { }
-	static InterviewWork() { /*@B 0x600032B*/ throw null; }
+	static InterviewWork() {
+	}
 	public enum Type
 	{
 		None = 0,

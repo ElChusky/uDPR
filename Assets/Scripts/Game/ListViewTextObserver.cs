@@ -101,13 +101,19 @@ public class ListViewTextObserver : global::SmartPoint.Components.LayoutCellObse
 	[global::System.Serializable]
 	public class CallbackEvent : global::UnityEngine.Events.UnityEvent<string, global::System.WeakReference>
 	{
-		public CallbackEvent() { /*@B 0x6009335*/ throw null; }
+		public CallbackEvent() {
+		}
 	}
 	public class Item
 	{
 		public string text;
 		public global::ListViewTextObserver.CallbackEvent onClick;
 		public global::System.WeakReference reference;
-		public Item(string text = null, global::UnityEngine.Events.UnityAction<string, global::System.WeakReference> callback = null, global::System.WeakReference reference = null) { /*@B 0x6009336*/ throw null; }
+		public Item(string text = null, global::UnityEngine.Events.UnityAction<string, global::System.WeakReference> callback = null, global::System.WeakReference reference = null) {
+			onClick = new global::ListViewTextObserver.CallbackEvent();
+			onClick.AddListener(callback);
+			this.reference = reference;
+			this.text = text;
+		}
 	}
 }

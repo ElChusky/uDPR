@@ -7,23 +7,23 @@ using UnityEngine;
 public class MirrorPlane : global::UnityEngine.MonoBehaviour
 {
 	[global::UnityEngine.SerializeField]
-	private string _texturePropertyName;
+	private string _texturePropertyName = "_MirrorMap";
 	[global::UnityEngine.SerializeField]
-	private int _textureSize;
+	private int _textureSize = 512;
 	[global::UnityEngine.SerializeField]
-	private float _clipPlaneDistance;
+	private float _clipPlaneDistance = 0.001f;
 	[global::UnityEngine.SerializeField]
 	private float _planeHeightOffset;
 	[global::UnityEngine.SerializeField]
-	private global::UnityEngine.LayerMask _targetLayers;
-	private global::System.Collections.Hashtable _cameraTable;
+	private global::UnityEngine.LayerMask _targetLayers = -1;
+	private global::System.Collections.Hashtable _cameraTable = new global::System.Collections.Hashtable();
 	private global::UnityEngine.RenderTexture _renderTexture;
 	private static bool _renderingLock;
 	private global::UnityEngine.MaterialPropertyBlock _propertyBlock;
 	private int _texturePropertyID;
 	private global::UnityEngine.Renderer _renderer;
 	private global::UnityEngine.Transform _transform;
-	public global::UnityEngine.LayerMask targetLayers { get { /*@B 0x60009E5*/ throw null; } set { /*@B 0x60009E6*/ throw null; } }
+	public global::UnityEngine.LayerMask targetLayers { get { return _targetLayers; } set { _targetLayers = value; } }
 	private void OnEnable() {
 		_transform = GetComponent<Transform>();
 		_renderer = GetComponent<Renderer>();
@@ -100,7 +100,29 @@ public class MirrorPlane : global::UnityEngine.MonoBehaviour
 		dest.aspect = src.aspect;
 		dest.orthographicSize = src.orthographicSize;
 	}
-	private void CreateMirrorObjects(global::UnityEngine.Camera currentCamera, out global::UnityEngine.Camera reflectionCamera) { /*@B 0x60009EB*/ throw null; }
+	private void CreateMirrorObjects(global::UnityEngine.Camera currentCamera, out global::UnityEngine.Camera reflectionCamera) {
+		reflectionCamera = null;
+		if (_renderTexture == null)
+		{
+			if (_renderTexture)
+				DestroyImmediate(_renderTexture);
+			_renderTexture = new RenderTexture(_textureSize, _textureSize, 16);
+			_renderTexture.name = "__MirrorReflection" + GetInstanceID();
+			_renderTexture.isPowerOfTwo = true;
+			_renderTexture.hideFlags = HideFlags.DontSave;
+		}
+		reflectionCamera = _cameraTable[currentCamera] as Camera;
+		if (reflectionCamera == null)
+		{
+			GameObject go = new GameObject("Mirror Refl Camera id" + GetInstanceID() + " for " + currentCamera.GetInstanceID(), typeof(Camera));
+			reflectionCamera = go.GetComponent<Camera>();
+			reflectionCamera.enabled = false;
+			reflectionCamera.transform.position = _transform.position;
+			reflectionCamera.transform.rotation = _transform.rotation;
+			go.hideFlags = HideFlags.HideAndDontSave;
+			_cameraTable[currentCamera] = reflectionCamera;
+		}
+	}
 	private global::UnityEngine.Vector4 CalculateClipPlane(global::UnityEngine.Camera reflectionCamera, global::UnityEngine.Vector3 planePoint, global::UnityEngine.Vector3 planeNormal) {
 		Vector3 offsetPosition = planePoint + planeNormal * _clipPlaneDistance;
 		Matrix4x4 worldToCameraMatrix = reflectionCamera.worldToCameraMatrix;
@@ -108,6 +130,8 @@ public class MirrorPlane : global::UnityEngine.MonoBehaviour
 		Vector3 cameraNormal = worldToCameraMatrix.MultiplyVector(planeNormal).normalized;
 		return new Vector4(cameraNormal.x, cameraNormal.y, cameraNormal.z, -Vector3.Dot(cameraPosition, cameraNormal));
 	}
-	public MirrorPlane() { /*@B 0x60009ED*/ throw null; }
-	static MirrorPlane() { /*@B 0x60009EE*/ throw null; }
+	public MirrorPlane() {
+	}
+	static MirrorPlane() {
+	}
 }

@@ -4,9 +4,9 @@ public class KinomiObject
 {
 	public global::UnityEngine.Transform Parent;
 	public int TagNo;
-	private global::UnityEngine.GameObject[] Objects;
-	private static readonly string[] GrowedObjectName;
-	private global::KinomiResources KinomiResources { get { /*@B 0x60006B8*/ throw null; } }
+	private global::UnityEngine.GameObject[] Objects = new global::UnityEngine.GameObject[7];
+	private static readonly string[] GrowedObjectName = new string[] { "Miki", "Hana", "Mi" };
+	private global::KinomiResources KinomiResources { get { return FieldManager.Instance.KinomiResources; } }
 	public void SetGrowPhase(global::KinomiWork.GrowPhase grouPhase, bool isWet) {
         Invisible();
         switch (grouPhase)
@@ -99,8 +99,10 @@ public class KinomiObject
 	private void SetParent(global::UnityEngine.GameObject gameObject) {
         gameObject.transform.SetParent(Parent, false);
     }
-	public KinomiObject() { /*@B 0x60006B9*/ throw null; }
-	static KinomiObject() { /*@B 0x60006BA*/ throw null; }
+	public KinomiObject() {
+	}
+	static KinomiObject() {
+	}
 	public enum ObjectType
 	{
 		Soil = 0,

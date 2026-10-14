@@ -9,7 +9,16 @@ public static class GameObjectExtensions
 
         return child.GetComponent<T>();
     }
-	public static global::UnityEngine.GameObject FindDeep(this global::UnityEngine.GameObject self, string name, bool includeInactive = false) { /*@B 0x6000DD9*/ throw null; }
+	public static global::UnityEngine.GameObject FindDeep(this global::UnityEngine.GameObject self, string name, bool includeInactive = false) {
+		var children = self.GetComponentsInChildren<Transform>(includeInactive);
+		for (int i = 0; i < children.Length; i++)
+		{
+			var child = children[i];
+			if (child.name == name)
+				return child.gameObject;
+		}
+		return null;
+	}
 	public static void DeleteAllChild(this global::UnityEngine.GameObject self) {
         foreach (Transform child in self.transform)
             Object.Destroy(child.gameObject);

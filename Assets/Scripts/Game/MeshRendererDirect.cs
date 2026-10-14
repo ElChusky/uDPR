@@ -12,7 +12,7 @@ public class MeshRendererDirect : global::UnityEngine.MonoBehaviour
 	public global::UnityEngine.Material[] materials;
 	[global::UnityEngine.SerializeField]
 	public global::MeshRendererDirect.RenderPacket[] renderPackets;
-	private static global::UnityEngine.Matrix4x4[] copyBuffer;
+	private static global::UnityEngine.Matrix4x4[] copyBuffer = new global::UnityEngine.Matrix4x4[1023];
 	private static global::UnityEngine.Rendering.BatchRendererGroup batchGroup;
 	private void OnEnable() {
 #if !BDSP_UNITY6_GATE // Unity 2019.4 BatchRendererGroup API (removed in 2022), written as shipped: only the Unity 6 compile gate defines BDSP_UNITY6_GATE (tools/compile_check.py) and skips it; the 2019.4.27f1 Editor compiles it -- checked with work/b190/check2019.py against the 2019.4.30f1 refs (errors=0)
@@ -58,7 +58,8 @@ public class MeshRendererDirect : global::UnityEngine.MonoBehaviour
 #endif
 	}
 	public MeshRendererDirect() { }
-	static MeshRendererDirect() { /*@B 0x60009E4*/ throw null; }
+	static MeshRendererDirect() {
+	}
 	[global::System.Serializable]
 	public class RenderPacket
 	{

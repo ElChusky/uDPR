@@ -11,7 +11,9 @@ public class KinomiWork
 	public static global::XLSXContent.KinomiPlaceData.SheetSheet1 GetPlaceData(int placeIndex) {
         return DataManager.KinomiPlaceData[placeIndex - 1];
     }
-	public static global::XLSXContent.KinomiPlaceData.SheetSheet1[] GetPlaceDataByAreaId(global::AreaID areaId) { /*@B 0x6000336*/ throw null; }
+	public static global::XLSXContent.KinomiPlaceData.SheetSheet1[] GetPlaceDataByAreaId(global::AreaID areaId) {
+		return Array.FindAll(DataManager.KinomiPlaceData.Sheet1, data => data.AreaID == areaId);
+	}
 	public static int GetPlaceDataCount() {
         return DataManager.KinomiPlaceData.Sheet1.Length;
     }

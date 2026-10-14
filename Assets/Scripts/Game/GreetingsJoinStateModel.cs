@@ -7,7 +7,11 @@ public class GreetingsJoinStateModel : global::NetStateModel
 	public int sexId { get; set; }
 	public global::OnlinePlayerCharacter opcCharacter { get; set; }
 	public global::UnionGreetingsContextMenu contextMenu { get; set; }
-	public GreetingsJoinStateModel() { /*@B 0x600119D*/ throw null; }
+	public GreetingsJoinStateModel() {
+		contextMenu = new UnionGreetingsContextMenu();
+		contextMenu.GreetingsJoinStateModel = this;
+		contextMenu.SetTransitionType();
+	}
 	protected override void Start() {
 		base.Start();
 		contextMenu = new UnionGreetingsContextMenu();

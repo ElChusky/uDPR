@@ -10,16 +10,16 @@ public class LightStoneResourcesManager
 	private const string DataAssetName = "lightstone/prefabs/lightstonemanager";
 	private const string PokemonAssetPath = "pokemons/field/{0}";
 	private static global::UnityEngine.GameObject ugLightStoneManagerPrefab;
-	private static bool _isDataLoadRequest;
-	private static bool _isDataLoadEnd;
+	private static bool _isDataLoadRequest = false;
+	private static bool _isDataLoadEnd = false;
 	private static global::System.Action _onPostLoaded;
-	private static global::System.Collections.Generic.List<string> _assetPaths;
+	private static global::System.Collections.Generic.List<string> _assetPaths = new global::System.Collections.Generic.List<string>();
 	public static global::Dpr.UnderGround.LightStone.LightStoneManager LightStoneManager { get; private set; }
 	public static global::UnityEngine.GameObject DhigudaPrefab { get; private set; }
 	public static global::UnityEngine.GameObject DagutorioPrefab { get; private set; }
 	public static global::XLSXContent.PokemonInfo.SheetCatalog DhigudaCatalog { get; private set; }
 	public static global::XLSXContent.PokemonInfo.SheetCatalog DagutorioCatalog { get; private set; }
-	public static bool IsDataLoadEnd { get { /*@B 0x6000EBE*/ throw null; } }
+	public static bool IsDataLoadEnd { get { return ugLightStoneManagerPrefab != null && DhigudaPrefab != null && DagutorioPrefab != null; } }
 	public static void UnLoad() {
         for (int i=0; i<_assetPaths.Count; i++)
         {
@@ -100,5 +100,6 @@ public class LightStoneResourcesManager
         return DataManager.GetPokemonCatalog(monsNo, 0, Sex.MALE, false, false);
     }
 	public LightStoneResourcesManager() { }
-	static LightStoneResourcesManager() { /*@B 0x6000EC5*/ throw null; }
+	static LightStoneResourcesManager() {
+	}
 }

@@ -36,7 +36,30 @@ public class LocalKoukan
 			Pos = pos,
 		};
 	}
-	private static int GetIndex(int npcindex, global::Dpr.Message.MessageEnumData.MsgLangId lang) { /*@B 0x6000355*/ throw null; }
+	private static int GetIndex(int npcindex, global::Dpr.Message.MessageEnumData.MsgLangId lang) {
+		if (npcindex > 2)
+			npcindex = 3;
+		switch (lang)
+		{
+			case MessageEnumData.MsgLangId.USA:
+				return npcindex + 4;
+			case MessageEnumData.MsgLangId.FRA:
+				return npcindex + 8;
+			case MessageEnumData.MsgLangId.ITA:
+				return npcindex + 12;
+			case MessageEnumData.MsgLangId.DEU:
+				return npcindex + 16;
+			case MessageEnumData.MsgLangId.ESP:
+				return npcindex + 20;
+			case MessageEnumData.MsgLangId.KOR:
+				return npcindex + 24;
+			case MessageEnumData.MsgLangId.SCH:
+				return npcindex + 28;
+			case MessageEnumData.MsgLangId.TCH:
+				return npcindex + 32;
+		}
+		return npcindex;
+	}
 	private static global::Pml.PokePara.PokemonParam CreateTradePokeParam(global::XLSXContent.LocalKoukanData.Sheetdata data) {
 		var spec = new InitialSpec
 		{

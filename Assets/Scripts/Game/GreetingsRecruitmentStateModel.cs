@@ -7,7 +7,11 @@ public class GreetingsRecruitmentStateModel : global::NetStateModel
 	public int sexId { get; set; }
 	public global::OnlinePlayerCharacter opcCharacter { get; set; }
 	public global::UnionGreetingsContextMenu contextMenu { get; set; }
-	public GreetingsRecruitmentStateModel() { /*@B 0x60011B1*/ throw null; }
+	public GreetingsRecruitmentStateModel() {
+		contextMenu = new UnionGreetingsContextMenu();
+		contextMenu.GreetingsRecruitmentModel = this;
+		contextMenu.SetTransitionType();
+	}
 	protected override void Start() {
 		base.Start();
 		// SHIPPED: unlike GreetingsJoinStateModel.Start, no unionMsg is created here (@02cd7e80)
