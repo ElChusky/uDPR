@@ -8,8 +8,18 @@ namespace Dpr.Message
 		private float g;
 		private float b;
 		private float a;
-		public MessageStyleColorData(float r, float g, float b, float a) { /*@B 0x6003BA8*/ throw null; }
-		public global::UnityEngine.Color GetColor() { /*@B 0x6003BA9*/ throw null; }
-		private float CalcColorValue(float value) { /*@B 0x6003BAA*/ throw null; }
+		public MessageStyleColorData(float r, float g, float b, float a) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+        }
+		public global::UnityEngine.Color GetColor() {
+            // CalcColorValue inlined
+            return new global::UnityEngine.Color(CalcColorValue(r), CalcColorValue(g), CalcColorValue(b), CalcColorValue(a));
+        }
+		private float CalcColorValue(float value) {
+            return value / MAX_VALUE;
+        }
 	}
 }

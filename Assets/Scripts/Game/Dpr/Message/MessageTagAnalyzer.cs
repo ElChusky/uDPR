@@ -7,13 +7,68 @@ namespace Dpr.Message
 	public class MessageTagAnalyzer
 	{
 		private const int SYSTEM_TAG_SIZE = 20;
-		private global::System.Text.StringBuilder systemTagStrBuilder;
+		private global::System.Text.StringBuilder systemTagStrBuilder = new global::System.Text.StringBuilder(SYSTEM_TAG_SIZE);
 		private const int MAX_WORD_SIZE = 30;
 		private const int BYTE_SIZE = 2;
 		private const int MIN_BYTE_LENGTH = 4;
-		private global::System.Text.StringBuilder wordStrBuilder;
-		private byte[] byteArray;
-		public global::Dpr.Message.LabelTagDataModel CustomTagAnalysis(ushort tagGroup, ushort tag, byte[] tagParams) { /*@B 0x6003D27*/ throw null; }
+		private global::System.Text.StringBuilder wordStrBuilder = new global::System.Text.StringBuilder(MAX_WORD_SIZE);
+		private byte[] byteArray = new byte[BYTE_SIZE];
+		public global::Dpr.Message.LabelTagDataModel CustomTagAnalysis(ushort tagGroup, ushort tag, byte[] tagParams) {
+            var tagDataModel = new LabelTagDataModel();
+            tagDataModel.tagGroupID = (MessageEnumData.GroupTagID)tagGroup;
+            tagDataModel.tagID = tag;
+            // the small *TagProcess helpers are inlined here (Name / Digit / Grm / Kor / SC)
+            switch ((MessageEnumData.GroupTagID)tagGroup)
+            {
+                case MessageEnumData.GroupTagID.Name:
+                    NameTagProcess(tagDataModel, tagParams);
+                    break;
+                case MessageEnumData.GroupTagID.Digit:
+                    DigitTagProcess(tagDataModel, tagParams);
+                    break;
+                case MessageEnumData.GroupTagID.Grm:
+                    GrmTagProcess(tagDataModel);
+                    break;
+                case MessageEnumData.GroupTagID.EN:
+                    ENTagProcess(tagDataModel, tagParams);
+                    break;
+                case MessageEnumData.GroupTagID.FR:
+                    FRTagProcess(tagDataModel, tagParams);
+                    break;
+                case MessageEnumData.GroupTagID.IT:
+                    ITTagProcess(tagDataModel, tagParams);
+                    break;
+                case MessageEnumData.GroupTagID.DE:
+                    DETagProcess(tagDataModel, tagParams);
+                    break;
+                case MessageEnumData.GroupTagID.ES:
+                    ESTagProcess(tagDataModel, tagParams);
+                    break;
+                case MessageEnumData.GroupTagID.Kor:
+                    KorTagProcess(tagDataModel, tagParams);
+                    break;
+                case MessageEnumData.GroupTagID.SC:
+                    SCTagProcess(tagDataModel, tagParams);
+                    break;
+                case MessageEnumData.GroupTagID.Character1:
+                    Character1TagProcess(tagDataModel);
+                    break;
+                case MessageEnumData.GroupTagID.Character2:
+                    Character2TagProcess(tagDataModel);
+                    break;
+                case MessageEnumData.GroupTagID.Ctrl1:
+                    Ctrl1TagProcess(tagDataModel, tagParams);
+                    break;
+                case MessageEnumData.GroupTagID.Ctrl2:
+                    Ctrl2TagProcess(tagDataModel, tagParams);
+                    break;
+                default:
+                    // Inlined empty EmitLog: only the Format survives; LogType unrecoverable.
+                    MessageHelper.EmitLog(string.Format("Formatter : Found  unuse {0} Tag Group!!!!!!!!", (MessageEnumData.GroupTagID)tagGroup));
+                    break;
+            }
+            return tagDataModel;
+        }
 		private void NameTagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) {
             tagDataModel.patternID = MessageEnumData.TagPatternID.Word;
             tagDataModel.index = tagParams[0];
@@ -26,11 +81,181 @@ namespace Dpr.Message
 		private void GrmTagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel) {
             tagDataModel.patternID = MessageEnumData.TagPatternID.Grammar;
         }
-		private void ENTagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) { /*@B 0x6003D2B*/ throw null; }
-		private void FRTagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) { /*@B 0x6003D2C*/ throw null; }
-		private void ITTagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) { /*@B 0x6003D2D*/ throw null; }
-		private void DETagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) { /*@B 0x6003D2E*/ throw null; }
-		private void ESTagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) { /*@B 0x6003D2F*/ throw null; }
+		private void ENTagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) {
+            switch ((MessageEnumData.ENID)tagDataModel.tagID)
+            {
+                case MessageEnumData.ENID.Gen:
+                case MessageEnumData.ENID.Qty:
+                case MessageEnumData.ENID.GenQty:
+                case MessageEnumData.ENID.QtyZero:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.GrammarWord;
+                    tagDataModel.tagParameter = tagParams[0];
+                    tagDataModel.tagWords = ExtractGrmWords(tagParams);
+                    break;
+                case MessageEnumData.ENID.DefArt:
+                case MessageEnumData.ENID.DefArtCap:
+                case MessageEnumData.ENID.IndArt:
+                case MessageEnumData.ENID.IndArtCap:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.GrammarWord;
+                    tagDataModel.tagParameter = tagParams[0];
+                    tagDataModel.forceArticle = tagParams[1];
+                    break;
+                case MessageEnumData.ENID.ForceSingular:
+                case MessageEnumData.ENID.ForcePlural:
+                case MessageEnumData.ENID.ForceInitialCap:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.Grammar;
+                    break;
+            }
+        }
+		private void FRTagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) {
+            switch ((MessageEnumData.FRID)tagDataModel.tagID)
+            {
+                case MessageEnumData.FRID.Gen:
+                case MessageEnumData.FRID.Qty:
+                case MessageEnumData.FRID.GenQty:
+                case MessageEnumData.FRID.Elision:
+                case MessageEnumData.FRID.QtyZero:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.GrammarWord;
+                    tagDataModel.tagParameter = tagParams[0];
+                    tagDataModel.tagWords = ExtractGrmWords(tagParams);
+                    break;
+                case MessageEnumData.FRID.DefArt:
+                case MessageEnumData.FRID.DefArtCap:
+                case MessageEnumData.FRID.IndArt:
+                case MessageEnumData.FRID.IndArtCap:
+                case MessageEnumData.FRID.A_DefArt:
+                case MessageEnumData.FRID.A_DefArtCap:
+                case MessageEnumData.FRID.De_DefArt:
+                case MessageEnumData.FRID.De_DefArtCap:
+                case MessageEnumData.FRID.De:
+                case MessageEnumData.FRID.DeCap:
+                case MessageEnumData.FRID.Que:
+                case MessageEnumData.FRID.QueCap:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.GrammarWord;
+                    tagDataModel.tagParameter = tagParams[0];
+                    tagDataModel.forceArticle = tagParams[1];
+                    break;
+                case MessageEnumData.FRID.ForceSingular:
+                case MessageEnumData.FRID.ForcePlural:
+                case MessageEnumData.FRID.ForceInitialCap:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.Grammar;
+                    break;
+            }
+        }
+		private void ITTagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) {
+            switch ((MessageEnumData.ITID)tagDataModel.tagID)
+            {
+                case MessageEnumData.ITID.Gen:
+                case MessageEnumData.ITID.Qty:
+                case MessageEnumData.ITID.GenQty:
+                case MessageEnumData.ITID.QtyZero:
+                case MessageEnumData.ITID.DateIT:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.GrammarWord;
+                    tagDataModel.tagParameter = tagParams[0];
+                    tagDataModel.tagWords = ExtractGrmWords(tagParams);
+                    break;
+                case MessageEnumData.ITID.DefArt:
+                case MessageEnumData.ITID.DefArtCap:
+                case MessageEnumData.ITID.IndArt:
+                case MessageEnumData.ITID.IndArtCap:
+                case MessageEnumData.ITID.Di_DefArt:
+                case MessageEnumData.ITID.Di_DefArtCap:
+                case MessageEnumData.ITID.Su_DefArt:
+                case MessageEnumData.ITID.Su_DefArtCap:
+                case MessageEnumData.ITID.A_DefArt:
+                case MessageEnumData.ITID.A_DefArtCap:
+                case MessageEnumData.ITID.In_DefArt:
+                case MessageEnumData.ITID.In_DefArtCap:
+                case MessageEnumData.ITID.Ed:
+                case MessageEnumData.ITID.EdCap:
+                case MessageEnumData.ITID.Ad:
+                case MessageEnumData.ITID.AdCap:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.GrammarWord;
+                    tagDataModel.tagParameter = tagParams[0];
+                    tagDataModel.forceArticle = tagParams[1];
+                    break;
+                case MessageEnumData.ITID.ForceSingular:
+                case MessageEnumData.ITID.ForcePlural:
+                case MessageEnumData.ITID.ForceMasculine:
+                case MessageEnumData.ITID.ForceInitialCap:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.Grammar;
+                    break;
+            }
+        }
+		private void DETagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) {
+            switch ((MessageEnumData.DEID)tagDataModel.tagID)
+            {
+                case MessageEnumData.DEID.Gen:
+                case MessageEnumData.DEID.Qty:
+                case MessageEnumData.DEID.GenQty:
+                case MessageEnumData.DEID.QtyZero:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.GrammarWord;
+                    tagDataModel.tagParameter = tagParams[0];
+                    tagDataModel.tagWords = ExtractGrmWords(tagParams);
+                    break;
+                case MessageEnumData.DEID.DefArtNom:
+                case MessageEnumData.DEID.DefArtNomCap:
+                case MessageEnumData.DEID.IndArtNom:
+                case MessageEnumData.DEID.IndArtNomCap:
+                case MessageEnumData.DEID.DefArtAcc:
+                case MessageEnumData.DEID.DefArtAccCap:
+                case MessageEnumData.DEID.IndArtAcc:
+                case MessageEnumData.DEID.IndArtAccCap:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.GrammarWord;
+                    tagDataModel.tagParameter = tagParams[0];
+                    tagDataModel.forceArticle = tagParams[1];
+                    break;
+                case MessageEnumData.DEID.ForceSingular:
+                case MessageEnumData.DEID.ForcePlural:
+                case MessageEnumData.DEID.ForceInitialCap:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.Grammar;
+                    break;
+                case MessageEnumData.DEID.ItemAcc:
+                case MessageEnumData.DEID.ItemAccClassified:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.Word;
+                    tagDataModel.index = tagParams[0];
+                    tagDataModel.strValue = string.Empty;
+                    break;
+            }
+        }
+		private void ESTagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) {
+            switch ((MessageEnumData.ESID)tagDataModel.tagID)
+            {
+                case MessageEnumData.ESID.Gen:
+                case MessageEnumData.ESID.Qty:
+                case MessageEnumData.ESID.GenQty:
+                case MessageEnumData.ESID.QtyZero:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.GrammarWord;
+                    tagDataModel.tagParameter = tagParams[0];
+                    tagDataModel.tagWords = ExtractGrmWords(tagParams);
+                    break;
+                case MessageEnumData.ESID.DefArt:
+                case MessageEnumData.ESID.DefArtCap:
+                case MessageEnumData.ESID.IndArt:
+                case MessageEnumData.ESID.IndArtCap:
+                case MessageEnumData.ESID.De_DefArt:
+                case MessageEnumData.ESID.De_DefArtCap:
+                case MessageEnumData.ESID.A_DefArt:
+                case MessageEnumData.ESID.A_DefArtCap:
+                case MessageEnumData.ESID.DefArt_TrTypeAndName:
+                case MessageEnumData.ESID.DefArtCap_TrTypeAndName:
+                case MessageEnumData.ESID.A_DefArt_TrTypeAndName:
+                case MessageEnumData.ESID.De_DefArt_TrTypeAndName:
+                case MessageEnumData.ESID.y_e:
+                case MessageEnumData.ESID.Y_E:
+                case MessageEnumData.ESID.o_u:
+                case MessageEnumData.ESID.O_U:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.GrammarWord;
+                    tagDataModel.tagParameter = tagParams[0];
+                    tagDataModel.forceArticle = tagParams[1];
+                    break;
+                case MessageEnumData.ESID.ForceSingular:
+                case MessageEnumData.ESID.ForcePlural:
+                case MessageEnumData.ESID.ForceInitialCap:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.Grammar;
+                    break;
+            }
+        }
 		private void KorTagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) {
             tagDataModel.patternID = MessageEnumData.TagPatternID.GrammarWord;
             tagDataModel.tagParameter = tagParams[0];
@@ -120,8 +345,51 @@ namespace Dpr.Message
                     break;
             }
         }
-		private void Ctrl1TagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) { /*@B 0x6003D34*/ throw null; }
-		private string ConvertCtrl1TagToRichText(global::Dpr.Message.MessageEnumData.Ctrl1ID ctrl1ID, float value) { /*@B 0x6003D35*/ throw null; }
+		private void Ctrl1TagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) {
+            var ctrl1ID = (MessageEnumData.Ctrl1ID)tagDataModel.tagID;
+            if (ctrl1ID == MessageEnumData.Ctrl1ID.xset)
+                tagDataModel.tagParameter = tagParams[0] | (tagParams[1] << 8);
+            else
+                tagDataModel.tagParameter = tagParams[0];
+
+            switch (ctrl1ID)
+            {
+                case MessageEnumData.Ctrl1ID.xright:
+                case MessageEnumData.Ctrl1ID.xadd:
+                case MessageEnumData.Ctrl1ID.xset:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.RichText;
+                    tagDataModel.strValue = ConvertCtrl1TagToRichText(ctrl1ID, tagDataModel.tagParameter);
+                    break;
+                case MessageEnumData.Ctrl1ID.battle_oneline:
+                case MessageEnumData.Ctrl1ID.unknown_message:
+                    tagDataModel.patternID = MessageEnumData.TagPatternID.ControlDesign;
+                    break;
+            }
+        }
+		private string ConvertCtrl1TagToRichText(global::Dpr.Message.MessageEnumData.Ctrl1ID ctrl1ID, float value) {
+            var sb = new StringBuilder();
+            switch (ctrl1ID)
+            {
+                case MessageEnumData.Ctrl1ID.xright:
+                    sb.Append("<align=right>");
+                    break;
+                case MessageEnumData.Ctrl1ID.xadd:
+                    sb.Append("<line-indent=");
+                    sb.Append(value);
+                    sb.Append("px>");
+                    break;
+                case MessageEnumData.Ctrl1ID.xset:
+                    sb.Append("<pos=");
+                    sb.Append(value);
+                    sb.Append("px>");
+                    break;
+                default:
+                    // Inlined empty EmitLog: only the Concat survives; LogType unrecoverable.
+                    MessageHelper.EmitLog("layoutId is not Ritch Text Tag ID : " + ctrl1ID);
+                    return string.Empty;
+            }
+            return sb.ToString();
+        }
 		private void Ctrl2TagProcess(global::Dpr.Message.LabelTagDataModel tagDataModel, byte[] tagParams) {
             tagDataModel.patternID = MessageEnumData.TagPatternID.ControlMessage;
             var ctrl2ID = (MessageEnumData.Ctrl2ID)tagDataModel.tagID;
@@ -262,6 +530,6 @@ namespace Dpr.Message
             byteArray[1] = tagParams[startIndex + 1];
             return System.BitConverter.ToInt16(byteArray, 0);
         }
-		public MessageTagAnalyzer() { /*@B 0x6003D3E*/ throw null; }
+		public MessageTagAnalyzer() { }
 	}
 }

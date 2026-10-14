@@ -5,7 +5,7 @@ namespace Dpr.Message
 	{
 		public int strNum;
 		public int fontSizeId;
-		public int fontColorIndex;
-		public MessageStyleData() { /*@B 0x6003BA7*/ throw null; }
+		public int fontColorIndex = -1;
+		public MessageStyleData() { }
 	}
 }

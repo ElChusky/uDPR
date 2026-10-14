@@ -4,18 +4,46 @@ namespace Dpr.Message
 	public class MessageManager : global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.Message.MessageManager>
 	{
 		public static global::UnityEngine.Events.UnityAction<bool> onChangeKanjiMode;
-		private global::Dpr.Message.MsgDataFileLoader msbtLoader;
-		private global::Dpr.Message.MessageDataModel dataModel;
-		private global::Dpr.Message.TagWordBuffer tagWordBuffer;
-		private global::Dpr.Message.MessageWordDataPool wordDataPool;
+		private global::Dpr.Message.MsgDataFileLoader msbtLoader = new global::Dpr.Message.MsgDataFileLoader();
+		private global::Dpr.Message.MessageDataModel dataModel = new global::Dpr.Message.MessageDataModel();
+		private global::Dpr.Message.TagWordBuffer tagWordBuffer = new global::Dpr.Message.TagWordBuffer();
+		private global::Dpr.Message.MessageWordDataPool wordDataPool = new global::Dpr.Message.MessageWordDataPool();
 		public bool IsInitialize { get => dataModel.Initialized; }
-		public bool IsLoading { get { /*@B 0x6003C0E*/ throw null; } }
-		public global::Dpr.Message.MessageEnumData.MsgLangId UserLanguageID { get { /*@B 0x6003C12*/ throw null; } }
-		public bool IsKanji { get { /*@B 0x6003C13*/ throw null; } }
-		public string[] Varitnas { get { /*@B 0x6003C15*/ throw null; } }
+		public bool IsLoading { get { return msbtLoader.IsLoading; } }
+		public global::Dpr.Message.MessageEnumData.MsgLangId UserLanguageID { get { return dataModel.UserSelectLanguageID; } }
+		public bool IsKanji { get { return dataModel.IsKanji; } }
+		public string[] Varitnas { get { return dataModel.Variants; } }
 		public global::Dpr.Message.TagWordBuffer TagWordBuffer { get { return this.tagWordBuffer; } }
 		public bool InsertSDCard { get { return false; } }
-		public void Initialize(global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003C0F*/ throw null; }
+		public void Initialize(global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            if (dataModel.IsCalledInitialize)
+            {
+                // MessageHelper class-init only = stripped debug log (literal unrecoverable)
+                return;
+            }
+
+            SmartPoint.AssetAssistant.Sequencer.onDestroy -= Destroy;
+            SmartPoint.AssetAssistant.Sequencer.onDestroy += Destroy;
+            ConfigWork.onValueChanged -= OnChangedConfig;
+            ConfigWork.onValueChanged += OnChangedConfig;
+            MessageWordSetHelper.manager = this;
+            // MessageDataModel.Initialize inlined
+            dataModel.Initialize(languageId);
+            msbtLoader.Initialize(OnCompleteLoadAssetBundle, OnCompleteLoadMsbtFile);
+            tagWordBuffer.Initialize(this, languageId);
+            wordDataPool.GeneratePool(MessageDataConstants.GENERATE_POOL_NUM);
+            // RegisitLoadingCommonMsbt / RegistLoadingLanguageMsbt inlined
+            RegisitLoadingCommonMsbt();
+            RegistLoadingLanguageMsbt();
+            RequestLoadMessageAssetbundle(() =>
+            {
+                dataModel.CreateAllLabelTable();
+                // MessageDataModel.InitializedManager inlined
+                dataModel.InitializedManager();
+                UnloadMSBTAssetBundle();
+                // trailing MessageHelper class-init only = stripped debug log
+            });
+        }
 		private bool CheckInitialized() {
             if (dataModel.Initialized)
                 return true;
@@ -23,49 +51,247 @@ namespace Dpr.Message
             MessageHelper.EmitLog("MessageManager not initialized!!!!!");
             return false;
         }
-		private void Destroy() { /*@B 0x6003C11*/ throw null; }
-		public void SetJPNKanjiFlag(bool flag) { /*@B 0x6003C14*/ throw null; }
+		private void Destroy() {
+            onChangeKanjiMode = null;
+            SmartPoint.AssetAssistant.Sequencer.onDestroy -= Destroy;
+            ConfigWork.onValueChanged -= OnChangedConfig;
+            MessageWordSetHelper.manager = null;
+            wordDataPool.Dispose();
+            msbtLoader.Dispose();
+            // MessageDataModel.Dispose inlined
+            dataModel.Dispose();
+            // UnloadCommonMSBTAssetBundle inlined
+            UnloadCommonMSBTAssetBundle();
+            UnloadMSBTAssetBundle();
+        }
+		public void SetJPNKanjiFlag(bool flag) {
+            if (dataModel.IsKanji == flag)
+                return;
+
+            // MessageDataModel.SetJPNKanjiFlag inlined
+            dataModel.SetJPNKanjiFlag(flag);
+            if (onChangeKanjiMode != null)
+                onChangeKanjiMode.Invoke(flag);
+        }
 		public global::Dpr.Message.MessageMsgFile GetMsgFile(string fileName) {
             // @0210c074: UserLanguageID is read before the inlined overload's CheckInitialized
             return GetMsgFile(fileName, UserLanguageID);
         }
-		public global::Dpr.Message.MessageMsgFile GetMsgFile(string fileName, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003C17*/ throw null; }
-		private void UnloadMSBTAssetBundle() { /*@B 0x6003C18*/ throw null; }
-		private void UnloadCommonMSBTAssetBundle() { /*@B 0x6003C19*/ throw null; }
-		private void RegistLoadingLanguageMsbt() { /*@B 0x6003C1A*/ throw null; }
-		private void RegisitLoadingCommonMsbt() { /*@B 0x6003C1B*/ throw null; }
-		private void RegistLoadingMsbtFile(global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003C1C*/ throw null; }
-		public void ReloadAllMsbtFile(global::Dpr.Message.MessageEnumData.MsgLangId newLanguageId, global::System.Action onCompleteLoad) { /*@B 0x6003C1D*/ throw null; }
-		public global::Dpr.Message.LoadMsbtOperation AsyncReloadAllMsbtFileAsync(global::Dpr.Message.MessageEnumData.MsgLangId newLanguageId) { /*@B 0x6003C1E*/ throw null; }
-		private void RequestLoadMessageAssetbundle(global::System.Action onFinishedLoadRequest = null) { /*@B 0x6003C1F*/ throw null; }
-		private void OnFinishReloadMsbt() { /*@B 0x6003C20*/ throw null; }
-		public void ClearTagWordParams() { /*@B 0x6003C22*/ throw null; }
-		public void SetTagWordParam(int index, global::Dpr.Message.AWordParamBase wordParam) { /*@B 0x6003C23*/ throw null; }
-		public bool IsSetWordParam(int index) { /*@B 0x6003C24*/ throw null; }
-		public string GetRivalName() { /*@B 0x6003C25*/ throw null; }
-		public string GetRivalMotherName() { /*@B 0x6003C26*/ throw null; }
-		public string GetNameMessage(string fileName, int labelIndex) { /*@B 0x6003C27*/ throw null; }
-		public string GetNameMessage(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003C28*/ throw null; }
-		public string GetNameMessage(string fileName, string label) { /*@B 0x6003C29*/ throw null; }
-		public string GetNameMessage(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003C2A*/ throw null; }
-		public global::Dpr.Message.MessageGlossaryParseDataModel GetNameMessageDataModel(string fileName, int labelIndex) { /*@B 0x6003C2B*/ throw null; }
-		public global::Dpr.Message.MessageGlossaryParseDataModel GetNameMessageDataModel(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003C2C*/ throw null; }
-		public global::Dpr.Message.MessageGlossaryParseDataModel GetNameMessageDataModel(string fileName, string label) { /*@B 0x6003C2D*/ throw null; }
-		public global::Dpr.Message.MessageGlossaryParseDataModel GetNameMessageDataModel(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003C2E*/ throw null; }
-		public global::Dpr.Message.AttributeInfo GetAttributeInfo(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003C2F*/ throw null; }
-		public string GetSimpleMessage(string fileName, string label) { /*@B 0x6003C30*/ throw null; }
-		public string GetSimpleMessage(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003C31*/ throw null; }
-		public string GetSimpleMessage(string fileName, int labelIndex) { /*@B 0x6003C32*/ throw null; }
-		public string GetSimpleMessage(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003C33*/ throw null; }
-		private void OnCompleteLoadAssetBundle(global::Dpr.Message.LoadAssetBundleTask loadTask) { /*@B 0x6003C34*/ throw null; }
+		public global::Dpr.Message.MessageMsgFile GetMsgFile(string fileName, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            // CheckInitialized inlined (its flag 0x4cc0620)
+            if (!CheckInitialized())
+                return null;
+
+            return dataModel.GetMsgFile(fileName, languageId);
+        }
+		private void UnloadMSBTAssetBundle() {
+            // UnloadCommonMSBTAssetBundle inlined
+            UnloadCommonMSBTAssetBundle();
+            string assetBundleName = MessageDataConstants.ASSET_FOLDER_NAME_TABLE[(int)dataModel.UserSelectLanguageID];
+            if (dataModel.UserSelectLanguageID == MessageEnumData.MsgLangId.JPN)
+            {
+                // MessageDataModel.GetJPNKanjiAssetBundleName inlined (its own init flag)
+                SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(dataModel.GetJPNKanjiAssetBundleName());
+            }
+            SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(assetBundleName);
+        }
+		private void UnloadCommonMSBTAssetBundle() {
+            SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(MessageDataConstants.COMMON_ASSETNAME);
+        }
+		private void RegistLoadingLanguageMsbt() {
+            RegistLoadingMsbtFile(dataModel.UserSelectLanguageID);
+        }
+		private void RegisitLoadingCommonMsbt() {
+            msbtLoader.RegistLoadCommonAssetBundleTask(MessageDataConstants.COMMON_ASSETNAME);
+        }
+		private void RegistLoadingMsbtFile(global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            msbtLoader.RegistLoadAssetBundleTask(MessageDataConstants.ASSET_FOLDER_NAME_TABLE[(int)languageId]);
+            if (languageId == MessageEnumData.MsgLangId.JPN)
+            {
+                // MessageDataModel.GetJPNKanjiAssetBundleName inlined (its own init flag)
+                msbtLoader.RegistLoadAssetBundleTask(dataModel.GetJPNKanjiAssetBundleName());
+            }
+        }
+		public void ReloadAllMsbtFile(global::Dpr.Message.MessageEnumData.MsgLangId newLanguageId, global::System.Action onCompleteLoad) {
+            if (dataModel.UserSelectLanguageID == newLanguageId)
+            {
+                // Inlined empty EmitLog: only the Format survives; LogType unrecoverable.
+                MessageHelper.EmitLog(string.Format("Message Data [{0}] is Already Loaded", newLanguageId));
+                if (onCompleteLoad != null)
+                    onCompleteLoad.Invoke();
+                return;
+            }
+
+            if (msbtLoader.IsLoading)
+            {
+                // MessageHelper class-init only = stripped debug log (literal unrecoverable)
+                if (onCompleteLoad != null)
+                    onCompleteLoad.Invoke();
+                return;
+            }
+
+            dataModel.UnloadMSBTFileByLanguageId(dataModel.UserSelectLanguageID);
+            dataModel.SetUserSelectLanguageID(newLanguageId);
+            // TagWordBuffer.SetLanguageId inlined
+            tagWordBuffer.SetLanguageId(newLanguageId);
+            // RegistLoadingLanguageMsbt inlined
+            RegistLoadingLanguageMsbt();
+            RequestLoadMessageAssetbundle(() =>
+            {
+                dataModel.CreateAllLabelTable();
+                if (onCompleteLoad != null)
+                    onCompleteLoad.Invoke();
+                UnloadMSBTAssetBundle();
+            });
+        }
+		public global::Dpr.Message.LoadMsbtOperation AsyncReloadAllMsbtFileAsync(global::Dpr.Message.MessageEnumData.MsgLangId newLanguageId) {
+            if (!dataModel.IsAlreadySetLoadOpData)
+            {
+                dataModel.UnloadMSBTFileByLanguageId(dataModel.UserSelectLanguageID);
+                dataModel.SetUserSelectLanguageID(newLanguageId);
+                // TagWordBuffer.SetLanguageId inlined
+                tagWordBuffer.SetLanguageId(newLanguageId);
+                // RegistLoadingLanguageMsbt inlined
+                RegistLoadingLanguageMsbt();
+                RequestLoadMessageAssetbundle(() =>
+                {
+                    dataModel.SetLoadOperationData();
+                    UnloadMSBTAssetBundle();
+                });
+            }
+            return dataModel.LoadMsbtOperation;
+        }
+		private void RequestLoadMessageAssetbundle(global::System.Action onFinishedLoadRequest = null) {
+            SmartPoint.AssetAssistant.SingletonMonoBehaviour<FontManager>.Instance.ReloadMaterialTable();
+            msbtLoader.RequestLoadAssetBundle(() =>
+            {
+                if (onFinishedLoadRequest != null)
+                    onFinishedLoadRequest.Invoke();
+                OnFinishReloadMsbt();
+            });
+        }
+		private void OnFinishReloadMsbt() {
+            // GetMsgFile(string) and MessageMsgFile.GetNameStr(int) inlined
+            var msgFile = GetMsgFile("ss_monsname");
+            MessageHelper.SetEggName(msgFile.GetNameStr(0));
+        }
+		public void ClearTagWordParams() {
+            tagWordBuffer.ClearWordParam();
+        }
+		public void SetTagWordParam(int index, global::Dpr.Message.AWordParamBase wordParam) {
+            tagWordBuffer.SetWordParam(index, wordParam);
+        }
+		public bool IsSetWordParam(int index) {
+            return tagWordBuffer.IsSetTagWordParam(index);
+        }
+		public string GetRivalName() {
+            // CheckInitialized inlined (its flag 0x4cc0620)
+            if (!CheckInitialized())
+                return string.Empty;
+
+            return PlayerWork.rivalName;
+        }
+		public string GetRivalMotherName() {
+            // CheckInitialized inlined (its flag 0x4cc0620)
+            if (!CheckInitialized())
+                return string.Empty;
+
+            var glossary = GetNameMessageDataModel("dlp_speakers_name", "DLP_SPEAKERS_NAME_007", UserLanguageID);
+            var langId = UserLanguageID;
+            // MessageHelper class-init only here = stripped debug log
+            string rivalName = GetRivalName();
+            // MessageGlossaryParseDataModel.SetTagWord inlined (its flag 0x4cc0610)
+            if (langId == MessageEnumData.MsgLangId.FRA)
+                glossary.SetTagWord(1, rivalName, glossary.StrWidth);
+            else
+                glossary.SetTagWord(0, rivalName, glossary.StrWidth);
+            return glossary.GetName();
+        }
+		public string GetNameMessage(string fileName, int labelIndex) {
+            return GetNameMessage(fileName, labelIndex, UserLanguageID);
+        }
+		public string GetNameMessage(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            // CheckInitialized inlined (its flag 0x4cc0620)
+            if (!CheckInitialized())
+                return string.Empty;
+
+            return GetNameMessageDataModel(fileName, labelIndex, languageId).GetName();
+        }
+		public string GetNameMessage(string fileName, string label) {
+            return GetNameMessage(fileName, label, UserLanguageID);
+        }
+		public string GetNameMessage(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            // CheckInitialized inlined (its flag 0x4cc0620)
+            if (!CheckInitialized())
+                return string.Empty;
+
+            return GetNameMessageDataModel(fileName, label, languageId).GetName();
+        }
+		public global::Dpr.Message.MessageGlossaryParseDataModel GetNameMessageDataModel(string fileName, int labelIndex) {
+            return GetNameMessageDataModel(fileName, labelIndex, UserLanguageID);
+        }
+		public global::Dpr.Message.MessageGlossaryParseDataModel GetNameMessageDataModel(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            // CheckInitialized (flag 0x4cc0620) and MessageDataModel.GetGloosaryParseData (flag 0x4cc0600) inlined
+            if (!CheckInitialized())
+                return null;
+
+            return dataModel.GetGloosaryParseData(fileName, labelIndex, languageId);
+        }
+		public global::Dpr.Message.MessageGlossaryParseDataModel GetNameMessageDataModel(string fileName, string label) {
+            return GetNameMessageDataModel(fileName, label, UserLanguageID);
+        }
+		public global::Dpr.Message.MessageGlossaryParseDataModel GetNameMessageDataModel(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            // CheckInitialized (flag 0x4cc0620) and MessageDataModel.GetGloosaryParseData inlined
+            if (!CheckInitialized())
+                return null;
+
+            return dataModel.GetGloosaryParseData(fileName, label, languageId);
+        }
+		public global::Dpr.Message.AttributeInfo GetAttributeInfo(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            // MessageDataModel.GetAttributeInfo inlined
+            return dataModel.GetAttributeInfo(fileName, label, languageId);
+        }
+		public string GetSimpleMessage(string fileName, string label) {
+            return GetSimpleMessage(fileName, label, UserLanguageID);
+        }
+		public string GetSimpleMessage(string fileName, string label, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            // CheckInitialized (flag 0x4cc0620) and MessageDataModel.GetTextParseData (flag 0x4cc0602) inlined
+            if (!CheckInitialized())
+                return string.Empty;
+
+            var parseData = dataModel.GetTextParseData(fileName, label, languageId);
+            if (parseData != null)
+                return parseData.CreateSimpleMessage();
+            return string.Empty;
+        }
+		public string GetSimpleMessage(string fileName, int labelIndex) {
+            return GetSimpleMessage(fileName, labelIndex, UserLanguageID);
+        }
+		public string GetSimpleMessage(string fileName, int labelIndex, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+            // CheckInitialized (flag 0x4cc0620) and MessageDataModel.GetTextParseData inlined
+            if (!CheckInitialized())
+                return string.Empty;
+
+            var parseData = dataModel.GetTextParseData(fileName, labelIndex, languageId);
+            if (parseData != null)
+                return parseData.CreateSimpleMessage();
+            return string.Empty;
+        }
+		private void OnCompleteLoadAssetBundle(global::Dpr.Message.LoadAssetBundleTask loadTask) {
+            dataModel.AddMsgDataFile(loadTask.fileName, loadTask.msbtData);
+        }
 		private void OnCompleteLoadMsbtFile(global::Dpr.Message.LoadMsbtFileTask loadTask) { }
 		private void OnChangedConfig(global::ConfigID configID, int value) {
             // @0210d338 / @0210d3c8: SetJPNKanjiFlag's own flag 0x4cc05b6 is tested in both arms = the inlined call
             if (configID == ConfigID.LangJpnMode)
                 SetJPNKanjiFlag(value != 0);
         }
-		public static global::Dpr.Message.WordDataModel GetWordDataFromPool() { /*@B 0x6003C37*/ throw null; }
-		public MessageManager() { /*@B 0x6003C39*/ throw null; }
+		public static global::Dpr.Message.WordDataModel GetWordDataFromPool() {
+            var wordData = Instance.wordDataPool.Get();
+            wordData.Init();
+            return wordData;
+        }
+		public MessageManager() { }
 		static MessageManager() { }
 	}
 }
