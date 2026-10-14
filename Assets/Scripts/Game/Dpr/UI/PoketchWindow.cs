@@ -42,44 +42,44 @@ namespace Dpr.UI
 		private global::System.Collections.Generic.List<global::Dpr.UI.PoketchAppBase> _poketchAppList;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("サイズ変更の時間")]
-		private float _resizeDuration;
+		private float _resizeDuration = 0.05f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("切り替え時の黒幕アニメ時間")]
-		private float _changeDuration;
+		private float _changeDuration = 0.1f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("黒幕が閉まっている時間")]
-		private float _closeWait;
+		private float _closeWait = 0.3f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("スティック押し込みで切り替え時のボタン受付延長時間")]
-		private float _changeWait;
+		private float _changeWait = 0.75f;
 		[global::UnityEngine.SerializeField]
-		private float _smallScale;
+		private float _smallScale = 0.4f;
 		[global::UnityEngine.SerializeField]
-		private float _largeScale;
+		private float _largeScale = 1f;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector3 _smallPos;
+		private global::UnityEngine.Vector3 _smallPos = global::UnityEngine.Vector3.zero;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector3 _largePos;
+		private global::UnityEngine.Vector3 _largePos = global::UnityEngine.Vector3.zero;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("小さくなる時の遅延時間")]
-		private float _toSmallDelay;
+		private float _toSmallDelay = 0.2f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("大きくなる時の遅延時間")]
 		private float _toLargeDelay;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("バックライト加算色")]
-		private global::UnityEngine.Color32 _lightColor;
+		private global::UnityEngine.Color32 _lightColor = new global::UnityEngine.Color32(32, 32, 32, 255);
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("アプリ背景色")]
 		private global::UnityEngine.Color32[] _bgColors;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("カーソル移動量")]
-		private float _cursolMoveValue;
+		private float _cursolMoveValue = 8f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.TooltipAttribute("ポケモン鳴き声のインターバル(秒)")]
-		private float _voiceWait;
-		private global::Dpr.UI.UIInputButton _buttonR;
-		private global::Dpr.UI.UIInputButton _buttonSR;
+		private float _voiceWait = 0.1f;
+		private global::Dpr.UI.UIInputButton _buttonR = new global::Dpr.UI.UIInputButton();
+		private global::Dpr.UI.UIInputButton _buttonSR = new global::Dpr.UI.UIInputButton();
 		private bool _isSizeChanging;
 		private bool _isBackLight;
 		private bool _isTouch;
@@ -107,13 +107,13 @@ namespace Dpr.UI
 		public bool IsLarge { get; private set; }
 		public bool IsPauseContinue { get; set; }
 		public bool IsCloseOnce { get; set; }
-		public global::Dpr.UI.PoketchAppBase CurrentApp { get { /*@B 0x60058C2*/ throw null; } }
-		public bool IsControlPoketch { get { /*@B 0x60058C3*/ throw null; } }
-		public bool IsClosingPoketch { get { /*@B 0x60058C4*/ throw null; } }
+		public global::Dpr.UI.PoketchAppBase CurrentApp { get { return _poketchAppList[CurrentAppIndex]; } }
+		public bool IsControlPoketch { get { return IsLarge || IsPauseContinue; } }
+		public bool IsClosingPoketch { get { return _closeColoutine != null; } }
 		public global::UnityEngine.UI.Image Cursor { get { return this._cursor; } }
-		public float CursorX { get { /*@B 0x60058C6*/ throw null; } }
-		public float CursorY { get { /*@B 0x60058C7*/ throw null; } }
-		public float Scale { get { /*@B 0x60058C8*/ throw null; } }
+		public float CursorX { get { return _cursor.transform.position.x; } }
+		public float CursorY { get { return _cursor.transform.position.y; } }
+		public float Scale { get { return IsLarge ? _largeScale : _smallScale; } }
 		public static global::Dpr.UI.PoketchWindow Instance { get; private set; }
 		public override void OnCreate() {
             base.OnCreate();
@@ -722,7 +722,7 @@ namespace Dpr.UI
                 numImage[dispIndex + i].sprite = numSprite[num % (div * 10) / div];
             }
         }
-		public PoketchWindow() { /*@B 0x60058E3*/ throw null; }
+		public PoketchWindow() { }
 		static PoketchWindow() { }
 		public enum TouchState
 		{

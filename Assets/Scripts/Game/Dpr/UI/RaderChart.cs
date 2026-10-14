@@ -6,7 +6,7 @@ namespace Dpr.UI
 	public class RaderChart : global::UnityEngine.UI.MaskableGraphic
 	{
 		[global::UnityEngine.SerializeField]
-		private float _length;
+		private float _length = 108f;
 		private global::UnityEngine.Material[] _maskMaterials;
 		private global::UnityEngine.Canvas _parentCanvas;
 		private global::UnityEngine.Mesh _mesh;
@@ -74,21 +74,50 @@ namespace Dpr.UI
 				return;
 			canvasRenderer.SetMesh(_mesh);
 		}
-		private global::UnityEngine.Canvas GetParentCanvas() { /*@B 0x600512B*/ throw null; }
+		private global::UnityEngine.Canvas GetParentCanvas() {
+			if (_parentCanvas == null)
+				_parentCanvas = GetComponentInParent<global::UnityEngine.Canvas>();
+			return _parentCanvas;
+		}
 		protected override void UpdateMaterial() {
 			canvasRenderer.materialCount = 1;
 			canvasRenderer.SetMaterial(GetModifiedMaterial(material, 0), 0);
 			canvasRenderer.SetColor(color);
 		}
-		private global::UnityEngine.Material GetModifiedMaterial(global::UnityEngine.Material baseMaterial, int index) { /*@B 0x600512D*/ throw null; }
-		public RaderChart() { /*@B 0x600512E*/ throw null; }
+		private global::UnityEngine.Material GetModifiedMaterial(global::UnityEngine.Material baseMaterial, int index) {
+			if (m_ShouldRecalculateStencil)
+			{
+				bool isMaskable = maskable;
+				m_ShouldRecalculateStencil = false;
+				if (isMaskable)
+				{
+					global::UnityEngine.Transform rootCanvas = global::UnityEngine.UI.MaskUtilities.FindRootSortOverrideCanvas(transform);
+					m_StencilValue = global::UnityEngine.UI.MaskUtilities.GetStencilDepth(transform, rootCanvas) + index;
+				}
+				else
+				{
+					m_StencilValue = 0;
+				}
+			}
+			global::UnityEngine.UI.Mask maskComponent = GetComponent<global::UnityEngine.UI.Mask>();
+			if (m_StencilValue > 0 && (maskComponent == null || !maskComponent.IsActive()))
+			{
+				int stencilMask = (1 << m_StencilValue) - 1;
+				global::UnityEngine.Material maskMat = global::UnityEngine.UI.StencilMaterial.Add(baseMaterial, stencilMask, global::UnityEngine.Rendering.StencilOp.Keep, global::UnityEngine.Rendering.CompareFunction.Equal, global::UnityEngine.Rendering.ColorWriteMask.All, stencilMask, 0);
+				global::UnityEngine.UI.StencilMaterial.Remove(_maskMaterials[index]);
+				_maskMaterials[index] = maskMat;
+				return _maskMaterials[index];
+			}
+			return baseMaterial;
+		}
+		public RaderChart() { }
 		public class Param
 		{
-			public float[] values;
+			public float[] values = new float[6];
 			public bool isSetColor;
 			public global::UnityEngine.Color color;
-			public float minLength;
-			public Param() { /*@B 0x600A9B5*/ throw null; }
+			public float minLength = 0.15f;
+			public Param() { }
 		}
 	}
 }

@@ -36,6 +36,8 @@ namespace Dpr.UI
 			iconImage.material.SetFloat(GrayscaleAmountPropertyId, isGrayscale ? 1f : 0f);
 		}
 		public SealIconButon() { }
-		static SealIconButon() { /*@B 0x6005A07*/ throw null; }
+		static SealIconButon() {
+			GrayscaleAmountPropertyId = global::UnityEngine.Shader.PropertyToID("_GrayscaleAmount");
+		}
 	}
 }

@@ -6,13 +6,21 @@ namespace Dpr.UI
 		private const string InfoMessageFileName = "dp_stickers_info";
 		private global::XLSXContent.SealTable.SheetSealData sealData;
 		public int SealId { get; private set; }
-		public int CategoryId { get { /*@B 0x6005A0A*/ throw null; } }
-		public int SortNumber { get { /*@B 0x6005A0B*/ throw null; } }
-		public string IconAssetName { get { /*@B 0x6005A0C*/ throw null; } }
-		public static string GetIconAssetName(int sealId) { /*@B 0x6005A0D*/ throw null; }
-		public static global::XLSXContent.SealTable.SheetSealData GetData(int sealId) { /*@B 0x6005A0E*/ throw null; }
-		public SealInfo(int id) { /*@B 0x6005A0F*/ throw null; }
-		public int GetCount() { /*@B 0x6005A10*/ throw null; }
-		public string GetInfoText() { /*@B 0x6005A11*/ throw null; }
+		public int CategoryId { get { return sealData.Category; } }
+		public int SortNumber { get { return sealData.SortNumber; } }
+		public string IconAssetName { get { return sealData.IconAssetbundleName; } }
+		public static string GetIconAssetName(int sealId) {
+			global::XLSXContent.SealTable.SheetSealData data = global::GameData.DataManager.GetSealData((global::SealID)sealId);
+			if (data == null)
+				return null;
+			return data.IconAssetbundleName;
+		}
+		public static global::XLSXContent.SealTable.SheetSealData GetData(int sealId) { return global::GameData.DataManager.GetSealData((global::SealID)sealId); }
+		public SealInfo(int id) {
+			SealId = id;
+			sealData = global::GameData.DataManager.GetSealData((global::SealID)id);
+		}
+		public int GetCount() { return global::Dpr.BallDeco.BallDecoWork.GetSealCount(SealId); }
+		public string GetInfoText() { return global::Dpr.Message.MessageManager.Instance.GetSimpleMessage("dp_stickers_info", SealId); }
 	}
 }

@@ -4,11 +4,11 @@ namespace Dpr.UI
 	public class SelectLanguageItem : global::Dpr.UI.SelectOpeningItem
 	{
 		[global::UnityEngine.SerializeField]
-		private global::Dpr.Message.MessageEnumData.MsgLangId _langId;
+		private global::Dpr.Message.MessageEnumData.MsgLangId _langId = global::Dpr.Message.MessageEnumData.MsgLangId.USA;
 		[global::UnityEngine.SerializeField]
 		private bool _useKanji;
 		public global::Dpr.Message.MessageEnumData.MsgLangId langId { get { return this._langId; } }
 		public bool useKanji { get { return this._useKanji; } }
-		public SelectLanguageItem() { /*@B 0x60055DD*/ throw null; }
+		public SelectLanguageItem() { }
 	}
 }
