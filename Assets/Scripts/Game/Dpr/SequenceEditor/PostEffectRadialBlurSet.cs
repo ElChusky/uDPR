@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public float intensity;
 		public int numSamples;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public PostEffectRadialBlurSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B07*/ throw null; }
+		public PostEffectRadialBlurSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			center = Macro.ParseVector3(macro.GetValue("center"), 0.5f, 0.5f, 0f);
+			intensity = Macro.ParseFloat(macro.GetValue("intensity"));
+			numSamples = Macro.ParseInt(macro.GetValue("numSamples"), 3);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

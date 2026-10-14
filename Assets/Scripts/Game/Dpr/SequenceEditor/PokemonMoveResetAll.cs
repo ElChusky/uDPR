@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class PokemonMoveResetAll : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public PokemonMoveResetAll(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004947*/ throw null; }
+		public PokemonMoveResetAll(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class PokemontRevertAnimationConfige : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
-		public PokemontRevertAnimationConfige(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600496C*/ throw null; }
+		public PokemontRevertAnimationConfige(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+		}
 	}
 }

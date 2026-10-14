@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class PostEffectRadialBlurFlg : global::Dpr.SequenceEditor.Macro
 	{
 		public bool isEnable;
-		public PostEffectRadialBlurFlg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B06*/ throw null; }
+		public PostEffectRadialBlurFlg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), 1);
+		}
 	}
 }

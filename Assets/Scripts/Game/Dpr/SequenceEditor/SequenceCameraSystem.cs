@@ -53,7 +53,7 @@ namespace Dpr.SequenceEditor
 		protected global::Dpr.SequenceEditor.SequenceCameraObject[] Cameras;
 		protected bool IsPlayingCameraAnimation;
 		protected global::Dpr.SequenceEditor.SequenceCameraSystem.CameraStateType CameraState { get; set; }
-		public SequenceCameraSystem(global::Dpr.SequenceEditor.ISequenceViewSystem viewSystem) { /*@B 0x6004BCA*/ throw null; }
+		public SequenceCameraSystem(global::Dpr.SequenceEditor.ISequenceViewSystem viewSystem) { _viewSystem = viewSystem; }
 		public virtual void OnUpdate(float deltaTime) {
 			// Empty in the binary
 		}

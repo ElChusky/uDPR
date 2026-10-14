@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_GPOKE_EFFECT type;
 		public bool pokeGroup;
-		public PokemonSetEye(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004966*/ throw null; }
+		public PokemonSetEye(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			type = Macro.Parse_SEQ_DEF_GPOKE_EFFECT(macro.GetValue("type"));
+			pokeGroup = Macro.ParseBool(macro.GetValue("pokeGroup"), 0);
+		}
 	}
 }

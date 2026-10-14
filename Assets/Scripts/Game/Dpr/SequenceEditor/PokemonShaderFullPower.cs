@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public bool isEnable;
-		public PokemonShaderFullPower(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600495E*/ throw null; }
+		public PokemonShaderFullPower(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), 1);
+		}
 	}
 }

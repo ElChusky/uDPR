@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class RaidWallGaugeUpdate : global::Dpr.SequenceEditor.Macro
 	{
 		public int frame;
-		public RaidWallGaugeUpdate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A86*/ throw null; }
+		public RaidWallGaugeUpdate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			frame = Macro.ParseInt(macro.GetValue("frame"), 0);
+		}
 	}
 }

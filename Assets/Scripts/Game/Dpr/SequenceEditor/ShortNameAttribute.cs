@@ -5,6 +5,6 @@ namespace Dpr.SequenceEditor
 	public class ShortNameAttribute : global::System.Attribute
 	{
 		public string ShortName { get; private set; }
-		public ShortNameAttribute(string shortName) { /*@B 0x600490E*/ throw null; }
+		public ShortNameAttribute(string shortName) { ShortName = shortName; }
 	}
 }

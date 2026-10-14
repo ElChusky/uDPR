@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public bool flg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public float speed;
-		public PokemonSetMotionSpeed(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004959*/ throw null; }
+		public PokemonSetMotionSpeed(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			flg = Macro.ParseBool(macro.GetValue("flg"), 0);
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			speed = Macro.ParseFloat(macro.GetValue("speed"));
+		}
 	}
 }

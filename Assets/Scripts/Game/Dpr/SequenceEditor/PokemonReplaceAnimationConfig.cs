@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public string cfgfile;
 		public string pakfile;
-		public PokemonReplaceAnimationConfig(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600496E*/ throw null; }
+		public PokemonReplaceAnimationConfig(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			cfgfile = Macro.ParseString(macro.GetValue("cfgfile"));
+			pakfile = Macro.ParseString(macro.GetValue("pakfile"));
+		}
 	}
 }

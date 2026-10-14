@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class RotomStartEvent : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.ROTOM_EFFECT type;
-		public RotomStartEvent(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A63*/ throw null; }
+		public RotomStartEvent(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			type = Macro.Parse_ROTOM_EFFECT(macro.GetValue("type"));
+		}
 	}
 }

@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class PokemonVisibleAll : global::Dpr.SequenceEditor.Macro
 	{
 		public bool visible;
-		public PokemonVisibleAll(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004951*/ throw null; }
+		public PokemonVisibleAll(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			visible = Macro.ParseBool(macro.GetValue("visible"), 0);
+		}
 	}
 }

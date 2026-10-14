@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class PostEffectColorGradingFlg : global::Dpr.SequenceEditor.Macro
 	{
 		public bool isEnable;
-		public PostEffectColorGradingFlg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B04*/ throw null; }
+		public PostEffectColorGradingFlg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), 1);
+		}
 	}
 }

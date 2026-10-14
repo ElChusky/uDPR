@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public string regist;
 		public bool isVoice;
-		public Sound3DCreate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AE7*/ throw null; }
+		public Sound3DCreate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			regist = Macro.ParseString(macro.GetValue("regist"));
+			isVoice = Macro.ParseBool(macro.GetValue("isVoice"), 0);
+		}
 	}
 }

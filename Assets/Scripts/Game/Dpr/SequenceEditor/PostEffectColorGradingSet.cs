@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public string texture;
 		public float influence;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public PostEffectColorGradingSet(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004B05*/ throw null; }
+		public PostEffectColorGradingSet(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			texture = Macro.ParseString(macro.GetValue("texture"));
+			influence = Macro.ParseFloat(macro.GetValue("influence"), 1f);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

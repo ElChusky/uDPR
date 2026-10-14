@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class RaidWallGaugeVisible : global::Dpr.SequenceEditor.Macro
 	{
 		public bool visible;
-		public RaidWallGaugeVisible(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A85*/ throw null; }
+		public RaidWallGaugeVisible(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			visible = Macro.ParseBool(macro.GetValue("visible"), 1);
+		}
 	}
 }
