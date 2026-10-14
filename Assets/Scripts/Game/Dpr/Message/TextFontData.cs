@@ -5,7 +5,12 @@ namespace Dpr.Message
 	public class TextFontData : global::UnityEngine.ScriptableObject
 	{
 		public global::Dpr.Message.TextParameter[] textParamArray;
-		public global::Dpr.Message.TextParameter GetTextParamByLanguageId(global::Dpr.Message.MessageEnumData.MsgLangId langId) { /*@B 0x6003B9B*/ throw null; }
+		public global::Dpr.Message.TextParameter GetTextParamByLanguageId(global::Dpr.Message.MessageEnumData.MsgLangId langId) {
+			var textParam = global::System.Array.Find(textParamArray, x => x.langId == langId);
+			if (textParam == null)
+				MessageHelper.EmitLog(string.Format("TextParameter not found LanguageId : {0}", langId), global::UnityEngine.LogType.Error);
+			return textParam;
+		}
 		public TextFontData() { }
 	}
 }

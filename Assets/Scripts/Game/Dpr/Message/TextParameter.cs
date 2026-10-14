@@ -4,17 +4,17 @@ namespace Dpr.Message
 	[global::System.Serializable]
 	public class TextParameter
 	{
-		public global::Dpr.Message.MessageEnumData.MsgLangId langId;
+		public global::Dpr.Message.MessageEnumData.MsgLangId langId = global::Dpr.Message.MessageEnumData.MsgLangId.JPN;
 		public float baseLineHeight;
 		public float lineHeight;
 		public global::Dpr.Message.TextParameter.FontSize[] absFontSizeArray;
-		public TextParameter() { /*@B 0x6003B9D*/ throw null; }
+		public TextParameter() { }
 		[global::System.Serializable]
 		public class FontSize
 		{
-			public global::Dpr.Message.MessageEnumData.UIFontSizeID fontSizeId;
+			public global::Dpr.Message.MessageEnumData.UIFontSizeID fontSizeId = global::Dpr.Message.MessageEnumData.UIFontSizeID.M;
 			public int fontSize;
-			public FontSize() { /*@B 0x600A33C*/ throw null; }
+			public FontSize() { }
 		}
 	}
 }

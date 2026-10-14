@@ -4,19 +4,135 @@ namespace Dpr.Message
 	public class TrTypeAndNameWordParam : global::Dpr.Message.AWordParamBase
 	{
 		private const int INIT_CAPACITY = 20;
-		private global::System.Text.StringBuilder sb;
-		public void SetFRSingleWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003DED*/ throw null; }
-		public void SetFRPairWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003DEE*/ throw null; }
-		private void SetFRSingleWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData) { /*@B 0x6003DEF*/ throw null; }
-		private void AppendFRDisplayPattern(int displayPattern, global::Dpr.Message.TrTypeAndNameData typeAndNameData) { /*@B 0x6003DF0*/ throw null; }
-		public void SetDESingleWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003DF1*/ throw null; }
-		public void SetDEPairWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003DF2*/ throw null; }
-		private void SetDESingleWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData) { /*@B 0x6003DF3*/ throw null; }
-		private void AppendDEDisplayPattern(int displayPattern, global::Dpr.Message.TrTypeAndNameData typeAndNameData) { /*@B 0x6003DF4*/ throw null; }
-		public void SetESSingleWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003DF5*/ throw null; }
-		public void SetESPairWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003DF6*/ throw null; }
-		private void SetESTrTypeAndNameWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData) { /*@B 0x6003DF7*/ throw null; }
-		private void AppendESDisplayPattern(int displayPattern, global::Dpr.Message.TrTypeAndNameData typeAndNameData) { /*@B 0x6003DF8*/ throw null; }
-		public TrTypeAndNameWordParam() { /*@B 0x6003DF9*/ throw null; }
+		private global::System.Text.StringBuilder sb = new global::System.Text.StringBuilder(INIT_CAPACITY);
+		public void SetFRSingleWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+			this.languageId = languageId;
+			SetFRSingleWordParam(typeAndNameData);
+		}
+		public void SetFRPairWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+			this.languageId = languageId;
+			SetFRSingleWordParam(typeAndNameData);
+		}
+		private void SetFRSingleWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData) {
+			count = 1;
+			sb.Clear();
+			AppendFRDisplayPattern(typeAndNameData.displayPattern, typeAndNameData);
+			strValue = sb.ToString();
+		}
+		private void AppendFRDisplayPattern(int displayPattern, global::Dpr.Message.TrTypeAndNameData typeAndNameData) {
+			var grammar = new FormatTagGrammar();
+			var typeParam = typeAndNameData.typeParam;
+			var nameParam = typeAndNameData.nameParam;
+			countablity = nameParam.countability;
+			gender = nameParam.gender;
+			initialSound = nameParam.initialSound;
+			articlePresence = nameParam.articlePresence;
+			sb.Append(nameParam.name + " ");
+			var tagDataModel = new MessageTagDataModel();
+			tagDataModel.SetWordParam(typeParam.name, 1, typeParam.gender, typeParam.initialSound, typeParam.articlePresence, typeParam.countability, typeParam.strWidth, false);
+			switch (displayPattern)
+			{
+				case 0:
+					sb.Append(grammar.FormatFRTag(MessageEnumData.FRID.DefArt, tagDataModel));
+					break;
+				case 1:
+					sb.Append(grammar.FormatFRTag(MessageEnumData.FRID.De_DefArt, tagDataModel));
+					break;
+				case 2:
+					sb.Append("de ");
+					break;
+			}
+			sb.Append(typeParam.name);
+		}
+		public void SetDESingleWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+			this.languageId = languageId;
+			SetDESingleWordParam(typeAndNameData);
+		}
+		public void SetDEPairWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+			this.languageId = languageId;
+			SetDESingleWordParam(typeAndNameData);
+		}
+		private void SetDESingleWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData) {
+			count = 1;
+			sb.Clear();
+			AppendDEDisplayPattern(typeAndNameData.displayPattern, typeAndNameData);
+			strValue = sb.ToString();
+		}
+		private void AppendDEDisplayPattern(int displayPattern, global::Dpr.Message.TrTypeAndNameData typeAndNameData) {
+			var typeParam = typeAndNameData.typeParam;
+			var nameParam = typeAndNameData.nameParam;
+			switch (displayPattern)
+			{
+				case 0:
+					countablity = typeParam.countability;
+					gender = typeParam.gender;
+					initialSound = typeParam.initialSound;
+					articlePresence = typeParam.articlePresence;
+					sb.Append(typeParam.name + " " + nameParam.name);
+					break;
+				case 1:
+					countablity = nameParam.countability;
+					gender = nameParam.gender;
+					initialSound = nameParam.initialSound;
+					articlePresence = nameParam.articlePresence;
+					sb.Append(nameParam.name + " von den " + typeParam.name);
+					break;
+				case 2:
+					countablity = nameParam.countability;
+					gender = nameParam.gender;
+					initialSound = nameParam.initialSound;
+					articlePresence = nameParam.articlePresence;
+					sb.Append(nameParam.name + " von " + typeParam.name);
+					break;
+			}
+		}
+		public void SetESSingleWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+			this.languageId = languageId;
+			SetESTrTypeAndNameWordParam(typeAndNameData);
+		}
+		public void SetESPairWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+			this.languageId = languageId;
+			SetESTrTypeAndNameWordParam(typeAndNameData);
+		}
+		private void SetESTrTypeAndNameWordParam(global::Dpr.Message.TrTypeAndNameData typeAndNameData) {
+			count = 1;
+			sb.Clear();
+			AppendESDisplayPattern(typeAndNameData.displayPattern, typeAndNameData);
+			strValue = sb.ToString();
+		}
+		private void AppendESDisplayPattern(int displayPattern, global::Dpr.Message.TrTypeAndNameData typeAndNameData) {
+			var typeParam = typeAndNameData.typeParam;
+			var nameParam = typeAndNameData.nameParam;
+			switch (displayPattern)
+			{
+				case 0:
+					countablity = typeParam.countability;
+					gender = typeParam.gender;
+					initialSound = typeParam.initialSound;
+					articlePresence = typeParam.articlePresence;
+					sb.Append(typeParam.name + " " + nameParam.name);
+					break;
+				case 1:
+				{
+					var grammar = new FormatTagGrammar();
+					var tagDataModel = new MessageTagDataModel();
+					tagDataModel.SetWordParam(typeParam.name, 1, typeParam.gender, typeParam.initialSound, typeParam.articlePresence, typeParam.countability, typeParam.strWidth, false);
+					countablity = nameParam.countability;
+					gender = nameParam.gender;
+					initialSound = nameParam.initialSound;
+					articlePresence = nameParam.articlePresence;
+					sb.Append(nameParam.name + " " + grammar.FormatESTag(MessageEnumData.ESID.De_DefArt, tagDataModel) + typeParam.name);
+					break;
+				}
+				case 2:
+					countablity = nameParam.countability;
+					gender = nameParam.gender;
+					initialSound = nameParam.initialSound;
+					articlePresence = nameParam.articlePresence;
+					sb.Append(nameParam.name + " de " + typeParam.name);
+					break;
+			}
+		}
+		public TrTypeAndNameWordParam() { }
 	}
 }

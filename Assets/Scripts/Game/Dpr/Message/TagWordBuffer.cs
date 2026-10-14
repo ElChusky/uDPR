@@ -3,32 +3,184 @@ namespace Dpr.Message
 {
 	public class TagWordBuffer
 	{
-		private global::Dpr.Message.AWordParamBase[] wordParamArray;
+		private global::Dpr.Message.AWordParamBase[] wordParamArray = new global::Dpr.Message.AWordParamBase[19];
 		private global::Dpr.Message.MessageEnumData.MsgLangId languageId;
 		private global::Dpr.Message.MessageManager msgManager;
 		public global::Dpr.Message.AWordParamBase[] WordParamArray { get { return this.wordParamArray; } }
-		public void Initialize(global::Dpr.Message.MessageManager msgManager, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003DC7*/ throw null; }
+		public void Initialize(global::Dpr.Message.MessageManager msgManager, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+			this.msgManager = msgManager;
+			this.languageId = languageId;
+		}
 		public void SetLanguageId(global::Dpr.Message.MessageEnumData.MsgLangId languageId) { this.languageId = languageId; }
-		public void ClearWordParam() { /*@B 0x6003DCA*/ throw null; }
-		public void SetWordParams(params global::Dpr.Message.AWordParamBase[] wordParams) { /*@B 0x6003DCB*/ throw null; }
-		public void SetWordParam(int index, global::Dpr.Message.AWordParamBase wordParam) { /*@B 0x6003DCC*/ throw null; }
-		public bool IsSetTagWordParam(int index) { /*@B 0x6003DCD*/ throw null; }
-		public void SetGlossaryWordParam(int index, global::Dpr.Message.MessageGlossaryParseDataModel dataModel) { /*@B 0x6003DCE*/ throw null; }
-		public void SetGlossaryWordParam(int index, global::Dpr.Message.MessageGlossaryParseDataModel dataModel, int count) { /*@B 0x6003DCF*/ throw null; }
-		public void SetItemWordParam(int index, int itemNumber, int count) { /*@B 0x6003DD0*/ throw null; }
-		public void SetUserPokemonWordParam(int index, string nickName, int genderId, bool isEgg, global::Dpr.Message.MessageEnumData.MsgLangId languageid, int initialSound = 0) { /*@B 0x6003DD1*/ throw null; }
-		public void SetUserNickNameWordParam(int index, string nickName, int genderId, global::Dpr.Message.MessageEnumData.MsgLangId languageid) { /*@B 0x6003DD2*/ throw null; }
-		public void SetRivalNameWordParam(int index, string nickName, int genderId) { /*@B 0x6003DD3*/ throw null; }
-		public void SetSupporterName(int index, string nickName, int genderId) { /*@B 0x6003DD4*/ throw null; }
-		public void SetPlaceWordParam(int index, string labelName) { /*@B 0x6003DD5*/ throw null; }
-		public void SetStrWordParam(int index, string str, float strWidth = -1f) { /*@B 0x6003DD6*/ throw null; }
-		public void SetStrWordParam(int index, string str, global::Dpr.Message.MessageEnumData.MsgLangId langId, float strWidth = -1f) { /*@B 0x6003DD7*/ throw null; }
-		public void SetDigitWordParam(int index, int count) { /*@B 0x6003DD8*/ throw null; }
-		public void SetDigitWordParam(int index, int count, global::Dpr.Message.MessageEnumData.ForceGrmID forceGrmID) { /*@B 0x6003DD9*/ throw null; }
-		public void SetDigitStrWordParam(int index, string countStr) { /*@B 0x6003DDA*/ throw null; }
-		public void SetSingleTrTypeAndNameWordParam(int index, global::Dpr.Message.TrTypeAndNameData typeAndNameData) { /*@B 0x6003DDB*/ throw null; }
-		public void SetSameTypePairTrTypeAndNameWordParam(int index1, global::Dpr.Message.TrTypeAndNameData typeAndNameData1, int index2, global::Dpr.Message.TrTypeAndNameData typeAndNameData2) { /*@B 0x6003DDC*/ throw null; }
-		public void SetDiffTypePairTrTypeAndNameWordParam(int index1, global::Dpr.Message.TrTypeAndNameData typeAndNameData1, int index2, global::Dpr.Message.TrTypeAndNameData typeAndNameData2) { /*@B 0x6003DDD*/ throw null; }
-		public TagWordBuffer() { /*@B 0x6003DDE*/ throw null; }
+		public void ClearWordParam() {
+			for (int i = 0; i < wordParamArray.Length; i++)
+				wordParamArray[i] = null;
+		}
+		public void SetWordParams(params global::Dpr.Message.AWordParamBase[] wordParams) {
+			for (int i = 0; i < wordParams.Length; i++)
+				SetWordParam(i, wordParams[i]);
+		}
+		public void SetWordParam(int index, global::Dpr.Message.AWordParamBase wordParam) {
+			if (index >= wordParamArray.Length)
+			{
+				MessageHelper.EmitLog(string.Format("Index {0} is over Size", index), global::UnityEngine.LogType.Error);
+				return;
+			}
+			wordParamArray[index] = wordParam;
+		}
+		public bool IsSetTagWordParam(int index) {
+			if (index >= wordParamArray.Length)
+				return false;
+			return wordParamArray[index] != null;
+		}
+		public void SetGlossaryWordParam(int index, global::Dpr.Message.MessageGlossaryParseDataModel dataModel) {
+			SetWordParam(index, new GlossaryWordParam(dataModel, 1, languageId));
+		}
+		public void SetGlossaryWordParam(int index, global::Dpr.Message.MessageGlossaryParseDataModel dataModel, int count) {
+			SetWordParam(index, new GlossaryWordParam(dataModel, count, languageId));
+		}
+		public void SetItemWordParam(int index, int itemNumber, int count) {
+			SetWordParam(index, new ItemNameWordParam(itemNumber, count, languageId));
+		}
+		public void SetUserPokemonWordParam(int index, string nickName, int genderId, bool isEgg, global::Dpr.Message.MessageEnumData.MsgLangId languageid, int initialSound = 0) {
+			var wordParam = new UserPokemonWordParam();
+			if (!isEgg)
+			{
+				wordParam.SetPokemonParam(nickName, genderId, languageid, initialSound);
+			}
+			else
+			{
+				int eggGender = genderId;
+				int eggInitialSound = 0;
+				if (MessageHelper.IsEFIGS(languageid))
+				{
+					var attributeInfo = msgManager.GetAttributeInfo("ss_monsname", "MONSNAME_000", languageid);
+					eggGender = attributeInfo.gender < 0 ? 0 : attributeInfo.gender;
+					eggInitialSound = attributeInfo.initialSound < 0 ? 0 : attributeInfo.initialSound;
+				}
+				wordParam.SetPokemonEggParam(nickName, eggGender, eggInitialSound, languageid);
+			}
+			SetWordParam(index, wordParam);
+		}
+		public void SetUserNickNameWordParam(int index, string nickName, int genderId, global::Dpr.Message.MessageEnumData.MsgLangId languageid) {
+			SetWordParam(index, new TrainerNickNameWordParam(nickName, genderId, languageid, MessageEnumData.AttriArticleID.NoArticle));
+		}
+		public void SetRivalNameWordParam(int index, string nickName, int genderId) {
+			SetWordParam(index, new TrainerNickNameWordParam(nickName, genderId, languageId, MessageEnumData.AttriArticleID.NoArticle));
+		}
+		public void SetSupporterName(int index, string nickName, int genderId) {
+			SetWordParam(index, new TrainerNickNameWordParam(nickName, genderId, languageId));
+		}
+		public void SetPlaceWordParam(int index, string labelName) {
+			SetWordParam(index, new PlaceWordParam(labelName));
+		}
+		public void SetStrWordParam(int index, string str, float strWidth = -1f) {
+			SetWordParam(index, new StringWordParam(str, languageId, strWidth));
+		}
+		public void SetStrWordParam(int index, string str, global::Dpr.Message.MessageEnumData.MsgLangId langId, float strWidth = -1f) {
+			SetWordParam(index, new StringWordParam(str, langId, strWidth));
+		}
+		public void SetDigitWordParam(int index, int count) {
+			SetWordParam(index, new DigitWordParam(count));
+		}
+		public void SetDigitWordParam(int index, int count, global::Dpr.Message.MessageEnumData.ForceGrmID forceGrmID) {
+			SetWordParam(index, new DigitWordParam(count, forceGrmID));
+		}
+		public void SetDigitStrWordParam(int index, string countStr) {
+			SetWordParam(index, new DigitWordParam(countStr));
+		}
+		public void SetSingleTrTypeAndNameWordParam(int index, global::Dpr.Message.TrTypeAndNameData typeAndNameData) {
+			var wordParam = new TrTypeAndNameWordParam();
+			var langId = MessageHelper.ConvertMsgId(languageId);
+			switch (langId)
+			{
+				case MessageEnumData.MsgLangId.ESP:
+					wordParam.SetESSingleWordParam(typeAndNameData, languageId);
+					break;
+				case MessageEnumData.MsgLangId.DEU:
+					wordParam.SetDESingleWordParam(typeAndNameData, languageId);
+					break;
+				case MessageEnumData.MsgLangId.FRA:
+					wordParam.SetFRSingleWordParam(typeAndNameData, languageId);
+					break;
+				default:
+					MessageHelper.EmitLog("TrTypeAndName Tag Used Except FR,DE and Spanish " + langId, global::UnityEngine.LogType.Error);
+					break;
+			}
+			SetWordParam(index, wordParam);
+		}
+		public void SetSameTypePairTrTypeAndNameWordParam(int index1, global::Dpr.Message.TrTypeAndNameData typeAndNameData1, int index2, global::Dpr.Message.TrTypeAndNameData typeAndNameData2) {
+			var langId = MessageHelper.ConvertMsgId(languageId);
+			switch (langId)
+			{
+				case MessageEnumData.MsgLangId.ESP:
+				{
+					var wordParam = new TrTypeAndNameWordParam();
+					SetStrWordParam(index2, typeAndNameData2.nameParam.name, typeAndNameData2.nameParam.strWidth);
+					wordParam.SetESPairWordParam(typeAndNameData1, languageId);
+					SetWordParam(index1, wordParam);
+					break;
+				}
+				case MessageEnumData.MsgLangId.DEU:
+				{
+					var wordParam = new TrTypeAndNameWordParam();
+					SetStrWordParam(index2, typeAndNameData2.nameParam.name, typeAndNameData2.nameParam.strWidth);
+					wordParam.SetDEPairWordParam(typeAndNameData1, languageId);
+					SetWordParam(index1, wordParam);
+					break;
+				}
+				case MessageEnumData.MsgLangId.FRA:
+				{
+					var wordParam = new TrTypeAndNameWordParam();
+					SetStrWordParam(index2, typeAndNameData2.nameParam.name, typeAndNameData2.nameParam.strWidth);
+					wordParam.SetFRPairWordParam(typeAndNameData1, languageId);
+					SetWordParam(index1, wordParam);
+					break;
+				}
+				default:
+					MessageHelper.EmitLog("TrTypeAndName Tag Used Except FR,DE and Spanish " + langId, global::UnityEngine.LogType.Error);
+					break;
+			}
+		}
+		public void SetDiffTypePairTrTypeAndNameWordParam(int index1, global::Dpr.Message.TrTypeAndNameData typeAndNameData1, int index2, global::Dpr.Message.TrTypeAndNameData typeAndNameData2) {
+			var langId = MessageHelper.ConvertMsgId(languageId);
+			switch (langId)
+			{
+				case MessageEnumData.MsgLangId.ESP:
+				{
+					var wordParam1 = new TrTypeAndNameWordParam();
+					wordParam1.SetESSingleWordParam(typeAndNameData1, languageId);
+					SetWordParam(index1, wordParam1);
+					var wordParam2 = new TrTypeAndNameWordParam();
+					wordParam2.SetESSingleWordParam(typeAndNameData2, languageId);
+					SetWordParam(index2, wordParam2);
+					break;
+				}
+				case MessageEnumData.MsgLangId.DEU:
+				{
+					var wordParam1 = new TrTypeAndNameWordParam();
+					wordParam1.SetDESingleWordParam(typeAndNameData1, languageId);
+					SetWordParam(index1, wordParam1);
+					var wordParam2 = new TrTypeAndNameWordParam();
+					wordParam2.SetDESingleWordParam(typeAndNameData2, languageId);
+					SetWordParam(index2, wordParam2);
+					break;
+				}
+				case MessageEnumData.MsgLangId.FRA:
+				{
+					var wordParam1 = new TrTypeAndNameWordParam();
+					wordParam1.SetFRSingleWordParam(typeAndNameData1, languageId);
+					SetWordParam(index1, wordParam1);
+					var wordParam2 = new TrTypeAndNameWordParam();
+					wordParam2.SetFRSingleWordParam(typeAndNameData2, languageId);
+					SetWordParam(index2, wordParam2);
+					break;
+				}
+				default:
+					MessageHelper.EmitLog("TrTypeAndName Tag Used Except FR,DE and Spanish " + langId, global::UnityEngine.LogType.Error);
+					break;
+			}
+		}
+		public TagWordBuffer() { }
 	}
 }

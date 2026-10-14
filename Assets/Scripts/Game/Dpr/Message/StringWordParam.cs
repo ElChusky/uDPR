@@ -3,6 +3,11 @@ namespace Dpr.Message
 {
 	public class StringWordParam : global::Dpr.Message.AWordParamBase
 	{
-		public StringWordParam(string str, global::Dpr.Message.MessageEnumData.MsgLangId languId, float strWidth = -1f) { /*@B 0x6003DEC*/ throw null; }
+		public StringWordParam(string str, global::Dpr.Message.MessageEnumData.MsgLangId languId, float strWidth = -1f) {
+			strValue = str;
+			this.strWidth = strWidth;
+			languageId = languId;
+			count = 1;
+		}
 	}
 }

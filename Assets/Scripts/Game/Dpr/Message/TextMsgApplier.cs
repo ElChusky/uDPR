@@ -10,7 +10,7 @@ namespace Dpr.Message
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.Message.TextMsgApplier.UITextParameter[] paramArray;
 		private global::Dpr.Message.MessageMsgFile[] msgFileArray;
-		private global::Dpr.Message.MessageEnumData.MsgLangId langId;
+		private global::Dpr.Message.MessageEnumData.MsgLangId langId = global::Dpr.Message.MessageEnumData.MsgLangId.Num;
 		public global::Dpr.Message.MessageMsgFile GetMsgFile(int arrayIndex) {
 			SetMsgFile();
 			if (CheckOutOfArrayIndex(arrayIndex))
@@ -96,20 +96,20 @@ namespace Dpr.Message
 			if (msgFileArray != null)
 				msgFileArray = null;
 		}
-		public TextMsgApplier() { /*@B 0x6003D6E*/ throw null; }
+		public TextMsgApplier() { }
 		[global::System.Serializable]
 		public class UITextParameter
 		{
 			public global::TMPro.TextMeshProUGUI uiText;
 			[global::UnityEngine.TooltipAttribute("-1以下ならfontMaterialは変更しない")]
-			public int fontMaterialIndex;
+			public int fontMaterialIndex = -1;
 			[global::UnityEngine.TooltipAttribute("取得先のmsgFile番号(-1ならテキストの更新は行わない)")]
 			public int msgFileIndex;
 			[global::UnityEngine.TooltipAttribute("ラベル名から取得")]
-			public string labelName;
+			public string labelName = "";
 			[global::UnityEngine.TooltipAttribute("Indexから取得(labelNameが空の場合)")]
 			public int labelIndex;
-			public UITextParameter() { /*@B 0x600A34F*/ throw null; }
+			public UITextParameter() { }
 		}
 	}
 }

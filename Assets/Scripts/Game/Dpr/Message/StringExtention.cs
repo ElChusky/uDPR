@@ -3,6 +3,8 @@ namespace Dpr.Message
 {
 	public static class StringExtention
 	{
-		public static string GetInvalidRichText(this string str) { /*@B 0x6003D64*/ throw null; }
+		public static string GetInvalidRichText(this string str) {
+			return str.Replace("<", string.Format("<{0}", MessageHelper.ConvertUnicodeToChar(0x200b)));
+		}
 	}
 }
