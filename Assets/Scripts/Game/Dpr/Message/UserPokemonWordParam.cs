@@ -3,8 +3,24 @@ namespace Dpr.Message
 {
 	public class UserPokemonWordParam : global::Dpr.Message.AWordParamBase
 	{
-		public void SetPokemonParam(string nickName, int genderId, global::Dpr.Message.MessageEnumData.MsgLangId languageId, int initialSound = 0) { /*@B 0x6003DE0*/ throw null; }
-		public void SetPokemonEggParam(string nickName, int gender, int initialSound, global::Dpr.Message.MessageEnumData.MsgLangId languageId) { /*@B 0x6003DE1*/ throw null; }
+		public void SetPokemonParam(string nickName, int genderId, global::Dpr.Message.MessageEnumData.MsgLangId languageId, int initialSound = 0) {
+			strValue = nickName;
+			gender = genderId;
+			this.initialSound = initialSound;
+			this.languageId = languageId;
+			count = 1;
+			countablity = 0;
+			articlePresence = 1;
+			bIsPokemonNickname = true;
+		}
+		public void SetPokemonEggParam(string nickName, int gender, int initialSound, global::Dpr.Message.MessageEnumData.MsgLangId languageId) {
+			strValue = nickName;
+			this.languageId = languageId;
+			this.gender = gender;
+			this.initialSound = initialSound;
+			countablity = 0;
+			articlePresence = 0;
+		}
 		public UserPokemonWordParam() { }
 	}
 }

@@ -6,10 +6,10 @@ namespace Dpr.Message
 	{
 		public global::Dpr.Message.MessageEnumData.WordDataPatternID patternID;
 		public global::Dpr.Message.MessageEnumData.MsgEventID eventID;
-		public int tagIndex;
+		public int tagIndex = -1;
 		public float tagValue;
 		public string str;
-		public float strWidth;
-		public WordData() { /*@B 0x6003BC3*/ throw null; }
+		public float strWidth = -1f;
+		public WordData() { }
 	}
 }

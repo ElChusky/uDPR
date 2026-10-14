@@ -12,9 +12,9 @@ namespace Dpr.Movie
 		private float _timeCounter;
 		private bool _enableSkip;
 		private const float _waitInputTime = 0f;
-		private bool _diaVersion;
-		private global::Dpr.Message.MessageEnumData.MsgLangId _lang;
-		private bool _male;
+		private bool _diaVersion = true;
+		private global::Dpr.Message.MessageEnumData.MsgLangId _lang = global::Dpr.Message.MessageEnumData.MsgLangId.JPN;
+		private bool _male = true;
 		private int _bodyType;
 		private global::Dpr.Movie.MoviePlayer _moviePlayer;
 		private string _moviePath;
@@ -91,7 +91,18 @@ namespace Dpr.Movie
             _state = EndingState.PlayingMovie;
             _enableSkip = PlayerWork.dendoudata.latestNumber > 1;
         }
-		private global::System.Collections.IEnumerator EndEnding() { /*@B 0x600479D*/ throw null; }
+		private global::System.Collections.IEnumerator EndEnding() {
+			_fadeImage.CrossFadeAlpha(1f, 1f, true);
+			StopBGM();
+			yield return new WaitForSeconds(1f);
+			_moviePlayer.Stop();
+			yield return new WaitForSeconds(2f);
+			SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+			GameManager.playEnding = false;
+			GameManager.afterStarting = false;
+			UnloadAssets();
+			_endCallback?.Invoke();
+		}
 		private void OnUpdate(float deltaTime) {
             bool isPushA = (GameController.push & Dpr.UI.UIManager.ButtonA) != 0;
             switch (_state)
@@ -171,7 +182,7 @@ namespace Dpr.Movie
 		private void StopBGM() {
             Audio.AudioManager.Instance.SetBgmEvent(AK.EVENTS.EV_END, false);
         }
-		public EndingPlayer() { /*@B 0x60047A4*/ throw null; }
+		public EndingPlayer() { }
 		private enum EndingState
 		{
 			None = 0,

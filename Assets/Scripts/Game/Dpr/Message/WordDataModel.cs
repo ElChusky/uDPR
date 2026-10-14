@@ -4,21 +4,49 @@ namespace Dpr.Message
 	public class WordDataModel
 	{
 		public bool isUse;
-		public global::System.Text.StringBuilder sb;
+		public global::System.Text.StringBuilder sb = new global::System.Text.StringBuilder(64);
 		public global::Dpr.Message.MessageEnumData.MsgEventID endEventId;
 		public global::Dpr.Message.MessageEnumData.MsgLangId languageId;
 		public float tagValue;
-		public float strWidth;
+		public float strWidth = -1f;
 		public bool bIsRichTextTag;
-		public int Length { get { /*@B 0x6003CC9*/ throw null; } }
-		public int StrLength { get { /*@B 0x6003CCA*/ throw null; } }
-		public bool IsNewLineEvent { get { /*@B 0x6003CCB*/ throw null; } }
-		public void Init() { /*@B 0x6003CCC*/ throw null; }
-		private void Reset() { /*@B 0x6003CCD*/ throw null; }
-		public void AppendStr(string message) { /*@B 0x6003CCE*/ throw null; }
-		public string GetMessage() { /*@B 0x6003CCF*/ throw null; }
-		public string GetMessageSubstring(int startIndex) { /*@B 0x6003CD0*/ throw null; }
-		public void Clear() { /*@B 0x6003CD1*/ throw null; }
-		public WordDataModel() { /*@B 0x6003CD2*/ throw null; }
+		public int Length { get {
+			if (bIsRichTextTag)
+				return 0;
+			return sb.Length;
+		} }
+		public int StrLength { get { return sb.Length; } }
+		public bool IsNewLineEvent { get {
+			if (endEventId == MessageEnumData.MsgEventID.NewLine || endEventId == MessageEnumData.MsgEventID.ScrollPage)
+				return true;
+			return endEventId == MessageEnumData.MsgEventID.ScrollLine;
+		} }
+		public void Init() {
+			bIsRichTextTag = false;
+			endEventId = MessageEnumData.MsgEventID.None;
+			sb.Clear();
+			tagValue = 0f;
+			strWidth = -1f;
+		}
+		private void Reset() {
+			bIsRichTextTag = false;
+			endEventId = MessageEnumData.MsgEventID.None;
+			sb.Clear();
+			tagValue = 0f;
+			strWidth = -1f;
+		}
+		public void AppendStr(string message) {
+			sb.Append(message);
+		}
+		public string GetMessage() {
+			return sb.ToString();
+		}
+		public string GetMessageSubstring(int startIndex) {
+			return sb.ToString(startIndex, 1);
+		}
+		public void Clear() {
+			isUse = false;
+			Reset();		}
+		public WordDataModel() { }
 	}
 }

@@ -3,6 +3,14 @@ namespace Dpr.Message
 {
 	public class TrainerNickNameWordParam : global::Dpr.Message.AWordParamBase
 	{
-		public TrainerNickNameWordParam(string nickName, int genderId, global::Dpr.Message.MessageEnumData.MsgLangId languageId, global::Dpr.Message.MessageEnumData.AttriArticleID article = (global::Dpr.Message.MessageEnumData.AttriArticleID)(0)) { /*@B 0x6003DDF*/ throw null; }
+		public TrainerNickNameWordParam(string nickName, int genderId, global::Dpr.Message.MessageEnumData.MsgLangId languageId, global::Dpr.Message.MessageEnumData.AttriArticleID article = (global::Dpr.Message.MessageEnumData.AttriArticleID)(0)) {
+			strValue = nickName;
+			this.languageId = languageId;
+			initialSound = 0;
+			countablity = 0;
+			count = 1;
+			gender = genderId;
+			articlePresence = (int)article;
+		}
 	}
 }
