@@ -165,7 +165,7 @@ namespace Dpr.Battle.Logic
 		}
 		private bool checkHandlerSkip(global::Dpr.Battle.Logic.EventFactor factor, global::Dpr.Battle.Logic.EventID eventID) {
 			BTL_POKEPARAM bpp = null;
-			if (factor.GetPokeID() != 31) // BTL_POKEID_NULL
+			if (factor.GetPokeID() != PokeID.INVALID)
 				bpp = m_pBattleEnv.GetPokeCon().GetPokeParam(factor.GetPokeID());
 
 			EventFactorType factorType = factor.GetFactorType();
