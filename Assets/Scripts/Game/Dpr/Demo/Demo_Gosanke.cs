@@ -13,16 +13,29 @@ namespace Dpr.Demo
 		private global::UnityEngine.UI.Image CursolImage;
 		private global::PokeRenderViewer PokemonViewer;
 		private global::UnityEngine.Transform RenderCamera;
-		private global::UnityEngine.Vector2[] CursolPositions;
+		private global::UnityEngine.Vector2[] CursolPositions = new global::UnityEngine.Vector2[] { new global::UnityEngine.Vector2(-216.0f, 80.0f), new global::UnityEngine.Vector2(-45.0f, -10.0f), new global::UnityEngine.Vector2(175.0f, 95.0f) };
 		private global::UnityEngine.UI.Image Blur;
 		private bool isSelectEnd;
-		private int[] CatalogIDs;
-		private static readonly global::Pml.MonsNo[] monsNos;
+		private int[] CatalogIDs = new int[3];
+		private static readonly global::Pml.MonsNo[] monsNos = new global::Pml.MonsNo[] { global::Pml.MonsNo.NAETORU, global::Pml.MonsNo.HIKOZARU, global::Pml.MonsNo.POTTYAMA };
 		private static readonly int _pokeLightColorID;
 		private static readonly int _pokeReflectionColorID;
 		private bool isEnd;
 		private int nowCursolPosIndex;
-		public Demo_Gosanke() { /*@B 0x600483C*/ throw null; }
+		public Demo_Gosanke() {
+			AssetBundlePath = "demo/gosankeprefab";
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "8-EV_POKESELECT_00", false));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "8-EV_POKESELECT_08", true));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "8-EV_POKESELECT_02", true));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "8-EV_POKESELECT_03", true));
+			Messages.Add(CreateMsgWindowParam("dp_scenario1", "8-EV_POKESELECT_04", true));
+			FadeColor = Color.black;
+			StartEnterFadeDuration = 0.5f;
+			StartExitFadeDuration = 0.5f;
+			EndEnterFadeDuration = 0.5f;
+			EndExitFadeDuration = 0.5f;
+			isDisableMainCamera = true;
+		}
 		public override void Destroy() {
 			base.Destroy();
 			BagAnimator = null;
@@ -236,6 +249,9 @@ namespace Dpr.Demo
 			if (TestNo == 0)
 				SmartPoint.AssetAssistant.Sequencer.Start(BagAnimation());
 		}
-		static Demo_Gosanke() { /*@B 0x600484D*/ throw null; }
+		static Demo_Gosanke() {
+			_pokeLightColorID = Shader.PropertyToID("_PokeLightColor");
+			_pokeReflectionColorID = Shader.PropertyToID("_PokeReflectorColor");
+		}
 	}
 }
