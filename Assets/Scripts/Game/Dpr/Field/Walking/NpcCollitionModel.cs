@@ -3,8 +3,34 @@ namespace Dpr.Field.Walking
 {
 	public class NpcCollitionModel : global::Dpr.Field.Walking.WalkingCollisionModelBase
 	{
-		public NpcCollitionModel(global::Dpr.Field.Walking.WalkData walkData) : base(default(global::Dpr.Field.Walking.WalkData)) { /*@B 0x6008B0A*/ throw null; }
-		public override void CollisionUpdate(float deltaTime) { /*@B 0x6008B0B*/ throw null; }
+		public NpcCollitionModel(global::Dpr.Field.Walking.WalkData walkData) : base(walkData) {
+			entity.IsIgnorePlayerCollision = true;
+		}
+		public override void CollisionUpdate(float deltaTime) {
+			if (CheckCollision(EntityManager.activeFieldPlayer, 1f, 1f, false, true, 999, false))
+			{
+				CollidedCount++;
+				if (CollidedCount >= 1)
+				{
+					FieldManager.fwMng.ChangePositionNPC();
+					CollidedCount = 0;
+				}
+				return;
+			}
+			CollidedCount = 0;
+			foreach (FieldCharacterEntity character in EntityManager.fieldCharacters)
+			{
+				CheckCollision(character, 1f, 1f, false, false, 999, false);
+			}
+			foreach (FieldPokemonEntity pokemon in EntityManager.fieldPokemons)
+			{
+				CheckCollision(pokemon, 1f, 1f, false, false, 999, false);
+			}
+			foreach (FieldObjectEntity obj in EntityManager.fieldObjects)
+			{
+				CheckCollision(obj, 1f, 1f, false, false, 999, false);
+			}
+		}
 		public override bool ObjectCollisionUpdate(float deltaTime, bool isIgnoreJump = false) {
 			// b239 FIX @01cdd490: tail `b WalkingCollisionModelBase.ObjectCollisionUpdate` — the base code called itself (infinite recursion).
 			return base.ObjectCollisionUpdate(deltaTime, isIgnoreJump);

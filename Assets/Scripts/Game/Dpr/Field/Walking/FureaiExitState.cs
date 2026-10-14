@@ -6,9 +6,20 @@ namespace Dpr.Field.Walking
 		public global::System.Action OnPlayerNear;
 		private float time;
 		private bool isRouteNull;
-		private global::Dpr.FureaiHiroba.FureaiPokeModel fureaiModel { get { /*@B 0x6008A50*/ throw null; } }
+		private global::Dpr.FureaiHiroba.FureaiPokeModel fureaiModel { get { return model.fureaiModel; } }
 		private global::Dpr.Field.Walking.AIFureaiModel model { get => (AIFureaiModel)base.model; }
-		public FureaiExitState(global::Dpr.Field.Walking.AIFureaiModel model) : base(default(global::Dpr.Field.Walking.AIModel)) { /*@B 0x6008A52*/ throw null; }
-		protected override void StateUpdate() { /*@B 0x6008A53*/ throw null; }
+		public FureaiExitState(global::Dpr.Field.Walking.AIFureaiModel model) : base(model) { }
+		protected override void StateUpdate() {
+			time += deltaTime;
+			global::Dpr.Field.Walking.WalkData walkData = model.walkData;
+			global::System.Collections.Generic.List<global::UnityEngine.Vector3> route = model.route;
+			model.walkData.isNeedRun = true;
+			walkData.Move(deltaTime, 20f, 2.5f, 0f);
+			walkData.LookAtTarget(player.position, deltaTime, 10f);
+			if (playerDistance < 3.5f || time > 2.5f)
+			{
+				OnPlayerNear?.Invoke();
+			}
+		}
 	}
 }

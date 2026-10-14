@@ -6,7 +6,19 @@ namespace Dpr.Field.Walking
 		private global::UnityEngine.Vector3 offset;
 		private float speed;
 		private float duration;
-		public LookAtPosition(global::UnityEngine.Vector3 offset, float speed, float duration) { /*@B 0x6008A88*/ throw null; }
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008A89*/ throw null; }
+		public LookAtPosition(global::UnityEngine.Vector3 offset, float speed, float duration) {
+			this.offset = offset;
+			this.speed = speed;
+			this.duration = duration;
+		}
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) {
+			float time = 0f;
+			yield return model.Loop(() => time < duration, () =>
+			{
+				float dt = global::SmartPoint.AssetAssistant.Sequencer.elapsedTime;
+				model.walkData.LookAtTarget(model.transform.position + offset, dt, speed);
+				time += dt;
+			});
+		}
 	}
 }

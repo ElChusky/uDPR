@@ -5,7 +5,20 @@ namespace Dpr.Field.Walking
 	{
 		private float speed;
 		private float duration;
-		public LookAtNextRoute(float speed, float duration) { /*@B 0x6008A8A*/ throw null; }
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008A8B*/ throw null; }
+		public LookAtNextRoute(float speed, float duration) {
+			this.speed = speed;
+			this.duration = duration;
+		}
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) {
+			float time = 0f;
+			if (model.route.IsNullOrEmpty())
+				yield break;
+			yield return model.Loop(() => time < duration, () =>
+			{
+				float dt = global::SmartPoint.AssetAssistant.Sequencer.elapsedTime;
+				model.walkData.LookAtTarget(model.route[0], dt, speed);
+				time += dt;
+			});
+		}
 	}
 }

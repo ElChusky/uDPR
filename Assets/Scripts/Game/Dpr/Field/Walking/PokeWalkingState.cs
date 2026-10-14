@@ -3,9 +3,11 @@ namespace Dpr.Field.Walking
 {
 	public class PokeWalkingState : global::Dpr.Field.Walking.WalkingState
 	{
-		private global::Dpr.FureaiHiroba.FureaiPokeModel fureaiModel { get { /*@B 0x6008A2D*/ throw null; } }
+		private global::Dpr.FureaiHiroba.FureaiPokeModel fureaiModel { get { return model.fureaiModel; } }
 		private global::Dpr.Field.Walking.AIFureaiModel model { get => (AIFureaiModel)base.model; }
-		public PokeWalkingState(global::Dpr.Field.Walking.AIModel model) : base(default(global::Dpr.Field.Walking.AIModel)) { /*@B 0x6008A2F*/ throw null; }
-		protected override void StateUpdate() { /*@B 0x6008A30*/ throw null; }
+		public PokeWalkingState(global::Dpr.Field.Walking.AIModel model) : base(model) { }
+		protected override void StateUpdate() {
+			base.StateUpdate();
+		}
 	}
 }

@@ -3,6 +3,6 @@ namespace Dpr.Field.Walking
 {
 	public class NPCWalkingModel : global::Dpr.Field.Walking.WalkingCharacterModel
 	{
-		public NPCWalkingModel(global::Dpr.Field.Walking.WalkData walkData) : base(default(global::Dpr.Field.Walking.WalkData)) { /*@B 0x6008AAC*/ throw null; }
+		public NPCWalkingModel(global::Dpr.Field.Walking.WalkData walkData) : base(walkData) { }
 	}
 }
