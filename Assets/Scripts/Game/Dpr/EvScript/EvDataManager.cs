@@ -16014,7 +16014,154 @@ namespace Dpr.EvScript
             }
             return entity;
         }
-		public global::System.Collections.IEnumerator RequestAssetSetUp(global::AreaID areaid) { /*@B 0x6009112*/ throw null; }
+		public global::System.Collections.IEnumerator RequestAssetSetUp(global::AreaID areaid) {
+            while (!DataManager.IsLoaded())
+                yield return null;
+            if (_isScriptLoad)
+            {
+                InitScriptLoad();
+                while (!InitScriptLoadWait())
+                    yield return null;
+                InitScriptEnd();
+            }
+            if (PlayerWork.Warp == PlayerWork.WarpType.None && areaid == _areaID && !GameManager.mapInfo[(int)PlayerWork.transitionZoneID].Reload)
+                yield break;
+            _areaID = areaid;
+            if (areaid == global::AreaID.UNKNOWN)
+                yield break;
+            if (FieldObjectMoveCodes == null)
+                FieldObjectMoveCodes = new System.Collections.Generic.List<global::FieldObjectMoveCode>(200);
+            FieldObjectMoveCodes.Clear();
+            _fieldObjectEntity.Clear();
+            _FieldKinomiGrowEntity.Clear();
+            _loadObjectList.Clear();
+            _loadObjectIndex = 0;
+            _AssetReqOpeList.RemoveAll(val => val == null);
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+                _AssetReqOpeList[i].RefCount = 0;
+            string key = "PlaceData_" + _areaID.ToString();
+            if (!DataManager.PlaceData.ContainsKey(key))
+                yield break;
+            global::XLSXContent.PlaceData placeData = DataManager.PlaceData[key];
+            if (placeData.Data.Length > 0)
+            {
+                int graphicsCount = DataManager.CharacterGraphics.Data.Length;
+                for (int i = 0; i < placeData.Data.Length; i++)
+                {
+                    global::XLSXContent.PlaceData.SheetData pd = placeData.Data[i];
+                    if (pd == null)
+                        continue;
+                    if (pd.DoNotLoad != EvWork.FLAG_INDEX.FLAG_END_SAVE_SIZE && FlagWork.GetFlag(pd.DoNotLoad))
+                        continue;
+                    LoadObjectData lod = new LoadObjectData();
+                    lod.IsLoadFast = pd.LoadFirst;
+                    lod.ObjectName = pd.ID;
+                    lod.PlaceData = placeData.Data[i];
+                    lod.Position = pd.Position;
+                    lod.Height = pd.HeightLayer;
+                    lod.IsCreated = false;
+                    lod.Angle = pd.Rotation;
+                    lod.MoveCode = pd.MoveCode;
+                    lod.MoveDirHead = global::FieldObjectEntity.GetDir(pd.Rotation);
+                    lod.MoveParam0 = pd.MoveParam0;
+                    lod.MoveParam1 = pd.MoveParam1;
+                    lod.MoveParam2 = pd.MoveParam2;
+                    lod.MoveLimitX = (int)pd.MoveLimit.x;
+                    lod.MoveLimitZ = (int)pd.MoveLimit.y;
+                    lod.Ev_Type = pd.EventType;
+                    lod.mv_old_dir = (int)lod.MoveDirHead;
+                    lod.mv_dir = (int)lod.MoveDirHead;
+                    SetSaveDataParam(ref lod);
+                    int graphic = pd.ObjectGraphicIndex;
+                    if (_areaID == global::AreaID.D31R0205 || _areaID == global::AreaID.D31R0206)
+                    {
+                        int mode = BtlTowerWork.GetMode();
+                        int rank = BtlTowerWork.GetRank(mode);
+                        int trainerIndex = 0;
+                        int round = 0;
+                        if (pd.ID == "TOWER_PLAYER_01_01") { trainerIndex = 0; round = 1; }
+                        else if (pd.ID == "TOWER_PLAYER_02_01") { trainerIndex = 0; round = 2; }
+                        else if (pd.ID == "TOWER_PLAYER_03_01") { trainerIndex = 0; round = 3; }
+                        else if (pd.ID == "TOWER_PLAYER_04_01") { trainerIndex = 0; round = 4; }
+                        else if (pd.ID == "TOWER_PLAYER_05_01") { trainerIndex = 0; round = 5; }
+                        else if (pd.ID == "TOWER_PLAYER_06_01") { trainerIndex = 0; round = 6; }
+                        else if (pd.ID == "TOWER_PLAYER_07_01") { trainerIndex = 0; round = 7; }
+                        else if (mode == 3)
+                        {
+                            if (pd.ID == "TOWER_PLAYER_01_02") { trainerIndex = 1; round = 1; }
+                            else if (pd.ID == "TOWER_PLAYER_02_02") { trainerIndex = 1; round = 2; }
+                            else if (pd.ID == "TOWER_PLAYER_03_02") { trainerIndex = 1; round = 3; }
+                            else if (pd.ID == "TOWER_PLAYER_04_02") { trainerIndex = 1; round = 4; }
+                            else if (pd.ID == "TOWER_PLAYER_05_02") { trainerIndex = 1; round = 5; }
+                            else if (pd.ID == "TOWER_PLAYER_06_02") { trainerIndex = 1; round = 6; }
+                            else if (pd.ID == "TOWER_PLAYER_07_02") { trainerIndex = 1; round = 7; }
+                        }
+                        if (round != 0)
+                        {
+                            BtlTowerWork.GetNowModeEnum(out global::TowerLotRule lotRule, out global::TowerLotCls lotCls);
+                            ulong seed = BtlTowerWork.GetTrainerRand(round - 1);
+                            graphic = TrainerSystem.CreateTowerLotResult(lotRule, lotCls, rank, round, seed).GetTrainerData(trainerIndex).fldGraphic;
+                            lod.replaceGraphicIndex = graphic;
+                        }
+                    }
+                    if (graphic < 0)
+                    {
+                        lod.AssetReqIndex = -1;
+                    }
+                    else
+                    {
+                        string path = "";
+                        if (graphic == 4)
+                            graphic = PlayerWork.playerSex ? 140 : 139;
+                        if (graphic >= Graphic_Poke)
+                        {
+                            path = string.Format("{0}pm{1:D4}_{2:D2}_{3:D2}", Path_Poke_Model, graphic / 10000, graphic / 100 % 100, graphic % 100);
+                        }
+                        else if (graphic >= Graphic_Gimmick && graphic < Graphic_Gimmick + 500)
+                        {
+                            path = DataManager.GimmickGraphics.Data[graphic - Graphic_Gimmick].AssetPath;
+                        }
+                        else if (graphic >= Graphic_SekiZou && graphic < Graphic_SekiZouMAX)
+                        {
+                            path = string.Format("pokemons/statue/{0}", graphic - Graphic_SekiZou);
+                        }
+                        else if (graphic >= 0 && graphic < graphicsCount)
+                        {
+                            path = Path_Parsons + DataManager.CharacterGraphics.Data[graphic].FieldGraphic;
+                        }
+                        if (string.IsNullOrEmpty(path))
+                            continue;
+                        int reqIndex = -1;
+                        for (int j = 0; j < _AssetReqOpeList.Count; j++)
+                        {
+                            if (_AssetReqOpeList[j].ReqOpe.assetBundleRequest.uri == path)
+                            {
+                                _AssetReqOpeList[j].RefCount = 1;
+                                reqIndex = j;
+                                break;
+                            }
+                        }
+                        if (reqIndex < 0)
+                        {
+                            AssetReqOpeRef reqOpe = new AssetReqOpeRef();
+                            reqOpe.RefCount = 1;
+                            reqOpe.ReqOpe = AssetManager.AppendAssetBundleRequest(path, true, null, null);
+                            _AssetReqOpeList.Add(reqOpe);
+                            reqIndex = _AssetReqOpeList.Count - 1;
+                        }
+                        lod.AssetReqIndex = reqIndex;
+                    }
+                    _loadObjectList.Add(lod);
+                }
+            }
+            string log = "fieldasset request \n";
+            for (int i = 0; i < _AssetReqOpeList.Count; i++)
+            {
+                if (_AssetReqOpeList[i] != null)
+                    log += string.Format("[{0}]{1}  [{2}]\n", i, _AssetReqOpeList[i].isEnd, _AssetReqOpeList[i].ReqOpe.assetBundleRequest.uri);
+            }
+            AssetManager.DispatchRequests(null);
+        }
 		public global::System.Collections.IEnumerator PreRequestAssetSetUp(global::AreaID areaid) { /*@B 0x6009113*/ throw null; }
 		private void SetSaveDataParam(ref global::Dpr.EvScript.EvDataManager.LoadObjectData lodata) { /*@B 0x6009114*/ throw null; }
 		public void SetCreateParent(global::UnityEngine.Transform parent) { /*@B 0x6009115*/ throw null; }
