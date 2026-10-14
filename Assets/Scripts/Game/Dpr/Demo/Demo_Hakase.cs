@@ -94,7 +94,92 @@ namespace Dpr.Demo
 			});
 			nowMessageNo = -1;
 		}
-		public override global::System.Collections.IEnumerator Main() { /*@B 0x6004853*/ throw null; }
+		public override global::System.Collections.IEnumerator Main() {
+			global::UnityEngine.GameObject gonbe;
+			string path;
+			global::AnimationPlayer animPlayer;
+			cameraController.cam.usePhysicalProperties = true;
+			cameraController.cam.gateFit = global::UnityEngine.Camera.GateFitMode.Vertical;
+			cameraController.PlayAnim("chapter001-001_cut01", 0f);
+			yield return null;
+			cameraController.PauseAnim();
+			DrawMessage(++nowMessageNo);
+			yield return WaitMessageWindow(true, 0f);
+			global::DG.Tweening.DOTweenModuleUI.DOFade(manager.Fade, 0f, 2f);
+			cameraController.ResumeAnim();
+			global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Audio.AudioManager>.Instance.SetBgmEvent(global::AK.EVENTS.B_OTH003, false);
+			yield return new global::UnityEngine.WaitForSeconds(2f);
+			DrawMessage(++nowMessageNo);
+			yield return WaitMessageWindow(false, 0f);
+			DrawMessage(++nowMessageNo);
+			yield return WaitMessageWindow(true, 0f);
+			hakaseEntity.RequestAnimationState(global::BattleCharacterEntity.AnimationState.Wait02_B, 0.15f, 0f, false);
+			yield return new global::UnityEngine.WaitForSeconds(0.5f);
+			hakaseEntity.RequestAnimationState(global::BattleCharacterEntity.AnimationState.Advent_B, 0.15f, 0f, false);
+			yield return new global::UnityEngine.WaitForSeconds(0.9f);
+			cameraController.PlayAnim("chapter001-001_cut02", 0f);
+			yield return new global::UnityEngine.WaitForSeconds(0.15f);
+			cameraController.PlayAnim("chapter001-001_cut03", 0f);
+			yield return new global::UnityEngine.WaitForSeconds(1f);
+			gonbe = global::UnityEngine.Object.Instantiate(PokeAsset, parent) as global::UnityEngine.GameObject;
+			gonbe.transform.localScale = global::UnityEngine.Vector3.zero;
+			gonbe.transform.localPosition = new global::UnityEngine.Vector3(0.38f, 0f, 0.314f);
+			global::XLSXContent.BattleDataTable.SheetBallEffectData ballEffect = global::System.Array.Find(global::Dpr.Battle.Logic.BattleDataTableManager.Instance.BattleDataTable.BallEffectData, x => x.BallID == global::Pml.BallId.MONSUTAABOORU);
+			path = ("effect/prefab/battle/" + global::System.IO.Path.GetFileNameWithoutExtension(ballEffect.IntroEffectAssetbundleName)).ToLower();
+			global::XLSXContent.EffectDatabase.SheetBattleEffectData ballParam = global::System.Array.Find(global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Effect.EffectManager>.Instance.dbEffects.BattleEffectData, x => x.AssetBundleName == path);
+			yield return global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Effect.EffectManager>.Instance.OpLoad(new global::Effect.EffectManager.LoadParam[] { ballParam }, (effect, isAllLoaded) => {
+				global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Effect.EffectManager>.Instance.Play(effect, gonbe.transform.position, global::UnityEngine.Quaternion.identity, null, instance => {
+					effect.Release();
+				});
+			});
+			animPlayer = gonbe.GetComponent<global::FieldPokemonEntity>().GetAnimationPlayer();
+			global::DG.Tweening.TweenSettingsExtensions.OnComplete(global::DG.Tweening.ShortcutExtensions.DOScale(gonbe.transform, global::UnityEngine.Vector3.one, 0.2f), () => {
+				animPlayer.Play(9, 0f, 0f);
+				global::DG.Tweening.DOVirtual.DelayedCall(animPlayer.currentRemaingTime, () => {
+					animPlayer.Play(0, 0f, 0f);
+				}, true);
+				global::DG.Tweening.DOVirtual.DelayedCall(0.2f, () => {
+					global::Dpr.SubContents.Utils.PlayVoice(global::Pml.MonsNo.GONBE, 0, 0);
+				}, true);
+			});
+			global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Audio.AudioManager>.Instance.PlaySe(global::AK.EVENTS.PLAY_BA_SYS_BALL_OPEN, null);
+			yield return new global::UnityEngine.WaitForSeconds(3.5f);
+			DrawMessage(++nowMessageNo);
+			yield return WaitMessageWindow(false, 0f);
+			DrawMessage(++nowMessageNo);
+			yield return WaitMessageWindow(false, 0f);
+			DrawMessage(++nowMessageNo);
+			yield return WaitMessageWindow(true, 0f);
+			yield return null;
+			yield return PlayerSelect(null, null); // TO CHECK: the inlined d__17 creation stores only this - the call's arguments are not recoverable (unused parameters are not hoisted)
+			DrawMessage(++nowMessageNo);
+			yield return WaitMessageWindow(true, 0f);
+			global::UnityEngine.GameObject rival = global::UnityEngine.Object.Instantiate(Rival3DModel, parent) as global::UnityEngine.GameObject;
+			rival.transform.localPosition = new global::UnityEngine.Vector3(-3f, 0f, 2.1f);
+			cam.GetComponent<global::UnityEngine.Animator>().enabled = false;
+			yield return null;
+			var tw = global::DG.Tweening.TweenSettingsExtensions.SetEase(global::DG.Tweening.ShortcutExtensions.DOLocalMove(cam.transform, new global::UnityEngine.Vector3(-3f, 1.2f, 5f), 2f, false), global::DG.Tweening.Ease.InOutQuint);
+			while (global::DG.Tweening.TweenExtensions.IsPlaying(tw))
+				yield return null;
+			DrawMessage(++nowMessageNo);
+			yield return WaitMessageWindow(false, 0f);
+			yield return RivalSelect();
+			cameraController.PlayAnim("chapter001-001_cut04", 0f);
+			animPlayer.Play(0x2c, 0f, 0f);
+			global::DG.Tweening.DOVirtual.DelayedCall(animPlayer.currentRemaingTime, () => {
+				animPlayer.Play(0x30, 0f, 0f);
+				animPlayer.forceLoop = true;
+			}, true);
+			DrawMessage(++nowMessageNo);
+			yield return WaitMessageWindow(false, 0f);
+			DrawMessage(++nowMessageNo);
+			yield return WaitMessageWindow(false, 0f);
+			DrawMessage(++nowMessageNo);
+			yield return WaitMessageWindow(true, 0f);
+			cameraController.PlayAnim("chapter001-001_cut05", 0f);
+			yield return new global::UnityEngine.WaitForSeconds(3f);
+			global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Audio.AudioManager>.Instance.SetBgmEvent("EV012", false);
+		}
 		private global::System.Collections.IEnumerator PlayerSelect(global::UnityEngine.GameObject gonbe, global::UnityEngine.UI.Image bgImage) { /*@B 0x6004854*/ throw null; }
 		private global::System.Collections.IEnumerator RivalSelect() { /*@B 0x6004855*/ throw null; }
 		public override void LightUpdate() {
