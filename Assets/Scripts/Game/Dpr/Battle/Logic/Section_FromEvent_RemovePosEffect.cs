@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_RemovePosEffect : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_RemovePosEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F4C*/ throw null; }
+		public Section_FromEvent_RemovePosEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_RemovePosEffect.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_RemovePosEffect.Description description) {
 			GetBattleEnv().GetPosEffectStatus(description.pos, description.effect).RemoveEffect();
 			GetServerCommandPutter().RemovePosHandler(description.effect, description.pos);
@@ -13,7 +13,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BtlPokePos pos;
 			public global::Dpr.Battle.Logic.BtlPosEffect effect;
-			public Description() { /*@B 0x600B577*/ throw null; }
+			public Description() {
+				pos = BtlPokePos.POS_NULL;
+				effect = BtlPosEffect.BTL_POSEFF_NULL;
+			}
 		}
 		public class Result
 		{

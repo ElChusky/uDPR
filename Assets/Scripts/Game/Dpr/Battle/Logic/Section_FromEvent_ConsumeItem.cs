@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_ConsumeItem : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_ConsumeItem(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EF1*/ throw null; }
+		public Section_FromEvent_ConsumeItem(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_ConsumeItem.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_ConsumeItem.Description description) {
 			BTL_POKEPARAM poke = GetPokeParam(description.userPokeID);
 			ushort itemID = poke.GetItem();
@@ -43,8 +43,13 @@ namespace Dpr.Battle.Logic
 			public bool isUseActionDisable;
 			public bool isKinomiCheckDisable;
 			public bool isConsumeMessageEnable;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B53B*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				isUseActionDisable = false;
+				isKinomiCheckDisable = false;
+				isConsumeMessageEnable = false;
+			}
 		}
 		public class Result
 		{

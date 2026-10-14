@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_RankFlat_Weaken : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_RankFlat_Weaken(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F44*/ throw null; }
+		public Section_FromEvent_RankFlat_Weaken(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_RankFlat_Weaken.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_RankFlat_Weaken.Description description) {
 			result.isSuccessed = false;
 			BTL_POKEPARAM bpp = GetPokeParam(description.pokeID);
@@ -14,7 +14,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public byte pokeID;
-			public Description() { /*@B 0x600B56F*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

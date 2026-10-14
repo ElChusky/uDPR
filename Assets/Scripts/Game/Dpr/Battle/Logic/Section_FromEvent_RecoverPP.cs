@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_RecoverPP : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_RecoverPP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F4A*/ throw null; }
+		public Section_FromEvent_RecoverPP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_RecoverPP.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_RecoverPP.Description description) {
 			result.isSuccessed = false;
 			BTL_POKEPARAM bpp = GetPokeParam(description.pokeID);
@@ -23,8 +23,14 @@ namespace Dpr.Battle.Logic
 			public byte volume;
 			public bool isSurfacePP;
 			public bool isDeadPokeEnable;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B575*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				pokeID = PokeID.INVALID;
+				wazaIdx = 0;
+				volume = 0;
+				isSurfacePP = false;
+				isDeadPokeEnable = false;
+			}
 		}
 		public class Result
 		{

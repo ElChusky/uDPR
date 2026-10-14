@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_SetPower : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_SetPower(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F5C*/ throw null; }
+		public Section_FromEvent_SetPower(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_SetPower.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_SetPower.Description description) {
 			result.isSuccessed = false;
 			if (!GetBattleEnv().GetPosPoke().IsExist(description.pokeID))
@@ -34,8 +34,20 @@ namespace Dpr.Battle.Logic
 			public bool isSpAttackEnable;
 			public bool isSpDefenceEnable;
 			public bool isAgilityEnable;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B585*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				pokeID = PokeID.INVALID;
+				attack = 0;
+				defence = 0;
+				spAttack = 0;
+				spDefence = 0;
+				agility = 0;
+				isAttackEnable = false;
+				isDefenceEnable = false;
+				isSpAttackEnable = false;
+				isSpDefenceEnable = false;
+				isAgilityEnable = false;
+			}
 		}
 		public class Result
 		{

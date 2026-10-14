@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_Damage : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_Damage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EF5*/ throw null; }
+		public Section_FromEvent_Damage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_Damage.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_Damage.Description description) {
 			BTL_POKEPARAM target = null;
 			result.isSuccessed = false;
@@ -90,8 +90,21 @@ namespace Dpr.Battle.Logic
 			public ushort exEffectNo;
 			public global::Dpr.Battle.Logic.BtlPokePos exEffectPos_from;
 			public global::Dpr.Battle.Logic.BtlPokePos exEffectPos_to;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B53D*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				pokeID = PokeID.INVALID;
+				targetPokeID = PokeID.INVALID;
+				damage = 0;
+				damageCause = DamageCause.OTHER;
+				damageCausePokeID = PokeID.INVALID;
+				canHidePokeAvoid = false;
+				disableDeadProcess = false;
+				isDisplayTokuseiWindow = false;
+				exEffectPlayMode = EffectPlayMode.DISABLE;
+				exEffectNo = 0;
+				exEffectPos_from = BtlPokePos.POS_NULL;
+				exEffectPos_to = BtlPokePos.POS_NULL;
+			}
 		}
 		public class Result
 		{

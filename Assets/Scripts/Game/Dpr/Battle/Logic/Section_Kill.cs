@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Kill : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Kill(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FC8*/ throw null; }
+		public Section_Kill(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Kill.Result pResult, in global::Dpr.Battle.Logic.Section_Kill.Description description) {
 			GetEventLauncher().Event_KillHandler(description.target, description.attackerID);
 			GetServerCommandPutter().KillPokemon(description.target, description.attackerID, description.deadCause, 0);
@@ -25,7 +25,13 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.DamageCause deadCause;
 			public global::Dpr.Battle.Logic.PGLRecord.RecParam pPglParam;
 			public bool doDeadProcess;
-			public Description() { /*@B 0x600B5B0*/ throw null; }
+			public Description() {
+				target = null;
+				pPglParam = null;
+				attackerID = PokeID.INVALID;
+				deadCause = DamageCause.OTHER;
+				doDeadProcess = false;
+			}
 		}
 		public class Result
 		{

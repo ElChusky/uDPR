@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_VanishMessageWindow : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_VanishMessageWindow(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F83*/ throw null; }
+		public Section_FromEvent_VanishMessageWindow(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_VanishMessageWindow.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_VanishMessageWindow.Description description) {
 			GetServerCommandPutter().Act_HideMessageWindow();
 		}

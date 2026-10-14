@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_RankSet : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_RankSet(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F48*/ throw null; }
+		public Section_FromEvent_RankSet(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_RankSet.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_RankSet.Description description) {
 			result.isSuccessed = false;
 			if (!GetBattleEnv().GetPosPoke().IsExist(description.pokeID))
@@ -26,7 +26,17 @@ namespace Dpr.Battle.Logic
 			public byte hit_ratio;
 			public byte avoid_ratio;
 			public byte critical_rank;
-			public Description() { /*@B 0x600B573*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+				attack = 0;
+				defence = 0;
+				sp_attack = 0;
+				sp_defence = 0;
+				agility = 0;
+				hit_ratio = 0;
+				avoid_ratio = 0;
+				critical_rank = 0;
+			}
 		}
 		public class Result
 		{

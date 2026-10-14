@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_InterruptAction : global::Dpr.Battle.Logic.Section
 	{
-		public Section_InterruptAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FC4*/ throw null; }
+		public Section_InterruptAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_InterruptAction.Result result, in global::Dpr.Battle.Logic.Section_InterruptAction.Description description) {
 			result.isInterrupted = false;
 			PokeAction action = getInterruptPokeAction(description.interruptPokeID);
@@ -35,7 +35,10 @@ namespace Dpr.Battle.Logic
 		{
 			public byte interruptPokeID;
 			public byte targetPokeID;
-			public Description() { /*@B 0x600B5AE*/ throw null; }
+			public Description() {
+				interruptPokeID = PokeID.INVALID;
+				targetPokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

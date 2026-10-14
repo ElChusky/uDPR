@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_UseItem_Force : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_UseItem_Force(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F7F*/ throw null; }
+		public Section_FromEvent_UseItem_Force(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_UseItem_Force.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_UseItem_Force.Description description) {
             result.isUsed = false;
             BTL_POKEPARAM poke = GetPokeParam(description.targetPokeID);
@@ -55,7 +55,13 @@ namespace Dpr.Battle.Logic
 			public ushort itemID;
 			public bool isAteKinomi;
 			public global::Dpr.Battle.Logic.Section_FromEvent_UseItem_Force.UseEffectType useEffectType;
-			public Description() { /*@B 0x600B5A1*/ throw null; }
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				targetPokeID = PokeID.INVALID;
+				itemID = 0;
+				isAteKinomi = false;
+				useEffectType = UseEffectType.Normal;
+			}
 		}
 		public class Result
 		{

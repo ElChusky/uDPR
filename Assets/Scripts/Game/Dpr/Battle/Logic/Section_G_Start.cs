@@ -4,8 +4,8 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_G_Start : global::Dpr.Battle.Logic.Section
 	{
-		private static readonly global::Dpr.Battle.Logic.Section_G_Start.resetFormTableElem[] resetFormTable;
-		public Section_G_Start(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FAA*/ throw null; }
+		private static readonly global::Dpr.Battle.Logic.Section_G_Start.resetFormTableElem[] resetFormTable = new resetFormTableElem[0];
+		public Section_G_Start(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_G_Start.Result pResulkt, in global::Dpr.Battle.Logic.Section_G_Start.Description description) {
             byte pokeID = description.pokeID;
             byte clientID = MainModule.PokeIDtoClientID(pokeID);
@@ -90,11 +90,13 @@ namespace Dpr.Battle.Logic
 					Memories.SetMemories_OnFaceToG(GetMainModule(), poke, pGPoke);
 			}
 		}
-		static Section_G_Start() { /*@B 0x6006FB4*/ throw null; }
+		static Section_G_Start() { }
 		public class Description
 		{
 			public byte pokeID;
-			public Description() { /*@B 0x600B5A7*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{
@@ -105,7 +107,11 @@ namespace Dpr.Battle.Logic
 			public global::Pml.MonsNo monsno;
 			public ushort formno_before;
 			public ushort formno_after;
-			public resetFormTableElem(global::Pml.MonsNo monsno, ushort formno_before, ushort formno_after) { /*@B 0x600B5A9*/ throw null; }
+			public resetFormTableElem(global::Pml.MonsNo monsno, ushort formno_before, ushort formno_after) {
+				this.monsno = monsno;
+				this.formno_before = formno_before;
+				this.formno_after = formno_after;
+			}
 		}
 	}
 }

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_UpdatePosEffectParam : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_UpdatePosEffectParam(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F7B*/ throw null; }
+		public Section_FromEvent_UpdatePosEffectParam(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_UpdatePosEffectParam.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_UpdatePosEffectParam.Description description) {
 			GetBattleEnv().GetPosEffectStatus(description.pos, description.effect).SetEffectParam(description.effectParam);
 			ServerCommandPutter.SCQUE_OP_UpdatePosEffectParam(GetServerCommandQueue(), description.effect, description.pos, description.effectParam.Raw_param1);
@@ -13,7 +13,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BtlPokePos pos;
 			public global::Dpr.Battle.Logic.BtlPosEffect effect;
 			public global::Dpr.Battle.Logic.PosEffect.EffectParam effectParam;
-			public Description() { /*@B 0x600B59D*/ throw null; }
+			public Description() {
+				pos = BtlPokePos.POS_NULL;
+				effect = BtlPosEffect.BTL_POSEFF_NULL;
+				effectParam.Raw_param1 = 0;
+			}
 		}
 		public class Result
 		{

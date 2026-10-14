@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_CheckSpecialWazaAdditionalEffectOccur : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_CheckSpecialWazaAdditionalEffectOccur(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EEF*/ throw null; }
+		public Section_FromEvent_CheckSpecialWazaAdditionalEffectOccur(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_CheckSpecialWazaAdditionalEffectOccur.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_CheckSpecialWazaAdditionalEffectOccur.Description description) {
             result.isOccur = false;
             uint per = GetEventLauncher().Event_CheckSpecialWazaAdditionalPer(description.atkPokeID, description.defPokeID, description.defaultPer);
@@ -15,7 +15,11 @@ namespace Dpr.Battle.Logic
 			public byte atkPokeID;
 			public byte defPokeID;
 			public byte defaultPer;
-			public Description() { /*@B 0x600B539*/ throw null; }
+			public Description() {
+				atkPokeID = PokeID.INVALID;
+				defPokeID = PokeID.INVALID;
+				defaultPer = 0;
+			}
 		}
 		public class Result
 		{

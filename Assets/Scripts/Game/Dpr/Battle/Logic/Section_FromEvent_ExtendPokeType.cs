@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_ExtendPokeType : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_ExtendPokeType(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F0A*/ throw null; }
+		public Section_FromEvent_ExtendPokeType(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_ExtendPokeType.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_ExtendPokeType.Description description) {
             result.isSuccessed = false;
 
@@ -23,7 +23,11 @@ namespace Dpr.Battle.Logic
 			public byte pokeID;
 			public byte exType;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM.ExTypeCause exTypeCause;
-			public Description() { /*@B 0x600B549*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+				exType = 0;
+				exTypeCause = BTL_POKEPARAM.ExTypeCause.EXTYPE_CAUSE_NONE;
+			}
 		}
 		public class Result
 		{

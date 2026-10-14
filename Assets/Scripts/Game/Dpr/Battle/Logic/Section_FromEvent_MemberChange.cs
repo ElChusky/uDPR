@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_MemberChange : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_MemberChange(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F2C*/ throw null; }
+		public Section_FromEvent_MemberChange(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_MemberChange.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_MemberChange.Description description) {
 			result.isSucceeded = false;
 			BTL_POKEPARAM outPoke = GetPokeParam(description.outPokeID);
@@ -44,9 +44,13 @@ namespace Dpr.Battle.Logic
 			public byte outPokeID;
 			public bool isInterruptDisable;
 			public bool isDisplayTokuseiWindow;
-			public global::Dpr.Battle.Logic.StrParam startMessage;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B561*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam startMessage = new StrParam();
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				outPokeID = PokeID.INVALID;
+				isInterruptDisable = false;
+				isDisplayTokuseiWindow = false;
+			}
 		}
 		public class Result
 		{

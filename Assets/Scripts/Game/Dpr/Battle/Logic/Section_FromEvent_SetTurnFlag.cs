@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_SetTurnFlag : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_SetTurnFlag(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F5E*/ throw null; }
+		public Section_FromEvent_SetTurnFlag(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_SetTurnFlag.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_SetTurnFlag.Description description) {
 			result.isSuccessed = false;
 			BTL_POKEPARAM bpp = GetPokeParam(description.pokeID);
@@ -16,7 +16,10 @@ namespace Dpr.Battle.Logic
 		{
 			public byte pokeID;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM.TurnFlag flag;
-			public Description() { /*@B 0x600B587*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+				flag = BTL_POKEPARAM.TurnFlag.TURNFLG_MAX;
+			}
 		}
 		public class Result
 		{

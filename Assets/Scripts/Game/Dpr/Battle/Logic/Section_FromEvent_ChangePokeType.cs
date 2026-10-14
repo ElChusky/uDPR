@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_ChangePokeType : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_ChangePokeType(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006ED9*/ throw null; }
+		public Section_FromEvent_ChangePokeType(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_ChangePokeType.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_ChangePokeType.Description description) {
 			result.isSuccessed = false;
 
@@ -50,8 +50,15 @@ namespace Dpr.Battle.Logic
 			public bool isStandardMessageDisable;
 			public bool isFailMessageEnable;
 			public bool isDisplayTokuseiWindow;
-			public global::Dpr.Battle.Logic.StrParam changedMessage;
-			public Description() { /*@B 0x600B531*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam changedMessage = new StrParam();
+			public Description() {
+				pokeID = PokeID.INVALID;
+				nextType = (PokeTypePair)0;
+				exTypeCause = BTL_POKEPARAM.ExTypeCause.EXTYPE_CAUSE_NONE;
+				isStandardMessageDisable = false;
+				isFailMessageEnable = false;
+				isDisplayTokuseiWindow = false;
+			}
 		}
 		public class Result
 		{

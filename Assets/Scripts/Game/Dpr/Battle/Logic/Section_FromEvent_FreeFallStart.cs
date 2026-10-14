@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_FreeFallStart : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_FreeFallStart(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F12*/ throw null; }
+		public Section_FromEvent_FreeFallStart(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_FreeFallStart.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_FreeFallStart.Description description) {
 			result.isSucceeded = false;
 			result.isFailMessageDisplayed = false;
@@ -80,7 +80,11 @@ namespace Dpr.Battle.Logic
 			public byte attackerID;
 			public byte targetID;
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
-			public Description() { /*@B 0x600B54F*/ throw null; }
+			public Description() {
+				wazaParam = null;
+				attackerID = PokeID.INVALID;
+				targetID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

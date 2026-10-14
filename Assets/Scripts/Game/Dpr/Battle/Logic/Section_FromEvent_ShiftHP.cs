@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_ShiftHP : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_ShiftHP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F66*/ throw null; }
+		public Section_FromEvent_ShiftHP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_ShiftHP.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_ShiftHP.Description description) {
 			result.isSuccessed = false;
 			for (int i = 0; i < description.targetPokeCount; i++)
@@ -32,10 +32,16 @@ namespace Dpr.Battle.Logic
 			public bool isEffectDisable;
 			public bool isItemReactionDisable;
 			public byte targetPokeCount;
-			public byte[] targetPokeID;
-			public int[] volume;
+			public byte[] targetPokeID = new byte[5];
+			public int[] volume = new int[5];
 			public global::Dpr.Battle.Logic.DamageCause damageCause;
-			public Description() { /*@B 0x600B58F*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+				isEffectDisable = false;
+				isItemReactionDisable = false;
+				targetPokeCount = 0;
+				damageCause = DamageCause.OTHER;
+			}
 		}
 		public class Result
 		{

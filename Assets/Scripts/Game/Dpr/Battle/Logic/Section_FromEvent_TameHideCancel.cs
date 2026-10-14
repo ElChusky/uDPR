@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_TameHideCancel : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_TameHideCancel(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F74*/ throw null; }
+		public Section_FromEvent_TameHideCancel(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_TameHideCancel.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_TameHideCancel.Description description) {
 			result.isSucceeded = false;
 			BTL_POKEPARAM poke = GetPokeParam(description.targetPokeID);
@@ -26,8 +26,11 @@ namespace Dpr.Battle.Logic
 		{
 			public byte targetPokeID;
 			public global::Dpr.Battle.Logic.ContFlag flag;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B597*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				targetPokeID = PokeID.INVALID;
+				flag = ContFlag.CONTFLG_NULL;
+			}
 		}
 		public class Result
 		{

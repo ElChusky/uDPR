@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_SwapItem : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_SwapItem(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F6C*/ throw null; }
+		public Section_FromEvent_SwapItem(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_SwapItem.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_SwapItem.Description description) {
 			result.isSucceeded = false;
 			BTL_POKEPARAM target = GetPokeParam(description.targetPokeID);
@@ -51,10 +51,15 @@ namespace Dpr.Battle.Logic
 			public byte targetPokeID;
 			public bool isIncRecordCount_StealItemFromWildPoke;
 			public bool isDisplayTokuseiWindow;
-			public global::Dpr.Battle.Logic.StrParam successMessage1;
-			public global::Dpr.Battle.Logic.StrParam successMessage2;
-			public global::Dpr.Battle.Logic.StrParam successMessage3;
-			public Description() { /*@B 0x600B593*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage1 = new StrParam();
+			public global::Dpr.Battle.Logic.StrParam successMessage2 = new StrParam();
+			public global::Dpr.Battle.Logic.StrParam successMessage3 = new StrParam();
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				targetPokeID = PokeID.INVALID;
+				isIncRecordCount_StealItemFromWildPoke = false;
+				isDisplayTokuseiWindow = false;
+			}
 		}
 		public class Result
 		{
