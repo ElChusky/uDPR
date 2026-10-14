@@ -2,15 +2,15 @@
 public class FieldEventDoorEntity : global::FieldEventEntity
 {
 	public global::FieldDoor.StartVectol startVectol;
-	public string connectionName;
+	public string connectionName = "";
 	public global::DoorType doorType;
-	public bool doorEnable;
-	public global::FieldDoor.CallLabel callLabel;
-	public global::FieldDoor.ExitLabel exitLabel;
+	public bool doorEnable = true;
+	public global::FieldDoor.CallLabel callLabel = global::FieldDoor.CallLabel.none;
+	public global::FieldDoor.ExitLabel exitLabel = global::FieldDoor.ExitLabel.none;
 	[global::UnityEngine.HideInInspector]
 	public int[] locatorArray;
 	[global::UnityEngine.HideInInspector]
 	public int[] mdIndexArray;
-	public override string entityType { get { /*@B 0x6000676*/ throw null; } }
-	public FieldEventDoorEntity() { /*@B 0x6000677*/ throw null; }
+	public override string entityType { get { return "FieldEventDoorEntity"; } }
+	public FieldEventDoorEntity() { }
 }

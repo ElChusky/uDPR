@@ -2,6 +2,6 @@
 public class FieldEventWallEntity : global::FieldEventEntity
 {
 	public global::FieldWall.HimituAna AnaStatus;
-	public override string entityType { get { /*@B 0x60006A4*/ throw null; } }
-	public FieldEventWallEntity() { /*@B 0x60006A5*/ throw null; }
+	public override string entityType { get { return "FieldEventWallEntity"; } }
+	public FieldEventWallEntity() { }
 }

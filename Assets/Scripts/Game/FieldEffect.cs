@@ -8,10 +8,10 @@ public class FieldEffect : global::EffectActivator
 	private global::EffectFieldID _effectId;
 	private global::Effect.EffectInstance _effectInstance;
 	private global::Effect.EffectData _effectData;
-	private static global::System.Collections.Generic.List<global::FieldEffect> requests;
-	public global::Effect.EffectManager.FieldLoadParam param { get { /*@B 0x600093A*/ throw null; } }
+	private static global::System.Collections.Generic.List<global::FieldEffect> requests = new global::System.Collections.Generic.List<global::FieldEffect>();
+	public global::Effect.EffectManager.FieldLoadParam param { get { return EffectManager.Instance.dbEffects.FieldEffectData[(int)_effectId]; } }
 	public global::Effect.EffectInstance effectInstance { get { return this._effectInstance; } set { this._effectInstance = value; } }
-	public static void AppendRequest(global::FieldEffect fieldEffect) { /*@B 0x600093D*/ throw null; }
+	public static void AppendRequest(global::FieldEffect fieldEffect) { requests.Add(fieldEffect); }
 	public static global::System.Collections.IEnumerator DispathRequests() {
         // param getter inlined in the <>c lambda (its flag 0x4cbb2de tested @01791eb0).
         EffectManager.FieldLoadParam[] effectParams = requests.Select(x => x.param).ToArray();
@@ -60,5 +60,5 @@ public class FieldEffect : global::EffectActivator
         _effectInstance = null;
     }
 	public FieldEffect() { }
-	static FieldEffect() { /*@B 0x6000942*/ throw null; }
+	static FieldEffect() { }
 }

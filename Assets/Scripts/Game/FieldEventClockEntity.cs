@@ -2,6 +2,15 @@
 public class FieldEventClockEntity : global::FieldEventEntity
 {
 	public global::UnityEngine.Transform HourHand;
-	protected override void OnUpdate(float deltaTime) { /*@B 0x6000674*/ throw null; }
-	public FieldEventClockEntity() { /*@B 0x6000675*/ throw null; }
+	protected override void OnUpdate(float deltaTime) {
+		base.OnUpdate(deltaTime);
+		if (HourHand != null) {
+			float t = global::UnityEngine.Mathf.InverseLerp(0f, 12f, global::UnityEngine.Mathf.Repeat(global::GameManager.elapsedTimeOfDay, 12f));
+			float angle = global::UnityEngine.Mathf.Lerp(0f, 360f, t);
+			global::UnityEngine.Vector3 euler = HourHand.eulerAngles;
+			euler.z = angle;
+			HourHand.eulerAngles = euler;
+		}
+	}
+	public FieldEventClockEntity() { }
 }

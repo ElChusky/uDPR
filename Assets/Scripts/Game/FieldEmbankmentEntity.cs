@@ -6,12 +6,83 @@ public class FieldEmbankmentEntity : global::FieldEventEntity
 	private global::FieldCharacterEntity character;
 	private bool isCharacterOut;
 	private bool isPlayingAnimeOut;
-	protected override void Awake() { /*@B 0x600066E*/ throw null; }
-	protected override void OnUpdate(float deltaTime) { /*@B 0x600066F*/ throw null; }
-	public void UpdateEmbankment() { /*@B 0x6000670*/ throw null; }
-	public bool CharacterOut(bool encount) { /*@B 0x6000671*/ throw null; }
-	private void SetCharacterActive(bool isActive) { /*@B 0x6000672*/ throw null; }
-	public FieldEmbankmentEntity() { /*@B 0x6000673*/ throw null; }
+	protected override void Awake() {
+		base.Awake();
+	}
+	protected override void OnUpdate(float deltaTime) {
+		base.OnUpdate(deltaTime);
+		UpdateEmbankment();
+	}
+	public void UpdateEmbankment() {
+		if (character == null) {
+			global::FieldCharacterEntity[] characters = global::EntityManager.fieldCharacters;
+			for (int i = 0; i < characters.Length; i++) {
+				global::FieldCharacterEntity chara = characters[i];
+				if (chara != null) {
+					global::UnityEngine.Transform charaTransform = chara.transform;
+					if (transform.position == charaTransform.position)
+						character = chara;
+				}
+			}
+		}
+		if (character != null) {
+			if (isCharacterOut) {
+				if (transform.localScale != global::UnityEngine.Vector3.zero)
+					SetCharacterActive(true);
+				if (isPlayingAnimeOut) {
+					if (!character.GetAnimationPlayer().IsPlayingEnd)
+						return;
+					isPlayingAnimeOut = false;
+					character.GetAnimationPlayer().forcePlay = false;
+					character.GetAnimationPlayer().Play(0, 0f, 0f);
+					global::PlayerWork.isPlayerInputActive = true;
+					if (!global::TrainerWork.GetWinFlag(character.EventParams.TrainerID))
+						global::Dpr.EvScript.EvDataManager.Instanse.ForceEyeEncount(character.EventParams.TrainerID);
+				}
+				gameObject.SetActive(false);
+			}
+			else if (character.gameObject.activeSelf) {
+				SetCharacterActive(false);
+			}
+		}
+	}
+	public bool CharacterOut(bool encount) {
+		if (isCharacterOut)
+			return false;
+		if (character == null)
+			return false;
+		if (global::TrainerWork.GetWinFlag(character.EventParams.TrainerID) == encount)
+			return false;
+		isCharacterOut = true;
+		SetCharacterActive(true);
+		global::UnityEngine.Vector3 direction = global::EntityManager.activeFieldPlayer.gameObject.transform.position - character.gameObject.transform.position;
+		character.yawAngle = global::UnityEngine.Quaternion.LookRotation(direction).eulerAngles.y;
+		switch (embankmentType) {
+			case EmbankmentType.GROUND:
+				global::FieldManager.Instance.CallEffect(global::EffectFieldID.EF_F_CHARA_OUT_GROUND, transform, null, null);
+				break;
+			case EmbankmentType.SNOW:
+				global::FieldManager.Instance.CallEffect(global::EffectFieldID.EF_F_CHARA_OUT_SNOW, transform, null, null);
+				break;
+			case EmbankmentType.SAND:
+				global::FieldManager.Instance.CallEffect(global::EffectFieldID.EF_F_CHARA_OUT_SAND, transform, null, null);
+				break;
+		}
+		global::Audio.AudioManager.Instance.PlaySe(global::AK.EVENTS.S_FI243, null);
+		isPlayingAnimeOut = true;
+		character.GetAnimationPlayer().Play(19, 0f, 0f);
+		character.GetAnimationPlayer().forcePlay = true;
+		global::PlayerWork.isPlayerInputActive = false;
+		global::EntityManager.activeFieldPlayer.PlayIdle();
+		return true;
+	}
+	private void SetCharacterActive(bool isActive) {
+		if (character != null) {
+			transform.localScale = isActive ? global::UnityEngine.Vector3.zero : global::UnityEngine.Vector3.one;
+			character.gameObject.SetActive(isActive);
+		}
+	}
+	public FieldEmbankmentEntity() { }
 	public enum EmbankmentType
 	{
 		NONE = 0,
