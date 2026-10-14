@@ -4026,16 +4026,100 @@ namespace Dpr.EvScript
 
             return false;
         }
-		private void EvCmdInfoBoardMake(global::Dpr.EvScript.EvScriptData ev) { /*@B 0x6008C18*/ throw null; }
+		private void EvCmdInfoBoardMake(global::Dpr.EvScript.EvScriptData ev) {
+            EvData.Command command = ev.GetScript.Commands[ev.CommandIndex];
+            string[] names = GetArgString(ev, command.Arg[1]).Split(new char[] { '%' });
+            string type = GetArgString(ev, command.Arg[2]);
+            MsgWindowType windowType;
+            if (type == MsgWindowType.DEFAULT.ToString())
+                windowType = MsgWindowType.DEFAULT;
+            else if (type == MsgWindowType.NAME_PLATE.ToString())
+                windowType = MsgWindowType.NAME_PLATE;
+            else if (type == MsgWindowType.BOARD_TYPE_TOWN.ToString())
+                windowType = MsgWindowType.BOARD_TYPE_TOWN;
+            else if (type == MsgWindowType.BOARD_TYPE_ROAD.ToString())
+                windowType = MsgWindowType.BOARD_TYPE_ROAD;
+            else if (type == MsgWindowType.BOARD_TYPE_POST.ToString())
+                windowType = MsgWindowType.BOARD_TYPE_POST;
+            else if (type == MsgWindowType.BOARD_TYPE_INFO.ToString())
+                windowType = MsgWindowType.BOARD_TYPE_INFO;
+            else if (type == MsgWindowType.ITEM.ToString())
+                windowType = MsgWindowType.ITEM;
+            else
+                windowType = MsgWindowType.BOARD_TYPE_TOWN;
+
+            _msgOpenParam.MsbtFile = names[0];
+            _msgOpenParam.Label = names[1];
+            _msgOpenParam.WindowType = windowType;
+            _msgOpenParam.Input = true;
+            _msgOpenParam.EndType = MsgEndType.Manual;
+            _msgOpenParam.PlayTextFeedSe = command.Arg.Count >= 4 && GetArgInt(command.Arg[3]) == 1;
+            _boardState = BOARD.BOARD_REQ_ADD;
+        }
 		private void Cmd_If_Jump(string type, string label) {
             IfJump_Call(true, type, label);
         }
-		private bool Cmd_TalkObjStart() { /*@B 0x6008C1A*/ throw null; }
-		private bool Cmd_TalkObjStartTurnNot() { /*@B 0x6008C1B*/ throw null; }
+		private bool Cmd_TalkObjStart() {
+            switch (_procCmd)
+            {
+                case EvCmdID.NAME._TURN_HERO_TALK_OBJ:
+                    NeckRotateHero();
+                    NeckRotateTarget(false);
+                    _procCmd = EvCmdID.NAME._NONE_USE_NUMBER;
+                    return true;
+                case EvCmdID.NAME._OBJ_PAUSE_ALL:
+                    Cmd_ObjPauseAll();
+                    _procCmd = EvCmdID.NAME._TURN_HERO_TALK_OBJ;
+                    return false;
+                case EvCmdID.NAME._SE_PLAY:
+                    PlaySe("UI_common_decide");
+                    _procCmd = EvCmdID.NAME._OBJ_PAUSE_ALL;
+                    return false;
+                default:
+                    _procCmd = EvCmdID.NAME._SE_PLAY;
+                    return false;
+            }
+        }
+		private bool Cmd_TalkObjStartTurnNot() {
+            switch (_procCmd)
+            {
+                case EvCmdID.NAME._TURN_HERO_TALK_OBJ:
+                    NeckRotateHero();
+                    NeckRotateTarget(true);
+                    _procCmd = EvCmdID.NAME._NONE_USE_NUMBER;
+                    return true;
+                case EvCmdID.NAME._OBJ_PAUSE_ALL:
+                    Cmd_ObjPauseAll();
+                    _procCmd = EvCmdID.NAME._TURN_HERO_TALK_OBJ;
+                    return false;
+                case EvCmdID.NAME._SE_PLAY:
+                    PlaySe("UI_common_decide");
+                    _procCmd = EvCmdID.NAME._OBJ_PAUSE_ALL;
+                    return false;
+                default:
+                    _procCmd = EvCmdID.NAME._SE_PLAY;
+                    return false;
+            }
+        }
 		private bool Cmd_LastKeyWait() {
             return true;
         }
-		private bool Cmd_TalkStart() { /*@B 0x6008C1D*/ throw null; }
+		private bool Cmd_TalkStart() {
+            switch (_procCmd)
+            {
+                case EvCmdID.NAME._OBJ_PAUSE_ALL:
+                    Cmd_ObjPauseAll();
+                    _procCmd = EvCmdID.NAME._NONE_USE_NUMBER;
+                    return true;
+                case EvCmdID.NAME._SE_PLAY:
+                    PlaySe("UI_common_decide");
+                    _procCmd = EvCmdID.NAME._OBJ_PAUSE_ALL;
+                    return false;
+                default:
+                    _procCmd = EvCmdID.NAME._SE_PLAY;
+                    return false;
+            }
+        }
 		public bool Cmd_ObjPauseAll() {
             foreach (var moveCode in FieldObjectMoveCodes)
             {
@@ -4166,9 +4250,82 @@ namespace Dpr.EvScript
             CmdMapChange(ev);
             return true;
         }
-		private bool StackMapChange() { /*@B 0x6008C27*/ throw null; }
-		private bool YesNoWindow(global::Dpr.EvScript.EvScriptData ev) { /*@B 0x6008C28*/ throw null; }
-		private bool CustumWindow(global::EvData.Command data, bool wordSet = false) { /*@B 0x6008C29*/ throw null; }
+		private bool StackMapChange() {
+            if (string.IsNullOrEmpty(_mapChangeZoneID))
+                return false;
+
+            XLSXContent.MapInfo.SheetZoneData zoneData = null;
+            for (int i = 0; i < GameManager.mapInfo.ZoneData.Length; i++)
+            {
+                if (GameManager.mapInfo.ZoneData[i].ZoneID.ToString() == _mapChangeZoneID)
+                {
+                    zoneData = GameManager.mapInfo.ZoneData[i];
+                    break;
+                }
+            }
+
+            bool result = false;
+            if (zoneData != null)
+            {
+                PlayerWork.SetTransitionZone(zoneData.ZoneID, _mapChangeIndex);
+                result = true;
+            }
+
+            _mapChangeZoneID = null;
+            return result;
+        }
+		private bool YesNoWindow(global::Dpr.EvScript.EvScriptData ev) {
+            EvData.Command data = ev.GetScript.Commands[ev.CommandIndex];
+            bool useCancel = true;
+            if (data.Arg.Count >= 3)
+                useCancel = GetArgInt(data.Arg[2]) == 1;
+
+            switch (_talkStart)
+            {
+                case TalkState.Init:
+                    _talkStart = TalkState.EndWait;
+                    MsgWindowManager.OpenYesNoMenu((int i) =>
+                    {
+                        SetWork(data.Arg[1].data, i);
+                        _talkStart = TalkState.CloseWait;
+                    }, global::Dpr.UI.ContextMenuWindow.CursorType.Arrow, useCancel, true, null, 1570109472u);
+                    break;
+                case TalkState.CloseWait:
+                    _talkStart = TalkState.Init;
+                    return true;
+            }
+
+            return false;
+        }
+		private bool CustumWindow(global::EvData.Command data, bool wordSet = false) {
+            switch (_talkStart)
+            {
+                case TalkState.Init:
+                {
+                    _talkStart = TalkState.EndWait;
+                    int count = data.Arg.Count;
+                    if (wordSet)
+                        MsgWindowManager.OpenCustomMenu(_custumWindow_Labels.ToArray(), OnSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType.Arrow, count < 3, 0, null, 1570109472u);
+                    else
+                        MsgWindowManager.OpenCustomMenu(_custumWindow_msbt, _custumWindow_Labels.ToArray(), OnSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType.Arrow, count < 3, 0, null, 1570109472u);
+                    break;
+                }
+                case TalkState.CloseWait:
+                    _custumWindow_msbt = "";
+                    _custumWindow_Labels.Clear();
+                    _custumWindow_RetIndex.Clear();
+                    _talkStart = TalkState.Init;
+                    return true;
+            }
+
+            return false;
+
+            void OnSelectChoices(int i)
+            {
+                SetWork(data.Arg[1].data, _custumWindow_RetIndex[i]);
+                _talkStart = TalkState.CloseWait;
+            }
+        }
 		private bool CmdPlayerMoveGridCenter(global::EvData.Command data) {
             int dir = GetArgInt(data.Arg[1]);
             var player = EntityManager.activeFieldPlayer;
@@ -4344,7 +4501,25 @@ namespace Dpr.EvScript
             }
             return true;
         }
-		private global::Dpr.Trainer.TrainerID GetArgTrainerID(global::Dpr.EvScript.EvScriptData ev, global::EvData.Aregment arg) { /*@B 0x6008C34*/ throw null; }
+		private global::Dpr.Trainer.TrainerID GetArgTrainerID(global::Dpr.EvScript.EvScriptData ev, global::EvData.Aregment arg) {
+            if (arg.argType == global::EvData.ArgType.Float)
+                return (TrainerID)(int)SmartPoint.AssetAssistant.UnityExtensions.FloatBits.ToFloat(arg.data);
+
+            if (arg.argType == global::EvData.ArgType.Work)
+                return (TrainerID)FlagWork.GetWork((EvWork.WORK_INDEX)arg.data);
+
+            if (arg.argType == global::EvData.ArgType.String)
+            {
+                string name = ev.EvData.GetString(arg.data);
+                for (TrainerID id = TrainerID.NONE; id < TrainerID.MAX; id++)
+                {
+                    if (name == id.ToString())
+                        return id;
+                }
+            }
+
+            return TrainerID.NONE;
+        }
 		private bool CmdTrainerBtlSet(global::Dpr.EvScript.EvScriptData ev) {
             EvData.Command command = ev.GetScript.Commands[ev.CommandIndex];
             TrainerID enemy1 = GetArgTrainerID(ev, command.Arg[1]);
@@ -4390,8 +4565,93 @@ namespace Dpr.EvScript
             node.gameObject.SetActive(flag);
             return true;
         }
-		private bool CmdFirstPokeSelectProc(global::Dpr.EvScript.EvScriptData ev) { /*@B 0x6008C39*/ throw null; }
-		private bool UpdateEvdata(float time, bool sp_script = false) { /*@B 0x6008C3A*/ throw null; }
+		private bool CmdFirstPokeSelectProc(global::Dpr.EvScript.EvScriptData ev) {
+            switch (_talkStart)
+            {
+                case TalkState.Init:
+                    _talkStart = TalkState.EndWait;
+                    var demo = new global::Dpr.Demo.Demo_Gosanke();
+                    demo.OnEndDemo = () => { _talkStart = TalkState.CloseWait; };
+                    FieldCanvas.PlayDemoOrStock(demo);
+                    break;
+                case TalkState.CloseWait:
+                    _custumWindow_msbt = "";
+                    _custumWindow_Labels.Clear();
+                    _custumWindow_RetIndex.Clear();
+                    _talkStart = TalkState.Init;
+                    return true;
+            }
+
+            return false;
+        }
+		private bool UpdateEvdata(float time, bool sp_script = false) {
+            if (_eventListIndex < 0)
+                return false;
+
+            TairyouHasseiPokeManager.ForceStopObject();
+            TairyouHasseiPokeManager.ForceStop = true;
+            _deltatime = time;
+
+            int loopLimit = 5001;
+            do
+            {
+                _evData = _eventList[_eventListIndex];
+                _evScript = _evData.GetScript;
+                _evCommand = _evScript.Commands[_evData.CommandIndex];
+                _evArg = _evCommand.Arg.ToArray();
+                int cmd = _evArg[0].data;
+                if (--loopLimit == 0)
+                {
+                    SetCloudScaleEnd();
+                    _eventListIndex = -1;
+                    return true;
+                }
+
+                int listIndex = _eventListIndex;
+                int labelIndex = _evData.LabelIndex;
+                if (!RunEvCmd(cmd))
+                    return true;
+
+                if (listIndex == _eventListIndex && _eventList[listIndex].LabelIndex == labelIndex)
+                    _evData.CommandIndex++;
+
+                VariableReset();
+            }
+            while (_eventListIndex >= 0 && _eventList[_eventListIndex].GetScript.Commands.Count > _eventList[_eventListIndex].CommandIndex);
+
+            EventEnd();
+            if (!StackMapChange() && !_isCall_TrainerBtl && _eventListIndex < 0 && _battleReturnData.EventListIndex < 0)
+            {
+                if (!sp_script)
+                {
+                    if (EntityManager.activeFieldPlayer != null)
+                    {
+                        _eventEndPosition = EntityManager.activeFieldPlayer.gridPosition;
+                        if (Fader.fillPower <= 0f)
+                            PlayerInputActive(true, true);
+                        else
+                            _isFadeEventReturnInput = true;
+                    }
+
+                    for (int i = 0; i < _talkTrinerIndex.Length; i++)
+                        _talkTrinerIndex[i] = -1;
+
+                    for (int i = 0; i < _eyeEncountTarget.Length; i++)
+                        _eyeEncountTarget[i] = null;
+                }
+
+                TairyouHasseiPokeManager.ForceStop = false;
+                _callQueue.Clear();
+            }
+
+            if (_eventEndDelegate != null)
+            {
+                _eventEndDelegate();
+                _eventEndDelegate = null;
+            }
+
+            return true;
+        }
 		private bool EvCmdNop() {
             return EvCmdEnd();
         }
@@ -4402,7 +4662,19 @@ namespace Dpr.EvScript
             SetEventListIndex(-1);
             return true;
         }
-		private bool EvCmdTimeWait() { /*@B 0x6008C3E*/ throw null; }
+		private bool EvCmdTimeWait() {
+            float frame = GetArgFloat(_evArg[1]);
+            int work = _evArg[2].data;
+            if (_timeWait <= frame * 0.0333333351f)
+            {
+                FlagWork.SetWork((EvWork.WORK_INDEX)work, 1);
+                _timeWait += _deltatime;
+                return false;
+            }
+
+            FlagWork.SetWork((EvWork.WORK_INDEX)work, 0);
+            return true;
+        }
 		private bool EvCmdLoadRegValue() {
             return true;
         }
@@ -4488,10 +4760,36 @@ namespace Dpr.EvScript
             else
                 return EvCmdEnd();
         }
-		private bool EvCmdIfJump() { /*@B 0x6008C58*/ throw null; }
-		private bool EvCmdIfCall() { /*@B 0x6008C59*/ throw null; }
-		private bool EvMacro_IFVAL_JUMP() { /*@B 0x6008C5A*/ throw null; }
-		private bool EvMacro_IFVAL_CALL() { /*@B 0x6008C5B*/ throw null; }
+		private bool EvCmdIfJump() {
+            string eq = GetArgString(_evData, _evArg[1]);
+            string label = GetArgString(_evData, _evArg[2]);
+            IfJump_Call(true, eq, label);
+            return true;
+        }
+		private bool EvCmdIfCall() {
+            string eq = GetArgString(_evData, _evArg[1]);
+            string label = GetArgString(_evData, _evArg[2]);
+            IfJump_Call(false, eq, label);
+            return true;
+        }
+		private bool EvMacro_IFVAL_JUMP() {
+            int val1 = GetArgInt(_evArg[1]);
+            string eq = GetArgString(_evData, _evArg[2]);
+            int val2 = GetArgInt(_evArg[3]);
+            string label = GetArgString(_evData, _evArg[4]);
+            if (CommandEquals(eq, val1, val2))
+                JumpLabel(label, null);
+            return true;
+        }
+		private bool EvMacro_IFVAL_CALL() {
+            int val1 = GetArgInt(_evArg[1]);
+            string eq = GetArgString(_evData, _evArg[2]);
+            int val2 = GetArgInt(_evArg[3]);
+            string label = GetArgString(_evData, _evArg[4]);
+            if (CommandEquals(eq, val1, val2))
+                CallLabel(label);
+            return true;
+        }
 		private bool EvMacro_IFWK_JUMP() {
             return EvMacro_IFVAL_JUMP();
         }
@@ -4502,15 +4800,31 @@ namespace Dpr.EvScript
             _switch_work_index = _evArg[1].data;
             return true;
         }
-		private bool EvMacro_CASE_JUMP() { /*@B 0x6008C5F*/ throw null; }
-		private bool EvMacro_CASE_CANCEL() { /*@B 0x6008C60*/ throw null; }
+		private bool EvMacro_CASE_JUMP() {
+            int value = FlagWork.GetWork((EvWork.WORK_INDEX)_switch_work_index);
+            int caseValue = GetArgInt(_evArg[1]);
+            string label = GetArgString(_evData, _evArg[2]);
+            if (value == caseValue)
+                JumpLabel(label, null);
+            return true;
+        }
+		private bool EvMacro_CASE_CANCEL() {
+            EvCmdCmpMain(EvWork.WORK_INDEX.SCWK_REG0, EvWork.WORK_INDEX.EV_WIN_B_CANCEL);
+            string label = GetArgString(_evData, _evArg[1]);
+            IfJump_Call(true, "EQ", label);
+            return true;
+        }
 		private bool EvCmdTimeWaitIconAdd() {
             return true;
         }
 		private bool EvCmdTimeWaitIconDel() {
             return true;
         }
-		private bool EvCmdFlagSet() { /*@B 0x6008C63*/ throw null; }
+		private bool EvCmdFlagSet() {
+            if (SetFlag(_evArg[1].data, true) == EvWork.FLAG_INDEX.FLAG_STOP_ZONE_PROGRAM)
+                FieldManager.Instance.eventTownMapPos = EntityManager.activeFieldPlayer.worldPosition;
+            return true;
+        }
 		private bool EvMacro_ARRIVE_FLAG_SET() {
             SetSysFlag(_evArg[1].data, true);
             return true;
@@ -4528,11 +4842,51 @@ namespace Dpr.EvScript
 
             return true;
         }
-		private bool EvMacro_IF_FLAGON_JUMP() { /*@B 0x6008C67*/ throw null; }
-		private bool EvMacro_IF_FLAGOFF_JUMP() { /*@B 0x6008C68*/ throw null; }
-		private bool EvMacro_IF_FLAGON_CALL() { /*@B 0x6008C69*/ throw null; }
-		private bool EvMacro_IF_FLAGOFF_CALL() { /*@B 0x6008C6A*/ throw null; }
-		private int GetIF_FLAG(global::EvData.Aregment arg) { /*@B 0x6008C6B*/ throw null; }
+		private bool EvMacro_IF_FLAGON_JUMP() {
+            string label = GetArgString(_evData, _evArg[2]);
+            if (GetIF_FLAG(_evArg[1]) == 1)
+            {
+                _cmp_flag = CmpResult.EQUAL;
+                IfJump_Call(true, "FLGON", label);
+            }
+            return true;
+        }
+		private bool EvMacro_IF_FLAGOFF_JUMP() {
+            string label = GetArgString(_evData, _evArg[2]);
+            if (GetIF_FLAG(_evArg[1]) == 0)
+            {
+                _cmp_flag = CmpResult.MINUS;
+                IfJump_Call(true, "FLGOFF", label);
+            }
+            return true;
+        }
+		private bool EvMacro_IF_FLAGON_CALL() {
+            string label = GetArgString(_evData, _evArg[2]);
+            if (GetIF_FLAG(_evArg[1]) == 1)
+            {
+                _cmp_flag = CmpResult.EQUAL;
+                IfJump_Call(false, "FLGON", label);
+            }
+            return true;
+        }
+		private bool EvMacro_IF_FLAGOFF_CALL() {
+            string label = GetArgString(_evData, _evArg[2]);
+            if (GetIF_FLAG(_evArg[1]) == 0)
+            {
+                _cmp_flag = CmpResult.MINUS;
+                IfJump_Call(false, "FLGOFF", label);
+            }
+            return true;
+        }
+		private int GetIF_FLAG(global::EvData.Aregment arg) {
+            if (arg.argType == global::EvData.ArgType.SysFlag)
+                return GetSysFlag(arg.data);
+
+            if (arg.argType == global::EvData.ArgType.Flag)
+                return GetFlag(arg.data);
+
+            return -100;
+        }
 		private bool EvCmdFlagCheckWk() { /*@B 0x6008C6C*/ throw null; }
 		private bool EvCmdFlagSetWk() {
             int flagNo = GetArgInt(_evArg[1]);
