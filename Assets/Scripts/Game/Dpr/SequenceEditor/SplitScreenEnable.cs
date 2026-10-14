@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public bool isEnable;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MASK_TEX_PATTERN maskPatt;
-		public SplitScreenEnable(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A87*/ throw null; }
+		public SplitScreenEnable(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			isEnable = Macro.ParseBool(macro.GetValue("isEnable"), 0);
+			maskPatt = Macro.Parse_SEQ_DEF_MASK_TEX_PATTERN(macro.GetValue("maskPatt"));
+		}
 	}
 }

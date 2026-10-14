@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SpecialWaitSequence : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_WAIT waitType;
-		public SpecialWaitSequence(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A43*/ throw null; }
+		public SpecialWaitSequence(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			waitType = Macro.Parse_SEQ_DEF_WAIT(macro.GetValue("waitType"));
+		}
 	}
 }

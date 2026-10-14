@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER_ADD trgTra;
 		public bool model;
 		public bool shadow;
-		public SpecialTrainerRenderVisible(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A5E*/ throw null; }
+		public SpecialTrainerRenderVisible(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trgRender = Macro.Parse_SEQ_DEF_RENDERER_TYPE(macro.GetValue("trgRender"));
+			trgTra = Macro.Parse_SEQ_DEF_TRAINER_ADD(macro.GetValue("trgTra"));
+			model = Macro.ParseBool(macro.GetValue("model"), 0);
+			shadow = Macro.ParseBool(macro.GetValue("shadow"), 0);
+		}
 	}
 }

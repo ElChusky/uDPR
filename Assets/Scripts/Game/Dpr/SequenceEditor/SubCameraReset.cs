@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SubCameraReset : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public SubCameraReset(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600498D*/ throw null; }
+		public SubCameraReset(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

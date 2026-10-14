@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER_ADD trg;
 		public string state;
 		public bool flg;
-		public TrainerChangeMotionBool(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A31*/ throw null; }
+		public TrainerChangeMotionBool(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER_ADD(macro.GetValue("trg"));
+			state = Macro.ParseString(macro.GetValue("state"));
+			flg = Macro.ParseBool(macro.GetValue("flg"));
+		}
 	}
 }

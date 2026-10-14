@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER trg;
 		public float speed;
-		public TrainerChangeMotionSpeed(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A34*/ throw null; }
+		public TrainerChangeMotionSpeed(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			speed = Macro.ParseFloat(macro.GetValue("speed"));
+		}
 	}
 }

@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS posTrg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public SubCameraRotatePosPoke(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004991*/ throw null; }
+		public SubCameraRotatePosPoke(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			posTrg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("posTrg"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }
