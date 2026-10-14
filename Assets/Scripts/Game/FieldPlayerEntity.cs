@@ -117,52 +117,773 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 	private bool isSwampLoopEffect;
 	private const float WaterFallUpCheckDistance = 0.7f;
 	private const float WaterFallDownCheckDistance = 0.7f;
-	public override string entityType { get { /*@B 0x60006F5*/ throw null; } }
-	public global::UnityEngine.Renderer[] rodRenderers { set { /*@B 0x60006F6*/ throw null; } }
-	public global::UnityEngine.Renderer podRenderer { get { return this._podRenderer; } set { /*@B 0x60006F8*/ throw null; } }
-	public global::UnityEngine.GameObject meshGroup { set { /*@B 0x60006F9*/ throw null; } }
-	public global::UnityEngine.GameObject bicycleObject { get { return this._bicycleObject; } set { /*@B 0x60006FB*/ throw null; } }
-	public global::UnityEngine.Renderer beadaruRenderer { set { /*@B 0x60006FC*/ throw null; } }
-	public global::UnityEngine.Renderer mukuhawkRenderer { set { /*@B 0x60006FD*/ throw null; } }
-	public global::UnityEngine.Color[] bicycleColors { get { /*@B 0x60006FE*/ throw null; } set { /*@B 0x60006FF*/ throw null; } }
-	public global::UnityEngine.Renderer bicycleRenderer { get { return this._bicycleRenderer; } set { /*@B 0x6000701*/ throw null; } }
+	public override string entityType { get { return "FieldPlayer"; } }
+	public global::UnityEngine.Renderer[] rodRenderers { set { _rodRenderers = value; } }
+	public global::UnityEngine.Renderer podRenderer { get { return this._podRenderer; } set { _podRenderer = value; } }
+	public global::UnityEngine.GameObject meshGroup { set { _meshGroup = value; } }
+	public global::UnityEngine.GameObject bicycleObject { get { return this._bicycleObject; } set { _bicycleObject = value; } }
+	public global::UnityEngine.Renderer beadaruRenderer { set { _beadaruRenderer = value; } }
+	public global::UnityEngine.Renderer mukuhawkRenderer { set { _mukuhawkRenderer = value; } }
+	public global::UnityEngine.Color[] bicycleColors { get { return _bicycleColors; } set { _bicycleColors = value; } }
+	public global::UnityEngine.Renderer bicycleRenderer { get { return this._bicycleRenderer; } set { _bicycleRenderer = value; } }
 	public int bicycleMaterialIndex { get { return this._bicycleMaterialIndex; } set { this._bicycleMaterialIndex = value; } }
 	public int bicycleColorIndex { get; set; }
-	public int hatVariation { get { /*@B 0x6000707*/ throw null; } set { /*@B 0x6000708*/ throw null; } }
-	public int shoesVariation { get { /*@B 0x6000709*/ throw null; } set { /*@B 0x600070A*/ throw null; } }
-	public int rodVariation { get { /*@B 0x600070B*/ throw null; } set { /*@B 0x600070C*/ throw null; } }
-	public bool podVisibility { get { /*@B 0x600070D*/ throw null; } set { /*@B 0x600070E*/ throw null; } }
-	public bool beadaruVisibility { get { /*@B 0x600070F*/ throw null; } set { /*@B 0x6000710*/ throw null; } }
-	public bool mukuhawkVisibility { get { /*@B 0x6000711*/ throw null; } set { /*@B 0x6000712*/ throw null; } }
+	public int hatVariation { get {
+            for (int i = 0; i < _hatRenderers.Length; i++)
+            {
+                if (_hatRenderers[i] != null && _hatRenderers[i].enabled)
+                    return i;
+            }
+            return -1;
+        } set {
+            for (int i = 0; i < _hatRenderers.Length; i++)
+            {
+                if (_hatRenderers[i] != null)
+                    _hatRenderers[i].enabled = value == i;
+            }
+        } }
+	public int shoesVariation { get {
+            for (int i = 0; i < _shoesRenderers.Length; i++)
+            {
+                if (_shoesRenderers[i] != null && _shoesRenderers[i].enabled)
+                    return i;
+            }
+            return -1;
+        } set {
+            for (int i = 0; i < _shoesRenderers.Length; i++)
+            {
+                if (_shoesRenderers[i] != null)
+                    _shoesRenderers[i].enabled = value == i;
+            }
+        } }
+	public int rodVariation { get {
+            for (int i = 0; i < _rodRenderers.Length; i++)
+            {
+                if (_rodRenderers[i] != null && _rodRenderers[i].enabled)
+                    return i;
+            }
+            return -1;
+        } set {
+            if (value < 0)
+            {
+                for (int i = 0; i < _rodRenderers.Length; i++)
+                {
+                    if (_rodRenderers[i] != null)
+                        _rodRenderers[i].enabled = false;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < _rodRenderers.Length; i++)
+                {
+                    if (_rodRenderers[i] != null)
+                        _rodRenderers[i].enabled = value == i;
+                }
+            }
+        } }
+	public bool podVisibility { get { return _podRenderer == null || _podRenderer.enabled; } set { if (_podRenderer != null) _podRenderer.enabled = value; } }
+	public bool beadaruVisibility { get { return _beadaruRenderer == null || _beadaruRenderer.enabled; } set { if (_beadaruRenderer != null) _beadaruRenderer.enabled = value; } }
+	public bool mukuhawkVisibility { get { return _mukuhawkRenderer == null || _mukuhawkRenderer.enabled; } set { if (_mukuhawkRenderer != null) _mukuhawkRenderer.enabled = value; } }
 	public bool DashFlag { get; private set; }
 	public global::System.Func<global::FieldPlayerEntity, bool> LateUpdateEvent { get; set; }
 	public float MoveSpeed { get; private set; }
 	public int FashionTableID { get; set; }
 	public global::UnityEngine.Transform BiidaruTransform { get; private set; }
 	public global::Dpr.FieldFloatMove VisiblePodMove { get; private set; }
-	public void ChangeVariation(int index) { /*@B 0x6000706*/ throw null; }
-	protected override void Awake() { /*@B 0x600071B*/ throw null; }
-	protected override void OnEnable() { /*@B 0x600071C*/ throw null; }
+	public void ChangeVariation(int index) {
+        index = Mathf.Clamp(index, 0, _variations.Length);
+        if (index == _currentVariation)
+            return;
+
+        if (_variations[_currentVariation].root == null)
+            _meshGroup.SetActive(false);
+        else
+            _variations[_currentVariation].root.SetActive(false);
+
+        if (_variations[index].root == null)
+            _meshGroup.SetActive(true);
+        else
+            _variations[index].root.SetActive(true);
+
+        _currentVariation = index;
+    }
+	protected override void Awake() { base.Awake(); }
+	protected override void OnEnable() {
+        base.OnEnable();
+        if (_setupMaterials)
+            return;
+
+        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+        int stencilRef = 1;
+        if (EntityManager.activeFieldPlayer == this)
+            stencilRef = 2;
+
+        var materialMap = new System.Collections.Generic.Dictionary<Material, Material>();
+        Material material = null;
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer renderer = renderers[i];
+            if (renderer.sharedMaterials.Length == 0)
+                continue;
+
+            var materials = new System.Collections.Generic.List<Material>();
+            Material[] sharedMaterials = renderer.sharedMaterials;
+            for (int j = 0; j < sharedMaterials.Length; j++)
+            {
+                Material key = sharedMaterials[j];
+                if (!materialMap.TryGetValue(key, out material))
+                {
+                    material = new Material(key);
+                    material.SetInt(_StencilRefID, stencilRef);
+                    materialMap.Add(key, material);
+                }
+                materials.Add(material);
+            }
+            renderer.sharedMaterials = materials.ToArray();
+        }
+        _setupMaterials = true;
+    }
 	protected override void OnFootSE() {
         if (FieldManager.Instance == null)
             return;
 
         FieldManager.Instance.FootEventSE(this, DashFlag, PlayerWork.IsFormBicycle(), FieldManager.AttributeEventCallType.Player);
     }
-	protected override void OnFootEffect(int index) { /*@B 0x600071E*/ throw null; }
-	protected override void OnUpdate(float deltaTime) { /*@B 0x600071F*/ throw null; }
-	protected override void OnLateUpdate(float deltaTime) { /*@B 0x6000720*/ throw null; }
-	private bool CheckMapCollision_AfterCharacterHit(global::UnityEngine.Vector3 moveVelocity, out global::UnityEngine.Vector3 afterMoveVector, out global::UnityEngine.Vector3 hitNormal) { /*@B 0x6000721*/ throw null; }
-	private bool IsOverlapObstacle(global::UnityEngine.Vector3 moveVelocity) { /*@B 0x6000722*/ throw null; }
-	protected override bool SwitchToNext() { /*@B 0x6000723*/ throw null; }
-	protected override void ProcessSequence(float deltaTime) { /*@B 0x6000724*/ throw null; }
-	public void GetInputVectorIgnoreUpdateInputAngle(out global::UnityEngine.Vector2 stickL, out float stickPowerSq, float deltatime, out bool analogstick) { /*@B 0x6000725*/ throw null; }
-	public void GetInputVector(out global::UnityEngine.Vector2 stickL, out float stickPowerSq, float deltatime, out bool analogstick) { /*@B 0x6000726*/ throw null; }
-	private bool IsStickInput() { /*@B 0x6000727*/ throw null; }
-	private bool GetCrossKeyVector(ref global::UnityEngine.Vector2 stickL, ref float stickPowerSq, float deltatime) { /*@B 0x6000728*/ throw null; }
-	public void StopCrossUpdate() { /*@B 0x6000729*/ throw null; }
-	private void UpdateCrossInputMove(ref global::UnityEngine.Vector2 stickL, ref float stickPowerSq, float deltatime) { /*@B 0x600072A*/ throw null; }
-	private void LateUpdateCrossInput() { /*@B 0x600072B*/ throw null; }
+	protected override void OnFootEffect(int index) {
+        if (IsStopFootEffect)
+            return;
+        if (this != EntityManager.activeFieldPlayer)
+            return;
+        if (index >= _effectCoolTime.Length)
+            return;
+        if (!(_effectCoolTime[index] > 0f))
+        {
+            _effectCoolTime[index] = _MaxCoolTime;
+            FieldManager.Instance?.FootEventEffect(this, DashFlag, PlayerWork.IsFormBicycle(), FieldManager.AttributeEventCallType.Player);
+        }
+    }
+	protected override void OnUpdate(float deltaTime) {
+        GameManager.GetAttribute(gridPosition, out int code, out int stop);
+        nowAttribute = GameManager.GetAttributeTable(code);
+        isAttributeStop = stop == 0x80;
+        UpdateParts(deltaTime);
+        base.OnUpdate(deltaTime);
+
+        if (PlayerWork.isPlayerInputActive)
+        {
+            Vector2 hitpos = Vector2.zero;
+            if (EvDataManager.Instanse.TrainerEyeCheck(ref moveVector, ref hitpos))
+            {
+                moveVector = Vector3.zero;
+                worldPosition.x = hitpos.x;
+                worldPosition.z = hitpos.y;
+            }
+        }
+
+        if (PlayerWork.isPlayerInputActive)
+        {
+            if (NaminoriEventRequest == NaminoriEventRequestType.EndSwim)
+                EndSwimEvent();
+            else if (NaminoriEventRequest == NaminoriEventRequestType.StartSwim)
+                StartSwimEvent();
+        }
+        NaminoriEventRequest = NaminoriEventRequestType.None;
+
+        if (!enabled)
+            return;
+    }
+	protected override void OnLateUpdate(float deltaTime) {
+        if (_bicycleRenderer != null && _propertyBlock != null && _bicycleColors.Length != 0)
+        {
+            _propertyBlock.Clear();
+            _bicycleMaterialIndex = Mathf.Clamp(_bicycleMaterialIndex, 0, _bicycleColors.Length - 1);
+            _bicycleRenderer.GetPropertyBlock(_propertyBlock, _bicycleMaterialIndex);
+            _propertyBlock.SetColor(ColorVariation._SkinColorID, _bicycleColors[bicycleColorIndex]);
+            _bicycleRenderer.SetPropertyBlock(_propertyBlock, _bicycleMaterialIndex);
+        }
+
+        if (LateUpdateEvent != null && LateUpdateEvent(this))
+            LateUpdateEvent = null;
+
+        LateUpdateParts(deltaTime);
+
+        if (this == EntityManager.activeFieldPlayer && isExtrudable)
+        {
+            bool ExtrudeFrom(FieldObjectEntity[] entities)
+            {
+                for (int i = 0; i < entities.Length; i++)
+                {
+                    FieldObjectEntity entity = entities[i];
+                    if (entity == this || entity == null)
+                        continue;
+                    if (!entity.gameObject.activeInHierarchy)
+                        continue;
+                    if (entity.IsIgnorePlayerCollision || entity.EventParams.Sit || entity.EventParams.isNoPlayerHit)
+                        continue;
+
+                    Vector3 diff = worldPosition + moveVector - entity.worldPosition;
+                    if (diff.y < -1.0f || diff.y > 1.0f)
+                        continue;
+
+                    Vector3 dir = new Vector3(diff.x, 0.0f, diff.z);
+                    float length = dir.FastNormalize();
+                    if (!(length < 1.0f))
+                        continue;
+
+                    moveVector = moveVector + dir * (1.0f - length);
+                    if (CheckMapCollision_AfterCharacterHit(moveVector, out moveVector, out Vector3 hitNormal))
+                    {
+                        Vector3 diff2 = worldPosition + moveVector - entity.worldPosition;
+                        float push = 1.0f - diff2.magnitude;
+                        if (push > 0.0f)
+                        {
+                            Vector3 slide = diff2 - hitNormal * Vector3.Dot(diff2, hitNormal);
+                            slide.FastNormalize();
+                            moveVector = moveVector + slide * push;
+                            if (CheckMapCollision_AfterCharacterHit(moveVector, out Vector3 afterMoveVector, out Vector3 hitNormal2))
+                            {
+                                isExtruded = true;
+                                _crossInputDir = DIR.DIR_NOT;
+                                _isCrossUpdate = false;
+                                _crossInputVectol = Vector2.zero;
+                                moveVector = Vector3.zero;
+                                return false;
+                            }
+                        }
+                    }
+
+                    if (IsOverlapObstacle(moveVector))
+                    {
+                        isExtruded = true;
+                        _crossInputDir = DIR.DIR_NOT;
+                        _isCrossUpdate = false;
+                        _crossInputVectol = Vector2.zero;
+                        _bicOldAcceleration = 0.0f;
+                        _bicAccelerationTime = 0.0f;
+                        moveVector = Vector3.zero;
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            if (ExtrudeFrom(EntityManager.fieldCharacters))
+                ExtrudeFrom(EntityManager.fieldPokemons);
+
+            if (EvDataManager.Instanse.CheckPosEvent(out Vector3 posEventPos, this))
+                moveVector = posEventPos - worldPosition;
+        }
+
+        if (CheckIceFloor(deltaTime))
+            StartIceFloor();
+        if (CheckMoveFloor(deltaTime))
+            StartMoveFloor();
+        if (CheckSwampDeep(deltaTime))
+            StartSwampDeep();
+        LateUpdateCrossInput();
+        LimitHeight();
+        KairikiPushObject(deltaTime);
+        base.OnLateUpdate(deltaTime);
+        UpdateWalkCount();
+        LaetPlayHitSE(deltaTime);
+    }
+	private bool CheckMapCollision_AfterCharacterHit(global::UnityEngine.Vector3 moveVelocity, out global::UnityEngine.Vector3 afterMoveVector, out global::UnityEngine.Vector3 hitNormal) {
+        Vector3 direction = moveVelocity;
+        float distance = direction.FastNormalize();
+        afterMoveVector = CollisionUtility.CollideObstacle(worldPosition, 0.4f, direction, distance, out bool jump, out bool isCollided, out float dotAngle, out hitNormal, Layer.Obstacle | Layer.Jump, 0.99f);
+        if (!isCollided)
+        {
+            if (Dpr.FieldGridCollision.CheckGriCollisionMoveEntity(out Vector3 outVelocity, out hitNormal, out dotAngle, worldPosition, moveVelocity, 0.4f, CheckGridCollision) == 0)
+                return false;
+            afterMoveVector = outVelocity;
+        }
+        return true;
+    }
+	private bool IsOverlapObstacle(global::UnityEngine.Vector3 moveVelocity) {
+        return Physics.CheckSphere(worldPosition + new Vector3(0.0f, 0.4f, 0.0f) + moveVelocity, 0.4f, Layer.Obstacle | Layer.Jump);
+    }
+	protected override bool SwitchToNext() {
+        switch (nextSequence)
+        {
+            case SequenceID.Jump:
+                {
+                    _isCrossUpdate = false;
+                    _crossInputDir = DIR.DIR_NOT;
+                    _crossInputVectol = Vector2.zero;
+                    PlayerWork.isPlayerInputActive = false;
+                    isExtrudable = false;
+                    isLanding = false;
+                    float height = DataManager.FieldCommonParam[(int)ParamIndx.JumpHight].param;
+                    float distance = DataManager.FieldCommonParam[(int)ParamIndx.JumpDistance].param;
+                    _path.Startup(transform, distance, height, 0.0f, 0.5f);
+                }
+                break;
+            case SequenceID.HoleJump:
+                {
+                    _bicOldAcceleration = 0.0f;
+                    _bicAccelerationTime = 0.0f;
+                    _isCrossUpdate = false;
+                    _crossInputDir = DIR.DIR_NOT;
+                    _crossInputVectol = Vector2.zero;
+                    PlayerWork.isPlayerInputActive = false;
+                    isExtrudable = false;
+                    isLanding = false;
+                    float height = DataManager.FieldCommonParam[(int)ParamIndx.JumpHight].param;
+                    _path.Startup(transform, 0.0f, height, 0.0f, 0.7f);
+                    PlayJumpStart();
+                }
+                break;
+            case SequenceID.Fishing:
+                _bicOldAcceleration = 0.0f;
+                _bicAccelerationTime = 0.0f;
+                _isCrossUpdate = false;
+                _crossInputDir = DIR.DIR_NOT;
+                _crossInputVectol = Vector2.zero;
+                PlayerWork.isPlayerInputActive = false;
+                break;
+            case SequenceID.BicycleJump:
+                _bicOldAcceleration = 0.0f;
+                _bicAccelerationTime = 0.0f;
+                _isCrossUpdate = false;
+                _crossInputDir = DIR.DIR_NOT;
+                _crossInputVectol = Vector2.zero;
+                PlayerWork.isPlayerInputActive = false;
+                isExtrudable = false;
+                isLanding = false;
+                break;
+            case SequenceID.SandClimbFail:
+                _bicOldAcceleration = 0.0f;
+                _bicAccelerationTime = 0.0f;
+                _isCrossUpdate = false;
+                _crossInputDir = DIR.DIR_NOT;
+                _crossInputVectol = Vector2.zero;
+                PlayerWork.isPlayerInputActive = false;
+                _sandFallSeq = 0;
+                _sandFallWait = 0.0f;
+                _sandFallPosZ = GridToPosition(gridPosition).y;
+                if (IsRideBicycle())
+                    AudioManager.Instance.PlaySe(AK.EVENTS.S_FI011, null);
+                else if (IsRun())
+                    AudioManager.Instance.PlaySe(AK.EVENTS.FOOTSTEPS_SOIL_R, null);
+                else
+                    AudioManager.Instance.PlaySe(AK.EVENTS.FOOTSTEPS_SOIL, null);
+                break;
+            case SequenceID.SandClimbSucsess:
+                PlayerWork.isPlayerInputActive = false;
+                _crossInputDir = DIR.DIR_NOT;
+                _isCrossUpdate = false;
+                _crossInputVectol = Vector2.zero;
+                if (IsRideBicycle())
+                    AudioManager.Instance.PlaySe(AK.EVENTS.S_FI010, null);
+                else if (IsRun())
+                    AudioManager.Instance.PlaySe(AK.EVENTS.FOOTSTEPS_SOIL_R, null);
+                else
+                    AudioManager.Instance.PlaySe(AK.EVENTS.FOOTSTEPS_SOIL, null);
+                break;
+            case SequenceID.SandFall:
+                PlayerWork.isPlayerInputActive = false;
+                _crossInputDir = DIR.DIR_NOT;
+                _isCrossUpdate = false;
+                _crossInputVectol = Vector2.zero;
+                if (IsRideBicycle())
+                    AudioManager.Instance.PlaySe(AK.EVENTS.S_FI011, null);
+                else if (IsRun())
+                    AudioManager.Instance.PlaySe(AK.EVENTS.FOOTSTEPS_SOIL_R, null);
+                else
+                    AudioManager.Instance.PlaySe(AK.EVENTS.FOOTSTEPS_SOIL, null);
+                break;
+            case SequenceID.EventMove:
+                _bicOldAcceleration = 0.0f;
+                _bicAccelerationTime = 0.0f;
+                _crossInputDir = DIR.DIR_NOT;
+                _isCrossUpdate = false;
+                _crossInputVectol = Vector2.zero;
+                _eventMoveEnd = false;
+                _eventRotateEnd = false;
+                break;
+            case SequenceID.FormChange:
+            case SequenceID.IceFloor:
+            case SequenceID.MoveFloor:
+                _bicOldAcceleration = 0.0f;
+                _bicAccelerationTime = 0.0f;
+                _crossInputDir = DIR.DIR_NOT;
+                _isCrossUpdate = false;
+                _crossInputVectol = Vector2.zero;
+                break;
+            case SequenceID.HoleOutJump:
+                _bicOldAcceleration = 0.0f;
+                _bicAccelerationTime = 0.0f;
+                _isCrossUpdate = false;
+                _crossInputDir = DIR.DIR_NOT;
+                _crossInputVectol = Vector2.zero;
+                PlayerWork.isPlayerInputActive = false;
+                isExtrudable = false;
+                isLanding = false;
+                _path.Startup(transform, 0.0f, 3.0f, 2.0f, 1.0f);
+                break;
+            case SequenceID.Active:
+                isExtrudable = true;
+                break;
+            default:
+                isExtrudable = false;
+                break;
+        }
+        return base.SwitchToNext();
+    }
+	protected override void ProcessSequence(float deltaTime) {
+        HitSEReset();
+        switch (currentSequence)
+        {
+            case SequenceID.Jump:
+                {
+                    float prevY = transform.position.y;
+                    transform.position = _path.Process(deltaTime, out bool isFinished);
+                    if (_animationPlayer.currentIndex == Animation.JumpStart && transform.position.y < prevY)
+                        PlayJumpLoop();
+                    if (isFinished)
+                    {
+                        FieldManager.Instance.RequestAttributeEffect(this, FieldManager.AttributeEventType.Jump);
+                        if (PlayerWork.IsFormBicycle())
+                            AudioManager.Instance.PlaySe(AK.EVENTS.S_FI038, null);
+                        PlayJumpEnd();
+                        nextSequence = SequenceID.Landing;
+                    }
+                }
+                break;
+            case SequenceID.Landing:
+                if (IsRideBicycle() || _animationPlayer.currentRemaingTime < 0.8f)
+                {
+                    if (!IsStickInput())
+                    {
+                        _bicOldAcceleration = 0.0f;
+                        _bicAccelerationTime = 0.0f;
+                    }
+                    isLanding = true;
+                    PlayerWork.isPlayerInputActive = true;
+                    nextSequence = SequenceID.Active;
+                }
+                break;
+            case SequenceID.HoleJump:
+                {
+                    float prevY = transform.position.y;
+                    transform.position = _path.Process(deltaTime, out bool isFinished);
+                    if (_animationPlayer.currentIndex == Animation.JumpStart && transform.position.y < prevY)
+                        PlayJumpLoop();
+                }
+                break;
+            case SequenceID.BicycleJump:
+                {
+                    PlayRun();
+                    Vector3 move = _bicJump.Update(deltaTime, out BicycleJump.Seq end, ref worldPosition);
+                    worldPosition = new Vector3(worldPosition.x + move.x, move.y, move.z);
+                    if (end == BicycleJump.Seq.End)
+                    {
+                        PlayerWork.isPlayerInputActive = true;
+                        isLanding = true;
+                        nextSequence = SequenceID.Active;
+                    }
+                }
+                break;
+            case SequenceID.SandClimbFail:
+                if (nowAttribute.Attribute != AttributeData.MapAttribute.MATTR_SLOPE_01 && nowAttribute.Attribute != AttributeData.MapAttribute.MATTR_SLOPE_02)
+                {
+                    moveVector = Vector3.zero;
+                    if (_sandFallWait > 0.33333334f)
+                    {
+                        moveVector = Vector3.zero;
+                        PlayerWork.isPlayerInputActive = true;
+                        nextSequence = SequenceID.Active;
+                    }
+                    _sandFallWait += deltaTime;
+                    break;
+                }
+                if (_sandFallSeq == 0)
+                {
+                    if (worldPosition.z > _sandFallPosZ)
+                        moveVector = new Vector3(0.0f, 0.0f, -1.0f) * DataManager.FieldCommonParam[(int)ParamIndx.WalkSpd].param * deltaTime;
+                    else
+                        _sandFallSeq = 1;
+                }
+                if (_sandFallSeq == 1)
+                    moveVector = new Vector3(0.0f, 0.0f, 1.0f) * DataManager.FieldCommonParam[(int)ParamIndx.WalkSpd].param * deltaTime;
+                _sandFallWait = 0.0f;
+                break;
+            case SequenceID.SandClimbSucsess:
+                if (nowAttribute.Attribute != AttributeData.MapAttribute.MATTR_SLOPE_01 && nowAttribute.Attribute != AttributeData.MapAttribute.MATTR_SLOPE_02)
+                {
+                    nextSequence = SequenceID.Active;
+                    PlayerWork.isPlayerInputActive = true;
+                    break;
+                }
+                {
+                    Vector3 dir = new Vector3(0.0f, 0.0f, -1.0f);
+                    float speed = GetMoveSpeed(DashFlag, deltaTime, PlayerWork.bicycleGear, false, false);
+                    moveVector = dir * speed * deltaTime;
+                }
+                break;
+            case SequenceID.SandFall:
+                if (nowAttribute.Attribute != AttributeData.MapAttribute.MATTR_SLOPE_01 && nowAttribute.Attribute != AttributeData.MapAttribute.MATTR_SLOPE_02)
+                {
+                    nextSequence = SequenceID.Active;
+                    PlayerWork.isPlayerInputActive = true;
+                    break;
+                }
+                {
+                    Vector3 dir = new Vector3(0.0f, 0.0f, 1.0f);
+                    float speed = GetMoveSpeed(DashFlag, deltaTime, PlayerWork.bicycleGear, false, false);
+                    moveVector = dir * speed * deltaTime;
+                }
+                break;
+            case SequenceID.EventMove:
+                {
+                    _eventMoveEnd = CorrectionMove(_eventMoveTargetPosition, deltaTime);
+                    float target = _eventMoveTargetAngle;
+                    float diff = target - yawAngle;
+                    if (diff < 0.0f)
+                        diff += 360.0f;
+                    if (diff > 180.0f)
+                        diff -= 360.0f;
+                    float step = diff % 360.0f * 0.4f;
+                    float yaw = step * step < 0.01f ? target : yawAngle + step;
+                    _eventRotateEnd = yaw == target;
+                    yawAngle = yaw;
+                }
+                break;
+            case SequenceID.IceFloor:
+                UpdateIceFloor(deltaTime);
+                break;
+            case SequenceID.MoveFloor:
+                UpdateMoveFloor(deltaTime);
+                break;
+            case SequenceID.SwampDeep:
+                UpdateSwampDeep(deltaTime);
+                break;
+            case SequenceID.HoleOutJump:
+                {
+                    float prevY = transform.position.y;
+                    transform.position = _path.Process(deltaTime, out bool isFinished);
+                    if (_animationPlayer.currentIndex == Animation.JumpStart && transform.position.y < prevY)
+                        PlayJumpLoop();
+                }
+                break;
+            case SequenceID.Fishing:
+            case 0x400a:
+            case 0x400b:
+            case 0x400c:
+            case 0x400d:
+            case 0x400e:
+            case 0x400f:
+            case SequenceID.FormChange:
+                break;
+            case SequenceID.Active:
+                SettingAttributeFlags();
+                UpdateInputOperation(deltaTime);
+                break;
+        }
+        base.ProcessSequence(deltaTime);
+    }
+	public void GetInputVectorIgnoreUpdateInputAngle(out global::UnityEngine.Vector2 stickL, out float stickPowerSq, float deltatime, out bool analogstick) {
+        UpdateInputAngleDisable = true;
+        GetInputVector(out stickL, out stickPowerSq, deltatime, out analogstick);
+        UpdateInputAngleDisable = false;
+    }
+	public void GetInputVector(out global::UnityEngine.Vector2 stickL, out float stickPowerSq, float deltatime, out bool analogstick) {
+        if (PlayerWork.IsEasyInput())
+        {
+            stickL = GameController.analogStickL + GameController.analogStickR;
+            stickL.x = Mathf.Clamp(stickL.x, -1.0f, 1.0f);
+            stickL.y = Mathf.Clamp(stickL.y, -1.0f, 1.0f);
+        }
+        else
+        {
+            stickL = GameController.analogStickL;
+        }
+        stickL = InputCorrection.FieldMoveCorrection(stickL);
+        stickPowerSq = stickL.x * stickL.x + stickL.y * stickL.y;
+
+        if (PlayerWork.IsEasyInput())
+            analogstick = true;
+        else
+            analogstick = !GetCrossKeyVector(ref stickL, ref stickPowerSq, deltatime);
+    }
+	private bool IsStickInput() {
+        return GameController.analogStickL.x != 0.0f || GameController.analogStickL.y != 0.0f ||
+               GameController.digitalPad.x != 0.0f || GameController.digitalPad.y != 0.0f;
+    }
+	private bool GetCrossKeyVector(ref global::UnityEngine.Vector2 stickL, ref float stickPowerSq, float deltatime) {
+        Vector2 cross = default;
+        if (stickPowerSq > 0.01f)
+        {
+            StopCrossUpdate();
+            return false;
+        }
+
+        if (_isCrossUpdate)
+        {
+            UpdateCrossInputMove(ref stickL, ref stickPowerSq, deltatime);
+            return true;
+        }
+
+        float minTime = DataManager.FieldCommonParam[(int)ParamIndx.CrossInputMinTime].param;
+        cross = GameController.digitalPad;
+        if (cross.x == 0.0f && cross.y == 0.0f)
+        {
+            if (!(minTime < _crossKey_pushTime))
+            {
+                StopCrossUpdate();
+                _crossKey_pushTime = 0.0f;
+                return false;
+            }
+
+            stickL = _crossInputVectol;
+            float step;
+            if (IsRideBicycle())
+                step = GetBicycleGear() ? 2.0f : 1.0f;
+            else
+                step = 1.0f;
+
+            Vector2 stopPos = GridToPosition(gridPosition);
+            _crossStopPosition = stopPos;
+            switch (_crossInputDir)
+            {
+                case DIR.DIR_UP:
+                    if (worldPosition.z < stopPos.y)
+                        _crossStopPosition.y = stopPos.y - step;
+                    break;
+                case DIR.DIR_DOWN:
+                    if (worldPosition.z > stopPos.y)
+                        _crossStopPosition.y = step + stopPos.y;
+                    break;
+                case DIR.DIR_LEFT:
+                    if (worldPosition.x > stopPos.x)
+                        _crossStopPosition.x = step + stopPos.x;
+                    break;
+                case DIR.DIR_RIGHT:
+                    if (worldPosition.x < stopPos.x)
+                        _crossStopPosition.x = stopPos.x - step;
+                    break;
+            }
+            _isCrossUpdate = true;
+            _crossKey_pushTime = 0.0f;
+            return true;
+        }
+
+        LimitedCrossInput(ref cross);
+        if (_crossKey_pushTime == 0.0f)
+        {
+            switch (GetDir())
+            {
+                case DIR.DIR_UP:
+                    if (cross.y == 1.0f)
+                        _crossKey_pushTime = minTime + 1.0f;
+                    break;
+                case DIR.DIR_DOWN:
+                    if (cross.y == -1.0f)
+                        _crossKey_pushTime = minTime + 1.0f;
+                    break;
+                case DIR.DIR_LEFT:
+                    if (cross.x == -1.0f)
+                        _crossKey_pushTime = minTime + 1.0f;
+                    break;
+                case DIR.DIR_RIGHT:
+                    if (cross.x == 1.0f)
+                        _crossKey_pushTime = minTime + 1.0f;
+                    break;
+            }
+        }
+
+        if (cross.y == 1.0f)
+            _crossInputDir = DIR.DIR_UP;
+        else if (cross.y == -1.0f)
+            _crossInputDir = DIR.DIR_DOWN;
+        else if (cross.x == -1.0f)
+            _crossInputDir = DIR.DIR_LEFT;
+        else if (cross.x == 1.0f)
+            _crossInputDir = DIR.DIR_RIGHT;
+
+        if (minTime < _crossKey_pushTime)
+        {
+            _crossInputVectol = cross;
+            stickL = cross;
+            stickPowerSq = cross.y * cross.y + cross.x * cross.x;
+            _crossKey_pushTime = minTime + 1.0f;
+        }
+        else
+        {
+            UpdateInputAngle(ref cross);
+            stickL = Vector2.zero;
+            stickPowerSq = 0.0f;
+            _crossInputVectol = Vector2.zero;
+        }
+        _crossKey_pushTime += deltatime;
+        return true;
+    }
+	public void StopCrossUpdate() {
+        _crossInputDir = DIR.DIR_NOT;
+        _isCrossUpdate = false;
+        _crossInputVectol = Vector2.zero;
+    }
+	private void UpdateCrossInputMove(ref global::UnityEngine.Vector2 stickL, ref float stickPowerSq, float deltatime) {
+        if (_isCrossUpdate)
+        {
+            stickL = _crossInputVectol;
+            stickPowerSq = _crossInputVectol.x * _crossInputVectol.x + _crossInputVectol.y * _crossInputVectol.y;
+        }
+    }
+	private void LateUpdateCrossInput() {
+        if (!_isCrossUpdate)
+            return;
+
+        if (IsInputStop() || moveVector == Vector3.zero)
+        {
+            _isCrossUpdate = false;
+            _crossInputDir = DIR.DIR_NOT;
+        }
+        else
+        {
+            Vector3 next = worldPosition + moveVector;
+            switch (_crossInputDir)
+            {
+                case DIR.DIR_UP:
+                    if (!(_crossStopPosition.y >= next.z))
+                        return;
+                    moveVector.x = 0.0f;
+                    _isCrossUpdate = false;
+                    _crossInputDir = DIR.DIR_NOT;
+                    moveVector.z = _crossStopPosition.y - worldPosition.z;
+                    break;
+                case DIR.DIR_DOWN:
+                    if (!(_crossStopPosition.y <= next.z))
+                        return;
+                    moveVector.x = 0.0f;
+                    _isCrossUpdate = false;
+                    _crossInputDir = DIR.DIR_NOT;
+                    moveVector.z = _crossStopPosition.y - worldPosition.z;
+                    break;
+                case DIR.DIR_LEFT:
+                    if (!(_crossStopPosition.x <= next.x))
+                        return;
+                    moveVector.z = 0.0f;
+                    _isCrossUpdate = false;
+                    _crossInputDir = DIR.DIR_NOT;
+                    moveVector.x = _crossStopPosition.x - worldPosition.x;
+                    break;
+                case DIR.DIR_RIGHT:
+                    if (!(_crossStopPosition.x >= next.x))
+                        return;
+                    moveVector.z = 0.0f;
+                    _isCrossUpdate = false;
+                    _crossInputDir = DIR.DIR_NOT;
+                    moveVector.x = _crossStopPosition.x - worldPosition.x;
+                    break;
+                default:
+                    return;
+            }
+        }
+        _crossInputVectol = Vector2.zero;
+        _bicOldAcceleration = 0.0f;
+        _bicAccelerationTime = 0.0f;
+    }
 	private void LimitedCrossInput(ref global::UnityEngine.Vector2 stick) {
         if (!(Math.Abs(stick.x) < Math.Abs(stick.y)))
         {
@@ -175,10 +896,33 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
             stick.y = stick.y < 0.0f ? -1.0f : 1.0f;
         }
     }
-	public float InputAtanAngle(ref global::UnityEngine.Vector2 stickL) { /*@B 0x600072D*/ throw null; }
-	public float InputYawAngle(float angle) { /*@B 0x600072E*/ throw null; }
-	private float UpdateInputAngle(ref global::UnityEngine.Vector2 stickL) { /*@B 0x600072F*/ throw null; }
-	public bool IsInputStop() { /*@B 0x6000730*/ throw null; }
+	public float InputAtanAngle(ref global::UnityEngine.Vector2 stickL) {
+        return (float)Math.Atan2(-stickL.x, -stickL.y);
+    }
+	public float InputYawAngle(float angle) {
+        return angle * 57.29578f;
+    }
+	private float UpdateInputAngle(ref global::UnityEngine.Vector2 stickL) {
+        float angle = InputAtanAngle(ref stickL);
+        if (!UpdateInputAngleDisable)
+        {
+            yawAngle = InputYawAngle(angle);
+            float diff = Mathf.Abs(yawAngle - _beforeAngle);
+            if (diff >= 170.0f && diff <= 190.0f)
+            {
+                _bicOldAcceleration = 0.0f;
+                _bicAccelerationTime = 0.0f;
+            }
+            _beforeAngle = yawAngle;
+        }
+        return angle;
+    }
+	public bool IsInputStop() {
+        return !enabled | FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_INPUT_OFF) | this != EntityManager.activeFieldPlayer |
+               !PlayerWork.isPlayerInputActive | SmartPoint.Components.Fader.isBusy | SmartPoint.Components.Fader.fillPower > 0.1f |
+               PlayerWork.isEvolveDemo | PlayerWork.isHatchDemo | FieldConnector.IsSetupOperationRunning | FieldManager.IsResume |
+               Dpr.UI.UIManager.IsFieldOpenMenu();
+    }
 	private void UpdateInputOperation(float deltaTime) { /*@B 0x6000731*/ throw null; }
 	private global::Dpr.FieldGridCollision.GridCollisionType CheckGridCollisionCore(global::UnityEngine.Vector2Int grid) { /*@B 0x6000732*/ throw null; }
 	private float GetMoveSpeed(bool isDash, float deltatime, bool gear, bool colHit, bool isdebug) { /*@B 0x6000733*/ throw null; }
