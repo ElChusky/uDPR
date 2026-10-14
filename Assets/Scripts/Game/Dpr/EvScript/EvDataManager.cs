@@ -12303,8 +12303,60 @@ namespace Dpr.EvScript
 		private bool EvCmdBoukennootoTipsOpenWait() {
             return !_boukennootoTipsOpen;
         }
-		private bool EvCmdOpenSpecialWinLabel() { /*@B 0x6009031*/ throw null; }
-		private bool EvCmdWaitSpecialWinLabel() { /*@B 0x6009032*/ throw null; }
+		private bool EvCmdOpenSpecialWinLabel() {
+            _isOpenSpecialWin = true;
+            _openSpecialWinLabelSelected = -1;
+            int type = GetArgInt(_evArg[1]);
+            ContextMenuScrolledWindow window = UIManager.Instance.CreateUIWindow<ContextMenuScrolledWindow>(UIWindowID.CONTEXTMENU_SCROLL);
+            window.onSelectChanged = menuItem => { };
+            window.onClicked = menuItem =>
+            {
+                _openSpecialWinLabelSelected = (int)menuItem.param.menuId;
+                return true;
+            };
+            window.onClosed = __ => _isOpenSpecialWin = false;
+            List<ContextMenuItem.Param> itemParams = new List<ContextMenuItem.Param>();
+            string[] labels;
+            if (type == 0)
+            {
+                labels = new string[] {
+                    "109-msg_tv_interview_type01", "109-msg_tv_interview_type02", "109-msg_tv_interview_type03",
+                    "109-msg_tv_interview_type04", "109-msg_tv_interview_type05", "109-msg_tv_interview_type06",
+                    "109-msg_tv_interview_type07", "109-msg_tv_interview_type08", "109-msg_tv_interview_type09",
+                    "109-msg_tv_interview_type10", "109-msg_tv_interview_type11", "109-msg_tv_interview_type12",
+                    "109-msg_tv_interview_type13", "109-msg_tv_interview_type14", "109-msg_tv_interview_type15",
+                    "109-msg_tv_interview_type16", "109-msg_tv_interview_type17", "109-msg_tv_interview_type18",
+                };
+            }
+            else
+            {
+                labels = new string[] {
+                    "109-msg_tv_interview_deco01", "109-msg_tv_interview_deco02", "109-msg_tv_interview_deco03",
+                    "109-msg_tv_interview_deco04", "109-msg_tv_interview_deco05", "109-msg_tv_interview_deco06",
+                    "109-msg_tv_interview_deco07", "109-msg_tv_interview_deco08", "109-msg_tv_interview_deco09",
+                    "109-msg_tv_interview_deco10", "109-msg_tv_interview_deco11", "109-msg_tv_interview_deco12",
+                    "109-msg_tv_interview_deco13",
+                };
+            }
+            for (int i = 0; i < labels.Length; i++)
+            {
+                ContextMenuItem.Param item = new ContextMenuItem.Param();
+                item.menuId = (ContextMenuID)i;
+                item.messageFile = "dp_tvshow";
+                item.messageLabel = labels[i];
+                itemParams.Add(item);
+            }
+            ContextMenuScrolledWindow.Param param = new ContextMenuScrolledWindow.Param();
+            param.itemParams = itemParams.ToArray();
+            window.Open(param);
+            return true;
+        }
+		private bool EvCmdWaitSpecialWinLabel() {
+            if (_isOpenSpecialWin)
+                return false;
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[1].data, _openSpecialWinLabelSelected);
+            return true;
+        }
 		private bool EvCmdHidenEffWait() {
             return _hidenEffectWait;
         }
@@ -12316,7 +12368,76 @@ namespace Dpr.EvScript
             Dpr.BallDeco.BallDecoWork.AddCapsuleCount(GetArgInt(_evArg[1]));
             return true;
         }
-		private bool EvCmd_CHANGE_FASHION_REQ() { /*@B 0x6009036*/ throw null; }
+		private bool EvCmd_CHANGE_FASHION_REQ() {
+            switch (_fashionLoadSeq)
+            {
+                case 0:
+                    {
+                        _oldfashionAssetReqUri = "";
+                        if (_fashionAssetReqOp != null)
+                            _oldfashionAssetReqUri = _fashionAssetReqOp.assetBundleRequest.uri;
+                        _fashionLoadSeq = 999;
+                        CharacterDressData.SheetData[] dressData = DataManager.CharacterDressData.Data;
+                        for (int i = 0; i < dressData.Length; i++)
+                        {
+                            CharacterDressData.SheetData data = dressData[i];
+                            if (data.Index == PlayerWork.playerFashion)
+                            {
+                                _fashionAssetReqOp = AssetManager.AppendAssetBundleRequest("persons/field/" + data.FieldGraphic, true, null, null);
+                                AssetManager.DispatchRequests(null);
+                                _fashionLoadSeq = 1;
+                                return false;
+                            }
+                        }
+                    }
+                    return false;
+                case 1:
+                    {
+                        if (_fashionAssetReqOp.assetBundleRequest.status != RequestStatus.Complete)
+                            return false;
+                        FieldPlayerEntity oldPlayer = EntityManager.activeFieldPlayer;
+                        _fashionYawAngle = oldPlayer.yawAngle;
+                        _fashionWorldpos = oldPlayer.worldPosition;
+                        UnityEngine.Object.Destroy(EntityManager.activeFieldPlayer.gameObject);
+                        EntityManager.activeFieldPlayer = null;
+                        UnityEngine.Object[] loadedAssets = _fashionAssetReqOp.assetBundleRequest.cache.loadedAssets;
+                        for (int i = 0; i < loadedAssets.Length; i++)
+                        {
+                            if (loadedAssets[i] is GameObject prefab)
+                            {
+                                UnityEngine.Object.Instantiate<GameObject>(prefab, GameManager.fieldObjectHolder).GetComponent<BaseEntity>().Register();
+                                break;
+                            }
+                        }
+                        if (_oldfashionAssetReqUri != "")
+                        {
+                            AssetManager.UnloadAssetBundle(_oldfashionAssetReqUri);
+                            _oldfashionAssetReqUri = "";
+                        }
+                        _fashionLoadSeq = 2;
+                    }
+                    return false;
+                case 2:
+                    {
+                        FieldPlayerEntity player = EntityManager.activeFieldPlayer;
+                        player.yawAngle = _fashionYawAngle;
+                        player.worldPosition = _fashionWorldpos;
+                        player.FashionTableID = PlayerWork.playerFashion;
+                        player.WorkApplyVisibility();
+                        ColorVariation colorVariation = player.GetComponent<ColorVariation>();
+                        if (colorVariation != null)
+                            colorVariation.ColorIndex = PlayerWork.colorID;
+                        GameManager.fieldCamera.Target = EntityManager.activeFieldPlayer.transform;
+                        int index = PlayerWork.playerSex ? 0 : 4;
+                        player.SetAnimationEvents(DataManager.CharacterGraphics.Data[index].animTbl);
+                        PlayReportManager.SaveReportLog_Custome();
+                        _fashionLoadSeq = 0;
+                    }
+                    return true;
+                default:
+                    return false;
+            }
+        }
 		private bool EvCmdWarpPanelStart() {
             FieldPlayerEntity player = EntityManager.activeFieldPlayer;
             _fieldObjectMove.Update(_deltatime);
