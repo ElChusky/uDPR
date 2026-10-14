@@ -5,10 +5,27 @@ public class FieldEyePaintingEntity : global::FieldEventEntity
 	public global::UnityEngine.GameObject Painting;
 	public global::FieldEyePaintingEntity.EyePaintingType DefaultEyePainting;
 	private global::FieldEyePaintingEntity.EyePaintingType CurrentEyePainting;
-	protected override void Awake() { /*@B 0x60006A6*/ throw null; }
-	public void ChangeEyePainting() { /*@B 0x60006A7*/ throw null; }
-	public void SetActivePaint(global::FieldEyePaintingEntity.EyePaintingType type) { /*@B 0x60006A8*/ throw null; }
-	public FieldEyePaintingEntity() { /*@B 0x60006A9*/ throw null; }
+	protected override void Awake() {
+		base.Awake();
+		isLanding = false;
+		SetActivePaint(DefaultEyePainting);
+	}
+	public void ChangeEyePainting() {
+		for (int i = 0; i < global::EntityManager.fieldEyePainting.Length; i++)
+			global::EntityManager.fieldEyePainting[i].SetActivePaint(EyePainting);
+	}
+	public void SetActivePaint(global::FieldEyePaintingEntity.EyePaintingType type) {
+		global::FieldEyePaintingEntity.EyePaintingType prev = CurrentEyePainting;
+		if (prev == type)
+			return;
+		CurrentEyePainting = type;
+		if (Painting != null) {
+			Painting.SetActive(EyePainting == type);
+			if (prev == EyePaintingType.NONE && EyePainting == EyePaintingType.NONE)
+				global::Audio.AudioManager.Instance.PlaySe(global::AK.EVENTS.S_FI245, null);
+		}
+	}
+	public FieldEyePaintingEntity() { }
 	public enum EyePaintingType
 	{
 		NONE = 0,
