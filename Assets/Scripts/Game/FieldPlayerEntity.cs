@@ -923,32 +923,543 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
                PlayerWork.isEvolveDemo | PlayerWork.isHatchDemo | FieldConnector.IsSetupOperationRunning | FieldManager.IsResume |
                Dpr.UI.UIManager.IsFieldOpenMenu();
     }
-	private void UpdateInputOperation(float deltaTime) { /*@B 0x6000731*/ throw null; }
-	private global::Dpr.FieldGridCollision.GridCollisionType CheckGridCollisionCore(global::UnityEngine.Vector2Int grid) { /*@B 0x6000732*/ throw null; }
-	private float GetMoveSpeed(bool isDash, float deltatime, bool gear, bool colHit, bool isdebug) { /*@B 0x6000733*/ throw null; }
-	private bool CanEntryAttribute(global::UnityEngine.Vector2Int grid, float height) { /*@B 0x6000734*/ throw null; }
-	private static bool CanEntryAttribute(global::UnityEngine.Vector2Int grid, float height, bool isRideBicyclelse, bool isSwim) { /*@B 0x6000735*/ throw null; }
-	private static bool CanEntryAttributeCommon(int code, int stop) { /*@B 0x6000736*/ throw null; }
-	private static bool CanEntryAttributeBycJump(int code, int stop, global::UnityEngine.Vector3 forward, out global::UnityEngine.Vector3 jumpvector) { /*@B 0x6000737*/ throw null; }
-	private bool IsBicJumpObjectEntity(ref global::UnityEngine.Vector2Int grid, float vectolx) { /*@B 0x6000738*/ throw null; }
-	private bool CanEntryNomoseGymWaterGrid(global::UnityEngine.Vector2Int grid, float height) { /*@B 0x6000739*/ throw null; }
-	public void OnEventEnter(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x600073A*/ throw null; }
-	public void OnEventStay(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x600073B*/ throw null; }
-	public void OnEventLeave(float deltaTime, global::FieldEventEntity eventEntity) { /*@B 0x600073C*/ throw null; }
+	private void UpdateInputOperation(float deltaTime) {
+        InputMoveVector = Vector3.zero;
+        if (IsInputStop())
+        {
+            moveVector = Vector3.zero;
+            return;
+        }
+
+        if (PlayerWork.IsFormSwim())
+        {
+            if (UpdateSwim(deltaTime))
+            {
+                moveVector = Vector3.zero;
+                return;
+            }
+        }
+        else if (FieldInput.PushA() && CheckSwim())
+        {
+            if (PlayerWork.transitionZoneID == ZoneID.UNKNOWN)
+                NaminoriEventRequest = NaminoriEventRequestType.StartSwim;
+            moveVector = Vector3.zero;
+            return;
+        }
+
+        if (FieldInput.PushB() && PlayerWork.IsFormBicycle())
+            ChangeBicycleGear(!PlayerWork.bicycleGear);
+
+        GetInputVector(out Vector2 stickL, out float stickPowerSq, deltaTime, out bool analogstick);
+        if (PlayerWork.FieldInputMode == 1)
+        {
+            stickL.y = 0.0f;
+        }
+        else if (PlayerWork.FieldInputMode == 2)
+        {
+            stickL.x = 0.0f;
+        }
+        else if (PlayerWork.FieldInputMode == 3)
+        {
+            if (stickL.x * stickL.x > stickL.y * stickL.y)
+                stickL.y = 0.0f;
+            else
+                stickL.x = 0.0f;
+        }
+
+        if (_isCycDownHillMode && stickL == Vector2.zero)
+        {
+            StopCrossUpdate();
+            stickL.y = -1.0f;
+        }
+
+        stickPowerSq = stickL.x * stickL.x + stickL.y * stickL.y;
+        if (stickPowerSq > 0.01f)
+        {
+            double inputforce = stickPowerSq / Math.Sqrt(stickPowerSq);
+            float angle = UpdateInputAngle(ref stickL);
+            DashFlag = DashJudgment(inputforce);
+            float dotAngle = 0.0f;
+            bool isBicycle = PlayerWork.IsFormBicycle();
+            if (!analogstick && !isBicycle)
+                DashFlag = FieldInput.OnB();
+            if (!FlagWork.GetFlag(EvWork.FLAG_INDEX.FE_SHOES_GET))
+                DashFlag = false;
+
+            MoveSpeed = CalcMoveSpeed(DashFlag, false);
+            Vector3 direction = new Vector3((float)Math.Sin(angle), 0.0f, (float)Math.Cos(angle));
+            InputMoveVector = direction * MoveSpeed * deltaTime;
+            if (CollisionUtility.IsCollideObstacle(worldPosition, 0.4f, direction, MoveSpeed * deltaTime, Layer.Obstacle | Layer.Jump))
+            {
+                MoveSpeed = CalcMoveSpeed(false, true);
+                InputMoveVector = direction * MoveSpeed * deltaTime;
+            }
+
+            moveVector = CollisionUtility.CollideObstacle(worldPosition, 0.4f, direction, MoveSpeed * deltaTime, out bool jump, out isExtruded, out dotAngle, out Vector3 colNormal, Layer.Obstacle | Layer.Jump, 0.99f);
+            if (!isExtruded)
+            {
+                moveVector = CollisionUtility.CollideObstacle(worldPosition - direction * 0.4f, 0.4f, direction, MoveSpeed * deltaTime + 0.4f, out jump, out isExtruded, out dotAngle, out colNormal, Layer.Obstacle | Layer.Jump, 0.99f);
+                moveVector -= direction * 0.4f;
+            }
+            if (isExtruded)
+            {
+                Vector3 afterMove = CollisionUtility.CollideObstacle(worldPosition, 0.4f, direction, MoveSpeed * deltaTime, out bool jump2, out bool isCollided2, out float dotAngle2, out Vector3 colNormal2, Layer.Obstacle | Layer.Jump, 0.99f);
+                if (isCollided2)
+                {
+                    moveVector = afterMove;
+                    jump = jump2;
+                    isExtruded = true;
+                    dotAngle = dotAngle2;
+                    colNormal = colNormal2;
+                }
+            }
+
+            var ignoreDir = Dpr.FieldGridCollision.GridCollisionIgnoreDir.None;
+            if (isExtruded)
+            {
+                if (colNormal.x * colNormal.x < 0.0001f * 0.0001f)
+                    ignoreDir = Dpr.FieldGridCollision.GridCollisionIgnoreDir.Vert;
+                else if (colNormal.z * colNormal.z < 0.0001f * 0.0001f)
+                    ignoreDir = Dpr.FieldGridCollision.GridCollisionIgnoreDir.Side;
+                StopCrossUpdate();
+            }
+
+            if (jump)
+            {
+                Vector2Int jumpGrid = PositionToGrid(worldPosition + InputMoveVector.normalized);
+                GameManager.GetAttribute(jumpGrid, out int jumpCode, out int jumpStop);
+                if (AttributeID.MATR_IsJumpRight(jumpCode) || AttributeID.MATR_IsJumpLeft(jumpCode) || AttributeID.MATR_IsJumpUp(jumpCode) || AttributeID.MATR_IsJumpDown(jumpCode))
+                {
+                    if (EvDataManager.Instanse.IsRunningEvent())
+                        return;
+                    PlayerWork.isPlayerInputActive = false;
+                    nextSequence = SequenceID.Jump;
+                    FieldManager.Instance.RequestAttributeSE(this, FieldManager.AttributeEventType.Jump);
+                    PlayJumpStart();
+                    StopCrossUpdate();
+                    return;
+                }
+            }
+
+            if (PlayerWork.IsFormBicycle())
+            {
+                Vector3 forward = InputMoveVector.normalized;
+                Vector2Int bicGrid = PositionToGrid(worldPosition + forward);
+                GameManager.GetAttribute(bicGrid, out int bicCode, out int bicStop);
+                if (CanEntryAttributeBycJump(bicCode, bicStop, forward, out Vector3 jumpvector) && IsBicJumpObjectEntity(ref bicGrid, jumpvector.x))
+                {
+                    if (EvDataManager.Instanse.IsRunningEvent())
+                        return;
+                    if (jumpvector.x == -1.0f)
+                        yawAngle = 270.0f;
+                    if (jumpvector.x == 1.0f)
+                        yawAngle = 90.0f;
+                    Vector2 gridPos = GridToPosition(bicGrid);
+                    Vector3 target = new Vector3(gridPos.x, Height, gridPos.y);
+                    target = target + jumpvector * (PlayerWork.bicycleGear ? 3.0f : 1.0f);
+                    _bicJump.SetUp(transform.position, target, PlayerWork.bicycleGear);
+                    PlayRun();
+                    MaxBicycleDecelerate();
+                    PlayerWork.isPlayerInputActive = false;
+                    nextSequence = SequenceID.BicycleJump;
+                    return;
+                }
+            }
+
+            if (Dpr.FieldGridCollision.CheckGriCollisionMoveEntity(out Vector3 outVelocity, out Vector3 hitNormal, out float hitAngle, worldPosition, moveVector, 0.4f, CheckGridCollision, ignoreDir) != Dpr.FieldGridCollision.GridCollisionType.None)
+            {
+                MoveSpeed = CalcMoveSpeed(false, true);
+                if (!isExtruded)
+                {
+                    dotAngle = hitAngle;
+                    moveVector = moveVector.normalized * MoveSpeed * deltaTime;
+                }
+                if (Dpr.FieldGridCollision.CheckGriCollisionMoveEntity(out outVelocity, worldPosition, moveVector, 0.4f, CheckGridCollision, ignoreDir) != Dpr.FieldGridCollision.GridCollisionType.None)
+                {
+                    moveVector = outVelocity;
+                    isExtruded = true;
+                }
+            }
+
+            if (!isExtruded)
+            {
+                if (DashFlag)
+                    PlayRun();
+                else
+                    PlayWalk();
+                return;
+            }
+
+            // the shipped code folds Mathf.Cos of these constant angles: cos60 = 0.49999997f, cos30 = 0.8660254f
+            float wallRate = 1.0f - dotAngle;
+            if (wallRate > 0.0f)
+                wallRate /= Mathf.Cos(60.0f * Mathf.Deg2Rad);
+            if (dotAngle > Mathf.Cos(60.0f * Mathf.Deg2Rad))
+            {
+                PlayWallWalk();
+                moveVector *= wallRate;
+                if (dotAngle > Mathf.Cos(30.0f * Mathf.Deg2Rad) && !EvDataManager.Instanse.IsContactDoor())
+                    HitSeRequest();
+            }
+            else if (DashFlag)
+            {
+                PlayRun();
+            }
+            else
+            {
+                PlayWalk();
+            }
+            StopCrossUpdate();
+            return;
+        }
+
+        if (!(_bicOldAcceleration > 0.0f))
+            _beforeAngle = 0.0f;
+        MoveSpeed = 0.0f;
+        BicycleDecelerate(deltaTime);
+        if (moveVector == Vector3.zero)
+            UpdateIdle();
+
+        float CalcMoveSpeed(bool dashFlag, bool colHit)
+        {
+            if (_isCycDownHillMode)
+            {
+                float speed;
+                if (stickL.y > 0.0f)
+                    speed = GetMoveSpeed(dashFlag, deltaTime, false, false, false);
+                else if (stickL.y < 0.0f && stickL.x == 0.0f)
+                    speed = GetMoveSpeed(dashFlag, deltaTime, true, false, false);
+                else
+                    speed = GetMoveSpeed(dashFlag, deltaTime, PlayerWork.bicycleGear, false, false);
+                if (stickL == Vector2.zero)
+                    return GetMoveSpeed(dashFlag, deltaTime, false, false, false);
+                return speed;
+            }
+            return GetMoveSpeed(dashFlag, deltaTime, PlayerWork.bicycleGear, colHit, false);
+        }
+    }
+	private global::Dpr.FieldGridCollision.GridCollisionType CheckGridCollisionCore(global::UnityEngine.Vector2Int grid) {
+        if (!CanEntryAttribute(grid, worldPosition.y))
+            return Dpr.FieldGridCollision.GridCollisionType.NoEntry;
+        return CanEntryNomoseGymWaterGrid(grid, worldPosition.y) ? Dpr.FieldGridCollision.GridCollisionType.None : Dpr.FieldGridCollision.GridCollisionType.NoEntry;
+    }
+	private float GetMoveSpeed(bool isDash, float deltatime, bool gear, bool colHit, bool isdebug) {
+        _bicDecelerateTime = 0.0f;
+        float speed;
+        if (!PlayerWork.IsFormBicycle() || colHit)
+        {
+            if (isDash)
+                speed = DataManager.FieldCommonParam[(int)ParamIndx.DashSpd].param;
+            else
+                speed = DataManager.FieldCommonParam[(int)ParamIndx.WalkSpd].param;
+        }
+        else
+        {
+            float maxSpeed = DataManager.FieldCommonParam[(int)ParamIndx.Gear3].param;
+            var accel = DataManager.FieldCommonParam[(int)ParamIndx.Gear3Accel];
+            if (gear)
+            {
+                maxSpeed = DataManager.FieldCommonParam[(int)ParamIndx.Gear4].param;
+                accel = DataManager.FieldCommonParam[(int)ParamIndx.Gear4Accel];
+            }
+            float accelerationTime = _bicAccelerationTime;
+            float acceleration = _bicOldAcceleration + accel.param * accelerationTime * 30.0f;
+            if (acceleration >= maxSpeed / 0.3f)
+            {
+                _isBicMaxSpeed = true;
+                acceleration = maxSpeed / 0.3f;
+            }
+            _bicAccelerationTime = Math.Min(accelerationTime + deltatime, 10.0f);
+            _bicOldAcceleration = acceleration;
+            speed = acceleration * 0.3f;
+        }
+
+        GameManager.GetAttribute(gridPosition, out int code, out int stop);
+        float rate;
+        if (AttributeID.MATR_IsShallowSnow(code))
+            rate = DataManager.FieldCommonParam[(int)ParamIndx.SnowLv1_MoveSpdRate].param;
+        else if (AttributeID.MATR_IsSnowDeep(code))
+            rate = DataManager.FieldCommonParam[(int)ParamIndx.SnowLv2_MoveSpdRate].param;
+        else if (AttributeID.MATR_IsSnowDeepMost(code))
+            rate = DataManager.FieldCommonParam[(int)ParamIndx.SnowLv3_MoveSpdRate].param;
+        else if (AttributeID.MATR_IsSwamp(code) || AttributeID.MATR_IsSwampGrass(code))
+            rate = DataManager.FieldCommonParam[(int)ParamIndx.Swamp_MoveSpdRate].param;
+        else if (AttributeID.MATR_IsLongGrass(code))
+            rate = DataManager.FieldCommonParam[(int)ParamIndx.LongGrass_MoveSpdRate].param;
+        else if (code == AttributeID.MATTER_TENKAI)
+        {
+            float kaidanSpd = DataManager.GetFieldCommonParam(ParamIndx.Tenkai_KaidanSpd);
+            float heightSpdL = DataManager.GetFieldCommonParam(ParamIndx.Tenkai_KaidanHeightSpd_L);
+            float heightSpdH = DataManager.GetFieldCommonParam(ParamIndx.Tenkai_KaidanHeightSpd_H);
+            float heightL = DataManager.GetFieldCommonParam(ParamIndx.Tenkai_KaidanHeight_L);
+            float heightH = DataManager.GetFieldCommonParam(ParamIndx.Tenkai_KaidanHeight_H);
+            float t;
+            float height = Height;
+            if (height >= heightH * 0.5f)
+                t = 1.0f / heightSpdH * (heightH - Height);
+            else
+                t = 1.0f / heightSpdL * height;
+            float clamped = t > 1.0f ? 1.0f : (t < 0.0f ? 0.0f : t);
+            rate = 1.0f - (1.0f - kaidanSpd) * clamped;
+            TenkaiWwise();
+        }
+        else
+            rate = 1.0f;
+        return speed * rate;
+    }
+	private bool CanEntryAttribute(global::UnityEngine.Vector2Int grid, float height) {
+        return CanEntryAttribute(grid, height, PlayerWork.IsFormBicycle(), PlayerWork.IsFormSwim());
+    }
+	private static bool CanEntryAttribute(global::UnityEngine.Vector2Int grid, float height, bool isRideBicyclelse, bool isSwim) {
+        GameManager.GetAttribute(grid, out int code, out int stop);
+        if (!CanEntryAttributeCommon(code, stop))
+            return false;
+
+        var table = GameManager.GetAttributeTable(code);
+        if (table == null)
+            return false;
+
+        if (AttributeID.MATR_IsBridge(code))
+        {
+            if (GameManager.IsHighAttribute(GameManager.GetAttributeExCodeRaw(grid), height))
+            {
+                if (table.Water)
+                {
+                    if (!isSwim)
+                        return true;
+                }
+                else if (!isRideBicyclelse && (AttributeID.MATR_IsBridgeV(code) || AttributeID.MATR_IsBridgeH(code)))
+                {
+                    return false;
+                }
+            }
+            else if (table.Water && isSwim)
+            {
+                return true;
+            }
+        }
+
+        if (isRideBicyclelse)
+        {
+            if (AttributeID.IsBicycleNoEntory(table))
+                return false;
+        }
+        else if (table.Attribute == AttributeData.MapAttribute.MATTR_TAKEOFF_01 || table.Attribute == AttributeData.MapAttribute.MATTR_TAKEOFF_02)
+        {
+            return false;
+        }
+        return isSwim == table.Water;
+    }
+	private static bool CanEntryAttributeCommon(int code, int stop) {
+        var table = GameManager.GetAttributeTable(code);
+        if (stop == 0x80 || table == null)
+            return false;
+        return table.Entry;
+    }
+	private static bool CanEntryAttributeBycJump(int code, int stop, global::UnityEngine.Vector3 forward, out global::UnityEngine.Vector3 jumpvector) {
+        jumpvector = Vector3.zero;
+        var table = GameManager.GetAttributeTable(code);
+        if (table == null)
+            return false;
+        if (stop != 0x80)
+            return false;
+
+        float x;
+        if (code == (int)AttributeData.MapAttribute.MATTR_TAKEOFF_01)
+            x = -1.0f;
+        else if (code == (int)AttributeData.MapAttribute.MATTR_TAKEOFF_02)
+            x = 1.0f;
+        else
+            return false;
+
+        jumpvector.x = x;
+        float angle = Vector3.SignedAngle(jumpvector, forward, Vector3.up);
+        return angle > -30.0f && angle < 30.0f;
+    }
+	private bool IsBicJumpObjectEntity(ref global::UnityEngine.Vector2Int grid, float vectolx) {
+        FieldEventEntity[] entities = EntityManager.fieldEventObjects;
+        for (int i = 0; i < EntityManager.fieldEventObjects.Length; i++)
+        {
+            if (entities[i] == null)
+                continue;
+            if (!entities[i].isActiveAndEnabled)
+                continue;
+            Vector2Int entityGrid = entities[i].gridPosition;
+            if (entityGrid.x == grid.x + vectolx && entityGrid.y == grid.y)
+                return false;
+        }
+        return true;
+    }
+	private bool CanEntryNomoseGymWaterGrid(global::UnityEngine.Vector2Int grid, float height) {
+        if (EntityManager.fieldNomoseGymWater.Length == 0)
+            return true;
+
+        FieldNomoseGymWaterEntity water = EntityManager.fieldNomoseGymWater[0];
+        float waterHeight = water.WaterHeightLevel[water.WaterLevel];
+        Vector3 position = Vec2ToVec3Position(GridToPosition(grid), height);
+        if (position.y + CollisionUtility.CollideGround(new Vector3(position.x, position.y, position.z + 0.2f), 3.0f, Layer.Ground) < waterHeight)
+            return false;
+        if (position.y + CollisionUtility.CollideGround(new Vector3(position.x, position.y, position.z + -0.2f), 3.0f, Layer.Ground) < waterHeight)
+            return false;
+        return true;
+    }
+	public void OnEventEnter(float deltaTime, global::FieldEventEntity eventEntity) {
+        EvDataManager.Instanse?.OnEventEnter(deltaTime, eventEntity);
+    }
+	public void OnEventStay(float deltaTime, global::FieldEventEntity eventEntity) {
+        EvDataManager.Instanse?.OnEventStay(deltaTime, eventEntity);
+    }
+	public void OnEventLeave(float deltaTime, global::FieldEventEntity eventEntity) {
+        EvDataManager.Instanse?.OnEventLeave(deltaTime, eventEntity);
+    }
 	private void OnGroundTrigger() { }
-	public void SetNormalForm(global::System.Action onfinish = null) { /*@B 0x600073E*/ throw null; }
-	private void SettingAttributeFlags() { /*@B 0x600073F*/ throw null; }
-	private void HitSeRequest() { /*@B 0x6000740*/ throw null; }
-	private void HitSEReset() { /*@B 0x6000741*/ throw null; }
-	private void LaetPlayHitSE(float time) { /*@B 0x6000742*/ throw null; }
-	private bool DashJudgment(double inputforce) { /*@B 0x6000743*/ throw null; }
-	public void SetEventCorrectionMove(global::UnityEngine.Vector3 position, float angle) { /*@B 0x6000744*/ throw null; }
-	public void StartEventCorrectionMove() { /*@B 0x6000745*/ throw null; }
-	public bool IsEventCorrectionMoveEnd() { /*@B 0x6000746*/ throw null; }
-	private bool CorrectionMove(global::UnityEngine.Vector3 position, float deltaTime) { /*@B 0x6000747*/ throw null; }
-	private bool CorrectionRotate(float angle) { /*@B 0x6000748*/ throw null; }
-	private bool IsIgnoreWalkCountZone(global::ZoneID zoneId) { /*@B 0x6000749*/ throw null; }
-	private bool IsIgnoreEggHatchCountZone(global::ZoneID zoneId) { /*@B 0x600074A*/ throw null; }
+	public void SetNormalForm(global::System.Action onfinish = null) {
+        PlayerWork.SetFormNormal();
+        ChangeForm(0, onfinish);
+    }
+	private void SettingAttributeFlags() {
+        if (PlayerWork.zoneID == ZoneID.UNKNOWN)
+            return;
+
+        GameManager.GetAttribute(gridPosition, out int code, out int stop);
+        var table = GameManager.GetAttributeTable(code);
+        var attribute = table.Attribute;
+        PlayerWork.FieldInputMode = 0;
+        _isCycDownHillMode = false;
+        int exCodeRaw = GameManager.GetAttributeExCodeRaw(gridPosition);
+        if (GameManager.IsHighAttribute(exCodeRaw, Height))
+        {
+            switch (attribute)
+            {
+                case AttributeData.MapAttribute.MATTR_BRIDGEV_GROUND:
+                case AttributeData.MapAttribute.MATTR_BRIDGEV_GROUND_E:
+                case AttributeData.MapAttribute.MATTR_BRIDGEV_WATER:
+                case AttributeData.MapAttribute.MATTR_BRIDGEV_SAND:
+                    PlayerWork.FieldInputMode = 2;
+                    break;
+                case AttributeData.MapAttribute.MATTR_BRIDGEH_GROUND:
+                case AttributeData.MapAttribute.MATTR_BRIDGEH_GROUND_E:
+                case AttributeData.MapAttribute.MATTR_BRIDGEH_WATER:
+                case AttributeData.MapAttribute.MATTR_BRIDGEH_SAND:
+                    PlayerWork.FieldInputMode = 1;
+                    break;
+                case AttributeData.MapAttribute.MATTR_BRIDGE_GROUND:
+                    if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_CYCLINGROAD))
+                        _isCycDownHillMode = true;
+                    break;
+            }
+        }
+
+        if (table.Attribute == AttributeData.MapAttribute.MATTR_SLOPE_02)
+        {
+            if (currentSequence == SequenceID.Active)
+            {
+                if (PlayerWork.IsFormBicycle() && PlayerWork.bicycleGear)
+                {
+                    nextSequence = SequenceID.SandClimbSucsess;
+                    return;
+                }
+                _bicOldAcceleration = 0.0f;
+                _bicAccelerationTime = 0.0f;
+                nextSequence = SequenceID.SandClimbFail;
+                PlayerWork.isPlayerInputActive = false;
+            }
+        }
+        else if (table.Attribute == AttributeData.MapAttribute.MATTR_SLOPE_01 && currentSequence == SequenceID.Active)
+        {
+            PlayerWork.isPlayerInputActive = false;
+            nextSequence = SequenceID.SandFall;
+        }
+    }
+	private void HitSeRequest() {
+        _hit_se_request = true;
+    }
+	private void HitSEReset() {
+        _hit_se_request = false;
+    }
+	private void LaetPlayHitSE(float time) {
+        if (!_hit_se_request)
+        {
+            _hit_se_wait = DataManager.FieldCommonParam[(int)ParamIndx.Hit_se_wait].param;
+            return;
+        }
+        _hit_se_wait -= time;
+        if (_hit_se_wait > 0.0f)
+            return;
+        AudioManager.Instance.PlaySe(AK.EVENTS.S_FI002, null);
+        _hit_se_wait = DataManager.FieldCommonParam[(int)ParamIndx.Hit_se_wait_loop].param;
+    }
+	private bool DashJudgment(double inputforce) {
+        ParamIndx index;
+        switch (_animationPlayer.currentIndex)
+        {
+            case Animation.Walk:
+            case Animation.BikeWalk:
+            case Animation.GrassWalk:
+                index = ParamIndx.InputRange_WalkToRun;
+                break;
+            case Animation.Run:
+            case Animation.BikeRun:
+            case Animation.GrassRun:
+                index = ParamIndx.InputRange_RunToWalk;
+                break;
+            default:
+                index = ParamIndx.InputRange_Wait;
+                break;
+        }
+        return DataManager.FieldCommonParam[(int)index].param <= inputforce;
+    }
+	public void SetEventCorrectionMove(global::UnityEngine.Vector3 position, float angle) {
+        _eventMoveTargetPosition = position;
+        _eventMoveTargetAngle = angle;
+    }
+	public void StartEventCorrectionMove() {
+        nextSequence = SequenceID.EventMove;
+    }
+	public bool IsEventCorrectionMoveEnd() {
+        return _eventMoveEnd && _eventRotateEnd;
+    }
+	private bool CorrectionMove(global::UnityEngine.Vector3 position, float deltaTime) {
+        float speed = GetMoveSpeed(false, deltaTime, PlayerWork.bicycleGear, false, false) * deltaTime * 0.8f;
+        Vector3 diff = position - worldPosition;
+        diff.y = 0.0f;
+        moveVector = diff.normalized * speed;
+        if (!(moveVector == Vector3.zero))
+        {
+            if (!(diff.sqrMagnitude < speed * speed))
+            {
+                PlayWalk();
+                return false;
+            }
+            moveVector = Vector3.zero;
+            worldPosition.x = position.x;
+            worldPosition.z = position.z;
+        }
+        PlayIdle();
+        return true;
+    }
+	private bool CorrectionRotate(float angle) {
+        float diff = angle - yawAngle;
+        if (diff < 0.0f)
+            diff += 360.0f;
+        if (diff > 180.0f)
+            diff -= 360.0f;
+        float step = diff % 360.0f * 0.4f;
+        yawAngle = step * step < 0.01f ? angle : yawAngle + step;
+        return yawAngle == angle;
+    }
+	private bool IsIgnoreWalkCountZone(global::ZoneID zoneId) {
+        return zoneId == ZoneID.UNION01 || zoneId == ZoneID.UNION02 || zoneId == ZoneID.UNION03;
+    }
+	private bool IsIgnoreEggHatchCountZone(global::ZoneID zoneId) {
+        if (zoneId >= ZoneID.UGAASECRETBASE01 && zoneId <= ZoneID.UGFASECRETBASE01)
+            return true;
+        if (zoneId >= ZoneID.UGSECRETBASE01 && zoneId <= ZoneID.UGSECRETBASE04)
+            return true;
+        if (zoneId == ZoneID.D11R0101)
+            return true;
+        return zoneId == ZoneID.UGFASECRETBASE02 || zoneId == ZoneID.UGFASECRETBASE03;
+    }
 	private void UpdateWalkCount() {
         if (currentSequence != SequenceID.SandClimbSucsess && currentSequence != SequenceID.SandFall && currentSequence != SequenceID.Active)
             return;
@@ -1000,11 +1511,64 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 
         PlayReportManager.AddWalkCnt(steps);
     }
-	private bool NoWalkUpdateAttribute() { /*@B 0x600074C*/ throw null; }
-	private bool IsEncount() { /*@B 0x600074D*/ throw null; }
-	public void ChangeForm(int form, global::System.Action onFinish) { /*@B 0x600074E*/ throw null; }
-	private void ChangeAnime(float time) { /*@B 0x600074F*/ throw null; }
-	public void JumpPlayerActionEvent(string label) { /*@B 0x6000750*/ throw null; }
+	private bool NoWalkUpdateAttribute() {
+        GameManager.GetAttribute(gridPosition, out int code, out int stop);
+        var table = GameManager.GetAttributeTable(code);
+        if (table.Attribute == AttributeData.MapAttribute.MATTR_SLOPE_02 && currentSequence == SequenceID.Active)
+        {
+            if (PlayerWork.IsFormBicycle() && PlayerWork.bicycleGear)
+                return false;
+            return true;
+        }
+        return false;
+    }
+	private bool IsEncount() {
+        GameManager.GetAttribute(gridPosition, out int code, out int stop);
+        var table = GameManager.GetAttributeTable(code);
+        var attribute = table.Attribute;
+        int exCodeRaw = GameManager.GetAttributeExCodeRaw(gridPosition);
+        if (attribute == AttributeData.MapAttribute.MATTR_BRIDGE_GROUND_E || attribute == AttributeData.MapAttribute.MATTR_BRIDGEV_GROUND_E || attribute == AttributeData.MapAttribute.MATTR_BRIDGEH_GROUND_E)
+            return !GameManager.IsHighAttribute(exCodeRaw, Height);
+        return table.Encount;
+    }
+	public void ChangeForm(int form, global::System.Action onFinish) {
+        if (currentForm == form)
+        {
+            onFinish?.Invoke();
+            return;
+        }
+        changeFormRetInput = PlayerWork.isPlayerInputActive;
+        PlayerWork.isPlayerInputActive = false;
+        nextForm = form;
+        formFinish = onFinish;
+        ChangeAnime(0.0f); // TO CHECK: the binary leaves s0 unset (ChangeAnime never reads time)
+    }
+	private void ChangeAnime(float time) {
+        currentForm = nextForm;
+        switch (currentForm)
+        {
+            case 0:
+                _meshGroup.SetActive(true);
+                _bicycleObject.SetActive(false);
+                break;
+            case 1:
+                _meshGroup.SetActive(false);
+                _bicycleObject.SetActive(true);
+                break;
+            case 2:
+                _meshGroup.SetActive(true);
+                _bicycleObject.SetActive(false);
+                break;
+        }
+        GetIdleAnimationIndex(out int index, out float duration);
+        _animationPlayer.Play(index, 0.0f);
+        PlayerWork.isPlayerInputActive = changeFormRetInput;
+        formFinish?.Invoke();
+    }
+	public void JumpPlayerActionEvent(string label) {
+        PlayerWork._isPlayerInputActive_ContactEvent = false;
+        EvDataManager.Instanse.JumpLabel(label, null);
+    }
 	private void KairikiPushObject(float deltaTime) {
         float prevPushTime = KairikiPushTime;
         int prevPushIndex = KairikiPushObjectIndex;
@@ -1097,60 +1661,408 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
             }
         }
     }
-	private void LimitHeight() { /*@B 0x6000752*/ throw null; }
-	public void WorkApplyVisibility() { /*@B 0x6000753*/ throw null; }
-	public void StopCrossInputAndBicycle() { /*@B 0x6000754*/ throw null; }
-	public void TenkaiWwise() { /*@B 0x6000755*/ throw null; }
-	private void UpdateIdle() { /*@B 0x6000756*/ throw null; }
-	private int GetNextGesture() { /*@B 0x6000757*/ throw null; }
-	public void PlayIdle(float duration) { /*@B 0x6000758*/ throw null; }
-	public void PlayIdle() { /*@B 0x6000759*/ throw null; }
-	public override void GetIdleAnimationIndex(out int index, out float duration) { /*@B 0x600075A*/ throw null; }
-	public bool IsIdle() { /*@B 0x600075B*/ throw null; }
-	public void GetWalkAnimationIndex(out int index, out float duration) { /*@B 0x600075C*/ throw null; }
-	public void PlayWalk() { /*@B 0x600075D*/ throw null; }
-	public bool IsWalk() { /*@B 0x600075E*/ throw null; }
-	public void PlayRun() { /*@B 0x600075F*/ throw null; }
-	public bool IsRun() { /*@B 0x6000760*/ throw null; }
-	public void PlayWallWalk() { /*@B 0x6000761*/ throw null; }
-	public void PlayNaminoriStart() { /*@B 0x6000762*/ throw null; }
-	public void PlayNaminoriEnd() { /*@B 0x6000763*/ throw null; }
-	public void PlayNaminoriLoop() { /*@B 0x6000764*/ throw null; }
-	public void PlayJumpStart() { /*@B 0x6000765*/ throw null; }
-	public void PlayJumpLoop() { /*@B 0x6000766*/ throw null; }
-	public void PlayJumpEnd() { /*@B 0x6000767*/ throw null; }
-	public void PlayHandOver() { /*@B 0x6000768*/ throw null; }
+	private void LimitHeight() {
+        if ((object)FieldManager.Instance == null)
+            return;
+        if (PlayerWork.IsFormSwim())
+            return;
+        if (!isLanding)
+            return;
+        if (FieldManager.Instance.IsNoEntry(gridPosition, worldPosition))
+            return;
+        if (!GameManager.IsHighAttribute(GameManager.GetAttributeExCodeRaw(gridPosition), worldPosition.y))
+            return;
+
+        if (CollisionUtility.IsOverCollideGround(worldPosition, 0.5f, Layer.Ground))
+        {
+            moveVector.y = CollisionUtility.OverCollideGround(worldPosition, 0.0f, Layer.Ground, true);
+            return;
+        }
+
+        Collider[] colliders = CollisionUtility.OverrapSphere(transform, new Vector3(0.0f, 0.5f, 0.0f), 0.0f, out int count, Layer.Ground);
+        for (int i = 0; i < count; i++)
+        {
+            BoxCollider box = colliders[i] as BoxCollider;
+            if (box)
+            {
+                float top = box.size.y * 0.5f + box.center.y + box.transform.position.y;
+                if (moveVector.y < top)
+                    moveVector.y = top;
+            }
+        }
+    }
+	public void WorkApplyVisibility() {
+        watchVisibility = FlagWork.GetFlag(EvWork.FLAG_INDEX.FE_POKETCH_GET);
+        hatVariation = FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_GET_CAP) ? 0 : 1;
+        shoesVariation = FlagWork.GetFlag(EvWork.FLAG_INDEX.FE_SHOES_GET) ? 0 : 1;
+        bicycleColorIndex = PlayerWork.bicycleColor;
+    }
+	public void StopCrossInputAndBicycle() {
+        _crossInputDir = DIR.DIR_NOT;
+        _isCrossUpdate = false;
+        _crossInputVectol = Vector2.zero;
+        _bicOldAcceleration = 0.0f;
+        _bicAccelerationTime = 0.0f;
+    }
+	public void TenkaiWwise() {
+        var attributeEx = GameManager.GetAttributeEx(gridPosition, Height);
+        float value;
+        if (attributeEx.Code == (int)AttributeData.MapAttributeEx.MATTREX_TENKAI_KAIDAN || attributeEx.Code == (int)AttributeData.MapAttributeEx.MATTREX_TENKAI_YUKA)
+        {
+            float low = DataManager.GetFieldCommonParam(ParamIndx.Tenkai_KaidanHeight_L);
+            float high = DataManager.GetFieldCommonParam(ParamIndx.Tenkai_KaidanHeight_H);
+            value = (Height - low) / (high - low) * 100.0f;
+            if (!(value >= 0.3f))
+                value = 0.0f;
+            else if (value > 100.0f)
+                value = 100.0f;
+        }
+        else
+        {
+            value = 0.0f;
+        }
+        AudioManager.Instance.SetRTPCValue(AK.GAME_PARAMETERS.ARC_STAIRS, value);
+    }
+	private void UpdateIdle() {
+        int index = _animationPlayer.currentIndex;
+        if (index == Animation.Gesture0 || index == Animation.Gesture1 || index == Animation.Gesture2)
+        {
+            if (_animationPlayer.currentRemaingTime > 0.2f)
+                return;
+            _animationPlayer.Play(GetNextGesture(), Math.Max(_animationPlayer.currentRemaingTime, 0.0f));
+        }
+        else if (index == Animation.Idle)
+        {
+            if (_animationPlayer.currentPlayingTime <= 5.0f)
+                return;
+            _animationPlayer.Play(GetNextGesture(), 0.2f);
+        }
+        else
+        {
+            PlayIdle();
+        }
+    }
+	private int GetNextGesture() {
+        int random = UnityEngine.Random.Range(0, 3);
+        switch (_animationPlayer.currentIndex)
+        {
+            case Animation.Idle:
+                if (random == 0)
+                    return Animation.Gesture0;
+                if (random == 1)
+                    return Animation.Gesture1;
+                return Animation.Gesture2;
+            case Animation.Gesture0:
+                if (random == 0)
+                    return Animation.Gesture1;
+                if (random == 1)
+                    return Animation.Gesture2;
+                return Animation.Idle;
+            case Animation.Gesture1:
+                if (random == 0)
+                    return Animation.Gesture0;
+                if (random == 1)
+                    return Animation.Gesture2;
+                return Animation.Idle;
+            case Animation.Gesture2:
+                if (random == 0)
+                    return Animation.Gesture0;
+                if (random == 1)
+                    return Animation.Gesture1;
+                return Animation.Idle;
+        }
+        return Animation.Idle;
+    }
+	public void PlayIdle(float duration) {
+        GetIdleAnimationIndex(out int index, out float idleDuration);
+        _animationPlayer.Play(index, duration);
+        if (FootSeWalkStartEvent)
+            return;
+        FootSeWalkStartEvent = true;
+        AudioManager.Instance.PlaySe(AK.EVENTS.WALK_END, null);
+    }
+	public void PlayIdle() {
+        if (PlayerWork.IsFormBicycle() && (PlayerWork.FieldInputMode == 1 || PlayerWork.FieldInputMode == 2))
+        {
+            if (_animationPlayer.IsPlaying)
+                _animationPlayer.Stop();
+            return;
+        }
+        GetIdleAnimationIndex(out int index, out float duration);
+        _animationPlayer.Play(index, duration);
+        if (FootSeWalkStartEvent)
+            return;
+        FootSeWalkStartEvent = true;
+        AudioManager.Instance.PlaySe(AK.EVENTS.WALK_END, null);
+    }
+	public override void GetIdleAnimationIndex(out int index, out float duration) {
+        if (PlayerWork.IsFormBicycle())
+        {
+            index = Animation.BikeIdle;
+        }
+        else if (PlayerWork.IsFormSwim())
+        {
+            index = Animation.NaminoriLoop;
+        }
+        else
+        {
+            base.GetIdleAnimationIndex(out index, out duration);
+            return;
+        }
+        duration = 0.2f;
+    }
+	public bool IsIdle() {
+        return _animationPlayer.currentIndex == Animation.Idle || _animationPlayer.currentIndex == Animation.BikeIdle;
+    }
+	public void GetWalkAnimationIndex(out int index, out float duration) {
+        duration = 0.2f;
+        if (PlayerWork.IsFormBicycle())
+            index = Animation.BikeWalk;
+        else if (PlayerWork.IsFormSwim())
+            index = Animation.NaminoriLoop;
+        else if (AttributeID.MATR_IsGrass(nowAttribute.Code) || AttributeID.MATR_IsLongGrass(nowAttribute.Code))
+            index = Animation.GrassWalk;
+        else
+            index = Animation.Walk;
+    }
+	public void PlayWalk() {
+        GetWalkAnimationIndex(out int index, out float duration);
+        _animationPlayer.Play(index, duration);
+        if (FootSeWalkStartEvent)
+        {
+            FootSeWalkStartEvent = false;
+            AudioManager.Instance.PlaySe(0x2fb2f77, null); // event id has no AK.EVENTS constant in the shipped metadata
+        }
+    }
+	public bool IsWalk() {
+        int index = _animationPlayer.currentIndex;
+        return index == Animation.BikeWalk || index == Animation.GrassWalk || index == Animation.Walk;
+    }
+	public void PlayRun() {
+        int index;
+        if (PlayerWork.IsFormBicycle())
+            index = Animation.BikeRun;
+        else if (PlayerWork.IsFormSwim())
+            index = Animation.NaminoriLoop;
+        else if (AttributeID.MATR_IsGrass(nowAttribute.Code) || AttributeID.MATR_IsLongGrass(nowAttribute.Code))
+            index = Animation.GrassRun;
+        else
+            index = Animation.Run;
+        _animationPlayer.Play(index, 0.2f);
+        if (FootSeWalkStartEvent)
+        {
+            FootSeWalkStartEvent = false;
+            AudioManager.Instance.PlaySe(0x2fb2f77, null);
+        }
+    }
+	public bool IsRun() {
+        int index = _animationPlayer.currentIndex;
+        return index == Animation.BikeRun || index == Animation.GrassRun || index == Animation.Run;
+    }
+	public void PlayWallWalk() {
+        int index;
+        if (PlayerWork.IsFormBicycle())
+            index = Animation.BikeWalk;
+        else if (PlayerWork.IsFormSwim())
+            index = Animation.NaminoriLoop;
+        else if (AttributeID.MATR_IsGrass(nowAttribute.Code) || AttributeID.MATR_IsLongGrass(nowAttribute.Code))
+            index = Animation.GrassWalk;
+        else
+            index = Animation.WallWalk;
+        _animationPlayer.Play(index, 0.2f);
+        if (FootSeWalkStartEvent)
+        {
+            FootSeWalkStartEvent = false;
+            AudioManager.Instance.PlaySe(0x2fb2f77, null);
+        }
+    }
+	public void PlayNaminoriStart() {
+        _animationPlayer.Play(Animation.NaminoriStart, 0.1f);
+        if (FootSeWalkStartEvent)
+        {
+            FootSeWalkStartEvent = false;
+            AudioManager.Instance.PlaySe(0x2fb2f77, null);
+        }
+    }
+	public void PlayNaminoriEnd() {
+        _animationPlayer.Play(Animation.NaminoriEnd, 0.1f);
+        if (FootSeWalkStartEvent)
+            return;
+        FootSeWalkStartEvent = true;
+        AudioManager.Instance.PlaySe(AK.EVENTS.WALK_END, null);
+    }
+	public void PlayNaminoriLoop() {
+        _animationPlayer.Play(Animation.NaminoriLoop, 0.2f);
+    }
+	public void PlayJumpStart() {
+        if (PlayerWork.IsFormBicycle())
+            _animationPlayer.Play(Animation.BikeWalk, 0.2f, 0.0f);
+        else if (PlayerWork.IsFormSwim())
+            _animationPlayer.Play(Animation.JumpStart, 0.2f, 0.0f);
+        else
+            _animationPlayer.Play(Animation.JumpStart, 0.2f, 0.1333333f);
+    }
+	public void PlayJumpLoop() {
+        int index;
+        if (PlayerWork.IsFormBicycle())
+            index = Animation.BikeWalk;
+        else if (PlayerWork.IsFormSwim())
+            index = Animation.JumpLoop;
+        else
+            index = Animation.JumpLoop;
+        _animationPlayer.Play(index, 0.2f);
+    }
+	public void PlayJumpEnd() {
+        if (PlayerWork.IsFormBicycle())
+            return;
+        if (PlayerWork.IsFormSwim())
+            _animationPlayer.Play(Animation.JumpEnd, 0.2f);
+        else
+            _animationPlayer.Play(Animation.JumpEnd, 0.2f);
+    }
+	public void PlayHandOver() {
+        _animationPlayer.Play(Animation.HandOver, 0.2f);
+    }
 	public void PlaySit() {
         _animationPlayer.Play(Animation.Sit, 0.0f);
     }
-	public void PlaySquat() { /*@B 0x600076A*/ throw null; }
-	public void PlayGetPause() { /*@B 0x600076B*/ throw null; }
-	public void PlayPoketchStart() { /*@B 0x600076C*/ throw null; }
-	public void PlayPoketchLoop() { /*@B 0x600076D*/ throw null; }
-	public void PlayPoketchEnd() { /*@B 0x600076E*/ throw null; }
-	public bool IsPlayPoketchLoop() { /*@B 0x600076F*/ throw null; }
-	public void PlaySwampStart() { /*@B 0x6000770*/ throw null; }
-	public void PlaySwampLoop() { /*@B 0x6000771*/ throw null; }
-	public void PlaySwampEnd() { /*@B 0x6000772*/ throw null; }
-	public void PlaySpin(bool restart = false) { /*@B 0x6000773*/ throw null; }
-	public void PlayWatering() { /*@B 0x6000774*/ throw null; }
+	public void PlaySquat() {
+        _animationPlayer.Play(Animation.Squat, 0.2f);
+    }
+	public void PlayGetPause() {
+        _animationPlayer.Play(Animation.GetPause, 0.2f);
+    }
+	public void PlayPoketchStart() {
+        _animationPlayer.Play(PlayerWork.IsFormSwim() ? Animation.NaminoriOperationStart : Animation.Poketch, 0.2f);
+    }
+	public void PlayPoketchLoop() {
+        _animationPlayer.Play(PlayerWork.IsFormSwim() ? Animation.NaminoriOperationLoop : Animation.OperationLoop, 0.2f);
+    }
+	public void PlayPoketchEnd() {
+        _animationPlayer.Play(PlayerWork.IsFormSwim() ? Animation.NaminoriOperationEnd : Animation.OperationEnd, 0.2f);
+    }
+	public bool IsPlayPoketchLoop() {
+        int index = PlayerWork.IsFormSwim() ? Animation.NaminoriOperationLoop : Animation.OperationLoop;
+        return GetAnimationPlayer().currentIndex == index;
+    }
+	public void PlaySwampStart() {
+        _animationPlayer.Play(Animation.SwampStart, 0.2f);
+    }
+	public void PlaySwampLoop() {
+        _animationPlayer.Play(Animation.SwampLoop, 0.2f);
+    }
+	public void PlaySwampEnd() {
+        _animationPlayer.Play(Animation.SwampEnd, 0.2f);
+    }
+	public void PlaySpin(bool restart = false) {
+        if (restart)
+            PlayIdle();
+        _animationPlayer.Play(Animation.Spin, restart ? 0.0f : 0.2f);
+    }
+	public void PlayWatering() {
+        _animationPlayer.Play(Animation.Waterning, 0.2f);
+        VisiblePodMove.SetValue(0.0f);
+        VisiblePodMove.MoveTime(1.0f, 0.4f);
+    }
 	public void PlayWateringLoop() {
         _animationPlayer.Play(Animation.WateringLoop, 0.0f);
     }
-	public void PlayWateringEnd() { /*@B 0x6000776*/ throw null; }
-	public void PlayFlyStart() { /*@B 0x6000777*/ throw null; }
-	public void PlayFlyEnd() { /*@B 0x6000778*/ throw null; }
-	public void PlayRockClimbUp() { /*@B 0x6000779*/ throw null; }
-	public void PlayRockClimbDown() { /*@B 0x600077A*/ throw null; }
-	public bool IsFishingStart() { /*@B 0x600077B*/ throw null; }
-	public void PlayFishingStart() { /*@B 0x600077C*/ throw null; }
-	public void PlayFishingLoop() { /*@B 0x600077D*/ throw null; }
-	public void PlayFishingHit() { /*@B 0x600077E*/ throw null; }
-	public void PlayFishingHitLoop() { /*@B 0x600077F*/ throw null; }
-	public void PlayFishingEnd() { /*@B 0x6000780*/ throw null; }
-	public void PlayFishingSuccess() { /*@B 0x6000781*/ throw null; }
-	public void PlayFishingSuccessLoop() { /*@B 0x6000782*/ throw null; }
-	private void BicycleDecelerate(float deltatime) { /*@B 0x6000783*/ throw null; }
+	public void PlayWateringEnd() {
+        _animationPlayer.Play(Animation.WateringEnd, 0.2f);
+        VisiblePodMove.SetValue(1.0f);
+        VisiblePodMove.MoveTime(0.0f, 0.4f);
+    }
+	public void PlayFlyStart() {
+        _animationPlayer.Play(Animation.FlyStart, 0.0f);
+    }
+	public void PlayFlyEnd() {
+        _animationPlayer.Play(Animation.FlyEnd, 0.0f);
+    }
+	public void PlayRockClimbUp() {
+        _animationPlayer.Play(Animation.RockClimbUp, 0.1f);
+    }
+	public void PlayRockClimbDown() {
+        _animationPlayer.Play(Animation.RockClimbDown, 0.1f);
+    }
+	public bool IsFishingStart() {
+        int index = _animationPlayer.currentIndex;
+        return index == Animation.NaminoriFishingStart || index == Animation.FinishingStart;
+    }
+	public void PlayFishingStart() {
+        _animationPlayer.Play(PlayerWork.IsFormSwim() ? Animation.NaminoriFishingStart : Animation.FinishingStart, 0.0f);
+    }
+	public void PlayFishingLoop() {
+        _animationPlayer.Play(PlayerWork.IsFormSwim() ? Animation.NaminoriFishingLoop : Animation.FinishingLoop, 0.0f);
+    }
+	public void PlayFishingHit() {
+        _animationPlayer.Play(PlayerWork.IsFormSwim() ? Animation.NaminoriFishingHit : Animation.FinishingHit, 0.0f);
+    }
+	public void PlayFishingHitLoop() {
+        _animationPlayer.Play(PlayerWork.IsFormSwim() ? Animation.NaminoriFishingHitLoop : Animation.FishingHitLoop, 0.2f);
+    }
+	public void PlayFishingEnd() {
+        _animationPlayer.Play(PlayerWork.IsFormSwim() ? Animation.NaminoriFishingEnd : Animation.FinishingEnd, 0.0f);
+    }
+	public void PlayFishingSuccess() {
+        _animationPlayer.Play(PlayerWork.IsFormSwim() ? Animation.NaminoriFishingSuccess : Animation.FishingFinishSuccsess, 0.0f);
+    }
+	public void PlayFishingSuccessLoop() {
+        _animationPlayer.Play(PlayerWork.IsFormSwim() ? Animation.NaminoriFishingSuccessLoop : Animation.FishingFinishSuccsessLoop, 0.2f);
+    }
+	private void BicycleDecelerate(float deltatime) {
+        _bicAccelerationTime = 0.0f;
+        if (_bicOldAcceleration <= 0.0f)
+            return;
+
+        if (!PlayerWork.IsFormBicycle())
+        {
+            _bicOldAcceleration = 0.0f;
+            return;
+        }
+
+        float stopSpeed = DataManager.FieldCommonParam[(int)(PlayerWork.bicycleGear ? ParamIndx.BicStopSpd_High : ParamIndx.BicStopSpd_Low)].param;
+        float decelerateTime = _bicDecelerateTime;
+        float acceleration = _bicOldAcceleration + stopSpeed * decelerateTime * 30.0f;
+        _bicOldAcceleration = acceleration <= 0.0f ? 0.0f : acceleration;
+        _bicDecelerateTime = Math.Min(decelerateTime + deltatime, 10.0f);
+
+        Vector3 direction = transform.forward;
+        float radian = (float)Math.Atan2(direction.x, direction.z);
+        direction = new Vector3((float)Math.Sin(radian), 0.0f, (float)Math.Cos(radian));
+
+        Vector2Int grid = PositionToGrid(worldPosition + direction * 0.5f);
+        GameManager.GetAttribute(grid, out int code, out int stop);
+        if (CanEntryAttributeBycJump(code, stop, direction, out Vector3 jumpvector) && IsBicJumpObjectEntity(ref grid, jumpvector.x))
+        {
+            if (jumpvector.x == -1.0f)
+                yawAngle = 270.0f;
+            if (jumpvector.x == 1.0f)
+                yawAngle = 90.0f;
+            Vector2 gridPos = GridToPosition(grid);
+            Vector3 target = new Vector3(gridPos.x, Height, gridPos.y);
+            target = target + jumpvector * (PlayerWork.bicycleGear ? 3.0f : 1.0f);
+            _bicJump.SetUp(transform.position, target, PlayerWork.bicycleGear);
+            PlayRun();
+            _bicOldAcceleration = 0.0f;
+            _bicAccelerationTime = 0.0f;
+            nextSequence = SequenceID.BicycleJump;
+            return;
+        }
+
+        moveVector = CollisionUtility.CollideObstacle(worldPosition, 0.4f, direction, _bicOldAcceleration * 0.3f * deltatime, out bool jump, out isExtruded, out float dotAngle, Layer.Obstacle | Layer.Jump, 0.99f);
+        if (jump || isExtruded)
+        {
+            moveVector = Vector3.zero;
+            _bicOldAcceleration = 0.0f;
+            return;
+        }
+        if (Dpr.FieldGridCollision.CheckGriCollisionMoveEntity(out Vector3 outVelocity, worldPosition, moveVector, 0.4f, CheckGridCollision) != Dpr.FieldGridCollision.GridCollisionType.None)
+        {
+            moveVector = Vector3.zero;
+            _bicOldAcceleration = 0.0f;
+            isExtruded = true;
+        }
+    }
 	public void SetRideBicycle(global::System.Action onfinish = null) {
         PlayerWork.SetFormBicycle();
         ChangeForm(1, () =>
@@ -1159,10 +2071,29 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
             onfinish?.Invoke();
         });
     }
-	public bool IsRideBicycle() { /*@B 0x6000785*/ throw null; }
-	private void ChangeBicycleGear(bool gear) { /*@B 0x6000786*/ throw null; }
-	private bool GetBicycleGear() { /*@B 0x6000787*/ throw null; }
-	public void StopBicycleDecelerate() { /*@B 0x6000788*/ throw null; }
+	public bool IsRideBicycle() {
+        return PlayerWork.IsFormBicycle();
+    }
+	private void ChangeBicycleGear(bool gear) {
+        if (PlayerWork.transitionZoneID != ZoneID.UNKNOWN)
+            return;
+        PlayerWork.bicycleGear = gear;
+        _isBicMaxSpeed = false;
+        if (!gear)
+        {
+            AudioManager.Instance.PlaySe(AK.EVENTS.S_FI008, null);
+            return;
+        }
+        AudioManager.Instance.PlaySe(AK.EVENTS.S_FI007, null);
+        FieldManager.Instance.CallEffect(EffectFieldID.EF_F_CYCLE_GEAR_04, transform);
+    }
+	private bool GetBicycleGear() {
+        return PlayerWork.bicycleGear;
+    }
+	public void StopBicycleDecelerate() {
+        _bicOldAcceleration = 0.0f;
+        _bicAccelerationTime = 0.0f;
+    }
 	public void MaxBicycleDecelerate() {
         _bicOldAcceleration = DataManager.FieldCommonParam[(int)ParamIndx.Gear4Accel].param;
         _bicAccelerationTime = 10.0f;
