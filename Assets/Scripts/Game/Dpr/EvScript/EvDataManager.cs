@@ -13537,27 +13537,171 @@ namespace Dpr.EvScript
             _umaAnimatorCtr[index].Play(stateName);
             return true;
         }
-		private bool EvCmd_UMA_ANIME_ATTACH() { /*@B 0x60090A8*/ throw null; }
-		private bool EvCmd_UMA_PLAY_WAIT() { /*@B 0x60090A9*/ throw null; }
-		private bool EvCmd_OBJ_ANIME_SPEED() { /*@B 0x60090AA*/ throw null; }
-		private bool EvCmd_OBJ_SCALE() { /*@B 0x60090AB*/ throw null; }
-		private bool EvCmd_BADGE_GET() { /*@B 0x60090AC*/ throw null; }
-		private bool EvCmdAddUgItem() { /*@B 0x60090AD*/ throw null; }
+		private bool EvCmd_UMA_ANIME_ATTACH() {
+            int index = GetArgInt(_evArg[1]);
+            FieldObjectEntity entity = Find_fieldObjectEntity(GetArgString(_evData, _evArg[2]));
+            entity.isExtruded = false;
+            entity.isLanding = false;
+            entity.SetPositionDirect(Vector3.zero);
+            _umaAnimatorCtr[index].SetChild(entity.transform);
+            return true;
+        }
+		private bool EvCmd_UMA_PLAY_WAIT() {
+            int index = GetArgInt(_evArg[1]);
+            if (_evArg.Length > 1)
+            {
+                // shipped: tests Length > 1 but reads _evArg[2] (Length == 2 throws)
+                string stateName = GetArgString(_evData, _evArg[2]);
+                return !_umaAnimatorCtr[index].IsPlay(stateName);
+            }
+            return !_umaAnimatorCtr[index].IsPlay();
+        }
+		private bool EvCmd_OBJ_ANIME_SPEED() {
+            FieldObjectEntity entity;
+            if (_evArg[1].argType == EvData.ArgType.String)
+                entity = Find_fieldObjectEntity(GetArgString(_evData, _evArg[1]));
+            else
+                entity = GetFieldObject(GetArgInt(_evArg[1]));
+
+            if (entity == null)
+                return false;
+
+            AnimationPlayer animPlayer = entity.GetAnimationPlayer();
+            if (animPlayer == null)
+                return false;
+
+            animPlayer.SetAnimSpeed(GetArgFloat(_evArg[2]));
+            return true;
+        }
+		private bool EvCmd_OBJ_SCALE() {
+            FieldObjectEntity entity;
+            if (_evArg[1].argType == EvData.ArgType.String)
+                entity = Find_fieldObjectEntity(GetArgString(_evData, _evArg[1]));
+            else
+                entity = GetFieldObject(GetArgInt(_evArg[1]));
+
+            if (entity == null)
+                return true;
+
+            float start = GetArgFloat(_evArg[2]);
+            float end = GetArgFloat(_evArg[3]);
+            float frame = GetArgFloat(_evArg[4]);
+            entity.SetScaleData(start, end, frame * (1f / 30f));
+            return true;
+        }
+		private bool EvCmd_BADGE_GET() {
+            int badgeNo;
+            _isOpenSubContentsMenu = true;
+            badgeNo = GetArgInt(_evArg[1]);
+            Sequencer.Start(OpOpenSubContentsWindow<UIBadgeGet>(UIWindowID.BADGE_GET, window => window.Open(UIWindow.WINDOWID_FIELD, badgeNo)));
+            return true;
+        }
+		private bool EvCmdAddUgItem() {
+            int ugItemNo = GetArgInt(_evArg[1]);
+            int num = GetArgInt(_evArg[2]);
+            UgItemWork.AddUgItem(ugItemNo, num);
+            FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[3].data, 1);
+            return true;
+        }
 		private bool EvCmd_DOF_FAR_DEPTH() {
             GameManager.fieldCamera.ScriptFarDepth(GetArgFloat(_evArg[1]), GetArgFloat(_evArg[2]));
             return true;
         }
-		private bool EvCmd_DISPLAY_MESSAGE() { /*@B 0x60090AF*/ throw null; }
-		private bool EvCmd_DISPLAY_MESSAGE_CLOSE() { /*@B 0x60090B0*/ throw null; }
-		private bool EvCmdCustomBallTrainerPage() { /*@B 0x60090B1*/ throw null; }
-		private bool EvCmdCustomBallTrainerCopyOpen() { /*@B 0x60090B2*/ throw null; }
-		private bool EvCmdUgItemName() { /*@B 0x60090B3*/ throw null; }
-		private bool EvCmdFureaiTalkStart() { /*@B 0x60090B4*/ throw null; }
+		private bool EvCmd_DISPLAY_MESSAGE() {
+            if (_evArg.Length < 2)
+            {
+                FieldCanvas.RedGyaradosMessage(true);
+                FieldCanvas.ShowDisplayMessage("100-msg_telop_01", "dp_scenario3", false);
+            }
+            else
+            {
+                string[] split = GetArgString(_evData, _evArg[1]).Split('%');
+                FieldCanvas.RedGyaradosMessage(false);
+                FieldCanvas.ShowDisplayMessage(split[1], split[0], false);
+            }
+            return true;
+        }
+		private bool EvCmd_DISPLAY_MESSAGE_CLOSE() {
+            FieldCanvas.CloseDisplayMessage();
+            return true;
+        }
+		private bool EvCmdCustomBallTrainerPage() {
+            SealTemplateWindow window;
+            int arg2;
+            int sealTemplateId = GetArgInt(_evArg[1]);
+            _isOpenCustomBallTrainer = true;
+            window = UIManager.Instance.CreateUIWindow<SealTemplateWindow>(UIWindowID.SEAL_TEMPLATE);
+            arg2 = _evArg[2].data;
+            window.onClosed += _ =>
+            {
+                _isOpenCustomBallTrainer = false;
+                SetWork(arg2, window.IsCopyRequest ? 1 : 0);
+            };
+            window.Open((Dpr.Trainer.SealTemplateID)sealTemplateId, UIWindow.WINDOWID_FIELD);
+            return true;
+        }
+		private bool EvCmdCustomBallTrainerCopyOpen() {
+            int arg2;
+            int sealTemplateID = GetArgInt(_evArg[1]);
+            _isOpenCustomBallTrainer = true;
+            Dpr.BallDeco.CapsuleData capsuleData = default;
+            TrainerSystem.SetupSealTemplate(ref capsuleData, (Dpr.Trainer.SealTemplateID)sealTemplateID, null);
+            capsuleData.IsAppliedTemplate = true;
+            CapsuleInfo capsuleInfo = new CapsuleInfo(capsuleData, null);
+            UISeal window = UIManager.Instance.CreateUIWindow<UISeal>(UIWindowID.SEAL);
+            arg2 = _evArg[2].data;
+            window.OpenCopyOnly(capsuleInfo, true, result =>
+            {
+                _isOpenCustomBallTrainer = false;
+                SetWork(arg2, result ? 1 : 0);
+            }, UIWindow.WINDOWID_FIELD);
+            return true;
+        }
+		private bool EvCmdUgItemName() {
+            int tagIndex = GetArgInt(_evArg[1]);
+            int ugItemId = GetArgInt(_evArg[2]);
+            int itemCount = GetArgInt(_evArg[3]);
+            MessageWordSetHelper.SetUgItemNameWord(tagIndex, ugItemId, itemCount);
+            return true;
+        }
+		private bool EvCmdFureaiTalkStart() {
+            int temoti = GetArgInt(_evArg[1]);
+            FureaiManager.Instance.TalkStart(temoti);
+            return true;
+        }
 		private bool EvCmdFureaiTalkEnd() { return true; }
-		private bool EvCmdPlayFureaiVoiceNakayoshiRank() { /*@B 0x60090B6*/ throw null; }
-		private bool EvCmdCreateHyouta() { /*@B 0x60090B7*/ throw null; }
-		private bool EvCmd_FADE_DUNGEON_OUT() { /*@B 0x60090B8*/ throw null; }
-		private bool EvCmd_FADE_DUNGEON_IN() { /*@B 0x60090B9*/ throw null; }
+		private bool EvCmdPlayFureaiVoiceNakayoshiRank() {
+            uint temoti = (uint)GetArgInt(_evArg[1]);
+            FureaiManager.Instance.PlayVoice_TemotiID(temoti);
+            return true;
+        }
+		private bool EvCmdCreateHyouta() {
+            if (FlagWork.GetWork(EvWork.WORK_INDEX.SCWK_REG0) == 1)
+            {
+                FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG0, 0);
+                FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG1, 0);
+                return true;
+            }
+            if (FlagWork.GetWork(EvWork.WORK_INDEX.SCWK_REG1) != 1)
+            {
+                FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG1, 1);
+                Vector2Int grid = EntityManager.activeFieldPlayer.gridPosition + Vector2Int.right;
+                Sequencer.Start(Dpr.SubContents.Utils.CreateNPC(grid, "persons/field/fc1062_00", entity =>
+                {
+                    EvDataManager.Instanse.FieldObjectEntityAdd(entity);
+                    FlagWork.SetWork(EvWork.WORK_INDEX.SCWK_REG0, 1);
+                }, 0));
+            }
+            return false;
+        }
+		private bool EvCmd_FADE_DUNGEON_OUT() {
+            FieldCanvas.FadeOut(FieldFader.FieldFadeType.DUNGEON, _fadeSpeed);
+            return true;
+        }
+		private bool EvCmd_FADE_DUNGEON_IN() {
+            FieldCanvas.FadeIn(FieldFader.FieldFadeType.DUNGEON, _fadeSpeed);
+            return true;
+        }
 		private bool EvCmd_FADE_BUILDING_OUT() {
             FieldCanvas.FadeOut(FieldFader.FieldFadeType.BUILDING, _fadeSpeed);
             return true;
@@ -13566,7 +13710,26 @@ namespace Dpr.EvScript
             FieldCanvas.FadeIn(FieldFader.FieldFadeType.BUILDING, _fadeSpeed);
             return true;
         }
-		private bool EvCmd_FADE_AREA_OUT() { /*@B 0x60090BC*/ throw null; }
+		private bool EvCmd_FADE_AREA_OUT() {
+            FieldFader.FieldFadeType fadeType = FieldFader.FieldFadeType.AREA_UP;
+            if (_evArg.Length > 1)
+            {
+                switch (GetArgInt(_evArg[1]))
+                {
+                    case 2:
+                        fadeType = FieldFader.FieldFadeType.AREA_DOWN;
+                        break;
+                    case 3:
+                        fadeType = FieldFader.FieldFadeType.AREA_LEFT;
+                        break;
+                    case 4:
+                        fadeType = FieldFader.FieldFadeType.AREA_RIGHT;
+                        break;
+                }
+            }
+            FieldCanvas.FadeOut(fadeType, _fadeSpeed);
+            return true;
+        }
 		private bool EvCmd_FADE_AREA_IN() {
             FieldFader.FieldFadeType fadeType = FieldFader.FieldFadeType.AREA_UP;
             if (_evArg.Length > 1)
@@ -13597,7 +13760,12 @@ namespace Dpr.EvScript
 
             return true;
         }
-		private bool EvCmdEntryUwasaZukan() { /*@B 0x60090C0*/ throw null; }
+		private bool EvCmdEntryUwasaZukan() {
+            uint monsno = (uint)GetArgInt(_evArg[1]);
+            PokemonParam param = new PokemonParam((MonsNo)monsno, 1, 1);
+            ZukanWork.SetPoke(monsno, DPData.GET_STATUS.SEE, param.GetSex(), 0, false);
+            return true;
+        }
 		private bool EvCmdTrainingOpen() {
             _isTraining = false;
             _isOpenTraining = true;
@@ -13754,7 +13922,29 @@ namespace Dpr.EvScript
             }
             return true;
         }
-		private bool EvCmd_SET_LIGHTINTENSITY_POKE() { /*@B 0x60090D1*/ throw null; }
+		private bool EvCmd_SET_LIGHTINTENSITY_POKE() {
+            _isRunningLight[LIGHT_POKE] = true;
+            _setlight_timer[LIGHT_POKE] = 0.0f;
+            _start_lightIntensity[LIGHT_POKE] = EnvironmentController.global.AddPokeLightIntensity;
+            _setlight_timer_limit[LIGHT_POKE] = GetArgInt(_evArg[1]) / 30.0f;
+            float light = GetArgFloat(_evArg[2]);
+            if (light <= 0.0f)
+                _end_lightIntensity[LIGHT_POKE] = 0.0f;
+            else
+                _end_lightIntensity[LIGHT_POKE] = light - EnvironmentController.global.parameters.PokeLightIntensity;
+
+            EnvironmentController.global.callback -= EnvironmentControllerSetLightPoke;
+            if (_setlight_timer_limit[LIGHT_POKE] <= 0.0f)
+            {
+                EnvironmentController.global.AddPokeLightIntensity = _end_lightIntensity[LIGHT_POKE];
+                _isRunningLight[LIGHT_POKE] = false;
+            }
+            else
+            {
+                EnvironmentController.global.callback += EnvironmentControllerSetLightPoke;
+            }
+            return true;
+        }
 		private void EnvironmentControllerSetLight(global::EnvironmentController controller, float deltaTime) {
             bool isEnd = EnviromentLightUpdate(LIGHT_FILED, deltaTime, out float light);
             controller.AddLightIntensity = light;
@@ -13782,7 +13972,22 @@ namespace Dpr.EvScript
                 _isRunningLight[LIGHT_POKE] = false;
             }
         }
-		private bool EnviromentLightUpdate(int index, float deltaTime, out float ret) { /*@B 0x60090D5*/ throw null; }
+		private bool EnviromentLightUpdate(int index, float deltaTime, out float ret) {
+            float t = _setlight_timer[index];
+            if (t <= 0.0f)
+                t = 0.0f;
+            else
+                t = t / _setlight_timer_limit[index];
+
+            ret = Mathf.Lerp(_start_lightIntensity[index], _end_lightIntensity[index], t);
+            if (t >= 1.0f)
+            {
+                ret = _end_lightIntensity[index];
+                return true;
+            }
+            _setlight_timer[index] += deltaTime;
+            return false;
+        }
 		private bool EvCmd_TV_RED_GYARADOS_ON() {
             var entity = FieldTvRedGyaradosEntity.GetTvRedGyarados();
 
@@ -13798,7 +14003,12 @@ namespace Dpr.EvScript
 
             return true;
         }
-		private bool EvCmd_AUTO_MSG() { /*@B 0x60090D8*/ throw null; }
+		private bool EvCmd_AUTO_MSG() {
+            _eMsgSpeed = (DPData.MSGSPEED)GetArgInt(_evArg[1]);
+            _autoTime = GetArgFloat(_evArg[2]);
+            _isAutoMsg = true;
+            return true;
+        }
 		private bool EvCmd_AUTO_MSG_STOP() {
             _isAutoMsg = false;
             return true;
@@ -14194,7 +14404,11 @@ namespace Dpr.EvScript
             FlagWork.SetWork((EvWork.WORK_INDEX)_evArg[2].data, count);
             return true;
         }
-		private void ResetSelectMsgWindowStringDate() { /*@B 0x60090FF*/ throw null; }
+		private void ResetSelectMsgWindowStringDate() {
+            _custumWindow_msbt = "";
+            _custumWindow_Labels.Clear();
+            _custumWindow_RetIndex.Clear();
+        }
 		private bool EvCmd_TEMOTI_PER_RND() {
             int pos = GetArgInt(_evArg[1]);
             PokeParty party = PlayerWork.playerParty;
@@ -14225,16 +14439,1296 @@ namespace Dpr.EvScript
             }
             isSpBtlAruseus = false;
         }
-		private bool RunEvCmd(int index) { /*@B 0x6009104*/ throw null; }
-		private bool WarpSegmentHitCheck(global::FieldEventDoorEntity entity, out global::UnityEngine.Vector3 reusltPosition, out float subtendedAngle, out float lineDistance, float hitrange) { /*@B 0x6009105*/ throw null; }
-		private void SegmentHit(ref global::UnityEngine.Vector2 segA, ref global::UnityEngine.Vector2 segB, ref global::UnityEngine.Vector2 targetPos, float radius, out float angleAT, out float angleBT, out float distance, out int hitstatus) { /*@B 0x6009106*/ throw null; }
-		public void InitScriptLoad() { /*@B 0x6009107*/ throw null; }
-		public bool InitScriptLoadWait() { /*@B 0x6009108*/ throw null; }
-		public void InitScriptEnd() { /*@B 0x6009109*/ throw null; }
+		private bool RunEvCmd(int index) {
+            // Dispatch over EvCmdID.NAME (jump table 0x3ddab7c, 1234 entries). Cases whose callee is a plain
+            // `return true;` compile straight to the shared `return true` exit; commands with no case fall to default.
+            switch ((EvCmdID.NAME)index)
+            {
+                case EvCmdID.NAME._NOP: return EvCmdNop();
+                case EvCmdID.NAME._DUMMY: return EvCmdDummy();
+                case EvCmdID.NAME._END: return EvCmdEnd();
+                case EvCmdID.NAME._TIME_WAIT: return EvCmdTimeWait();
+                case EvCmdID.NAME._LD_REG_VAL: return EvCmdLoadRegValue();
+                case EvCmdID.NAME._LD_REG_WDATA: return EvCmdLoadRegWData();
+                case EvCmdID.NAME._LD_REG_ADR: return EvCmdLoadRegAdrs();
+                case EvCmdID.NAME._LD_ADR_VAL: return EvCmdLoadAdrsValue();
+                case EvCmdID.NAME._LD_ADR_REG: return EvCmdLoadAdrsReg();
+                case EvCmdID.NAME._LD_REG_REG: return EvCmdLoadRegReg();
+                case EvCmdID.NAME._LD_ADR_ADR: return EvCmdLoadAdrsAdrs();
+                case EvCmdID.NAME._CP_REG_REG: return EvCmdCmpRegReg();
+                case EvCmdID.NAME._CP_REG_VAL: return EvCmdCmpRegValue();
+                case EvCmdID.NAME._CP_REG_ADR: return EvCmdCmpRegAdrs();
+                case EvCmdID.NAME._CP_ADR_REG: return EvCmdCmpAdrsReg();
+                case EvCmdID.NAME._CP_ADR_VAL: return EvCmdCmpAdrsValue();
+                case EvCmdID.NAME._CP_ADR_ADR: return EvCmdCmpAdrsAdrs();
+                case EvCmdID.NAME._CMPVAL: return EvCmdCmpWkValue();
+                case EvCmdID.NAME._CMPWK: return EvCmdCmpWkWk();
+                case EvCmdID.NAME._DEBUG_WATCH_WORK: return EvCmdDebugWatch();
+                case EvCmdID.NAME._VM_ADD: return EvCmdVMMachineAdd();
+                case EvCmdID.NAME._CHG_COMMON_SCR: return EvCmdChangeCommonScr();
+                case EvCmdID.NAME._CHG_LOCAL_SCR: return EvCmdChangeLocalScr();
+                case EvCmdID.NAME._JUMP: return EvCmdGlobalJump();
+                case EvCmdID.NAME._OBJ_ID_JUMP: return EvCmdObjIDJump();
+                case EvCmdID.NAME._BG_ID_JUMP: return EvCmdBgIDJump();
+                case EvCmdID.NAME._PLAYER_DIR_JUMP: return EvCmdPlayerDirJump();
+                case EvCmdID.NAME._CALL: return EvCmdGlobalCall();
+                case EvCmdID.NAME._RET: return EvCmdRet();
+                case EvCmdID.NAME._IF_JUMP: return EvCmdIfJump();
+                case EvCmdID.NAME._IF_CALL: return EvCmdIfCall();
+                case EvCmdID.NAME._IFVAL_JUMP: return EvMacro_IFVAL_JUMP();
+                case EvCmdID.NAME._IFVAL_CALL: return EvMacro_IFVAL_CALL();
+                case EvCmdID.NAME._IFWK_JUMP: return EvMacro_IFWK_JUMP();
+                case EvCmdID.NAME._IFWK_CALL: return EvMacro_IFWK_CALL();
+                case EvCmdID.NAME._SWITCH: return EvMacro_SWITCH();
+                case EvCmdID.NAME._CASE_JUMP: return EvMacro_CASE_JUMP();
+                case EvCmdID.NAME._CASE_CANCEL: return EvMacro_CASE_CANCEL();
+                case EvCmdID.NAME._ADD_WAITICON: return EvCmdTimeWaitIconAdd();
+                case EvCmdID.NAME._DEL_WAITICON: return EvCmdTimeWaitIconDel();
+                case EvCmdID.NAME._FLAG_SET: return EvCmdFlagSet();
+                case EvCmdID.NAME._ARRIVE_FLAG_SET: return EvMacro_ARRIVE_FLAG_SET();
+                case EvCmdID.NAME._FLAG_RESET: return EvCmdFlagReset();
+                case EvCmdID.NAME._FLAG_CHECK: return EvCmdFlagCheck();
+                case EvCmdID.NAME._IF_FLAGON_JUMP: return EvMacro_IF_FLAGON_JUMP();
+                case EvCmdID.NAME._IF_FLAGOFF_JUMP: return EvMacro_IF_FLAGOFF_JUMP();
+                case EvCmdID.NAME._IF_FLAGON_CALL: return EvMacro_IF_FLAGON_CALL();
+                case EvCmdID.NAME._IF_FLAGOFF_CALL: return EvMacro_IF_FLAGOFF_CALL();
+                case EvCmdID.NAME._FLAG_CHECK_WK: return EvCmdFlagCheckWk();
+                case EvCmdID.NAME._FLAG_SET_WK: return EvCmdFlagSetWk();
+                case EvCmdID.NAME._TRAINER_FLAG_SET: return EvCmdTrainerFlagSet();
+                case EvCmdID.NAME._TRAINER_FLAG_RESET: return EvCmdTrainerFlagReset();
+                case EvCmdID.NAME._TRAINER_FLAG_CHECK: return EvCmdTrainerFlagCheck();
+                case EvCmdID.NAME._IF_TR_FLAGON_JUMP: return EvMacro_IF_TR_FLAGON_JUMP();
+                case EvCmdID.NAME._IF_TR_FLAGOFF_JUMP: return EvMacro_IF_TR_FLAGOFF_JUMP();
+                case EvCmdID.NAME._IF_TR_FLAGON_CALL: return EvMacro_IF_TR_FLAGON_CALL();
+                case EvCmdID.NAME._IF_TR_FLAGOFF_CALL: return EvMacro_IF_TR_FLAGOFF_CALL();
+                case EvCmdID.NAME._ADD_WK: return EvCmdWkAdd();
+                case EvCmdID.NAME._SUB_WK: return EvCmdWkSub();
+                case EvCmdID.NAME._LDVAL: return EvCmdLoadWkValue();
+                case EvCmdID.NAME._LDWK: return EvCmdLoadWkWk();
+                case EvCmdID.NAME._LDWKVAL: return EvCmdLoadWkWkValue();
+                case EvCmdID.NAME._TALKMSG_ALLPUT: return EvCmdTalkMsgAllPut();
+                case EvCmdID.NAME._TALKMSG_ALLPUT_PMS: return EvCmdTalkMsgAllPutPMS();
+                case EvCmdID.NAME._TALKMSG_PMS: return EvCmdTalkMsgPMS();
+                case EvCmdID.NAME._TALKMSG_BTOWER_APPEAR: return EvCmdTalkMsgTowerApper();
+                case EvCmdID.NAME._TALKMSG_NG_POKE_NAME: return EvCmdTalkMsgNgPokeName();
+                case EvCmdID.NAME._TALKMSG: return EvCmdTalkMsg();
+                case EvCmdID.NAME._TALKMSG_SP: return EvCmdTalkMsgSp();
+                case EvCmdID.NAME._TALKMSG_SP_AUTO: return EvCmdTalkMsgSpAuto();
+                case EvCmdID.NAME._TALKMSG_NOSKIP: return EvCmdTalkMsgNoSkip();
+                case EvCmdID.NAME._AB_KEYWAIT: return EvCmdABKeyWait();
+                case EvCmdID.NAME._AB_KEY_TIME_WAIT: return EvCmdABKeyTimeWait();
+                case EvCmdID.NAME._LAST_KEYWAIT: return EvCmdLastKeyWait();
+                case EvCmdID.NAME._NEXT_ANM_LAST_KEYWAIT: return EvCmdNextAnmLastKeyWait();
+                case EvCmdID.NAME._TALK_OPEN: return EvCmdTalkWinOpen();
+                case EvCmdID.NAME._TALK_CLOSE: return EvCmdTalkWinClose();
+                case EvCmdID.NAME._TALK_CLOSE_NO_CLEAR: return EvCmdTalkWinCloseNoClear();
+                case EvCmdID.NAME._TALK_KEYWAIT: return EvMacro_TALK_KEYWAIT();
+                case EvCmdID.NAME._EASY_OBJ_MSG: return EvMacro_EASY_OBJ_MSG();
+                case EvCmdID.NAME._EASY_MSG: return EvMacro_EASY_MSG();
+                case EvCmdID.NAME._BOARD_MAKE: return EvCmdBoardMake();
+                case EvCmdID.NAME._INFOBOARD_MAKE: return EvCmdInfoBoardMake();
+                case EvCmdID.NAME._BOARD_REQ: return EvCmdBoardReq();
+                case EvCmdID.NAME._BOARD_REQ_WAIT: return EvCmdBoardReqWait();
+                case EvCmdID.NAME._BOARD_MSG: return EvCmdBoardMsg();
+                case EvCmdID.NAME._BOARD_END_WAIT: return EvCmdBoardEndWait();
+                case EvCmdID.NAME._EASY_BOARD_MSG: return EvMacro_EASY_BOARD_MSG();
+                case EvCmdID.NAME._EASY_INFOBOARD_MSG: return EvMacro_EASY_INFOBOARD_MSG();
+                case EvCmdID.NAME._MENU_REQ: return EvCmdMenuReq();
+                case EvCmdID.NAME._BG_SCROLL: return EvCmdBgScroll();
+                case EvCmdID.NAME._YES_NO_WIN: return EvCmdYesNoWin();
+                case EvCmdID.NAME._GUINNESS_WIN: return EvCmdGuinnessWin();
+                case EvCmdID.NAME._BMPMENU_INIT: return EvCmdBmpMenuInit();
+                case EvCmdID.NAME._BMPMENU_INIT_EX: return EvCmdBmpMenuInitEx();
+                case EvCmdID.NAME._BMPMENU_MAKE_LIST: return EvCmdBmpMenuMakeList();
+                case EvCmdID.NAME._BMPMENU_MAKE_LIST16: return EvCmdBmpMenuMakeList16();
+                case EvCmdID.NAME._BMPMENU_START: return EvCmdBmpMenuStart();
+                case EvCmdID.NAME._BMPLIST_INIT: return EvCmdBmpListInit();
+                case EvCmdID.NAME._BMPLIST_INIT_EX: return EvCmdBmpListInitEx();
+                case EvCmdID.NAME._BMPLIST_MAKE_LIST: return EvCmdBmpListMakeList();
+                case EvCmdID.NAME._BMPLIST_START: return EvCmdBmpListStart();
+                case EvCmdID.NAME._BMPMENU_HV_START: return EvCmdBmpMenuHVStart();
+                case EvCmdID.NAME._SE_PLAY: return EvCmdSePlay();
+                case EvCmdID.NAME._SE_STOP: return EvCmdSeStop();
+                case EvCmdID.NAME._SE_WAIT: return EvCmdSeWait();
+                case EvCmdID.NAME._VOICE_PLAY: return EvCmdVoicePlay();
+                case EvCmdID.NAME._VOICE_WAIT: return EvCmdVoicePlayWait();
+                case EvCmdID.NAME._EASY_VOICE_MSG: return EvMacro_EASY_VOICE_MSG();
+                case EvCmdID.NAME._ME_PLAY: return EvCmdMePlay();
+                case EvCmdID.NAME._ME_WAIT: return EvCmdMeWait();
+                case EvCmdID.NAME._SND_INITIAL_VOL_SET: return EvCmdSndInitialVolSet();
+                case EvCmdID.NAME._BGM_PLAY: return EvCmdBgmPlay();
+                case EvCmdID.NAME._BGM_PLAY_CHECK: return EvCmdBgmPlayCheck();
+                case EvCmdID.NAME._BGM_STOP: return EvCmdBgmStop();
+                case EvCmdID.NAME._BGM_NOW_MAP_PLAY: return EvCmdBgmNowMapPlay();
+                case EvCmdID.NAME._BGM_SPECIAL_SET: return EvCmdBgmSpecialSet();
+                case EvCmdID.NAME._BGM_FADEOUT: return EvCmdBgmFadeOut();
+                case EvCmdID.NAME._BGM_FADEIN: return EvCmdBgmFadeIn();
+                case EvCmdID.NAME._BGM_PLAYER_PAUSE: return EvCmdBgmPlayerPause();
+                case EvCmdID.NAME._PLAYER_FIELD_DEMO_BGM_PLAY: return EvCmdPlayerFieldDemoBgmPlay();
+                case EvCmdID.NAME._CTRL_BGM_FLAG_SET: return EvCmdCtrlBgmFlagSet();
+                case EvCmdID.NAME._CTRL_BGM_FLAG_RESET: return EvCmdCtrlBgmFlagReSet();
+                case EvCmdID.NAME._PERAP_DATA_CHECK: return EvCmdPerapDataCheck();
+                case EvCmdID.NAME._PERAP_REC_START: return EvCmdPerapRecStart();
+                case EvCmdID.NAME._PERAP_REC_STOP: return EvCmdPerapRecStop();
+                case EvCmdID.NAME._PERAP_SAVE: return EvCmdPerapSave();
+                case EvCmdID.NAME._SND_CLIMAX_DATA_LOAD: return EvCmdSndClimaxDataLoad();
+                case EvCmdID.NAME._OBJ_ANIME: return EvCmdObjAnime();
+                case EvCmdID.NAME._OBJ_ANIME_POS: return EvCmdObjAnimePos();
+                case EvCmdID.NAME._OBJ_ANIME_WAIT: return EvCmdObjAnimeWait();
+                case EvCmdID.NAME._TALK_OBJ_PAUSE_ALL: return EvCmdTalkObjPauseAll();
+                case EvCmdID.NAME._OBJ_PAUSE_ALL: return EvCmdObjPauseAll();
+                case EvCmdID.NAME._OBJ_PAUSE_CLEAR_ALL: return EvCmdObjPauseClearAll();
+                case EvCmdID.NAME._OBJ_PAUSE: return EvCmdObjPause();
+                case EvCmdID.NAME._OBJ_PAUSE_CLEAR: return EvCmdObjPauseClear();
+                case EvCmdID.NAME._OBJ_ADD: return EvCmdObjAdd();
+                case EvCmdID.NAME._OBJ_DEL: return EvCmdObjDel();
+                case EvCmdID.NAME._VANISH_DUMMY_OBJ_ADD: return EvCmdVanishDummyObjAdd();
+                case EvCmdID.NAME._VANISH_DUMMY_OBJ_DEL: return EvCmdVanishDummyObjDel();
+                case EvCmdID.NAME._TURN_HERO_SITE: return EvCmdObjTurn();
+                case EvCmdID.NAME._TALK_OBJ_START: return EvMacro_TALK_OBJ_START();
+                case EvCmdID.NAME._TALK_OBJ_START_TURN_NOT: return EvMacro_TALK_OBJ_START_TURN_NOT();
+                case EvCmdID.NAME._TALK_OBJ_END: return EvMacro_TALK_OBJ_END();
+                case EvCmdID.NAME._TALK_START: return EvMacro_TALK_START();
+                case EvCmdID.NAME._EVENT_START: return EvMacro_EVENT_START();
+                case EvCmdID.NAME._TALK_END: return EvMacro_TALK_END();
+                case EvCmdID.NAME._EVENT_END: return EvMacro_EVENT_END();
+                case EvCmdID.NAME._PLAYER_POS_GET: return EvCmdPlayerPosGet();
+                case EvCmdID.NAME._OBJ_POS_GET: return EvCmdObjPosGet();
+                case EvCmdID.NAME._PLAYER_POS_OFFSET_SET: return EvCmdPlayerPosOffsetSet();
+                case EvCmdID.NAME._PLAYER_DIR_GET: return EvCmdPlayerDirGet();
+                case EvCmdID.NAME._NOT_ZONE_DEL_SET: return EvCmdNotZoneDelSet();
+                case EvCmdID.NAME._MOVE_CODE_CHANGE: return EvCmdMoveCodeChange();
+                case EvCmdID.NAME._MOVE_CODE_GET: return EvCmdMoveCodeGet();
+                case EvCmdID.NAME._PAIR_OBJID_SET: return EvCmdPairObjIdSet();
+                case EvCmdID.NAME._SP_EVENT_DATA_END: return EvMacro_SP_EVENT_DATA_END();
+                case EvCmdID.NAME._SCENE_CHANGE_LABEL: return EvMacro_SCENE_CHANGE_LABEL();
+                case EvCmdID.NAME._SCENE_CHANGE_DATA: return EvMacro_SCENE_CHANGE_DATA();
+                case EvCmdID.NAME._SCENE_CHANGE_END: return EvMacro_SCENE_CHANGE_END();
+                case EvCmdID.NAME._FLAG_CHANGE_LABEL: return EvMacro_FLAG_CHANGE_LABEL();
+                case EvCmdID.NAME._OBJ_CHANGE_LABEL: return EvMacro_OBJ_CHANGE_LABEL();
+                case EvCmdID.NAME._INIT_CHANGE_LABEL: return EvMacro_INIT_CHANGE_LABEL();
+                case EvCmdID.NAME._ADD_GOLD: return EvCmdAddGold();
+                case EvCmdID.NAME._SUB_GOLD: return EvCmdSubGold();
+                case EvCmdID.NAME._COMP_GOLD: return EvCmdCompGold();
+                case EvCmdID.NAME._GOLD_WIN_WRITE: return EvCmdGoldWinWrite();
+                case EvCmdID.NAME._GOLD_WIN_DEL: return EvCmdGoldWinDel();
+                case EvCmdID.NAME._GOLD_WRITE: return EvCmdGoldWrite();
+                case EvCmdID.NAME._COIN_WIN_WRITE: return EvCmdCoinWinWrite();
+                case EvCmdID.NAME._COIN_WIN_DEL: return EvCmdCoinWinDel();
+                case EvCmdID.NAME._COIN_WRITE: return EvCmdCoinWrite();
+                case EvCmdID.NAME._ADD_COIN: return EvCmdAddCoin();
+                case EvCmdID.NAME._SUB_COIN: return EvCmdSubCoin();
+                case EvCmdID.NAME._FLD_ITEM_EVENT: return EvMacro_FLD_ITEM_EVENT();
+                case EvCmdID.NAME._ADD_ITEM: return EvCmdAddItem();
+                case EvCmdID.NAME._SUB_ITEM: return EvCmdSubItem();
+                case EvCmdID.NAME._ADD_ITEM_CHK: return EvCmdAddItemChk();
+                case EvCmdID.NAME._ITEM_CHK: return EvCmdCheckItem();
+                case EvCmdID.NAME._WAZA_ITEM_CHK: return EvCmdWazaMachineItemNoCheck();
+                case EvCmdID.NAME._GET_POCKET_NO: return EvCmdGetPocketNo();
+                case EvCmdID.NAME._CHECK_POCKET: return EvCmdPocketCheck();
+                case EvCmdID.NAME._ADD_GOODS: return EvCmdAddGoods();
+                case EvCmdID.NAME._SUB_GOODS: return EvCmdSubGoods();
+                case EvCmdID.NAME._ADD_GOODS_CHK: return EvCmdAddGoodsChk();
+                case EvCmdID.NAME._ADD_TRAP: return EvCmdAddTrap();
+                case EvCmdID.NAME._SUB_TRAP: return EvCmdSubTrap();
+                case EvCmdID.NAME._ADD_TRAP_CHK: return EvCmdAddTrapChk();
+                case EvCmdID.NAME._ADD_TREASURE: return EvCmdAddTreasure();
+                case EvCmdID.NAME._SUB_TREASURE: return EvCmdSubTreasure();
+                case EvCmdID.NAME._ADD_TREASURE_CHK: return EvCmdAddTreasureChk();
+                case EvCmdID.NAME._ADD_TAMA: return EvCmdAddTama();
+                case EvCmdID.NAME._SUB_TAMA: return EvCmdSubTama();
+                case EvCmdID.NAME._ADD_TAMA_CHK: return EvCmdAddTamaChk();
+                case EvCmdID.NAME._CB_SEAL_KIND_NUM_GET: return EvCmdCBSealKindNumGet();
+                case EvCmdID.NAME._CB_ITEM_NUM_GET: return EvCmdCBItemNumGet();
+                case EvCmdID.NAME._CB_ITEM_NUM_ADD: return EvCmdCBItemNumAdd();
+                case EvCmdID.NAME._UNKNOWN_FORM_GET: return EvCmdUnknownFormGet();
+                case EvCmdID.NAME._ADD_POKEMON: return EvCmdAddPokemon();
+                case EvCmdID.NAME._ADD_TAMAGO: return EvCmdAddTamago();
+                case EvCmdID.NAME._CHG_POKE_WAZA: return EvCmdChgPokeWaza();
+                case EvCmdID.NAME._CHK_POKE_WAZA: return EvCmdChkPokeWaza();
+                case EvCmdID.NAME._CHK_POKE_WAZA_GROUP: return EvCmdChkPokeWazaGroup();
+                case EvCmdID.NAME._APPROVE_POISON_DEAD: return EvCmdApprovePoisonDead();
+                case EvCmdID.NAME._REVENGE_TRAINER_SEARCH: return EvCmdRevengeTrainerSearch();
+                case EvCmdID.NAME._INIT_WEATHER: return EvCmdInitWeather();
+                case EvCmdID.NAME._SET_WEATHER: return EvCmdSetWeather();
+                case EvCmdID.NAME._UPDATE_WEATHER: return EvCmdUpdateWeather();
+                case EvCmdID.NAME._GET_TEMOTI_POKE_NUM: return EvCmdGetTemotiPokeNum();
+                case EvCmdID.NAME._SET_MAP_PROC: return EvCmdSetMapProc();
+                case EvCmdID.NAME._FINISH_MAP_PROC: return EvCmdFinishMapProc();
+                case EvCmdID.NAME._WIFI_AUTO_REG: return EvCmdWiFiAutoReg();
+                case EvCmdID.NAME._WIFI_P2P_MATCH_EVENT_CALL: return EvCmdWiFiP2PMatchEventCall();
+                case EvCmdID.NAME._WIFI_P2P_MATCH_SET_DEL: return EvCmdWiFiP2PMatchSetDel();
+                case EvCmdID.NAME._COMM_GET_CURRENT_ID: return EvCmdCommGetCurrentID();
+                case EvCmdID.NAME._DENDOU_NUM_GET: return EvCmdDendouNumGet();
+                case EvCmdID.NAME._POKE_WINDOW_PUT: return EvCmdPokeWindowPut();
+                case EvCmdID.NAME._POKE_WINDOW_PUT_PP: return EvCmdPokeWindowPutPP();
+                case EvCmdID.NAME._POKE_WINDOW_DEL: return EvCmdPokeWindowDel();
+                case EvCmdID.NAME._POKE_WINDOW_ANM: return EvCmdPokeWindowAnm();
+                case EvCmdID.NAME._POKE_WINDOW_ANM_WAIT: return EvCmdPokeWindowAnmWait();
+                case EvCmdID.NAME._BTL_SEARCHER_EVENT_CALL: return EvCmdBtlSearcherEventCall();
+                case EvCmdID.NAME._BTL_SEARCHER_DIR_MV_SET: return EvCmdBtlSearcherDirMvSet();
+                case EvCmdID.NAME._MSG_BOY_EVENT: return EvCmdMsgBoyEvent();
+                case EvCmdID.NAME._IMAGE_CLIP_SET_PROC: return EvCmdImageClipSetProc();
+                case EvCmdID.NAME._IMAGE_CLIP_VIEW_CON_SET_PROC: return EvCmdImageClipPreviewConProc();
+                case EvCmdID.NAME._CUSTOM_BALL_EVENT_CALL: return EvCmdCustomBallEventCall();
+                case EvCmdID.NAME._TMAP_BG_SET_PROC: return EvCmdTMapBGSetProc();
+                case EvCmdID.NAME._BOX_SET_PROC: return EvCmdBoxSetProc();
+                case EvCmdID.NAME._OEKAKI_BOARD_SET_PROC: return EvCmdOekakiBoardSetProc();
+                case EvCmdID.NAME._TRADE_LIST_SET_PROC: return EvCmdTradeListSetProc();
+                case EvCmdID.NAME._RECORD_CORNER_SET_PROC: return EvCmdRecordCornerSetProc();
+                case EvCmdID.NAME._DENDOU_SET_PROC: return EvCmdDendouSetProc();
+                case EvCmdID.NAME._PC_DENDOU_SET_PROC: return EvCmdPcDendouSetProc();
+                case EvCmdID.NAME._WORLDTRADE_SET_PROC: return EvCmdWorldTradeSetProc();
+                case EvCmdID.NAME._DPW_INIT_PROC: return EvCmdDPWInitProc();
+                case EvCmdID.NAME._FIRST_POKE_SELECT_PROC: return EvCmdFirstPokeSelectProc();
+                case EvCmdID.NAME._FIRST_POKE_SELECT_SET_AND_DEL: return EvCmdFirstPokeSelectSetAndDel();
+                case EvCmdID.NAME._BAG_SET_PROC_NORMAL: return EvCmdBagSetProcNormal();
+                case EvCmdID.NAME._BAG_SET_PROC_KINOMI: return EvCmdBagSetProcKinomi();
+                case EvCmdID.NAME._BAG_GET_RESULT: return EvCmdBagGetResult();
+                case EvCmdID.NAME._POKELIST_SET_PROC: return EvCmdPokeListSetProc();
+                case EvCmdID.NAME._NPC_TRADE_POKELIST_SET_PROC: return EvCmdNpcTradePokeListSetProc();
+                case EvCmdID.NAME._UNION_POKELIST_SET_PROC: return EvCmdUnionPokeListSetProc();
+                case EvCmdID.NAME._POKELIST_GET_RESULT: return EvCmdPokeListGetResult();
+                case EvCmdID.NAME._CON_POKELIST_SET_PROC: return EvCmdConPokeListSetProc();
+                case EvCmdID.NAME._CON_POKELIST_GET_RESULT: return EvCmdConPokeListGetResult();
+                case EvCmdID.NAME._CON_POKESTATUS_SET_PROC: return EvCmdConPokeStatusSetProc();
+                case EvCmdID.NAME._POKESTATUS_GET_RESULT: return EvCmdPokeStatusGetResult();
+                case EvCmdID.NAME._WIFI_EARTH_SET_PROC: return EvCmdWifiEarthSetProc();
+                case EvCmdID.NAME._EYE_TRAINER_MOVE_SET: return EvCmdEyeTrainerMoveSet();
+                case EvCmdID.NAME._EYE_TRAINER_MOVE_CHECK: return EvCmdEyeTrainerMoveCheck();
+                case EvCmdID.NAME._EYE_TRAINER_TYPE_GET: return EvCmdEyeTrainerTypeGet();
+                case EvCmdID.NAME._EYE_TRAINER_ID_GET: return EvCmdEyeTrainerIdGet();
+                case EvCmdID.NAME._NAMEIN: return EvCmdNameIn();
+                case EvCmdID.NAME._NAMEIN_POKE: return EvCmdNameInPoke();
+                case EvCmdID.NAME._WIPE_FADE_START: return EvCmdWipeFadeStart();
+                case EvCmdID.NAME._WHITE_OUT: return EvMacro_WHITE_OUT();
+                case EvCmdID.NAME._WHITE_IN: return EvMacro_WHITE_IN();
+                case EvCmdID.NAME._BLACK_OUT: return EvMacro_BLACK_OUT();
+                case EvCmdID.NAME._BLACK_IN: return EvMacro_BLACK_IN();
+                case EvCmdID.NAME._MAP_CHANGE: return EvCmdMapChange();
+                case EvCmdID.NAME._MAP_CHANGE_NONE_FADE: return EvMacro_MAP_CHANGE();
+                case EvCmdID.NAME._COLOSSEUM_MAP_CHANGE_IN: return EvCmdColosseumMapChangeIn();
+                case EvCmdID.NAME._COLOSSEUM_MAP_CHANGE_OUT: return EvCmdColosseumMapChangeOut();
+                case EvCmdID.NAME._GET_BEFORE_ZONE_ID: return EvCmdGetBeforeZoneID();
+                case EvCmdID.NAME._GET_NOW_ZONE_ID: return EvCmdGetNowZoneID();
+                case EvCmdID.NAME._KABENOBORI: return EvCmdKabeNobori();
+                case EvCmdID.NAME._NAMINORI: return EvCmdNaminori();
+                case EvCmdID.NAME._BICYCLE_CHECK: return EvCmdBicycleCheck();
+                case EvCmdID.NAME._BICYCLE_REQ: return EvCmdBicycleReq();
+                case EvCmdID.NAME._BICYCLE_REQ_NON_BGM: return EvCmdBicycleReqNonBgm();
+                case EvCmdID.NAME._CYCLING_ROAD_SET: return EvCmdCyclingRoadSet();
+                case EvCmdID.NAME._PLAYER_FORM_GET: return EvCmdPlayerFormGet();
+                case EvCmdID.NAME._PLAYER_REQ_BIT_ON: return EvCmdPlayerReqBitOn();
+                case EvCmdID.NAME._PLAYER_REQ_START: return EvCmdPlayerReqStart();
+                case EvCmdID.NAME._TAKINOBORI: return EvCmdTakinobori();
+                case EvCmdID.NAME._SORAWOTOBU: return EvCmdSorawotobu();
+                case EvCmdID.NAME._HIDEN_FLASH: return EvCmdHidenFlash();
+                case EvCmdID.NAME._HIDEN_KIRIBARAI: return EvCmdHidenKiribarai();
+                case EvCmdID.NAME._CUTIN: return EvCmdCutIn();
+                case EvCmdID.NAME._CON_HERO_CHANGE: return EvCmdConHeroChange();
+                case EvCmdID.NAME._PLAYER_NAME: return EvCmdPlayerName();
+                case EvCmdID.NAME._RIVAL_NAME: return EvCmdRivalName();
+                case EvCmdID.NAME._SUPPORT_NAME: return EvCmdSupportName();
+                case EvCmdID.NAME._POKEMON_NAME: return EvCmdPokemonName();
+                case EvCmdID.NAME._ITEM_NAME: return EvCmdItemName();
+                case EvCmdID.NAME._POCKET_NAME: return EvCmdPocketName();
+                case EvCmdID.NAME._ITEM_WAZA_NAME: return EvCmdItemWazaName();
+                case EvCmdID.NAME._WAZA_NAME: return EvCmdWazaName();
+                case EvCmdID.NAME._NUMBER_NAME: return EvCmdNumberName();
+                case EvCmdID.NAME._NUMBER_NAME_EX: return EvCmdNumberNameEx();
+                case EvCmdID.NAME._BIRTH_DAY_CHECK: return EvCmdBirthDayCheck();
+                case EvCmdID.NAME._ANOON_SEE_NUM: return EvCmdAnoonSeeNum();
+                case EvCmdID.NAME._NICK_NAME: return EvCmdNickName();
+                case EvCmdID.NAME._POKETCH_NAME: return EvCmdPoketchName();
+                case EvCmdID.NAME._TR_TYPE_NAME: return EvCmdTrTypeName();
+                case EvCmdID.NAME._MY_TR_TYPE_NAME: return EvCmdMyTrTypeName();
+                case EvCmdID.NAME._POKEMON_NAME_EXTRA: return EvCmdPokemonNameExtra();
+                case EvCmdID.NAME._FIRST_POKEMON_NAME: return EvCmdFirstPokemonName();
+                case EvCmdID.NAME._RIVAL_POKEMON_NAME: return EvCmdRivalPokemonName();
+                case EvCmdID.NAME._SUPPORT_POKEMON_NAME: return EvCmdSupportPokemonName();
+                case EvCmdID.NAME._FIRST_POKE_NO_GET: return EvCmdFirstPokeNoGet();
+                case EvCmdID.NAME._NUTS_NAME: return EvCmdNutsName();
+                case EvCmdID.NAME._SEIKAKU_NAME: return EvCmdSeikakuName();
+                case EvCmdID.NAME._GOODS_NAME: return EvCmdGoodsName();
+                case EvCmdID.NAME._TRAP_NAME: return EvCmdTrapName();
+                case EvCmdID.NAME._TAMA_NAME: return EvCmdTamaName();
+                case EvCmdID.NAME._ZONE_NAME: return EvCmdZoneName();
+                case EvCmdID.NAME._GENERATE_INFO_GET: return EvCmdGenerateInfoGet();
+                case EvCmdID.NAME._TRAINER_ID_GET: return EvCmdTrainerIdGet();
+                case EvCmdID.NAME._TRAINER_BTL_SET: return EvCmdTrainerBattleSet();
+                case EvCmdID.NAME._TRAINER_MULTI_BTL_SET: return EvCmdTrainerMultiBattleSet();
+                case EvCmdID.NAME._TRAINER_MSG_SET: return EvCmdTrainerMessageSet();
+                case EvCmdID.NAME._TRAINER_TALK_TYPE_GET: return EvCmdTrainerTalkTypeGet();
+                case EvCmdID.NAME._REVENGE_TRAINER_TALK_TYPE_GET: return EvCmdRevengeTrainerTalkTypeGet();
+                case EvCmdID.NAME._TRAINER_TYPE_GET: return EvCmdTrainerTypeGet();
+                case EvCmdID.NAME._TRAINER_BGM_SET: return EvCmdTrainerBgmSet();
+                case EvCmdID.NAME._TRAINER_LOSE: return EvCmdTrainerLose();
+                case EvCmdID.NAME._TRAINER_LOSE_CHECK: return EvCmdTrainerLoseCheck();
+                case EvCmdID.NAME._NORMAL_LOSE: return EvCmdNormalLose();
+                case EvCmdID.NAME._SEACRET_POKE_RETRY_CHECK: return EvCmdSeacretPokeRetryCheck();
+                case EvCmdID.NAME._HAIFU_POKE_RETRY_CHECK: return EvCmdHaifuPokeRetryCheck();
+                case EvCmdID.NAME._2VS2_BATTLE_CHECK: return EvCmd2vs2BattleCheck();
+                case EvCmdID.NAME._DEBUG_TRAINER_FLAG_SET: return EvCmdDebugTrainerFlagSet();
+                case EvCmdID.NAME._DEBUG_TRAINER_FLAG_ON_JUMP: return EvCmdDebugTrainerFlagOnJump();
+                case EvCmdID.NAME._DEBUG_SIO_ENCOUNT: return EvCmdDebugSioEncount();
+                case EvCmdID.NAME._DEBUG_SIO_CONTEST: return EvCmdDebugSioContest();
+                case EvCmdID.NAME._CONSIO_TIMING_SEND: return EvCmdConSioTimingSend();
+                case EvCmdID.NAME._CONSIO_TIMING_CHECK: return EvCmdConSioTimingCheck();
+                case EvCmdID.NAME._CON_SYSTEM_CREATE: return EvCmdConSystemCreate();
+                case EvCmdID.NAME._CON_SYSTEM_EXIT: return EvCmdConSystemExit();
+                case EvCmdID.NAME._CON_JUDGE_NAME_GET: return EvCmdConJudgeNameGet();
+                case EvCmdID.NAME._CON_BREEDER_NAME_GET: return EvCmdConBreederNameGet();
+                case EvCmdID.NAME._CON_NICK_NAME_GET: return EvCmdConNickNameGet();
+                case EvCmdID.NAME._CON_NUM_TAG_SET: return EvCmdConNumTagSet();
+                case EvCmdID.NAME._CON_SIO_PARAM_INIT_SET: return EvCmdConSioParamInitSet();
+                case EvCmdID.NAME._CONTEST_PROC: return EvCmdContestProc();
+                case EvCmdID.NAME._CON_RANK_NAME_GET: return EvCmdConRankNameGet();
+                case EvCmdID.NAME._CON_TYPE_NAME_GET: return EvCmdConTypeNameGet();
+                case EvCmdID.NAME._CON_VICTORY_BREEDER_NAME_GET: return EvCmdConVictoryBreederNameGet();
+                case EvCmdID.NAME._CON_VICTORY_ITEM_NO_GET: return EvCmdConVictoryItemNoGet();
+                case EvCmdID.NAME._CON_VICTORY_NICK_NAME_GET: return EvCmdConVictoryNickNameGet();
+                case EvCmdID.NAME._CON_RANKING_CHECK: return EvCmdConRankingCheck();
+                case EvCmdID.NAME._CON_VICTORY_ENTRY_NO_GET: return EvCmdConVictoryEntryNoGet();
+                case EvCmdID.NAME._CON_MY_ENTRY_NO_GET: return EvCmdConMyEntryNoGet();
+                case EvCmdID.NAME._CON_OBJ_CODE_GET: return EvCmdConObjCodeGet();
+                case EvCmdID.NAME._CON_POPULARITY_GET: return EvCmdConPopularityGet();
+                case EvCmdID.NAME._CON_DESK_MODE_GET: return EvCmdConDeskModeGet();
+                case EvCmdID.NAME._CON_HAVE_RIBBON_CHECK: return EvCmdConHaveRibbonCheck();
+                case EvCmdID.NAME._CON_RIBBON_NAME_GET: return EvCmdConRibbonNameGet();
+                case EvCmdID.NAME._CON_ACCE_NO_GET: return EvCmdConAcceNoGet();
+                case EvCmdID.NAME._CON_ENTRY_PARAM_GET: return EvCmdConEntryParamGet();
+                case EvCmdID.NAME._CON_CAMERA_FLASH_SET: return EvCmdConCameraFlashSet();
+                case EvCmdID.NAME._CON_CAMERA_FLASH_CHECK: return EvCmdConCameraFlashCheck();
+                case EvCmdID.NAME._CON_HBLANK_STOP: return EvCmdConHBlankStop();
+                case EvCmdID.NAME._CON_HBLANK_START: return EvCmdConHBlankStart();
+                case EvCmdID.NAME._CON_ENDING_SKIP_CHECK: return EvCmdConEndingSkipCheck();
+                case EvCmdID.NAME._CON_RECORD_DISP: return EvCmdConRecordDisp();
+                case EvCmdID.NAME._CON_MSGPRINT_FLAG_SET: return EvCmdConMsgPrintFlagSet();
+                case EvCmdID.NAME._CON_MSGPRINT_FLAG_RESET: return EvCmdConMsgPrintFlagReset();
+                case EvCmdID.NAME._SP_LOCATION_SET: return EvCmdSpLocationSet();
+                case EvCmdID.NAME._ELEVATOR_FLOOR_WRITE: return EvCmdElevatorFloorWrite();
+                case EvCmdID.NAME._SHINOU_ZUKAN_SEE_NUM: return EvCmdGetShinouZukanSeeNum();
+                case EvCmdID.NAME._SHINOU_ZUKAN_GET_NUM: return EvCmdGetShinouZukanGetNum();
+                case EvCmdID.NAME._ZENKOKU_ZUKAN_SEE_NUM: return EvCmdGetZenkokuZukanSeeNum();
+                case EvCmdID.NAME._ZENKOKU_ZUKAN_GET_NUM: return EvCmdGetZenkokuZukanGetNum();
+                case EvCmdID.NAME._CHK_ZENKOKU_ZUKAN: return EvCmdChkZenkokuZukan();
+                case EvCmdID.NAME._WILD_BTL_SET: return EvCmdWildBattleSet();
+                case EvCmdID.NAME._SP_WILD_BTL_SET: return EvCmdSpWildBattleSet();
+                case EvCmdID.NAME._FIRST_BTL_SET: return EvCmdFirstBattleSet();
+                case EvCmdID.NAME._CAPTURE_BTL_SET: return EvCmdCaptureBattleSet();
+                case EvCmdID.NAME._HONEY_TREE: return EvCmdHoneyTree();
+                case EvCmdID.NAME._GET_HONEY_TREE_STATE: return EvCmdGetHoneyTreeState();
+                case EvCmdID.NAME._HONEY_TREE_BTL_SET: return EvCmdHoneyTreeBattleSet();
+                case EvCmdID.NAME._TSIGN_SET_PROC: return EvCmdTSignSetProc();
+                case EvCmdID.NAME._REPORT_SAVE_CHECK: return EvCmdReportSaveCheck();
+                case EvCmdID.NAME._REPORT_SAVE: return EvCmdReportSave();
+                case EvCmdID.NAME._GET_POKETCH: return EvCmdGetPoketch();
+                case EvCmdID.NAME._GET_POKETCH_FLAG: return EvCmdGetPoketchFlag();
+                case EvCmdID.NAME._POKETCH_ADD: return EvCmdPoketchAppAdd();
+                case EvCmdID.NAME._POKETCH_CHECK: return EvCmdPoketchAppCheck();
+                case EvCmdID.NAME._UNION_PARENT_CARD_TALK_NO: return EvCmdUnionParentCardTalkNo();
+                case EvCmdID.NAME._UNION_GET_INFO_TALK_NO: return EvCmdUnionGetInfoTalkNo();
+                case EvCmdID.NAME._UNION_BEACON_CHANGE: return EvCmdUnionBeaconChange();
+                case EvCmdID.NAME._UNION_CONNECT_TALK_DENIED: return EvCmdUnionConnectTalkDenied();
+                case EvCmdID.NAME._UNION_CONNECT_TALK_OK: return EvCmdUnionConnectTalkOk();
+                case EvCmdID.NAME._UNION_TRAINER_NAME_REGIST: return EvCmdUnionTrainerNameRegist();
+                case EvCmdID.NAME._UNION_RETURN_SETUP: return EvCmdUnionReturnSetUp();
+                case EvCmdID.NAME._UNION_CONNECT_CUT_RESTART: return EvCmdUnionConnectCutRestart();
+                case EvCmdID.NAME._UNION_GET_TALK_NUMBER: return EvCmdUnionGetTalkNumber();
+                case EvCmdID.NAME._UNION_ID_SET: return EvCmdUnionIdSet();
+                case EvCmdID.NAME._UNION_RESULT_GET: return EvCmdUnionResultGet();
+                case EvCmdID.NAME._UNION_OBJ_ALL_VANISH: return EvCmdUnionObjAllVanish();
+                case EvCmdID.NAME._UNION_SCRIPT_RESULT_SET: return EvCmdUnionScriptResultSet();
+                case EvCmdID.NAME._UNION_PARENT_START_COMMAND_SET: return EvCmdUnionParentStartCommandSet();
+                case EvCmdID.NAME._UNION_CHILD_SELECT_COMMAND_SET: return EvCmdUnionChildSelectCommandSet();
+                case EvCmdID.NAME._UNION_CONNECT_START: return EvCmdUnionConnectStart();
+                case EvCmdID.NAME._UNION_MAP_CHANGE: return EvCmdUnionMapChange();
+                case EvCmdID.NAME._UNION_VIEW_MY_STATUS_SET: return EvCmdUnionViewMyStatusSet();
+                case EvCmdID.NAME._SYS_FLAG_ZUKAN_GET: return EvCmdSysFlagZukanGet();
+                case EvCmdID.NAME._SYS_FLAG_ZUKAN_SET: return EvCmdSysFlagZukanSet();
+                case EvCmdID.NAME._SYS_FLAG_SHOES_GET: return EvCmdSysFlagShoesGet();
+                case EvCmdID.NAME._SYS_FLAG_SHOES_SET: return EvCmdSysFlagShoesSet();
+                case EvCmdID.NAME._SYS_FLAG_BADGE_GET: return EvCmdSysFlagBadgeGet();
+                case EvCmdID.NAME._SYS_FLAG_BADGE_SET: return EvCmdSysFlagBadgeSet();
+                case EvCmdID.NAME._SYS_FLAG_BADGE_COUNT: return EvCmdSysFlagBadgeCount();
+                case EvCmdID.NAME._SYS_FLAG_BAG_GET: return EvCmdSysFlagBagGet();
+                case EvCmdID.NAME._SYS_FLAG_BAG_SET: return EvCmdSysFlagBagSet();
+                case EvCmdID.NAME._SYS_FLAG_PAIR_GET: return EvCmdSysFlagPairGet();
+                case EvCmdID.NAME._SYS_FLAG_PAIR_SET: return EvCmdSysFlagPairSet();
+                case EvCmdID.NAME._SYS_FLAG_PAIR_RESET: return EvCmdSysFlagPairReset();
+                case EvCmdID.NAME._SYS_FLAG_ONE_STEP_GET: return EvCmdSysFlagOneStepGet();
+                case EvCmdID.NAME._SYS_FLAG_ONE_STEP_SET: return EvCmdSysFlagOneStepSet();
+                case EvCmdID.NAME._SYS_FLAG_ONE_STEP_RESET: return EvCmdSysFlagOneStepReset();
+                case EvCmdID.NAME._SYS_FLAG_GAME_CLEAR_GET: return EvCmdSysFlagGameClearGet();
+                case EvCmdID.NAME._SYS_FLAG_GAME_CLEAR_SET: return EvCmdSysFlagGameClearSet();
+                case EvCmdID.NAME._SYS_FLAG_KAIRIKI_SET: return EvCmdSysFlagKairikiSet();
+                case EvCmdID.NAME._SYS_FLAG_KAIRIKI_RESET: return EvCmdSysFlagKairikiReset();
+                case EvCmdID.NAME._SYS_FLAG_KAIRIKI_GET: return EvCmdSysFlagKairikiGet();
+                case EvCmdID.NAME._SYS_FLAG_FLASH_SET: return EvCmdSysFlagFlashSet();
+                case EvCmdID.NAME._SYS_FLAG_FLASH_RESET: return EvCmdSysFlagFlashReset();
+                case EvCmdID.NAME._SYS_FLAG_FLASH_GET: return EvCmdSysFlagFlashGet();
+                case EvCmdID.NAME._SYS_FLAG_KIRIBARAI_SET: return EvCmdSysFlagKiribaraiSet();
+                case EvCmdID.NAME._SYS_FLAG_KIRIBARAI_RESET: return EvCmdSysFlagKiribaraiReset();
+                case EvCmdID.NAME._SYS_FLAG_KIRIBARAI_GET: return EvCmdSysFlagKiribaraiGet();
+                case EvCmdID.NAME._SHOP_CALL: return EvCmdShopCall();
+                case EvCmdID.NAME._FIX_SHOP_CALL: return EvCmdFixShopCall();
+                case EvCmdID.NAME._FIX_GOODS_CALL: return EvCmdFixGoodsCall();
+                case EvCmdID.NAME._FIX_SEAL_CALL: return EvCmdFixSealCall();
+                case EvCmdID.NAME._ACCE_SHOP_CALL: return EvCmdAcceShopCall();
+                case EvCmdID.NAME._GAME_OVER_CALL: return EvCmdGameOverCall();
+                case EvCmdID.NAME._SET_WARP_ID: return EvCmdSetWarpId();
+                case EvCmdID.NAME._GET_MY_SEX: return EvCmdGetMySex();
+                case EvCmdID.NAME._PC_KAIFUKU: return EvCmdPcKaifuku();
+                case EvCmdID.NAME._COMM_DIRECT_END: return EvCmdCommDirectEnd();
+                case EvCmdID.NAME._COMM_DIRECT_END_TIMING: return EvCmdCommDirectEndTiming();
+                case EvCmdID.NAME._COMM_DIRECT_ENTER_BTL_ROOM: return EvCmdCommDirectEnterBtlRoom();
+                case EvCmdID.NAME._COMM_PLAYER_SET_DIR: return EvCmdCommPlayerSetDir();
+                case EvCmdID.NAME._SET_UP_DOOR_ANIME: return EvCmdSetUpDoorAnime();
+                case EvCmdID.NAME._WAIT_3D_ANIME: return EvCmdWait3DAnime();
+                case EvCmdID.NAME._FREE_3D_ANIME: return EvCmdFree3DAnime();
+                case EvCmdID.NAME._SEQ_OPEN_DOOR: return EvCmdOpenDoor();
+                case EvCmdID.NAME._SEQ_CLOSE_DOOR: return EvCmdCloseDoor();
+                case EvCmdID.NAME._PMS_BUF: return EvCmdPMSBuf();
+                case EvCmdID.NAME._GET_SEED_STATUS: return EvCmdSeedGetStatus();
+                case EvCmdID.NAME._GET_SEED_TYPE: return EvCmdSeedGetType();
+                case EvCmdID.NAME._GET_SEED_COUNT: return EvCmdSeedGetNutsCount();
+                case EvCmdID.NAME._SET_SEED_NUTS: return EvCmdSeedSetNuts();
+                case EvCmdID.NAME._SET_SEED_WATER: return EvCmdSeedSetWater();
+                case EvCmdID.NAME._TAKE_SEED: return EvCmdSeedTakeNuts();
+                case EvCmdID.NAME._SXY_POS_CHANGE: return EvCmdSxyPosChange();
+                case EvCmdID.NAME._OBJ_POS_CHANGE: return EvCmdObjPosChange();
+                case EvCmdID.NAME._SXY_MV_CHANGE: return EvCmdSxyMoveCodeChange();
+                case EvCmdID.NAME._SXY_DIR_CHANGE: return EvCmdSxyDirChange();
+                case EvCmdID.NAME._SXY_EXIT_POS_CHANGE: return EvCmdSxyExitPosChange();
+                case EvCmdID.NAME._SXY_BG_POS_CHANGE: return EvCmdSxyBgPosChange();
+                case EvCmdID.NAME._OBJ_DIR_CHANGE: return EvCmdObjDirChange();
+                case EvCmdID.NAME._RETURN_SCRIPT_WK_SET: return EvCmdReturnScriptWkSet();
+                case EvCmdID.NAME._MSGEXPANDBUF: return EvCmdMsgExpandBuf();
+                case EvCmdID.NAME._GET_SODATEYA_ZIISAN: return EvCmdGetSodateyaZiisan();
+                case EvCmdID.NAME._INIT_WATER_GYM: return EvCmdInitWaterGym();
+                case EvCmdID.NAME._PUSH_WATER_GYM_BUTTON: return EvCmdPushWaterGymButton();
+                case EvCmdID.NAME._INIT_GHOST_GYM: return EvCmdInitGhostGym();
+                case EvCmdID.NAME._MOVE_GHOST_GYM_LIFT: return EvCmdMoveGhostGymLift();
+                case EvCmdID.NAME._INIT_STEEL_GYM: return EvCmdInitSteelGym();
+                case EvCmdID.NAME._INIT_COMBAT_GYM: return EvCmdInitCombatGym();
+                case EvCmdID.NAME._INIT_ELEC_GYM: return EvCmdInitElecGym();
+                case EvCmdID.NAME._ROTATE_ELEC_GYM_GEAR: return EvCmdRotElecGymGear();
+                case EvCmdID.NAME._GET_POKE_COUNT: return EvCmdGetPokeCount();
+                case EvCmdID.NAME._GET_POKE_COUNT2: return EvCmdGetPokeCount2();
+                case EvCmdID.NAME._GET_POKE_COUNT3: return EvCmdGetPokeCount3();
+                case EvCmdID.NAME._GET_POKE_COUNT4: return EvCmdGetPokeCount4();
+                case EvCmdID.NAME._GET_TAMAGO_COUNT: return EvCmdGetTamagoCount();
+                case EvCmdID.NAME._UG_SHOP_MENU_INIT: return EvCmdUgShopMenuInit();
+                case EvCmdID.NAME._UG_SHOP_TALK_START: return EvCmdUgShopTalkStart();
+                case EvCmdID.NAME._UG_SHOP_TALK_END: return EvCmdUgShopTalkEnd();
+                case EvCmdID.NAME._DEL_SODATEYA_EGG: return EvCmdDelSodateyaEgg();
+                case EvCmdID.NAME._GET_SODATEYA_EGG: return EvCmdGetSodateyaEgg();
+                case EvCmdID.NAME._MSG_SODATEYA_AISHOU: return EvCmdMsgSodateyaAishou();
+                case EvCmdID.NAME._MSG_AZUKE_SET: return EvCmdMsgAzukeSet();
+                case EvCmdID.NAME._SET_SODATEYA_POKE: return EvCmdSetSodateyaPoke();
+                case EvCmdID.NAME._SODATEYA_POKELIST: return EvCmdSodateyaPokeList();
+                case EvCmdID.NAME._HIKITORI_LIST: return EvCmdHikitoriList();
+                case EvCmdID.NAME._SODATE_POKE_LEVEL_STR: return EvCmdSodatePokeLevelStr();
+                case EvCmdID.NAME._HIKITORI_RYOUKIN: return EvCmdHikitoriRyoukin();
+                case EvCmdID.NAME._HIKITORI_POKE: return EvCmdHikitoriPoke();
+                case EvCmdID.NAME._TAMAGO_DEMO: return EvCmdTamagoDemo();
+                case EvCmdID.NAME._TEMOTI_MONSNO: return EvCmdTemotiMonsNo();
+                case EvCmdID.NAME._MONS_OWN_CHK: return EvCmdMonsOwnChk();
+                case EvCmdID.NAME._CHK_TEMOTI_POKERUS: return EvCmdChkTemotiPokerus();
+                case EvCmdID.NAME._TEMOTI_POKE_SEX_GET: return EvCmdTemotiPokeSexGet();
+                case EvCmdID.NAME._SUB_MY_GOLD: return EvCmdSubMyGold();
+                case EvCmdID.NAME._COMP_MY_GOLD: return EvCmdCompMyGold();
+                case EvCmdID.NAME._OBJ_VISIBLE: return EvCmdObjVisible();
+                case EvCmdID.NAME._OBJ_INVISIBLE: return EvCmdObjInvisible();
+                case EvCmdID.NAME._MAILBOX: return EvCmdMailBox();
+                case EvCmdID.NAME._GET_MAILBOX_DATANUM: return EvCmdGetMailBoxDataNum();
+                case EvCmdID.NAME._RANKING_VIEW: return EvCmdRankingView();
+                case EvCmdID.NAME._GET_TIME_ZONE: return EvCmdGetTimeZone();
+                case EvCmdID.NAME._GET_RND: return EvCmdGetRand();
+                case EvCmdID.NAME._GET_RND_NEXT: return EvCmdGetRandNext();
+                case EvCmdID.NAME._GET_NATSUKI: return EvCmdGetNatsuki();
+                case EvCmdID.NAME._ADD_NATSUKI: return EvCmdAddNatsuki();
+                case EvCmdID.NAME._SUB_NATSUKI: return EvCmdSubNatsuki();
+                case EvCmdID.NAME._HIKITORI_LIST_NAME_SET: return EvCmdHikitoriListNameSet();
+                case EvCmdID.NAME._GET_SODATEYA_AISHOU: return EvCmdGetSodateyaAishou();
+                case EvCmdID.NAME._TEMOTI_POKE_CHK: return EvCmdTemotiPokeChk();
+                case EvCmdID.NAME._OOKISA_RECORD_CHK: return EvCmdOokisaRecordChk();
+                case EvCmdID.NAME._OOKISA_RECORD_SET: return EvCmdOokisaRecordSet();
+                case EvCmdID.NAME._OOKISA_TEMOTI_SET_BUF: return EvCmdOokisaTemotiSet();
+                case EvCmdID.NAME._OOKISA_KIROKU_SET_BUF: return EvCmdOokisaKirokuSet();
+                case EvCmdID.NAME._OOKISA_KURABE_INIT: return EvCmdOokisaKurabeInit();
+                case EvCmdID.NAME._WAZALIST_SET_PROC: return EvCmdWazaListSetProc();
+                case EvCmdID.NAME._WAZALIST_GET_RESULT: return EvCmdWazaListGetResult();
+                case EvCmdID.NAME._WAZA_COUNT: return EvCmdWazaCount();
+                case EvCmdID.NAME._WAZA_DEL: return EvCmdWazaDel();
+                case EvCmdID.NAME._TEMOTI_WAZANO: return EvCmdTemotiWazaNo();
+                case EvCmdID.NAME._TEMOTI_WAZA_NAME: return EvCmdTemotiWazaName();
+                case EvCmdID.NAME._FNOTE_START_SET: return EvCmdFNoteStartSet();
+                case EvCmdID.NAME._FNOTE_DATA_MAKE: return EvCmdFNoteDataMake();
+                case EvCmdID.NAME._FNOTE_DATA_SAVE: return EvCmdFNoteDataSave();
+                case EvCmdID.NAME._IMC_ACCE_ADD_ITEM: return EvCmdImcAcceAddItem();
+                case EvCmdID.NAME._IMC_ACCE_ADD_ITEM_CHK: return EvCmdImcAcceAddItemChk();
+                case EvCmdID.NAME._IMC_BG_ADD_ITEM: return EvCmdImcBgAddItem();
+                case EvCmdID.NAME._NUTMIXER_CALL: return EvCmdNutMixerProc();
+                case EvCmdID.NAME._ZUKAN_CHK_SHINOU: return EvCmdZukanChkShinou();
+                case EvCmdID.NAME._ZUKAN_CHK_NATIONAL: return EvCmdZukanChkNational();
+                case EvCmdID.NAME._ZUKAN_RECONGNIZE_SHINOU: return EvCmdZukanRecongnizeShinou();
+                case EvCmdID.NAME._ZUKAN_RECONGNIZE_NATIONAL: return EvCmdZukanRecongnizeNational();
+                case EvCmdID.NAME._URAYAMA_ENCOUNT_SET: return EvCmdUrayamaEncountSet();
+                case EvCmdID.NAME._URAYAMA_ENCOUNT_NO_CHK: return EvCmdUrayamaEncountNoChk();
+                case EvCmdID.NAME._POKE_MAIL_CHK: return EvCmdPokeMailChk();
+                case EvCmdID.NAME._PAPERPLANE_SET: return EvCmdPaperplaneSet();
+                case EvCmdID.NAME._POKE_MAIL_DEL: return EvCmdPokeMailDel();
+                case EvCmdID.NAME._KASEKI_COUNT: return EvCmdKasekiCount();
+                case EvCmdID.NAME._ITEMLIST_SET_PROC: return EvCmdItemListSetProc();
+                case EvCmdID.NAME._ITEMLIST_GET_RESULT: return EvCmdItemListGetResult();
+                case EvCmdID.NAME._ITEMNO_TO_MONSNO: return EvCmdItemNoToMonsNo();
+                case EvCmdID.NAME._KASEKI_ITEMNO: return EvCmdKasekiItemNo();
+                case EvCmdID.NAME._POKE_LEVEL_CHK: return EvCmdPokeLevelChk();
+                case EvCmdID.NAME._BTOWER_APP_CALL: return EvCmdBTowerAppSetProc();
+                case EvCmdID.NAME._RECORD_INC: return EvCmdRecordInc();
+                case EvCmdID.NAME._RECORD_GET: return EvCmdRecordGet();
+                case EvCmdID.NAME._RECORD_ADD: return EvCmdRecordAdd();
+                case EvCmdID.NAME._RECORD_SET: return EvCmdRecordSet();
+                case EvCmdID.NAME._RECORD_SETIFLARGE: return EvCmdRecordSetIflarge();
+                case EvCmdID.NAME._SAFARI_START: return EvCmdSafariControlStart();
+                case EvCmdID.NAME._SAFARI_END: return EvCmdSafariControlEnd();
+                case EvCmdID.NAME._CALL_SAFARI_SCOPE: return EvCmdCallSafariScope();
+                case EvCmdID.NAME._INIT_SAFARI_TRAIN: return EvCmdInitSafariTrain();
+                case EvCmdID.NAME._MOVE_SAFARI_TRAIN: return EvCmdMoveSafariTrain();
+                case EvCmdID.NAME._CHECK_SAFARI_TRAIN: return EvCmdCheckSafariTrain();
+                case EvCmdID.NAME._PLAYER_HEGIHT_VALID: return EvCmdPlayerHeightValid();
+                case EvCmdID.NAME._GET_POKE_SEIKAKU: return EvCmdGetPokeSeikaku();
+                case EvCmdID.NAME._CHK_POKE_SEIKAKU_ALL: return EvCmdChkPokeSeikakuAll();
+                case EvCmdID.NAME._UNDERGROUND_TALK_COUNT: return EvCmdUnderGroundTalkCount();
+                case EvCmdID.NAME._NATURAL_PARK_WALK_COUNT_CLEAR: return EvCmdNaturalParkWalkCountClear();
+                case EvCmdID.NAME._NATURAL_PARK_WALK_COUNT_GET: return EvCmdNaturalParkWalkCountGet();
+                case EvCmdID.NAME._NATURAL_PARK_ACCESSORY_NO_GET: return EvCmdNaturalParkAccessoryNoGet();
+                case EvCmdID.NAME._GET_NEWS_POKE_NO: return EvCmdGetNewsPokeNo();
+                case EvCmdID.NAME._NEWS_COUNT_SET: return EvCmdNewsCountSet();
+                case EvCmdID.NAME._NEWS_COUNT_CHK: return EvCmdNewsCountChk();
+                case EvCmdID.NAME._START_GENERATE: return EvCmdStartGenerate();
+                case EvCmdID.NAME._ADD_MOVE_POKE: return EvCmdAddMovePoke();
+                case EvCmdID.NAME._OSHIE_WAZA_COUNT: return EvCmdOshieWazaCount();
+                case EvCmdID.NAME._REMAIND_WAZA_COUNT: return EvCmdRemaindWazaCount();
+                case EvCmdID.NAME._OSHIE_WAZALIST_SET_PROC: return EvCmdOshieWazaListSetProc();
+                case EvCmdID.NAME._REMAIND_WAZALIST_SET_PROC: return EvCmdRemaindWazaListSetProc();
+                case EvCmdID.NAME._OSHIE_WAZALIST_GET_RESULT: return EvCmdOshieWazaListGetResult();
+                case EvCmdID.NAME._REMAIND_WAZALIST_GET_RESULT: return EvCmdRemaindWazaListGetResult();
+                case EvCmdID.NAME._NORMAL_WAZALIST_SET_PROC: return EvCmdNormalWazaListSetProc();
+                case EvCmdID.NAME._NORMAL_WAZALIST_GET_RESULT: return EvCmdNormalWazaListGetResult();
+                case EvCmdID.NAME._FLD_TRADE_ALLOC: return EvCmdFldTradeAlloc();
+                case EvCmdID.NAME._FLD_TRADE_MONSNO: return EvCmdFldTradeMonsno();
+                case EvCmdID.NAME._FLD_TRADE_CHG_MONSNO: return EvCmdFldTradeChgMonsno();
+                case EvCmdID.NAME._FLD_TRADE_EVENT: return EvCmdFldTradeEvent();
+                case EvCmdID.NAME._FLD_TRADE_DEL: return EvCmdFldTradeDel();
+                case EvCmdID.NAME._ZUKAN_TEXT_VER_UP: return EvCmdZukanTextVerUp();
+                case EvCmdID.NAME._ZUKAN_SEX_VER_UP: return EvCmdZukanSexVerUp();
+                case EvCmdID.NAME._ZENKOKU_ZUKAN_FLAG: return EvCmdZenkokuZukanFlag();
+                case EvCmdID.NAME._CHK_RIBBON_COUNT: return EvCmdChkRibbonCount();
+                case EvCmdID.NAME._CHK_RIBBON_COUNT_ALL: return EvCmdChkRibbonCountAll();
+                case EvCmdID.NAME._CHK_RIBBON: return EvCmdChkRibbon();
+                case EvCmdID.NAME._SET_RIBBON: return EvCmdSetRibbon();
+                case EvCmdID.NAME._RIBBON_NAME: return EvCmdRibbonName();
+                case EvCmdID.NAME._CHK_PRMEXP: return EvCmdChkPrmExp();
+                case EvCmdID.NAME._CHK_WEEK: return EvCmdChkWeek();
+                case EvCmdID.NAME._TV_ENTRY_WATCH_HIDE_ITEM: return EvCmdTVEntryWatchHideItem();
+                case EvCmdID.NAME._TV_ENTRY_WATCH_CHANGE_NAME: return EvCmdTVEntryWatchChangeName();
+                case EvCmdID.NAME._REGULATION_LIST_CALL: return EvCmdRegulationListCall();
+                case EvCmdID.NAME._ASHIATO_CHK: return EvCmdAshiatoChk();
+                case EvCmdID.NAME._PC_RECOVER_ANM: return EvCmdPcRecoverAnm();
+                case EvCmdID.NAME._ELEVATOR_ANM: return EvCmdElevatorAnm();
+                case EvCmdID.NAME._CALL_SHIP_DEMO: return EvCmdCallShipDemo();
+                case EvCmdID.NAME._DEBUG_PRINT_WORK: return EvCmdDebugPrintWork();
+                case EvCmdID.NAME._DEBUG_PRINT_FLAG: return EvCmdDebugPrintFlag();
+                case EvCmdID.NAME._DEBUG_PRINT_WORK_STATIONED: return EvCmdDebugPrintWorkStationed();
+                case EvCmdID.NAME._DEBUG_PRINT_FLAG_STATIONED: return EvCmdDebugPrintFlagStationed();
+                case EvCmdID.NAME._PM_VERSION_GET: return EvCmdPMVersionGet();
+                case EvCmdID.NAME._FRONT_POKEMON: return EvCmdFrontPokemon();
+                case EvCmdID.NAME._TEMOTI_POKE_TYPE: return EvCmdTemotiPokeType();
+                case EvCmdID.NAME._AIKOTOBA_KABEGAMI_SET: return EvCmdAikotobaKabegamiSet();
+                case EvCmdID.NAME._GET_UG_HATA_NUM: return EvCmdGetUgHataNum();
+                case EvCmdID.NAME._GET_KUJI_ATARI_NUM: return EvCmdGetKujiAtariNum();
+                case EvCmdID.NAME._KUJI_ATARI_CHK: return EvCmdKujiAtariChk();
+                case EvCmdID.NAME._KUJI_ATARI_INIT: return EvCmdKujiAtariInit();
+                case EvCmdID.NAME._NICK_NAME_PC: return EvCmdNickNamePC();
+                case EvCmdID.NAME._TV_INTERVIEWER_CHECK: return EvCmdTVInterviewerCheck();
+                case EvCmdID.NAME._COUNT_MONSBOX_SPACE: return EvCmdPokeBoxCountEmptySpace();
+                case EvCmdID.NAME._POKEPARK_CONTROL: return EvCmdPokeParkControl();
+                case EvCmdID.NAME._POKEPARK_DEPOSIT_COUNT: return EvCmdPokeParkDepositCount();
+                case EvCmdID.NAME._POKEPARK_TRANS_MONS: return EvCmdPokeParkTransMons();
+                case EvCmdID.NAME._POKEPARK_GET_SCORE: return EvCmdPokeParkGetScore();
+                case EvCmdID.NAME._DENDOU_BALL_ANM: return EvCmdDendouBallAnm();
+                case EvCmdID.NAME._INIT_FLD_LIFT: return EvCmdInitFldLift();
+                case EvCmdID.NAME._MOVE_FLD_LIFT: return EvCmdMoveFldLift();
+                case EvCmdID.NAME._CHECK_FLD_LIFT: return EvCmdCheckFldLift();
+                case EvCmdID.NAME._SETUP_RAH_CYL: return EvCmdSetupRAHCyl();
+                case EvCmdID.NAME._START_RAH_CYL: return EvCmdStartRAHCyl();
+                case EvCmdID.NAME._ADD_SCORE: return EvCmdAddScore();
+                case EvCmdID.NAME._ACCE_NAME: return EvCmdAcceName();
+                case EvCmdID.NAME._PARTY_MONSNO_CHECK: return EvCmdPartyMonsNoCheck();
+                case EvCmdID.NAME._PARTY_DEOKISISUFORM_CHANGE: return EvCmdPartyDeokisisuFormChange();
+                case EvCmdID.NAME._CHECKMINOMUCHICOMP: return EvCmdCheckMinomuchiComp();
+                case EvCmdID.NAME._POKETCH_HOOK_SET: return EvCmdPoketchHookSet();
+                case EvCmdID.NAME._POKETCH_HOOK_RESET: return EvCmdPoketchHookReset();
+                case EvCmdID.NAME._SLOT_MACHINE: return EvCmdSlotMachine();
+                case EvCmdID.NAME._GET_NOW_HOUR: return EvCmdGetNowHour();
+                case EvCmdID.NAME._D20R0106_LEGEND_IS_UNSEAL: return EvCmd_D20R0106Legend_IsUnseal();
+                case EvCmdID.NAME._DRESSING_IMC_ACCE_CHECK: return EvCmdDressingImcAcceCheck();
+                case EvCmdID.NAME._AGB_CARTRIDGE_VER_GET: return EvCmdAgbCartridgeVerGet();
+                case EvCmdID.NAME._UNDERGROUND_TALK_COUNT_CLEAR: return EvCmdUnderGroundTalkCountClear();
+                case EvCmdID.NAME._NAMEIN_MONUMENT: return EvCmdNameInStone();
+                case EvCmdID.NAME._MONUMENT_NAME: return EvCmdMonumantName();
+                case EvCmdID.NAME._COMP_COIN: return EvCmdCompCoin();
+                case EvCmdID.NAME._SLOT_RENTYAN_CHK: return EvCmdSlotRentyanChk();
+                case EvCmdID.NAME._ADD_COIN_CHK: return EvCmdAddCoinChk();
+                case EvCmdID.NAME._LEVEL_JIJII_NO: return EvCmdLevelJijiiNo();
+                case EvCmdID.NAME._POKE_LEVEL_GET: return EvCmdPokeLevelGet();
+                case EvCmdID.NAME._IMC_ACCE_SUB_ITEM: return EvCmdImcAcceSubItem();
+                case EvCmdID.NAME._C08R0801SCOPECAMERASET: return EvCmdc08r0801ScopeCameraSet();
+                case EvCmdID.NAME._LEVEL_JIJII_INIT: return EvCmdLevelJijiiInit();
+                case EvCmdID.NAME._NEW_NANKAI_WORD_SET: return EvCmdNewNankaiWordSet();
+                case EvCmdID.NAME._REGULAR_CHECK: return EvCmdRegularCheck();
+                case EvCmdID.NAME._TEMOTI_POKE_CONTEST_STATUS_GET: return EvCmdTemotiPokeContestStatusGet();
+                case EvCmdID.NAME._D17SYSTEM_MAP_SELECT: return EvCmdD17SystemMapSelect();
+                case EvCmdID.NAME._UNDERGROUND_TOOL_GIVE_COUNT: return EvCmdUnderGroundToolGiveCount();
+                case EvCmdID.NAME._UNDERGROUND_KASEKI_DIG_COUNT: return EvCmdUnderGroundKasekiDigCount();
+                case EvCmdID.NAME._UNDERGROUND_TRAP_HIT_COUNT: return EvCmdUnderGroundTrapHitCount();
+                case EvCmdID.NAME._POFIN_ADD: return EvCmdPofinAdd();
+                case EvCmdID.NAME._POFIN_ADD_CHK: return EvCmdPofinAddCheck();
+                case EvCmdID.NAME._IS_HAIHU_EVENT_ENABLE: return EvCmdIsHaihuEventEnable();
+                case EvCmdID.NAME._SODATEYA_POKELIST_SET_PROC: return EvCmdSodateyaPokeListSetProc();
+                case EvCmdID.NAME._SODATEYA_POKELIST_GET_RESULT: return EvCmdSodateyaPokeListGetResult();
+                case EvCmdID.NAME._GET_RANDOM_HIT: return EvCmdGetRandomHit();
+                case EvCmdID.NAME._UNDERGROUND_TALK_COUNT2: return EvCmdUnderGroundTalkCount2();
+                case EvCmdID.NAME._HIDENEFF_START: return EvCmdHidenEffStart();
+                case EvCmdID.NAME._ZISHIN: return EvCmdZishin();
+                case EvCmdID.NAME._BTL_POINT_WIN_WRITE: return EvCmdBtlPointWinWrite();
+                case EvCmdID.NAME._BTL_POINT_WIN_DEL: return EvCmdBtlPointWinDel();
+                case EvCmdID.NAME._BTL_POINT_WRITE: return EvCmdBtlPointWrite();
+                case EvCmdID.NAME._COMP_BTL_POINT: return EvCmdCompBtlPoint();
+                case EvCmdID.NAME._AUSU_ITEM_CHECK: return EvCmdAusuItemCheck();
+                case EvCmdID.NAME._CHECK_MY_GSID: return EvCmdCheckMyGSID();
+                case EvCmdID.NAME._GET_COIN_GIFT: return EvCmdGetCoinGift();
+                case EvCmdID.NAME._SUB_WK_COIN: return EvCmdSubWkCoin();
+                case EvCmdID.NAME._COMP_WK_COIN: return EvCmdCompWkCoin();
+                case EvCmdID.NAME._AIKOTOBA_OKURIMONO_CHK: return EvCmdAikotobaOkurimonoChk();
+                case EvCmdID.NAME._WIFI_HUSIGINAOKURIMONO_OPEN_FLAG_SET: return EvCmdWifiHusiginaokurimonoOpenFlagSet();
+                case EvCmdID.NAME._UNION_GET_CARD_TALK_NO: return EvCmdUnionGetCardTalkNo();
+                case EvCmdID.NAME._WIRELESS_ICON_EASY: return EvCmdWirelessIconEasy();
+                case EvCmdID.NAME._WIRELESS_ICON_EASY_END: return EvCmdWirelessIconEasyEnd();
+                case EvCmdID.NAME._SAVE_FIELD_OBJ: return EvCmdSaveFieldObj();
+                case EvCmdID.NAME._SEAL_NAME: return EvCmdSealName();
+                case EvCmdID.NAME._SET_ESCAPE_LOCATION: return EvCmdSetEscapeLocation();
+                case EvCmdID.NAME._FIELDOBJ_BITSET_FELLOWHIT: return EvCmdFieldObjBitSetFellowHit();
+                case EvCmdID.NAME._DAME_TAMAGO_CHK_ALL: return EvCmdDameTamagoChkAll();
+                case EvCmdID.NAME._UNION_BMPMENU_START: return EvCmdUnionBmpMenuStart();
+                case EvCmdID.NAME._UNION_BATTLE_START_CHECK: return EvCmdUnionBattleStartCheck();
+                case EvCmdID.NAME._GET_TRCARD_RANK: return EvCmdGetCardRank();
+                case EvCmdID.NAME._SET_TURN_HERO_FRAME: return EvCmd_SET_TURN_HERO_FRAME();
+                case EvCmdID.NAME._SET_TURN_OBJ_FRAME: return EvCmd_SET_TURN_OBJ_FRAME();
+                case EvCmdID.NAME._DEBUG_PRINT: return EvCmd_DEBUG_PRINT();
+                case EvCmdID.NAME._FADE_WAIT: return EvCmd_FADE_WAIT();
+                case EvCmdID.NAME._HERO_MOVE_GRID_CENTER: return EvCmd_HERO_MOVE_GRID_CENTER();
+                case EvCmdID.NAME._SET_POS_HERO_MATCH_X: return EvCmd_SET_POS_HERO_MATCH_X();
+                case EvCmdID.NAME._SET_POS_HERO_MATCH_Z: return EvCmd_SET_POS_HERO_MATCH_Z();
+                case EvCmdID.NAME._GET_LANGUAGE: return EvCmd_GET_LANGUAGE();
+                case EvCmdID.NAME._GET_REL_POS_HERO: return EvCmd__GET_REL_POS_HERO();
+                case EvCmdID.NAME._CAMERA_TARGET_HERO: return EvCmd__CAMERA_TARGET_HERO();
+                case EvCmdID.NAME._CAMERA_TARGET_DUMMY: return EvCmd__CAMERA_TARGET_DUMMY();
+                case EvCmdID.NAME._DUMMY_ANIME: return EvCmd_DUMMY_ANIME();
+                case EvCmdID.NAME._DUMMY_ANIME_WAIT: return EvCmd__DUMMY_ANIME_WAIT();
+                case EvCmdID.NAME._DUMMY_SET_POS: return EvCmd_DUMMY_SET_POS();
+                case EvCmdID.NAME._DUMMY_SET_POS_HERO: return EvCmd_DUMMY_SET_POS_HERO();
+                case EvCmdID.NAME._SET_CUSTUM_WIN_MSBT: return EvCmd_SET_CUSTUM_WIN_MSBT();
+                case EvCmdID.NAME._ADD_CUSTUM_WIN_LABEL: return EvCmd_ADD_CUSTUM_WIN_LABEL();
+                case EvCmdID.NAME._OPEN_CUSTUM_WIN: return EvCmd_OPEN_CUSTUM_WIN();
+                case EvCmdID.NAME._VISIBLE_OBJ_PROP: return EvCmd_VISIBLE_OBJ_PROP();
+                case EvCmdID.NAME._INVISIBLE_OBJ_PROP: return EvCmd_INVISIBLE_OBJ_PROP();
+                case EvCmdID.NAME._EVENT_CAMERA_MODE: return EvCmd_EVENT_CAMERA_MODE();
+                case EvCmdID.NAME._SET_EVENT_CAMERA_PARAM: return EvCmd_SET_EVENT_CAMERA_PARAM();
+                case EvCmdID.NAME._EVENT_CAMERA_WAIT: return EvCmd_EVENT_CAMERA_WAIT();
+                case EvCmdID.NAME._EVENT_CAMERA_FRAME: return EvCmd_EVENT_CAMERA_FRAME();
+                case EvCmdID.NAME._HIT_DOOR_ANIME: return EvCmd_HIT_DOOR_ANIME();
+                case EvCmdID.NAME._HIT_DOOR_ANIME_WAIT: return EvCmd_HIT_DOOR_ANIME_WAIT();
+                case EvCmdID.NAME._SET_DOOR_OBJ: return EvCmd_SET_DOOR_OBJ();
+                case EvCmdID.NAME._ROTOMU_FORM_CHECK: return EvCmdRotomuFormCheck();
+                case EvCmdID.NAME._TEMOTI_ROTOMU_FORM_WAZA_CHG: return EvCmdRotomuFormWazaChange();
+                case EvCmdID.NAME._EVENT_GET_TEMOTI_POKE_CHK_GET_POS: return EvCmdEventGetTemotiPokeChkGetPos();
+                case EvCmdID.NAME._TURN_HERO_TALK_OBJ: return EvCmd_TURN_HERO_TALK_OBJ();
+                case EvCmdID.NAME._FADE_SPEED: return EvCmd_FADE_SPEED();
+                case EvCmdID.NAME._FADE_BALL: return EvCmd_FADE_BALL();
+                case EvCmdID.NAME._FADE_DEFAULT: return EvCmd_FADE_DEFAULT();
+                case EvCmdID.NAME._DOOR_FORCE_ANIME_END: return EvCmd_DOOR_FORCE_ANIME_END();
+                case EvCmdID.NAME._LDVAL_VERSION: return EvMacro_LDVAL_VERSION();
+                case EvCmdID.NAME._LDVAL_SEX: return EvMacro_LDVAL_SEX();
+                case EvCmdID.NAME._GROUP_EXIST_CHECK: return EvCmd_GROUP_EXIST_CHECK();
+                case EvCmdID.NAME._GROUP_ENTRY_CHECK: return EvCmd_GROUP_ENTRY_CHECK();
+                case EvCmdID.NAME._GROUP_NAME: return EvCmd_GROUP_NAME();
+                case EvCmdID.NAME._GROUP_LEADER_NAME: return EvCmd_GROUP_LEADER_NAME();
+                case EvCmdID.NAME._GROUP_NAME_IN: return EvCmd_GROUP_NAME_IN();
+                case EvCmdID.NAME._GROUP_ENTRY: return EvCmd_GROUP_ENTRY();
+                case EvCmdID.NAME._GROUP_MAKE: return EvCmd_GROUP_MAKE();
+                case EvCmdID.NAME._TV_INTERVIEW_ENTRY: return EvCmdTVInterviewerEntry();
+                case EvCmdID.NAME._TV_START: return EvCmdTVStart();
+                case EvCmdID.NAME._TV_END: return EvCmdTVEnd();
+                case EvCmdID.NAME._TV_START_NUMBER: return EvCmdTVStartNumber();
+                case EvCmdID.NAME._DEBUG_RESET_WORK: return EvCmd_DEBUG_RESET_WORK();
+                case EvCmdID.NAME._SET_SYS_FLAG: return EvCmd_SET_SYS_FLAG();
+                case EvCmdID.NAME._RESET_SYS_FLAG: return EvCmd_RESET_SYS_FLAG();
+                case EvCmdID.NAME._CAMERA_SET_COS_ANGLE: return EvCmd_CAMERA_SET_COS_ANGLE();
+                case EvCmdID.NAME._CAMERA_COS_ANGLE_WAIT: return EvCmd_CAMERA_COS_ANGLE_WAIT();
+                case EvCmdID.NAME._HERO_MOVE_GRID_CENTER_FRONT: return EvCmd_HERO_MOVE_GRID_CENTER_FRONT();
+                case EvCmdID.NAME._WARP_ENABLE_SET: return EvCmd_WARP_ENABLE_SET();
+                case EvCmdID.NAME._DOOR_ENABLE_SET: return EvCmd_DOOR_ENABLE_SET();
+                case EvCmdID.NAME._AC_ANIM_LOCK: return EvCmd_AC_ANIM_LOCK();
+                case EvCmdID.NAME._AC_ANIM_RELEASE: return EvCmd_AC_ANIM_RELEASE();
+                case EvCmdID.NAME._SET_OFFSET: return EvCmd_CAMERA_SET_OFFSET();
+                case EvCmdID.NAME._NAMINORI_END: return EvCmdNaminoriEnd();
+                case EvCmdID.NAME._TAKIKUDARI: return EvCmdTakikudari();
+                case EvCmdID.NAME._KABENOBORI_CHECK: return EvCmdKabeNoboriCheck();
+                case EvCmdID.NAME._TALK_POKE_GET_TEMOTI_INDEX: return EvCmdTalkPokeGetTemotiIndex();
+                case EvCmdID.NAME._NATURAL_PARK_GET_MONOHIROI_ITEM_NO: return EvCmdNaturalParkGetMonohiroiItemNo();
+                case EvCmdID.NAME._CON_OPEN_POKE_SELECT_MENU: return EvCmdConOpenPokeSelectMenu();
+                case EvCmdID.NAME._CON_OPEN_CAPSULE_SELECT_MENU: return EvCmdConOpenCapsuleSelectMenu();
+                case EvCmdID.NAME._CON_OPEN_BOUTIQUE_SELECT_MENU: return EvCmdConOpenBoutiqueSelectMenu();
+                case EvCmdID.NAME._CON_WAIT_CONTEST_MENU: return EvCmdConWaitContestMenu();
+                case EvCmdID.NAME._CON_MY_ENTRY_NO_WORD_SET: return EvCmdConMyEntryNumberWordSet();
+                case EvCmdID.NAME._CON_BEST_PERFORMER_CHECK: return EvCmdConBestPerformerCheck();
+                case EvCmdID.NAME._CON_CATEGORY_RIBBON_NAME_SET: return EvCmdConCategoryRibbonNameSet();
+                case EvCmdID.NAME._CON_HAVE_CONTEST_STAR_CHECK: return EvCmdConHaveContestStarCheck();
+                case EvCmdID.NAME._CON_CONTEST_STAR_NAME_SET: return EvCmdConContestStarNameSet();
+                case EvCmdID.NAME._CON_REWARD_NAME_SET: return EvCmdConRewardNameSet();
+                case EvCmdID.NAME._OBJ_ANIME_FUREAI: return EvCmdObjAnimeFureai();
+                case EvCmdID.NAME._CON_CATEGORY_AND_RANK_SET: return EvCmdConCategoryAndRankSet();
+                case EvCmdID.NAME._CON_RANK_SET: return EvCmdConRankSet();
+                case EvCmdID.NAME._NATURAL_PARK_POKE_CREATE: return EvCmdNaturalParkPokeCreate();
+                case EvCmdID.NAME._NATURAL_PARK_POKE_KAISAN: return EvCmdNaturalParkPokeKaisan();
+                case EvCmdID.NAME._NATURAL_PARK_POKE_SYUUGOU: return EvCmdNaturalParkPokeSyuugou();
+                case EvCmdID.NAME._CON_CHECK_ENTRY_POKE: return EvCmdConCheckEntryPoke();
+                case EvCmdID.NAME._NATURAL_PARK_POKE_SELECT_MENU: return EvCmdNaturalParkPokeSelectMenu();
+                case EvCmdID.NAME._CON_RESET_PARAMETER: return EvCmdConResetParameter();
+                case EvCmdID.NAME._CON_SELECT_SINGLE_MODE: return EvCmdConSelectSingleMode();
+                case EvCmdID.NAME._CON_SELECT_MULTI_MODE: return EvCmdConSelectMultiMode();
+                case EvCmdID.NAME._DPR_SHOP_OPEN: return EvCmdShopOpen();
+                case EvCmdID.NAME._DPR_SHOP_OPEN_WAIT: return EvCmdShopOpenWait();
+                case EvCmdID.NAME._DOOR_TRANSITION_ZONE_SET: return EvCmdDoorTransitionZoneSet();
+                case EvCmdID.NAME._IMAGE_CLIP_VIEW_CON_CHECK_PROC: return ExCmdImageClipViewConCheckProc();
+                case EvCmdID.NAME._MOVE_COMBAT_GYM_WALL: return EvCmdMoveCombatGymWall();
+                case EvCmdID.NAME._EV_ENTITY_PLAYER_MOVE_START: return EvCmdEventEntityPlayerMoveStart();
+                case EvCmdID.NAME._EV_ENTITY_PLAYER_MOVE_END: return EvCmdEventEntityPlayerMoveEnd();
+                case EvCmdID.NAME._EV_ENTITY_PLAYER_MOVE_RESET: return EvCmdEventEntityPlayerMoveReset();
+                case EvCmdID.NAME._CHECK_CAN_SEED_WATER: return EvCmdCheckCanSeedWater();
+                case EvCmdID.NAME._SHOP_OPEN_FIXED: return EvCmdOpenFixedShop();
+                case EvCmdID.NAME._SHOP_OPEN_SEAL: return EvCmdOpenSealShop();
+                case EvCmdID.NAME._SHOP_OPEN_BATTLE: return EvCmdOpenBattleParkShop();
+                case EvCmdID.NAME._SHOP_OPEN_FLOWER: return EvCmdOpenFlowerShop();
+                case EvCmdID.NAME._SHOP_OPEN_OTENKI: return EvCmdOpenOtenkiShop();
+                case EvCmdID.NAME._SHOP_OPEN_SELL: return EvCmdOpenSellShop();
+                case EvCmdID.NAME._GET_COSTUME: return EvCmdGetCostume();
+                case EvCmdID.NAME._SHOP_OPEN_BOUTIQUE_BUY: return EvCmdOpenBoutiqueShopBuy();
+                case EvCmdID.NAME._SHOP_OPEN_BOUTIQUE_CHANGE: return EvCmdOpenBoutiqueShopChange();
+                case EvCmdID.NAME._CON_REWARD_SHOWMASTER_NAME_SET: return EvCmdRewardShowMasterNameSet();
+                case EvCmdID.NAME._CON_TWINKLE_STAR_NAME_SET: return EvCmdConTwinkleStarNameSet();
+                case EvCmdID.NAME._ANAWOHORU: return EvCmdAnawohoru();
+                case EvCmdID.NAME._ANANUKENOHIMO: return EvCmdAnanukenohimo();
+                case EvCmdID.NAME._TELEPORT: return EvCmdTeleport();
+                case EvCmdID.NAME._AMAIKAORI: return EvCmdAmaikaori();
+                case EvCmdID.NAME._CHECK_POFIN: return EvCmdPofinCheck();
+                case EvCmdID.NAME._AMAIMITU: return EvCmdAmaimitu();
+                case EvCmdID.NAME._WARP_START_ANIMATION: return EvCmdWarpStartAnimation();
+                case EvCmdID.NAME._WARP_END_ANIMATION: return EvCmdWarpEndAnimation();
+                case EvCmdID.NAME._SAFARI_SCOPE_SEQUENCE: return EvCmdSafariScopeSequence();
+                case EvCmdID.NAME._EVENT_CAMERA_INDEX: return EvCmdEventCameraIndex();
+                case EvCmdID.NAME._EVENT_CAMERA_END_WAIT: return EvCmdEventCameraEndWait();
+                case EvCmdID.NAME._SHOP_OPEN_PALPARK: return EvCmdOpenPalParkShop();
+                case EvCmdID.NAME._BTOWER_APP_WAIT: return EvCmdBattleTowerRecordMenuWait();
+                case EvCmdID.NAME._FLOOR_OPEN: return EvCmdOpenFloor();
+                case EvCmdID.NAME._FLOOR_CLOSE: return EvCmdCloseFloor();
+                case EvCmdID.NAME._MONEY_OPEN: return EvCmdOpenMoney();
+                case EvCmdID.NAME._MONEY_CLOSE: return EvCmdCloseMoney();
+                case EvCmdID.NAME._AZUKARIYA_EXIST_EGG: return EvCmdAzukariyaExistEgg();
+                case EvCmdID.NAME._AZUKARIYA_STORED_COUNT: return EvCmdAzukariyaStoredCount();
+                case EvCmdID.NAME._AZUKARIYA_SET_STORED_NAME: return EvCmdAzukariyaSetStoredName();
+                case EvCmdID.NAME._AZUKARIYA_STORE: return EvCmdAzukariyaStore();
+                case EvCmdID.NAME._AZUKARIYA_RESTORE: return EvCmdAzukariyaRestore();
+                case EvCmdID.NAME._AZUKARIYA_LOVE_LEVEL: return EvCmdAzukariyaLoveLevel();
+                case EvCmdID.NAME._AZUKARIYA_GET_STORED_MONSNO: return EvCmdAzukariyaGetStoredMonsNo();
+                case EvCmdID.NAME._AZUKARIYA_GET_EGG: return EvCmdAzukariyaGetEgg();
+                case EvCmdID.NAME._AZUKARIYA_DISCARD_EGG: return EvCmdAzukariyaDiscardEgg();
+                case EvCmdID.NAME._AZUKARIYA_SET_STORED_INFO_STR: return EvCmdAzukariyaSetStoredInfoStr();
+                case EvCmdID.NAME._AZUKARIYA_GET_STORED_SEX: return EvCmdAzukariyaGetStoredSex();
+                case EvCmdID.NAME._AZUKARIYA_OLDMAN_INIT: return EvCmdAzukariyOldmanInit();
+                case EvCmdID.NAME._ADD_CUSTUM_WIN_LABEL_WORD_SET: return EvCmd_ADD_CUSTUM_WIN_LABEL_WORD_SET();
+                case EvCmdID.NAME._OPEN_CUSTUM_WIN_WORD_SET: return EvCmd_OPEN_CUSTUM_WIN_WORD_SET();
+                case EvCmdID.NAME._BTL_ENCSEQ_LOAD: return EvCmd_BTL_ENCSEQ_LOAD();
+                case EvCmdID.NAME._USE_SPRAY: return EvCmd_UseSpray();
+                case EvCmdID.NAME._BIRTH_MOUNTH_INPUT: return EvCmdBirthMonthInput();
+                case EvCmdID.NAME._BIRTH_DAY_INPUT: return EvCmdBirthDayInput();
+                case EvCmdID.NAME._SPEAKERS_NAME: return EvCmdSpeakersName();
+                case EvCmdID.NAME._GET_PLAYER_CAP: return EvCmd_GET_PLAYER_CAP();
+                case EvCmdID.NAME._CAMERA_SHAKE: return EvCmdCameraShake();
+                case EvCmdID.NAME._EVENT_ENTITY_CLIP_PLAY: return EvCmdEventEntityClipPlay();
+                case EvCmdID.NAME._EVENT_ENTITY_CLIP_WAIT: return EvCmdEventEntityClipWait();
+                case EvCmdID.NAME._FACE_INDEX: return EvCmd_FACE_INDEX();
+                case EvCmdID.NAME._TEMOTI_BALL_LOAD: return EvCmdTemotiBallLoad();
+                case EvCmdID.NAME._TEMOTI_BALL_LOAD_WAIT: return EvCmdTemotiBallLoadWait();
+                case EvCmdID.NAME._POKECEN_PUT_BALL: return EvCmdPokecenPutBall();
+                case EvCmdID.NAME._POKECEN_CLEAR_BALL: return EvCmdPokecenClearBall();
+                case EvCmdID.NAME._CHARA_LOOK_LOCK: return EvCmd_CHARA_LOOK_LOCK();
+                case EvCmdID.NAME._CHARA_LOOK_RELEASE: return EvCmd_CHARA_LOOK_RELEASE();
+                case EvCmdID.NAME._TALK_OBJ_START_LOOK_NONE: return EvCmd_TALK_OBJ_START_LOOK_NONE();
+                case EvCmdID.NAME._BOUKENNOOTO_TIPS_OPEN: return EvCmdBoukennootoTipsOpen();
+                case EvCmdID.NAME._HIDENEFF_WAIT: return EvCmdHidenEffWait();
+                case EvCmdID.NAME._GET_URAYAMA_ENCOUNT_INDEX: return EvCmd_GET_URAYAMA_ENCOUNT_INDEX();
+                case EvCmdID.NAME._CUSTOM_BALL_NUM_ADD: return EvCmd_CUSTOM_BALL_NUM_ADD();
+                case EvCmdID.NAME._CHANGE_FASHION_REQ: return EvCmd_CHANGE_FASHION_REQ();
+                case EvCmdID.NAME._WARP_PANEL_START: return EvCmdWarpPanelStart();
+                case EvCmdID.NAME._WARP_PANEL_END: return EvCmdWarpPanelEnd();
+                case EvCmdID.NAME._CON_OPEN_MATCHING_MENU: return EvCmdConOpenMatchingMenu();
+                case EvCmdID.NAME._OPEN_PASSWORD_SWKEYBOARD: return EvCmdOpenPasswordSWKeyboard();
+                case EvCmdID.NAME._DENDOU_NUM_SET: return EvCmd_DENDOU_NUM_SET();
+                case EvCmdID.NAME._TEMOTI_BOX_POKE_CHK: return EvCmdTemotiBoxPokeChk();
+                case EvCmdID.NAME._TEMOTI_BOX_MONSNO: return EvCmdTemotiBoxMonsNo();
+                case EvCmdID.NAME._CALL_WAZA_OMOIDASHI_UI: return EvCmdCallWazaOmoidashiUi();
+                case EvCmdID.NAME._CALL_WAZA_WASURE_UI: return EvCmdCallWazaWasureUi();
+                case EvCmdID.NAME._CALL_WAZA_OSHIE_UI: return EvCmdCallWazaOshieUi();
+                case EvCmdID.NAME._CHECK_WAZA_OSHIE: return EvCmdCheckWazaOshie();
+                case EvCmdID.NAME._CHECK_WAZA_OSHIE_ALL: return EvCmdCheckWazaOshieAll();
+                case EvCmdID.NAME._TEMOTI_BOX_POKEMON_NAME: return EvCmdTemotiBoxPokemonName();
+                case EvCmdID.NAME._BTWR_TOOL_CHK_ENTRY_POKE_NUM: return EvCmd_BTWR_TOOL_CHK_ENTRY_POKE_NUM();
+                case EvCmdID.NAME._BTWR_TOOL_CLEAR_PLAY_DATA: return EvCmd_BTWR_TOOL_CLEAR_PLAY_DATA();
+                case EvCmdID.NAME._BTWR_TOOL_PUSH_NOW_LOCATION: return EvCmd_BTWR_TOOL_PUSH_NOW_LOCATION();
+                case EvCmdID.NAME._BTWR_TOOL_POP_NOW_LOCATION: return EvCmd_BTWR_TOOL_POP_NOW_LOCATION();
+                case EvCmdID.NAME._BTWR_TOOL_GET_WIFI_RANK: return EvCmd_BTWR_TOOL_GET_WIFI_RANK();
+                case EvCmdID.NAME._BTWR_TOOL_SET_PLAY_MODE: return EvCmd_BTWR_TOOL_SET_PLAY_MODE();
+                case EvCmdID.NAME._BTWR_TOOL_SET_NOW_WIN: return EvCmd_BTWR_TOOL_SET_NOW_WIN();
+                case EvCmdID.NAME._BTWR_TOOL_SET_RANK: return EvCmd_BTWR_TOOL_SET_RANK();
+                case EvCmdID.NAME._BTWR_SUB_CHK_ENTRY_POKE: return EvCmd_BTWR_SUB_CHK_ENTRY_POKE();
+                case EvCmdID.NAME._BTWR_SUB_GET_NOW_ROUND: return EvCmd_BTWR_SUB_GET_NOW_ROUND();
+                case EvCmdID.NAME._BTWR_SUB_INC_ROUND: return EvCmd_BTWR_SUB_INC_ROUND();
+                case EvCmdID.NAME._BTWR_SUB_IS_CLEAR: return EvCmd_BTWR_SUB_IS_CLEAR();
+                case EvCmdID.NAME._BTWR_SUB_GET_RENSHOU_CNT: return EvCmd_BTWR_SUB_GET_RENSHOU_CNT();
+                case EvCmdID.NAME._BTWR_SUB_SET_SCORE: return EvCmd_BTWR_SUB_SET_SCORE();
+                case EvCmdID.NAME._BTWR_SUB_CHOICE_BTL_PARTNER: return EvCmd_BTWR_SUB_CHOICE_BTL_PARTNER();
+                case EvCmdID.NAME._BTWR_SUB_LOCAL_BTL_CALL: return EvCmd_BTWR_SUB_LOCAL_BTL_CALL();
+                case EvCmdID.NAME._BTWR_SUB_GET_PLAY_MODE: return EvCmd_BTWR_SUB_GET_PLAY_MODE();
+                case EvCmdID.NAME._BTWR_SUB_SET_LEADER_CLEAR_FLAG: return EvCmd_BTWR_SUB_SET_LEADER_CLEAR_FLAG();
+                case EvCmdID.NAME._BTWR_SUB_GET_LEADER_CLEAR_FLAG: return EvCmd_BTWR_SUB_GET_LEADER_CLEAR_FLAG();
+                case EvCmdID.NAME._BTWR_SUB_ADD_BATTLE_POINT: return EvCmd_BTWR_SUB_ADD_BATTLE_POINT();
+                case EvCmdID.NAME._BTWR_SUB_RENSHOU_RIBBON_SET: return EvCmd_BTWR_SUB_RENSHOU_RIBBON_SET();
+                case EvCmdID.NAME._BTWR_SUB_GET_MINE_OBJ: return EvCmd_BTWR_SUB_GET_MINE_OBJ();
+                case EvCmdID.NAME._BTWR_SUB_UPDATE_RANDOM: return EvCmd_BTWR_SUB_UPDATE_RANDOM();
+                case EvCmdID.NAME._BTWR_DEB_IS_WORK_NULL: return EvCmd_BTWR_DEB_IS_WORK_NULL();
+                case EvCmdID.NAME._BOUKENNOOTO_TIPS_WAIT: return EvCmdBoukennootoTipsOpenWait();
+                case EvCmdID.NAME._SAVE_RENDOU_ENABLE: return EvCmdSaveRendouEnable();
+                case EvCmdID.NAME._RETURN_LOOP: return EvCmd_RETURN_LOOP();
+                case EvCmdID.NAME._INPUT_JUMP: return EvCmd_INPUT_JUMP();
+                case EvCmdID.NAME._BTWR_SUB_BTL_TRAINER_SET: return EvCmd_BTWR_SUB_BTL_TRAINER_SET();
+                case EvCmdID.NAME._BTWR_SUB_GET_RANK: return EvCmd_BTWR_SUB_GET_RANK();
+                case EvCmdID.NAME._BTWR_SUB_RANK_DOWN_LOSE: return EvCmd_BTWR_SUB_RANK_DOWN_LOSE();
+                case EvCmdID.NAME._BTWR_SUB_RANK_DOWN_LOSE_RESET: return EvCmd_BTWR_SUB_RANK_DOWN_LOSE_RESET();
+                case EvCmdID.NAME._BTWR_SUB_ADD_LOSE: return EvCmd_BTWR_SUB_ADD_LOSE();
+                case EvCmdID.NAME._SET_VISIBILITY: return EvCmd_SET_VISIBILITY();
+                case EvCmdID.NAME._LOAD_CAMERA_CONTROLLER: return EvCmd_LOAD_CAMERA_CONTROLLER();
+                case EvCmdID.NAME._LOAD_WAIT_CAMERA_CONTROLLER: return EvCmd_LOAD_WAIT_CAMERA_CONTROLLER();
+                case EvCmdID.NAME._CAMERA_CONTROLLER_PLAY: return EvCmd_CAMERA_CONTROLLER_PLAY();
+                case EvCmdID.NAME._CAMERA_CONTROLLER_END: return EvCmd_CAMERA_CONTROLLER_END();
+                case EvCmdID.NAME._TEMOTI_ROTOMU_FORM_CHG_CHECK: return EvCmdTemotiRotomuFormChangeGet();
+                case EvCmdID.NAME._TEMOTI_POKE_CHK_NUM: return EvCmdTemotiPokeChkNum();
+                case EvCmdID.NAME._TEMOTI_ROTOMU_FORM_GET: return EvCmdTemotiRotomuFormNoGet();
+                case EvCmdID.NAME._POKELIST_FORM_CHANGE_SET_PROC: return EvCmd_POKELIST_FORM_CHANGE_SET_PROC();
+                case EvCmdID.NAME._POKELIST_FORM_CHANGE_GET_RESULT: return EvCmd_POKELIST_FORM_CHANGE_GET_RESULT();
+                case EvCmdID.NAME._TUREARUKI_POKEMON_TALK: return EvCmd_TUREARUKI_POKEMON_TALK();
+                case EvCmdID.NAME._TUREARUKI_POKEMON_INDEX: return EvCmd_TUREARUKI_POKEMON_INDEX();
+                case EvCmdID.NAME._TUREARUKI_TAKE_ITEM: return EvCmd_TUREARUKI_TAKE_ITEM();
+                case EvCmdID.NAME._TUREARUKI_ITEM_TIMER_SET: return EvCmd_TUREARUKI_ITEM_TIMER_SET();
+                case EvCmdID.NAME._RELEASE_CAMERA_CONTROLLER: return EvCmd_RELEASE_CAMERA_CONTROLLER();
+                case EvCmdID.NAME._FIND_BG_ENABLE: return EvCmd_FIND_BG_ENABLE();
+                case EvCmdID.NAME._FIND_BG_DISABLE: return EvCmd_FIND_BG_DISABLE();
+                case EvCmdID.NAME._CALL_EFFECT: return EvCmd_CALL_EFFECT();
+                case EvCmdID.NAME._STOP_EFFECT: return EvCmd_STOP_EFFECT();
+                case EvCmdID.NAME._RELEASE_EFFECT: return EvCmd_RELEASE_EFFECT();
+                case EvCmdID.NAME._CASSET_VERSION_GET: return EvCmd_CASSET_VERSION_GET();
+                case EvCmdID.NAME._BOX_OPEN_NORMAL: return EvCmd_BOX_OPEN_NORMAL();
+                case EvCmdID.NAME._BOX_OPEN_SELECT: return EvCmd_BOX_OPEN_SELECT();
+                case EvCmdID.NAME._CALL_EFFECT_OBJ: return EvCmd_CALL_EFFECT_OBJ();
+                case EvCmdID.NAME._SORAWOTOBU_END: return EvCmdSorawotobuEnd();
+                case EvCmdID.NAME._CON_OPEN_RESUME_MATCHING_MENU: return EvCmdConOpenResumeMatchingMenu();
+                case EvCmdID.NAME._BOX_SEAL_UI_WAIT: return EvCmd_BOX_SEAL_UI_WAIT();
+                case EvCmdID.NAME._OBJ_POS_CHANGE_WORLD: return EvCmd_OBJ_POS_CHANGE_WORLD();
+                case EvCmdID.NAME._OPEN_SPECIAL_WIN_LABEL: return EvCmdOpenSpecialWinLabel();
+                case EvCmdID.NAME._WAIT_SPECIAL_WIN_LABEL: return EvCmdWaitSpecialWinLabel();
+                case EvCmdID.NAME._AK_LISNER_TRA: return EvCmd_AK_LISNER_TRA();
+                case EvCmdID.NAME._AK_LISNER_POS: return EvCmd_AK_LISNER_POS();
+                case EvCmdID.NAME._AK_LISNER_ROT: return EvCmd_AK_LISNER_ROT();
+                case EvCmdID.NAME._UNION_PROC: return EvCmdUnionProc();
+                case EvCmdID.NAME._CAMERA_CONTROLLER_WAIT: return EvCmd_CAMERA_CONTROLLER_WAIT();
+                case EvCmdID.NAME._SET_TV_INT: return EvCmd_SET_TV_INT();
+                case EvCmdID.NAME._SET_TV_PLAYER_NAME: return EvCmd_SET_TV_PLAYER_NAME();
+                case EvCmdID.NAME._SET_TV_POKE_NICK_NAME: return EvCmd_SET_TV_POKE_NICK_NAME();
+                case EvCmdID.NAME._TV_TPIC_ENABLE: return EvCmd_TV_TPIC_ENABLE();
+                case EvCmdID.NAME._TV_TPIC_BRANCH: return EvCmd_TV_TPIC_BRANCH();
+                case EvCmdID.NAME._TUREARUKI_POKE_CREATE: return EvCmd_TUREARUKI_POKE_CREATE();
+                case EvCmdID.NAME._TUREARUKI_POKE_DELETE: return EvCmd_TUREARUKI_POKE_DELETE();
+                case EvCmdID.NAME._AUTO_TANKEN_SET: return EvCmd_AUTO_TANKEN_SET();
+                case EvCmdID.NAME._SET_MATCHING_GROUP: return EvCmdSetMatchingGroup();
+                case EvCmdID.NAME._AUTO_TANKEN_SET_WAIT: return EvCmd_AUTO_TANKEN_SET_WAIT();
+                case EvCmdID.NAME._USE_TANKENSET: return EvCmd_USE_TANKENSET();
+                case EvCmdID.NAME._TALK_UNION_NPC: return EvCmd_TALK_UNION_NPC();
+                case EvCmdID.NAME._CHECK_ONLINE_ACCOUNT: return EvCmdCheckOnlineAccount();
+                case EvCmdID.NAME._WAIT_CHECK_ONLINE_ACCOUNT: return EvCmdWaitCheckOnlineAccount();
+                case EvCmdID.NAME._LOCALKOUKAN_APPLY: return EvCmd_LOCALKOUKAN_APPLY();
+                case EvCmdID.NAME._ZUKAN_TOUROKU: return EvCmd_ZUKAN_TOUROKU();
+                case EvCmdID.NAME._ZUKAN_TOUROKU_WAIT: return EvCmd_ZUKAN_TOUROKU_WAIT();
+                case EvCmdID.NAME._CHK_ZUKAN_TOUROKU: return EvCmd_CHK_ZUKAN_TOUROKU();
+                case EvCmdID.NAME._AUTO_SAVE: return EvCmd_AUTO_SAVE();
+                case EvCmdID.NAME._ENDING_DEMO: return EvCmd_ENDING_DEMO();
+                case EvCmdID.NAME._AZUKARIYA_TAKE_OVER_POKE: return EvCmdAzukariyaTakeOverPoke();
+                case EvCmdID.NAME._POKETORE_GET_CHARGE: return EvCmd_POKETORE_GET_CHARGE();
+                case EvCmdID.NAME._POKETORE_START: return EvCmd_POKETORE_START();
+                case EvCmdID.NAME._BICYCLE_COLOR_SET: return EvCmd_BICYCLE_COLOR_SET();
+                case EvCmdID.NAME._BICYCLE_COLOR_GET: return EvCmd_BICYCLE_COLOR_GET();
+                case EvCmdID.NAME._PARK_ITEM_NAME: return EvCmd_PARK_ITEM_NAME();
+                case EvCmdID.NAME._LOAD_UMA_ANIME: return EvCmd_LOAD_UMA_ANIME();
+                case EvCmdID.NAME._RELEASE_UMA_ANIME: return EvCmd_RELEASE_UMA_ANIME();
+                case EvCmdID.NAME._LOAD_UMA_ANIME_WAIT: return EvCmd_LOAD_UMA_ANIME_WAIT();
+                case EvCmdID.NAME._UMA_ANIME_PLAY: return EvCmd_UMA_ANIME_PLAY();
+                case EvCmdID.NAME._UMA_ANIME_ATTACH: return EvCmd_UMA_ANIME_ATTACH();
+                case EvCmdID.NAME._UMA_PLAY_WAIT: return EvCmd_UMA_PLAY_WAIT();
+                case EvCmdID.NAME._OBJ_ANIME_SPEED: return EvCmd_OBJ_ANIME_SPEED();
+                case EvCmdID.NAME._OBJ_SCALE: return EvCmd_OBJ_SCALE();
+                case EvCmdID.NAME._BADGE_GET: return EvCmd_BADGE_GET();
+                case EvCmdID.NAME._ADD_UG_ITEM: return EvCmdAddUgItem();
+                case EvCmdID.NAME._TOBARI_4F_SHOP_OPEN: return EvCmdOpenTobari4fShop();
+                case EvCmdID.NAME._DOF_FAR_DEPTH: return EvCmd_DOF_FAR_DEPTH();
+                case EvCmdID.NAME._DISPLAY_MESSAGE: return EvCmd_DISPLAY_MESSAGE();
+                case EvCmdID.NAME._DISPLAY_MESSAGE_CLOSE: return EvCmd_DISPLAY_MESSAGE_CLOSE();
+                case EvCmdID.NAME._CUSTOM_BALL_TRAINER_PAGE: return EvCmdCustomBallTrainerPage();
+                case EvCmdID.NAME._CUSTOM_BALL_TRAINER_COPY_OPEN: return EvCmdCustomBallTrainerCopyOpen();
+                case EvCmdID.NAME._RECONGNIZE_TOKIKAKE: return EvCmdRecongnizeTokikake();
+                case EvCmdID.NAME._RECONGNIZE_OPEN_WAIT: return EvCmdRecongnizeOpenWait();
+                case EvCmdID.NAME._UG_ITEM_NAME: return EvCmdUgItemName();
+                case EvCmdID.NAME._FUREAI_TALK_START: return EvCmdFureaiTalkStart();
+                case EvCmdID.NAME._FUREAI_TALK_END: return EvCmdFureaiTalkEnd();
+                case EvCmdID.NAME._PLAY_FUREAI_VOICE_NAKAYOSHIRANK: return EvCmdPlayFureaiVoiceNakayoshiRank();
+                case EvCmdID.NAME._CREATE_HYOUTA: return EvCmdCreateHyouta();
+                case EvCmdID.NAME._CALL_SHIP_DEMO_SEA_MAP: return EvCmdCallShipDemoSeaMap();
+                case EvCmdID.NAME._SETUP_SHIP: return EvCmdSetupShip();
+                case EvCmdID.NAME._PC_DENDOU_SET_PROC_OPEN_WAIT: return EvCmdPcDendouSetProcOpenWait();
+                case EvCmdID.NAME._GET_POKETCH_APP_ID: return EvCmdGetUsedPoketchAppID();
+                case EvCmdID.NAME._FADE_DUNGEON_OUT: return EvCmd_FADE_DUNGEON_OUT();
+                case EvCmdID.NAME._FADE_DUNGEON_IN: return EvCmd_FADE_DUNGEON_IN();
+                case EvCmdID.NAME._FADE_BUILDING_OUT: return EvCmd_FADE_BUILDING_OUT();
+                case EvCmdID.NAME._FADE_BUILDING_IN: return EvCmd_FADE_BUILDING_IN();
+                case EvCmdID.NAME._FADE_AREA_OUT: return EvCmd_FADE_AREA_OUT();
+                case EvCmdID.NAME._FADE_AREA_IN: return EvCmd_FADE_AREA_IN();
+                case EvCmdID.NAME._CUSTOM_BALL_TRAINER_PAGE_WAIT: return EvCmdCustomBallTrainerOpenWait();
+                case EvCmdID.NAME._C08R0801SCOPECAMERA_SEQUENCE: return EvCmdc08r0801ScopeSequence();
+                case EvCmdID.NAME._EMBANKMENT: return EvCmd_EMBANKMENT();
+                case EvCmdID.NAME._ENTRY_UWASA_ZUKAN: return EvCmdEntryUwasaZukan();
+                case EvCmdID.NAME._TALK_UG_NPC: return EvCmdTalkUgNpc();
+                case EvCmdID.NAME._TRAINING_OPEN: return EvCmdTrainingOpen();
+                case EvCmdID.NAME._TRAINING_OPEN_WAIT: return EvCmdTrainingOpenWait();
+                case EvCmdID.NAME._CAMERA_CONTROLLER_IS_NULL: return EvCmd_CAMERA_CONTROLLER_IS_NULL();
+                case EvCmdID.NAME._UMA_IS_NULL: return EvCmd_UMA_IS_NULL();
+                case EvCmdID.NAME._GET_IS_HAVE_SECRETBASE: return EvCmdGetIsHaveSecretBase();
+                case EvCmdID.NAME._GET_UG_NPC_TALK_COUNT: return EvCmdGetUgNpcTalkCount();
+                case EvCmdID.NAME._RESET_UG_NPC_TALK_COUNT: return EvCmdResetUgNpcTalkCount();
+                case EvCmdID.NAME._TEMOTI_POKE_CHK_GET_POS: return EvCmd_TEMOTI_POKE_CHK_GET_POS();
+                case EvCmdID.NAME._SET_FORCE_BLINK: return EvCmd_SET_FORCE_BLINK();
+                case EvCmdID.NAME._CHECK_SECRET_BASE_EXPANTION: return EvCmd_CheckSecretBaseExpantion();
+                case EvCmdID.NAME._TV_TOPIC_BRANCH_GET: return EvCmdTVTopicBranchGet();
+                case EvCmdID.NAME._TV_TOPIC_INT_GET: return EvCmdTVTopicIntGet();
+                case EvCmdID.NAME._TV_TOPIC_STR_WORD_SET: return EvCmdTVTopicStrWordSet();
+                case EvCmdID.NAME._OOKISA_VALUE_SET_BUF: return EvCmdOokisaValueSet();
+                case EvCmdID.NAME._SET_LIGHTINTENSITY: return EvCmd_SET_LIGHTINTENSITY();
+                case EvCmdID.NAME._SET_LIGHTINTENSITY_CHARCTER: return EvCmd_SET_LIGHTINTENSITY_CHARCTER();
+                case EvCmdID.NAME._SET_LIGHTINTENSITY_POKE: return EvCmd_SET_LIGHTINTENSITY_POKE();
+                case EvCmdID.NAME._END_LIGHTINTENSITY: return EvCmd_END_LIGHTINTENSITY();
+                case EvCmdID.NAME._END_LIGHTINTENSITY_CHARCTER: return EvCmd_END_LIGHTINTENSITY_CHARCTER();
+                case EvCmdID.NAME._END_LIGHTINTENSITY_POKE: return EvCmd_END_LIGHTINTENSITY_POKE();
+                case EvCmdID.NAME._TV_RED_GYARADOS_ON: return EvCmd_TV_RED_GYARADOS_ON();
+                case EvCmdID.NAME._TV_RED_GYARADOS_OFF: return EvCmd_TV_RED_GYARADOS_OFF();
+                case EvCmdID.NAME._PARTNER_NAME_SET: return EvCmdPartnerNameSet();
+                case EvCmdID.NAME._TV_MONITOR_SET: return EvCmdTVMonitorSet();
+                case EvCmdID.NAME._TV_MONITOR_RESET: return EvCmdTVMonitorReset();
+                case EvCmdID.NAME._EFF_SCALE: return EvCmd_EFF_SCALE();
+                case EvCmdID.NAME._GET_ITEM_COUNT: return EvCmd_GET_ITEM_COUNT();
+                case EvCmdID.NAME._PLAY_EMO_SE: return EvCmd_PLAY_EMO_SE();
+                case EvCmdID.NAME._AUTO_MSG: return EvCmd_AUTO_MSG();
+                case EvCmdID.NAME._AUTO_MSG_STOP: return EvCmd_AUTO_MSG_STOP();
+                case EvCmdID.NAME._GET_TAG_PATNER_ID: return EvCmd_GET_TAG_PATNER_ID();
+                case EvCmdID.NAME._ADD_WAZA: return EvCmdAddWaza();
+                case EvCmdID.NAME._NICKNAME_PLACEMENT: return EvCmd_NICKNAME_PLACEMENT();
+                case EvCmdID.NAME._UNIQUE_POKE_TEMP: return EvCmd_UNIQUE_POKE_TEMP();
+                case EvCmdID.NAME._UNIQUE_POKE_FIX: return EvCmd_UNIQUE_POKE_FIX();
+                case EvCmdID.NAME._GET_FORM: return EvCmd_GET_FORM();
+                case EvCmdID.NAME._NICK_NAME_ALL: return EvCmd_NICK_NAME_ALL();
+                case EvCmdID.NAME._DOF_CHANGE_TARGET_POS: return EvCmd_DOF_CHANGE_TARGET_POS();
+                case EvCmdID.NAME._DOF_RESET_TARGET_POS: return EvCmd_DOF_RESET_TARGET_POS();
+                case EvCmdID.NAME._ADD_MAROYAKA_POFFIN: return EvCmd_ADD_MAROYAKA_POFFIN();
+                case EvCmdID.NAME._ALL_MONSNO: return EvCmd_ALL_MONSNO();
+                case EvCmdID.NAME._ALL_MONS_OWN_CHK: return EvCmd_ALL_MONS_OWN_CHK();
+                case EvCmdID.NAME._CON_CATEGORY_NAME: return EvCmdContestCategoryName();
+                case EvCmdID.NAME._CON_RANK_NAME: return EvCmdContestRankName();
+                case EvCmdID.NAME._POKE_TYPE_NAME: return EvCmdPokeTypeName();
+                case EvCmdID.NAME._POFFIN_NAME: return EvCmdPofifinName();
+                case EvCmdID.NAME._DRESS_NAME: return EvCmdDressName();
+                case EvCmdID.NAME._EVENT_ENTITY_VISIBLE: return EvCmdEventEntityVisible();
+                case EvCmdID.NAME._UG_LEAVE_HOYUTA: return EvCmdUgLevaeHyouta();
+                case EvCmdID.NAME._AZUKARIYA_STORE_UI: return EvCmdAzukariyaStoreUI();
+                case EvCmdID.NAME._SET_TELEPORT_ID: return EvCmd_SET_TELEPORT_ID();
+                case EvCmdID.NAME._POKE_LVUP_HOW_MANY: return EvCmd_POKE_LVUP_HOW_MANY();
+                case EvCmdID.NAME._USE_SPECIAL_ITEM: return EvCmd_USE_SPECIAL_ITEM();
+                case EvCmdID.NAME._GET_BP: return EvCmd_GET_BP();
+                case EvCmdID.NAME._FOV_OFFSET_RATE: return EvCmd_FOV_OFFSET_RATE();
+                case EvCmdID.NAME._OBJ_DIR_CHANGE_WORLD: return EvCmd_OBJ_DIR_CHANGE_WORLD();
+                case EvCmdID.NAME._OBJ_POS_CHANGE_WORLD_FIND: return EvCmd_OBJ_POS_CHANGE_WORLD_FIND();
+                case EvCmdID.NAME._ZONE_NAME2: return EvCmdZoneName2();
+                case EvCmdID.NAME._TALK_COLISEUM_NPC: return EvCmd_TALK_COLISEUM_NPC();
+                case EvCmdID.NAME._USE_SUB_ATTRIBUTE: return EvCmd_USE_SUB_ATTRIBUTE();
+                case EvCmdID.NAME._ADD_CUSTUM_WIN_LABEL_TWO_WINDOW: return EvCmd_ADD_CUSTUM_WIN_LABEL_TWO_WINDOW();
+                case EvCmdID.NAME._POKE_LEVEL_GET_ALL: return EvCmd_POKE_LEVEL_GET_ALL();
+                case EvCmdID.NAME._RESET_SAVEBGM: return EvCmd_RESET_SAVEBGM();
+                case EvCmdID.NAME._BTWR_SUB_SELECT_POKE: return EvCmd_BTWR_SUB_SELECT_POKE();
+                case EvCmdID.NAME._BTWR_SUB_GET_ENTRY_POKE: return EvCmd_BTWR_SUB_GET_ENTRY_POKE();
+                case EvCmdID.NAME._SET_GLOBALWATERFIELD: return EvCmd_SET_GLOBALWATERFIELD();
+                case EvCmdID.NAME._TV_INTERVIEW_STR_WORD_SET: return EvCmdTvInterviewStrWordSet();
+                case EvCmdID.NAME._ZONE_NAME_LABEL: return EvCmdZoneNameLabel();
+                case EvCmdID.NAME._AUTO_SAVE_BACK_UP_ON: return EvCmd_AUTO_SAVE_BACK_UP_ON();
+                case EvCmdID.NAME._GET_STATUE_NUM: return EvCmd_GET_STATUENUM();
+                case EvCmdID.NAME._BTWR_PLAYER_WIN_CHECK: return EvCmd_BTWR_PLAYER_WIN_CHECK();
+                case EvCmdID.NAME._GET_GOLD: return EvCmd_GET_GOLD();
+                case EvCmdID.NAME._AG_TRANSITION_HOYUTA: return EvCmdAGAnimationHyouta();
+                case EvCmdID.NAME._ADD_POKEMON_UI: return EvCmdAddPokemonUI();
+                case EvCmdID.NAME._GET_FUREAI_SELECT_POKE_TEMOTI_NO: return EvCmdGetFureaiSelectPokeTemotiNo();
+                case EvCmdID.NAME._TV_TOPIC_STR_GENDER_WORD_SET: return EvCmdTVTopicStrGenderWordSet();
+                case EvCmdID.NAME._EVENT_ENTITY_CLIP_ATTACH_PLAYER: return EvCmdEventEntityAttachPlayer();
+                case EvCmdID.NAME._GET_POKE_COUNT5: return EvCmdGetPokeCount5();
+                case EvCmdID.NAME._ADD_UNIQUE_POKEMON_UI: return EvCmdAddUniquePokemonUI();
+                case EvCmdID.NAME._BTWR_SUB_ADD_BATTLE_POINT_MANUAL: return EvCmd_BTWR_SUB_ADD_BATTLE_POINT_MANUAL();
+                case EvCmdID.NAME._POKE_TARENT_POW_MAX: return EvCmd_POKE_TARENT_POW_MAX();
+                case EvCmdID.NAME._OPEN_BATTLE_WIN: return EvCmd_OPEN_BATTLE_WIN();
+                case EvCmdID.NAME._OJIGI: return EvCmd_OJIGI();
+                case EvCmdID.NAME._DARKNESS_TEMPORARILY_OFF: return EvCmd_DARKNESS_TEMPORARILY_OFF();
+                case EvCmdID.NAME._DARKNESS_TEMPORARILY_ON: return EvCmd_DARKNESS_TEMPORARILY_ON();
+                case EvCmdID.NAME._SAVE_PLAYREPORT: return EvCmdSavePlayReport();
+                case EvCmdID.NAME._SET_STOP_EYE_ENCOUNT: return EvCmd_SET_STOP_EYE_ENCOUNT();
+                case EvCmdID.NAME._RESET_STOP_EYE_ENCOUNT: return EvCmd_RESET_STOP_EYE_ENCOUNT();
+                case EvCmdID.NAME._OPEN_CUSTUM_WIN_FIXED: return EvCmd_OPEN_CUSTUM_WIN_FIXED();
+                case EvCmdID.NAME._PLAY_REPORT_TRAINING: return EvCmd_PLAY_REPORT_TRAINING();
+                case EvCmdID.NAME._PLAY_REPORT_BTLTOWER_WIN: return EvCmd_PLAY_REPORT_BTLTOWER_WIN();
+                case EvCmdID.NAME._GET_WATER_GYM_WATER_LEVEL: return EvCmdGetWaterGymWaterLevel();
+                case EvCmdID.NAME._REGET_WATER_GYM_WATER_LEVEL: return EvCmdResetWaterGymWaterLevel();
+                case EvCmdID.NAME._GET_RECORD_TOWOR_WIN: return EvCmd_GET_RECORD_TOWOR_WIN();
+                case EvCmdID.NAME._TEMOTI_PER_RND: return EvCmd_TEMOTI_PER_RND();
+                case EvCmdID.NAME._ADD_BTLTWR_CHALLENGE: return EvCmd_ADD_BTLTWR_CHALLENGE();
+                case EvCmdID.NAME._CHECK_GMS_ONLINE_ACCOUNT: return EvCmdCheckGMSOnlineAccount();
+                case EvCmdID.NAME._BTLTWR_CONTINUE_ROUND: return EvCmd_BTLTWR_CONTINUE_ROUND();
+                case EvCmdID.NAME._GMS_END: return EvCmdGMSEnd();
+                default: return true;
+            }
+        }
+		private bool WarpSegmentHitCheck(global::FieldEventDoorEntity entity, out global::UnityEngine.Vector3 reusltPosition, out float subtendedAngle, out float lineDistance, float hitrange) {
+            reusltPosition = Vector3.zero;
+            subtendedAngle = 0.0f;
+            lineDistance = 0.0f;
+            float x = entity.worldPosition.x;
+            float z = entity.worldPosition.z;
+            Vector2 offset = entity.offset;
+            Vector2 size = entity.size;
+            Vector2 segA = Vector2.zero;
+            Vector2 segB = Vector2.zero;
+            Vector2 targetPos = new Vector2(EntityManager.activeFieldPlayer.worldPosition.x, EntityManager.activeFieldPlayer.worldPosition.z);
+            x = x - offset.x;
+            z = z + offset.y;
+            Vector2 forward = new Vector2(EntityManager.activeFieldPlayer.transform.forward.x, EntityManager.activeFieldPlayer.transform.forward.z);
+            float angleAT;
+            float angleBT;
+            float distance;
+            int hitstatus;
+            switch (entity.startVectol)
+            {
+                case FieldDoor.StartVectol.Up:
+                    segA = new Vector2(x, z);
+                    segB = new Vector2(x - size.x, z);
+                    break;
+                case FieldDoor.StartVectol.Down:
+                    segA = new Vector2(x, z - size.y);
+                    segB = new Vector2(x - size.x, z - size.y);
+                    break;
+                case FieldDoor.StartVectol.Left:
+                    segA = new Vector2(x - size.x, z);
+                    segB = new Vector2(x - size.x, z - size.y);
+                    break;
+                case FieldDoor.StartVectol.Right:
+                    segA = new Vector2(x, z);
+                    segB = new Vector2(x, z - size.y);
+                    break;
+            }
+            if (entity.startVectol != FieldDoor.StartVectol.All)
+            {
+                SegmentHit(ref segA, ref segB, ref targetPos, hitrange, out angleAT, out angleBT, out distance, out hitstatus);
+                if (hitstatus == 0 || angleAT > 90.0f || angleBT > 90.0f)
+                    return false;
+            }
+
+            float radius = size.x * size.y + 0.1f;
+            float halfX = size.x < 1.0f ? size.x * 0.5f : 0.5f;
+            float halfZ = size.y < 1.0f ? size.y * 0.5f : 0.5f;
+            segA = new Vector2(x - halfX, z - halfZ);
+            segB = new Vector2((x - size.x) + halfX, (z - size.y) + halfZ);
+            SegmentHit(ref segA, ref segB, ref targetPos, radius, out angleAT, out angleBT, out distance, out hitstatus);
+            Vector2 dir = (segB - segA).normalized;
+            Vector2 normal = new Vector2(-dir.y, dir.x);
+            Vector2 hitPos = Vector2.zero;
+            if (hitstatus == 3)
+                hitPos = segB;
+            else if (hitstatus == 2)
+                hitPos = segA;
+            else if (hitstatus == 1)
+                hitPos = targetPos - normal * distance;
+
+            Vector2 toHit = hitPos - targetPos;
+            subtendedAngle = FieldCalc.SubtendedAngle(ref toHit, ref forward);
+            reusltPosition = new Vector3(hitPos.x, entity.Height, hitPos.y);
+            lineDistance = distance;
+            return hitstatus != 0;
+        }
+		private void SegmentHit(ref global::UnityEngine.Vector2 segA, ref global::UnityEngine.Vector2 segB, ref global::UnityEngine.Vector2 targetPos, float radius, out float angleAT, out float angleBT, out float distance, out int hitstatus) {
+            hitstatus = 0;
+            Vector2 ab = (segB - segA).normalized;
+            Vector2 at = targetPos - segA;
+            Vector2 bt = targetPos - segB;
+            float dotA = Vector2.Dot(ab, at.normalized);
+            float dotB = Vector2.Dot(ab, bt.normalized);
+            angleAT = Mathf.Acos(dotA) * Mathf.Rad2Deg;
+            angleBT = Mathf.Acos(-dotB) * Mathf.Rad2Deg;
+            distance = FieldCalc.Cross(ref ab, ref at);
+            if (dotA <= 0.0f || ab == Vector2.zero)
+            {
+                if (at.sqrMagnitude < radius * radius)
+                    hitstatus = 2;
+            }
+            else if (dotB >= 0.0f)
+            {
+                if (bt.sqrMagnitude < radius * radius)
+                    hitstatus = 3;
+            }
+            else
+            {
+                if (Mathf.Abs(distance) < radius)
+                    hitstatus = 1;
+            }
+        }
+		public void InitScriptLoad() {
+            MessageManager.Instance.Initialize(MessageEnumData.MsgLangId.JPN);
+            _scriptOperation = AssetManager.AppendAssetBundleRequest("ev_script", true, null, null);
+            AssetManager.DispatchRequests(null);
+        }
+		public bool InitScriptLoadWait() {
+            if (_scriptOperation != null)
+            {
+                if (_scriptOperation.assetBundleRequest.status != RequestStatus.Complete)
+                    return false;
+
+                int length = _scriptOperation.assetBundleRequest.cache.loadedAssets.Length;
+                _eventList = new EvScriptData[length];
+                for (int i = 0; i < length; i++)
+                {
+                    UnityEngine.Object asset = _scriptOperation.assetBundleRequest.cache.loadedAssets[i];
+                    if (asset is EvData ev)
+                    {
+                        if (ev == null)
+                            continue;
+                        _eventList[i] = new EvScriptData(ev);
+                    }
+                    else if (asset is EventCameraTable cameraTable)
+                    {
+                        _evCameraTable = cameraTable;
+                    }
+                }
+                AssetManager.UnloadAssetBundle(_scriptOperation.assetBundleRequest.uri);
+                _scriptOperation = null;
+            }
+            return true;
+        }
+		public void InitScriptEnd() {
+            if (!_isScriptLoad)
+                return;
+
+            for (int i = 0; i < _eventList.Length; i++)
+            {
+                EvScriptData scriptData = _eventList[i];
+                if (scriptData == null)
+                    continue;
+
+                for (int j = 0; j < scriptData.EvData.Scripts.Count; j++)
+                {
+                    int[] index = new int[] { i, j };
+                    EvData.Script script = scriptData.EvData.Scripts[j];
+                    if (!_findAllLabel.ContainsKey(script.Label))
+                        _findAllLabel.Add(script.Label, index);
+                }
+            }
+        }
 		private bool IsRockclimbLabel(string label) {
             return label == "ev_hiden_kabenobori";
         }
-		public void SaveDataReflection() { /*@B 0x600910B*/ throw null; }
+		public void SaveDataReflection() {
+            EntityManager.BuildFieldEntities();
+            foreach (FieldObjectEntity entity in _fieldObjectEntity)
+            {
+                if (entity == null || entity.gameObject == null)
+                    continue;
+
+                FIELD_OBJ_SAVE_DATA data = FieldObjWork.Get(entity.gameObject.name.GetHashCode(), out bool flag);
+                if (!flag)
+                    continue;
+
+                entity.gridPosition = new Vector2Int(data.grid_x, data.grid_y);
+                entity.worldPosition.y = data.height;
+                entity.yawAngle = data.angle;
+                int moveCodeIndex = entity.EventParams.MoveCodeIndex;
+                if (moveCodeIndex >= 0)
+                {
+                    FieldObjectMoveCode moveCode = FieldObjectMoveCodes[moveCodeIndex];
+                    moveCode.MoveCode = data.movecode;
+                    moveCode.MoveDirHead = (DIR)data.dir_head;
+                    moveCode.MoveParam0 = data.mvParam0;
+                    moveCode.MoveParam1 = data.mvParam1;
+                    moveCode.MoveParam2 = data.mvParam2;
+                    moveCode.MoveLimitX = data.limitX;
+                    moveCode.MoveLimitZ = data.limitZ;
+                    moveCode.Ev_Type = data.ev_type;
+                    moveCode.mv_old_dir = data.mv_old_dir;
+                    moveCode.mv_dir = data.mv_dir;
+                }
+            }
+
+            for (int i = 0; i < EntityManager.fieldTobariGymWalls.Length; i++)
+            {
+                FieldTobariGymWallEntity wall = EntityManager.fieldTobariGymWalls[i];
+                if (wall == null || wall.gameObject == null)
+                    continue;
+
+                FIELD_OBJ_SAVE_DATA data = FieldObjWork.Get(wall.name.GetHashCode(), out bool flag);
+                if (flag)
+                    wall.ApplySaveData(in data);
+            }
+
+            if (EntityManager.fieldNomoseGymWater.Length != 0)
+            {
+                FieldNomoseGymWaterEntity water = EntityManager.fieldNomoseGymWater[0];
+                if (water != null && water.gameObject != null)
+                {
+                    FIELD_OBJ_SAVE_DATA data = FieldObjWork.Get(water.name.GetHashCode(), out bool flag);
+                    if (flag)
+                        water.ApplySaveData(in data);
+                }
+            }
+        }
 		public void SetSaveObj() {
             foreach (var entity in _fieldObjectEntity)
             {
@@ -14301,8 +15795,75 @@ namespace Dpr.EvScript
                 }
             }
         }
-		public void SetupGimmickEntity() { /*@B 0x600910D*/ throw null; }
-		public void SceneStartGimmickEntity() { /*@B 0x600910E*/ throw null; }
+		public void SetupGimmickEntity() {
+            EntityManager.BuildFieldEntities();
+            for (int i = 0; i < EntityManager.fieldTobariGymWalls.Length; i++)
+            {
+                FieldTobariGymWallEntity wall = EntityManager.fieldTobariGymWalls[i];
+                if (wall == null || wall.gameObject == null)
+                    continue;
+                wall.Setup();
+            }
+
+            if (EntityManager.fieldNagisaGymGears != null && EntityManager.fieldNagisaGymGears.Length != 0)
+            {
+                for (int i = 0; i < EntityManager.fieldNagisaGymGears.Length; i++)
+                {
+                    FieldNagisaGymGearEntity gear = EntityManager.fieldNagisaGymGears[i];
+                    if (gear == null || gear.gameObject == null)
+                        continue;
+                    gear.Setup(_areaID);
+                }
+            }
+            else
+            {
+                GimmickWork.ClearGearRotate();
+            }
+
+            for (int i = 0; i < EntityManager.fieldLiftObjects.Length; i++)
+            {
+                FieldEventLiftEntity lift = EntityManager.fieldLiftObjects[i];
+                if (lift == null || lift.gameObject == null)
+                    continue;
+                lift.Setup();
+            }
+
+            if (EntityManager.fieldNomoseGymWater.Length != 0)
+            {
+                FieldNomoseGymWaterEntity water = EntityManager.fieldNomoseGymWater[0];
+                if (water != null && water.gameObject != null)
+                    water.Setup();
+            }
+
+            for (int i = 0; i < EntityManager.fieldNomoseGymSwitches.Length; i++)
+            {
+                FieldNomoseGymSwitchEntity sw = EntityManager.fieldNomoseGymSwitches[i];
+                if (sw == null || sw.gameObject == null)
+                    continue;
+                sw.Setup();
+            }
+
+            if (EntityManager.fieldElevatorBackground.Length != 0)
+            {
+                FieldElevatorBackgroundEntity elevator = EntityManager.fieldElevatorBackground[0];
+                if (elevator != null && elevator.gameObject != null)
+                    elevator.Setup();
+            }
+        }
+		public void SceneStartGimmickEntity() {
+            if (EntityManager.fieldNagisaGymGears == null)
+                return;
+            if (EntityManager.fieldNagisaGymGears.Length == 0)
+                return;
+
+            for (int i = 0; i < EntityManager.fieldNagisaGymGears.Length; i++)
+            {
+                FieldNagisaGymGearEntity gear = EntityManager.fieldNagisaGymGears[i];
+                if (gear == null || gear.gameObject == null)
+                    continue;
+                gear.SceneStart();
+            }
+        }
 		public static void PlayHoneyTreeAnimation(global::ZoneID zoneId) {
             var honeyData = HoneyWork.GetHoneyData(zoneId);
             if (!honeyData.HasValue)
