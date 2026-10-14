@@ -2,6 +2,6 @@
 public class FieldBicycleJumpEventEntity : global::FieldEventEntity
 {
 	public global::DIR EntranceDirection;
-	public override string entityType { get { /*@B 0x600062B*/ throw null; } }
-	public FieldBicycleJumpEventEntity() { /*@B 0x600062C*/ throw null; }
+	public override string entityType { get { return "FieldBicycleJumpEventEntity"; } }
+	public FieldBicycleJumpEventEntity() { }
 }

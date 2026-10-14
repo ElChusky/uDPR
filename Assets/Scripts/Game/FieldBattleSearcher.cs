@@ -87,7 +87,18 @@ public static class FieldBattleSearcher
         PlayerWork.BtlSearcherCharge = 0;
         return result;
     }
-	private static void SearchEventEnd(float time) { /*@B 0x600000A*/ throw null; }
+	private static void SearchEventEnd(float time) {
+		eventTime += time;
+		if (eventTime >= 0.3f)
+		{
+			FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_AUTOSAVE_STOP, false);
+			FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.SYS_INPUT_OFF, false);
+			PlayerWork.isPlayerInputActive = true;
+			FieldCanvas.DeleteBalloon(null, false);
+			EvDataManager.Instanse.SetBtlSearchEndEvent(null);
+			FlagWork.SetSysFlag(EvWork.SYSFLAG_INDEX.FLAG_STOP_EYE_ENCOUNT, false);
+		}
+	}
 	public static void WalkClearFlag() {
         EvDataManager evDataManager = EvDataManager.Instanse;
         for (int i = 0; i < evDataManager.FieldObjectMoveCodes.Count; i++)

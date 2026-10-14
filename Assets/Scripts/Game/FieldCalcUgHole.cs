@@ -7,7 +7,35 @@ public static class FieldCalcUgHole
 	private const float OfsMinValue = 0.2f;
 	private const float OfsMaxValue = 0.6f;
 	private const float SlopeOfsY = 0.1f;
-	public static void CalcHoleTransform(out global::UnityEngine.Vector3 eulerAngles, out global::UnityEngine.Vector3 positionOffset) { /*@B 0x600009A*/ throw null; }
+	public static void CalcHoleTransform(out global::UnityEngine.Vector3 eulerAngles, out global::UnityEngine.Vector3 positionOffset) {
+		eulerAngles = Vector3.zero;
+		CalcSlope(Vector3.forward, out float degForward, out float ofsForward);
+		float ofsY;
+		if (degForward == 0f)
+		{
+			ofsY = 0f;
+		}
+		else
+		{
+			eulerAngles = new Vector3(degForward, 0f, 0f);
+			ofsY = ofsForward;
+		}
+		CalcSlope(Vector3.left, out float degLeft, out float ofsLeft);
+		if (degLeft != 0f)
+		{
+			if (degForward == 0f)
+			{
+				eulerAngles = new Vector3(0f, 0f, degLeft);
+				ofsY = ofsLeft;
+			}
+			else
+			{
+				eulerAngles = Vector3.zero;
+				ofsY = 0f;
+			}
+		}
+		positionOffset = new Vector3(0f, ofsY, 0f);
+	}
 	private static void CalcSlope(global::UnityEngine.Vector3 direction, out float deg, out float ofsY) {
 		ofsY = 0f;
 
