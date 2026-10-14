@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_PushOut : global::Dpr.Battle.Logic.Section
 	{
-		public Section_PushOut(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007039*/ throw null; }
+		public Section_PushOut(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_PushOut.Result pResult, in global::Dpr.Battle.Logic.Section_PushOut.Description description) {
 			pResult.isSuccessed = false;
 			pResult.isFailMessageDisplayed = false;
@@ -145,7 +145,14 @@ namespace Dpr.Battle.Logic
 			public bool isIgnoreLevel;
 			public ushort effectNo;
 			public global::Dpr.Battle.Logic.StrParam succeedMessage;
-			public Description() { /*@B 0x600B5D6*/ throw null; }
+			public Description() {
+				attackerID = PokeID.INVALID;
+				targetID = PokeID.INVALID;
+				isForceChange = false;
+				isIgnoreLevel = false;
+				effectNo = 0;
+				succeedMessage = null;
+			}
 		}
 		public class Result
 		{

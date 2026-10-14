@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaAdditionalEffect_Target : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaAdditionalEffect_Target(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60071BA*/ throw null; }
+		public Section_WazaAdditionalEffect_Target(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaAdditionalEffect_Target.Result pResult, in global::Dpr.Battle.Logic.Section_WazaAdditionalEffect_Target.Description description) {
 			Pml.WazaData.WazaCategory category = WAZADATA.GetCategory(description.wazaParam.wazaID);
 			if (description.fMigawriHit)

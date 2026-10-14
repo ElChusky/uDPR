@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaAdditionalEffect_RankEffect : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaAdditionalEffect_RankEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60071B6*/ throw null; }
+		public Section_WazaAdditionalEffect_RankEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaAdditionalEffect_RankEffect.Result pResult, in global::Dpr.Battle.Logic.Section_WazaAdditionalEffect_RankEffect.Description description) {
 			if (description.target.IsDead())
 				return;
@@ -30,7 +30,12 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM target;
-			public Description() { /*@B 0x600B653*/ throw null; }
+			public Description() {
+				actionDesc = null;
+				wazaParam = null;
+				attacker = null;
+				target = null;
+			}
 		}
 		public class Result
 		{

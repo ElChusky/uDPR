@@ -5,7 +5,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60071C3*/ throw null; }
+		public Section_WazaExec(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec.Description description) {
 			pResult.isSuccess = false;
 			WazaNo waza = description.pWazaParam.wazaID;

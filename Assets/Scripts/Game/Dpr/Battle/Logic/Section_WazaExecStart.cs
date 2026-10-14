@@ -5,7 +5,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExecStart : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExecStart(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60071D2*/ throw null; }
+		public Section_WazaExecStart(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExecStart.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExecStart.Description description) {
 			WazaParam wazaParam = new WazaParam();
 			WazaParam wazaParamOrg = new WazaParam();
@@ -339,18 +339,20 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.PokeAction pPokemonAction;
-			public Description() { /*@B 0x600B65F*/ throw null; }
+			public Description() {
+				pPokemonAction = null;
+			}
 		}
 		public class Result
 		{
 			public global::Dpr.Battle.Logic.Section_WazaExecStart.ResultCode resultCode;
 			public bool isWazaEffective;
 			public bool isPPUsed;
-			public global::Dpr.Battle.Logic.WazaParam wazaParam;
+			public global::Dpr.Battle.Logic.WazaParam wazaParam = new WazaParam();
 			public global::Dpr.Battle.Logic.BtlPokePos targetPos;
-			public global::Dpr.Battle.Logic.PokeSet targets;
-			public global::Dpr.Battle.Logic.WazaRobParam robParam;
-			public Result() { /*@B 0x600B660*/ throw null; }
+			public global::Dpr.Battle.Logic.PokeSet targets = new PokeSet();
+			public global::Dpr.Battle.Logic.WazaRobParam robParam = new WazaRobParam();
+			public Result() { }
 		}
 	}
 }

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_MemberInCore : global::Dpr.Battle.Logic.Section
 	{
-		public Section_MemberInCore(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FE6*/ throw null; }
+		public Section_MemberInCore(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_MemberInCore.Result pResult, in global::Dpr.Battle.Logic.Section_MemberInCore.Description description) {
 			if (GetRule() != BtlRule.BTL_RULE_SAFARI)
 				GetServerCommandPutter().UpdateIllusion((BTL_CLIENT_ID)description.clientID);
@@ -28,7 +28,11 @@ namespace Dpr.Battle.Logic
 			public byte clientID;
 			public byte posIdx;
 			public byte nextPokeIdx;
-			public Description() { /*@B 0x600B5BE*/ throw null; }
+			public Description() {
+				clientID = (byte)BTL_CLIENT_ID.BTL_CLIENT_NULL;
+				posIdx = 0;
+				nextPokeIdx = 0;
+			}
 		}
 		public class Result
 		{

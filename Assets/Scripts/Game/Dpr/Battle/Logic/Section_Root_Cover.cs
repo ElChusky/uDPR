@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Root_Cover : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Root_Cover(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070A5*/ throw null; }
+		public Section_Root_Cover(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Root_Cover.Result pResult, in global::Dpr.Battle.Logic.Section_Root_Cover.Description description) {
 			GetSharedData().GetInterruptAccessor().Clear();
 			GetServerCommandQueue().Initialize();
@@ -43,7 +43,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.SVCL_ACTION pClientInstructions;
-			public Description() { /*@B 0x600B5FA*/ throw null; }
+			public Description() {
+				pClientInstructions = null;
+			}
 		}
 		public class Result
 		{

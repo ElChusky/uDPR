@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Shrink : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Shrink(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070DD*/ throw null; }
+		public Section_Shrink(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Shrink.Result pResult, in global::Dpr.Battle.Logic.Section_Shrink.Description description) {
 			pResult.isSuccess = false;
 			if (description.target.IsGMode() || description.target.IsRaidBoss())
@@ -30,7 +30,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM target;
 			public uint percentage;
-			public Description() { /*@B 0x600B60C*/ throw null; }
+			public Description() {
+				target = null;
+				percentage = 0;
+			}
 		}
 		public class Result
 		{

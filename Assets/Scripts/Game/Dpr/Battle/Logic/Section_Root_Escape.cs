@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Root_Escape : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Root_Escape(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070AB*/ throw null; }
+		public Section_Root_Escape(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Root_Escape.Result pResult, in global::Dpr.Battle.Logic.Section_Root_Escape.Description description) {
 			pResult.isSuccessed = false;
 			GetSharedData().GetInterruptAccessor().Request(InterruptCode.QUIT_ESCAPE);

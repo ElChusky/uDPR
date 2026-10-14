@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RecordWazaDamage : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RecordWazaDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007081*/ throw null; }
+		public Section_RecordWazaDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RecordWazaDamage.Result pResult, in global::Dpr.Battle.Logic.Section_RecordWazaDamage.Description description) {
 			for (int i = 0; i < description.damageTargetNum; i++)
 			{
@@ -30,7 +30,14 @@ namespace Dpr.Battle.Logic
 			public byte damageTargetNum;
 			public global::Dpr.Battle.Logic.DamageProcParams damageProcParams;
 			public global::Dpr.Battle.Logic.PokeSet damagedPokeSet;
-			public Description() { /*@B 0x600B5EC*/ throw null; }
+			public Description() {
+				attacker = null;
+				attackerPos = BtlPokePos.POS_NULL;
+				wazaParam = null;
+				damageTargetNum = 0;
+				damageProcParams = null;
+				damagedPokeSet = null;
+			}
 		}
 		public class Result
 		{

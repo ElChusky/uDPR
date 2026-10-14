@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_TameLockClear : global::Dpr.Battle.Logic.Section
 	{
-		public Section_TameLockClear(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007112*/ throw null; }
+		public Section_TameLockClear(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_TameLockClear.Result pResult, in global::Dpr.Battle.Logic.Section_TameLockClear.Description description) {
 			// both helpers are inlined here (0216f5a8 clearTameLock, 0216f5e4 clearHide)
 			clearTameLock(description.poke);
@@ -38,7 +38,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
-			public Description() { /*@B 0x600B62E*/ throw null; }
+			public Description() {
+				poke = null;
+			}
 		}
 		public class Result
 		{

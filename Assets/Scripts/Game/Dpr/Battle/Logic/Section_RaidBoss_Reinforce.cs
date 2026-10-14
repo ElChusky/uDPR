@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RaidBoss_Reinforce : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RaidBoss_Reinforce(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007063*/ throw null; }
+		public Section_RaidBoss_Reinforce(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RaidBoss_Reinforce.Result pResult, in global::Dpr.Battle.Logic.Section_RaidBoss_Reinforce.Description description) {
 			BTL_POKEPARAM poke = GetPokeParam(description.pokeID);
 			if (!canReinforce(poke))
@@ -78,7 +78,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public byte pokeID;
-			public Description() { /*@B 0x600B5E2*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

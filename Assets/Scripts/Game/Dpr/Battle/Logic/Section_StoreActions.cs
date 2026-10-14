@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_StoreActions : global::Dpr.Battle.Logic.Section
 	{
-		public Section_StoreActions(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007107*/ throw null; }
+		public Section_StoreActions(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_StoreActions.Result pResult, in global::Dpr.Battle.Logic.Section_StoreActions.Description description) {
 			// the two-argument overload is inlined here (five calls with clientID 0..4, 021c816c..021c81bc); createPokeAction_G is a tail call
 			createPokeAction_FromClientInstruction(description.pokeActionContainer, description.clientInstructions);
@@ -133,7 +133,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.PokeActionContainer pokeActionContainer;
 			public global::Dpr.Battle.Logic.SVCL_ACTION clientInstructions;
-			public Description() { /*@B 0x600B62A*/ throw null; }
+			public Description() {
+				pokeActionContainer = null;
+				clientInstructions = null;
+			}
 		}
 		public class Result
 		{

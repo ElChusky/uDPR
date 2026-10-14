@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_SimpleDamage_CheckEnable : global::Dpr.Battle.Logic.Section
 	{
-		public Section_SimpleDamage_CheckEnable(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070F1*/ throw null; }
+		public Section_SimpleDamage_CheckEnable(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_SimpleDamage_CheckEnable.Result pResult, in global::Dpr.Battle.Logic.Section_SimpleDamage_CheckEnable.Description description) {
 			pResult.isEnable = false;
 			if (GetEventLauncher().Event_CheckEnableSimpleDamage(description.poke, description.damage, description.damageCause))
@@ -16,7 +16,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
 			public uint damage;
 			public global::Dpr.Battle.Logic.DamageCause damageCause;
-			public Description() { /*@B 0x600B61E*/ throw null; }
+			public Description() {
+				poke = null;
+				damage = 0;
+				damageCause = DamageCause.OTHER;
+			}
 		}
 		public class Result
 		{

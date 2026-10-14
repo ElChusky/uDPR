@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_SideEffect_Remove : global::Dpr.Battle.Logic.Section
 	{
-		public Section_SideEffect_Remove(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070E2*/ throw null; }
+		public Section_SideEffect_Remove(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_SideEffect_Remove.Result result, in global::Dpr.Battle.Logic.Section_SideEffect_Remove.Description description) {
 			result.isSuccessed = false;
 			var removeResult = new RemoveResult();
@@ -64,7 +64,12 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BtlSide side;
 			public byte[] flags;
 			public bool isTokuseiWindowDisplay;
-			public Description() { /*@B 0x600B610*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+				side = BtlSide.BTL_SIDE_NULL;
+				isTokuseiWindowDisplay = false;
+				flags = new byte[3];
+			}
 		}
 		public class Result
 		{
@@ -73,8 +78,16 @@ namespace Dpr.Battle.Logic
 		}
 		private class RemoveResult
 		{
-			public bool[][] isRemoved;
-			public RemoveResult() { /*@B 0x600B612*/ throw null; }
+			public bool[][] isRemoved = RectangularArrays.RectangularDefaultArray<bool>(2, 22);
+			public RemoveResult() {
+				for (var side = BtlSide.BTL_SIDE_1ST; side < BtlSide.BTL_SIDE_NUM; side++)
+				{
+					for (var effect = BtlSideEffect.BTL_SIDEEFF_START; effect < BtlSideEffect.BTL_SIDEEFF_MAX; effect++)
+					{
+						isRemoved[(int)side][(int)effect] = false;
+					}
+				}
+			}
 			public bool isRemovedAny() {
 				for (var side = BtlSide.BTL_SIDE_1ST; side < BtlSide.BTL_SIDE_NUM; side++)
 				{

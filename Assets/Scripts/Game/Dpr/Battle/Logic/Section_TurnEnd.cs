@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_TurnEnd : global::Dpr.Battle.Logic.Section
 	{
-		public Section_TurnEnd(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007161*/ throw null; }
+		public Section_TurnEnd(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_TurnEnd.Result pResult, in global::Dpr.Battle.Logic.Section_TurnEnd.Description description) {
 			// removeRaidBossReinforceHandler, updateRaidBossReinforceTurn, updateRaidBossGWall, incPokeTurnCount,
 			// checkRaidBattleForceQuit and checkForceQuitByTurnOver are inlined here (each block = the helper's own listing)

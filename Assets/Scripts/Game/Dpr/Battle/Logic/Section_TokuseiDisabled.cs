@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_TokuseiDisabled : global::Dpr.Battle.Logic.Section
 	{
-		public Section_TokuseiDisabled(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007117*/ throw null; }
+		public Section_TokuseiDisabled(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_TokuseiDisabled.Result result, in global::Dpr.Battle.Logic.Section_TokuseiDisabled.Description description) {
 			BTL_POKEPARAM target = description.target;
 			GetEventLauncher().Event_TokuseiDisabled(target);
@@ -21,7 +21,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM target;
-			public Description() { /*@B 0x600B630*/ throw null; }
+			public Description() {
+				target = null;
+			}
 		}
 		public class Result
 		{

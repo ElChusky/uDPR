@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RecoverHP : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RecoverHP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007084*/ throw null; }
+		public Section_RecoverHP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RecoverHP.Result result, in global::Dpr.Battle.Logic.Section_RecoverHP.Description description) {
 			result.isRecovered = false;
 			BTL_POKEPARAM poke = GetPokeParam(description.targetPokeID);
@@ -68,8 +68,18 @@ namespace Dpr.Battle.Logic
 			public bool isDisplayFailMessage_SP;
 			public bool isDisplayRecoverEffect;
 			public bool isSkipFailCheckSP;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B5EE*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				targetPokeID = PokeID.INVALID;
+				recoverHP = 0;
+				itemID = 0;
+				isDisplayTokuseiWindow = false;
+				isDisplayFailMessage_HPFull = false;
+				isDisplayFailMessage_SP = true;
+				isDisplayRecoverEffect = true;
+				isSkipFailCheckSP = false;
+			}
 		}
 		public class Result
 		{

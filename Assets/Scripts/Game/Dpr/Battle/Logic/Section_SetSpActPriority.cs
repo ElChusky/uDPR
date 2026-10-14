@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_SetSpActPriority : global::Dpr.Battle.Logic.Section
 	{
-		public Section_SetSpActPriority(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070DB*/ throw null; }
+		public Section_SetSpActPriority(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_SetSpActPriority.Result pResult, in global::Dpr.Battle.Logic.Section_SetSpActPriority.Description description) {
             for (byte i = 0; i < description.actionContainer.GetCount(); i++)
             {
@@ -18,7 +18,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.PokeActionContainer actionContainer;
-			public Description() { /*@B 0x600B60A*/ throw null; }
+			public Description() {
+				actionContainer = null;
+			}
 		}
 		public class Result
 		{

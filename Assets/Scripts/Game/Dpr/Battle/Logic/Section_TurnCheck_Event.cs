@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_TurnCheck_Event : global::Dpr.Battle.Logic.Section
 	{
-		public Section_TurnCheck_Event(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007124*/ throw null; }
+		public Section_TurnCheck_Event(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_TurnCheck_Event.Result pResult, in global::Dpr.Battle.Logic.Section_TurnCheck_Event.Description description) {
 			GetEventLauncher().Event_TurnCheck(PokeID.INVALID, description.eventID);
 			if (!CheckShowdown() || !CheckSkipBattleAfterShowdown())
@@ -51,7 +51,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.EventID eventID;
-			public Description() { /*@B 0x600B634*/ throw null; }
+			public Description() {
+				eventID = EventID.INVALID;
+			}
 		}
 		public class Result
 		{

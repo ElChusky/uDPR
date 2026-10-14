@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RecoverHP_Core : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RecoverHP_Core(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600708D*/ throw null; }
+		public Section_RecoverHP_Core(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RecoverHP_Core.Result pResult, in global::Dpr.Battle.Logic.Section_RecoverHP_Core.Description description) {
 			BtlPokePos pos = GetPokePos(description.poke.GetID());
 			if (pos != BtlPokePos.POS_NULL && description.isEffectEnable)
@@ -15,7 +15,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
 			public ushort recoverHP;
 			public bool isEffectEnable;
-			public Description() { /*@B 0x600B5F4*/ throw null; }
+			public Description() {
+				poke = null;
+				recoverHP = 0;
+				isEffectEnable = false;
+			}
 		}
 		public class Result
 		{

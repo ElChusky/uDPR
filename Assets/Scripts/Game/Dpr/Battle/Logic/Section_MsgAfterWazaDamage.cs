@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_MsgAfterWazaDamage : global::Dpr.Battle.Logic.Section
 	{
-		public Section_MsgAfterWazaDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007004*/ throw null; }
+		public Section_MsgAfterWazaDamage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_MsgAfterWazaDamage.Result pResult, in global::Dpr.Battle.Logic.Section_MsgAfterWazaDamage.Description description) {
 			if (description.hitCheckParam.isAffinityMessageDisplay)
 			{
@@ -40,7 +40,14 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.HITCHECK_PARAM hitCheckParam;
 			public byte targetCount;
 			public bool isPluralHitWaza;
-			public Description() { /*@B 0x600B5CA*/ throw null; }
+			public Description() {
+				damageProcParam = null;
+				wazaParam = null;
+				attacker = null;
+				hitCheckParam = null;
+				targetCount = 0;
+				isPluralHitWaza = false;
+			}
 		}
 		public class Result
 		{

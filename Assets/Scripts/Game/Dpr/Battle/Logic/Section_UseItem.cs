@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_UseItem : global::Dpr.Battle.Logic.Section
 	{
-		public Section_UseItem(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600717D*/ throw null; }
+		public Section_UseItem(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_UseItem.Result pResult, in global::Dpr.Battle.Logic.Section_UseItem.Description description) {
 			pResult.isExpGet = false;
 			var capContext = new POKE_CAPTURED_CONTEXT();
@@ -134,7 +134,12 @@ namespace Dpr.Battle.Logic
 			public ushort itemID;
 			public byte actParam;
 			public byte targetPokeID;
-			public Description() { /*@B 0x600B644*/ throw null; }
+			public Description() {
+				poke = null;
+				itemID = 0;
+				actParam = 0;
+				targetPokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

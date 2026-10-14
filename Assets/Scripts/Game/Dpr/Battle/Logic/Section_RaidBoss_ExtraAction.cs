@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RaidBoss_ExtraAction : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RaidBoss_ExtraAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007053*/ throw null; }
+		public Section_RaidBoss_ExtraAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RaidBoss_ExtraAction.Result pResult, in global::Dpr.Battle.Logic.Section_RaidBoss_ExtraAction.Description description) {
 			if (canExtraAttack())
 			{

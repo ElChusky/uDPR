@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaExec_Category : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaExec_Category(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60071E7*/ throw null; }
+		public Section_WazaExec_Category(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaExec_Category.Result pResult, in global::Dpr.Battle.Logic.Section_WazaExec_Category.Description description) {
 			if (description.isDamageWaza)
 			{

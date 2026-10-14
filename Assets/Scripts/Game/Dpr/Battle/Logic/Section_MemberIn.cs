@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_MemberIn : global::Dpr.Battle.Logic.Section
 	{
-		public Section_MemberIn(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FE2*/ throw null; }
+		public Section_MemberIn(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_MemberIn.Result pResult, in global::Dpr.Battle.Logic.Section_MemberIn.Description description) {
             pResult.inPokeID = memberIn(description.clientID, description.posIdx, description.nextPokeIdx);
             GetServerCommandPutter().Act_MemberIn(description.clientID, description.posIdx, description.nextPokeIdx, description.isPutMessage);
@@ -26,7 +26,12 @@ namespace Dpr.Battle.Logic
 			public byte posIdx;
 			public byte nextPokeIdx;
 			public bool isPutMessage;
-			public Description() { /*@B 0x600B5BC*/ throw null; }
+			public Description() {
+				clientID = (byte)BTL_CLIENT_ID.BTL_CLIENT_NULL;
+				posIdx = 0;
+				nextPokeIdx = 0;
+				isPutMessage = false;
+			}
 		}
 		public class Result
 		{

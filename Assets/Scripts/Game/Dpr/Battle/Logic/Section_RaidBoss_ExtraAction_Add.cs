@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_RaidBoss_ExtraAction_Add : global::Dpr.Battle.Logic.Section
 	{
-		public Section_RaidBoss_ExtraAction_Add(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007060*/ throw null; }
+		public Section_RaidBoss_ExtraAction_Add(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_RaidBoss_ExtraAction_Add.Result pResult, in global::Dpr.Battle.Logic.Section_RaidBoss_ExtraAction_Add.Description description) {
 			PokeAction pokeAction = null;
 			if (GetRule() != BtlRule.BTL_RULE_RAID)

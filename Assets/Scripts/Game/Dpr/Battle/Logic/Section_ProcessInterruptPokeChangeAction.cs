@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_ProcessInterruptPokeChangeAction : global::Dpr.Battle.Logic.Section
 	{
-		public Section_ProcessInterruptPokeChangeAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600702C*/ throw null; }
+		public Section_ProcessInterruptPokeChangeAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_ProcessInterruptPokeChangeAction.Result pResult, in global::Dpr.Battle.Logic.Section_ProcessInterruptPokeChangeAction.Description description) {
 			var inPokeIDRegister = new PokeIDRegister();
 			processAction_OnlyPokeChange(inPokeIDRegister, description.pokeActionContainer);
@@ -49,7 +49,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public global::Dpr.Battle.Logic.PokeActionContainer pokeActionContainer;
-			public Description() { /*@B 0x600B5D2*/ throw null; }
+			public Description() {
+				pokeActionContainer = null;
+			}
 		}
 		public class Result
 		{

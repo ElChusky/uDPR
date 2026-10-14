@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Migawari_Damage : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Migawari_Damage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FF8*/ throw null; }
+		public Section_Migawari_Damage(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Migawari_Damage.Result pResult, in global::Dpr.Battle.Logic.Section_Migawari_Damage.Description description) {
 			putDamageEffect(description.attacker, description.target, description.wazaParam, description.damage, description.affinity, description.criticalType);
 			pResult.damage = addDamage(description.target, description.damage);
@@ -90,7 +90,15 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.CriticalType criticalType;
 			public global::Dpr.Battle.Logic.ActionDesc actionDesc;
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
-			public Description() { /*@B 0x600B5C6*/ throw null; }
+			public Description() {
+				attacker = null;
+				target = null;
+				damage = 0;
+				affinity = global::Pml.Battle.TypeAffinity.AffinityID.TYPEAFF_1;
+				criticalType = CriticalType.CRITICAL_NONE;
+				actionDesc = null;
+				wazaParam = null;
+			}
 		}
 		public class Result
 		{

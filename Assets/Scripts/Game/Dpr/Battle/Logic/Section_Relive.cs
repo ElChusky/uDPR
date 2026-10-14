@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Relive : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Relive(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60070A1*/ throw null; }
+		public Section_Relive(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Relive.Result result, in global::Dpr.Battle.Logic.Section_Relive.Description description) {
 			GetServerCommandPutter().Relive(description.pokeID, description.recoverHP);
 			GetBattleEnv().GetDeadRec().Relive(description.pokeID);
@@ -41,8 +41,11 @@ namespace Dpr.Battle.Logic
 		{
 			public byte pokeID;
 			public ushort recoverHP;
-			public global::Dpr.Battle.Logic.StrParam reliveMessage;
-			public Description() { /*@B 0x600B5F8*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam reliveMessage = new StrParam();
+			public Description() {
+				pokeID = PokeID.INVALID;
+				recoverHP = 0;
+			}
 		}
 		public class Result
 		{

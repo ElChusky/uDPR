@@ -21,7 +21,7 @@ namespace Dpr.Battle.Logic
 					return DamageCause.OTHER;
 			}
 		}
-		public Section_TurnCheck_Sick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6007132*/ throw null; }
+		public Section_TurnCheck_Sick(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_TurnCheck_Sick.Result pResult, in global::Dpr.Battle.Logic.Section_TurnCheck_Sick.Description description) {
 			pResult.isExpGet = false;
 			var pokeSet = new PokeSet();

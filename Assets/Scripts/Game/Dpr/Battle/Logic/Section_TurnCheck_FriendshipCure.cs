@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_TurnCheck_FriendshipCure : global::Dpr.Battle.Logic.Section
 	{
-		public Section_TurnCheck_FriendshipCure(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600712D*/ throw null; }
+		public Section_TurnCheck_FriendshipCure(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_TurnCheck_FriendshipCure.Result pResult, in global::Dpr.Battle.Logic.Section_TurnCheck_FriendshipCure.Description description) {
 			var pokeSet = new PokeSet();
 			storeFrontPokeByAgilityOrder(pokeSet);

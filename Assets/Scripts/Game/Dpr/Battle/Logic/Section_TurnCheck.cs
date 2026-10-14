@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_TurnCheck : global::Dpr.Battle.Logic.Section
 	{
-		public Section_TurnCheck(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x600711A*/ throw null; }
+		public Section_TurnCheck(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_TurnCheck.Result pResult, in global::Dpr.Battle.Logic.Section_TurnCheck.Description description) {
 			TurnCheckResult result = turnCheck();
 			// InterruptAccessor.Request is inlined (one merged `strb` @0216fa08); codes from 0x050103 by result - 1

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_WazaAdditionalEffect_User : global::Dpr.Battle.Logic.Section
 	{
-		public Section_WazaAdditionalEffect_User(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x60071BE*/ throw null; }
+		public Section_WazaAdditionalEffect_User(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_WazaAdditionalEffect_User.Result pResult, in global::Dpr.Battle.Logic.Section_WazaAdditionalEffect_User.Description description) {
             if (WAZADATA.GetCategory(description.wazaParam.wazaID) == Pml.WazaData.WazaCategory.DAMAGE_EFFECT_USER)
                 addRankEffect(description.attacker, description.wazaParam, description.actionDesc);

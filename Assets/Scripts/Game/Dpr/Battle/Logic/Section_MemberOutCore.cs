@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_MemberOutCore : global::Dpr.Battle.Logic.Section
 	{
-		public Section_MemberOutCore(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FEC*/ throw null; }
+		public Section_MemberOutCore(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_MemberOutCore.Result pResult, in global::Dpr.Battle.Logic.Section_MemberOutCore.Description description) {
 			byte pokeID = description.outPoke.GetID();
 			putMemberOut(description.outPoke, description.effectNo);
@@ -33,7 +33,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM outPoke;
 			public ushort effectNo;
-			public Description() { /*@B 0x600B5C2*/ throw null; }
+			public Description() {
+				outPoke = null;
+				effectNo = 0;
+			}
 		}
 		public class Result
 		{
