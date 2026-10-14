@@ -71,7 +71,7 @@ namespace Dpr.FureaiHiroba
 		private int GetSonota() { return this.sonotaNo; }
 		private bool CanGetSonota() {
 			itemType = isSeal ? global::Dpr.FureaiHiroba.MonohiroiLottery.ItemType.Seal : global::Dpr.FureaiHiroba.MonohiroiLottery.ItemType.Item;
-			if (itemType == global::Dpr.FureaiHiroba.MonohiroiLottery.ItemType.Seal) {
+			if (isSeal) {
 				return global::PlayerWork.GetSealData(sonotaNo).Count < 99;
 			}
 			return global::ItemWork.IsAddItem(sonotaNo, 1);

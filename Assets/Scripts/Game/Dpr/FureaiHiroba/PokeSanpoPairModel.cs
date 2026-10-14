@@ -6,9 +6,16 @@ namespace Dpr.FureaiHiroba
 		public global::Dpr.FureaiHiroba.FureaiPokeModel masterPoke;
 		public global::Dpr.FureaiHiroba.FureaiPokeModel slavePoke;
 		public bool isMaster;
-		public global::Dpr.FureaiHiroba.FureaiPokeModel self { get { /*@B 0x6003481*/ throw null; } }
-		public global::Dpr.FureaiHiroba.FureaiPokeModel pair { get { /*@B 0x6003482*/ throw null; } }
-		public PokeSanpoPairModel(bool isMaster, global::Dpr.FureaiHiroba.FureaiPokeModel masterPoke, global::Dpr.FureaiHiroba.FureaiPokeModel slavePoke) { /*@B 0x6003483*/ throw null; }
-		public void Destroy() { /*@B 0x6003484*/ throw null; }
+		public global::Dpr.FureaiHiroba.FureaiPokeModel self { get { return isMaster ? masterPoke : slavePoke; } }
+		public global::Dpr.FureaiHiroba.FureaiPokeModel pair { get { return isMaster ? slavePoke : masterPoke; } }
+		public PokeSanpoPairModel(bool isMaster, global::Dpr.FureaiHiroba.FureaiPokeModel masterPoke, global::Dpr.FureaiHiroba.FureaiPokeModel slavePoke) {
+			this.isMaster = isMaster;
+			this.masterPoke = masterPoke;
+			this.slavePoke = slavePoke;
+		}
+		public void Destroy() {
+			masterPoke = null;
+			slavePoke = null;
+		}
 	}
 }
