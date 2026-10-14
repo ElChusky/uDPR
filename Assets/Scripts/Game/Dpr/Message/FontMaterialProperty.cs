@@ -10,53 +10,53 @@ namespace Dpr.Message
 		[global::UnityEngine.SerializeField]
 		public bool useFace;
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color faceColor;
+		public global::UnityEngine.Color faceColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(-1f, 1f)]
 		public float faceSoftness;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(-1f, 1f)]
 		public float faceDilate;
-		public static readonly int PropFaceColor;
-		public static readonly int PropOutlineSoftness;
-		public static readonly int PropFaceDilate;
+		public static readonly int PropFaceColor = global::UnityEngine.Shader.PropertyToID("_FaceColor");
+		public static readonly int PropOutlineSoftness = global::UnityEngine.Shader.PropertyToID("_OutlineSoftness");
+		public static readonly int PropFaceDilate = global::UnityEngine.Shader.PropertyToID("_FaceDilate");
 		[global::UnityEngine.HeaderAttribute("Outline")]
 		[global::UnityEngine.SerializeField]
 		public bool useOutline;
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color outlineColor;
+		public global::UnityEngine.Color outlineColor = global::UnityEngine.Color.black;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 1f)]
 		public float outlineThickness;
-		public static readonly int PropOutlineColor;
-		public static readonly int PropOutlineWidth;
+		public static readonly int PropOutlineColor = global::UnityEngine.Shader.PropertyToID("_OutlineColor");
+		public static readonly int PropOutlineWidth = global::UnityEngine.Shader.PropertyToID("_OutlineWidth");
 		[global::UnityEngine.HeaderAttribute("Glow")]
 		[global::UnityEngine.SerializeField]
 		public bool useGlow;
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color glowColor;
+		public global::UnityEngine.Color glowColor = global::UnityEngine.Color.green;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(-1f, 1f)]
 		public float glowOffset;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 1f)]
-		public float glowInner;
+		public float glowInner = 0.05f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 1f)]
-		public float glowOuter;
+		public float glowOuter = 0.05f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 1f)]
-		public float glowPower;
-		public static readonly int PropGlowColor;
-		public static readonly int PropGlowOffset;
-		public static readonly int PropGlowInner;
-		public static readonly int PropGlowOuter;
-		public static readonly int PropGlowPower;
+		public float glowPower = 0.75f;
+		public static readonly int PropGlowColor = global::UnityEngine.Shader.PropertyToID("_GlowColor");
+		public static readonly int PropGlowOffset = global::UnityEngine.Shader.PropertyToID("_GlowOffset");
+		public static readonly int PropGlowInner = global::UnityEngine.Shader.PropertyToID("_GlowInner");
+		public static readonly int PropGlowOuter = global::UnityEngine.Shader.PropertyToID("_GlowOuter");
+		public static readonly int PropGlowPower = global::UnityEngine.Shader.PropertyToID("_GlowPower");
 		[global::UnityEngine.HeaderAttribute("Underlay")]
 		[global::UnityEngine.SerializeField]
 		public bool useUnderlay;
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color underlayColor;
+		public global::UnityEngine.Color underlayColor = new global::UnityEngine.Color(0.5f, 0.5f, 0.5f, 0.5f);
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(-1f, 1f)]
 		public float underlayOffsetX;
@@ -69,22 +69,22 @@ namespace Dpr.Message
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 1f)]
 		public float underlaySoftness;
-		public static readonly int PropUnderlayColor;
-		public static readonly int PropUnderlayOffsetX;
-		public static readonly int PropUnderlayOffsetY;
-		public static readonly int PropUnderlayDilate;
-		public static readonly int PropUnderlaySoftness;
+		public static readonly int PropUnderlayColor = global::UnityEngine.Shader.PropertyToID("_UnderlayColor");
+		public static readonly int PropUnderlayOffsetX = global::UnityEngine.Shader.PropertyToID("_UnderlayOffsetX");
+		public static readonly int PropUnderlayOffsetY = global::UnityEngine.Shader.PropertyToID("_UnderlayOffsetY");
+		public static readonly int PropUnderlayDilate = global::UnityEngine.Shader.PropertyToID("_UnderlayDilate");
+		public static readonly int PropUnderlaySoftness = global::UnityEngine.Shader.PropertyToID("_UnderlaySoftness");
 		[global::UnityEngine.HeaderAttribute("DebugSetting")]
 		[global::UnityEngine.SerializeField]
 		public bool useDebugSetting;
 		[global::UnityEngine.SerializeField]
-		public float debugSettingGradientScale;
+		public float debugSettingGradientScale = 6f;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(-1f, 1f)]
 		public float debugSettingSharpness;
-		public static readonly int PropDebugSettingGradientScale;
-		public static readonly int PropDebugSettingSharpness;
-		public FontMaterialProperty() { /*@B 0x6003B99*/ throw null; }
-		static FontMaterialProperty() { /*@B 0x6003B9A*/ throw null; }
+		public static readonly int PropDebugSettingGradientScale = global::UnityEngine.Shader.PropertyToID("_GradientScale");
+		public static readonly int PropDebugSettingSharpness = global::UnityEngine.Shader.PropertyToID("_Sharpness");
+		public FontMaterialProperty() { }
+		static FontMaterialProperty() { }
 	}
 }

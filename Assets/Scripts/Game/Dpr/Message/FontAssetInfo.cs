@@ -5,13 +5,43 @@ namespace Dpr.Message
 	{
 		public global::TMPro.TMP_FontAsset fontAsset;
 		public global::Dpr.Message.TextParameter textParam;
-		private global::System.Collections.Generic.Dictionary<int, int> absFontSizeTable;
-		public global::Dpr.Message.MessageEnumData.MsgLangId LangId { get { /*@B 0x6003B9F*/ throw null; } }
-		public int LanguageIdToInt { get { /*@B 0x6003BA0*/ throw null; } }
-		public FontAssetInfo(global::Dpr.Message.TextParameter textParam, global::TMPro.TMP_FontAsset fontAsset) { /*@B 0x6003B9E*/ throw null; }
-		public float GetBaseLine() { /*@B 0x6003BA1*/ throw null; }
-		public int GetAbsFontSizeBySizeID(global::Dpr.Message.MessageEnumData.UIFontSizeID fontSizeId) { /*@B 0x6003BA2*/ throw null; }
-		public void AddCharacters(string str) { /*@B 0x6003BA3*/ throw null; }
-		public void ClearFallbackFontAtlas() { /*@B 0x6003BA4*/ throw null; }
+		private global::System.Collections.Generic.Dictionary<int, int> absFontSizeTable = new global::System.Collections.Generic.Dictionary<int, int>();
+		public global::Dpr.Message.MessageEnumData.MsgLangId LangId { get { return textParam.langId; } }
+		public int LanguageIdToInt { get { return (int)textParam.langId; } }
+		public FontAssetInfo(global::Dpr.Message.TextParameter textParam, global::TMPro.TMP_FontAsset fontAsset) {
+            this.textParam = textParam;
+            this.fontAsset = fontAsset;
+            global::UnityEngine.TextCore.FaceInfo faceInfo = this.fontAsset.faceInfo;
+            faceInfo.lineHeight = textParam.lineHeight;
+            this.fontAsset.faceInfo = faceInfo;
+            foreach (global::Dpr.Message.TextParameter.FontSize fontSize in textParam.absFontSizeArray)
+            {
+                int key = (int)fontSize.fontSizeId;
+                if (absFontSizeTable.ContainsKey(key))
+                {
+                    global::Dpr.Message.MessageHelper.EmitLog(string.Format("Failed Add absFontSizeTable : Already Add Key {0} in Language {1}", key, textParam.langId), global::UnityEngine.LogType.Error);
+                }
+                else
+                {
+                    absFontSizeTable.Add((int)fontSize.fontSizeId, fontSize.fontSize);
+                }
+            }
+        }
+		public float GetBaseLine() { return textParam.baseLineHeight; }
+		public int GetAbsFontSizeBySizeID(global::Dpr.Message.MessageEnumData.UIFontSizeID fontSizeId) { return absFontSizeTable[(int)fontSizeId]; }
+		public void AddCharacters(string str) {
+            string text = str.Replace("\n", string.Empty);
+            uint[] missingCharacters;
+            fontAsset.HasCharacters(text, out missingCharacters, false, true);
+        }
+		public void ClearFallbackFontAtlas() {
+            if (fontAsset == null)
+                return;
+            foreach (global::TMPro.TMP_FontAsset fallback in fontAsset.fallbackFontAssetTable)
+            {
+                if (fallback.atlasPopulationMode == global::TMPro.AtlasPopulationMode.Dynamic)
+                    fallback.ClearFontAssetData(false);
+            }
+        }
 	}
 }
