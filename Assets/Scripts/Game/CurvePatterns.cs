@@ -5,8 +5,16 @@ public class CurvePatterns : global::UnityEngine.ScriptableObject
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.AnimationCurve[] curves;
 	public float[] times { get; private set; }
-	public int Count { get { /*@B 0x600055D*/ throw null; } }
-	public global::UnityEngine.AnimationCurve this[int index] { get { /*@B 0x600055F*/ throw null; } }
-	public void OnEnable() { /*@B 0x600055E*/ throw null; }
+	public int Count { get { return curves.Length; } }
+	public global::UnityEngine.AnimationCurve this[int index] { get { return curves[index]; } }
+	public void OnEnable() {
+        int count = curves.Length;
+        times = new float[count];
+        for (int i = 0; i < count; i++)
+        {
+            if (curves[i].length > 0)
+                times[i] = curves[i].keys[curves[i].length - 1].time;
+        }
+    }
 	public CurvePatterns() { }
 }

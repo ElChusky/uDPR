@@ -3,13 +3,13 @@ using Dpr.NetworkUtils;
 using INL1;
 public class ColiseumFrontDeskStateController : global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::ColiseumFrontDeskStateController>
 {
-	private static readonly string UNION_ROOM_MANAGER;
+	private static readonly string UNION_ROOM_MANAGER = "UnionRoomManager";
 	private const int MESSAGE_INDEX_TRADE_DESCRIPTION = 1;
 	private const int MESSAGE_INDEX_TRADE_TIMEOUT = 3;
 	private static bool IsStart;
-	public bool isTalkEnd;
-	public bool isNotFirst;
-	public bool isFirstInternetCheck;
+	public bool isTalkEnd = true;
+	public bool isNotFirst = true;
+	public bool isFirstInternetCheck = true;
 	public bool isInternet;
 	public bool isMultiBattleRoom;
 	private global::UnionFrontDeskMsgWindow msgWindow;
@@ -164,8 +164,8 @@ public class ColiseumFrontDeskStateController : global::SmartPoint.AssetAssistan
 	private void InternetCheck() {
 		msgWindow.OpenMessageStartInternet();
 	}
-	public ColiseumFrontDeskStateController() { /*@B 0x6001089*/ throw null; }
-	static ColiseumFrontDeskStateController() { /*@B 0x600108A*/ throw null; }
+	public ColiseumFrontDeskStateController() { }
+	static ColiseumFrontDeskStateController() { }
 	public enum FrontDeskNpcState
 	{
 		NONE = 0,

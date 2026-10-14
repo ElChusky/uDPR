@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraSortTragroups : global::UnityEngine.MonoBehaviour
 {
 	private global::UnityEngine.Camera _camera;
-	private static global::System.Collections.Generic.List<global::System.ValueTuple<global::PokemonTraGroup, global::UnityEngine.Transform>> _traGroupAndTransforms;
+	private static global::System.Collections.Generic.List<global::System.ValueTuple<global::PokemonTraGroup, global::UnityEngine.Transform>> _traGroupAndTransforms = new global::System.Collections.Generic.List<global::System.ValueTuple<global::PokemonTraGroup, global::UnityEngine.Transform>>();
 	private void Awake() {
 		_camera = GetComponent<Camera>();
 	}
@@ -37,5 +37,5 @@ public class CameraSortTragroups : global::UnityEngine.MonoBehaviour
 			value = item.Item1.SetBaseRenderQueue(value, _camera);
 	}
 	public CameraSortTragroups() { }
-	static CameraSortTragroups() { /*@B 0x6000DD7*/ throw null; }
+	static CameraSortTragroups() { }
 }

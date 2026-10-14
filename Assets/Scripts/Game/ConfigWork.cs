@@ -27,7 +27,24 @@ public static class ConfigWork
         Initialize(ref config);
         CheckAndInvokeChangedValues(ref config, ref prevConfig);
     }
-	private static void CheckAndInvokeChangedValues(ref global::DPData.CONFIG config, ref global::DPData.CONFIG prevConfig) { /*@B 0x6000C1F*/ throw null; }
-	public static void InvokeChangedValues(ref global::DPData.CONFIG config) { /*@B 0x6000C20*/ throw null; }
+	private static void CheckAndInvokeChangedValues(ref global::DPData.CONFIG config, ref global::DPData.CONFIG prevConfig) {
+        string[] names = global::System.Enum.GetNames(typeof(global::ConfigID));
+        for (int i = 0; i < names.Length; i++)
+        {
+            if (!config.IsEqualValue((global::ConfigID)i, ref prevConfig))
+            {
+                if (onValueChanged != null)
+                    onValueChanged.Invoke((global::ConfigID)i, config.GetValue((global::ConfigID)i));
+            }
+        }
+    }
+	public static void InvokeChangedValues(ref global::DPData.CONFIG config) {
+        string[] names = global::System.Enum.GetNames(typeof(global::ConfigID));
+        for (int i = 0; i < names.Length; i++)
+        {
+            if (onValueChanged != null)
+                onValueChanged.Invoke((global::ConfigID)i, config.GetValue((global::ConfigID)i));
+        }
+    }
 	static ConfigWork() { }
 }

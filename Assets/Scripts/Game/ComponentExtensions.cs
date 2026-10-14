@@ -2,5 +2,13 @@
 public static class ComponentExtensions
 {
 	public static T FindComponent<T>(this global::UnityEngine.Component self, string name) where T : global::UnityEngine.Component { /*@B 0x6000DDC*/ throw null; }
-	public static global::UnityEngine.GameObject FindDeep(this global::UnityEngine.Component self, string name, bool includeInactive = false) { /*@B 0x6000DDD*/ throw null; }
+	public static global::UnityEngine.GameObject FindDeep(this global::UnityEngine.Component self, string name, bool includeInactive = false) {
+        var transforms = self.GetComponentsInChildren<global::UnityEngine.Transform>(includeInactive);
+        for (int i = 0; i < transforms.Length; i++)
+        {
+            if (transforms[i].name == name)
+                return transforms[i].gameObject;
+        }
+        return null;
+    }
 }
