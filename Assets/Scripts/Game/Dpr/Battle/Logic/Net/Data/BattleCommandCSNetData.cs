@@ -4,6 +4,6 @@ namespace Dpr.Battle.Logic.Net.Data
 	public class BattleCommandCSNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Battle.Logic.Net.Data.BattleCommandCS>
 	{
 		public override byte GetDataID { get { return 204; } }
-		public BattleCommandCSNetData() { /*@B 0x60080E9*/ throw null; }
+		public BattleCommandCSNetData() { }
 	}
 }

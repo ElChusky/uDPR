@@ -11,7 +11,7 @@ namespace Dpr.Battle.View
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.Battle.View.BattlePostProcessFilter.EffectObjectData[] _effectObjectDatas;
 		[global::UnityEngine.SerializeField]
-		private bool _useOnPostRender;
+		private bool _useOnPostRender = true;
 		private global::Dpr.Battle.View.PfxParam _pfxParam;
 		private global::UnityEngine.Camera _camera;
 		private global::UnityEngine.RenderTexture _renderTexture;
@@ -48,7 +48,45 @@ namespace Dpr.Battle.View
 				}
 			}
 		}
-		public void Reset() { /*@B 0x6005F58*/ throw null; }
+		public void Reset() {
+			OnDisable();
+			_pfxParam.SetDefualt();
+			if (_effectObjectDatas == null)
+				return;
+			if (_camera == null)
+				_camera = GetComponent<Camera>();
+			int width;
+			int height;
+			if (_camera.targetTexture != null)
+			{
+				width = _camera.targetTexture.width;
+				height = _camera.targetTexture.height;
+			}
+			else
+			{
+				width = global::SmartPoint.AssetAssistant.Sequencer.screenWidth;
+				height = global::SmartPoint.AssetAssistant.Sequencer.screenHeight;
+			}
+			if (_renderTexture == null)
+			{
+				_renderTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
+				_renderTexture.autoGenerateMips = false;
+			}
+			RenderTargetIdentifier rt = BuiltinRenderTextureType.CameraTarget;
+			for (int i = 0; i < _effectObjectDatas.Length; i++)
+			{
+				if (_effectObjectDatas[i] == null)
+					continue;
+				ImageEffectObject effectObject = _effectObjectDatas[i].effectObject;
+				if (effectObject == null)
+					continue;
+				effectObject.temporaryRT = _renderTexture;
+				effectObject.camera = _camera;
+				_effectObjectDatas[i].commandBuffer = effectObject.Build(rt, out rt, _effectObjectDatas[i].isFeedback);
+				if (!_useOnPostRender)
+					_camera.AddCommandBuffer(CameraEvent.BeforeImageEffects, _effectObjectDatas[i].commandBuffer);
+			}
+		}
 		private void Update() {
 			if (_effectObjectDatas == null)
 				return;
@@ -130,7 +168,7 @@ namespace Dpr.Battle.View
 			// 01e49a20: tail branch
 			Reset();
 		}
-		public BattlePostProcessFilter() { /*@B 0x6005F5E*/ throw null; }
+		public BattlePostProcessFilter() { }
 		[global::System.Serializable]
 		public class EffectObjectData
 		{

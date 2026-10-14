@@ -4,6 +4,6 @@ namespace Dpr.Battle.Logic.Net.Data
 	public class ServerVersionNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Battle.Logic.Net.Data.ServerVersion>
 	{
 		public override byte GetDataID { get { return 201; } }
-		public ServerVersionNetData() { /*@B 0x60080E3*/ throw null; }
+		public ServerVersionNetData() { }
 	}
 }

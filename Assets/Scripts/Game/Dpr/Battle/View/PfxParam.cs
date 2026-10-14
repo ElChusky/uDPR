@@ -124,6 +124,10 @@ namespace Dpr.Battle.View
 			colorTemperature = DEFAULT_COLOR_TEMPERATURE;
 			colorInversion = DEFAULT_COLOR_INVERSION;
 		}
-		public static global::Dpr.Battle.View.PfxParam Factory() { /*@B 0x6005FC2*/ throw null; }
+		public static global::Dpr.Battle.View.PfxParam Factory() {
+			global::Dpr.Battle.View.PfxParam param = default;
+			param.SetDefualt();
+			return param;
+		}
 	}
 }

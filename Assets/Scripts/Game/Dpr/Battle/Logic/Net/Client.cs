@@ -8,7 +8,7 @@ namespace Dpr.Battle.Logic.Net
 	{
 		private const int WORK_MAX = 4;
 		private static uint s_battleCmdSeqNo;
-		private static int[] s_setupStationIndices;
+		private static int[] s_setupStationIndices = new int[] { -1, -1, -1, -1 };
 		private global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM m_pSetupParam;
 		private global::Dpr.Battle.Logic.Net.Data.ServerVersions m_serverVesions;
 		private byte m_myClientID;
@@ -31,7 +31,15 @@ namespace Dpr.Battle.Logic.Net
 		private bool isFinishedSession;
 		private const int SEND_SERVER_VERSION_INTERVAL = 15;
 		private const global::Dpr.NetworkUtils.TransportType UseTransportType = (global::Dpr.NetworkUtils.TransportType)(2);
-		private static global::Dpr.Battle.Logic.Net.Client Instance { get { /*@B 0x600809C*/ throw null; } }
+		private static global::Dpr.Battle.Logic.Net.Client Instance { get {
+                if (global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.Battle.Logic.BattleProc>.isInstantiated)
+                {
+                    global::Dpr.Battle.Logic.MainModule mainModule = global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.Battle.Logic.BattleProc>.Instance.MainModule;
+                    if (mainModule != null)
+                        return mainModule.m_iPtrNetClient;
+                }
+                return null;
+            } }
 		public int ErrorKindBits { get { return this.m_ErrorKindBit; } }
 		public Client(global::Dpr.Battle.Logic.BATTLE_SETUP_PARAM bsp) {
             m_pSetupParam = bsp;
@@ -687,7 +695,7 @@ namespace Dpr.Battle.Logic.Net
 		private int SendReliableData<T>(global::Dpr.NetworkUtils.ANetData<T> data, int stationIndex) where T : struct {
             return data.SendReliableData(stationIndex, UseTransportType);
         }
-		static Client() { /*@B 0x60080DF*/ throw null; }
+		static Client() { }
 		private struct SendToClientReq
 		{
 			public const int HEADER_SIZE = 17;
@@ -710,7 +718,25 @@ namespace Dpr.Battle.Logic.Net
                     divNum++;
                 return divNum;
             }
-			public static bool GetOfs(out int outOfs, out int outBytes, int size, int index) { /*@B 0x600B74E*/ throw null; }
+			public static bool GetOfs(out int outOfs, out int outBytes, int size, int index) {
+                int divNum = GetDivNum(size);
+                if (index >= divNum)
+                {
+                    outOfs = 0;
+                    outBytes = 0;
+                    return false;
+                }
+                outOfs = index * WRITABLE_SIZE;
+                int bytes = WRITABLE_SIZE;
+                if (index >= divNum - 1)
+                {
+                    int rest = size % WRITABLE_SIZE;
+                    if (rest != 0)
+                        bytes = rest;
+                }
+                outBytes = bytes;
+                return true;
+            }
 			public void Set(ulong pSendBuf, int sendSize) {
                 sendBuf = pSendBuf;
                 this.sendSize = sendSize;
@@ -728,10 +754,21 @@ namespace Dpr.Battle.Logic.Net
 			public ulong cmdSeqNo;
 			public bool isChecked;
 			public unsafe byte* body;
-			public BattleCommandWork() { /*@B 0x600B751*/ throw null; }
-			public void Set(byte clientId, ulong cmdSeqNo) { /*@B 0x600B752*/ throw null; }
-			public void Initialize() { /*@B 0x600B753*/ throw null; }
-			public bool IsValid() { /*@B 0x600B754*/ throw null; }
+			public unsafe BattleCommandWork() {
+                body = (byte*)global::Dpr.Battle.Logic.BattleUnmanagedMem.Malloc(BUFFER_SIZE, global::Unity.Collections.Allocator.Persistent, 16);
+            }
+			public void Set(byte clientId, ulong cmdSeqNo) {
+                this.clientId = clientId;
+                this.cmdSeqNo = cmdSeqNo;
+            }
+			public void Initialize() {
+                clientId = (byte)global::Dpr.Battle.Logic.BTL_CLIENT_ID.BTL_CLIENT_NULL;
+                cmdSeqNo = 0;
+                isChecked = false;
+            }
+			public bool IsValid() {
+                return clientId != (byte)global::Dpr.Battle.Logic.BTL_CLIENT_ID.BTL_CLIENT_NULL;
+            }
 		}
 		private struct SendSeverVersionReq
 		{

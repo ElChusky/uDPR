@@ -4,8 +4,12 @@ namespace Dpr.Battle.View
 	public sealed class RefCounted
 	{
 		public int referencedCount;
-		public int AddRef() { /*@B 0x6005FC3*/ throw null; }
-		public int Release() { /*@B 0x6005FC4*/ throw null; }
+		public int AddRef() {
+			return ++referencedCount;
+		}
+		public int Release() {
+			return --referencedCount;
+		}
 		public RefCounted() { }
 	}
 }

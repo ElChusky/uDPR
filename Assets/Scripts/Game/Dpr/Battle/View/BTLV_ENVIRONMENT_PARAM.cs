@@ -10,6 +10,14 @@ namespace Dpr.Battle.View
 		public readonly global::UnityEngine.Vector4 PokeLightColor;
 		public readonly float PokeLightIntensity;
 		public readonly global::UnityEngine.Vector4 PokeReflectorColor;
-		public BTLV_ENVIRONMENT_PARAM(global::EnvironmentController controller) { /*@B 0x6005EE4*/ throw null; }
+		public BTLV_ENVIRONMENT_PARAM(global::EnvironmentController controller) {
+			PitchYaw = controller.parameters.PitchYaw;
+			CharacterLightColor = controller.parameters.CharacterLightColor;
+			CharacterLightIntensity = controller.parameters.CharacterLightIntensity;
+			CharacterReflectorColor = controller.parameters.CharacterReflectorColor;
+			PokeLightColor = controller.parameters.PokeLightColor;
+			PokeLightIntensity = controller.parameters.PokeLightIntensity;
+			PokeReflectorColor = controller.parameters.PokeReflectorColor;
+		}
 	}
 }

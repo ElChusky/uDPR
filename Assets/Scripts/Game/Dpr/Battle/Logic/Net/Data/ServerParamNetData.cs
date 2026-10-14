@@ -4,6 +4,6 @@ namespace Dpr.Battle.Logic.Net.Data
 	public class ServerParamNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Battle.Logic.Net.Data.ServerParam>
 	{
 		public override byte GetDataID { get { return 202; } }
-		public ServerParamNetData() { /*@B 0x60080E5*/ throw null; }
+		public ServerParamNetData() { }
 	}
 }

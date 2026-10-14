@@ -25,14 +25,14 @@ namespace Dpr.Battle.View
 		public const float DEFAULT_CANVAS_TRANSITION_DELAY = 0f;
 		public const int DEFAULT_SELECT_WAZA_RESULT = -1;
 		public const int WAZA_MAX_NUM = 4;
-		public static readonly global::UnityEngine.Color BATTLE_FADE_OUT_FADER_COLOR;
+		public static readonly global::UnityEngine.Color BATTLE_FADE_OUT_FADER_COLOR = global::UnityEngine.Color.black;
 		public static string GetPlayerNoCapModelName(global::Pml.Sex sex) {
             return string.Format("pc{0:d4}_01", (int)sex + 1);
         }
 		public static string GetCameraName(global::Dpr.SequenceEditor.SequenceCameraSystem.CameraStateType type) {
             return "BattleCamera_" + type.ToString();
         }
-		static BattleViewDefine() { /*@B 0x6005EF0*/ throw null; }
+		static BattleViewDefine() { }
 		public static class Path
 		{
 			public const string ASSET_BUNDLE_PATH = "btlv";
@@ -40,18 +40,36 @@ namespace Dpr.Battle.View
 			public const string ASSET_BUNDLE_PATH_FX = "effect/prefab/battle";
 			public const string ASSET_BUNDLE_PATH_MODEL = "effmodel";
 			public const string ASSET_BUNDLE_PATH_CHARACTERS = "objects";
-			public static string GetScreenObjectPath() { /*@B 0x600B14F*/ throw null; }
-			public static string GetUISystemPath() { /*@B 0x600B150*/ throw null; }
-			public static string GetDataTablePath(string dataTableName) { /*@B 0x600B151*/ throw null; }
-			public static string GetSequencePath(string seqName) { /*@B 0x600B152*/ throw null; }
-			public static string GetFXPath(string path) { /*@B 0x600B153*/ throw null; }
-			public static string GetSealFXPath(string path) { /*@B 0x600B154*/ throw null; }
-			public static string GetModelPath(string path) { /*@B 0x600B155*/ throw null; }
-			public static string GetWaitCameraPath(string fileName) { /*@B 0x600B156*/ throw null; }
+			public static string GetScreenObjectPath() {
+                return "btlv/objects/battle_screen_object";
+            }
+			public static string GetUISystemPath() {
+                return "ui/prefab/battleviewuisystem";
+            }
+			public static string GetDataTablePath(string dataTableName) {
+                return "btlv/data/";
+            }
+			public static string GetSequencePath(string seqName) {
+                return "btlv/waza/sequence/" + seqName;
+            }
+			public static string GetFXPath(string path) {
+                return ("effect/prefab/battle/" + global::System.IO.Path.GetFileNameWithoutExtension(path)).ToLower();
+            }
+			public static string GetSealFXPath(string path) {
+                return "effect/prefab/" + path;
+            }
+			public static string GetModelPath(string path) {
+                return ("effmodel/" + global::System.IO.Path.GetFileNameWithoutExtension(path)).ToLower();
+            }
+			public static string GetWaitCameraPath(string fileName) {
+                return "btlv/waza/camera/wait/" + fileName;
+            }
 			public static string GetBallPath(global::Pml.BallId ballID) {
                 return string.Format("{0}/ob{1:D4}_00", ASSET_BUNDLE_PATH_CHARACTERS, (int)ballID + 200);
             }
-			public static string GetObjectPath(string fileName) { /*@B 0x600B158*/ throw null; }
+			public static string GetObjectPath(string fileName) {
+                return "objects/" + fileName;
+            }
 		}
 		public static class StringFormat
 		{

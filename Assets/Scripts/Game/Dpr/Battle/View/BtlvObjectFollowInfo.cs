@@ -10,7 +10,23 @@ namespace Dpr.Battle.View
 		public bool FollowScl { get; set; }
 		public bool FollowAnimScl { get; set; }
 		public bool FollowLocalScl { get; set; }
-		public BtlvObjectFollowInfo() { /*@B 0x6005F74*/ throw null; }
-		public BtlvObjectFollowInfo(global::Dpr.Battle.View.ITranslationObject model, global::UnityEngine.Transform joint, bool isFollowPos, bool isFollowRot, bool isFollowScl, bool followAnimScl, bool followLocalScl) { /*@B 0x6005F75*/ throw null; }
+		public BtlvObjectFollowInfo() {
+			HdlFollowModel = null;
+			FollowJoint = null;
+			FollowLocalScl = false;
+			FollowPos = false;
+			FollowRot = false;
+			FollowScl = false;
+			FollowAnimScl = false;
+		}
+		public BtlvObjectFollowInfo(global::Dpr.Battle.View.ITranslationObject model, global::UnityEngine.Transform joint, bool isFollowPos, bool isFollowRot, bool isFollowScl, bool followAnimScl, bool followLocalScl) {
+			HdlFollowModel = model;
+			FollowJoint = joint;
+			FollowPos = isFollowPos;
+			FollowRot = isFollowRot;
+			FollowScl = isFollowScl;
+			FollowAnimScl = followAnimScl;
+			FollowLocalScl = followLocalScl;
+		}
 	}
 }

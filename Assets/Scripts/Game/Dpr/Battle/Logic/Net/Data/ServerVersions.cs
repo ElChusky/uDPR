@@ -5,11 +5,21 @@ namespace Dpr.Battle.Logic.Net.Data
 	{
 		public const int ELEM_MAX = 4;
 		public const int StationIndexInvalid = -1;
-		private global::Dpr.Battle.Logic.Net.Data.ServerVersionData[] m_element;
+		private global::Dpr.Battle.Logic.Net.Data.ServerVersionData[] m_element = new ServerVersionData[ELEM_MAX];
 		private byte m_maxVersion;
 		private byte m_serverClientID;
-		public ServerVersions() { /*@B 0x60080EA*/ throw null; }
-		public void Initialize() { /*@B 0x60080EB*/ throw null; }
+		public ServerVersions() {
+			Initialize();
+		}
+		public void Initialize() {
+			m_maxVersion = 0;
+			m_serverClientID = (byte)global::Dpr.Battle.Logic.BTL_CLIENT_ID.BTL_CLIENT_NULL;
+			for (int i = 0; i < m_element.Length; i++)
+			{
+				m_element[i].stationIndex = StationIndexInvalid;
+				m_element[i].recvedFlag = false;
+			}
+		}
 		public void SetServerVersion(int clientID, in global::Dpr.Battle.Logic.Net.Data.ServerVersionData data) {
 			if (clientID >= m_element.Length)
 				return;

@@ -4,6 +4,6 @@ namespace Dpr.Battle.Logic.Net.Data
 	public class SignalNetData : global::Dpr.NetworkUtils.ANetData<global::Dpr.Battle.Logic.Net.Data.Signal>
 	{
 		public override byte GetDataID { get { return 200; } }
-		public SignalNetData() { /*@B 0x60080E1*/ throw null; }
+		public SignalNetData() { }
 	}
 }

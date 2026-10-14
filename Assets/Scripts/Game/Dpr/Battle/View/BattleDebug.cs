@@ -8,8 +8,8 @@ namespace Dpr.Battle.View
 		private const string MONITOR_LABEL_CMD = "Cmd";
 		private const string MONITOR_LABEL_CMD_WAIT = "CmdWait";
 		private const string MONITOR_LABEL_SUSPEND = "Suspend";
-		private static global::System.Collections.Generic.Dictionary<string, global::System.Diagnostics.Stopwatch> _stopwatches;
-		private static global::System.Diagnostics.Stopwatch _stopwatch;
+		private static global::System.Collections.Generic.Dictionary<string, global::System.Diagnostics.Stopwatch> _stopwatches = new global::System.Collections.Generic.Dictionary<string, global::System.Diagnostics.Stopwatch>();
+		private static global::System.Diagnostics.Stopwatch _stopwatch = new global::System.Diagnostics.Stopwatch();
 		public static bool isDisableLog;
 		[global::System.Diagnostics.ConditionalAttribute("DMY")]
 		public static void Log(object msg) { }
@@ -44,9 +44,24 @@ namespace Dpr.Battle.View
 		public static void OutputSuspend(object value, float life = 1f) { }
 		[global::System.Diagnostics.ConditionalAttribute("DMY")]
 		public static void FrameLog(object value = null) { }
-		public static void StartStopwatch(string key) { /*@B 0x6005EE0*/ throw null; }
-		public static void LapStopwatch(string key, string label = "") { /*@B 0x6005EE1*/ throw null; }
-		public static void StopStopwatch(string key, string label) { /*@B 0x6005EE2*/ throw null; }
-		static BattleDebug() { /*@B 0x6005EE3*/ throw null; }
+		public static void StartStopwatch(string key) {
+			if (!_stopwatches.ContainsKey(key))
+				_stopwatches.Add(key, new global::System.Diagnostics.Stopwatch());
+			global::System.Diagnostics.Stopwatch stopwatch = _stopwatches[key];
+			if (stopwatch.IsRunning)
+				stopwatch.Stop();
+			stopwatch.Reset();
+			stopwatch.Start();
+		}
+		public static void LapStopwatch(string key, string label = "") {
+			global::System.Diagnostics.Stopwatch stopwatch = null;
+			_stopwatches.TryGetValue(key, out stopwatch);
+		}
+		public static void StopStopwatch(string key, string label) {
+			global::System.Diagnostics.Stopwatch stopwatch = null;
+			if (_stopwatches.TryGetValue(key, out stopwatch) && stopwatch.IsRunning)
+				stopwatch.Stop();
+		}
+		static BattleDebug() { }
 	}
 }
