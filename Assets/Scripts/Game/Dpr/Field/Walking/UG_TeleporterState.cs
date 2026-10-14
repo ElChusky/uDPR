@@ -3,7 +3,14 @@ namespace Dpr.Field.Walking
 {
 	public class UG_TeleporterState : global::Dpr.Field.Walking.UGBaseState
 	{
-		public UG_TeleporterState(global::Dpr.Field.Walking.AIModel model) : base(default(global::Dpr.Field.Walking.AIModel)) { /*@B 0x6008A63*/ throw null; }
-		protected override void StateUpdate() { /*@B 0x6008A64*/ throw null; }
+		public UG_TeleporterState(global::Dpr.Field.Walking.AIModel model) : base(model)
+		{
+			rotSpeed = global::UnityEngine.Random.Range(0.5f, 1f);
+		}
+		protected override void StateUpdate()
+		{
+			// shipped override is a bare tail `b UGBaseState.StateUpdate` @01ce5580
+			base.StateUpdate();
+		}
 	}
 }

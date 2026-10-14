@@ -3,7 +3,12 @@ namespace Dpr.Field.Walking
 {
 	public class WaitState : global::Dpr.Field.Walking.AIStateBase
 	{
-		public WaitState(global::Dpr.Field.Walking.AIModel model) : base(default(global::Dpr.Field.Walking.AIModel)) { /*@B 0x6008A28*/ throw null; }
-		protected override void StateUpdate() { /*@B 0x6008A29*/ throw null; }
+		public WaitState(global::Dpr.Field.Walking.AIModel model) : base(model) { }
+		protected override void StateUpdate()
+		{
+			global::Dpr.Field.Walking.WalkData walkData = model.walkData;
+			global::System.Collections.Generic.List<global::UnityEngine.Vector3> route = model.route;
+			walkData.LookAtTarget(LookTarget.position, deltaTime, 10f);
+		}
 	}
 }

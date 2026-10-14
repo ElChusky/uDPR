@@ -12,9 +12,9 @@ namespace Dpr.Field.Walking
 		public float awayDistanceOffset;
 		public float farDistanceOffset;
 		public bool isLinePosition;
-		public float offsetScale;
-		public float moveSpeed;
-		public float MaxSpeed;
+		public float offsetScale = 1f;
+		public float moveSpeed = 1f;
+		public float MaxSpeed = 1.8f;
 		public float distance;
 		public float bodySize;
 		public float bodyDistance;
@@ -25,9 +25,9 @@ namespace Dpr.Field.Walking
 		public float PositionHosei;
 		public float walkHosei;
 		public float runHosei;
-		public float walkSpeed;
-		public float runSpeed;
-		public float baseSpeed;
+		public float walkSpeed = 0.4f;
+		public float runSpeed = 0.6f;
+		public float baseSpeed = 2.5f;
 		public float nowSpeed;
 		public bool isNeedWalk;
 		public bool isNeedRun;
@@ -36,45 +36,199 @@ namespace Dpr.Field.Walking
 		public float totalMoveDistance;
 		public global::UnityEngine.Vector3 prevMoveVec;
 		public int CollidedCount;
-		public static readonly float[] HeavyPushSpeed;
+		public static readonly float[] HeavyPushSpeed = new float[] { 1f, 0.6f, 0.4f, 0.25f };
 		public int WeightRank;
 		private float prevAngle;
 		private float angleRate;
 		private float NearCount;
-		public global::UnityEngine.Transform transform { get { /*@B 0x6008B2E*/ throw null; } }
-		public float targetDistance { get { /*@B 0x6008B2F*/ throw null; } }
-		public float awayDistance { get { /*@B 0x6008B30*/ throw null; } }
-		public float farDistance { get { /*@B 0x6008B31*/ throw null; } }
-		public float minDistance { get { /*@B 0x6008B32*/ throw null; } }
+		public global::UnityEngine.Transform transform { get { return entity.transform; } }
+		public float targetDistance { get { return bodyDistance + 0.5f; } }
+		public float awayDistance { get { return awayDistanceOffset + targetDistance; } }
+		public float farDistance { get { return farDistanceOffset + targetDistance; } }
+		public float minDistance { get { return bodyDistance + 0.5f; } }
 		public global::UnityEngine.Vector3 TargetPosition { get; set; }
-		public float SpeedHosei { get { /*@B 0x6008B35*/ throw null; } }
-		public global::UnityEngine.Vector3 moveVec { get { /*@B 0x6008B36*/ throw null; } set { /*@B 0x6008B37*/ throw null; } }
+		public float SpeedHosei { get { return isNeedRun ? 3f : 1.5f; } }
+		public global::UnityEngine.Vector3 moveVec { get { return entity.moveVector; } set { entity.moveVector = value; } }
 		public global::Dpr.FureaiHiroba.PokeWalkingActionModel actionModel { get; private set; }
-		public WalkData(global::FieldObjectEntity entity) { /*@B 0x6008B3A*/ throw null; }
-		public void CreateActionModel(global::XLSXContent.PokeWalkingActionNakayoshi.SheetSheet1 nakayoshi, global::XLSXContent.PokeWalkingActionSeikaku.SheetSheet1 seikaku) { /*@B 0x6008B3B*/ throw null; }
-		public void Move(float deltaTime, float Accelarate, float BaseSpeed = 2.5f, float otherDistance = 0f) { /*@B 0x6008B3C*/ throw null; }
-		public void NPCMove(float deltaTime, float Accelarate, float BaseSpeed = 1.5f) { /*@B 0x6008B3D*/ throw null; }
-		public global::UnityEngine.Vector3 MoveSimple(float deltaTime, float speed) { /*@B 0x6008B3E*/ throw null; }
-		public void MoveSimple2(float deltaTime, float speed) { /*@B 0x6008B3F*/ throw null; }
-		public void MoveSimple3(float deltaTime, float speed) { /*@B 0x6008B40*/ throw null; }
-		public void LookAtTarget(global::UnityEngine.Vector3 target, float deltaTime, float speed) { /*@B 0x6008B41*/ throw null; }
-		public float GetAngle(global::UnityEngine.Vector3 target) { /*@B 0x6008B42*/ throw null; }
-		public global::UnityEngine.Vector3 AngleToVector3(float Angle) { /*@B 0x6008B43*/ throw null; }
-		public void Update(float deltaTime) { /*@B 0x6008B44*/ throw null; }
-		public void UpdateDistance() { /*@B 0x6008B45*/ throw null; }
-		public void UpdateFormation(float deltaTime) { /*@B 0x6008B46*/ throw null; }
-		public global::UnityEngine.Vector3 GetRotateOffset(float angle, float deltaTime) { /*@B 0x6008B47*/ throw null; }
-		public bool IsNear() { /*@B 0x6008B48*/ throw null; }
-		public bool IsAwayTargetPos() { /*@B 0x6008B49*/ throw null; }
-		public bool IsAwayTrackTarget() { /*@B 0x6008B4A*/ throw null; }
-		public bool IsFar() { /*@B 0x6008B4B*/ throw null; }
-		public bool IsFarTrackTarget() { /*@B 0x6008B4C*/ throw null; }
-		public void NeedWalkCheck() { /*@B 0x6008B4D*/ throw null; }
-		public void NeedRunCheck(float deltaTime) { /*@B 0x6008B4E*/ throw null; }
-		public void SetTargetPos(global::UnityEngine.Vector3 pos) { /*@B 0x6008B4F*/ throw null; }
-		public float GetAwayDistance() { /*@B 0x6008B50*/ throw null; }
-		public float GetFarDistance() { /*@B 0x6008B51*/ throw null; }
-		static WalkData() { /*@B 0x6008B52*/ throw null; }
+		public WalkData(global::FieldObjectEntity entity)
+		{
+			this.entity = entity;
+			if (entity is global::FieldPokemonEntity)
+			{
+				(entity as global::FieldPokemonEntity).EnablePlayInitialIdleAnimation(false);
+			}
+			WeightRank = 0;
+		}
+		public void CreateActionModel(global::XLSXContent.PokeWalkingActionNakayoshi.SheetSheet1 nakayoshi, global::XLSXContent.PokeWalkingActionSeikaku.SheetSheet1 seikaku)
+		{
+			PositionHosei = global::UnityEngine.Mathf.Clamp(nakayoshi.PositionHosei + seikaku.PositionHosei, 0.3f, 3f);
+			walkHosei = nakayoshi.WalkStartDistanceHosei + seikaku.WalkStartDistanceHosei;
+			runHosei = nakayoshi.RunStartDistanceHosei + seikaku.RunStartDistanceHosei;
+			actionModel = new global::Dpr.FureaiHiroba.PokeWalkingActionModel(nakayoshi, seikaku);
+		}
+		public void Move(float deltaTime, float Accelarate, float BaseSpeed = 2.5f, float otherDistance = 0f)
+		{
+			float num = distance - minDistance;
+			if (otherDistance != 0f)
+			{
+				num = otherDistance;
+			}
+			baseSpeed = BaseSpeed;
+			float max = global::UnityEngine.Mathf.Min(num, (isNeedRun ? runSpeed : walkSpeed) * BaseSpeed * deltaTime);
+			float speed = global::UnityEngine.Mathf.Clamp(deltaTime * Accelarate + nowSpeed, 0f, max);
+			moveVec = entity.transform.TransformDirection(global::UnityEngine.Vector3.forward) * speed;
+			nowSpeed = speed;
+		}
+		public void NPCMove(float deltaTime, float Accelarate, float BaseSpeed = 1.5f)
+		{
+			float rate = global::UnityEngine.Mathf.Clamp(distance - minDistance, 0f, 1f);
+			float max = global::UnityEngine.Mathf.Clamp(runSpeed * BaseSpeed, 0f, global::UnityEngine.Mathf.Max(rate * ((distance - minDistance) * 30f), 0f));
+			nowSpeed = global::UnityEngine.Mathf.Clamp(deltaTime * Accelarate + nowSpeed, 0f, max);
+			moveVec = entity.transform.TransformDirection(global::UnityEngine.Vector3.forward) * (nowSpeed * deltaTime);
+		}
+		public global::UnityEngine.Vector3 MoveSimple(float deltaTime, float speed)
+		{
+			moveVec = entity.transform.TransformDirection(global::UnityEngine.Vector3.forward) * deltaTime * speed;
+			moveVec = global::UnityEngine.Vector3.ClampMagnitude(moveVec, prevMoveVec.magnitude + deltaTime);
+			return moveVec;
+		}
+		public void MoveSimple2(float deltaTime, float speed)
+		{
+			moveVec = entity.transform.TransformDirection(global::UnityEngine.Vector3.forward) * deltaTime * speed;
+		}
+		public void MoveSimple3(float deltaTime, float speed)
+		{
+			// the clamped rate is computed and never used (shipped)
+			float rate = global::UnityEngine.Mathf.Clamp(distance - minDistance, 0.3f, 1f);
+			moveVec = entity.transform.TransformDirection(global::UnityEngine.Vector3.forward) * deltaTime * speed;
+			float maxLength = global::UnityEngine.Mathf.Clamp(prevMoveVec.magnitude + deltaTime, 0f, 7f);
+			moveVec = global::UnityEngine.Vector3.ClampMagnitude(moveVec, maxLength);
+		}
+		public void LookAtTarget(global::UnityEngine.Vector3 target, float deltaTime, float speed)
+		{
+			global::UnityEngine.Quaternion look = global::UnityEngine.Quaternion.LookRotation(target - entity.transform.position);
+			float t = deltaTime * speed;
+			entity.transform.rotation = global::UnityEngine.Quaternion.Lerp(entity.transform.rotation, look, t + 0.01f);
+			float angle = (look * global::UnityEngine.Quaternion.Inverse(entity.transform.rotation)).eulerAngles.y;
+			if (angle > 180f)
+			{
+				angle = global::UnityEngine.Mathf.Abs(angle - 360f);
+			}
+			isNeedRotate = moveVec.magnitude == 0f & t * angle > 0.2f;
+			entity.transform.localEulerAngles = new global::UnityEngine.Vector3(0f, entity.transform.localEulerAngles.y, 0f);
+		}
+		public float GetAngle(global::UnityEngine.Vector3 target)
+		{
+			global::UnityEngine.Quaternion look = global::UnityEngine.Quaternion.LookRotation(target - entity.transform.position);
+			float angle = (look * global::UnityEngine.Quaternion.Inverse(entity.transform.rotation)).eulerAngles.y;
+			if (angle > 180f)
+			{
+				return angle - 360f;
+			}
+			return angle;
+		}
+		public global::UnityEngine.Vector3 AngleToVector3(float Angle)
+		{
+			float rad = Angle * global::UnityEngine.Mathf.Deg2Rad;
+			return new global::UnityEngine.Vector3(global::UnityEngine.Mathf.Sin(rad), 0f, global::UnityEngine.Mathf.Cos(rad));
+		}
+		public void Update(float deltaTime)
+		{
+			bodyDistance = bodySize + TrackTargetBodySize;
+			UpdateFormation(deltaTime);
+			UpdateDistance();
+			NeedWalkCheck();
+			NeedRunCheck(deltaTime);
+		}
+		public void UpdateDistance()
+		{
+			global::UnityEngine.Vector3 a = new global::UnityEngine.Vector3(entity.transform.position.x, 0f, entity.transform.position.z);
+			global::UnityEngine.Vector3 b = new global::UnityEngine.Vector3(TargetPosition.x, 0f, TargetPosition.z);
+			distance = global::UnityEngine.Vector3.Distance(a, b);
+		}
+		public void UpdateFormation(float deltaTime)
+		{
+			if (TrackTarget != null)
+			{
+				global::UnityEngine.Vector3 pos = TrackTarget.position;
+				if (isLinePosition)
+				{
+					pos = pos + GetRotateOffset(TrackTarget.eulerAngles.y, deltaTime) * offsetScale;
+				}
+				TargetPosition = pos;
+			}
+		}
+		public global::UnityEngine.Vector3 GetRotateOffset(float angle, float deltaTime)
+		{
+			float y = global::UnityEngine.Mathf.LerpAngle(prevAngle, angle, deltaTime);
+			RotOffset = global::UnityEngine.Quaternion.Euler(0f, y, 0f) * Offset * bodySize;
+			prevAngle = y;
+			return RotOffset;
+		}
+		public bool IsNear()
+		{
+			return distance - minDistance <= 0.01f;
+		}
+		public bool IsAwayTargetPos()
+		{
+			return distance > GetAwayDistance();
+		}
+		public bool IsAwayTrackTarget()
+		{
+			if (TrackTarget == null || entity.transform == null)
+			{
+				return false;
+			}
+			return global::UnityEngine.Vector3.Distance(TrackTarget.position + RotOffset * offsetScale, entity.transform.position) > GetAwayDistance();
+		}
+		public bool IsFar()
+		{
+			return distance > GetFarDistance();
+		}
+		public bool IsFarTrackTarget()
+		{
+			return global::UnityEngine.Vector3.Distance(TrackTarget.position, entity.transform.position) > GetFarDistance();
+		}
+		public void NeedWalkCheck()
+		{
+			if (!isNeedWalk && IsAwayTrackTarget())
+			{
+				isNeedWalk = true;
+			}
+			else if (isNeedWalk && IsNear())
+			{
+				isNeedWalk = false;
+			}
+		}
+		public void NeedRunCheck(float deltaTime)
+		{
+			if (IsFar())
+			{
+				isNeedRun = true;
+				NearCount = 0f;
+			}
+			else if (IsNear())
+			{
+				NearCount += deltaTime;
+				if (NearCount > 0.3f && EntityManager.activeFieldPlayer.moveVector == global::UnityEngine.Vector3.zero)
+				{
+					isNeedRun = false;
+				}
+			}
+		}
+		public void SetTargetPos(global::UnityEngine.Vector3 pos)
+		{
+			TargetPosition = pos;
+		}
+		public float GetAwayDistance()
+		{
+			return offsetScale * awayDistance;
+		}
+		public float GetFarDistance()
+		{
+			return offsetScale * farDistance;
+		}
+		static WalkData() { }
 		// PC (s41): NPCMove keeps nowSpeed in units per SECOND (its step is nowSpeed * deltaTime), Move in units per FRAME; the view's
 		// shipped animation speed (1 / elapsedTime) * nowSpeed is a speed per second only for the per-frame one (WalkingCharacterView).
 		public bool pcNowSpeedPerSecond;
