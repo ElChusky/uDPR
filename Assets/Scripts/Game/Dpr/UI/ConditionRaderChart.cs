@@ -10,7 +10,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.ConditionRaderChart.ChartItem[] _chartItems;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.RaderChart _rader;
-		private global::System.Collections.Generic.List<global::Effect.EffectInstance> _effects;
+		private global::System.Collections.Generic.List<global::Effect.EffectInstance> _effects = new global::System.Collections.Generic.List<global::Effect.EffectInstance>();
 		public const int conditionRaderParamNum = 5;
 		private void Awake() { }
 		public void Setup(global::Pml.PokePara.PokemonParam pokemonParam) {
@@ -73,7 +73,7 @@ namespace Dpr.UI
 			if (_chartItems[(int)condition].icon != null)
 				_chartItems[(int)condition].icon.gameObject.SetActive(enabled);
 		}
-		public ConditionRaderChart() { /*@B 0x6005074*/ throw null; }
+		public ConditionRaderChart() { }
 		[global::System.Serializable]
 		private class ChartItem
 		{

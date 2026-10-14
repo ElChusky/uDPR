@@ -8,7 +8,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.ContestMatchingRecruitmentMember.JoinPlayerData[] joinPlayerDataArray;
 		private global::Dpr.UI.ContestMatchingUI contestMatchingUIPtr;
 		private global::Dpr.Contest.ContestMatchingNetwork networkPtr;
-		private global::Dpr.UI.UIInputController inputController;
+		private global::Dpr.UI.UIInputController inputController = new global::Dpr.UI.UIInputController();
 		private global::Dpr.NetworkUtils.NetworkManager networkManager;
 		private global::System.Action onFinishState;
 		private global::System.Action<global::Dpr.UI.ContestMatching.FinishPattern> onFinish;
@@ -416,7 +416,7 @@ namespace Dpr.UI
 					break;
 			}
 		}
-		public ContestMatchingRecruitmentMember() { /*@B 0x60052D1*/ throw null; }
+		public ContestMatchingRecruitmentMember() { }
 		private enum RecruitmentState
 		{
 			WaitJoinMember = 0,
@@ -431,7 +431,12 @@ namespace Dpr.UI
 			public int cassetVersion;
 			public ushort fashion;
 			public bool isDpClear;
-			public void Clear() { /*@B 0x600AA1F*/ throw null; }
+			public void Clear() {
+                playerName = string.Empty;
+                cassetVersion = 0;
+                fashion = 0;
+                isDpClear = false;
+            }
 			public JoinPlayerData() { }
 		}
 	}

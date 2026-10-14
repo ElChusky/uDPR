@@ -16,15 +16,20 @@ namespace Dpr.UI
 		private global::Dpr.UI.ContextMenuScrolledWindow.MenuWindowParam[] _windowParams;
 		[global::UnityEngine.SerializeField]
 		protected global::Dpr.UI.UIScrollView _itemListScrollView;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private readonly int _animStateIn = Animator.StringToHash("in");
+		private readonly int _animStateOut = Animator.StringToHash("out");
 		private global::UnityEngine.UI.VerticalLayoutGroup _verticalLayoutGroup;
 		private global::Dpr.UI.ContextMenuItem _selectItem;
 		public global::System.Func<global::Dpr.UI.ContextMenuItem, bool> onClicked;
 		public global::UnityEngine.Events.UnityAction<global::Dpr.UI.ContextMenuItem> onSelectChanged;
 		private global::Dpr.UI.ContextMenuScrolledWindow.Param _param;
 		public global::Dpr.UI.ContextMenuItem selectItem { get { return this._selectItem; } }
-		public void Awake() { /*@B 0x6005084*/ throw null; }
+		public void Awake() {
+			_animator = GetComponentInChildren<Animator>(true);
+			_cursor.gameObject.SetActive(false);
+			_verticalLayoutGroup = _contentRoot.transform.GetComponent<global::UnityEngine.UI.VerticalLayoutGroup>();
+			_itemListScrollView.Initialize(OnRequiredItemData, OnSelectItemScrollViewItem, OnUnSelectItemScrollViewItem);
+		}
 		public void Open(global::Dpr.UI.ContextMenuScrolledWindow.Param param) {
 			StartCoroutine(OpOpen(param)); // iterator stub inlined (MonoBehaviour.StartCoroutine @01ebf034, not Sequencer)
 		}
@@ -143,7 +148,7 @@ namespace Dpr.UI
 
 			return true; // every path returns true (@01ebfd5c)
 		}
-		public ContextMenuScrolledWindow() { /*@B 0x600508E*/ throw null; }
+		public ContextMenuScrolledWindow() { }
 		[global::System.Serializable]
 		private class MenuWindowParam
 		{
@@ -160,16 +165,16 @@ namespace Dpr.UI
 		{
 			public global::Dpr.UI.ContextMenuScrolledWindow.Param.MenuWindowType windowType;
 			public global::Dpr.UI.ContextMenuItem.Param[] itemParams;
-			public global::UnityEngine.Vector2 pivot;
-			public global::UnityEngine.Vector3 position;
+			public global::UnityEngine.Vector2 pivot = Vector2.zero;
+			public global::UnityEngine.Vector3 position = Vector3.zero;
 			public int selectIndex;
-			public float minItemWidth;
-			public int cancelIndex;
-			public bool useCancel;
-			public bool useLoopAndRepeat;
-			public bool isInputEnable;
+			public float minItemWidth = 122.0f;
+			public int cancelIndex = -1;
+			public bool useCancel = true;
+			public bool useLoopAndRepeat = true;
+			public bool isInputEnable = true;
 			public global::UnityEngine.Events.UnityAction<int, global::Dpr.UI.ContextMenuItem.Param> onSetupMessageArgs;
-			public Param() { /*@B 0x600A96F*/ throw null; }
+			public Param() { }
 			public enum MenuWindowType
 			{
 				Default = 0,

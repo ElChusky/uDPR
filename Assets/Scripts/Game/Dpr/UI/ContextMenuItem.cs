@@ -11,19 +11,48 @@ namespace Dpr.UI
 		private int _index;
 		public global::Dpr.UI.ContextMenuItem.Param param { get { return this._param; } }
 		public int index { get { return this._index; } }
-		public void Setup(global::Dpr.UI.ContextMenuItem.Param param, global::UnityEngine.Color[] fontColors, int index, global::UnityEngine.Events.UnityAction<int, global::Dpr.UI.ContextMenuItem.Param> onSetupMessageArgs) { /*@B 0x6005077*/ throw null; }
+		public void Setup(global::Dpr.UI.ContextMenuItem.Param param, global::UnityEngine.Color[] fontColors, int index, global::UnityEngine.Events.UnityAction<int, global::Dpr.UI.ContextMenuItem.Param> onSetupMessageArgs) {
+            _fontColors = fontColors;
+            _param = param;
+            var data = UIManager.Instance.GetContextMenuData(param.menuId);
+            if (string.IsNullOrEmpty(param.text))
+            {
+                string messageFile = param.messageFile ?? data.MessageFile;
+                if (param.messageIndex < 0)
+                {
+                    string messageLabel = param.messageLabel ?? data.MessageLabel;
+                    onSetupMessageArgs?.Invoke(index, param);
+                    _text.SetupMessage(messageFile, messageLabel);
+                }
+                else
+                {
+                    onSetupMessageArgs?.Invoke(index, param);
+                    _text.SetupMessage(messageFile, param.messageIndex);
+                }
+            }
+            else
+            {
+                _text.text = param.text;
+            }
+
+            _text.color = _fontColors[(int)param.colorType];
+            _text.gameObject.AddComponent<global::UnityEngine.UI.ContentSizeFitter>().horizontalFit = global::UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
+        }
 		public float GetWidth() {
             // @01ebec00: the TEXT's transform (TMP_Text.transform), not this one; one localPosition read, `x + x` (@01ebec40)
             var tf = _text.transform as RectTransform;
             return tf.sizeDelta.x + _text.transform.localPosition.x * 2f;
         }
-		public void SetWidth(float width) { /*@B 0x6005079*/ throw null; }
+		public void SetWidth(float width) {
+            var rectTransform = transform as RectTransform;
+            rectTransform.sizeDelta = new Vector2(width, rectTransform.sizeDelta.y);
+        }
 		public void Select(bool enabled) { }
-		public virtual bool GetActive() { /*@B 0x600507B*/ throw null; }
-		public virtual void SetActive(bool isActive) { /*@B 0x600507C*/ throw null; }
+		public virtual bool GetActive() { return gameObject.activeSelf; }
+		public virtual void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 		public virtual int GetIndex() { return this._index; }
 		public virtual void SetIndex(int index) { this._index = index; }
-		public virtual global::UnityEngine.RectTransform GetRectTransform() { /*@B 0x600507F*/ throw null; }
+		public virtual global::UnityEngine.RectTransform GetRectTransform() { return transform as RectTransform; }
 		public virtual void Select() { }
 		public virtual void UnSelect() { }
 		public ContextMenuItem() { }
@@ -33,10 +62,10 @@ namespace Dpr.UI
 			public global::ContextMenuID menuId;
 			public string messageFile;
 			public string messageLabel;
-			public int messageIndex;
+			public int messageIndex = -1;
 			public string text;
 			public global::Dpr.UI.ContextMenuItem.Param.ColorType colorType;
-			public Param() { /*@B 0x600A96D*/ throw null; }
+			public Param() { }
 			public enum ColorType
 			{
 				Default = 0,

@@ -11,8 +11,8 @@ namespace Dpr.UI
 		private global::Dpr.UI.PokemonStatusConditionFurItem _furItemPrefab;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.ConditionFur.FurAnimParam _furParam;
-		private readonly int _animStateKeduya01;
-		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusConditionFurItem> _items;
+		private readonly int _animStateKeduya01 = global::UnityEngine.Animator.StringToHash("Keduya_01");
+		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusConditionFurItem> _items = new global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusConditionFurItem>();
 		private global::UnityEngine.Coroutine _opFurAnim;
 		private const int _furIconMax = 12;
 		private void Awake() {
@@ -90,13 +90,13 @@ namespace Dpr.UI
 				}
 			}
 		}
-		public ConditionFur() { /*@B 0x600506A*/ throw null; }
+		public ConditionFur() { }
 		[global::System.Serializable]
 		private class FurAnimParam
 		{
-			public float nextSeconds;
-			public float waitAllPlaySeconds;
-			public FurAnimParam() { /*@B 0x600A960*/ throw null; }
+			public float nextSeconds = 0.3f;
+			public float waitAllPlaySeconds = 0.3f;
+			public FurAnimParam() { }
 		}
 	}
 }

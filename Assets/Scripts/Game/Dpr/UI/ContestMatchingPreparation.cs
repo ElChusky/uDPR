@@ -6,8 +6,14 @@ namespace Dpr.UI
 {
 	public class ContestMatchingPreparation
 	{
-		private readonly string[] CONTEXTMENU_LABELS;
-		private readonly global::System.Collections.Generic.List<global::UIWindowID> USE_WINDOW_ID_ARRAY;
+		private readonly string[] CONTEXTMENU_LABELS = new string[] { "DP_contest_611", "DP_contest_428" };
+		private readonly global::System.Collections.Generic.List<global::UIWindowID> USE_WINDOW_ID_ARRAY = new global::System.Collections.Generic.List<global::UIWindowID>()
+        {
+            global::UIWindowID.CONTEST_POKEMON,
+            global::UIWindowID.CONTEST_WAZA,
+            global::UIWindowID.CONTEST_CAPSULE,
+            global::UIWindowID.CONTEST_BOUTIQUE,
+        };
 		private bool[] activeMemberArray;
 		private ushort[] fashionIDArray;
 		private global::Dpr.UI.ContestMatchingUI contestMatchingUIPtr;
@@ -628,7 +634,7 @@ namespace Dpr.UI
 					break;
 			}
 		}
-		public ContestMatchingPreparation() { /*@B 0x60052A5*/ throw null; }
+		public ContestMatchingPreparation() { }
 		private enum PreparationState
 		{
 			Confirm = 0,

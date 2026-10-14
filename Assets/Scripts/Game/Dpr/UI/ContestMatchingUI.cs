@@ -13,8 +13,8 @@ namespace Dpr.UI
 		private const string EMPTY_PLAYER_LABEL = "DP_contest_666";
 		private const float SHOW_MSG_TIME = 2f;
 		private const int START_UI_COUNTDOWN_COUNT = 10;
-		private readonly string[] YESNO_CONTEXTMENU_LABELS;
-		private readonly global::UnityEngine.Vector2 MSG_WINDOW_ANCHOR_POS;
+		private readonly string[] YESNO_CONTEXTMENU_LABELS = new string[] { "DP_contest_292", "DP_contest_293" };
+		private readonly global::UnityEngine.Vector2 MSG_WINDOW_ANCHOR_POS = new global::UnityEngine.Vector2(15.0f, 110.0f);
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIContMatchingPlayerBoard[] _playerBoardArray;
 		[global::UnityEngine.SerializeField]
@@ -25,15 +25,15 @@ namespace Dpr.UI
 		private global::Dpr.UI.UIText countTimeText;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.GameObject timerObj;
-		private global::Dpr.NetworkUtils.CountDownTimer countTimer;
-		private global::Dpr.SubContents.ShowMessageWindow msgWindow;
-		private global::Dpr.UI.KeyGuideCreater _keyGuideCreator;
+		private global::Dpr.NetworkUtils.CountDownTimer countTimer = new global::Dpr.NetworkUtils.CountDownTimer();
+		private global::Dpr.SubContents.ShowMessageWindow msgWindow = new global::Dpr.SubContents.ShowMessageWindow();
+		private global::Dpr.UI.KeyGuideCreater _keyGuideCreator = new global::Dpr.UI.KeyGuideCreater();
 		private global::Dpr.Message.MessageMsgFile msgFile;
 		private global::Dpr.MsgWindow.MsgWindowManager msgWindowManager;
 		private global::UnityEngine.Transform keyguideParent;
-		public int GetNowViewModelCount { get { /*@B 0x60052F5*/ throw null; } }
-		public int CountTime { get { /*@B 0x6005309*/ throw null; } }
-		public bool IsFinishCountDown { get { /*@B 0x600530A*/ throw null; } }
+		public int GetNowViewModelCount { get { return modelView.ModelViewCount; } }
+		public int CountTime { get { return countTimer.RemainingCount; } }
+		public bool IsFinishCountDown { get { return !countTimer.IsCountDown; } }
 		public void Initialize() {
 			msgWindowManager = MsgWindowManager.Instance;
 			msgFile = MessageManager.Instance.GetMsgFile("dp_contest");
@@ -262,6 +262,6 @@ namespace Dpr.UI
 			Dpr.Contest.ContestUtils.EmitLog("CloseContextMenu", LogType.Log);
 			msgWindowManager.CloseContextMenu();
 		}
-		public ContestMatchingUI() { /*@B 0x6005321*/ throw null; }
+		public ContestMatchingUI() { }
 	}
 }

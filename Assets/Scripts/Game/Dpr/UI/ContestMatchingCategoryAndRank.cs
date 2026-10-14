@@ -6,7 +6,7 @@ namespace Dpr.UI
 {
 	public class ContestMatchingCategoryAndRank
 	{
-		private readonly string[] contextMenuLabels;
+		private readonly string[] contextMenuLabels = new string[] { "DP_contest_672", "DP_contest_673" };
 		private global::Dpr.Contest.CategoryID[] categoryIds;
 		private global::Dpr.Contest.RankID[] rankIds;
 		private global::Dpr.UI.ContestMatchingUI contestMatchingUIPtr;
@@ -14,13 +14,13 @@ namespace Dpr.UI
 		private global::Dpr.UI.UISelectorWindow selectorWindowPtr;
 		private global::XLSXContent.ContestConfigDatas contConfigDataPtr;
 		private global::Dpr.Message.MessageMsgFile msgFile;
-		private global::Dpr.UI.UIInputController inputController;
+		private global::Dpr.UI.UIInputController inputController = new global::Dpr.UI.UIInputController();
 		private global::System.Action onFinishState;
 		private global::System.Action<global::Dpr.UI.ContestMatching.FinishPattern> onFinish;
 		private global::Dpr.UI.ContestMatchingCategoryAndRank.SelectState currentState;
 		private int[] receiveSkillPointArray;
 		private int nowSelectPlayerIndex;
-		private int transferPlayerIndex;
+		private int transferPlayerIndex = -1;
 		private int initSelectPlayerIndex;
 		private bool bLockPlayerAction;
 		private bool bIsOpenConfirmMsg;
@@ -561,7 +561,7 @@ namespace Dpr.UI
 			networkPtr.SendCategoryAndRankDataToAll(ContestWork.categoryID, ContestWork.rankID, PlayerWork.cassetVersion);
 			networkPtr.SetMainFlag(networkPtr.MyStationIndex, true);
 		}
-		public ContestMatchingCategoryAndRank() { /*@B 0x6005271*/ throw null; }
+		public ContestMatchingCategoryAndRank() { }
 		private enum SelectState
 		{
 			WaitLotteryCategoryAndRank = 0,

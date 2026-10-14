@@ -10,7 +10,7 @@ namespace Dpr.UI
 		private global::Dpr.UI.ContestMatchingUI contestMatchingUIPtr;
 		private global::Dpr.Contest.ContestMatchingNetwork networkPtr;
 		private global::XLSXContent.ContestMasterDatas contMasterDataPtr;
-		private global::Dpr.UI.UIInputController inputController;
+		private global::Dpr.UI.UIInputController inputController = new global::Dpr.UI.UIInputController();
 		private global::Dpr.UI.UISelectorWindow selectorWindowPtr;
 		private global::Dpr.MsgWindow.WaitTimer waitTimer;
 		private global::System.Action<global::Dpr.UI.ContestMatching.FinishPattern> onFinish;
@@ -308,7 +308,7 @@ namespace Dpr.UI
 					break;
 			}
 		}
-		public ContestMatchingResume() { /*@B 0x60052EB*/ throw null; }
+		public ContestMatchingResume() { }
 		private enum ResumeState
 		{
 			LoadModel = 0,
