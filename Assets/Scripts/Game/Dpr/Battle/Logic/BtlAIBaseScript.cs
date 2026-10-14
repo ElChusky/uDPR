@@ -593,15 +593,30 @@ namespace Dpr.Battle.Logic
 		protected int p_PokeChangeEnable;
 		protected int p_Score;
 		protected int MyClientID;
-		protected long Call(byte cmd, params long[] args) { /*@B 0x6007E87*/ throw null; }
-		protected void ScoreCtrl(int value) { /*@B 0x6007E88*/ throw null; }
-		protected void SetPokeChangeEnable() { /*@B 0x6007E89*/ throw null; }
-		protected global::Pml.WazaNo CurrentWazaNo() { /*@B 0x6007E8A*/ throw null; }
+		protected long Call(byte cmd, params long[] args)
+		{
+			return global::Dpr.Battle.Logic.BattleAiCommand.AI_CMD((byte)this.MyClientID, (global::Dpr.Battle.Logic.AICmd)cmd, args);
+		}
+		protected void ScoreCtrl(int value) { this.p_Score += value; }
+		protected void SetPokeChangeEnable() { this.p_PokeChangeEnable = 1; }
+		protected global::Pml.WazaNo CurrentWazaNo()
+		{
+			return (global::Pml.WazaNo)this.Call(CMD_GET_CURRENT_WAZANO);
+		}
 		protected void PRINTF(string s) { }
-		public void SetGlobalParameters(int clientID, int score, int pokeChangeEnable) { /*@B 0x6007E8C*/ throw null; }
+		public void SetGlobalParameters(int clientID, int score, int pokeChangeEnable)
+		{
+			this.p_Score = score;
+			this.MyClientID = clientID;
+			this.p_PokeChangeEnable = pokeChangeEnable;
+		}
 		protected virtual void main() { }
-		public void Execute() { /*@B 0x6007E8E*/ throw null; }
-		public void GetResult(global::Dpr.Battle.Logic.AiScript.Result result) { /*@B 0x6007E8F*/ throw null; }
+		public void Execute() { this.main(); }
+		public void GetResult(global::Dpr.Battle.Logic.AiScript.Result result)
+		{
+			result.score = this.p_Score;
+			result.isPokeChangeEnable = this.p_PokeChangeEnable != 0;
+		}
 		public BtlAIBaseScript() { }
 	}
 }

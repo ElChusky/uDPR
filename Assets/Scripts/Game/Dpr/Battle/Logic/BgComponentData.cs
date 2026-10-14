@@ -16,8 +16,8 @@ namespace Dpr.Battle.Logic
 		public int reflectionResolution;
 		public int shadowResolution;
 		private global::XLSXContent.BattleSetupEffectLots.SheetArenaEffTable arenaEffTable;
-		public bool enableReflection { get { /*@B 0x6006768*/ throw null; } }
-		public global::EffectBattleID[] effectBattleID { get { /*@B 0x6006769*/ throw null; } }
+		public bool enableReflection { get { return this.reflectionResolution > 0; } }
+		public global::EffectBattleID[] effectBattleID { get { return this.arenaEffTable.EffectID; } }
 		public void Clear() {
 			arenaEffTable = null;
 			arenaIndex = -1;

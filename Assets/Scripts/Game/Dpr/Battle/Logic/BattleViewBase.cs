@@ -450,8 +450,37 @@ namespace Dpr.Battle.Logic
 
             return m_iPtrClient.GetSyncClientTime(clientID);
         }
-		public virtual void GetUiDisplay_Turn_Weather(out uint numerator, out uint denominator) { /*@B 0x6006845*/ throw null; }
-		public virtual void GetUiDisplay_Turn_Ground(out uint numerator, out uint denominator) { /*@B 0x6006846*/ throw null; }
+		public virtual void GetUiDisplay_Turn_Weather(out uint numerator, out uint denominator)
+		{
+			numerator = 0;
+			denominator = 0;
+			FieldStatus fieldStatus = GetFieldStatus();
+			if (fieldStatus.GetWeather() == (BtlWeather)0)
+				return;
+			byte clientID = GetClientID();
+			byte causePokeID = fieldStatus.GetWeatherCausePokeID();
+			uint wholeTurn = fieldStatus.GetWeatherWholeTurn();
+			uint turnUpCount = fieldStatus.GetWeatherTurnUpCount();
+			uint remainingTurn = fieldStatus.GetWeatherRemainingTurn();
+			uint passedTurn = fieldStatus.GetWeatherPassedTurn();
+			if (wholeTurn < 255)
+				GetUiDisplay_Turn(out numerator, out denominator, clientID, causePokeID, wholeTurn, turnUpCount, remainingTurn, passedTurn);
+		}
+		public virtual void GetUiDisplay_Turn_Ground(out uint numerator, out uint denominator)
+		{
+			numerator = 0;
+			denominator = 0;
+			FieldStatus fieldStatus = GetFieldStatus();
+			if (fieldStatus.GetGround() == 0)
+				return;
+			byte clientID = GetClientID();
+			byte causePokeID = fieldStatus.GetGroundCausePokeID();
+			uint wholeTurn = fieldStatus.GetGroundWholeTurn();
+			uint turnUpCount = fieldStatus.GetGroundTurnUpCount();
+			uint remainingTurn = fieldStatus.GetGroundRemainingTurn();
+			uint passedTurn = fieldStatus.GetGroundPassedTurn();
+			GetUiDisplay_Turn(out numerator, out denominator, clientID, causePokeID, wholeTurn, turnUpCount, remainingTurn, passedTurn);
+		}
 		public virtual void GetUiDisplay_Turn_Hikarinokabe(out uint numerator, out uint denominator, global::Dpr.Battle.Logic.BtlSide side) {
             GetUiDisplay_Turn_SideEffect(out numerator, out denominator, side, BtlSideEffect.BTL_SIDEEFF_HIKARINOKABE);
         }
@@ -461,8 +490,60 @@ namespace Dpr.Battle.Logic
 		public virtual void GetUiDisplay_Turn_AuroraVeil(out uint numerator, out uint denominator, global::Dpr.Battle.Logic.BtlSide side) {
             GetUiDisplay_Turn_SideEffect(out numerator, out denominator, side, BtlSideEffect.BTL_SIDEEFF_AURORAVEIL);
         }
-		public virtual void GetUiDisplay_Turn_SideEffect(out uint numerator, out uint denominator, global::Dpr.Battle.Logic.BtlSide side, global::Dpr.Battle.Logic.BtlSideEffect sideEffect) { /*@B 0x600684A*/ throw null; }
-		public virtual void GetUiDisplay_Turn(out uint numerator, out uint denominator, byte myClientID, byte causePokeID, uint totalTurn, uint upTurn, uint remainTurn, uint passedTurn) { /*@B 0x600684B*/ throw null; }
+		public virtual void GetUiDisplay_Turn_SideEffect(out uint numerator, out uint denominator, global::Dpr.Battle.Logic.BtlSide side, global::Dpr.Battle.Logic.BtlSideEffect sideEffect)
+		{
+			numerator = 0;
+			denominator = 0;
+			switch (sideEffect)
+			{
+				case BtlSideEffect.BTL_SIDEEFF_REFLECTOR:
+				case BtlSideEffect.BTL_SIDEEFF_HIKARINOKABE:
+				case BtlSideEffect.BTL_SIDEEFF_AURORAVEIL:
+					break;
+				default:
+					return;
+			}
+			SideEffectStatus status = GetSideEffectStatus(side, sideEffect);
+			if (!status.IsEffective())
+				return;
+			byte clientID = GetClientID();
+			byte causePokeID = status.GetCausePokeID();
+			uint maxTurn = status.GetMaxTurnCount();
+			uint turnUpCount = status.GetTurnUpCount();
+			uint remainingTurn = status.GetRemainingTurn();
+			uint currentTurn = status.GetCurrentTurnCount();
+			GetUiDisplay_Turn(out numerator, out denominator, clientID, causePokeID, maxTurn, turnUpCount, remainingTurn, currentTurn);
+		}
+		public virtual void GetUiDisplay_Turn(out uint numerator, out uint denominator, byte myClientID, byte causePokeID, uint totalTurn, uint upTurn, uint remainTurn, uint passedTurn)
+		{
+			numerator = 0;
+			denominator = 0;
+			if (m_pMainModule == null)
+				return;
+			uint dispTotal = totalTurn;
+			if (causePokeID != PokeID.INVALID)
+			{
+				bool isFriend = false;
+				if (!IsWatchMode())
+				{
+					BtlSide causeSide = m_pMainModule.PokeIDtoSide(causePokeID);
+					BtlSide mySide = m_pMainModule.GetClientSide(myClientID);
+					isFriend = m_pMainModule.IsFriendClientID((byte)mySide, (byte)causeSide);
+				}
+				if (!isFriend)
+				{
+					dispTotal = totalTurn - upTurn;
+					if (totalTurn - upTurn <= passedTurn)
+					{
+						upTurn = 0;
+						dispTotal = totalTurn;
+					}
+					remainTurn -= upTurn;
+				}
+			}
+			numerator = remainTurn;
+			denominator = dispTotal;
+		}
 		public virtual void GetUiDisplay_PokeType(out byte type1, out byte type2, in global::Dpr.Battle.Logic.BTL_POKEPARAM poke) {
             PokeTypePair pokeType = poke.GetPokeType();
             type1 = PokeTypePair.GetType1(pokeType);
@@ -486,7 +567,25 @@ namespace Dpr.Battle.Logic
                 type2 = PokeTypePair.GetType2(viewType);
             }
         }
-		public void GetUiDisplay_WazaName(out global::Pml.WazaNo pDispWazaNo, out int pSpWazaNameIndex, global::Pml.MonsNo monsno, ushort formno, bool isG, bool isSpGEnable, global::Pml.WazaNo wazano) { /*@B 0x600684D*/ throw null; }
+		public void GetUiDisplay_WazaName(out global::Pml.WazaNo pDispWazaNo, out int pSpWazaNameIndex, global::Pml.MonsNo monsno, ushort formno, bool isG, bool isSpGEnable, global::Pml.WazaNo wazano)
+		{
+			pDispWazaNo = (WazaNo)0;
+			pSpWazaNameIndex = -1;
+			if (wazano == (WazaNo)0)
+				return;
+			int spIndex = GShock.GetSpecialWazaNameIndex(monsno, formno, isG, isSpGEnable, wazano);
+			if (spIndex >= 0)
+			{
+				pDispWazaNo = (WazaNo)0;
+				pSpWazaNameIndex = spIndex;
+				return;
+			}
+			if (isG)
+				pDispWazaNo = GWaza.GetGWaza(wazano);
+			else
+				pDispWazaNo = wazano;
+			pSpWazaNameIndex = -1;
+		}
 		public void GetUiDisplay_WazaName(out global::Pml.WazaNo pDispWazaNo, out int pSpWazaNameIndex, global::Dpr.Battle.Logic.BTL_POKEPARAM pAttacker, global::Pml.WazaNo wazano) {
             bool isG = pAttacker.IsGMode();
             bool isSpGEnable = pAttacker.IsSpecialGEnable();
@@ -914,14 +1013,14 @@ namespace Dpr.Battle.Logic
 		public class ExpGetDesc
 		{
 			public global::Pml.PokeParty iPtrParty;
-			public global::Dpr.Battle.Logic.BattleViewBase.ExpGetDescByPoke[] pokeDesc;
+			public global::Dpr.Battle.Logic.BattleViewBase.ExpGetDescByPoke[] pokeDesc = Arrays.InitializeWithDefaultInstances<global::Dpr.Battle.Logic.BattleViewBase.ExpGetDescByPoke>(6);
 			public void Clear() {
                 for (byte i = 0; i < pokeDesc.Length; i++)
                 {
                     pokeDesc[i].Clear();
                 }
             }
-			public ExpGetDesc() { /*@B 0x600B466*/ throw null; }
+			public ExpGetDesc() { }
 		}
 		public class ExpGetResult
 		{
@@ -934,7 +1033,7 @@ namespace Dpr.Battle.Logic
                     isLevelUpOccurred[i] = false;
                 }
             }
-			public ExpGetResult() { /*@B 0x600B468*/ throw null; }
+			public ExpGetResult() { }
 		}
 		public enum RecPlayerInput : byte
 		{
@@ -954,7 +1053,7 @@ namespace Dpr.Battle.Logic
 		{
 			public ushort[] effectNo = new ushort[5];
 			public global::Dpr.Battle.Logic.GShock.Effect gShockEffect;
-			public SummarizedGShockEffectParam() { /*@B 0x600B469*/ throw null; }
+			public SummarizedGShockEffectParam() { }
 		}
 		public class Raid_SelectBall_Param
 		{
@@ -966,7 +1065,7 @@ namespace Dpr.Battle.Logic
 		{
 			public bool isThrow;
 			public global::Pml.ItemNo itemno = ItemNo.MONSUTAABOORU;
-			public Raid_SelectBall_Result() { /*@B 0x600B46B*/ throw null; }
+			public Raid_SelectBall_Result() { }
 		}
 		public class RaidCaptureParam
 		{
@@ -993,7 +1092,7 @@ namespace Dpr.Battle.Logic
                 gender = Sex.MALE;
                 pokeLanguageID = MessageEnumData.MsgLangId.JPN;
             }
-			public UiDisplayPlayerNameInfo() { /*@B 0x600B46E*/ throw null; }
+			public UiDisplayPlayerNameInfo() { }
 		}
 		public class RaidRewardParam
 		{
@@ -1023,7 +1122,7 @@ namespace Dpr.Battle.Logic
                     itemInfo[i].Reset();
                 }
             }
-			public RaidRewardParam() { /*@B 0x600B472*/ throw null; }
+			public RaidRewardParam() { }
 			public class ItemInfo
 			{
 				public global::Pml.ItemNo no;
