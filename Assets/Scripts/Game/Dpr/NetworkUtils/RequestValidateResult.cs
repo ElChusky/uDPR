@@ -5,6 +5,9 @@ namespace Dpr.NetworkUtils
 	{
 		public global::INL1.IlcaNetServerCallbackResult callbackResult;
 		public global::Dpr.NetworkUtils.ValidateResultID validateResult;
-		public void Reset() { /*@B 0x6003896*/ throw null; }
+		public void Reset() {
+			callbackResult = global::INL1.IlcaNetServerCallbackResult.Error;
+			validateResult = global::Dpr.NetworkUtils.ValidateResultID.None;
+		}
 	}
 }

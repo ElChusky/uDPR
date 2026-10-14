@@ -5,6 +5,6 @@ namespace Dpr.NetworkUtils
 	{
 		public override byte GetDataID { get { return 68; } }
 		public static byte DataID { get { return 68; } }
-		public NetJoinDigPermission() { /*@B 0x60039F9*/ throw null; }
+		public NetJoinDigPermission() { }
 	}
 }

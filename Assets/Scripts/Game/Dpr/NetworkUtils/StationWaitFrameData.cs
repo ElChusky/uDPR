@@ -44,6 +44,6 @@ namespace Dpr.NetworkUtils
 
 			data.waitFrame = waitFrame;
 		}
-		public StationWaitFrameData() { /*@B 0x6003A1E*/ throw null; }
+		public StationWaitFrameData() { }
 	}
 }

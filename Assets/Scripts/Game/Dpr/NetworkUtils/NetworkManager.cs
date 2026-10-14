@@ -17,24 +17,24 @@ namespace Dpr.NetworkUtils
 		public static global::Dpr.NetworkUtils.NetworkManager.ReceivePacketExCallback onReceivePacketEx;
 		public static global::Dpr.NetworkUtils.NetworkManager.SessionEventCallback onSessionEvent;
 		public static global::Dpr.NetworkUtils.NetworkManager.FinishSessionCallback onFinishedSession;
-		private global::System.Collections.Generic.Dictionary<int, string> sessionErrorLogTable;
-		private global::System.Collections.Generic.Dictionary<int, global::XLSXContent.NetworkData.SheetErrorDialogInfo> networkErrorDialogTable;
+		private global::System.Collections.Generic.Dictionary<int, string> sessionErrorLogTable = new global::System.Collections.Generic.Dictionary<int, string>();
+		private global::System.Collections.Generic.Dictionary<int, global::XLSXContent.NetworkData.SheetErrorDialogInfo> networkErrorDialogTable = new global::System.Collections.Generic.Dictionary<int, global::XLSXContent.NetworkData.SheetErrorDialogInfo>();
 		private bool processingInternetGo;
-		private global::Dpr.NetworkUtils.SessionConnector sessionConnector;
-		private global::Dpr.NetworkUtils.NetworkParam networkParam;
-		private global::INL1.PacketReader packetReader;
-		private global::INL1.PacketWriter packetWriter;
-		private global::INL1.PacketWriterRe packetWriterRe;
-		private global::INL1.IlcaNetServerValidate.CheckRequest checkRequest;
-		private global::INL1.IlcaNetServerValidate.CheckResponse checkResponse;
+		private global::Dpr.NetworkUtils.SessionConnector sessionConnector = new global::Dpr.NetworkUtils.SessionConnector();
+		private global::Dpr.NetworkUtils.NetworkParam networkParam = new global::Dpr.NetworkUtils.NetworkParam();
+		private global::INL1.PacketReader packetReader = new global::INL1.PacketReader();
+		private global::INL1.PacketWriter packetWriter = new global::INL1.PacketWriter();
+		private global::INL1.PacketWriterRe packetWriterRe = new global::INL1.PacketWriterRe();
+		private global::INL1.IlcaNetServerValidate.CheckRequest checkRequest = new global::INL1.IlcaNetServerValidate.CheckRequest();
+		private global::INL1.IlcaNetServerValidate.CheckResponse checkResponse = new global::INL1.IlcaNetServerValidate.CheckResponse();
 		private global::Dpr.NetworkUtils.RequestValidateResult validateResult;
 		private global::Dpr.NetworkUtils.ValidateCheckResult singleValidateCheckResult;
 		private global::Dpr.NetworkUtils.ValidateCheckPluralResult pluralValidateCheckResult;
-		private global::Dpr.NetworkUtils.GMSTradeResult gmsTradeResult;
-		private global::Dpr.NetworkUtils.ErrorAppletResult appletResult;
-		private global::Dpr.SubContents.ShowMessageWindow showMsgWindow;
+		private global::Dpr.NetworkUtils.GMSTradeResult gmsTradeResult = new global::Dpr.NetworkUtils.GMSTradeResult();
+		private global::Dpr.NetworkUtils.ErrorAppletResult appletResult = new global::Dpr.NetworkUtils.ErrorAppletResult();
+		private global::Dpr.SubContents.ShowMessageWindow showMsgWindow = new global::Dpr.SubContents.ShowMessageWindow();
 		private int systemErrorDialogOpenCount;
-		private global::Dpr.NetworkUtils.ErrorCodeID systemErrorDialogCode;
+		private global::Dpr.NetworkUtils.ErrorCodeID systemErrorDialogCode = global::Dpr.NetworkUtils.ErrorCodeID.NUM;
 		public static bool IsNetworkAvailable { get {
 #if SWITCH
                 return UnityEngine.Switch.NetworkInterfaceWrapper.IsNetworkAvailable();
@@ -943,7 +943,7 @@ namespace Dpr.NetworkUtils
                 onSessionEvent?.Invoke(sessionEvent);
             }
         }
-		public NetworkManager() { /*@B 0x60038FE*/ throw null; }
+		public NetworkManager() { }
 		static NetworkManager() { }
 		public delegate void ReceivePacketCallback(global::INL1.PacketReader pr);
 		public delegate void ReceivePacketExCallback(global::INL1.PacketReader pr, global::Dpr.NetworkUtils.TransportType transportType, int receiveStationIndex);

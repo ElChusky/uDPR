@@ -5,6 +5,6 @@ namespace Dpr.NetworkUtils
 	{
 		public override byte GetDataID { get { return 40; } }
 		public static byte DataID { get { return 40; } }
-		public NetDigEndData() { /*@B 0x60039FF*/ throw null; }
+		public NetDigEndData() { }
 	}
 }

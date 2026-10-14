@@ -8,11 +8,11 @@ namespace Dpr.NX
 		public const string MOUNT_NAME = "SaveData";
 		public const string SAVEDATA_PATH = "SaveData:/SaveData.bin";
 		public const string BACKUP_PATH = "SaveData:/Backup.bin";
-		public static readonly int SAVELOAD_BUFFER_SIZE;
-		private static global::Dpr.NX.SaveSystem _Instance;
+		public static readonly int SAVELOAD_BUFFER_SIZE = global::System.Runtime.InteropServices.Marshal.SizeOf(typeof(global::PlayerWork.SaveData));
+		private static global::Dpr.NX.SaveSystem _Instance = new global::Dpr.NX.SaveSystem();
 		private bool _isMounted;
 		private bool _isBusy;
-		private byte[] _buffer;
+		private byte[] _buffer = new byte[SAVELOAD_BUFFER_SIZE];
 		private global::System.Threading.Thread _saveLoadThread;
 		private bool _threadEnable;
 		private bool _saveRequest;
@@ -23,8 +23,8 @@ namespace Dpr.NX
 		private bool _fromBackup;
 		private bool _loadResult;
 		private global::System.Action<bool> _postLoadFunction;
-		private global::System.Threading.SynchronizationContext _mainThread;
-		private SaveSystem() { /*@B 0x6004785*/ throw null; }
+		private global::System.Threading.SynchronizationContext _mainThread = global::System.Threading.SynchronizationContext.Current;
+		private SaveSystem() { }
 		public static bool IsBusy() {
 			return _Instance._isBusy;
 		}
@@ -203,6 +203,6 @@ namespace Dpr.NX
 			_Instance._postLoadFunction?.Invoke(_Instance._loadResult);
 			_Instance._isBusy = false;
 		}
-		static SaveSystem() { /*@B 0x6004794*/ throw null; }
+		static SaveSystem() { }
 	}
 }

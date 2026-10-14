@@ -6,6 +6,9 @@ namespace Dpr.NetworkUtils
 		private ushort posX;
 		private ushort posZ;
 		public short rotY;
-		public global::UnityEngine.Vector2 pos { get { /*@B 0x6003952*/ throw null; } set { /*@B 0x6003953*/ throw null; } }
+		public global::UnityEngine.Vector2 pos { get { return new global::UnityEngine.Vector2(-posX * 0.05f, posZ * 0.05f); } set {
+				posX = (ushort)(int)global::UnityEngine.Mathf.Abs(value.x * 20f);
+				posZ = (ushort)(int)global::UnityEngine.Mathf.Abs(value.y * 20f);
+			} }
 	}
 }

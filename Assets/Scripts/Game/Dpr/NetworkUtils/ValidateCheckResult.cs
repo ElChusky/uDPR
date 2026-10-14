@@ -5,6 +5,9 @@ namespace Dpr.NetworkUtils
 	{
 		public global::Dpr.NetworkUtils.ValidateResultID validateResult;
 		public bool bIsSuccess;
-		public void Reset() { /*@B 0x6003897*/ throw null; }
+		public void Reset() {
+			bIsSuccess = false;
+			validateResult = global::Dpr.NetworkUtils.ValidateResultID.ProcessError;
+		}
 	}
 }

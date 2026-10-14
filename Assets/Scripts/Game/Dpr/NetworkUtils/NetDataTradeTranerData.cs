@@ -5,6 +5,6 @@ namespace Dpr.NetworkUtils
 	{
 		public override byte GetDataID { get { return 36; } }
 		public static byte DataID { get { return 36; } }
-		public NetDataTradeTranerData() { /*@B 0x600399F*/ throw null; }
+		public NetDataTradeTranerData() { }
 	}
 }

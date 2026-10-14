@@ -4,7 +4,7 @@ namespace Dpr.NX
 {
 	public class UserAccount
 	{
-		public static global::nn.account.Uid UserId;
+		public static global::nn.account.Uid UserId = global::nn.account.Uid.Invalid;
 		public static global::nn.account.UserHandle UserHandle;
 		public static global::nn.account.Nickname Nickname;
 		public static void Open() {
@@ -19,6 +19,6 @@ namespace Dpr.NX
 			Account.GetNickname(ref Nickname, UserId);
 		}
 		public UserAccount() { }
-		static UserAccount() { /*@B 0x6004797*/ throw null; }
+		static UserAccount() { }
 	}
 }

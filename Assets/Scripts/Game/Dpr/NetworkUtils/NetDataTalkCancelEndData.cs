@@ -5,6 +5,6 @@ namespace Dpr.NetworkUtils
 	{
 		public override byte GetDataID { get { return 16; } }
 		public static byte DataID { get { return 16; } }
-		public NetDataTalkCancelEndData() { /*@B 0x600397E*/ throw null; }
+		public NetDataTalkCancelEndData() { }
 	}
 }

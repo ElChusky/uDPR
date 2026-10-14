@@ -5,6 +5,6 @@ namespace Dpr.NetworkUtils
 	{
 		public override byte GetDataID { get { return 71; } }
 		public static byte DataID { get { return 71; } }
-		public NetKousekiAdd() { /*@B 0x6003A05*/ throw null; }
+		public NetKousekiAdd() { }
 	}
 }

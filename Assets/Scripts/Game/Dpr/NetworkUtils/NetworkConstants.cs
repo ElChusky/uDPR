@@ -10,9 +10,20 @@ namespace Dpr.NetworkUtils
 		public const int VALIDATE_GAME_MODE = 1;
 		public const int VALIDATE_PUBLICKEY_SIZE = 392;
 		public const byte WAIT_STATION_FRAME = 254;
-		public static readonly global::UnityEngine.Vector2Int RAND_GAMEMODE_BIT;
-		public static int ADD_ERROR_DIALOG_SORT;
-		public static readonly global::System.Collections.Generic.Dictionary<int, string> LANG_CODE_TABLE;
+		public static readonly global::UnityEngine.Vector2Int RAND_GAMEMODE_BIT = new global::UnityEngine.Vector2Int(0, 4);
+		public static int ADD_ERROR_DIALOG_SORT = 100;
+		public static readonly global::System.Collections.Generic.Dictionary<int, string> LANG_CODE_TABLE = new global::System.Collections.Generic.Dictionary<int, string>
+		{
+			{ 1, "ja" },
+			{ 2, "en-US" },
+			{ 7, "es" },
+			{ 3, "fr" },
+			{ 5, "de" },
+			{ 4, "it" },
+			{ 8, "ko" },
+			{ 10, "zh-Hant" },
+			{ 9, "zh-Hans" },
+		};
 		public const string NET_COMM_MSBT_NAME = "ss_net_mystery";
 		public const string REPORT_MSBT_NAME = "ss_report";
 		public const string CONFIRM_FIRST_CONNECT_MSG_LABEL = "SS_net_mystery_020";
@@ -21,6 +32,6 @@ namespace Dpr.NetworkUtils
 		public const string DO_REPORT_MSG_LABEL = "SS_net_mystery_023";
 		public const string CHANGED_INTERNET_MSG_LABEL = "SS_net_mystery_040";
 		public const string COMPLETE_REPORT_MSG_LABEL = "SS_report_18";
-		static NetworkConstants() { /*@B 0x600388F*/ throw null; }
+		static NetworkConstants() { }
 	}
 }

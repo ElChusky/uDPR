@@ -5,24 +5,37 @@ namespace Dpr.NetworkUtils
 {
 	public class SessionConnector
 	{
-		private readonly uint[] DEFAULT_ATTRIBUTE_VALUE;
+		private readonly uint[] DEFAULT_ATTRIBUTE_VALUE = new uint[6];
 		private global::System.Action<global::Dpr.NetworkUtils.StartSessionResult> onCompleteStartSession;
 		private global::System.Action<global::Dpr.NetworkUtils.SessionEventData> onSessionEvent;
 		private global::System.Action<global::Dpr.NetworkUtils.SessionErrorType> onSessionError;
 		private global::System.Action onFinishSession;
 		private global::Dpr.NetworkUtils.StartSessionResult sessionResult;
 		private global::Dpr.NetworkUtils.SessionEventData sessionEventData;
-		private global::INL1.IlcaNetSessionSetting sessionSetting;
+		private global::INL1.IlcaNetSessionSetting sessionSetting = new global::INL1.IlcaNetSessionSetting();
 		private global::INL1.IlcaNetSessionState nowSessionState;
 		private global::UnityEngine.MonoBehaviour callObjPtr;
 		private bool bRunningSession;
-		private bool canCallOnFinishedSession;
-		public bool IsConnect { get { /*@B 0x6003903*/ throw null; } }
-		public bool IsDisconnect { get { /*@B 0x6003904*/ throw null; } }
+		private bool canCallOnFinishedSession = true;
+		public bool IsConnect { get {
+				if (nowSessionState == IlcaNetSessionState.SS_NoInit || nowSessionState == IlcaNetSessionState.SS_Crash)
+					return false;
+				return nowSessionState != IlcaNetSessionState.SS_Final;
+			} }
+		public bool IsDisconnect { get {
+				switch (nowSessionState)
+				{
+					case IlcaNetSessionState.SS_NoInit:
+					case IlcaNetSessionState.SS_GamingError:
+					case IlcaNetSessionState.SS_Crash:
+						return true;
+				}
+				return nowSessionState == IlcaNetSessionState.SS_Final;
+			} }
 		public bool IsRunning { get { return this.bRunningSession; } }
 		public global::INL1.IlcaNetSessionState SessionState { get { return this.nowSessionState; } }
-		public bool IsSessionWait { get { /*@B 0x6003907*/ throw null; } }
-		public global::INL1.IlcaNetSessionNetworkType NetworkType { get { /*@B 0x6003908*/ throw null; } }
+		public bool IsSessionWait { get { return nowSessionState == IlcaNetSessionState.SS_MatchingWait; } }
+		public global::INL1.IlcaNetSessionNetworkType NetworkType { get { return sessionSetting.networkType; } }
 		public void Initialize(global::UnityEngine.MonoBehaviour callObj, global::System.Action<global::Dpr.NetworkUtils.SessionEventData> onSessionEvent, global::System.Action<global::Dpr.NetworkUtils.SessionErrorType> onSessionError, global::System.Action onFinishedSession) {
             callObjPtr = callObj;
             this.onSessionEvent = onSessionEvent;
@@ -391,6 +404,6 @@ namespace Dpr.NetworkUtils
                     return null;
             }
         }
-		public SessionConnector() { /*@B 0x600392C*/ throw null; }
+		public SessionConnector() { }
 	}
 }
