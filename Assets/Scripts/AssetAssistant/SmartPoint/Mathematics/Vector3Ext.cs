@@ -88,8 +88,10 @@ namespace SmartPoint.Mathematics
             return ref self.FastScale(1.0f / (float)Math.Sqrt(self.FastLengthSq()));
         }
 		public static float FastNormalize(this ref global::UnityEngine.Vector3 self) {
-			float lengthSq = self.x * self.x + self.y * self.y + self.z * self.z;
-			if (lengthSq < 1E-05f)
+			// @02bca9d8: s8 = squared length; below 1e-5 the vector is zeroed and s8 (still squared) is returned;
+			// otherwise s8 = sqrt (mov v8, v0 @02bcaa40) - the LENGTH - scales the vector and is returned.
+			float length = self.x * self.x + self.y * self.y + self.z * self.z;
+			if (length < 1E-05f)
 			{
 				self.z = 0f;
 				self.x = 0f;
@@ -97,12 +99,13 @@ namespace SmartPoint.Mathematics
 			}
 			else
 			{
-				float inv = 1f / (float)Math.Sqrt(lengthSq);
+				length = (float)Math.Sqrt(length);
+				float inv = 1f / length;
 				self.x *= inv;
 				self.y *= inv;
 				self.z *= inv;
 			}
-			return lengthSq;
+			return length;
 		}
 		public static ref global::UnityEngine.Vector3 FastRotateX(this ref global::UnityEngine.Vector3 self, float angle) {
 			float sin = (float)Math.Sin(angle);
