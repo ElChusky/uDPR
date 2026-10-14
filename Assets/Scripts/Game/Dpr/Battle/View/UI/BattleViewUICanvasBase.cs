@@ -14,7 +14,7 @@ namespace Dpr.Battle.View.UI
 		protected global::Dpr.Battle.View.UI.BattleViewUICanvasBase.TransitionType _transitionType;
 		[global::UnityEngine.HeaderAttribute("[TransitionParams]")]
 		[global::UnityEngine.SerializeField]
-		protected global::Dpr.Battle.View.UI.BattleViewUICanvasBase.TransitionParams _transitionParams = global::Dpr.Battle.View.UI.BattleViewUICanvasBase.TransitionParams.Factory();
+		protected global::Dpr.Battle.View.UI.BattleViewUICanvasBase.TransitionParams _transitionParams;
 		private global::UnityEngine.RectTransform _cachedRectTransform;
 		protected global::UnityEngine.CanvasGroup _canvasGroup;
 		protected global::System.Action _onShowComplete;
