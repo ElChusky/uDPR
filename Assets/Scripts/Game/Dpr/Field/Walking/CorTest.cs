@@ -19,13 +19,42 @@ namespace Dpr.Field.Walking
 		public int Button09;
 		[global::UnityEngine.SerializeField]
 		private int SubNo;
-		private void Awake() { /*@B 0x60089AF*/ throw null; }
-		private void Test() { /*@B 0x60089B0*/ throw null; }
-		private void Cancel() { /*@B 0x60089B1*/ throw null; }
-		private void Pause() { /*@B 0x60089B2*/ throw null; }
-		private void Restart() { /*@B 0x60089B3*/ throw null; }
-		private void DeltaTimePause() { /*@B 0x60089B4*/ throw null; }
-		private void SubCancel() { /*@B 0x60089B5*/ throw null; }
+		private void Awake()
+		{
+			if (corSys != null)
+				corSys.Cancel();
+			container = new global::Dpr.Field.Walking.CorSystemContainer("メイン");
+			corSys = container;
+		}
+		private void Test()
+		{
+			string[] names = new string[] { "A", "B", "C", "D", "E" };
+			int idx = global::UnityEngine.Random.Range(0, 5);
+			string name = "攻撃" + names[idx];
+			global::UnityEngine.UI.Text text = global::Dpr.FureaiHiroba.DebugManager.CreateText(name, 0f);
+			global::Dpr.Field.Walking.CorSystem sub = container.AddWait(5f, (global::Dpr.Field.Walking.CorSystem corSys) =>
+			{
+				text.text = corSys.CorName + ":" + corSys.duration.ToString();
+			}, name);
+			sub.onFinished += () =>
+			{
+				global::UnityEngine.Object.Destroy(text.gameObject);
+			};
+			if (container.isPlaying)
+				return;
+			container.Play();
+		}
+		private void Cancel() { corSys.Cancel(); }
+		private void Pause() { corSys.Pause(); }
+		private void Restart() { corSys.Restart(); }
+		private void DeltaTimePause()
+		{
+			if (global::Dpr.Field.Walking.DeltaTime.isPause)
+				global::Dpr.Field.Walking.DeltaTime.UnPause();
+			else
+				global::Dpr.Field.Walking.DeltaTime.Pause();
+		}
+		private void SubCancel() { container.SubCancel(SubNo); }
 		public CorTest() { }
 	}
 }

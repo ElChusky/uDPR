@@ -5,12 +5,12 @@ namespace Dpr.Field.Walking
 	public class DeltaTime
 	{
 		public static bool isPause;
-		public static float TimeScale;
-		public static float deltaTime { get { /*@B 0x60089A9*/ throw null; } }
+		public static float TimeScale = 1f;
+		public static float deltaTime { get { return global::SmartPoint.AssetAssistant.Sequencer.elapsedTime * TimeScale; } }
 		public void Update() { }
-		public static void Pause() { /*@B 0x60089AB*/ throw null; }
-		public static void UnPause() { /*@B 0x60089AC*/ throw null; }
+		public static void Pause() { isPause = true; }
+		public static void UnPause() { isPause = false; }
 		public DeltaTime() { }
-		static DeltaTime() { /*@B 0x60089AE*/ throw null; }
+		static DeltaTime() { }
 	}
 }
