@@ -3,20 +3,20 @@
 public class EventCameraData : global::UnityEngine.ScriptableObject
 {
 	public float baseTime;
-	public float timeScale;
+	public float timeScale = 1f;
 	public int length;
-	public global::System.Collections.Generic.List<global::EventCameraData.EventType> type;
-	public global::System.Collections.Generic.List<bool> isEnd;
-	public global::System.Collections.Generic.List<float> startTime;
-	public global::System.Collections.Generic.List<global::EventCameraData.FadeData> fadeData;
-	public global::System.Collections.Generic.List<global::EventCameraData.PathData> pathData;
-	public global::System.Collections.Generic.List<global::EventCameraData.DofData> dofData;
-	public global::System.Collections.Generic.List<global::EventCameraData.PathData2> pathData2;
-	public global::System.Collections.Generic.List<global::EventCameraData.RotationData> rotationData;
-	public global::System.Collections.Generic.List<global::EventCameraData.ReturnDefault> returnDefault;
-	public global::System.Collections.Generic.List<global::EventCameraData.ReturnDefault> returnDefaultRotate;
-	public global::System.Collections.Generic.List<global::EventCameraData.FovData> fovData;
-	public EventCameraData() { /*@B 0x6000097*/ throw null; }
+	public global::System.Collections.Generic.List<global::EventCameraData.EventType> type = new global::System.Collections.Generic.List<global::EventCameraData.EventType>();
+	public global::System.Collections.Generic.List<bool> isEnd = new global::System.Collections.Generic.List<bool>();
+	public global::System.Collections.Generic.List<float> startTime = new global::System.Collections.Generic.List<float>();
+	public global::System.Collections.Generic.List<global::EventCameraData.FadeData> fadeData = new global::System.Collections.Generic.List<global::EventCameraData.FadeData>();
+	public global::System.Collections.Generic.List<global::EventCameraData.PathData> pathData = new global::System.Collections.Generic.List<global::EventCameraData.PathData>();
+	public global::System.Collections.Generic.List<global::EventCameraData.DofData> dofData = new global::System.Collections.Generic.List<global::EventCameraData.DofData>();
+	public global::System.Collections.Generic.List<global::EventCameraData.PathData2> pathData2 = new global::System.Collections.Generic.List<global::EventCameraData.PathData2>();
+	public global::System.Collections.Generic.List<global::EventCameraData.RotationData> rotationData = new global::System.Collections.Generic.List<global::EventCameraData.RotationData>();
+	public global::System.Collections.Generic.List<global::EventCameraData.ReturnDefault> returnDefault = new global::System.Collections.Generic.List<global::EventCameraData.ReturnDefault>();
+	public global::System.Collections.Generic.List<global::EventCameraData.ReturnDefault> returnDefaultRotate = new global::System.Collections.Generic.List<global::EventCameraData.ReturnDefault>();
+	public global::System.Collections.Generic.List<global::EventCameraData.FovData> fovData = new global::System.Collections.Generic.List<global::EventCameraData.FovData>();
+	public EventCameraData() { }
 	public enum EventType
 	{
 		Path = 0,
@@ -53,38 +53,38 @@ public class EventCameraData : global::UnityEngine.ScriptableObject
 	{
 		public int curveIndex;
 		public float workTime;
-		public float workTimeScale;
-		public ReturnDefault() { /*@B 0x60092B3*/ throw null; }
+		public float workTimeScale = 1f;
+		public ReturnDefault() { }
 	}
 	[global::System.Serializable]
 	public class RotationData
 	{
 		public int curveIndex;
 		public float workTime;
-		public float workTimeScale;
+		public float workTimeScale = 1f;
 		public bool isDefaultRotate;
 		public global::UnityEngine.Vector3 Angle1;
 		public global::UnityEngine.Vector3 Angle2;
-		public RotationData() { /*@B 0x60092B4*/ throw null; }
+		public RotationData() { }
 	}
 	[global::System.Serializable]
 	public class PathData2
 	{
 		public int curveIndex;
 		public float workTime;
-		public float workTimeScale;
+		public float workTimeScale = 1f;
 		public global::EventCameraData.VectorType vTypeStart;
 		public global::EventCameraData.VectorType vTypeEnd;
 		public global::UnityEngine.Vector3 Pos1;
 		public global::UnityEngine.Vector3 Pos2;
 		public global::UnityEngine.Vector3 Pos3;
-		public PathData2() { /*@B 0x60092B5*/ throw null; }
+		public PathData2() { }
 	}
 	[global::System.Serializable]
 	public class PathData
 	{
 		public float workTime;
-		public float workTimeScale;
+		public float workTimeScale = 1f;
 		public global::EventCameraData.VectorType vTypeStart;
 		public global::EventCameraData.VectorType vTypeEnd;
 		public global::UnityEngine.Vector3 startPosition;
@@ -93,7 +93,7 @@ public class EventCameraData : global::UnityEngine.ScriptableObject
 		public bool isDefaultRotate;
 		public global::UnityEngine.Vector3 startRotation;
 		public global::UnityEngine.Vector3 endRotation;
-		public PathData() { /*@B 0x60092B6*/ throw null; }
+		public PathData() { }
 	}
 	[global::System.Serializable]
 	public class FadeData
@@ -108,13 +108,13 @@ public class EventCameraData : global::UnityEngine.ScriptableObject
 	{
 		public float workTime;
 		public float workTimeScale;
-		public bool[] use;
-		public global::EventCameraData.DofValType[] typeStart;
-		public global::EventCameraData.DofValType[] typeEnd;
-		public float[] valStart;
-		public float[] valEnd;
+		public bool[] use = new bool[3];
+		public global::EventCameraData.DofValType[] typeStart = new global::EventCameraData.DofValType[3];
+		public global::EventCameraData.DofValType[] typeEnd = new global::EventCameraData.DofValType[3];
+		public float[] valStart = new float[3];
+		public float[] valEnd = new float[3];
 		public global::UnityEngine.Vector3 targetOffset;
-		public DofData() { /*@B 0x60092B8*/ throw null; }
+		public DofData() { }
 	}
 	[global::System.Serializable]
 	public class FovData
