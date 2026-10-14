@@ -11,10 +11,20 @@ public class TairyouHasseiPokeManager
 	private float _defaultScale;
 	private byte _loadingState;
 	private global::UnityEngine.GameObject _parent;
-	private global::ZoneID _targetZone;
+	private global::ZoneID _targetZone = global::ZoneID.UNKNOWN;
 	public static bool ForceStop;
 	private static global::TairyouHasseiPokeManager instance;
-	public TairyouHasseiPokeManager() { /*@B 0x600035F*/ throw null; }
+	public TairyouHasseiPokeManager()
+	{
+		if (instance == null)
+			instance = this;
+		_objects = new TairyouHasseiPoke[POKE_MAX];
+		_operation = null;
+		_defaultScale = 0.0f;
+		_parent = new GameObject();
+		_parent.name = "Tairyou";
+		_loadingState = 0;
+	}
 	public bool ZoneChange(bool walk) {
         if (_loadingState == 1)
             return false;
@@ -320,8 +330,70 @@ public class TairyouHasseiPokeManager
 
         return false;
     }
-	private bool CheckAttribute(ref global::UnityEngine.Vector2Int outgrid, out global::EffectFieldID effet) { /*@B 0x6000369*/ throw null; }
-	private bool ZoneCheck(ref global::UnityEngine.Vector2Int grid) { /*@B 0x600036A*/ throw null; }
+	private bool CheckAttribute(ref global::UnityEngine.Vector2Int outgrid, out global::EffectFieldID effet)
+	{
+		Vector2Int grid = EntityManager.activeFieldPlayer.gridPosition;
+		float height = EntityManager.activeFieldPlayer.Height;
+		int rx = RandomGroupWork.RandomValue(10000);
+		int ry = RandomGroupWork.RandomValue(10000);
+		if (rx % GRID_SIZE > 3 || ry % GRID_SIZE > 3)
+		{
+			int sign = (RandomGroupWork.RandomValue(10000) & 1) == 0 ? 1 : -1;
+			grid.x = grid.x + sign * (rx % GRID_SIZE);
+			sign = (RandomGroupWork.RandomValue(10000) & 1) == 0 ? 1 : -1;
+			grid.y = grid.y + sign * (ry % GRID_SIZE);
+			for (int i = 0; i < EntityManager.fieldObjects.Length; i++)
+			{
+				FieldObjectEntity entity = EntityManager.fieldObjects[i];
+				if (entity != null && entity.gridPosition == grid)
+				{
+					effet = global::EffectFieldID.NONE;
+					outgrid = Vector2Int.zero;
+					return false;
+				}
+			}
+			global::XLSXContent.MapAttributeExTable.SheetData attr = GameManager.GetAttributeEx(grid, height, false);
+			if (attr != null)
+			{
+				effet = attr.EffectWalkSunnyA;
+				if (AttributeID.EX_IsTairyouGrass(attr.AttributeEx))
+				{
+					for (int i = 0; i < _objects.Length; i++)
+					{
+						if (_objects[i].Pokemon != null && _objects[i].Pokemon.gridPosition == grid)
+						{
+							outgrid = Vector2Int.zero;
+							return false;
+						}
+					}
+					if (ZoneCheck(ref grid))
+					{
+						outgrid = grid;
+						return true;
+					}
+				}
+			}
+			effet = global::EffectFieldID.NONE;
+			outgrid = Vector2Int.zero;
+			return false;
+		}
+		effet = global::EffectFieldID.NONE;
+		outgrid = Vector2Int.zero;
+		return false;
+	}
+	private bool ZoneCheck(ref global::UnityEngine.Vector2Int grid)
+	{
+		global::XLSXContent.MapInfo.SheetZoneData zoneData = GameManager.mapInfo[(int)_targetZone];
+		if (zoneData == null)
+			return false;
+		if (zoneData.ZoneGrid != null)
+		{
+			uint index = (uint)(grid.y / 32 * zoneData.ZoneGrid.Width + grid.x / 32);
+			if (index >= zoneData.ZoneGrid.Length || _targetZone != zoneData.ZoneGrid[(int)index])
+				return false;
+		}
+		return true;
+	}
 	public static void ForceStopObject() {
         if (ForceStop)
             return;

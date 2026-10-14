@@ -3,16 +3,16 @@ using UnityEngine.EventSystems;
 using UnityEngine;
 public class StabilizationScrollRect : global::UnityEngine.UI.ScrollRect, global::UnityEngine.EventSystems.IPointerUpHandler, global::UnityEngine.EventSystems.IEventSystemHandler
 {
-	private static global::System.Collections.Generic.List<global::UnityEngine.EventSystems.RaycastResult> _raycastResults;
+	private static global::System.Collections.Generic.List<global::UnityEngine.EventSystems.RaycastResult> _raycastResults = new global::System.Collections.Generic.List<global::UnityEngine.EventSystems.RaycastResult>();
 	private global::UnityEngine.GameObject _lastPressedObject;
 	private global::UnityEngine.Vector2 _startingPoint;
 	private global::UnityEngine.Vector2 _offsetVector;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0.001f, 0.1f)]
-	private float _horizontalThreshold;
+	private float _horizontalThreshold = 0.01f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0.001f, 0.1f)]
-	private float _verticalThreshold;
+	private float _verticalThreshold = 0.01f;
 	private bool _isMoving;
 	private bool _isDragging;
 	// @02cabcf0
@@ -160,6 +160,6 @@ public class StabilizationScrollRect : global::UnityEngine.UI.ScrollRect, global
 		clone.useDragThreshold = e.useDragThreshold;
 		return clone;
 	}
-	public StabilizationScrollRect() { /*@B 0x60003D6*/ throw null; }
-	static StabilizationScrollRect() { /*@B 0x60003D7*/ throw null; }
+	public StabilizationScrollRect() { }
+	static StabilizationScrollRect() { }
 }

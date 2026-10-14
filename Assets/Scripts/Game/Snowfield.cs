@@ -2,22 +2,39 @@
 using UnityEngine;
 public class Snowfield : global::ProceduralPlane
 {
-	protected static readonly int ID_HEIGHT_MAP;
-	protected static readonly int ID_CORNER;
-	protected static readonly int ID_SNOWCOVER;
+	protected static readonly int ID_HEIGHT_MAP = Shader.PropertyToID("_HeightMap");
+	protected static readonly int ID_CORNER = Shader.PropertyToID("_Corner");
+	protected static readonly int ID_SNOWCOVER = Shader.PropertyToID("_Decrease");
 	public static global::Snowfield global;
 	[global::UnityEngine.SerializeField]
-	protected float _snowCover;
+	protected float _snowCover = 0.005f;
 	[global::UnityEngine.SerializeField]
 	protected global::UnityEngine.Texture2D _skierFootprintTexture;
 	[global::UnityEngine.SerializeField]
 	protected global::UnityEngine.Texture2D _heightMap;
 	[global::UnityEngine.SerializeField]
-	protected global::UnityEngine.Vector3Int _corner;
+	protected global::UnityEngine.Vector3Int _corner = global::UnityEngine.Vector3Int.zero;
 	private global::UnityEngine.Material transferMaterial;
-	public float snowCover { get { return this._snowCover; } set { /*@B 0x6000E67*/ throw null; } }
-	protected override void OnEnable() { /*@B 0x6000E68*/ throw null; }
-	protected override void OnDisable() { /*@B 0x6000E69*/ throw null; }
+	public float snowCover { get { return this._snowCover; } set { this._snowCover = value; } }
+	protected override void OnEnable()
+	{
+		global = this;
+		base.OnEnable();
+		if (_transferMaterial != null)
+		{
+			transferMaterial = new Material(_transferMaterial);
+		}
+	}
+	protected override void OnDisable()
+	{
+		base.OnDisable();
+		if (transferMaterial != null)
+		{
+			Object.DestroyImmediate(transferMaterial);
+			transferMaterial = null;
+		}
+		global = null;
+	}
 	// @02caae70 — written from the listing. The footprint pass only runs with a _footprintMaterial; the property-block /
 	// ExecuteCommandBuffer tail runs whenever there is an active field player.
 	protected override void OnUpdate() {
@@ -119,6 +136,6 @@ public class Snowfield : global::ProceduralPlane
         Graphics.ExecuteCommandBuffer(_commandBuffer);
 #endif
     }
-	public Snowfield() { /*@B 0x6000E6B*/ throw null; }
-	static Snowfield() { /*@B 0x6000E6C*/ throw null; }
+	public Snowfield() { }
+	static Snowfield() { }
 }

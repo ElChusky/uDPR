@@ -8,9 +8,9 @@ public class TradeSecurityController
 	private const int NETWORK_NOT_ERROR = 1;
 	private const int NETWORK_ERROR = 0;
 	private const int INVALID_MONS_NO = -1;
-	private static readonly global::Pml.MonsNo[] very_rare_monsno;
-	private static readonly global::Pml.MonsNo[] legend_rare_monsno;
-	private static readonly global::Pml.MonsNo[] sub_legend_rare_monsno;
+	private static readonly global::Pml.MonsNo[] very_rare_monsno = new global::Pml.MonsNo[] { global::Pml.MonsNo.MYUU, global::Pml.MonsNo.SEREBHI, global::Pml.MonsNo.ZIRAATI, global::Pml.MonsNo.DEOKISISU, global::Pml.MonsNo.FIONE, global::Pml.MonsNo.MANAFI, global::Pml.MonsNo.DAAKURAI, global::Pml.MonsNo.SHEIMI, global::Pml.MonsNo.ARUSEUSU };
+	private static readonly global::Pml.MonsNo[] legend_rare_monsno = new global::Pml.MonsNo[] { global::Pml.MonsNo.MYUUTUU, global::Pml.MonsNo.RUGIA, global::Pml.MonsNo.HOUOU, global::Pml.MonsNo.KAIOOGA, global::Pml.MonsNo.GURAADON, global::Pml.MonsNo.REKKUUZA, global::Pml.MonsNo.DHIARUGA, global::Pml.MonsNo.PARUKIA, global::Pml.MonsNo.GIRATHINA };
+	private static readonly global::Pml.MonsNo[] sub_legend_rare_monsno = new global::Pml.MonsNo[] { global::Pml.MonsNo.HURIIZAA, global::Pml.MonsNo.SANDAA, global::Pml.MonsNo.FAIYAA, global::Pml.MonsNo.RAIKOU, global::Pml.MonsNo.ENTEI, global::Pml.MonsNo.SUIKUN, global::Pml.MonsNo.REZIROKKU, global::Pml.MonsNo.REZIAISU, global::Pml.MonsNo.REZISUTIRU, global::Pml.MonsNo.RATHIASU, global::Pml.MonsNo.RATHIOSU, global::Pml.MonsNo.YUKUSII, global::Pml.MonsNo.EMURITTO, global::Pml.MonsNo.AGUNOMU, global::Pml.MonsNo.HIIDORAN, global::Pml.MonsNo.REZIGIGASU, global::Pml.MonsNo.KURESERIA };
 	public global::TradeSecurityController.TradeParent tradeParent;
 	public global::Pml.MonsNo myMonsNo;
 	public global::Pml.MonsNo targetMonsNo;
@@ -205,7 +205,7 @@ public class TradeSecurityController
 		PlayerWork.SetPlayerGrid(grid);
 	}
 	public TradeSecurityController() { }
-	static TradeSecurityController() { /*@B 0x6001267*/ throw null; }
+	static TradeSecurityController() { }
 	public enum TradeParent
 	{
 		NONE = 0,

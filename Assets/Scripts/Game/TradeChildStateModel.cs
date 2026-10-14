@@ -8,5 +8,5 @@ public class TradeChildStateModel : global::TradeStateModel
 	protected override void SendPokeData() { }
 	protected override void WriteSaveData() { }
 	public override void OnUpdate(float deltaTime) { }
-	public TradeChildStateModel() { /*@B 0x600124D*/ throw null; }
+	public TradeChildStateModel() { }
 }
