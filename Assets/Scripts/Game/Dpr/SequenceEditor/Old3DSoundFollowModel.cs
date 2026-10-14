@@ -12,6 +12,15 @@ namespace Dpr.SequenceEditor
 		public bool isScl;
 		public global::UnityEngine.Vector3 pos;
 		public global::UnityEngine.Vector3 rot;
-		public Old3DSoundFollowModel(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049F1*/ throw null; }
+		public Old3DSoundFollowModel(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			type = Macro.Parse_SEQ_DEF_FOLLOW(macro.GetValue("type"));
+			grpNo = Macro.ParseInt(macro.GetValue("grpNo"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			isPos = Macro.ParseBool(macro.GetValue("isPos"), 1);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 1);
+			isScl = Macro.ParseBool(macro.GetValue("isScl"), 1);
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			rot = Macro.ParseVector3(macro.GetValue("rot"));
+		}
 	}
 }

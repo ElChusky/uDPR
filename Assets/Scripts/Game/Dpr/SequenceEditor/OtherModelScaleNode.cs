@@ -11,6 +11,14 @@ namespace Dpr.SequenceEditor
 		public bool relative;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool origin;
-		public OtherModelScaleNode(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AA4*/ throw null; }
+		public OtherModelScaleNode(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			node = Macro.Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			reset = Macro.ParseBool(macro.GetValue("reset"), 0);
+			scale = Macro.ParseVector3(macro.GetValue("scale"), 1f, 1f, 1f);
+			relative = Macro.ParseBool(macro.GetValue("relative"), 0);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			origin = Macro.ParseBool(macro.GetValue("origin"), 0);
+		}
 	}
 }

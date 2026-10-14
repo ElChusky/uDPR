@@ -12,6 +12,15 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 pos;
 		public global::UnityEngine.Vector3 rot;
 		public bool isAnimScl;
-		public ParticleFollowModel(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049AF*/ throw null; }
+		public ParticleFollowModel(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			grpNo = Macro.ParseInt(macro.GetValue("grpNo"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			isPos = Macro.ParseBool(macro.GetValue("isPos"), 1);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 1);
+			isScl = Macro.ParseBool(macro.GetValue("isScl"), 1);
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			rot = Macro.ParseVector3(macro.GetValue("rot"));
+			isAnimScl = Macro.ParseBool(macro.GetValue("isAnimScl"), 0);
+		}
 	}
 }

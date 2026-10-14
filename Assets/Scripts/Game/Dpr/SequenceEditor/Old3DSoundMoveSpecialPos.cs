@@ -9,6 +9,12 @@ namespace Dpr.SequenceEditor
 		public bool isFlip;
 		public bool isRot;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public Old3DSoundMoveSpecialPos(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049EE*/ throw null; }
+		public Old3DSoundMoveSpecialPos(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			pos = Macro.Parse_SEQ_DEF_SPPOS(macro.GetValue("pos"));
+			ofs = Macro.ParseVector3(macro.GetValue("ofs"));
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), 1);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 1);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

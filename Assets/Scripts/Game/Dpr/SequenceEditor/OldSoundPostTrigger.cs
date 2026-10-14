@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class OldSoundPostTrigger : global::Dpr.SequenceEditor.Macro
 	{
 		public string trigger;
-		public OldSoundPostTrigger(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049E0*/ throw null; }
+		public OldSoundPostTrigger(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trigger = Macro.ParseString(macro.GetValue("trigger"));
+		}
 	}
 }

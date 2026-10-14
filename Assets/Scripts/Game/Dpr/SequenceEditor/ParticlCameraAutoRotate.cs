@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public float length;
 		public global::UnityEngine.Vector3 ofs;
 		public bool subCamera;
-		public ParticlCameraAutoRotate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049B4*/ throw null; }
+		public ParticlCameraAutoRotate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			length = Macro.ParseFloat(macro.GetValue("length"));
+			ofs = Macro.ParseVector3(macro.GetValue("ofs"));
+			subCamera = Macro.ParseBool(macro.GetValue("subCamera"), 0);
+		}
 	}
 }

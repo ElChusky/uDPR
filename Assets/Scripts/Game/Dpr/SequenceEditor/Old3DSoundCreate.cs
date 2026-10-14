@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class Old3DSoundCreate : global::Dpr.SequenceEditor.Macro
 	{
 		public string regist;
-		public Old3DSoundCreate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049E7*/ throw null; }
+		public Old3DSoundCreate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			regist = Macro.ParseString(macro.GetValue("regist"));
+		}
 	}
 }
