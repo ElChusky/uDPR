@@ -8,7 +8,15 @@ namespace Dpr.Field.Walking
 		public global::System.Action OnPlayerNear;
 		public global::Dpr.FureaiHiroba.Emoticon emoticon;
 		public global::Dpr.FureaiHiroba.FureaiPokeModel fureaiModel { get => (FureaiPokeModel)charaModel; }
-		public AIFureaiModel(global::Dpr.FureaiHiroba.FureaiPokeController controller) : base(default(global::Dpr.Field.Walking.WalkingCharacterController)) { /*@B 0x6008A01*/ throw null; }
-		public override void Destroy() { /*@B 0x6008A02*/ throw null; }
+		public AIFureaiModel(global::Dpr.FureaiHiroba.FureaiPokeController controller) : base(controller) {
+			sanpoModel = controller.model.sanpoModel;
+			emoticon = controller.emoticon;
+			OnPlayerNear = controller.PlayerNear;
+		}
+		public override void Destroy() {
+			base.Destroy();
+			OnPlayerNear = null;
+			emoticon = null;
+		}
 	}
 }
