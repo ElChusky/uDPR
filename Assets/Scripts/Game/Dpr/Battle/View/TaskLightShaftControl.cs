@@ -3,6 +3,6 @@ namespace Dpr.Battle.View
 {
 	public sealed class TaskLightShaftControl : global::Dpr.Battle.View.TaskPostEffectCotrol
 	{
-		public TaskLightShaftControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject) : base(default(global::Dpr.SequenceEditor.SequenceCameraObject)) { /*@B 0x600604F*/ throw null; }
+		public TaskLightShaftControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject) : base(cameraObject) { }
 	}
 }

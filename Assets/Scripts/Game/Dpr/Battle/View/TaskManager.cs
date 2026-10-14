@@ -10,8 +10,14 @@ namespace Dpr.Battle.View
 		private int _taskNum;
 		private global::Dpr.Battle.View.Task _iPtrTaskFirst;
 		private global::Dpr.Battle.View.Task _iPtrNowChain;
-		public bool IsAllFinished { get { /*@B 0x6005FC6*/ throw null; } }
-		public TaskManager(int taskCnt = 24) { /*@B 0x6005FC7*/ throw null; }
+		public bool IsAllFinished { get { return _taskNum == 0; } }
+		public TaskManager(int taskCnt = 24) {
+			// Task() and Task.Clear(Task) inlined (01e86020); taskCnt is never read
+			_iPtrTaskFirst = new Task();
+			_iPtrTaskFirst.Clear(_iPtrTaskFirst);
+			_iPtrTaskFirst.Parent = this;
+			_suicideFlag = false;
+		}
 		public void Dispose() {
 			if (_iPtrTaskFirst != null)
 				_iPtrTaskFirst.Dispose();

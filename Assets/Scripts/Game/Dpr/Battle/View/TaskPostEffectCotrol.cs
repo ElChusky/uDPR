@@ -4,9 +4,21 @@ namespace Dpr.Battle.View
 	public class TaskPostEffectCotrol : global::Dpr.Battle.View.Task
 	{
 		protected global::Dpr.SequenceEditor.SequenceCameraObject _cameraObject;
-		public TaskPostEffectCotrol(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject) { /*@B 0x6006038*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006039*/ throw null; }
-		protected override void OnUpdate(int frame, float raito) { /*@B 0x600603A*/ throw null; }
-		protected virtual global::Dpr.Battle.View.PfxParam OnUpdate(int frame, float raito, ref global::Dpr.Battle.View.PfxParam pfxParam) { /*@B 0x600603B*/ throw null; }
+		public TaskPostEffectCotrol(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject) {
+			_cameraObject = cameraObject;
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _cameraObject);
+		}
+		protected override void OnUpdate(int frame, float raito) {
+			if (_cameraObject == null)
+				return;
+			// GetPostEffects() / GetPfxParam() inlined (0xb0-byte copy from +0x58 -> +0x10)
+			global::Dpr.Battle.View.PfxParam pfxParam = _cameraObject.GetPostEffects().GetPfxParam();
+			_cameraObject.GetPostEffects().SetPfxParam(OnUpdate(frame, raito, ref pfxParam), true);
+		}
+		protected virtual global::Dpr.Battle.View.PfxParam OnUpdate(int frame, float raito, ref global::Dpr.Battle.View.PfxParam pfxParam) {
+			return pfxParam;
+		}
 	}
 }

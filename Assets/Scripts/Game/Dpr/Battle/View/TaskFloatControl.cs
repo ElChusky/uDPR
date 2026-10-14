@@ -4,9 +4,15 @@ namespace Dpr.Battle.View
 {
 	public sealed class TaskFloatControl : global::Dpr.Battle.View.TaskValueControl<float>
 	{
-		protected override bool IsFinishCondition { get { /*@B 0x6005FEC*/ throw null; } }
-		public TaskFloatControl(int lifeTime, global::DG.Tweening.Ease easingType, global::System.Action<float> onUpdate) : base(default(float), default(float), default(global::System.Action<float>)) { /*@B 0x6005FED*/ throw null; }
-		public TaskFloatControl(float from, float to, int lifeTime, global::DG.Tweening.Ease easingType, global::System.Action<float> onUpdate) : base(default(float), default(float), default(global::System.Action<float>)) { /*@B 0x6005FEE*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskFloatControl(int lifeTime, global::DG.Tweening.Ease easingType, global::System.Action<float> onUpdate) : base(0f, 1f, onUpdate) {
+			_lifeTime = lifeTime;
+			_easingType = easingType;
+		}
+		public TaskFloatControl(float from, float to, int lifeTime, global::DG.Tweening.Ease easingType, global::System.Action<float> onUpdate) : base(from, to, onUpdate) {
+			_lifeTime = lifeTime;
+			_easingType = easingType;
+		}
 		protected override void OnUpdate(int frame, float raito) {
             _onUpdate?.Invoke(DOVirtual.EasedValue(_from, _to, raito, _easingType));
         }

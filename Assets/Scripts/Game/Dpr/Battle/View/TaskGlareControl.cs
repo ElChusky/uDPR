@@ -3,6 +3,8 @@ namespace Dpr.Battle.View
 {
 	public sealed class TaskGlareControl : global::Dpr.Battle.View.TaskPostEffectCotrol
 	{
-		public TaskGlareControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject, float luminance, float threshold, int lifeTime, global::DG.Tweening.Ease easingType) : base(default(global::Dpr.SequenceEditor.SequenceCameraObject)) { /*@B 0x600603C*/ throw null; }
+		public TaskGlareControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject, float luminance, float threshold, int lifeTime, global::DG.Tweening.Ease easingType) : base(cameraObject) {
+			// shipped: luminance / threshold / lifeTime / easingType are never stored (01e85dd0)
+		}
 	}
 }

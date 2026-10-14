@@ -11,9 +11,22 @@ namespace Dpr.Battle.View
 		private float _len;
 		private float _startRot;
 		private float _endRot;
-		protected override bool IsFinishCondition { get { /*@B 0x6006013*/ throw null; } }
-		public TaskCameraRotatePos(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, global::UnityEngine.Vector3 pos, global::UnityEngine.Vector3 trg, float rotRad, int lifeTime, global::DG.Tweening.Ease easingType) { /*@B 0x6006014*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6006015*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskCameraRotatePos(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, global::UnityEngine.Vector3 pos, global::UnityEngine.Vector3 trg, float rotRad, int lifeTime, global::DG.Tweening.Ease easingType) {
+			_iPtrBtlvCameraSystem = pBtlvCameraSystem;
+			_pos = pos;
+			_lifeTime = lifeTime;
+			_easingType = easingType;
+			Vector3 ofs = Mathe.Offset(trg, pos);
+			float rot = Mathe.Atan2(ofs.x, ofs.z);
+			_startRot = -rot;
+			_endRot = rotRad - rot;
+			_trgY = trg.y;
+			_len = Mathe.Length(ofs.x, ofs.z);
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _iPtrBtlvCameraSystem);
+		}
 		protected override void OnUpdate(int frame, float raito) {
 			float rot = DOVirtual.EasedValue(_startRot, _endRot, raito, _easingType);
 			float x = 0.0f;

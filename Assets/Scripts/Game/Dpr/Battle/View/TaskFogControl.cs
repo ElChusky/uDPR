@@ -3,6 +3,6 @@ namespace Dpr.Battle.View
 {
 	public sealed class TaskFogControl : global::Dpr.Battle.View.TaskPostEffectCotrol
 	{
-		public TaskFogControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject) : base(default(global::Dpr.SequenceEditor.SequenceCameraObject)) { /*@B 0x600604E*/ throw null; }
+		public TaskFogControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject) : base(cameraObject) { }
 	}
 }

@@ -13,8 +13,41 @@ namespace Dpr.Battle.View
 		public global::poketool.PokeGType gType;
 		public int adjustHeight;
 		public int speciesValue;
-		public SimpleParam(global::Pml.MonsNo monsNo = (global::Pml.MonsNo)(0), int formNo = 0, global::Pml.Sex sex = (global::Pml.Sex)(0), bool isRare = false, bool isEgg = false, float scale = 1f, int perRand = 0, global::poketool.PokeGType gType = (global::poketool.PokeGType)(0), int adjustHeight = 100, int speciesValue = -1) { /*@B 0x6005EE5*/ throw null; }
-		public SimpleParam(global::XLSXContent.PokemonInfo.SheetCatalog catalog, bool isContest) { /*@B 0x6005EE6*/ throw null; }
-		public SimpleParam(global::Dpr.Battle.View.SimpleParam other) { /*@B 0x6005EE7*/ throw null; }
+		public SimpleParam(global::Pml.MonsNo monsNo = (global::Pml.MonsNo)(0), int formNo = 0, global::Pml.Sex sex = (global::Pml.Sex)(0), bool isRare = false, bool isEgg = false, float scale = 1f, int perRand = 0, global::poketool.PokeGType gType = (global::poketool.PokeGType)(0), int adjustHeight = 100, int speciesValue = -1) {
+			this.monsNo = monsNo;
+			this.formNo = formNo;
+			this.sex = sex;
+			this.isRare = isRare;
+			this.isEgg = isEgg;
+			this.scale = scale;
+			this.perRand = perRand;
+			this.gType = gType;
+			this.adjustHeight = adjustHeight;
+			this.speciesValue = speciesValue;
+		}
+		public SimpleParam(global::XLSXContent.PokemonInfo.SheetCatalog catalog, bool isContest) {
+			monsNo = catalog.MonsNo;
+			formNo = catalog.FormNo;
+			sex = catalog.Sex;
+			isRare = catalog.Rare;
+			isEgg = false;
+			scale = isContest ? catalog.ContestScale : catalog.BattleScale;
+			perRand = 0;
+			gType = (global::poketool.PokeGType)0;
+			adjustHeight = catalog.BattleAjustHeight;
+			speciesValue = 0;
+		}
+		public SimpleParam(global::Dpr.Battle.View.SimpleParam other) {
+			monsNo = other.monsNo;
+			formNo = other.formNo;
+			sex = other.sex;
+			isRare = other.isRare;
+			isEgg = other.isEgg;
+			scale = other.scale;
+			perRand = other.perRand;
+			gType = other.gType;
+			adjustHeight = other.adjustHeight;
+			speciesValue = other.speciesValue;
+		}
 	}
 }

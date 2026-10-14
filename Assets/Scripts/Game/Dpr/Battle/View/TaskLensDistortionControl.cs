@@ -3,6 +3,6 @@ namespace Dpr.Battle.View
 {
 	public sealed class TaskLensDistortionControl : global::Dpr.Battle.View.TaskPostEffectCotrol
 	{
-		public TaskLensDistortionControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject) : base(default(global::Dpr.SequenceEditor.SequenceCameraObject)) { /*@B 0x6006045*/ throw null; }
+		public TaskLensDistortionControl(global::Dpr.SequenceEditor.SequenceCameraObject cameraObject) : base(cameraObject) { }
 	}
 }

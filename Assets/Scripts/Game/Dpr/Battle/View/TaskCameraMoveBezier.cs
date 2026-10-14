@@ -9,9 +9,19 @@ namespace Dpr.Battle.View
 		private global::UnityEngine.Vector3[] _points;
 		private bool[] _vectorElems;
 		private global::UnityEngine.Vector3 _originPos;
-		protected override bool IsFinishCondition { get { /*@B 0x600601B*/ throw null; } }
-		public TaskCameraMoveBezier(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, bool isRelative, global::UnityEngine.Vector3[] points, bool[] vectorElems, int lifeTime, global::DG.Tweening.Ease easingType) { /*@B 0x600601C*/ throw null; }
-		protected override void OnDispose() { /*@B 0x600601D*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskCameraMoveBezier(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, bool isRelative, global::UnityEngine.Vector3[] points, bool[] vectorElems, int lifeTime, global::DG.Tweening.Ease easingType) {
+			_camera = pBtlvCameraSystem;
+			_isReletive = isRelative;
+			_points = points;
+			_vectorElems = vectorElems;
+			_lifeTime = lifeTime;
+			_easingType = easingType;
+			_originPos = pBtlvCameraSystem.GetPosition();
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _camera);
+		}
 		protected override void OnUpdate(int frame, float raito) {
 			Vector3 pos = Dpr.Spline.Bezier.CubicBezier(_points[0], _points[1], _points[2], _points[3], raito);
 			if (_isReletive)

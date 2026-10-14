@@ -9,9 +9,20 @@ namespace Dpr.Battle.View
 		private global::UnityEngine.Vector3 _ofs;
 		private global::System.Action<global::UnityEngine.Vector3> _onPosUpdate;
 		private global::System.Action<global::UnityEngine.Vector3> _onRotUpdate;
-		protected override bool IsFinishCondition { get { /*@B 0x6006009*/ throw null; } }
-		public TaskObjectCameraAutoRotate(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, float len, global::UnityEngine.Vector3 ofs, int lifeTime, global::System.Action<global::UnityEngine.Vector3> onPosUpdate, global::System.Action<global::UnityEngine.Vector3> onRotUpdate) { /*@B 0x600600A*/ throw null; }
-		protected override void OnDispose() { /*@B 0x600600B*/ throw null; }
+		protected override bool IsFinishCondition { get { return _lifeTime <= _frame; } }
+		public TaskObjectCameraAutoRotate(global::Dpr.SequenceEditor.SequenceCameraObject pBtlvCameraSystem, float len, global::UnityEngine.Vector3 ofs, int lifeTime, global::System.Action<global::UnityEngine.Vector3> onPosUpdate, global::System.Action<global::UnityEngine.Vector3> onRotUpdate) {
+			_iPtrBtlvCamraSystem = pBtlvCameraSystem;
+			_len = len;
+			_ofs = ofs;
+			_lifeTime = lifeTime;
+			_onPosUpdate = onPosUpdate;
+			_onRotUpdate = onRotUpdate;
+			_lifeTime = lifeTime;
+		}
+		protected override void OnDispose() {
+			Mem.Del(ref _onPosUpdate);
+			Mem.Del(ref _onRotUpdate);
+		}
 		protected override void OnUpdate(int frame, float raito) {
 			Vector3 pos = Vector3.zero;
 			Vector3 rot = Vector3.zero;
