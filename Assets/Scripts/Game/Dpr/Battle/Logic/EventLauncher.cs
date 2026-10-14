@@ -1521,13 +1521,81 @@ namespace Dpr.Battle.Logic
             m_pEventSystem.CallEvent(EventID.CHECK_RECOVER_MSG_CUSTOM);
             m_pEventSystem.EVENTVAR_Pop();
         }
-		public void Event_GetWazaSickAddStr(global::Pml.WazaData.WazaSick sick, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM defender, global::Dpr.Battle.Logic.StrParam str) { /*@B 0x6006AF3*/ throw null; }
-		public void Event_WazaSickCont(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Pml.WazaData.WazaSick sick, global::Dpr.Battle.Logic.BTL_SICKCONTOBJ sickCont) { /*@B 0x6006AF4*/ throw null; }
-		public bool Event_CheckAddSickFailStdSkip(global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaData.WazaSick sick, global::Dpr.Battle.Logic.SickCause cause) { /*@B 0x6006AF5*/ throw null; }
-		public bool Event_WazaSick_CheckFail(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Pml.WazaData.WazaSick sick, global::Dpr.Battle.Logic.SickCause cause, ref bool bCallFailedEvent) { /*@B 0x6006AF6*/ throw null; }
-		public void Event_AddSick_Failed(global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaData.WazaSick sick, global::Dpr.Battle.Logic.SickCause cause, uint wazaSerial) { /*@B 0x6006AF7*/ throw null; }
-		public void Event_PokeSickFixed(global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.PokePara.Sick sick, global::Dpr.Battle.Logic.BTL_SICKCONT inSickCont) { /*@B 0x6006AF8*/ throw null; }
-		public void Event_WazaSickFixed(global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaData.WazaSick sick) { /*@B 0x6006AF9*/ throw null; }
+		public void Event_GetWazaSickAddStr(global::Pml.WazaData.WazaSick sick, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM defender, global::Dpr.Battle.Logic.StrParam str) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, defender.GetID());
+            m_pEventSystem.EVENTVAR_SetWorkAddress(EventVar.Label.WORK_ADRS, str);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.SICKID, (int)sick);
+            m_pEventSystem.CallEvent(EventID.WAZASICK_STR);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public void Event_WazaSickCont(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Pml.WazaData.WazaSick sick, global::Dpr.Battle.Logic.BTL_SICKCONTOBJ sickCont) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, target.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.SICKID, (int)sick);
+            m_pEventSystem.EVENTVAR_SetWorkAddress(EventVar.Label.SICK_CONT_ADRS, sickCont);
+            m_pEventSystem.CallEvent(EventID.WAZASICK_PARAM);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public bool Event_CheckAddSickFailStdSkip(global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaData.WazaSick sick, global::Dpr.Battle.Logic.SickCause cause) {
+            if (attacker == null)
+                return false;
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, target.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.SICKID, (int)sick);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.SICK_CAUSE, (int)cause);
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.GEN_FLAG, FALSE);
+            m_pEventSystem.CallEvent(EventID.CHECK_ADDSICK_FAIL_STD_SKIP);
+            bool result = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.GEN_FLAG) != FALSE;
+            m_pEventSystem.EVENTVAR_Pop();
+            return result;
+        }
+		public bool Event_WazaSick_CheckFail(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Pml.WazaData.WazaSick sick, global::Dpr.Battle.Logic.SickCause cause, ref bool bCallFailedEvent) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker != null ? attacker.GetID() : PokeID.INVALID);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, target.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.SICKID, (int)sick);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.SICK_CAUSE, (int)cause);
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.FAIL_FLAG, FALSE);
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.ALMOST_FLAG, FALSE);
+            m_pEventSystem.CallEvent(EventID.ADDSICK_CHECKFAIL);
+            int failFlag = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.FAIL_FLAG);
+            int almostFlag = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.ALMOST_FLAG);
+            bCallFailedEvent = almostFlag != FALSE;
+            m_pEventSystem.EVENTVAR_Pop();
+            return failFlag != FALSE;
+        }
+		public void Event_AddSick_Failed(global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaData.WazaSick sick, global::Dpr.Battle.Logic.SickCause cause, uint wazaSerial) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, target.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker != null ? attacker.GetID() : PokeID.INVALID);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.SICKID, (int)sick);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.SICK_CAUSE, (int)cause);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.WAZA_SERIAL, (int)wazaSerial);
+            m_pEventSystem.CallEvent(EventID.ADDSICK_FAILED);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public void Event_PokeSickFixed(global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.PokePara.Sick sick, global::Dpr.Battle.Logic.BTL_SICKCONT inSickCont) {
+            BTL_SICKCONTOBJ sickCont = new BTL_SICKCONTOBJ(inSickCont);
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, target.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker != null ? attacker.GetID() : PokeID.INVALID);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.SICKID, (int)sick);
+            m_pEventSystem.EVENTVAR_SetWorkAddress(EventVar.Label.SICK_CONT_ADRS, sickCont);
+            m_pEventSystem.CallEvent(EventID.POKESICK_FIXED);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public void Event_WazaSickFixed(global::Dpr.Battle.Logic.BTL_POKEPARAM target, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaData.WazaSick sick) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, target.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker != null ? attacker.GetID() : PokeID.INVALID);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.SICKID, (int)sick);
+            m_pEventSystem.CallEvent(EventID.WAZASICK_FIXED);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
 		public bool Event_CheckKodawariFactorExist(global::Dpr.Battle.Logic.BTL_POKEPARAM poke) {
             m_pEventSystem.EVENTVAR_Push();
             m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, poke.GetID());
@@ -1538,12 +1606,71 @@ namespace Dpr.Battle.Logic
 
             return enableFlag == FALSE;
         }
-		public void Event_TokuseiDisabled(global::Dpr.Battle.Logic.BTL_POKEPARAM target) { /*@B 0x6006AFB*/ throw null; }
-		public bool Event_CheckAddRankEffectOccur(global::Dpr.Battle.Logic.WazaParam wazaParam, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM target) { /*@B 0x6006AFC*/ throw null; }
-		public ushort Event_CheckPushOutEffectNo(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaNo waza) { /*@B 0x6006AFD*/ throw null; }
-		public void Event_CheckPushOutFail(out bool isFailed, out bool isFailMessageDisplayed, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM target) { /*@B 0x6006AFE*/ throw null; }
-		public byte Event_WazaWeatherTurnUp(global::Dpr.Battle.Logic.BtlWeather weather, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker) { /*@B 0x6006AFF*/ throw null; }
-		public bool Event_CheckChangeWeather(global::Dpr.Battle.Logic.BtlWeather weather, ref byte turn) { /*@B 0x6006B00*/ throw null; }
+		public void Event_TokuseiDisabled(global::Dpr.Battle.Logic.BTL_POKEPARAM target) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, target.GetID());
+            m_pEventSystem.CallEvent_Force(EventID.TOKUSEI_DISABLE);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public bool Event_CheckAddRankEffectOccur(global::Dpr.Battle.Logic.WazaParam wazaParam, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM target) {
+            byte per = (byte)WAZADATA.GetRankEffectPer(wazaParam.wazaID, 0);
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, target.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.WAZAID, (int)wazaParam.wazaID);
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.FAIL_FLAG, FALSE);
+            m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.ADD_PER, per);
+            m_pEventSystem.CallEvent(EventID.ADD_RANK_TARGET);
+            bool failFlag = (byte)m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.FAIL_FLAG) != FALSE;
+            per = (byte)m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.ADD_PER);
+            m_pEventSystem.EVENTVAR_Pop();
+            if (failFlag)
+                return false;
+            return (byte)calc.GetRand(100) < per;
+        }
+		public ushort Event_CheckPushOutEffectNo(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaNo waza) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.EFFECT_NO, 0);
+            m_pEventSystem.CallEvent(EventID.PUSHOUT_EFFECT_NO);
+            int effectNo = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.EFFECT_NO);
+            m_pEventSystem.EVENTVAR_Pop();
+            return (ushort)effectNo;
+        }
+		public void Event_CheckPushOutFail(out bool isFailed, out bool isFailMessageDisplayed, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM target) {
+            isFailed = false;
+            isFailMessageDisplayed = false;
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.FAIL_FLAG, isFailed ? TRUE : FALSE);
+            m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.MESSAGE_DISPLAYED, isFailMessageDisplayed ? TRUE : FALSE);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, target.GetID());
+            m_pEventSystem.CallEvent(EventID.CHECK_PUSHOUT);
+            isFailed = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.FAIL_FLAG) != FALSE;
+            isFailMessageDisplayed = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.MESSAGE_DISPLAYED) != FALSE;
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public byte Event_WazaWeatherTurnUp(global::Dpr.Battle.Logic.BtlWeather weather, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.WEATHER, (int)weather);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.TURN_COUNT, 0);
+            m_pEventSystem.CallEvent(EventID.WAZA_WEATHER_TURNCNT);
+            int turn = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.TURN_COUNT);
+            m_pEventSystem.EVENTVAR_Pop();
+            return (byte)turn;
+        }
+		public bool Event_CheckChangeWeather(global::Dpr.Battle.Logic.BtlWeather weather, ref byte turn) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.WEATHER, (int)weather);
+            m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.TURN_COUNT, turn);
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.FAIL_FLAG, FALSE);
+            m_pEventSystem.CallEvent(EventID.WEATHER_CHANGE);
+            m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.WEATHER);
+            turn = (byte)m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.TURN_COUNT);
+            int failFlag = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.FAIL_FLAG);
+            m_pEventSystem.EVENTVAR_Pop();
+            return failFlag == FALSE;
+        }
 		public void Event_ChangeGroundBefore(byte pokeID, byte ground, ref global::Dpr.Battle.Logic.BTL_SICKCONT contParam) {
             m_pEventSystem.EVENTVAR_Push();
             m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, pokeID);
@@ -1560,7 +1687,13 @@ namespace Dpr.Battle.Logic
 
             m_pEventSystem.EVENTVAR_Pop();
         }
-		public void Event_ChangeGroundAfter(byte pokeID, byte ground) { /*@B 0x6006B02*/ throw null; }
+		public void Event_ChangeGroundAfter(byte pokeID, byte ground) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, pokeID);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.GROUND, ground);
+            m_pEventSystem.CallEvent(EventID.CHANGE_GROUND_AFTER);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
 		public bool Event_FieldEffectCall(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaNo waza) {
             m_pEventSystem.EVENTVAR_Push();
             m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.POKEID_ATK, attacker.GetID());
@@ -1572,7 +1705,13 @@ namespace Dpr.Battle.Logic
 
             return successFlag != FALSE;
         }
-		public void Event_ChangeFieldAfter(byte pokeID, global::Dpr.Battle.Logic.EffectType field) { /*@B 0x6006B04*/ throw null; }
+		public void Event_ChangeFieldAfter(byte pokeID, global::Dpr.Battle.Logic.EffectType field) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, pokeID);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.FIELD, (int)field);
+            m_pEventSystem.CallEvent(EventID.CHANGE_FIELD_AFTER);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
 		public void Event_WazaDamageReaction(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM defender, global::Dpr.Battle.Logic.WazaParam wazaParam, global::Pml.Battle.TypeAffinity.AffinityID aff, uint damage, bool fCritical, bool fMigawari) {
             byte defPokeID = defender.GetID();
 
@@ -1618,7 +1757,12 @@ namespace Dpr.Battle.Logic
 
             return successFlag != FALSE;
         }
-		public void Event_TurnCheck(byte pokeID, global::Dpr.Battle.Logic.EventID event_type) { /*@B 0x6006B07*/ throw null; }
+		public void Event_TurnCheck(byte pokeID, global::Dpr.Battle.Logic.EventID event_type) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, pokeID);
+            m_pEventSystem.CallEvent(event_type);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
 		public uint Event_SickDamage(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, global::Pml.WazaData.WazaSick sickID, uint damage) {
             m_pEventSystem.EVENTVAR_Push();
             m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, bpp.GetID());
@@ -1630,11 +1774,46 @@ namespace Dpr.Battle.Logic
 
             return damage;
         }
-		public int Event_CheckWeatherReaction(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, global::Dpr.Battle.Logic.BtlWeather weather, uint damage) { /*@B 0x6006B09*/ throw null; }
-		public void Event_PokeDeadActionAfter(byte deadPokeID) { /*@B 0x6006B0A*/ throw null; }
-		public void Event_PokeDeadAfter(byte deadPokeID) { /*@B 0x6006B0B*/ throw null; }
-		public void Event_BeforeDead(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp) { /*@B 0x6006B0C*/ throw null; }
-		public void Event_AfterCritical(global::Dpr.Battle.Logic.WazaParam wazaParam, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM defender) { /*@B 0x6006B0D*/ throw null; }
+		public int Event_CheckWeatherReaction(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, global::Dpr.Battle.Logic.BtlWeather weather, uint damage) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, bpp.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.WEATHER, (int)weather);
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.FAIL_FLAG, FALSE);
+            m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.DAMAGE, (int)damage);
+            m_pEventSystem.CallEvent(EventID.WEATHER_REACTION);
+            int result = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.DAMAGE);
+            bool failFlag = (byte)m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.FAIL_FLAG) != FALSE;
+            m_pEventSystem.EVENTVAR_Pop();
+            if (failFlag)
+                result = 0;
+            return result;
+        }
+		public void Event_PokeDeadActionAfter(byte deadPokeID) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.POKEID, deadPokeID);
+            m_pEventSystem.CallEvent(EventID.DEAD_ACTION_AFTER);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public void Event_PokeDeadAfter(byte deadPokeID) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.POKEID, deadPokeID);
+            m_pEventSystem.CallEvent(EventID.DEAD_AFTER);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public void Event_BeforeDead(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.POKEID, bpp.GetID());
+            m_pEventSystem.CallEvent(EventID.NOTIFY_DEAD);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public void Event_AfterCritical(global::Dpr.Battle.Logic.WazaParam wazaParam, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM defender) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, defender.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.WAZA_TOUCH_FLAG, wazaParam.touchFlag ? TRUE : FALSE);
+            m_pEventSystem.CallEvent(EventID.AFTER_CRITICAL);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
 		public bool Event_GetReqWazaParam(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaNo orgWazaId, global::Dpr.Battle.Logic.BtlPokePos orgTargetPos, global::Dpr.Battle.Logic.REQWAZA_WORK reqWaza) {
             m_pEventSystem.EVENTVAR_Push();
             m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, attacker.GetID());
@@ -1662,7 +1841,13 @@ namespace Dpr.Battle.Logic
 
             return (byte)priority;
         }
-		public void Event_BeforeFight(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, global::Pml.WazaNo waza) { /*@B 0x6006B10*/ throw null; }
+		public void Event_BeforeFight(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, global::Pml.WazaNo waza) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.POKEID, bpp.GetID());
+            m_pEventSystem.EVENTVAR_SetValue(EventVar.Label.WAZAID, (int)waza);
+            m_pEventSystem.CallEvent(EventID.BEFORE_FIGHT);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
 		public void Event_FixConfDamage(global::Dpr.Battle.Logic.BTL_POKEPARAM poke, ref ushort damage) {
             m_pEventSystem.EVENTVAR_Push();
             m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, poke.GetID());
@@ -1678,9 +1863,33 @@ namespace Dpr.Battle.Logic
             if ((fixDamageFlag | zeroDamageFlag) != FALSE)
                 damage = zeroDamageFlag != FALSE ? (ushort)0 : fixDamage;
         }
-		public void Event_ConfDamageReaction(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM defender) { /*@B 0x6006B12*/ throw null; }
-		public bool Event_CheckWazaMsgCustom(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaNo orgWazaID, global::Pml.WazaNo actWazaID, global::Dpr.Battle.Logic.StrParam str) { /*@B 0x6006B13*/ throw null; }
-		public void Event_CheckWazaExeFail(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, global::Pml.WazaNo waza, global::Dpr.Battle.Logic.WazaFailCause cause) { /*@B 0x6006B14*/ throw null; }
+		public void Event_ConfDamageReaction(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM defender) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, defender.GetID());
+            m_pEventSystem.CallEvent(EventID.CONF_DAMAGE_REACTION);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public bool Event_CheckWazaMsgCustom(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaNo orgWazaID, global::Pml.WazaNo actWazaID, global::Dpr.Battle.Logic.StrParam str) {
+            str.Clear();
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.WAZAID, (int)actWazaID);
+            m_pEventSystem.EVENTVAR_SetWorkAddress(EventVar.Label.WORK_ADRS, str);
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.GEN_FLAG, FALSE);
+            m_pEventSystem.CallEvent(EventID.REQWAZA_MSG);
+            int genFlag = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.GEN_FLAG);
+            m_pEventSystem.EVENTVAR_Pop();
+            return genFlag != FALSE;
+        }
+		public void Event_CheckWazaExeFail(global::Dpr.Battle.Logic.BTL_POKEPARAM bpp, global::Pml.WazaNo waza, global::Dpr.Battle.Logic.WazaFailCause cause) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID, bpp.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.WAZAID, (int)waza);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.FAIL_CAUSE, (int)cause);
+            m_pEventSystem.CallEvent(EventID.WAZA_EXECUTE_FAIL);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
 		public global::Dpr.Battle.Logic.WazaForceEnableMode Event_WazaExecuteStart(global::Dpr.Battle.Logic.ActionDesc actionDesc, global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.WazaParam wazaParam, global::Dpr.Battle.Logic.PokeSet rec, global::Dpr.Battle.Logic.WazaEffectParams pWazaEffectParams) {
             byte targetCount = (byte)rec.GetCount();
 
@@ -1717,8 +1926,27 @@ namespace Dpr.Battle.Logic
 
             return breakFlag != FALSE;
         }
-		public bool Event_CheckTameFail(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.PokeSet targetRec) { /*@B 0x6006B17*/ throw null; }
-		public bool Event_CheckTameTurnSkip(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaNo waza) { /*@B 0x6006B18*/ throw null; }
+		public bool Event_CheckTameFail(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.PokeSet targetRec) {
+            BTL_POKEPARAM target = targetRec.Get(0);
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_DEF, target != null ? target.GetID() : PokeID.INVALID);
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.FAIL_FLAG, FALSE);
+            m_pEventSystem.CallEvent(EventID.CHECK_TAMETURN_FAIL);
+            int failFlag = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.FAIL_FLAG);
+            m_pEventSystem.EVENTVAR_Pop();
+            return failFlag != FALSE;
+        }
+		public bool Event_CheckTameTurnSkip(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaNo waza) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.WAZAID, (int)waza);
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.GEN_FLAG, FALSE);
+            m_pEventSystem.CallEvent(EventID.CHECK_TAMETURN_SKIP);
+            int genFlag = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.GEN_FLAG);
+            m_pEventSystem.EVENTVAR_Pop();
+            return genFlag != FALSE;
+        }
 		public bool Event_TameStart(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.PokeSet targetRec, global::Dpr.Battle.Logic.WazaParam wazaParam, ref byte hideTargetPokeID, ref bool fFailMsgDisped) {
             byte targetCount = (byte)targetRec.GetCount();
 
@@ -1752,9 +1980,36 @@ namespace Dpr.Battle.Logic
 
             return failFlag == FALSE;
         }
-		public void Event_TameStartFixed(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker) { /*@B 0x6006B1A*/ throw null; }
-		public void Event_TameSkip(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaNo waza) { /*@B 0x6006B1B*/ throw null; }
-		public bool Event_TameRelease(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.PokeSet rec, global::Pml.WazaNo waza) { /*@B 0x6006B1C*/ throw null; }
+		public void Event_TameStartFixed(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.CallEvent(EventID.TAME_START_FIXED);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public void Event_TameSkip(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Pml.WazaNo waza) {
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.CallEvent(EventID.TAME_SKIP);
+            m_pEventSystem.EVENTVAR_Pop();
+        }
+		public bool Event_TameRelease(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.PokeSet rec, global::Pml.WazaNo waza) {
+            uint count = rec.GetCount();
+            m_pEventSystem.EVENTVAR_Push();
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.POKEID_ATK, attacker.GetID());
+            m_pEventSystem.EVENTVAR_SetRewriteOnceValue(EventVar.Label.FAIL_FLAG, FALSE);
+            m_pEventSystem.EVENTVAR_SetConstValue(EventVar.Label.TARGET_POKECNT, (int)count);
+            for (uint i = 0; i < count; ++i)
+            {
+                BTL_POKEPARAM bpp = rec.Get(i);
+                m_pEventSystem.EVENTVAR_SetConstValue(LABEL_OFFSET(EventVar.Label.POKEID_TARGET1, i), bpp.GetID());
+            }
+            m_pEventSystem.CallEvent(EventID.TAME_RELEASE);
+            int failFlag = m_pEventSystem.EVENTVAR_GetValue(EventVar.Label.FAIL_FLAG);
+            if (failFlag == FALSE)
+                m_pEventSystem.CallEvent(EventID.TAME_RELEASE_FIXED);
+            m_pEventSystem.EVENTVAR_Pop();
+            return failFlag == FALSE;
+        }
 		public bool Event_CheckPokeHideAvoid(global::Dpr.Battle.Logic.BTL_POKEPARAM attacker, global::Dpr.Battle.Logic.BTL_POKEPARAM defender, global::Pml.WazaNo waza, ref bool bEnableAvoidMsg) {
             bEnableAvoidMsg = true;
 
