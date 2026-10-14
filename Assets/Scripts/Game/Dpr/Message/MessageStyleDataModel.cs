@@ -4,10 +4,30 @@ namespace Dpr.Message
 	public class MessageStyleDataModel : global::Dpr.Message.MessageStyleData
 	{
 		public int styleIndex;
-		public global::UnityEngine.Color fontColor;
+		public global::UnityEngine.Color fontColor = global::UnityEngine.Color.black;
 		public int fontSize;
 		public int maxTextWidth;
-		public global::UnityEngine.Color GetFontColor { get { /*@B 0x6003BA5*/ throw null; } }
-		public MessageStyleDataModel(int styleIndex, global::Dpr.Message.MessageStyleData formatData) { /*@B 0x6003BA6*/ throw null; }
+		public global::UnityEngine.Color GetFontColor { get { return fontColor; } }
+		public MessageStyleDataModel(int styleIndex, global::Dpr.Message.MessageStyleData formatData) {
+            // MessageStyleData() is inlined here (its fontColorIndex = -1 store before Object..ctor)
+            this.styleIndex = styleIndex;
+            strNum = formatData.strNum;
+            fontSizeId = formatData.fontSizeId;
+            fontColorIndex = formatData.fontColorIndex;
+            fontSize = MessageFontDataConstants.FONT_SIZE_TABLE[fontSizeId];
+            if (strNum < 8)
+            {
+                maxTextWidth = (strNum + 1) * fontSize;
+            }
+            else
+            {
+                maxTextWidth = (strNum + 2) * fontSize;
+                if (fontColorIndex >= 0)
+                {
+                    // MessageStyleColorData.GetColor inlined
+                    fontColor = MessageFontDataConstants.FONT_COLOR_ARRAY[fontColorIndex].GetColor();
+                }
+            }
+        }
 	}
 }
