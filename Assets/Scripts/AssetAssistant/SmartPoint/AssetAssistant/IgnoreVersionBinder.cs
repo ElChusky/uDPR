@@ -4,11 +4,8 @@ namespace SmartPoint.AssetAssistant
 	public class IgnoreVersionBinder : global::System.Runtime.Serialization.SerializationBinder
 	{
 		public override global::System.Type BindToType(string assemblyName, string typeName) {
-			// The first lookup goes through il2cpp's calling-assembly GetType wrapper (assembly "AssetAssistant"), the
-			// fallback is a direct Type.GetType tail call - both are Type.GetType(typeName, false) in C#.
-			global::System.Type type = global::System.Type.GetType(typeName, false); // TO CHECK: duplicate GetType(typeName, false) as in the binary
-			if (type != null)
-				return type;
+			// One call: il2cpp expands Type.GetType(string, bool) into il2cpp_codegen_get_type (try the name qualified with the
+			// calling assembly "AssetAssistant", then the plain name) - that pair is the compiler's, not two source calls.
 			return global::System.Type.GetType(typeName, false);
 		}
 		public IgnoreVersionBinder() { }
