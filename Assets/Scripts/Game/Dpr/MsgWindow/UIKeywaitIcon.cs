@@ -9,11 +9,34 @@ namespace Dpr.MsgWindow
 		private float iconMoveDist;
 		private float addAngleSec;
 		private float angle;
-		public void Setup(global::UnityEngine.GameObject iconContent, float iconMoveDist, float addAngleSec, global::UnityEngine.Sprite iconSprite) { /*@B 0x6003AA5*/ throw null; }
-		public void ResetParam() { /*@B 0x6003AA6*/ throw null; }
-		public void SetKeywaitIconActive(bool active) { /*@B 0x6003AA7*/ throw null; }
-		public void OnUpdate(float deltaTime) { /*@B 0x6003AA8*/ throw null; }
-		private void UpdateKeywaitIconPosition() { /*@B 0x6003AA9*/ throw null; }
+		public void Setup(global::UnityEngine.GameObject iconContent, float iconMoveDist, float addAngleSec, global::UnityEngine.Sprite iconSprite) {
+            this.iconContent = iconContent;
+            this.iconMoveDist = iconMoveDist;
+            this.addAngleSec = addAngleSec;
+            var iconImage = global::GameObjectExtensions.FindDeep(iconContent, "IconImage", true);
+            keywaitIconRect = iconImage.GetComponent<global::UnityEngine.RectTransform>();
+            iconImage.GetComponent<global::UnityEngine.UI.Image>().sprite = iconSprite;
+            SetKeywaitIconActive(false);
+        }
+		public void ResetParam() {
+            angle = 0f;
+            UpdateKeywaitIconPosition();
+        }
+		public void SetKeywaitIconActive(bool active) {
+            if (iconContent.activeSelf != active)
+                iconContent.SetActive(active);
+        }
+		public void OnUpdate(float deltaTime) {
+            float newAngle = angle + addAngleSec * deltaTime;
+            angle = newAngle > LIMIT_VALUE ? newAngle - LIMIT_VALUE : newAngle;
+            UpdateKeywaitIconPosition();
+        }
+		private void UpdateKeywaitIconPosition() {
+            float posY = (float)(iconMoveDist - global::System.Math.Sin(angle * 0.017453292f) * iconMoveDist);
+            global::UnityEngine.Vector2 pos = keywaitIconRect.anchoredPosition;
+            pos.y = posY;
+            keywaitIconRect.anchoredPosition = pos;
+        }
 		public UIKeywaitIcon() { }
 	}
 }

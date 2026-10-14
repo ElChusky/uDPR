@@ -7,12 +7,36 @@ namespace Dpr.MsgWindow
 		private bool bIsPlaying;
 		private bool bWaiting;
 		public bool WaitFinishSE { get { return this.bWaiting; } }
-		public void Setup(global::Dpr.MsgWindow.MsgWindowDataContainer dataContainer) { /*@B 0x6003B67*/ throw null; }
-		public void Reset() { /*@B 0x6003B69*/ throw null; }
-		public void PlayDecideSE() { /*@B 0x6003B6A*/ throw null; }
-		public void PerformCallbackOne(float value) { /*@B 0x6003B6B*/ throw null; }
-		private void PlayCallbackSE(uint eventId) { /*@B 0x6003B6C*/ throw null; }
-		private void OnFinishCallbackSEPlay(global::Audio.AudioInstance seInstance) { /*@B 0x6003B6D*/ throw null; }
+		public void Setup(global::Dpr.MsgWindow.MsgWindowDataContainer dataContainer) { soundDataTablePtr = dataContainer.SoundTagDataTable; }
+		public void Reset() {
+            bIsPlaying = false;
+            bWaiting = false;
+        }
+		public void PlayDecideSE() { global::Audio.AudioManager.Instance.CreateSe(global::AK.EVENTS.UI_COMMON_DECIDE, 0u).Play(null, false); }
+		public void PerformCallbackOne(float value) {
+            if (value > 1f)
+            {
+                if (soundDataTablePtr.ContainsKey((int)value))
+                {
+                    PlayCallbackSE(soundDataTablePtr[(int)value]);
+                    return;
+                }
+                global::Dpr.Message.MessageHelper.EmitLog(string.Format("CallbackOne Tag Value is not found!!!!!!!! : {0}", value), global::UnityEngine.LogType.Error);
+                return;
+            }
+            if (bIsPlaying)
+                bWaiting = true;
+        }
+		private void PlayCallbackSE(uint eventId) {
+            if (bIsPlaying)
+                global::Dpr.Message.MessageHelper.EmitLog("SE Playing!!!", global::UnityEngine.LogType.Warning);
+            global::Audio.AudioManager.Instance.CreateSe(eventId, 0u).Play(OnFinishCallbackSEPlay, false);
+            bIsPlaying = true;
+        }
+		private void OnFinishCallbackSEPlay(global::Audio.AudioInstance seInstance) {
+            bIsPlaying = false;
+            bWaiting = false;
+        }
 		public MsgWindowSoundPlayer() { }
 	}
 }

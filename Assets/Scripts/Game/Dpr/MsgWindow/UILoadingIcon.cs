@@ -3,14 +3,27 @@ namespace Dpr.MsgWindow
 {
 	public class UILoadingIcon
 	{
-		private readonly int playAnimHash;
+		private readonly int playAnimHash = global::UnityEngine.Animator.StringToHash("NetLoadingIcon1");
 		private global::UnityEngine.Animator loadingAnimator;
 		private global::UnityEngine.GameObject iconPrefab;
 		private bool bIsPlayAnim;
-		public void Setup(global::UnityEngine.GameObject iconPrefab) { /*@B 0x6003AB0*/ throw null; }
-		public void OnFinalize() { /*@B 0x6003AB1*/ throw null; }
-		public void PlayAnim() { /*@B 0x6003AB2*/ throw null; }
-		public void SetLoadingIconActive(bool active) { /*@B 0x6003AB3*/ throw null; }
-		public UILoadingIcon() { /*@B 0x6003AB4*/ throw null; }
+		public void Setup(global::UnityEngine.GameObject iconPrefab) {
+            this.iconPrefab = iconPrefab;
+            loadingAnimator = this.iconPrefab.GetComponent<global::UnityEngine.Animator>();
+            SetLoadingIconActive(false);
+        }
+		public void OnFinalize() { global::UnityEngine.Object.Destroy(iconPrefab); }
+		public void PlayAnim() {
+            if (bIsPlayAnim)
+                return;
+            loadingAnimator.Play(playAnimHash);
+        }
+		public void SetLoadingIconActive(bool active) {
+            if (iconPrefab == null || iconPrefab.activeSelf == active)
+                return;
+            bIsPlayAnim = active;
+            iconPrefab.SetActive(active);
+        }
+		public UILoadingIcon() { }
 	}
 }

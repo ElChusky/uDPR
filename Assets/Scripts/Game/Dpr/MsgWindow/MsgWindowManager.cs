@@ -3,23 +3,52 @@ namespace Dpr.MsgWindow
 {
 	public class MsgWindowManager : global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.MsgWindow.MsgWindowManager>
 	{
-		private global::Dpr.MsgWindow.MsgWindowDataContainer dataContainer;
+		private global::Dpr.MsgWindow.MsgWindowDataContainer dataContainer = new global::Dpr.MsgWindow.MsgWindowDataContainer();
 		private global::XLSXContent.MsgWindowData msgWindowData;
 		private global::Dpr.UI.ContextMenuWindow contextMenu;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.GameObject msgWindowObj;
 		private global::Dpr.MsgWindow.MsgWindow msgWindow;
 		private const string YES_NO_MSBT_NAME = "ss_box";
-		private readonly string[] YES_NO_LABEL_ARRAY;
+		private readonly string[] YES_NO_LABEL_ARRAY = new string[] { "SS_box_053", "SS_box_054" };
 		public global::Dpr.MsgWindow.MsgWindowDataContainer DataContainer { get { return this.dataContainer; } }
 		public global::Dpr.MsgWindow.MsgWindow MsgWindow { get { return this.msgWindow; } }
-		public static bool IsOpenWindow { get { /*@B 0x6003B4C*/ throw null; } }
-		public static bool IsOpen { get { /*@B 0x6003B4D*/ throw null; } }
-		private void Start() { /*@B 0x6003B45*/ throw null; }
-		private global::System.Collections.IEnumerator IE_StartMsgWindow() { /*@B 0x6003B46*/ throw null; }
-		private void OnUpdate(float deltaTime) { /*@B 0x6003B47*/ throw null; }
-		private void Destroy() { /*@B 0x6003B48*/ throw null; }
-		public static void SetMsgWindowData(global::XLSXContent.MsgWindowData msgWindowData) { /*@B 0x6003B4A*/ throw null; }
+		public static bool IsOpenWindow { get {
+                if (Instance.contextMenu != null)
+                    return true;
+                return Instance.msgWindow.MsgState != global::Dpr.MsgWindow.MsgWindowDataModel.MsgWindowState.Inactive;
+            } }
+		public static bool IsOpen { get { return Instance.msgWindow.IsOpen; } }
+		private void Start() {
+            msgWindow = msgWindowObj.GetComponent<global::Dpr.MsgWindow.MsgWindow>();
+            if (msgWindow == null)
+                global::Dpr.Message.MessageHelper.EmitLog("Failed GetComponent : MsgWindow", global::UnityEngine.LogType.Error);
+            global::SmartPoint.AssetAssistant.Sequencer.Start(IE_StartMsgWindow());
+            global::SmartPoint.AssetAssistant.Sequencer.onDestroy += Destroy;
+        }
+		private global::System.Collections.IEnumerator IE_StartMsgWindow() {
+            while (!global::Dpr.UI.UIManager.isInitialized)
+                yield return null;
+            dataContainer.FormatMsgWindowData(msgWindowData);
+            msgWindow.Initialize();
+            while (!global::GameManager.isReady)
+                yield return null;
+            global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+            global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+        }
+		private void OnUpdate(float deltaTime) {
+            if (msgWindow == null)
+                return;
+            msgWindow.OnUpdate(deltaTime);
+        }
+		private void Destroy() {
+            global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+            dataContainer.Dispose();
+            if (msgWindow == null)
+                return;
+            msgWindow.OnFinalize();
+        }
+		public static void SetMsgWindowData(global::XLSXContent.MsgWindowData msgWindowData) { Instance.msgWindowData = msgWindowData; }
 		public static global::Dpr.MsgWindow.MsgWindow OpenMsg(global::Dpr.MsgWindow.MsgWindowParam msgWindowParam) {
             var window = Instance.msgWindow;
             window.OpenWindow(msgWindowParam);
@@ -40,20 +69,133 @@ namespace Dpr.MsgWindow
             window.OpenBtlMsgWindow(msgWindowParam);
             return window;
         }
-		public static void CloseMsg() { /*@B 0x6003B52*/ throw null; }
-		public static void ReplaceMsg(global::Dpr.MsgWindow.MsgWindowParam msgWindowParam) { /*@B 0x6003B53*/ throw null; }
-		public static void ReplaceBtlMsg(global::Dpr.MsgWindow.MsgWindowParam msgWindowParam) { /*@B 0x6003B54*/ throw null; }
-		public static void MoveNextPage() { /*@B 0x6003B55*/ throw null; }
-		public static void OpenYesNoMenu(global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType = (global::Dpr.UI.ContextMenuWindow.CursorType)(1), bool useCancel = true, bool initSelectYes = true, global::System.Action onClosed = null, uint seDecide = 1570109472u) { /*@B 0x6003B56*/ throw null; }
-		public void OpenContextMenu_YESNO(global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType, bool selectYes, bool useCancel, global::System.Action onClosed, uint seDecide = 1570109472u) { /*@B 0x6003B57*/ throw null; }
-		public static void OpenCustomMenu(string msbtName, string[] labelNameArray, global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType = (global::Dpr.UI.ContextMenuWindow.CursorType)(1), bool useCancel = true, int initSelectIndex = 0, global::System.Action onClosed = null, uint seDecide = 1570109472u) { /*@B 0x6003B58*/ throw null; }
-		public void OpenContextMenu_Custom(string msbtName, string[] labelNameArray, global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType, bool useCancel, int initSelectIndex, global::System.Action onClosed, uint seDecide = 1570109472u) { /*@B 0x6003B59*/ throw null; }
-		public static void OpenCustomMenu(string[] textArray, global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType = (global::Dpr.UI.ContextMenuWindow.CursorType)(1), bool useCancel = true, int initSelectIndex = 0, global::System.Action onClosed = null, uint seDecide = 1570109472u) { /*@B 0x6003B5A*/ throw null; }
-		public void OpenContextMenu_Custom(string[] textArray, global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType, bool useCancel, int initSelectIndex, global::System.Action onCloseed, uint seDecide = 1570109472u) { /*@B 0x6003B5B*/ throw null; }
-		public void CloseContextMenu() { /*@B 0x6003B5C*/ throw null; }
-		private global::Dpr.UI.ContextMenuWindow.Param CreateContextMenuParam(string msbtName, string[] labelNameArray, int initSelectIndex, global::Dpr.UI.ContextMenuWindow.CursorType cursorType, bool useCancel, uint seDecide) { /*@B 0x6003B5D*/ throw null; }
-		private global::Dpr.UI.ContextMenuWindow.Param CreateContextMenuParam(string[] textArray, int initSelectIndex, global::Dpr.UI.ContextMenuWindow.CursorType cursorType, bool useCancel, uint seDecide) { /*@B 0x6003B5E*/ throw null; }
-		private void OpenContextMenu(global::Dpr.UI.ContextMenuWindow.Param menuParam, global::System.Action<int> onSelectChoices, global::System.Action onClosed) { /*@B 0x6003B5F*/ throw null; }
+		public static void CloseMsg() {
+            var window = Instance.msgWindow;
+            if (window.IsOpen)
+            {
+                window.CloseWindow();
+                return;
+            }
+            global::Dpr.Message.MessageHelper.EmitLog("CloseMsg Failed : MsgWindow Not Open!!", global::UnityEngine.LogType.Warning);
+            window.DoOnCloseCallback();
+        }
+		public static void ReplaceMsg(global::Dpr.MsgWindow.MsgWindowParam msgWindowParam) {
+            var window = Instance.msgWindow;
+            if (window.IsOpen)
+            {
+                window.ReplaceMessage(msgWindowParam);
+                return;
+            }
+            global::Dpr.Message.MessageHelper.EmitLog("ReplaceMessage Failed : MsgWindow Not Open!!", global::UnityEngine.LogType.Warning);
+        }
+		public static void ReplaceBtlMsg(global::Dpr.MsgWindow.MsgWindowParam msgWindowParam) {
+            var window = Instance.msgWindow;
+            if (window.IsOpen)
+            {
+                window.ReplaceBtlMessage(msgWindowParam);
+                return;
+            }
+            global::Dpr.Message.MessageHelper.EmitLog("ReplaceBtlMsg Failed : MsgWindow Not Open!!", global::UnityEngine.LogType.Warning);
+        }
+		public static void MoveNextPage() {
+            var window = Instance.msgWindow;
+            if (window.IsOpen)
+            {
+                window.MoveNextPage();
+                return;
+            }
+            global::Dpr.Message.MessageHelper.EmitLog("ReplaceBtlMsg Failed : MsgWindow Not Open!!", global::UnityEngine.LogType.Warning);
+        }
+		public static void OpenYesNoMenu(global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType = (global::Dpr.UI.ContextMenuWindow.CursorType)(1), bool useCancel = true, bool initSelectYes = true, global::System.Action onClosed = null, uint seDecide = 1570109472u) {
+            var manager = Instance;
+            var menuParam = manager.CreateContextMenuParam(YES_NO_MSBT_NAME, manager.YES_NO_LABEL_ARRAY, initSelectYes ? 0 : 1, cursorType, useCancel, seDecide);
+            manager.OpenContextMenu(menuParam, onSelectChoices, onClosed);
+        }
+		public void OpenContextMenu_YESNO(global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType, bool selectYes, bool useCancel, global::System.Action onClosed, uint seDecide = 1570109472u) {
+            var menuParam = CreateContextMenuParam(YES_NO_MSBT_NAME, YES_NO_LABEL_ARRAY, selectYes ? 0 : 1, cursorType, useCancel, seDecide);
+            OpenContextMenu(menuParam, onSelectChoices, onClosed);
+        }
+		public static void OpenCustomMenu(string msbtName, string[] labelNameArray, global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType = (global::Dpr.UI.ContextMenuWindow.CursorType)(1), bool useCancel = true, int initSelectIndex = 0, global::System.Action onClosed = null, uint seDecide = 1570109472u) {
+            var manager = Instance;
+            var menuParam = manager.CreateContextMenuParam(msbtName, labelNameArray, initSelectIndex, cursorType, useCancel, seDecide);
+            manager.OpenContextMenu(menuParam, onSelectChoices, onClosed);
+        }
+		public void OpenContextMenu_Custom(string msbtName, string[] labelNameArray, global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType, bool useCancel, int initSelectIndex, global::System.Action onClosed, uint seDecide = 1570109472u) {
+            var menuParam = CreateContextMenuParam(msbtName, labelNameArray, initSelectIndex, cursorType, useCancel, seDecide);
+            OpenContextMenu(menuParam, onSelectChoices, onClosed);
+        }
+		public static void OpenCustomMenu(string[] textArray, global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType = (global::Dpr.UI.ContextMenuWindow.CursorType)(1), bool useCancel = true, int initSelectIndex = 0, global::System.Action onClosed = null, uint seDecide = 1570109472u) {
+            var manager = Instance;
+            var menuParam = manager.CreateContextMenuParam(textArray, initSelectIndex, cursorType, useCancel, seDecide);
+            manager.OpenContextMenu(menuParam, onSelectChoices, onClosed);
+        }
+		public void OpenContextMenu_Custom(string[] textArray, global::System.Action<int> onSelectChoices, global::Dpr.UI.ContextMenuWindow.CursorType cursorType, bool useCancel, int initSelectIndex, global::System.Action onCloseed, uint seDecide = 1570109472u) {
+            var menuParam = CreateContextMenuParam(textArray, initSelectIndex, cursorType, useCancel, seDecide);
+            OpenContextMenu(menuParam, onSelectChoices, onCloseed);
+        }
+		public void CloseContextMenu() {
+            if (contextMenu == null)
+                return;
+            contextMenu.Close(null);
+            contextMenu = null;
+        }
+		private global::Dpr.UI.ContextMenuWindow.Param CreateContextMenuParam(string msbtName, string[] labelNameArray, int initSelectIndex, global::Dpr.UI.ContextMenuWindow.CursorType cursorType, bool useCancel, uint seDecide) {
+            var msgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile(msbtName);
+            if (msgFile == null)
+                return null;
+            string[] textArray = new string[labelNameArray.Length];
+            for (int i = 0; i < labelNameArray.Length; i++)
+                textArray[i] = msgFile.GetFormattedMessage(labelNameArray[i]);
+            return CreateContextMenuParam(textArray, initSelectIndex, cursorType, useCancel, seDecide);
+        }
+		private global::Dpr.UI.ContextMenuWindow.Param CreateContextMenuParam(string[] textArray, int initSelectIndex, global::Dpr.UI.ContextMenuWindow.CursorType cursorType, bool useCancel, uint seDecide) {
+            var menuParam = new global::Dpr.UI.ContextMenuWindow.Param();
+            menuParam.itemParams = new global::Dpr.UI.ContextMenuItem.Param[textArray.Length];
+            for (int i = 0; i < textArray.Length; i++)
+            {
+                menuParam.itemParams[i] = new global::Dpr.UI.ContextMenuItem.Param();
+                menuParam.itemParams[i].text = textArray[i];
+                menuParam.itemParams[i].menuId = (global::ContextMenuID)i;
+            }
+            menuParam.position = msgWindow.CalcContextMenuPos();
+            menuParam.pivot = new global::UnityEngine.Vector2(1f, 0f);
+            menuParam.selectIndex = initSelectIndex;
+            menuParam.useCancel = useCancel;
+            menuParam.useLoopAndRepeat = false;
+            menuParam.seDecide = seDecide;
+            if (msgWindow.IsOpen && msgWindow.IsNetwork)
+                menuParam.windowType = global::Dpr.UI.ContextMenuWindow.Param.MenuWindowType.Network;
+            return menuParam;
+        }
+		private void OpenContextMenu(global::Dpr.UI.ContextMenuWindow.Param menuParam, global::System.Action<int> onSelectChoices, global::System.Action onClosed) {
+            if (menuParam == null)
+            {
+                global::Dpr.Message.MessageHelper.EmitLog("ContextMenuWindow Param is null!!!", global::UnityEngine.LogType.Error);
+                if (onSelectChoices != null)
+                    onSelectChoices.Invoke(-1);
+                return;
+            }
+            if (msgWindow.IsOpen)
+                msgWindow.HideKeywaitIcon();
+            contextMenu = global::Dpr.UI.UIManager.Instance.CreateUIWindow<global::Dpr.UI.ContextMenuWindow>(global::UIWindowID.CONTEXTMENU);
+            contextMenu.onClicked = (global::Dpr.UI.ContextMenuItem menuItem) =>
+            {
+                contextMenu = null;
+                if (onSelectChoices != null)
+                    onSelectChoices.Invoke((int)menuItem.param.menuId);
+                return true;
+            };
+            contextMenu.onClosed = (global::Dpr.UI.UIWindow uiWindow) =>
+            {
+                if (onClosed != null)
+                    onClosed.Invoke();
+                contextMenu = null;
+            };
+            global::Audio.AudioManager.Instance.PlaySe(global::AK.EVENTS.UI_COMMON_DECIDE, null);
+            contextMenu.Open(menuParam);
+            if (!gameObject.activeSelf)
+                contextMenu.transform.localScale = global::UnityEngine.Vector3.zero;
+        }
 		public static void ClearMsgWindowCallbackFunc() {
             var window = Instance.msgWindow;
             if (window == null)
@@ -61,6 +203,6 @@ namespace Dpr.MsgWindow
 
             window.ClearCallbackFunc();
         }
-		public MsgWindowManager() { /*@B 0x6003B61*/ throw null; }
+		public MsgWindowManager() { }
 	}
 }

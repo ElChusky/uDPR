@@ -9,15 +9,24 @@ namespace Dpr.MsgWindow
 		private global::UnityEngine.UI.Image frameImage;
 		private global::UnityEngine.Canvas canvas;
 		private global::UnityEngine.Sprite currentWndFrameSpr;
-		public int SortingOrder { get { /*@B 0x6003A9C*/ throw null; } }
-		public void Setup(global::UnityEngine.RectTransform msgTextRect, global::UnityEngine.RectTransform windowRect, global::UnityEngine.Canvas canvas, global::UnityEngine.GameObject frameObj) { /*@B 0x6003A9B*/ throw null; }
-		public void SetWindowPos(global::UnityEngine.Vector2 anchorPos) { /*@B 0x6003A9D*/ throw null; }
-		public void SetSortingOrder(int sortingOrder) { /*@B 0x6003A9E*/ throw null; }
-		public void SetOffsetPosX(float posX) { /*@B 0x6003A9F*/ throw null; }
-		public void SetWindowFrameSpr(global::UnityEngine.Sprite newFrameSpr) { /*@B 0x6003AA0*/ throw null; }
-		public void SetCurrentSelectWindowSpr() { /*@B 0x6003AA1*/ throw null; }
-		public void SetBoardFrameSpr(global::UnityEngine.Sprite newBoardSpr) { /*@B 0x6003AA2*/ throw null; }
-		public void SetWindowWidth(float width) { /*@B 0x6003AA3*/ throw null; }
+		public int SortingOrder { get { return canvas.sortingOrder; } }
+		public void Setup(global::UnityEngine.RectTransform msgTextRect, global::UnityEngine.RectTransform windowRect, global::UnityEngine.Canvas canvas, global::UnityEngine.GameObject frameObj) {
+            this.msgTextRect = msgTextRect;
+            this.canvas = canvas;
+            this.windowRect = windowRect;
+            frameImage = frameObj.GetComponent<global::UnityEngine.UI.Image>();
+            frameRect = frameObj.GetComponent<global::UnityEngine.RectTransform>();
+        }
+		public void SetWindowPos(global::UnityEngine.Vector2 anchorPos) { windowRect.anchoredPosition = anchorPos; }
+		public void SetSortingOrder(int sortingOrder) { canvas.sortingOrder = sortingOrder; }
+		public void SetOffsetPosX(float posX) { msgTextRect.anchoredPosition = new global::UnityEngine.Vector2(posX, msgTextRect.anchoredPosition.y); }
+		public void SetWindowFrameSpr(global::UnityEngine.Sprite newFrameSpr) {
+            currentWndFrameSpr = newFrameSpr;
+            frameImage.sprite = currentWndFrameSpr;
+        }
+		public void SetCurrentSelectWindowSpr() { frameImage.sprite = currentWndFrameSpr; }
+		public void SetBoardFrameSpr(global::UnityEngine.Sprite newBoardSpr) { frameImage.sprite = newBoardSpr; }
+		public void SetWindowWidth(float width) { frameRect.sizeDelta = new global::UnityEngine.Vector2(width, frameRect.sizeDelta.y); }
 		public UIWindowLayout() { }
 	}
 }

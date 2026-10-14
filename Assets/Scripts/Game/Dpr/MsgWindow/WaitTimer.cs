@@ -5,11 +5,18 @@ namespace Dpr.MsgWindow
 	{
 		private float limitTime;
 		private float timer;
-		public float Ratio { get { /*@B 0x6003A38*/ throw null; } }
-		public void SetLimitTime(float limitTime) { /*@B 0x6003A39*/ throw null; }
-		public void SetCurrentTime(float time) { /*@B 0x6003A3A*/ throw null; }
-		public void ResetTimer() { /*@B 0x6003A3B*/ throw null; }
-		public bool IsFinishWait(float deltaTime) { /*@B 0x6003A3C*/ throw null; }
+		public float Ratio { get {
+                if (limitTime > 0f)
+                    return global::UnityEngine.Mathf.Clamp01(timer / limitTime);
+                return 0f;
+            } }
+		public void SetLimitTime(float limitTime) { this.limitTime = limitTime; }
+		public void SetCurrentTime(float time) { timer = time < limitTime ? time : limitTime; }
+		public void ResetTimer() { timer = 0f; }
+		public bool IsFinishWait(float deltaTime) {
+            timer += deltaTime;
+            return limitTime <= timer;
+        }
 		public WaitTimer() { }
 	}
 }
