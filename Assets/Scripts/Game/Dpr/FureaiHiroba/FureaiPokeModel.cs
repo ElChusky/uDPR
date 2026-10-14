@@ -6,35 +6,121 @@ namespace Dpr.FureaiHiroba
 		public bool isSelectPoke;
 		public float stateTime;
 		public bool isCollided;
-		public global::System.Collections.Generic.List<int> CanAnimationList;
+		public global::System.Collections.Generic.List<int> CanAnimationList = new global::System.Collections.Generic.List<int>();
 		public int CollisionHitCount;
-		public int MonohiroiItemNo;
-		public int MonohiroiSealNo;
+		public int MonohiroiItemNo = -1;
+		public int MonohiroiSealNo = -1;
 		private global::Dpr.FureaiHiroba.FureaiDataManager dataManager;
 		public global::Dpr.FureaiHiroba.FureaiPokeModel.GetFureaiPokes GetHirobaPokes;
 		private global::Pml.PokePara.PokemonParam pokeParam;
 		public global::Dpr.FureaiHiroba.FureaiPokeController controller { get => (FureaiPokeController)base.controller; }
 		public global::Dpr.FureaiHiroba.PokeSanpoModel sanpoModel { get; private set; }
-		public uint TemotiNo { get { /*@B 0x6003472*/ throw null; } }
-		public uint nakayoshi { get { /*@B 0x6003473*/ throw null; } }
-		public uint pokeID { get { /*@B 0x6003474*/ throw null; } }
-		public global::Pml.MonsNo monsNo { get { /*@B 0x6003475*/ throw null; } }
-		public global::Pml.PokePara.Seikaku seikaku { get { /*@B 0x6003476*/ throw null; } }
-		public string NickName { get { /*@B 0x6003477*/ throw null; } }
+		public uint TemotiNo { get { return global::PlayerWork.playerParty.GetMemberIndex(pokeParam); } }
+		public uint nakayoshi { get { return pokeParam.GetFriendship(); } }
+		public uint pokeID { get { return pokeParam.GetID(); } }
+		public global::Pml.MonsNo monsNo { get { return pokeParam.GetMonsNo(); } }
+		public global::Pml.PokePara.Seikaku seikaku { get { return pokeParam.GetSeikaku(); } }
+		public string NickName { get { return pokeParam.GetNickName(); } }
 		public global::Pml.PokePara.PokemonParam GetPokeParam() { return this.pokeParam; }
 		public global::FieldPokemonEntity GetEntity() {
             // FIX (b242, @01bf6490): typeHierarchy compare → raise_invalid_cast @01bf64d4 = a castclass (the base code `as`).
             return (FieldPokemonEntity)entity;
         }
-		public FureaiPokeModel(global::Dpr.Field.Walking.WalkData walkData, global::Pml.PokePara.PokemonParam pokeParam, global::Dpr.FureaiHiroba.FureaiDataManager dataMng) : base(default(global::Dpr.Field.Walking.WalkData)) { /*@B 0x6003478*/ throw null; }
-		public override void Destroy() { /*@B 0x6003479*/ throw null; }
-		public void PokeCollisionUpdate() { /*@B 0x600347A*/ throw null; }
-		public void Debug_SetNakayoshi(uint nakayoshi) { /*@B 0x600347B*/ throw null; }
-		private void SetNakayoshiRandom() { /*@B 0x600347C*/ throw null; }
-		public void SetSanpoModel(global::Dpr.FureaiHiroba.PokeSanpoModel sanpoModel) { /*@B 0x600347D*/ throw null; }
-		public void Log() { /*@B 0x600347E*/ throw null; }
-		public int GetAnimRandom() { /*@B 0x600347F*/ throw null; }
-		public bool LottMonohiroiItemID() { /*@B 0x6003480*/ throw null; }
+		public FureaiPokeModel(global::Dpr.Field.Walking.WalkData walkData, global::Pml.PokePara.PokemonParam pokeParam, global::Dpr.FureaiHiroba.FureaiDataManager dataMng) : base(walkData) {
+			this.pokeParam = pokeParam;
+			dataManager = dataMng;
+			var kuse = dataMng.ActionKuseList.Find((global::XLSXContent.FreeSanpoKuse.SheetSheet1 x) => x.PokeID == (int)pokeParam.GetMonsNo());
+			if (kuse.kw32_happyA01) {
+				CanAnimationList.Add(43);
+			}
+			if (kuse.kw32_happyB01) {
+				CanAnimationList.Add(44);
+			}
+			if (kuse.kw32_happyC01) {
+				CanAnimationList.Add(45);
+			}
+			if (kuse.kw33_moveA01) {
+				CanAnimationList.Add(46);
+			}
+			if (kuse.kw33_moveB01) {
+				CanAnimationList.Add(47);
+			}
+			if (kuse.kw33_moveC01) {
+				CanAnimationList.Add(48);
+			}
+			if (kuse.kw33_moveD01) {
+				CanAnimationList.Add(49);
+			}
+		}
+		public override void Destroy() {
+			if (sanpoModel != null) {
+				sanpoModel.Destroy();
+			}
+			sanpoModel = null;
+			CanAnimationList.Clear();
+			dataManager = null;
+			GetHirobaPokes = null;
+			pokeParam = null;
+			base.Destroy();
+		}
+		public void PokeCollisionUpdate() {
+			var entities = global::EntityManager.GetEntities<global::FieldCharacterEntity>();
+			if (entities.Length < 1) {
+				return;
+			}
+			for (int i = 0; i < entities.Length; i++) {
+				var target = entities[i];
+				if (target.transform == transform) {
+					continue;
+				}
+				if (target.GetComponent<global::Dpr.FureaiHiroba.FureaiPokeController>() != null) {
+					var other = target.GetComponent<global::Dpr.FureaiHiroba.FureaiPokeController>().model;
+					if (other.walkData.order < walkData.order) {
+						collisionModel.CheckCollision(target, bodySize + other.bodySize, 1f, true, false, 999, false);
+					}
+				}
+			}
+		}
+		public void Debug_SetNakayoshi(uint nakayoshi) {
+			pokeParam.SetFriendship(nakayoshi);
+		}
+		private void SetNakayoshiRandom() {
+			uint[] values = new uint[] { 0, 128, 255 };
+			pokeParam.SetFriendship(values[global::UnityEngine.Random.Range(0, 3)]);
+		}
+		public void SetSanpoModel(global::Dpr.FureaiHiroba.PokeSanpoModel sanpoModel) {
+			this.sanpoModel = sanpoModel;
+		}
+		public void Log() {
+			// The concatenated text is unused in the shipped binary (its log call was compiled out).
+			_ = string.Concat(new object[] {
+				global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.Message.MessageManager>.Instance.GetNameMessage("ss_monsname", (int)pokeParam.GetMonsNo()),
+				"\n立ち止まり確率:",
+				walkData.actionModel.StopThreshold,
+				"\nキョロ確率:",
+				walkData.actionModel.KyoroThreshold - walkData.actionModel.StopThreshold,
+			});
+		}
+		public int GetAnimRandom() {
+			return CanAnimationList[global::UnityEngine.Random.Range(0, CanAnimationList.Count)];
+		}
+		public bool LottMonohiroiItemID() {
+			if (MonohiroiItemNo != -1 || MonohiroiSealNo != -1) {
+				return true;
+			}
+			var lottery = new global::Dpr.FureaiHiroba.MonohiroiLottery(dataManager, (int)pokeParam.GetMonsNo());
+			int item = lottery.GetItem();
+			if (item == -1) {
+				return false;
+			}
+			if (lottery.itemType == global::Dpr.FureaiHiroba.MonohiroiLottery.ItemType.Item || (lottery.itemType == global::Dpr.FureaiHiroba.MonohiroiLottery.ItemType.Seal && !lottery.isSeal)) {
+				MonohiroiItemNo = item;
+			}
+			else {
+				MonohiroiSealNo = item;
+			}
+			return true;
+		}
 		public delegate global::System.Collections.Generic.List<global::Dpr.FureaiHiroba.FureaiPokeModel> GetFureaiPokes();
 	}
 }

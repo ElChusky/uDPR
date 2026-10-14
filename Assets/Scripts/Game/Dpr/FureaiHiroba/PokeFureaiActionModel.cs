@@ -6,8 +6,11 @@ namespace Dpr.FureaiHiroba
 		public global::Dpr.Field.Walking.CorSystem corSystem;
 		protected float IntervalTime;
 		protected float elapsedTime;
-		public bool IsAction { get { /*@B 0x6003485*/ throw null; } }
-		protected void Init() { /*@B 0x6003486*/ throw null; }
+		public bool IsAction { get { return corSystem.isPlaying; } }
+		protected void Init() {
+			elapsedTime = global::UnityEngine.Random.Range(-2f, 2f);
+			corSystem = new global::Dpr.Field.Walking.CorSystem("");
+		}
 		public PokeFureaiActionModel() { }
 	}
 }

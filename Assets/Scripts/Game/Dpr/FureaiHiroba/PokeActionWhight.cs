@@ -7,6 +7,10 @@ namespace Dpr.FureaiHiroba
 		public int ActionNo;
 		private float _weight;
 		public float lotteryWeight { get { return this._weight; } }
-		public PokeActionWhight(string name, int ActionNo, float weight) { /*@B 0x6003493*/ throw null; }
+		public PokeActionWhight(string name, int ActionNo, float weight) {
+			Name = name;
+			this.ActionNo = ActionNo;
+			_weight = weight;
+		}
 	}
 }

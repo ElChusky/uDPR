@@ -3,6 +3,6 @@ namespace Dpr.FureaiHiroba
 {
 	public class FureaiPokeView : global::Dpr.Field.Walking.WalkingCharacterView
 	{
-		public FureaiPokeView() { /*@B 0x60033DA*/ throw null; }
+		public FureaiPokeView() { }
 	}
 }

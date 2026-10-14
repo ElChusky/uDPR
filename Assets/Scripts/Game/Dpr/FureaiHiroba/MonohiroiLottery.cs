@@ -7,15 +7,79 @@ namespace Dpr.FureaiHiroba
 		public bool isSeal;
 		private int kinomiNo;
 		private int sonotaNo;
-		private float kinomiRate;
-		private static readonly int[] Sonota_Kakuritu;
-		public MonohiroiLottery(global::Dpr.FureaiHiroba.FureaiDataManager dataManager, int pokeID) { /*@B 0x6003494*/ throw null; }
-		public int GetItem() { /*@B 0x6003495*/ throw null; }
-		private int GetKinomi() { /*@B 0x6003496*/ throw null; }
+		private float kinomiRate = 0.5f;
+		private static readonly int[] Sonota_Kakuritu = new int[] { 15, 15, 15, 15, 10, 10, 8, 5, 5, 2 };
+		public MonohiroiLottery(global::Dpr.FureaiHiroba.FureaiDataManager dataManager, int pokeID) {
+			var kinomiList = dataManager.MonohiroiKinomiList;
+			var sonotaList = dataManager.MonohiroiSonotaList;
+			int rand = global::UnityEngine.Random.Range(1, 101);
+			int total = 0;
+			foreach (var kinomi in kinomiList) {
+				total += kinomi.Kakuritu;
+				if (rand <= total) {
+					kinomiNo = kinomi.ItemID;
+					break;
+				}
+			}
+			var sonota = sonotaList.Find((global::XLSXContent.MonohiroiSonota.SheetSheet1 x) => x.PokeID == pokeID);
+			var items = new global::System.Collections.Generic.List<int>(10);
+			items.Add((int)sonota.ItemA);
+			items.Add((int)sonota.ItemB);
+			items.Add((int)sonota.ItemC);
+			items.Add((int)sonota.ItemD);
+			items.Add((int)sonota.ItemE);
+			items.Add((int)sonota.ItemF);
+			items.Add((int)sonota.ItemG);
+			items.Add((int)sonota.ItemH);
+			items.Add((int)sonota.ItemI);
+			items.Add((int)sonota.ItemJ);
+			total = 0;
+			for (int i = 0; i < Sonota_Kakuritu.Length; i++) {
+				total += Sonota_Kakuritu[i];
+				if (rand <= total) {
+					sonotaNo = items[i];
+					isSeal = i != 3 && i != 9;
+					return;
+				}
+			}
+		}
+		public int GetItem() {
+			bool isKinomi = GetItemIsKinomi();
+			bool canKinomi = global::ItemWork.IsAddItem(kinomiNo, 1);
+			bool canSonota = CanGetSonota();
+			if (isKinomi) {
+				if (canKinomi) {
+					return GetKinomi();
+				}
+				if (canSonota) {
+					return GetSonota();
+				}
+				return -1;
+			}
+			if (canSonota) {
+				return GetSonota();
+			}
+			if (canKinomi) {
+				return GetKinomi();
+			}
+			return -1;
+		}
+		private int GetKinomi() {
+			itemType = global::Dpr.FureaiHiroba.MonohiroiLottery.ItemType.Item;
+			return kinomiNo;
+		}
 		private int GetSonota() { return this.sonotaNo; }
-		private bool CanGetSonota() { /*@B 0x6003498*/ throw null; }
-		private bool GetItemIsKinomi() { /*@B 0x6003499*/ throw null; }
-		static MonohiroiLottery() { /*@B 0x600349A*/ throw null; }
+		private bool CanGetSonota() {
+			itemType = isSeal ? global::Dpr.FureaiHiroba.MonohiroiLottery.ItemType.Seal : global::Dpr.FureaiHiroba.MonohiroiLottery.ItemType.Item;
+			if (isSeal) {
+				return global::PlayerWork.GetSealData(sonotaNo).Count < 99;
+			}
+			return global::ItemWork.IsAddItem(sonotaNo, 1);
+		}
+		private bool GetItemIsKinomi() {
+			return global::UnityEngine.Random.Range(0f, 1f) < kinomiRate;
+		}
+		static MonohiroiLottery() { }
 		public enum ItemType
 		{
 			Item = 0,

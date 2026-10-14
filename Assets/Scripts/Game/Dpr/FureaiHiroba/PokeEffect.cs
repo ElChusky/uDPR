@@ -4,10 +4,16 @@ namespace Dpr.FureaiHiroba
 {
 	public class PokeEffect
 	{
-		private global::System.Collections.Generic.Dictionary<string, global::UnityEngine.GameObject> Effects;
+		private global::System.Collections.Generic.Dictionary<string, global::UnityEngine.GameObject> Effects = new global::System.Collections.Generic.Dictionary<string, global::UnityEngine.GameObject>();
 		private global::UnityEngine.Transform transform;
-		public PokeEffect(global::UnityEngine.Transform tra) { /*@B 0x60033DB*/ throw null; }
-		public void Destroy() { /*@B 0x60033DC*/ throw null; }
+		public PokeEffect(global::UnityEngine.Transform tra) {
+			transform = tra;
+		}
+		public void Destroy() {
+			Effects.Clear();
+			Effects = null;
+			transform = null;
+		}
 		public void PlayEffect(global::UnityEngine.GameObject go, string name, float bodySize) {
             ParticleSystem eff = Object.Instantiate<GameObject>(go, transform, false).GetComponent<ParticleSystem>();
             Effects.Add(name, eff.gameObject);
@@ -26,6 +32,11 @@ namespace Dpr.FureaiHiroba
 
             DG.Tweening.TweenSettingsExtensions.OnComplete(DG.Tweening.DOVirtual.DelayedCall(0f, () => eff.Play(), true), () => DG.Tweening.DOVirtual.DelayedCall(LoopInterval, () => PlayEffLoop(eff, LoopInterval), true));
         }
-		public void CancelEff(string name) { /*@B 0x60033DF*/ throw null; }
+		public void CancelEff(string name) {
+			if (Effects.ContainsKey(name)) {
+				Object.Destroy(Effects[name].gameObject);
+				Effects.Remove(name);
+			}
+		}
 	}
 }

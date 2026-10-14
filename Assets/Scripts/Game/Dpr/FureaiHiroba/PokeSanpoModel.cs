@@ -7,25 +7,55 @@ namespace Dpr.FureaiHiroba
 		public bool isLookPlayer;
 		public bool isAddWalking;
 		public float CollidedRotValue;
-		private float LookPlayerDistance;
-		private float WalkingAddDistance;
+		private float LookPlayerDistance = 3f;
+		private float WalkingAddDistance = 1.5f;
 		public int PositionNo;
 		public global::UnityEngine.Vector3 InitPos;
 		public global::UnityEngine.Vector3 RandomOffsetPos;
 		public bool isPairEnd;
-		private static global::System.Collections.Generic.List<global::UnityEngine.Vector3> AngleToDirection;
-		public bool isPairMode { get { /*@B 0x600349B*/ throw null; } }
-		public bool isPairPosition { get { /*@B 0x600349C*/ throw null; } }
+		private static global::System.Collections.Generic.List<global::UnityEngine.Vector3> AngleToDirection = new global::System.Collections.Generic.List<global::UnityEngine.Vector3>() { global::UnityEngine.Vector3.back, global::UnityEngine.Vector3.left, global::UnityEngine.Vector3.forward, global::UnityEngine.Vector3.right };
+		public bool isPairMode { get { return PairModel != null; } }
+		public bool isPairPosition { get { return PositionNo > 9; } }
 		public global::Dpr.FureaiHiroba.PokeSanpoPairModel PairModel { get; set; }
 		public global::UnityEngine.Vector3 defaultDirection { get; private set; }
 		public global::Dpr.FureaiHiroba.PokeSanpoActionModel actionModel { get; private set; }
-		public void CreateActionModel(float bodySize, global::XLSXContent.FreeSanpoActionProbability.SheetSheet1 ActionProbability, int nakayoshiRank) { /*@B 0x60034A3*/ throw null; }
-		public void Update(float deltaTime, global::UnityEngine.Transform Player, global::UnityEngine.Transform transform) { /*@B 0x60034A4*/ throw null; }
-		public void SetDefaultDirection(int Angle) { /*@B 0x60034A5*/ throw null; }
-		public void SetPair(bool isMaster, global::Dpr.FureaiHiroba.FureaiPokeModel masterPoke, global::Dpr.FureaiHiroba.FureaiPokeModel slavePoke) { /*@B 0x60034A6*/ throw null; }
-		public void DeletePair() { /*@B 0x60034A7*/ throw null; }
-		public void Destroy() { /*@B 0x60034A8*/ throw null; }
-		public PokeSanpoModel() { /*@B 0x60034A9*/ throw null; }
-		static PokeSanpoModel() { /*@B 0x60034AA*/ throw null; }
+		public void CreateActionModel(float bodySize, global::XLSXContent.FreeSanpoActionProbability.SheetSheet1 ActionProbability, int nakayoshiRank) {
+			LookPlayerDistance = nakayoshiRank * 0.6f + bodySize + 2f;
+			WalkingAddDistance = bodySize + 1.5f;
+			actionModel = new global::Dpr.FureaiHiroba.PokeSanpoActionModel(ActionProbability);
+		}
+		public void Update(float deltaTime, global::UnityEngine.Transform Player, global::UnityEngine.Transform transform) {
+			float distance = global::UnityEngine.Vector3.Distance(Player.position, transform.position);
+			isLookPlayer = distance < LookPlayerDistance || (isLookPlayer && distance < LookPlayerDistance + 1f);
+			isAddWalking = distance < WalkingAddDistance;
+			if (global::UnityEngine.Random.Range(0, 30) == 0) {
+				RandomOffsetPos = global::UnityEngine.Vector3.right * global::UnityEngine.Random.Range(-3, 3) + global::UnityEngine.Vector3.forward * global::UnityEngine.Random.Range(-3, 3);
+			}
+		}
+		public void SetDefaultDirection(int Angle) {
+			defaultDirection = AngleToDirection[global::UnityEngine.Mathf.Abs(Angle / 90)];
+		}
+		public void SetPair(bool isMaster, global::Dpr.FureaiHiroba.FureaiPokeModel masterPoke, global::Dpr.FureaiHiroba.FureaiPokeModel slavePoke) {
+			PairModel = new global::Dpr.FureaiHiroba.PokeSanpoPairModel(isMaster, masterPoke, slavePoke);
+		}
+		public void DeletePair() {
+			if (PairModel != null) {
+				PairModel.pair.sanpoModel.PairModel = null;
+				PairModel.pair.sanpoModel.isPairEnd = true;
+				Destroy();
+				isPairEnd = true;
+			}
+		}
+		public void Destroy() {
+			if (PairModel != null) {
+				PairModel.Destroy();
+			}
+			PairModel = null;
+			if (actionModel != null) {
+				actionModel.Destroy();
+			}
+		}
+		public PokeSanpoModel() { }
+		static PokeSanpoModel() { }
 	}
 }
