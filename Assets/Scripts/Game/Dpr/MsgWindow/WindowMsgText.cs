@@ -7,26 +7,56 @@ namespace Dpr.MsgWindow
 		private global::TMPro.TextMeshProUGUI text;
 		private global::UnityEngine.RectTransform textRect;
 		private global::UnityEngine.Color defaultColor;
-		public float TextHeight { get { /*@B 0x6003A76*/ throw null; } }
-		public float FontSize { get { /*@B 0x6003A77*/ throw null; } }
-		public void Initialize() { /*@B 0x6003A78*/ throw null; }
-		public void ResetText() { /*@B 0x6003A79*/ throw null; }
-		public void ResetColor() { /*@B 0x6003A7A*/ throw null; }
+		public float TextHeight { get { return textRect.sizeDelta.y; } }
+		public float FontSize { get { return text.fontSize; } }
+		public void Initialize() {
+			textRect = GetComponent<global::UnityEngine.RectTransform>();
+			text = GetComponent<global::TMPro.TextMeshProUGUI>();
+			defaultColor = text.color;
+			global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.Message.FontManager>.Instance.ChangeFontMaterial(text, 0);
+		}
+		public void ResetText() {
+			text.text = string.Empty;
+		}
+		public void ResetColor() {
+			text.color = defaultColor;
+		}
 		public void SetPositionYByIndex(int index, float lineSpace) {
             textRect.anchoredPosition = new Vector2(textRect.anchoredPosition.x, -((textRect.sizeDelta.y + lineSpace) * index));
             ResetText();
         }
-		public void SetTextEnable(bool enabled) { /*@B 0x6003A7C*/ throw null; }
+		public void SetTextEnable(bool enabled) {
+			if (text.enabled != enabled)
+				text.enabled = enabled;
+		}
 		public void SetTextWidth(float width) {
             var sizeDelta = textRect.sizeDelta;
             if (sizeDelta.x != width)
                 textRect.sizeDelta = new Vector2(width, sizeDelta.y);
         }
-		public void SetFontSize(float fontSize) { /*@B 0x6003A7E*/ throw null; }
-		public void SetFontAsset(global::TMPro.TMP_FontAsset newFontAsset, global::TMPro.VerticalAlignmentOptions vAlignment) { /*@B 0x6003A7F*/ throw null; }
-		public void SetText(string messageStr) { /*@B 0x6003A80*/ throw null; }
-		public void SetTextColor(global::UnityEngine.Color textColor) { /*@B 0x6003A81*/ throw null; }
-		public void CreateStrFontTexture(string messageStr) { /*@B 0x6003A82*/ throw null; }
+		public void SetFontSize(float fontSize) {
+			if (text.fontSize != fontSize)
+				text.fontSize = fontSize;
+		}
+		public void SetFontAsset(global::TMPro.TMP_FontAsset newFontAsset, global::TMPro.VerticalAlignmentOptions vAlignment) {
+			if (text.font == newFontAsset)
+				return;
+			text.font = newFontAsset;
+			text.UpdateFontAsset();
+			text.verticalAlignment = vAlignment;
+			text.text = "";
+			text.ForceMeshUpdate(true, false);
+		}
+		public void SetText(string messageStr) {
+			text.text = messageStr;
+		}
+		public void SetTextColor(global::UnityEngine.Color textColor) {
+			text.color = textColor;
+		}
+		public void CreateStrFontTexture(string messageStr) {
+			text.text = messageStr;
+			text.ForceMeshUpdate(true, false);
+		}
 		public WindowMsgText() { }
 	}
 }
