@@ -6,14 +6,14 @@ namespace Dpr.Rendering
 	[global::UnityEngine.CreateAssetMenuAttribute(menuName = "ScriptableObjects/ImageEffect/BtlvPfx", fileName = "BtlvPfx")]
 	public sealed class BtlvPfx : global::SmartPoint.Rendering.ImageEffectObject
 	{
-		public static readonly int _ColorHue;
-		public static readonly int _ColorSat;
-		public static readonly int _ColorVal;
-		public static readonly int _ColorScale;
-		public static readonly int _ColorBias;
-		public static readonly int _ColorContrast;
+		public static readonly int _ColorHue = global::UnityEngine.Shader.PropertyToID("_ColorHue");
+		public static readonly int _ColorSat = global::UnityEngine.Shader.PropertyToID("_ColorSaturation");
+		public static readonly int _ColorVal = global::UnityEngine.Shader.PropertyToID("_ColorBrightness");
+		public static readonly int _ColorScale = global::UnityEngine.Shader.PropertyToID("_ColorScale");
+		public static readonly int _ColorBias = global::UnityEngine.Shader.PropertyToID("_ColorBias");
+		public static readonly int _ColorContrast = global::UnityEngine.Shader.PropertyToID("_ColorContrast");
 		public const string _SEPIA_TONE_ON = "_SEPIA_TONE_ON";
-		public static readonly int _SepiaToneWeight;
+		public static readonly int _SepiaToneWeight = global::UnityEngine.Shader.PropertyToID("_SepiaToneWeight");
 		public const string _COLOR_INVERSION_ON = "_COLOR_INVERSION_ON";
 		private static global::UnityEngine.Material _btlvPfxMaterial;
 		public override global::UnityEngine.Rendering.CommandBuffer Build(global::UnityEngine.Rendering.RenderTargetIdentifier sourceRT, out global::UnityEngine.Rendering.RenderTargetIdentifier resultRT, bool feedbackCameraTarget = true) {
@@ -98,6 +98,6 @@ namespace Dpr.Rendering
 				_btlvPfxMaterial.DisableKeyword(_COLOR_INVERSION_ON);
 		}
 		public BtlvPfx() { }
-		static BtlvPfx() { /*@B 0x6003828*/ throw null; }
+		static BtlvPfx() { }
 	}
 }

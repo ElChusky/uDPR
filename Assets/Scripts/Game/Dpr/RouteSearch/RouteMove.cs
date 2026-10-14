@@ -7,7 +7,7 @@ namespace Dpr.RouteSearch
 		private global::UnityEngine.Vector3[] Route;
 		private int CurrentRouteIndex;
 		public bool IsBusy { get; private set; }
-		public float MoveSpeed { get; set; }
+		public float MoveSpeed { get; set; } = 5f;
 		public void StartRoute(global::UnityEngine.Vector3[] route) {
             Route = route;
             CurrentRouteIndex = 0;
@@ -52,6 +52,6 @@ namespace Dpr.RouteSearch
             }
             outputPos = position;
         }
-		public RouteMove() { /*@B 0x600386D*/ throw null; }
+		public RouteMove() { }
 	}
 }

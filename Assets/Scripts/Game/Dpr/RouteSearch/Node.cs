@@ -10,16 +10,24 @@ namespace Dpr.RouteSearch
 		private global::Dpr.RouteSearch.Node.EStatus status;
 		public global::UnityEngine.Vector2Int Id { get; private set; }
 		public float HeuristicCost { get; private set; }
-		public bool IsOpen { get { /*@B 0x6003885*/ throw null; } }
-		public bool IsClose { get { /*@B 0x6003886*/ throw null; } }
-		public bool IsUntouch { get { /*@B 0x6003887*/ throw null; } }
-		public float Score { get { /*@B 0x6003888*/ throw null; } }
-		public Node(in global::UnityEngine.Vector2Int id) { /*@B 0x6003889*/ throw null; }
-		public void Reset() { /*@B 0x600388A*/ throw null; }
-		public void SetGoal(in global::UnityEngine.Vector2Int goalId) { /*@B 0x600388B*/ throw null; }
-		public void Open(in global::UnityEngine.Vector2Int fromId, float moveCost, int depth) { /*@B 0x600388C*/ throw null; }
-		public void Colse() { /*@B 0x600388D*/ throw null; }
-		public static float CalcScore(float moveCost, float heuristicCost) { /*@B 0x600388E*/ throw null; }
+		public bool IsOpen { get { return this.status == global::Dpr.RouteSearch.Node.EStatus.Open; } }
+		public bool IsClose { get { return this.status == global::Dpr.RouteSearch.Node.EStatus.Close; } }
+		public bool IsUntouch { get { return this.status == global::Dpr.RouteSearch.Node.EStatus.Untouch; } }
+		public float Score { get { return this.MoveCost + this.HeuristicCost; } }
+		public Node(in global::UnityEngine.Vector2Int id) { this.Id = id; }
+		public void Reset() {
+			this.status = global::Dpr.RouteSearch.Node.EStatus.Untouch;
+			this.Attribute.IsValid = false;
+		}
+		public void SetGoal(in global::UnityEngine.Vector2Int goalId) { this.HeuristicCost = (goalId - this.Id).magnitude; }
+		public void Open(in global::UnityEngine.Vector2Int fromId, float moveCost, int depth) {
+			this.MoveCost = moveCost;
+			this.FromId = fromId;
+			this.Depth = depth;
+			this.status = global::Dpr.RouteSearch.Node.EStatus.Open;
+		}
+		public void Colse() { this.status = global::Dpr.RouteSearch.Node.EStatus.Close; }
+		public static float CalcScore(float moveCost, float heuristicCost) { return moveCost + heuristicCost; }
 		private enum EStatus
 		{
 			Untouch = 0,

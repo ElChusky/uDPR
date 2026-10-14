@@ -6,8 +6,8 @@ namespace Dpr.Rendering
 	[global::UnityEngine.CreateAssetMenuAttribute(menuName = "ScriptableObjects/ImageEffect/ColorFilter", fileName = "ColorFilter")]
 	public class ColorFilter : global::SmartPoint.Rendering.ImageEffectObject
 	{
-		public static readonly int _Color;
-		private static global::UnityEngine.Material _colorFilteMaterial;
+		public static readonly int _Color = global::UnityEngine.Shader.PropertyToID("_Color");
+		private static global::UnityEngine.Material _colorFilteMaterial = null;
 		public global::UnityEngine.Material[] materials { get { return this.materialInstances; } }
 		public override global::UnityEngine.Rendering.CommandBuffer Build(global::UnityEngine.Rendering.RenderTargetIdentifier sourceRT, out global::UnityEngine.Rendering.RenderTargetIdentifier resultRT, bool feedbackCameraTarget = true) {
 			Destroy();
@@ -72,6 +72,6 @@ namespace Dpr.Rendering
 			_colorFilteMaterial.SetColor(_Color, new Color(param.colorFilterR, param.colorFilterG, param.colorFilterB, param.colorFilterA));
 		}
 		public ColorFilter() { }
-		static ColorFilter() { /*@B 0x6003832*/ throw null; }
+		static ColorFilter() { }
 	}
 }

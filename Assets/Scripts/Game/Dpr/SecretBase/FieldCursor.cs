@@ -21,10 +21,10 @@ namespace Dpr.SecretBase
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.BoxCollider boxCollider;
 		private global::UnityEngine.RectInt rect;
-		private global::UnityEngine.Vector3 cursorOffset;
-		private global::UnityEngine.Vector3 cursorPosition;
-		public int Width { get { /*@B 0x600355C*/ throw null; } }
-		public int Height { get { /*@B 0x600355D*/ throw null; } }
+		private global::UnityEngine.Vector3 cursorOffset = new global::UnityEngine.Vector3(-0.5f, 0.0015f, 0.5f);
+		private global::UnityEngine.Vector3 cursorPosition = new global::UnityEngine.Vector3(0f, 0f, 0f);
+		public int Width { get { return fieldCursorGrid.Width; } }
+		public int Height { get { return fieldCursorGrid.Height; } }
 		public global::UnityEngine.Transform Node { get { return this.node; } }
 		public global::UnityEngine.Transform StatueRoot { get { return this.statueRoot; } }
 		public global::UnityEngine.BoxCollider BoxCollider { get { return this.boxCollider; } }
@@ -81,6 +81,6 @@ namespace Dpr.SecretBase
 			{
 			}
 		}
-		public FieldCursor() { /*@B 0x600356A*/ throw null; }
+		public FieldCursor() { }
 	}
 }

@@ -6,14 +6,14 @@ namespace Dpr.Rendering
 	[global::UnityEngine.CreateAssetMenuAttribute(menuName = "ScriptableObjects/ImageEffect/FeedbackBlur", fileName = "FeedbackBlur")]
 	public class FeedbackBlur : global::SmartPoint.Rendering.ImageEffectObject
 	{
-		public static readonly int DELAY_BUFFER_TEX_ID;
-		public static readonly int _FeedbackBlurWeight;
-		public static readonly int _FeedbackBlurRotation;
-		public static readonly int _FeedbackBlurScale;
-		public static readonly int _FeedbackBlurHue;
-		public static readonly int _FeedbackBlurSaturation;
-		public static readonly int _FeedbackBlurBrightness;
-		public static readonly int _FeedbackBlurContrast;
+		public static readonly int DELAY_BUFFER_TEX_ID = global::UnityEngine.Shader.PropertyToID("_DelayFrameTexture");
+		public static readonly int _FeedbackBlurWeight = global::UnityEngine.Shader.PropertyToID("_FeedbackBlurWeight");
+		public static readonly int _FeedbackBlurRotation = global::UnityEngine.Shader.PropertyToID("_FeedbackBlurRotation");
+		public static readonly int _FeedbackBlurScale = global::UnityEngine.Shader.PropertyToID("_FeedbackBlurScale");
+		public static readonly int _FeedbackBlurHue = global::UnityEngine.Shader.PropertyToID("_FeedbackBlurHue");
+		public static readonly int _FeedbackBlurSaturation = global::UnityEngine.Shader.PropertyToID("_FeedbackBlurSaturation");
+		public static readonly int _FeedbackBlurBrightness = global::UnityEngine.Shader.PropertyToID("_FeedbackBlurBrightness");
+		public static readonly int _FeedbackBlurContrast = global::UnityEngine.Shader.PropertyToID("_FeedbackBlurContrast");
 		private global::UnityEngine.RenderTexture _delayBuffer;
 		private static global::UnityEngine.Material _feedbackBlurMaterial;
 		public override void Destroy() {
@@ -105,6 +105,6 @@ namespace Dpr.Rendering
 			_feedbackBlurMaterial.SetFloat(_FeedbackBlurContrast, param.feedbackEffectContrast);
 		}
 		public FeedbackBlur() { }
-		static FeedbackBlur() { /*@B 0x6003837*/ throw null; }
+		static FeedbackBlur() { }
 	}
 }

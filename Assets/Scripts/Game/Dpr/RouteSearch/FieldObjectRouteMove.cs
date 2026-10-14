@@ -13,13 +13,16 @@ namespace Dpr.RouteSearch
 		private float StopTime;
 		private bool IsRotating;
 		private float RotateTarget;
-		private static readonly float MovingMinimumRate;
-		private static readonly float FailedStopTime;
+		private static readonly float MovingMinimumRate = 0.2f;
+		private static readonly float FailedStopTime = 1f;
 		public global::Dpr.RouteSearch.ObjectType ObjectType { get; set; }
-		public float MoveSpeed { get { /*@B 0x6003850*/ throw null; } set { /*@B 0x6003851*/ throw null; } }
-		public float RotateSpeed { get; set; }
+		public float MoveSpeed { get { return this.RouteMove.MoveSpeed; } set { this.RouteMove.MoveSpeed = value; } }
+		public float RotateSpeed { get; set; } = 720f;
 		public bool IsBusy { get; private set; }
-		public FieldObjectRouteMove(global::FieldObjectEntity entity) { /*@B 0x6003856*/ throw null; }
+		public FieldObjectRouteMove(global::FieldObjectEntity entity) {
+			this.Entity = entity;
+			this.RouteMove = new global::Dpr.RouteSearch.RouteMove();
+		}
 		public void StartRoute(global::UnityEngine.Vector3 goalPos, global::System.Action<global::Dpr.RouteSearch.RouteMoveResult> completedEvent = null) {
             global::XLSXContent.AttributeMatrix matrix = GameManager.GetMapAttributeMattrix();
             StopCore(RouteMoveResult.Canceled);
@@ -146,8 +149,22 @@ namespace Dpr.RouteSearch
 		private static float CalcYawAngle(float x, float z) {
             return Mathf.Atan2(x, z) * Mathf.Rad2Deg;
         }
-		private static float MoveAngle(float baseAngle, float targetAngle, float moveAngle, out bool complete) { /*@B 0x6003862*/ throw null; }
-		static FieldObjectRouteMove() { /*@B 0x6003863*/ throw null; }
+		private static float MoveAngle(float baseAngle, float targetAngle, float moveAngle, out bool complete) {
+			complete = false;
+			float delta = global::UnityEngine.Mathf.DeltaAngle(baseAngle, targetAngle);
+			if (delta <= 0f)
+			{
+				if (delta < -moveAngle)
+					return baseAngle - moveAngle;
+			}
+			else if (delta > moveAngle)
+			{
+				return baseAngle + moveAngle;
+			}
+			complete = true;
+			return targetAngle;
+		}
+		static FieldObjectRouteMove() { }
 		private enum AnimationType
 		{
 			Invalid = 0,

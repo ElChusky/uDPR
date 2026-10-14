@@ -30,7 +30,7 @@ namespace Dpr.SecretBase
 		private global::FieldConnector fieldConnector;
 		private bool isHaveState;
 		private bool isExited;
-		private bool isMineSecretBase;
+		private bool isMineSecretBase = true;
 		private global::Dpr.SecretBase.SecretBaseController.State state;
 		private global::Dpr.UI.ContextMenuItem selectedItem;
 		public global::System.Collections.IEnumerator ActivateOperation(global::FieldConnector fieldConnector) {
@@ -371,7 +371,7 @@ namespace Dpr.SecretBase
             if (postProcessFilter != null)
                 postProcessFilter.Reset();
         }
-		public SecretBaseController() { /*@B 0x60034F4*/ throw null; }
+		public SecretBaseController() { }
 		private enum State
 		{
 			SecretBase = 0,

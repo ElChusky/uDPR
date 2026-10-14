@@ -12,11 +12,118 @@ namespace Dpr.SecretBase
 		public global::XLSXContent.Pedestal.SheetInfo pedestal;
 		private global::Dpr.SecretBase.PlacementData.NGMotionMono ngMotionPlayer;
 		public bool isLoading { get; private set; }
-		public global::UnityEngine.Vector3 Position { get { /*@B 0x60035AA*/ throw null; } }
-		public PlacementData(global::Dpr.SecretBase.PlacementData prev, global::UnityEngine.RectInt rect, global::Dpr.SecretBase.FieldCursor origin, global::UnityEngine.Transform root) { /*@B 0x60035AB*/ throw null; }
-		public PlacementData(global::UnityEngine.GameObject model, global::Dpr.SecretBase.StatueItemData value, global::Dpr.SecretBase.StatueEffectData statue, global::XLSXContent.Pedestal.SheetInfo pedestal, global::UnityEngine.RectInt rect, global::Dpr.SecretBase.FieldCursor origin, bool bIsCursorCopy, global::UnityEngine.Transform root = null) { /*@B 0x60035AC*/ throw null; }
-		public PlacementData(global::Dpr.SecretBase.StatueModelLoader modelLoader, global::Dpr.SecretBase.StatueItemData value, global::Dpr.SecretBase.StatueEffectData statue, global::XLSXContent.Pedestal.SheetInfo pedestal, global::UnityEngine.RectInt rect, global::Dpr.SecretBase.FieldCursor origin, bool bIsCursorCopy, global::UnityEngine.Transform root = null) { /*@B 0x60035AD*/ throw null; }
-		public void SetParent(global::Dpr.SecretBase.FieldCursor parent) { /*@B 0x60035AE*/ throw null; }
+		public global::UnityEngine.Vector3 Position { get { return cursor.transform.position; } }
+		public PlacementData(global::Dpr.SecretBase.PlacementData prev, global::UnityEngine.RectInt rect, global::Dpr.SecretBase.FieldCursor origin, global::UnityEngine.Transform root) {
+			data = prev.data;
+			statue = prev.statue;
+			pedestal = prev.pedestal;
+			GameObject go = Object.Instantiate(origin.gameObject, root);
+			go.SetActive(true);
+			cursor = go.GetComponent<FieldCursor>();
+			cursor.SetRect(rect);
+			SetDisplayCursor(!SecretBaseSaveDataWork.ViewMode);
+			Transform statueRoot = cursor.StatueRoot;
+			if (prev.statueModel != null)
+			{
+				statueModel = prev.statueModel;
+				statueModel.SetParent(statueRoot);
+			}
+			if (prev.pedestalModel != null)
+			{
+				pedestalModel = prev.pedestalModel;
+				pedestalModel.SetParent(statueRoot);
+			}
+			BoxCollider boxCollider = cursor.BoxCollider;
+			if (boxCollider != null)
+			{
+				boxCollider.enabled = true;
+				boxCollider.center = new Vector3(0f, 0.5f, 0f);
+				boxCollider.size = new Vector3(statue.width, 1f, statue.height);
+				boxCollider.gameObject.layer = LayerMask.NameToLayer("Obstacle");
+			}
+			UpdateGraphic(false);
+			statueRoot.gameObject.AddComponent<SetMotionMono>();
+		}
+		public PlacementData(global::UnityEngine.GameObject model, global::Dpr.SecretBase.StatueItemData value, global::Dpr.SecretBase.StatueEffectData statue, global::XLSXContent.Pedestal.SheetInfo pedestal, global::UnityEngine.RectInt rect, global::Dpr.SecretBase.FieldCursor origin, bool bIsCursorCopy, global::UnityEngine.Transform root = null) {
+			data = value;
+			this.statue = statue;
+			this.pedestal = pedestal;
+			if (bIsCursorCopy)
+			{
+				bool hasRoot = root != null;
+				GameObject src = origin.gameObject;
+				GameObject go = hasRoot ? Object.Instantiate(src, root, false) : Object.Instantiate(src);
+				go.SetActive(true);
+				cursor = go.GetComponent<FieldCursor>();
+				cursor.SetRect(rect);
+			}
+			else
+			{
+				cursor = origin;
+			}
+			BoxCollider boxCollider = cursor.BoxCollider;
+			if (boxCollider != null)
+			{
+				boxCollider.enabled = true;
+				boxCollider.center = new Vector3(0f, 0.5f, 0f);
+				boxCollider.size = new Vector3(statue.width, 1f, statue.height);
+				boxCollider.gameObject.layer = LayerMask.NameToLayer("Obstacle");
+			}
+			SetDisplayCursor(!SecretBaseSaveDataWork.ViewMode);
+			statueModel = model.transform;
+			statueModel.SetParent(cursor.StatueRoot);
+			if (data.pedestalId > 0)
+				SetPedestal(pedestal);
+			UpdateGraphic(!bIsCursorCopy);
+		}
+		public PlacementData(global::Dpr.SecretBase.StatueModelLoader modelLoader, global::Dpr.SecretBase.StatueItemData value, global::Dpr.SecretBase.StatueEffectData statue, global::XLSXContent.Pedestal.SheetInfo pedestal, global::UnityEngine.RectInt rect, global::Dpr.SecretBase.FieldCursor origin, bool bIsCursorCopy, global::UnityEngine.Transform root = null) {
+			data = value;
+			this.statue = statue;
+			this.pedestal = pedestal;
+			if (bIsCursorCopy)
+			{
+				bool hasRoot = root != null;
+				GameObject src = origin.gameObject;
+				GameObject go = hasRoot ? Object.Instantiate(src, root, false) : Object.Instantiate(src);
+				go.SetActive(true);
+				cursor = go.GetComponent<FieldCursor>();
+				cursor.SetRect(rect);
+			}
+			else
+			{
+				cursor = origin;
+			}
+			SetDisplayCursor(!SecretBaseSaveDataWork.ViewMode);
+			isLoading = true;
+			modelLoader.Load(statue, cursor.StatueRoot, gameObject =>
+			{
+				if (isLoading)
+				{
+					statueModel = gameObject.transform;
+					if (data.pedestalId > 0)
+						SetPedestal(pedestal);
+					UpdateGraphic(!bIsCursorCopy);
+					isLoading = false;
+					return;
+				}
+				Object.Destroy(gameObject);
+			});
+		}
+		public void SetParent(global::Dpr.SecretBase.FieldCursor parent) {
+			if (statueModel != null)
+				statueModel.SetParent(parent.StatueRoot);
+			if (pedestalModel != null)
+				pedestalModel.SetParent(parent.StatueRoot);
+			Object.Destroy(cursor.gameObject);
+			cursor = parent;
+			BoxCollider boxCollider = cursor.BoxCollider;
+			if (boxCollider != null)
+			{
+				boxCollider.enabled = false;
+				boxCollider.gameObject.layer = 0;
+			}
+			UpdateGraphic(false);
+		}
 		public void SetPedestal(global::XLSXContent.Pedestal.SheetInfo pedestal) {
 			if (statueModel == null)
 				return;
@@ -142,8 +249,8 @@ namespace Dpr.SecretBase
 		private class SetMotionMono : global::UnityEngine.MonoBehaviour
 		{
 			private float timer;
-			private float height;
-			private readonly float g;
+			private float height = 0.05f;
+			private readonly float g = 10f;
 			private float v0;
 			private int bound;
 			private void Start() {
@@ -172,11 +279,11 @@ namespace Dpr.SecretBase
 
 				transform.localPosition = Vector3.up * y;
 			}
-			public SetMotionMono() { /*@B 0x600A140*/ throw null; }
+			public SetMotionMono() { }
 		}
 		private class NGMotionMono : global::UnityEngine.MonoBehaviour
 		{
-			private readonly float length;
+			private readonly float length = 0.02f;
 			private int count;
 			private global::UnityEngine.Vector3 basePos;
 			private bool isPlaying;
@@ -212,7 +319,7 @@ namespace Dpr.SecretBase
 #endif
 					Stop();
 			}
-			public NGMotionMono() { /*@B 0x600A145*/ throw null; }
+			public NGMotionMono() { }
 		}
 	}
 }

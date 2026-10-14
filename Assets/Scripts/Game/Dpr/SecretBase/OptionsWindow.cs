@@ -3,6 +3,6 @@ namespace Dpr.SecretBase
 {
 	public class OptionsWindow : global::Dpr.SecretBase.SelectWindow<global::Dpr.SecretBase.OptionsItem, string>
 	{
-		public OptionsWindow() { /*@B 0x6003677*/ throw null; }
+		public OptionsWindow() { }
 	}
 }
