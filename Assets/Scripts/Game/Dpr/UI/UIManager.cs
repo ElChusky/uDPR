@@ -91,54 +91,342 @@ namespace Dpr.UI
 		private static global::Dpr.UI.UIManager.ComparerTownMapGuide _comparerTownMapGuide;
 		private static global::Dpr.UI.UIManager.ComparerPlaceName _comparerPlaceName;
 		private global::Dpr.UI.NowloadingController _nowLoadingController;
-		public static bool isInitialized { get { /*@B 0x6005BB7*/ throw null; } }
+		public static bool isInitialized { get { return _instance != null && (_instance._InitializeStateBits & (int)InitializeStateBit.Loaded) == (int)InitializeStateBit.Loaded; } }
 		public global::TransitionID transitionId { get { return this._transitionId; } }
 		public bool isFadeTransition { get { return this._isFadeTransition; } }
-		public global::UnityEngine.RectTransform modelBgRoot { get { /*@B 0x6005BBA*/ throw null; } }
+		public global::UnityEngine.RectTransform modelBgRoot { get { return this._modelView.modelBgRoot; } }
 		public global::XLSXContent.UIDatabase database { get { return this._mdUis; } }
 		public global::XLSXContent.TownMapGuideTable townMapGuideTable { get { return this._mdTownmapGuide; } }
 		public global::XLSXContent.TownMapTable townMapTable { get { return this._mdTownmap; } }
 		public global::XLSXContent.DistributionTable distributionTable { get { return this._mdDistribution; } }
 		public global::XLSXContent.PlaceNameTable placeNameTable { get { return this._mdPlaceName; } }
 		public global::XLSXContent.InputLimitTable inputLimitTable { get { return this._mdInputLimit; } }
-		public bool IsResidentSpriteAtlases { get { /*@B 0x6005BC1*/ throw null; } }
+		public bool IsResidentSpriteAtlases { get { return (this._InitializeStateBits & (int)InitializeStateBit.LoadedSpriteAtlas) != 0; } }
 		public global::Dpr.UI.UIModelViewController modelView { get { return this._modelView; } }
 		public global::XLSXContent.SearchIndexData searchIndexData { get { return this._mdSearchIndexData; } }
 		public bool isLoadedDatabase { get { return this._isLoadedDatabase; } }
-		protected override bool Awake() { /*@B 0x6005BC4*/ throw null; }
-		public void RegisterOnDestroy() { /*@B 0x6005BC5*/ throw null; }
-		private void OnEnable() { /*@B 0x6005BC6*/ throw null; }
-		private void OnDisable() { /*@B 0x6005BC7*/ throw null; }
-		private void Destroy() { /*@B 0x6005BC8*/ throw null; }
-		public global::System.Collections.IEnumerator Start() { /*@B 0x6005BC9*/ throw null; }
-		public void LoadResidents() { /*@B 0x6005BCA*/ throw null; }
-		public void LoadWindows(bool isOpening) { /*@B 0x6005BCB*/ throw null; }
-		public void Reload(global::Dpr.Message.MessageEnumData.MsgLangId unloadLangId, global::UnityEngine.Events.UnityAction onComplete) { /*@B 0x6005BCC*/ throw null; }
-		private global::System.Collections.IEnumerator OpReload(global::Dpr.Message.MessageEnumData.MsgLangId unloadLangId, global::UnityEngine.Events.UnityAction onComplete, global::UnityEngine.Events.UnityAction onUnloadComplete = null) { /*@B 0x6005BCD*/ throw null; }
-		private void BeginDebugInstrument() { /*@B 0x6005BCE*/ throw null; }
-		private void DebugInstrument(string label) { /*@B 0x6005BCF*/ throw null; }
-		private global::System.Collections.IEnumerator OpLoad(int type, bool isOpening = false) { /*@B 0x6005BD0*/ throw null; }
-		private global::System.Collections.IEnumerator DoParallel() { /*@B 0x6005BD1*/ throw null; }
-		public void LoadDatabase() { /*@B 0x6005BD3*/ throw null; }
-		private global::System.Collections.IEnumerator OpLoadDatabase() { /*@B 0x6005BD4*/ throw null; }
-		private void UnloadDatabase() { /*@B 0x6005BD5*/ throw null; }
-		private void CreateInputLimitHashSet(global::Dpr.UI.UIManager.InputLimitType type, global::XLSXContent.SheetInputLimitTable[] inputLimitDatas) { /*@B 0x6005BD6*/ throw null; }
-		private void UnloadResidentSpriteAtlases(bool isVariant, global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(-1)) { /*@B 0x6005BD7*/ throw null; }
-		private global::System.Collections.IEnumerator OpLoadResidentSpriteAtlases(bool isVariant) { /*@B 0x6005BD8*/ throw null; }
-		private global::System.Collections.IEnumerator OpLoadSpriteAtlases(global::System.Collections.Generic.List<global::SpriteAtlasID> spriteAtlasIds, bool isVariant) { /*@B 0x6005BD9*/ throw null; }
-		private int FindSpriteAtlasIndex(string assetName) { /*@B 0x6005BDA*/ throw null; }
-		public void UnloadSpriteAtlases(global::System.Collections.Generic.List<global::SpriteAtlasID> spriteAtlasIds, bool isVariant, global::Dpr.Message.MessageEnumData.MsgLangId langId) { /*@B 0x6005BDB*/ throw null; }
-		private void OnAtlasRequested(string name, global::System.Action<global::UnityEngine.U2D.SpriteAtlas> atlasCallback) { /*@B 0x6005BDC*/ throw null; }
-		private global::System.Collections.IEnumerator OpWaitDatabase(string name, global::System.Action<global::UnityEngine.U2D.SpriteAtlas> atlasCallback) { /*@B 0x6005BDD*/ throw null; }
-		public global::UnityEngine.U2D.SpriteAtlas GetSpriteAtlas(global::SpriteAtlasID spriteAtlasId) { /*@B 0x6005BDE*/ throw null; }
-		public global::UnityEngine.Sprite GetAtlasSprite(global::SpriteAtlasID spriteAtlasId, string name) { /*@B 0x6005BDF*/ throw null; }
+		protected override bool Awake() {
+            _blurBg = _blurBgRoot.GetComponentInChildren<global::UnityEngine.UI.RawImage>();
+            _blurBg.color = new Color(_blurBg.color.r, _blurBg.color.g, _blurBg.color.b, 0f);
+            return base.Awake();
+        }
+		public void RegisterOnDestroy() {
+            Sequencer.onDestroy -= Destroy;
+            Sequencer.onDestroy += Destroy;
+        }
+		private void OnEnable() {
+            global::UnityEngine.U2D.SpriteAtlasManager.atlasRequested += OnAtlasRequested;
+        }
+		private void OnDisable() {
+            global::UnityEngine.U2D.SpriteAtlasManager.atlasRequested -= OnAtlasRequested;
+        }
+		private void Destroy() {
+            Sequencer.onDestroy -= Destroy;
+            UnloadResidentWindows(false);
+            UnloadResidentSpriteAtlases(false);
+            UnloadResidentSpriteAtlases(true, MessageHelper.ConvertMsgId(PlayerWork.msgLangID));
+            UnloadSearchIndexData(MessageHelper.ConvertMsgId(PlayerWork.msgLangID));
+            global::Dpr.Battle.View.Systems.BattleViewUISystem.UnloadAssetSelf();
+            UnloadDatabase();
+        }
+		public global::System.Collections.IEnumerator Start() {
+            while (_mdUis == null)
+                yield return null;
+
+            _spriteAtlasParams.Clear();
+            UIDatabase.SheetSpriteAtlas[] spriteAtlases = _mdUis.SpriteAtlas;
+            for (int i = 0; i < spriteAtlases.Length; i++)
+            {
+                _spriteAtlasParams.Add(new SpriteAtlasParam
+                {
+                    assetBundleName = spriteAtlases[i].AssetBundleName,
+                    assetName = spriteAtlases[i].AssetName,
+                });
+            }
+            _SetupKeyAssign(global::DPData.INPUTMODE.INPUTMODE_NORMAL);
+            _modelView.gameObject.SetActive(false);
+        }
+		public void LoadResidents() {
+            Sequencer.Start(OpLoad(0, false));
+        }
+		public void LoadWindows(bool isOpening) {
+            if ((_InitializeStateBits & (int)InitializeStateBit.EntryWindows) != 0)
+                return;
+
+            Sequencer.Start(OpLoad(1, isOpening));
+        }
+		public void Reload(global::Dpr.Message.MessageEnumData.MsgLangId unloadLangId, global::UnityEngine.Events.UnityAction onComplete) {
+            Sequencer.Start(OpReload(unloadLangId, onComplete, null));
+        }
+		private global::System.Collections.IEnumerator OpReload(global::Dpr.Message.MessageEnumData.MsgLangId unloadLangId, global::UnityEngine.Events.UnityAction onComplete, global::UnityEngine.Events.UnityAction onUnloadComplete = null) {
+            BeginDebugInstrument();
+            _InitializeStateBits &= ~(int)(InitializeStateBit.EntryWindows | InitializeStateBit.LoadedWindows | InitializeStateBit.EntryAterLang | InitializeStateBit.LoadAterLang);
+            ClearAtlasSprites();
+            UnloadResidentWindows(false);
+            UnloadResidentSpriteAtlases(true, unloadLangId);
+            UnloadSearchIndexData(unloadLangId);
+            global::Dpr.AssetBundleUnloader unloader = global::Dpr.Battle.View.Systems.BattleViewUISystem.UnloadAssetSelf();
+            while (!unloader.isUnloaded)
+                yield return null;
+
+            DebugInstrument("Reset Unload");
+            onUnloadComplete?.Invoke();
+            yield return OpLoad(1, false);
+
+            onComplete?.Invoke();
+            yield return null;
+        }
+		private void BeginDebugInstrument() {
+            _debugInstrument = Time.realtimeSinceStartup;
+        }
+		private void DebugInstrument(string label) {
+            _debugInstrument = Time.realtimeSinceStartup;
+        }
+		private global::System.Collections.IEnumerator OpLoad(int type, bool isOpening = false) {
+            switch (type)
+            {
+                case 0:
+                    _InitializeStateBits |= (int)InitializeStateBit.EntrySpriteAtlas;
+                    BeginDebugInstrument();
+                    yield return OpLoadResidentSpriteAtlases(false);
+                    SetupSpriteMonsterBall();
+                    _InitializeStateBits |= (int)InitializeStateBit.LoadedSpriteAtlas;
+                    DebugInstrument(InitializeStateBit.LoadedSpriteAtlas.ToString());
+                    break;
+                case 1:
+                    _InitializeStateBits |= (int)InitializeStateBit.EntryWindows;
+                    if (!isOpening)
+                    {
+                        Sequencer.Start(DoParallel());
+                        yield break;
+                    }
+                    BeginDebugInstrument();
+                    yield return OpLoadResidentWindows(true);
+                    _InitializeStateBits |= (int)InitializeStateBit.LoadedWindows;
+                    DebugInstrument(InitializeStateBit.LoadedWindows.ToString());
+                    break;
+            }
+        }
+		private global::System.Collections.IEnumerator DoParallel() {
+            BeginDebugInstrument();
+            yield return OpLoadResidentSpriteAtlases(true);
+            yield return OpLoadResidentWindows(false);
+            _InitializeStateBits |= (int)InitializeStateBit.LoadedWindows;
+            DebugInstrument(InitializeStateBit.LoadedWindows.ToString());
+        }
+		public void LoadDatabase() {
+            Sequencer.Start(OpLoadDatabase());
+        }
+		private global::System.Collections.IEnumerator OpLoadDatabase() {
+            _isLoadedDatabase = false;
+            BeginDebugInstrument();
+            for (int i = 0; i < _databaseAssetBundleNames.Length; i++)
+                AssetManager.AppendAssetBundleRequest(_databaseAssetBundleNames[i], true, null, null);
+
+            yield return AssetManager.DispatchRequests((eventType, name, asset) =>
+            {
+                if (eventType != RequestEventType.Activated)
+                    return;
+
+                ScriptableObject obj = asset as ScriptableObject;
+                if (obj == null)
+                    return;
+
+                if (name == "UIDatabase")
+                    _mdUis = obj as UIDatabase;
+                else if (name == "TownMapGuideTable")
+                    _mdTownmapGuide = obj as TownMapGuideTable;
+                else if (name == "TownMapTable")
+                    _mdTownmap = obj as TownMapTable;
+                else if (name == "DistributionTable")
+                    _mdDistribution = obj as DistributionTable;
+                else if (name == "PlaceNameTable")
+                    _mdPlaceName = obj as PlaceNameTable;
+                else if (name == "InputLimitTable")
+                {
+                    _mdInputLimit = obj as InputLimitTable;
+                    CreateInputLimitHashSet(InputLimitType.JPN, _mdInputLimit.J);
+                    CreateInputLimitHashSet(InputLimitType.KOR, _mdInputLimit.K);
+                    CreateInputLimitHashSet(InputLimitType.TCH, _mdInputLimit.TC);
+                    CreateInputLimitHashSet(InputLimitType.SCH, _mdInputLimit.SC);
+                    CreateInputLimitHashSet(InputLimitType.EFIGS, _mdInputLimit.EFIGS);
+                }
+            });
+
+            DebugInstrument("uimasterdatas");
+            _isLoadedDatabase = true;
+        }
+		private void UnloadDatabase() {
+            for (int i = 0; i < _databaseAssetBundleNames.Length; i++)
+                AssetManager.UnloadAssetBundle(_databaseAssetBundleNames[i]);
+
+            _isLoadedDatabase = false;
+        }
+		private void CreateInputLimitHashSet(global::Dpr.UI.UIManager.InputLimitType type, global::XLSXContent.SheetInputLimitTable[] inputLimitDatas) {
+            HashSet<int> hashSet = new HashSet<int>();
+            for (int i = 0; i < inputLimitDatas.Length; i++)
+                hashSet.Add(inputLimitDatas[i].DecimalNumber);
+
+            _inputLimitHashSets[(int)type] = hashSet;
+        }
+		private void UnloadResidentSpriteAtlases(bool isVariant, global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(-1)) {
+            List<SpriteAtlasID> spriteAtlasIds = new List<SpriteAtlasID>();
+            UIDatabase.SheetSpriteAtlas[] spriteAtlases = _mdUis.SpriteAtlas;
+            for (int i = 0; i < spriteAtlases.Length; i++)
+            {
+                if (spriteAtlases[i].Resident && spriteAtlases[i].IsLanguage == isVariant)
+                    spriteAtlasIds.Add((SpriteAtlasID)i);
+            }
+            UnloadSpriteAtlases(spriteAtlasIds, isVariant, langId);
+        }
+		private global::System.Collections.IEnumerator OpLoadResidentSpriteAtlases(bool isVariant) {
+            List<SpriteAtlasID> spriteAtlasIds = new List<SpriteAtlasID>();
+            UIDatabase.SheetSpriteAtlas[] spriteAtlases = _mdUis.SpriteAtlas;
+            for (int i = 0; i < spriteAtlases.Length; i++)
+            {
+                if (spriteAtlases[i].Resident && spriteAtlases[i].IsLanguage == isVariant)
+                    spriteAtlasIds.Add((SpriteAtlasID)i);
+            }
+            yield return OpLoadSpriteAtlases(spriteAtlasIds, isVariant);
+        }
+		private global::System.Collections.IEnumerator OpLoadSpriteAtlases(global::System.Collections.Generic.List<global::SpriteAtlasID> spriteAtlasIds, bool isVariant) {
+            yield return null;
+
+            for (int i = 0; i < spriteAtlasIds.Count; i++)
+            {
+                int index = (int)spriteAtlasIds[i];
+                UIDatabase.SheetSpriteAtlas data = _mdUis.SpriteAtlas[index];
+                SpriteAtlasParam param = _spriteAtlasParams[index];
+                param.variantAssetBundleName = isVariant ? MessageHelper.AddVariantNameToPath(_spriteAtlasParams[index].assetBundleName) : null;
+                AssetManager.AppendAssetBundleRequest(data.AssetBundleName, true, null, isVariant ? MessageHelper.GetLocalizeVariants() : null);
+            }
+
+            yield return AssetManager.DispatchRequests((eventType, name, asset) =>
+            {
+                if (eventType != RequestEventType.Activated)
+                    return;
+
+                global::UnityEngine.U2D.SpriteAtlas spriteAtlas = asset as global::UnityEngine.U2D.SpriteAtlas;
+                if (spriteAtlas == null)
+                    return;
+
+                int index = FindSpriteAtlasIndex(name);
+                _spriteAtlasParams[index].SetSpriteAtlas(spriteAtlas);
+            });
+        }
+		private int FindSpriteAtlasIndex(string assetName) {
+            UIDatabase.SheetSpriteAtlas[] spriteAtlases = _mdUis.SpriteAtlas;
+            for (int i = 0; i < spriteAtlases.Length; i++)
+            {
+                if (spriteAtlases[i].AssetName == assetName)
+                    return i;
+            }
+            return -1;
+        }
+		public void UnloadSpriteAtlases(global::System.Collections.Generic.List<global::SpriteAtlasID> spriteAtlasIds, bool isVariant, global::Dpr.Message.MessageEnumData.MsgLangId langId) {
+            for (int i = 0; i < spriteAtlasIds.Count; i++)
+            {
+                SpriteAtlasParam param = _spriteAtlasParams[(int)spriteAtlasIds[i]];
+                UnloadAssetBundle(param.assetBundleName, isVariant, langId);
+                param.Clear();
+            }
+        }
+		private void OnAtlasRequested(string name, global::System.Action<global::UnityEngine.U2D.SpriteAtlas> atlasCallback) {
+            if (_mdUis == null)
+            {
+                Sequencer.Start(OpWaitDatabase(name, atlasCallback));
+                return;
+            }
+
+            for (int i = 0; i < _spriteAtlasParams.Count; i++)
+            {
+                if (_spriteAtlasParams[i].assetName == name)
+                {
+                    SpriteAtlasParam param = _spriteAtlasParams[i];
+                    if (param != null)
+                        param.SetAtlasCallback(atlasCallback);
+                    return;
+                }
+            }
+        }
+		private global::System.Collections.IEnumerator OpWaitDatabase(string name, global::System.Action<global::UnityEngine.U2D.SpriteAtlas> atlasCallback) {
+            while (_mdUis == null)
+                yield return null;
+
+            OnAtlasRequested(name, atlasCallback);
+        }
+		public global::UnityEngine.U2D.SpriteAtlas GetSpriteAtlas(global::SpriteAtlasID spriteAtlasId) {
+            return _spriteAtlasParams[(int)spriteAtlasId].spriteAtlas;
+        }
+		public global::UnityEngine.Sprite GetAtlasSprite(global::SpriteAtlasID spriteAtlasId, string name) {
+            AtlasSpriteKey key = new AtlasSpriteKey { spriteAtlasId = spriteAtlasId, name = name };
+            Sprite sprite = null;
+            if (!_atlasSpriteDict.TryGetValue(key, out sprite))
+            {
+                sprite = _spriteAtlasParams[(int)spriteAtlasId].spriteAtlas.GetSprite(name);
+                _atlasSpriteDict.Add(key, sprite);
+            }
+            return sprite;
+        }
 		public void ClearCachedSprites() { }
-		public void ClearAtlasSprites() { /*@B 0x6005BE1*/ throw null; }
-		public void ClearAtlasSprite(global::SpriteAtlasID spriteAtlasId) { /*@B 0x6005BE2*/ throw null; }
-		private void SetupSpriteMonsterBall() { /*@B 0x6005BE3*/ throw null; }
-		public global::System.Collections.IEnumerator LoadSearchIndexData() { /*@B 0x6005BE4*/ throw null; }
-		private void UnloadSearchIndexData(global::Dpr.Message.MessageEnumData.MsgLangId langId) { /*@B 0x6005BE5*/ throw null; }
-		public void InitializeAfterLangDecide(global::UnityEngine.Events.UnityAction onComplete = null) { /*@B 0x6005BE6*/ throw null; }
+		public void ClearAtlasSprites() {
+            AtlasSpriteKey[] keys = _atlasSpriteDict.Keys.ToArray();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                AtlasSpriteKey key = keys[i];
+                if (_spriteAtlasParams.FirstOrDefault(x => x.spriteAtlasId == key.spriteAtlasId) == null)
+                    _atlasSpriteDict.Remove(key);
+            }
+        }
+		public void ClearAtlasSprite(global::SpriteAtlasID spriteAtlasId) {
+            AtlasSpriteKey[] keys = _atlasSpriteDict.Keys.ToArray();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                if (keys[i].spriteAtlasId == spriteAtlasId)
+                    _atlasSpriteDict.Remove(keys[i]);
+            }
+        }
+		private void SetupSpriteMonsterBall() {
+            _spriteMonsterBallDict.Clear();
+            UIDatabase.SheetMonsterBall[] monsterBalls = _mdUis.MonsterBall;
+            for (int i = 0; i < monsterBalls.Length; i++)
+            {
+                UIDatabase.SheetMonsterBall monsterBallData = monsterBalls[i];
+                if (monsterBallData.BallId != BallId.NULL)
+                {
+                    ItemInfo.LoadItemIcon((int)monsterBallData.ItemNo, sprite =>
+                    {
+                        MonsterBallParam param = new MonsterBallParam();
+                        param.itemNo = monsterBallData.ItemNo;
+                        param.ballId = monsterBallData.BallId;
+                        param.sprite = sprite;
+                        _spriteMonsterBallDict.Add(param.ballId, param);
+                    }, false, false);
+                }
+            }
+            _spriteMonsterBallStrange = GetAtlasSprite(SpriteAtlasID.COMMON, _mdUis.CommonSprite[21].SpriteName);
+            _spriteMonsterBallIllegal = GetAtlasSprite(SpriteAtlasID.COMMON, _mdUis.CommonSprite[22].SpriteName);
+        }
+		public global::System.Collections.IEnumerator LoadSearchIndexData() {
+            AssetManager.AppendAssetBundleRequest(_assetPathIndexdata, true, null, MessageHelper.GetLocalizeVariants());
+            yield return AssetManager.DispatchRequests((eventType, name, asset) =>
+            {
+                if (eventType != RequestEventType.Activated)
+                    return;
+
+                ScriptableObject obj = asset as ScriptableObject;
+                if (obj == null)
+                    return;
+
+                _mdSearchIndexData = obj as SearchIndexData;
+            });
+        }
+		private void UnloadSearchIndexData(global::Dpr.Message.MessageEnumData.MsgLangId langId) {
+            UnloadAssetBundle(_assetPathIndexdata, true, langId);
+        }
+		public void InitializeAfterLangDecide(global::UnityEngine.Events.UnityAction onComplete = null) {
+            Sequencer.Start(OpInitializeAfterLangDecide(onComplete));
+        }
 		public global::System.Collections.IEnumerator OpInitializeAfterLangDecide(global::UnityEngine.Events.UnityAction onComplete = null) { /*@B 0x6005BE7*/ throw null; }
 		public static bool IsMaleDress(global::XLSXContent.CharacterDressData.SheetData dressData) {
             // @017bff20: `add w8, Index, #0x63 ; cmp w8, #0xc7 ; cset lo` = an unsigned range test -99 <= Index <= 99 (the base code had `Index < 100`)
