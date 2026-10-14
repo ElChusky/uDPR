@@ -3,10 +3,21 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class AdapterFactory
 	{
-		private global::Dpr.Battle.Logic.Adapter[] m_adapter;
+		private global::Dpr.Battle.Logic.Adapter[] m_adapter = new global::Dpr.Battle.Logic.Adapter[5];
 		private global::Dpr.Battle.Logic.Net.Client m_iPtrNetClient;
-		public AdapterFactory(global::Dpr.Battle.Logic.Net.Client iPtrNetClient) { /*@B 0x600757B*/ throw null; }
-		public void Dispose() { /*@B 0x600757C*/ throw null; }
-		public global::Dpr.Battle.Logic.Adapter Create(global::Dpr.Battle.Logic.BtlCommMode commMode, byte clientID) { /*@B 0x600757D*/ throw null; }
+		public AdapterFactory(global::Dpr.Battle.Logic.Net.Client iPtrNetClient) {
+            for (int i = 0; i < m_adapter.Length; i++)
+                m_adapter[i] = null;
+            m_iPtrNetClient = iPtrNetClient;
+        }
+		public void Dispose() {
+            for (int i = 0; i < m_adapter.Length; i++)
+                m_adapter[i] = null;
+        }
+		public global::Dpr.Battle.Logic.Adapter Create(global::Dpr.Battle.Logic.BtlCommMode commMode, byte clientID) {
+            if (m_adapter[clientID] == null)
+                m_adapter[clientID] = new Adapter(clientID, commMode != BtlCommMode.BTL_COMM_NONE, m_iPtrNetClient);
+            return m_adapter[clientID];
+        }
 	}
 }

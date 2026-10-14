@@ -6,20 +6,59 @@ namespace Dpr.Battle.Logic
 		private global::Dpr.Battle.Logic.AiScript m_script;
 		private global::Dpr.Battle.Logic.BtlAiScriptNo m_scriptNo;
 		private global::Dpr.Battle.Logic.AiScriptCommandHandler m_commandHandler;
-		private global::Dpr.Battle.Logic.AiScriptCommandHandler.CommandParam m_commandParam;
+		private global::Dpr.Battle.Logic.AiScriptCommandHandler.CommandParam m_commandParam = new global::Dpr.Battle.Logic.AiScriptCommandHandler.CommandParam();
 		private uint m_seq;
-		private global::Dpr.Battle.Logic.AiScript.Result m_result;
-		public AiScriptHandler() { /*@B 0x6007DBA*/ throw null; }
-		public void StartScript(global::Dpr.Battle.Logic.AiScriptHandler.ScriptStartParam startParam) { /*@B 0x6007DBB*/ throw null; }
-		public bool WaitScript() { /*@B 0x6007DBC*/ throw null; }
+		private global::Dpr.Battle.Logic.AiScript.Result m_result = new global::Dpr.Battle.Logic.AiScript.Result();
+		public AiScriptHandler() {
+            m_script = null;
+            m_commandHandler = null;
+            m_scriptNo = BtlAiScriptNo.BTL_AISCRIPT_NO_NULL;
+            m_seq = 0;
+        }
+		public void StartScript(global::Dpr.Battle.Logic.AiScriptHandler.ScriptStartParam startParam) {
+            m_script = startParam.script;
+            m_scriptNo = startParam.scriptNo;
+            m_commandHandler = startParam.commandHandler;
+            m_commandParam.CopyFrom(startParam.commandParam);
+            m_seq = 0;
+        }
+		public bool WaitScript() {
+            switch ((SeqWaitScript)m_seq)
+            {
+                case SeqWaitScript.SEQ_LOAD_START:
+                    m_script.StartLoadScript(m_scriptNo);
+                    m_seq++;
+                    goto case SeqWaitScript.SEQ_LOAD_WAIT;
+                case SeqWaitScript.SEQ_LOAD_WAIT:
+                    if (!m_script.WaitLoadScript())
+                        return false;
+                    m_seq++;
+                    goto case SeqWaitScript.SEQ_EXEC_START;
+                case SeqWaitScript.SEQ_EXEC_START:
+                    m_commandHandler.SetCommandParam(m_commandParam);
+                    m_script.SetExecParameter(m_commandHandler);
+                    m_seq++;
+                    goto case SeqWaitScript.SEQ_EXEC_WAIT;
+                case SeqWaitScript.SEQ_EXEC_WAIT:
+                    m_script.Execute();
+                    m_script.GetResult(m_result);
+                    m_seq++;
+                    goto case SeqWaitScript.SEQ_END;
+                case SeqWaitScript.SEQ_END:
+                    m_script.UnLoadScript();
+                    break;
+            }
+            return true;
+        }
 		public global::Dpr.Battle.Logic.AiScript.Result GetScriptResult() { return this.m_result; }
 		public class ScriptStartParam
 		{
 			public global::Dpr.Battle.Logic.AiScript script;
 			public global::Dpr.Battle.Logic.BtlAiScriptNo scriptNo;
 			public global::Dpr.Battle.Logic.AiScriptCommandHandler commandHandler;
-			public global::Dpr.Battle.Logic.AiScriptCommandHandler.CommandParam commandParam;
-			public ScriptStartParam() { /*@B 0x600B740*/ throw null; }
+			public global::Dpr.Battle.Logic.AiScriptCommandHandler.CommandParam commandParam = new global::Dpr.Battle.Logic.AiScriptCommandHandler.CommandParam();
+			public ScriptStartParam() {
+			}
 		}
 		public enum SeqWaitScript
 		{
