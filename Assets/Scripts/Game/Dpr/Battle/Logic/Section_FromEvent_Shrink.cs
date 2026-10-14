@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_Shrink : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_Shrink(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F69*/ throw null; }
+		public Section_FromEvent_Shrink(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_Shrink.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_Shrink.Description description) {
 			result.isSucceeded = shrink(description.pokeID, description.percentage);
 		}
@@ -19,7 +19,10 @@ namespace Dpr.Battle.Logic
 		{
 			public byte pokeID;
 			public byte percentage;
-			public Description() { /*@B 0x600B591*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+				percentage = 0;
+			}
 		}
 		public class Result
 		{

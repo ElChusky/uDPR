@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_SetWazaEffectEnable : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_SetWazaEffectEnable(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F60*/ throw null; }
+		public Section_FromEvent_SetWazaEffectEnable(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_SetWazaEffectEnable.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_SetWazaEffectEnable.Description description) {
 			GetActionSharedData().wazaEffectParams.SetEnable();
 		}

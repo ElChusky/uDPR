@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_Kill : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_Kill(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F29*/ throw null; }
+		public Section_FromEvent_Kill(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_Kill.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_Kill.Description description) {
 			result.isKilled = false;
 			if (!GetBattleEnv().GetPosPoke().IsExist(description.targetPokeID))
@@ -39,8 +39,15 @@ namespace Dpr.Battle.Logic
 			public bool isDisableDeadProcess;
 			public global::Pml.WazaNo recordWazaID;
 			public global::Dpr.Battle.Logic.DamageCause deadCause;
-			public global::Dpr.Battle.Logic.StrParam message;
-			public Description() { /*@B 0x600B55F*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam message = new StrParam();
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				targetPokeID = PokeID.INVALID;
+				isDeadPokeEnable = false;
+				isDisableDeadProcess = false;
+				recordWazaID = WazaNo.NULL;
+				deadCause = DamageCause.OTHER;
+			}
 		}
 		public class Result
 		{

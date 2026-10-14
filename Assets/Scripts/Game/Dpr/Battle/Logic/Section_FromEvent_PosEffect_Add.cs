@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_PosEffect_Add : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_PosEffect_Add(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F34*/ throw null; }
+		public Section_FromEvent_PosEffect_Add(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_PosEffect_Add.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_PosEffect_Add.Description description) {
 			result.isAdded = false;
 			int[] factorParam = new int[4];
@@ -40,7 +40,13 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BtlPosEffect effect;
 			public global::Dpr.Battle.Logic.PosEffect.EffectParam effectParam;
 			public bool isSkipHpRecoverSpFailCheck;
-			public Description() { /*@B 0x600B567*/ throw null; }
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				pos = BtlPokePos.POS_NULL;
+				effect = BtlPosEffect.BTL_POSEFF_NULL;
+				effectParam.Raw_param1 = 0;
+				isSkipHpRecoverSpFailCheck = false;
+			}
 		}
 		public class Result
 		{

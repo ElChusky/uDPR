@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_FriendshipEffect : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_FriendshipEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F18*/ throw null; }
+		public Section_FromEvent_FriendshipEffect(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_FriendshipEffect.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_FriendshipEffect.Description description) {
 			GetServerCommandPutter().Act_FriendshipEffectWithMsg(description.pokeID, description.effectType, description.message.GetStrType(), description.message.GetStrID(),
 			                                                     (ushort)description.message.GetArgs()[0], (ushort)description.message.GetArgs()[1]);
@@ -12,8 +12,11 @@ namespace Dpr.Battle.Logic
 		{
 			public byte pokeID;
 			public global::Dpr.Battle.Logic.FriendshipEffect effectType;
-			public global::Dpr.Battle.Logic.StrParam message;
-			public Description() { /*@B 0x600B551*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam message = new StrParam();
+			public Description() {
+				pokeID = PokeID.INVALID;
+				effectType = FriendshipEffect.FREFF_HEART;
+			}
 		}
 		public class Result
 		{

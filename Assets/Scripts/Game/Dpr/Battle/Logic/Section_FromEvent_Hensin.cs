@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_Hensin : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_Hensin(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F1E*/ throw null; }
+		public Section_FromEvent_Hensin(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_Hensin.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_Hensin.Description description) {
 			result.isSucceeded = false;
 			BTL_POKEPARAM user = GetPokeParam(description.userPokeID);
@@ -59,8 +59,12 @@ namespace Dpr.Battle.Logic
 			public byte userPokeID;
 			public byte targetPokeID;
 			public bool isDisplayTokuseiWindow;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B557*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				targetPokeID = PokeID.INVALID;
+				isDisplayTokuseiWindow = false;
+			}
 		}
 		public class Result
 		{

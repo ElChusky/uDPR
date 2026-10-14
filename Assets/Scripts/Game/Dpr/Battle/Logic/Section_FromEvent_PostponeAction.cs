@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_PostponeAction : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_PostponeAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F37*/ throw null; }
+		public Section_FromEvent_PostponeAction(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_PostponeAction.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_PostponeAction.Description description) {
 			result.isSucceeded = false;
 			if (GetPokemonActionContainer().PostponeAction(description.pokeID))
@@ -15,8 +15,10 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public byte pokeID;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B569*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				pokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

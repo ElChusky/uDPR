@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_DeadCheck : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_DeadCheck(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EFA*/ throw null; }
+		public Section_FromEvent_DeadCheck(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_DeadCheck.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_DeadCheck.Description description) {
             result.isChecked = false;
             if (!GetBattleEnv().GetPosPoke().IsExist(description.pokeID))
@@ -23,7 +23,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public byte pokeID;
-			public Description() { /*@B 0x600B53F*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

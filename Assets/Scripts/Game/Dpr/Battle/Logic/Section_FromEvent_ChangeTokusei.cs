@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_ChangeTokusei : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_ChangeTokusei(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EDB*/ throw null; }
+		public Section_FromEvent_ChangeTokusei(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_ChangeTokusei.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_ChangeTokusei.Description description) {
 			result.isChanged = false;
 
@@ -67,8 +67,16 @@ namespace Dpr.Battle.Logic
 			public bool isEffectiveToSameTokusei;
 			public bool isSkipMemberInEvent;
 			public bool isDisplayTokuseiWindow;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B533*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				targetPokeID = PokeID.INVALID;
+				tokuseiID = TokuseiNo.NULL;
+				cause = TokuseiChangeCause.TOKUSEI_CHANGE_CAUSE_OTHER;
+				isEffectiveToSameTokusei = false;
+				isSkipMemberInEvent = false;
+				isDisplayTokuseiWindow = false;
+			}
 		}
 		public class Result
 		{

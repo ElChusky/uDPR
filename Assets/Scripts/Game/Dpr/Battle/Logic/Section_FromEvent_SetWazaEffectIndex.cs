@@ -3,14 +3,16 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_SetWazaEffectIndex : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_SetWazaEffectIndex(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F62*/ throw null; }
+		public Section_FromEvent_SetWazaEffectIndex(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_SetWazaEffectIndex.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_SetWazaEffectIndex.Description description) {
 			GetActionSharedData().wazaEffectParams.effectIndex = description.effectIndex;
 		}
 		public class Description
 		{
 			public byte effectIndex;
-			public Description() { /*@B 0x600B58B*/ throw null; }
+			public Description() {
+				effectIndex = 0;
+			}
 		}
 		public class Result
 		{

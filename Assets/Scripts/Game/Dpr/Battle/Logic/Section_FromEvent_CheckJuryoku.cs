@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_CheckJuryoku : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_CheckJuryoku(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EE9*/ throw null; }
+		public Section_FromEvent_CheckJuryoku(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_CheckJuryoku.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_CheckJuryoku.Description description) {
 			byte[] pokeIDArray = new byte[6];
 			getAllFrontPokeID(pokeIDArray, out uint pokeCount, description.userPokeID);
@@ -79,7 +79,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public byte userPokeID;
-			public Description() { /*@B 0x600B537*/ throw null; }
+			public Description() {
+				userPokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

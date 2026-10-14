@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_Koraeru : global::Dpr.Battle.Logic.Section
 	{
-		public Section_Koraeru(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FCE*/ throw null; }
+		public Section_Koraeru(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_Koraeru.Result result, in global::Dpr.Battle.Logic.Section_Koraeru.Description description) {
             switch (description.cause)
             {
@@ -35,7 +35,10 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM poke;
 			public global::Dpr.Battle.Logic.KoraeruCause cause;
-			public Description() { /*@B 0x600B5B4*/ throw null; }
+			public Description() {
+				poke = null;
+				cause = KoraeruCause.NONE;
+			}
 		}
 		public class Result
 		{

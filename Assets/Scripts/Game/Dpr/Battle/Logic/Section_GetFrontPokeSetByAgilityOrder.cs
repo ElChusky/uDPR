@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_GetFrontPokeSetByAgilityOrder : global::Dpr.Battle.Logic.Section
 	{
-		public Section_GetFrontPokeSetByAgilityOrder(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FC0*/ throw null; }
+		public Section_GetFrontPokeSetByAgilityOrder(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_GetFrontPokeSetByAgilityOrder.Result pResult, in global::Dpr.Battle.Logic.Section_GetFrontPokeSetByAgilityOrder.Description description) {
             storeFrontPoke(description.pPokeSet);
             sortByAgility(description.pPokeSet);

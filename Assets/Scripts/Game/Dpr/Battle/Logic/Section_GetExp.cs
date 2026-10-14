@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_GetExp : global::Dpr.Battle.Logic.Section
 	{
-		public Section_GetExp(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FB5*/ throw null; }
+		public Section_GetExp(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_GetExp.Result pResult, in global::Dpr.Battle.Logic.Section_GetExp.Description description) {
 			bool isExpGet_ByFaced = false;
 			bool isExpGet_ByGakusyuSouti = false;
@@ -113,12 +113,17 @@ namespace Dpr.Battle.Logic
 		{
 			public global::Dpr.Battle.Logic.BTL_PARTY pParty;
 			public global::Dpr.Battle.Logic.ExpCalculator.CalcExpContainer pExpContainer;
-			public Description() { /*@B 0x600B5AA*/ throw null; }
+			public Description() {
+				pParty = null;
+				pExpContainer = null;
+			}
 		}
 		public class Result
 		{
 			public bool isExpGet;
-			public Result() { /*@B 0x600B5AB*/ throw null; }
+			public Result() {
+				isExpGet = false;
+			}
 		}
 	}
 }

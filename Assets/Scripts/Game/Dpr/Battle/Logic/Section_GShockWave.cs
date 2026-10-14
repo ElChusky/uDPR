@@ -5,7 +5,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_GShockWave : global::Dpr.Battle.Logic.Section
 	{
-		public Section_GShockWave(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F85*/ throw null; }
+		public Section_GShockWave(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_GShockWave.Result pResult, in global::Dpr.Battle.Logic.Section_GShockWave.Description description) {
 			pResult.isEffected = false;
 			BTL_POKEPARAM attacker = description.attacker;

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_Message : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_Message(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F30*/ throw null; }
+		public Section_FromEvent_Message(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_Message.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_Message.Description description) {
 			BTL_POKEPARAM poke = (description.pokeID != PokeID.INVALID) ? GetPokeParam(description.pokeID) : null;
 			if (poke != null && description.isDisplayTokuseiWindow)
@@ -18,8 +18,11 @@ namespace Dpr.Battle.Logic
 		{
 			public byte pokeID;
 			public bool isDisplayTokuseiWindow;
-			public global::Dpr.Battle.Logic.StrParam message;
-			public Description() { /*@B 0x600B563*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam message = new StrParam();
+			public Description() {
+				pokeID = PokeID.INVALID;
+				isDisplayTokuseiWindow = false;
+			}
 		}
 		public class Result
 		{

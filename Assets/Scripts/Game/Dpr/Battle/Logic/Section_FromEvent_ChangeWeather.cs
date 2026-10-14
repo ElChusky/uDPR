@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_ChangeWeather : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_ChangeWeather(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006EDE*/ throw null; }
+		public Section_FromEvent_ChangeWeather(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_ChangeWeather.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_ChangeWeather.Description description) {
             result.isSuccessed = false;
 
@@ -139,9 +139,16 @@ namespace Dpr.Battle.Logic
 			public byte turn;
 			public byte turnUpCount;
 			public bool byAirLock;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
 			public bool isDisplayTokuseiWindow;
-			public Description() { /*@B 0x600B535*/ throw null; }
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				isDisplayTokuseiWindow = false;
+				weather = BtlWeather.BTL_WEATHER_NONE;
+				turn = 0;
+				turnUpCount = 0;
+				byAirLock = false;
+			}
 		}
 		public class Result
 		{

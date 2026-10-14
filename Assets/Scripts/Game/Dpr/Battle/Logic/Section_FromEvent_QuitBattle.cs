@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_QuitBattle : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_QuitBattle(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F39*/ throw null; }
+		public Section_FromEvent_QuitBattle(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_QuitBattle.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_QuitBattle.Description description) {
 			result.isSucceeded = false;
 			BTL_POKEPARAM poke = GetPokeParam(description.userPokeID);
@@ -34,7 +34,11 @@ namespace Dpr.Battle.Logic
 			public byte userPokeID;
 			public bool isForceSuccess;
 			public bool isDisplayTokuseiWindow;
-			public Description() { /*@B 0x600B56B*/ throw null; }
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				isForceSuccess = false;
+				isDisplayTokuseiWindow = false;
+			}
 		}
 		public class Result
 		{

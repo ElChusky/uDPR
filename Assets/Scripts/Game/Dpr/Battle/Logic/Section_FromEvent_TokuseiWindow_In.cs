@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_TokuseiWindow_In : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_TokuseiWindow_In(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F77*/ throw null; }
+		public Section_FromEvent_TokuseiWindow_In(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_TokuseiWindow_In.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_TokuseiWindow_In.Description description) {
 			result.isDisplayed = false;
 			if (GetBattleEnv().GetPosPoke().IsExist(description.pokeID))
@@ -15,7 +15,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public byte pokeID;
-			public Description() { /*@B 0x600B599*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

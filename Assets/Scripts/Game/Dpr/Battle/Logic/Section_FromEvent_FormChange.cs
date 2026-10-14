@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_FormChange : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_FormChange(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F0F*/ throw null; }
+		public Section_FromEvent_FormChange(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_FormChange.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_FormChange.Description description) {
 			result.isChanged = false;
 			BTL_POKEPARAM poke = GetPokeParam(description.pokeID);
@@ -38,8 +38,15 @@ namespace Dpr.Battle.Logic
 			public bool isEnableInCaseOfDead;
 			public bool isDisplayTokuseiWindow;
 			public bool isDisplayChangeEffect;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B54D*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				pokeID = PokeID.INVALID;
+				formNo = 0;
+				isDontResetFormByOut = false;
+				isEnableInCaseOfDead = false;
+				isDisplayTokuseiWindow = false;
+				isDisplayChangeEffect = true;
+			}
 		}
 		public class Result
 		{

@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_SetCounter : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_SetCounter(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F54*/ throw null; }
+		public Section_FromEvent_SetCounter(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_SetCounter.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_SetCounter.Description description) {
 			BTL_POKEPARAM bpp = GetPokeParam(description.pokeID);
 			GetServerCommandPutter().SetBppCounter(bpp, (BTL_POKEPARAM.Counter)description.counterID, description.value);
@@ -13,7 +13,11 @@ namespace Dpr.Battle.Logic
 			public byte pokeID;
 			public byte counterID;
 			public byte value;
-			public Description() { /*@B 0x600B57F*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+				counterID = 0;
+				value = 0;
+			}
 		}
 		public class Result
 		{

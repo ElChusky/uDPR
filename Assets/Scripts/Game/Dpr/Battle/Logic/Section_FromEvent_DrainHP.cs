@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_DrainHP : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_DrainHP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F07*/ throw null; }
+		public Section_FromEvent_DrainHP(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_DrainHP.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_DrainHP.Description description) {
 			result.isSuccessed = false;
 
@@ -40,8 +40,13 @@ namespace Dpr.Battle.Logic
 			public byte recoverPokeID;
 			public byte damagedPokeID;
 			public bool isSkipFailCheckSP;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B547*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				recoverHP = 0;
+				recoverPokeID = PokeID.INVALID;
+				damagedPokeID = PokeID.INVALID;
+				isSkipFailCheckSP = false;
+			}
 		}
 		public class Result
 		{

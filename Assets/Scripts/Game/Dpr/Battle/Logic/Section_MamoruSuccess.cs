@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_MamoruSuccess : global::Dpr.Battle.Logic.Section
 	{
-		public Section_MamoruSuccess(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006FDA*/ throw null; }
+		public Section_MamoruSuccess(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_MamoruSuccess.Result pResult, in global::Dpr.Battle.Logic.Section_MamoruSuccess.Description description) {
 			GetServerCommandPutter().EffectByPos(description.target, (ushort)BtlEff.BTLEFF_GUARD);
 			GetServerCommandPutter().Message_Set((ushort)BTL_STRID_SET.Mamoru, description.target.GetID());
@@ -14,7 +14,11 @@ namespace Dpr.Battle.Logic
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM attacker;
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM target;
 			public global::Dpr.Battle.Logic.WazaParam wazaParam;
-			public Description() { /*@B 0x600B5B8*/ throw null; }
+			public Description() {
+				attacker = null;
+				target = null;
+				wazaParam = null;
+			}
 		}
 		public class Result
 		{

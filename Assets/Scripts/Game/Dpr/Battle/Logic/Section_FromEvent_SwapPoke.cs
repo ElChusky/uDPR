@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_SwapPoke : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_SwapPoke(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F71*/ throw null; }
+		public Section_FromEvent_SwapPoke(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_SwapPoke.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_SwapPoke.Description description) {
 			result.isSwapped = false;
 			if (description.pokeID1 == description.pokeID2)
@@ -38,8 +38,11 @@ namespace Dpr.Battle.Logic
 		{
 			public byte pokeID1;
 			public byte pokeID2;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B595*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				pokeID1 = PokeID.INVALID;
+				pokeID2 = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{

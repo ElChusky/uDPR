@@ -4,7 +4,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_SetItem : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_SetItem(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F56*/ throw null; }
+		public Section_FromEvent_SetItem(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_SetItem.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_SetItem.Description description) {
 			result.isSucceeded = false;
 			BTL_POKEPARAM bpp = GetPokeParam(description.targetPokeID);
@@ -56,8 +56,18 @@ namespace Dpr.Battle.Logic
 			public bool isCallConsumedEvent;
 			public bool isDisplayTokuseiWindow;
 			public bool isConsumeItem;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B581*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				userPokeID = PokeID.INVALID;
+				targetPokeID = PokeID.INVALID;
+				itemID = 0;
+				isClearConsume = false;
+				isClearConsumeOtherPoke = false;
+				clearConsumePokeID = PokeID.INVALID;
+				isCallConsumedEvent = false;
+				isDisplayTokuseiWindow = false;
+				isConsumeItem = false;
+			}
 		}
 		public class Result
 		{

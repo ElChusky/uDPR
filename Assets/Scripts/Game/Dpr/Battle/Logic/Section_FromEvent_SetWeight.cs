@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_SetWeight : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_SetWeight(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F64*/ throw null; }
+		public Section_FromEvent_SetWeight(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_SetWeight.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_SetWeight.Description description) {
 			GetServerCommandPutter().SetWeight(description.pokeID, description.weight);
 			GetServerCommandPutter().Message(description.successMessage);
@@ -12,8 +12,11 @@ namespace Dpr.Battle.Logic
 		{
 			public byte pokeID;
 			public ushort weight;
-			public global::Dpr.Battle.Logic.StrParam successMessage;
-			public Description() { /*@B 0x600B58D*/ throw null; }
+			public global::Dpr.Battle.Logic.StrParam successMessage = new StrParam();
+			public Description() {
+				pokeID = PokeID.INVALID;
+				weight = 0;
+			}
 		}
 		public class Result
 		{

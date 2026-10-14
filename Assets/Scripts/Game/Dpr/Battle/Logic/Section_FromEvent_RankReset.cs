@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_RankReset : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_RankReset(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F46*/ throw null; }
+		public Section_FromEvent_RankReset(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_RankReset.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_RankReset.Description description) {
 			result.isSuccessed = false;
 			for (int i = 0; i < description.pokeCount; i++)
@@ -18,8 +18,10 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public byte pokeCount;
-			public byte[] pokeID;
-			public Description() { /*@B 0x600B571*/ throw null; }
+			public byte[] pokeID = new byte[5];
+			public Description() {
+				pokeCount = 0;
+			}
 		}
 		public class Result
 		{

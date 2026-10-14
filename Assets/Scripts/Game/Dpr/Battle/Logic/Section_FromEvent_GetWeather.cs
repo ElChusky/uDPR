@@ -3,7 +3,7 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class Section_FromEvent_GetWeather : global::Dpr.Battle.Logic.Section
 	{
-		public Section_FromEvent_GetWeather(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(global::BdspClean.Default<global::Dpr.Battle.Logic.Section.CommonParam>.Value) { /*@B 0x6006F1A*/ throw null; }
+		public Section_FromEvent_GetWeather(in global::Dpr.Battle.Logic.Section.CommonParam commonParam) : base(commonParam) { }
 		public void Execute(global::Dpr.Battle.Logic.Section_FromEvent_GetWeather.Result result, in global::Dpr.Battle.Logic.Section_FromEvent_GetWeather.Description description) {
 			BtlWeather weather = GetEventLauncher().Event_GetWeather();
 			if (description.pokeID != PokeID.INVALID)
@@ -13,7 +13,9 @@ namespace Dpr.Battle.Logic
 		public class Description
 		{
 			public byte pokeID;
-			public Description() { /*@B 0x600B553*/ throw null; }
+			public Description() {
+				pokeID = PokeID.INVALID;
+			}
 		}
 		public class Result
 		{
