@@ -15,12 +15,110 @@ public class MultipleCameraCompositor : global::UnityEngine.MonoBehaviour, globa
 	private global::UnityEngine.Rendering.CommandBuffer _resolveDepthCB;
 	public global::UnityEngine.RenderTexture colorBufferTexture { get { return this._colorBufferTexture; } }
 	public global::UnityEngine.RenderTexture depthBufferTexture { get { return this._depthBufferTexture; } }
-	public void OnViewportChange(int width, int height) { /*@B 0x6000846*/ throw null; }
-	private void OnEnable() { /*@B 0x6000849*/ throw null; }
-	private void OnReset() { /*@B 0x600084A*/ throw null; }
-	private void OnDisable() { /*@B 0x600084B*/ throw null; }
-	private void OnUpdate(float deltaTime) { /*@B 0x600084C*/ throw null; }
-	public void AddLayerCamera(global::UnityEngine.Camera layerCamera) { /*@B 0x600084D*/ throw null; }
+	public void OnViewportChange(int width, int height)
+	{
+		OnReset();
+	}
+	private void OnEnable()
+	{
+		OnReset();
+	}
+	private void OnReset()
+	{
+		OnDisable();
+		if (_mainCamera == null)
+			return;
+		int width = global::SmartPoint.AssetAssistant.Sequencer.screenWidth;
+		int height = global::SmartPoint.AssetAssistant.Sequencer.screenHeight;
+		_camera = GetComponent<global::UnityEngine.Camera>();
+		_colorBufferTexture = new global::UnityEngine.RenderTexture(width, height, 0, global::UnityEngine.RenderTextureFormat.RGB111110Float);
+		_colorBufferTexture.Create();
+		_depthBufferTexture = new global::UnityEngine.RenderTexture(width, height, 24, global::UnityEngine.RenderTextureFormat.Depth);
+		_depthBufferTexture.Create();
+		_mainCamera.SetTargetBuffers(_colorBufferTexture.colorBuffer, _depthBufferTexture.depthBuffer);
+		for (int i = 0; i < _layerCameras.Length; i++)
+		{
+			global::UnityEngine.Camera cam = _layerCameras[i];
+			if (cam != null)
+			{
+				cam.clearFlags = global::UnityEngine.CameraClearFlags.Nothing;
+				cam.SetTargetBuffers(_colorBufferTexture.colorBuffer, _depthBufferTexture.depthBuffer);
+			}
+		}
+		_resolveColorCB = new global::UnityEngine.Rendering.CommandBuffer();
+		_resolveColorCB.name = "Resolve ColorBuffer";
+		_resolveColorCB.SetGlobalTexture(GLOBAL_DEPTHTEX_ID, _depthBufferTexture);
+		_resolveColorCB.Blit(_colorBufferTexture, global::UnityEngine.Rendering.BuiltinRenderTextureType.CameraTarget);
+		_camera.AddCommandBuffer(global::UnityEngine.Rendering.CameraEvent.BeforeForwardOpaque, _resolveColorCB);
+		_resolveDepthCB = new global::UnityEngine.Rendering.CommandBuffer();
+		_resolveDepthCB.name = "Resolve DepthBuffer";
+		_resolveDepthCB.SetGlobalTexture(OPAQUE_DEPTHTEX_ID, global::UnityEngine.Rendering.BuiltinRenderTextureType.Depth);
+		_mainCamera.AddCommandBuffer(global::UnityEngine.Rendering.CameraEvent.AfterForwardOpaque, _resolveDepthCB);
+		global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+	}
+	private void OnDisable()
+	{
+		global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+		if (_colorBufferTexture != null)
+		{
+			global::UnityEngine.Object.Destroy(_colorBufferTexture);
+			global::UnityEngine.Object.Destroy(_depthBufferTexture);
+		}
+		if (_mainCamera == null)
+			return;
+		_mainCamera.SetTargetBuffers(global::UnityEngine.Graphics.activeColorBuffer, global::UnityEngine.Graphics.activeDepthBuffer);
+		for (int i = 0; i < _layerCameras.Length; i++)
+		{
+			global::UnityEngine.Camera cam = _layerCameras[i];
+			if (cam != null)
+				cam.SetTargetBuffers(global::UnityEngine.Graphics.activeColorBuffer, global::UnityEngine.Graphics.activeDepthBuffer);
+		}
+		if (_resolveColorCB != null)
+		{
+			_camera.RemoveCommandBuffer(global::UnityEngine.Rendering.CameraEvent.BeforeForwardOpaque, _resolveColorCB);
+			_resolveColorCB.Clear();
+			_resolveColorCB = null;
+		}
+		if (_resolveDepthCB != null)
+		{
+			_mainCamera.RemoveCommandBuffer(global::UnityEngine.Rendering.CameraEvent.AfterForwardOpaque, _resolveDepthCB);
+			_resolveDepthCB.Clear();
+			_resolveDepthCB = null;
+		}
+	}
+	private void OnUpdate(float deltaTime)
+	{
+		float nearClip = _mainCamera.nearClipPlane;
+		float farClip = _mainCamera.farClipPlane;
+		float fov = _mainCamera.fieldOfView;
+		_camera.nearClipPlane = nearClip;
+		_camera.farClipPlane = farClip;
+		_camera.fieldOfView = fov;
+		for (int i = 0; i < _layerCameras.Length; i++)
+		{
+			global::UnityEngine.Camera cam = _layerCameras[i];
+			if (cam != null)
+			{
+				cam.nearClipPlane = nearClip;
+				cam.farClipPlane = farClip;
+				cam.fieldOfView = fov;
+			}
+		}
+	}
+	public void AddLayerCamera(global::UnityEngine.Camera layerCamera)
+	{
+		if (global::System.Linq.Enumerable.FirstOrDefault(_layerCameras, x => x == layerCamera) != null)
+			return;
+		global::System.Collections.Generic.List<global::UnityEngine.Camera> list = global::System.Linq.Enumerable.ToList(_layerCameras);
+		list.Add(layerCamera);
+		_layerCameras = list.ToArray();
+		layerCamera.clearFlags = global::UnityEngine.CameraClearFlags.Nothing;
+		layerCamera.SetTargetBuffers(_colorBufferTexture.colorBuffer, _depthBufferTexture.depthBuffer);
+	}
 	public MultipleCameraCompositor() { }
-	static MultipleCameraCompositor() { /*@B 0x600084F*/ throw null; }
+	static MultipleCameraCompositor()
+	{
+		OPAQUE_DEPTHTEX_ID = global::UnityEngine.Shader.PropertyToID("_OpaqueDepthTexture");
+		GLOBAL_DEPTHTEX_ID = global::UnityEngine.Shader.PropertyToID("_GlobalDepthTexture");
+	}
 }

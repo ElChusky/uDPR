@@ -18,11 +18,11 @@ public class OnlinePlayerCharacter : global::UnityEngine.MonoBehaviour
 	public global::Balloon balloon;
 	public global::Dpr.FureaiHiroba.Emoticon emoticon;
 	public global::System.Action<int> _ShowWindow;
-	public float talkDistance;
+	public float talkDistance = 1f;
 	public bool isMenuOpen;
 	public global::AnimationPlayer _myAnimationPlayer;
 	public int stationIndex;
-	private float _IdleTransutuonTime;
+	private float _IdleTransutuonTime = 0.1f;
 	private bool _IsTransitionIdle;
 	private int emoticonType;
 	public bool isRecruiment;
@@ -209,5 +209,5 @@ public class OnlinePlayerCharacter : global::UnityEngine.MonoBehaviour
 		DeleteEmoticon();
 		Destroy(opcState);
 	}
-	public OnlinePlayerCharacter() { /*@B 0x6001107*/ throw null; }
+	public OnlinePlayerCharacter() { }
 }

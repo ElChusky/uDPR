@@ -18,7 +18,7 @@ public class PetrifyUpdater : global::UnityEngine.MonoBehaviour
 	private static readonly int _specularMapID;
 	private static readonly int _ambientMapID;
 	public global::PetrifyData.MaterialData materialData;
-	public global::System.Collections.Generic.List<global::UnityEngine.Material> materials;
+	public global::System.Collections.Generic.List<global::UnityEngine.Material> materials = new global::System.Collections.Generic.List<global::UnityEngine.Material>();
 	public void LateUpdate() {
 		if (materialData != null && materials != null)
 		{
@@ -49,6 +49,23 @@ public class PetrifyUpdater : global::UnityEngine.MonoBehaviour
 			material.SetTexture(_ambientMapID, materialData.ambientMap == null ? Texture2D.whiteTexture : materialData.ambientMap);
 		}
 	}
-	public PetrifyUpdater() { /*@B 0x6000DE3*/ throw null; }
-	static PetrifyUpdater() { /*@B 0x6000DE4*/ throw null; }
+	public PetrifyUpdater() { }
+	static PetrifyUpdater()
+	{
+		_noiseFactorID = Shader.PropertyToID("_PetrifyNoiseFactor");
+		_triPlanarScaleID = Shader.PropertyToID("_PetrifyTriPlanarScale");
+		_textureOffsetID = Shader.PropertyToID("_PetrifyTextureOffset");
+		_disributionID = Shader.PropertyToID("_PetrifyDistribution");
+		_edgeDetectionID = Shader.PropertyToID("_PetrifyEdgeDetectionScale");
+		_colorWeightID = Shader.PropertyToID("_PetrifyColorWeight");
+		_bumpScaleID = Shader.PropertyToID("_PetrifyBumpScale");
+		_cosinePowerID = Shader.PropertyToID("_PetrifyCosinePower");
+		_specularScaleID = Shader.PropertyToID("_PetrifySpecularScale");
+		_glossyID = Shader.PropertyToID("_PetrifyGlossy");
+		_reflecivityID = Shader.PropertyToID("_PetrifyReflectivity");
+		_colorMapID = Shader.PropertyToID("_PetrifyAlbedoTex");
+		_bumpMapID = Shader.PropertyToID("_PetrifyBumpTex");
+		_specularMapID = Shader.PropertyToID("_PetrifySpecularTex");
+		_ambientMapID = Shader.PropertyToID("_PetrifyAmbientTex");
+	}
 }

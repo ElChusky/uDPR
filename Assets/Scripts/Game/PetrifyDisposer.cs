@@ -3,7 +3,7 @@ using UnityEngine;
 public class PetrifyDisposer : global::UnityEngine.MonoBehaviour
 {
 	[global::UnityEngine.HideInInspector]
-	public global::System.Collections.Generic.List<global::UnityEngine.Renderer> volatileRenderers;
+	public global::System.Collections.Generic.List<global::UnityEngine.Renderer> volatileRenderers = new global::System.Collections.Generic.List<global::UnityEngine.Renderer>();
 	private void OnDestroy() {
 		foreach (Renderer renderer in volatileRenderers)
 		{
@@ -15,5 +15,5 @@ public class PetrifyDisposer : global::UnityEngine.MonoBehaviour
 		}
 		volatileRenderers.Clear();
 	}
-	public PetrifyDisposer() { /*@B 0x6000DE0*/ throw null; }
+	public PetrifyDisposer() { }
 }
