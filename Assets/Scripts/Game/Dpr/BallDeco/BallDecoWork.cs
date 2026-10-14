@@ -19,14 +19,14 @@ namespace Dpr.BallDeco
 		public const int Capsule2DCalcCenterFrontPhiAngle = 0;
 		public const int Capsule2DCalcCenterBackPhiAngle = -180;
 		public const string BallLightEffectAssetBundlePathFormat = "effect/prefab/seal/ef_s_seal_eb{0:D3}";
-		public static readonly int Capsule2DCalcFrontRadius;
-		public static readonly int Capsule2DCalcBackRadius;
-		public static readonly int Capsule2DCalcFrontSplitAngle;
-		public static readonly int Capsule2DCalcBackSplitAngle;
-		public static readonly float EffectMoveValue;
-		public static readonly global::DG.Tweening.Ease EffectMoveEasingType;
-		public static bool IsFixBallDecoExtraData;
-		private static bool[] tempAttachCapsuleFlags;
+		public static readonly int Capsule2DCalcFrontRadius = 1;
+		public static readonly int Capsule2DCalcBackRadius = 1;
+		public static readonly int Capsule2DCalcFrontSplitAngle = 28;
+		public static readonly int Capsule2DCalcBackSplitAngle = 25;
+		public static readonly float EffectMoveValue = 0f;
+		public static readonly global::DG.Tweening.Ease EffectMoveEasingType = global::DG.Tweening.Ease.Linear;
+		public static bool IsFixBallDecoExtraData = false;
+		private static bool[] tempAttachCapsuleFlags = new bool[6];
 		public static ref global::Dpr.BallDeco.SaveBallDecoData m_ballDecoData { get => ref PlayerWork.GetBallDecoData(); }
 		public static ref global::Dpr.BallDeco.SaveBallDecoExtraData m_ballDecoExtraData { get => ref PlayerWork.GetBallDecoExtraData(); }
 		public static void ResetBallDecoExtraData() {
@@ -75,7 +75,13 @@ namespace Dpr.BallDeco
                 }
             }
         }
-		public static void GetPokeIndex(global::Pml.PokePara.PokemonParam pokemonParam, out int tray, out int pos) { /*@B 0x6004144*/ throw null; }
+		public static void GetPokeIndex(global::Pml.PokePara.PokemonParam pokemonParam, out int tray, out int pos) {
+            tray = -1;
+            pos = -1;
+            uint index = PlayerWork.playerParty.GetMemberIndex(pokemonParam);
+            if (index < 6)
+                pos = (int)index;
+        }
 		public static void ClearTempAttachCapsuleFlags() {
             for (int i = 0; i < tempAttachCapsuleFlags.Length; i++)
                 tempAttachCapsuleFlags[i] = false;
@@ -374,7 +380,9 @@ namespace Dpr.BallDeco
             sealData.Count += count;
             PlayerWork.SetSealData(id, sealData);
         }
-		public static ref global::Dpr.BallDeco.CapsuleData GetCapsuleData(int capsuleId) { /*@B 0x6004167*/ throw null; }
+		public static ref global::Dpr.BallDeco.CapsuleData GetCapsuleData(int capsuleId) {
+            return ref PlayerWork.GetBallDecoData().CapsuleDatas[capsuleId];
+        }
 		public static int GetAttachTray(int capsuleId) {
             return m_ballDecoExtraData.AttachCapsuleTrays[capsuleId];
         }
@@ -403,7 +411,18 @@ namespace Dpr.BallDeco
             int id = ItemManager.IsStrangeBall(ballId) ? 299 : (int)ballId;
             return string.Format(BallLightEffectAssetBundlePathFormat, id);
         }
-		public static bool GetFixedEffectData(global::SealID sealID, out global::UnityEngine.Vector3 pos, out global::UnityEngine.Vector3 rot, out global::UnityEngine.Vector3 scaleRate) { /*@B 0x600416D*/ throw null; }
-		static BallDecoWork() { /*@B 0x600416E*/ throw null; }
+		public static bool GetFixedEffectData(global::SealID sealID, out global::UnityEngine.Vector3 pos, out global::UnityEngine.Vector3 rot, out global::UnityEngine.Vector3 scaleRate) {
+            var data = GameData.DataManager.GetFixedSealEffectData(sealID);
+            if (data == null)
+            {
+                pos = rot = scaleRate = Vector3.zero;
+                return false;
+            }
+            pos = data.Position;
+            rot = data.Rotation;
+            scaleRate = data.AdjustScaleRate;
+            return true;
+        }
+		static BallDecoWork() { }
 	}
 }

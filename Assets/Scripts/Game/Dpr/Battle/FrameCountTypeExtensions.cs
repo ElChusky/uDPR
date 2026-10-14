@@ -3,6 +3,16 @@ namespace Dpr.Battle
 {
 	public static class FrameCountTypeExtensions
 	{
-		public static global::UnityEngine.YieldInstruction GetYieldInstruction(this global::Dpr.Battle.FrameCountType frameCountType) { /*@B 0x6005ECF*/ throw null; }
+		public static global::UnityEngine.YieldInstruction GetYieldInstruction(this global::Dpr.Battle.FrameCountType frameCountType) 
+		{
+			switch (frameCountType)
+			{
+				case global::Dpr.Battle.FrameCountType.FixedUpdate:
+					return global::Dpr.Battle.YieldInstructionCache.WaitForFixedUpdate;
+				case global::Dpr.Battle.FrameCountType.EndOfFrame:
+				default:
+					return global::Dpr.Battle.YieldInstructionCache.WaitForEndOfFrame;
+			}
+		}
 	}
 }

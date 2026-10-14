@@ -3,12 +3,12 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class ActionSharedData
 	{
-		public global::Dpr.Battle.Logic.WazaMessageParam wazaMessageParam;
-		public global::Dpr.Battle.Logic.WazaEffectParams wazaEffectParams;
-		public global::Dpr.Battle.Logic.WazaRobParam magicCoatParam;
+		public global::Dpr.Battle.Logic.WazaMessageParam wazaMessageParam = new global::Dpr.Battle.Logic.WazaMessageParam();
+		public global::Dpr.Battle.Logic.WazaEffectParams wazaEffectParams = new global::Dpr.Battle.Logic.WazaEffectParams();
+		public global::Dpr.Battle.Logic.WazaRobParam magicCoatParam = new global::Dpr.Battle.Logic.WazaRobParam();
 		public bool isWazaFailMessageDisplayed;
 		public bool isWazaFailMessageRoundUp;
 		public bool isInterruptAction;
-		public ActionSharedData() { /*@B 0x6006929*/ throw null; }
+		public ActionSharedData() { }
 	}
 }

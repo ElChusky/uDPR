@@ -4,10 +4,22 @@ namespace Dpr.Battle.Logic
 	public sealed class ActionRecorder
 	{
 		public const uint RECORD_TURN_NUM = 2u;
-		private global::Dpr.Battle.Logic.ActionRecorder.TurnData[] m_turnData;
-		public ActionRecorder() { /*@B 0x600758D*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.ActionRecorder src) { /*@B 0x600758E*/ throw null; }
-		public void Clear() { /*@B 0x600758F*/ throw null; }
+		private global::Dpr.Battle.Logic.ActionRecorder.TurnData[] m_turnData = Arrays.InitializeWithDefaultInstances<TurnData>((int)RECORD_TURN_NUM);
+		public ActionRecorder()
+		{
+			ClearTurnData(m_turnData[0]);
+			ClearTurnData(m_turnData[1]);
+		}
+		public void CopyFrom(in global::Dpr.Battle.Logic.ActionRecorder src)
+		{
+			for (int i = 0; i < m_turnData.Length; i++)
+				m_turnData[i].CopyFrom(src.m_turnData[i]);
+		}
+		public void Clear()
+		{
+			ClearTurnData(m_turnData[0]);
+			ClearTurnData(m_turnData[1]);
+		}
 		private void ClearTurnData(global::Dpr.Battle.Logic.ActionRecorder.TurnData turnData) {
             for (int i = 0; i < PokeID.NUM; i++)
                 turnData.pokeData[i].actionFlag = 0;
@@ -42,9 +54,13 @@ namespace Dpr.Battle.Logic
 		}
 		private class TurnData
 		{
-			public global::Dpr.Battle.Logic.ActionRecorder.PokeData[] pokeData;
-			public void CopyFrom(global::Dpr.Battle.Logic.ActionRecorder.TurnData src) { /*@B 0x600B6A0*/ throw null; }
-			public TurnData() { /*@B 0x600B6A1*/ throw null; }
+			public global::Dpr.Battle.Logic.ActionRecorder.PokeData[] pokeData = Arrays.InitializeWithDefaultInstances<PokeData>(PokeID.NUM);
+			public void CopyFrom(global::Dpr.Battle.Logic.ActionRecorder.TurnData src)
+			{
+				for (int i = 0; i < pokeData.Length; i++)
+					pokeData[i].actionFlag = src.pokeData[i].actionFlag;
+			}
+			public TurnData() { }
 		}
 	}
 }

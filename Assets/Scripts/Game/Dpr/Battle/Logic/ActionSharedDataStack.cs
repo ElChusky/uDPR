@@ -3,13 +3,42 @@ namespace Dpr.Battle.Logic
 {
 	public sealed class ActionSharedDataStack
 	{
-		private global::Dpr.Battle.Logic.ActionSharedData[] m_data;
+		private global::Dpr.Battle.Logic.ActionSharedData[] m_data = Arrays.InitializeWithDefaultInstances<ActionSharedData>(6);
 		private byte m_index;
-		public ActionSharedDataStack() { /*@B 0x600692A*/ throw null; }
-		public void Initialize() { /*@B 0x600692B*/ throw null; }
-		public global::Dpr.Battle.Logic.ActionSharedData GetCurrentData() { /*@B 0x600692C*/ throw null; }
-		public void Push() { /*@B 0x600692D*/ throw null; }
-		public void Pop() { /*@B 0x600692E*/ throw null; }
-		private void clear(global::Dpr.Battle.Logic.ActionSharedData data) { /*@B 0x600692F*/ throw null; }
+		public ActionSharedDataStack()
+		{
+			Initialize();
+		}
+		public void Initialize()
+		{
+			m_index = 0;
+			clear(m_data[0]);
+		}
+		public global::Dpr.Battle.Logic.ActionSharedData GetCurrentData()
+		{
+			return m_data[m_index];
+		}
+		public void Push()
+		{
+			if (m_index < m_data.Length - 1)
+			{
+				m_index++;
+				clear(m_data[m_index]);
+			}
+		}
+		public void Pop()
+		{
+			if (m_index != 0)
+				m_index--;
+		}
+		private void clear(global::Dpr.Battle.Logic.ActionSharedData data)
+		{
+			data.wazaMessageParam.Clear();
+			data.wazaEffectParams.Clear();
+			data.magicCoatParam.Clear();
+			data.isWazaFailMessageDisplayed = false;
+			data.isWazaFailMessageRoundUp = false;
+			data.isInterruptAction = false;
+		}
 	}
 }

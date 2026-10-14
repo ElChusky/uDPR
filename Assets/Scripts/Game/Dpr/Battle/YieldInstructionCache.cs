@@ -3,8 +3,8 @@ namespace Dpr.Battle
 {
 	internal static class YieldInstructionCache
 	{
-		public static readonly global::UnityEngine.WaitForEndOfFrame WaitForEndOfFrame;
-		public static readonly global::UnityEngine.WaitForFixedUpdate WaitForFixedUpdate;
-		static YieldInstructionCache() { /*@B 0x6005ECE*/ throw null; }
+		public static readonly global::UnityEngine.WaitForEndOfFrame WaitForEndOfFrame = new global::UnityEngine.WaitForEndOfFrame();
+		public static readonly global::UnityEngine.WaitForFixedUpdate WaitForFixedUpdate = new global::UnityEngine.WaitForFixedUpdate();
+		static YieldInstructionCache() { }
 	}
 }

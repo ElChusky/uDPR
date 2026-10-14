@@ -4,7 +4,10 @@ namespace Dpr.Battle
 	public class WaitForFunc : global::UnityEngine.CustomYieldInstruction
 	{
 		private global::System.Func<bool> _onComplete;
-		public override bool keepWaiting { get { /*@B 0x6005ED0*/ throw null; } }
-		public WaitForFunc(global::System.Func<bool> onComplete) { /*@B 0x6005ED1*/ throw null; }
+		public override bool keepWaiting { get => _onComplete(); }
+		public WaitForFunc(global::System.Func<bool> onComplete)
+		{
+			_onComplete = onComplete;
+		}
 	}
 }

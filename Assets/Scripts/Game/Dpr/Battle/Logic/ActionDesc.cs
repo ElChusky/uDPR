@@ -9,7 +9,7 @@ namespace Dpr.Battle.Logic
 		public bool isMagicCoatReaction;
 		public bool isOdorikoReaction;
 		public bool isSaihaiReaction;
-		public global::Dpr.Battle.Logic.InsertActionInfo insertInfo;
+		public global::Dpr.Battle.Logic.InsertActionInfo insertInfo = new global::Dpr.Battle.Logic.InsertActionInfo();
 		public void CopyFrom(global::Dpr.Battle.Logic.ActionDesc src) {
             serialNo = src.serialNo;
             isOiutiInterruptAction = src.isOiutiInterruptAction;
@@ -31,6 +31,6 @@ namespace Dpr.Battle.Logic
 		public static void Clear(global::Dpr.Battle.Logic.ActionDesc desc) {
             desc.Clear();
         }
-		public ActionDesc() { /*@B 0x6006BDC*/ throw null; }
+		public ActionDesc() { }
 	}
 }

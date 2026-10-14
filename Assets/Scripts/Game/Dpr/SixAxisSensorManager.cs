@@ -4,23 +4,117 @@ namespace Dpr
 	public static class SixAxisSensorManager
 	{
 		private const int HandleMax = 2;
-		private static global::nn.hid.NpadId _currentNpadId;
-		private static global::nn.hid.NpadStyle _currentNpadStyle;
-		private static int _handlesCount;
-		private static global::nn.hid.SixAxisSensorHandle[] _handles;
-		private static global::Dpr.SixAxisSensorManager.SensorState[] _states;
-		private static bool _isInitialized;
-		private static bool _enableSensor;
-		public static int handleCount { get { /*@B 0x600310C*/ throw null; } }
-		public static void Initialize() { /*@B 0x600310D*/ throw null; }
-		private static void OnSettingValueChanged(global::ConfigID configId, int value) { /*@B 0x600310E*/ throw null; }
+		private static global::nn.hid.NpadId _currentNpadId = global::nn.hid.NpadId.Invalid;
+		private static global::nn.hid.NpadStyle _currentNpadStyle = global::nn.hid.NpadStyle.Invalid;
+		private static int _handlesCount = 0;
+		private static global::nn.hid.SixAxisSensorHandle[] _handles = new global::nn.hid.SixAxisSensorHandle[HandleMax];
+		private static global::Dpr.SixAxisSensorManager.SensorState[] _states = new global::Dpr.SixAxisSensorManager.SensorState[HandleMax];
+		private static bool _isInitialized = false;
+		private static bool _enableSensor = true;
+		public static int handleCount { get => _handlesCount; }
+		public static void Initialize()
+		{
+			if (_isInitialized)
+				return;
+			_isInitialized = true;
+			global::ConfigWork.onValueChanged += OnSettingValueChanged;
+			global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+		}
+		private static void OnSettingValueChanged(global::ConfigID configId, int value)
+		{
+			if (configId == global::ConfigID.GyroSensor)
+				_enableSensor = value == 0;
+		}
 		public static void Terminate() { }
-		public static global::Dpr.SixAxisSensorManager.SensorState GetSensorState(int index) { /*@B 0x6003110*/ throw null; }
-		private static void OnUpdate(float deltaTime) { /*@B 0x6003111*/ throw null; }
-		private static void UpdateInternal(float deltaTime) { /*@B 0x6003112*/ throw null; }
-		private static bool UpdatePadState() { /*@B 0x6003113*/ throw null; }
-		private static void GetSixAxisSensor(global::nn.hid.NpadId id, global::nn.hid.NpadStyle style) { /*@B 0x6003114*/ throw null; }
-		static SixAxisSensorManager() { /*@B 0x6003115*/ throw null; }
+		public static global::Dpr.SixAxisSensorManager.SensorState GetSensorState(int index)
+		{
+			if (!_enableSensor)
+				return null;
+			if (index >= _handlesCount) { } // shipped: the test is evaluated, both outcomes fall through
+			return _states[index];
+		}
+		private static void OnUpdate(float deltaTime)
+		{
+			UpdateInternal(deltaTime);
+		}
+		private static void UpdateInternal(float deltaTime)
+		{
+			if (global::GameController.npadId == global::nn.hid.NpadId.Invalid)
+				return;
+			if (global::GameController.npadStyle == global::nn.hid.NpadStyle.Invalid)
+				return;
+			if (global::GameController.npadState.buttons != global::nn.hid.NpadButton.None)
+			{
+				if (_currentNpadId != global::GameController.npadId || _currentNpadStyle != global::GameController.npadStyle)
+					GetSixAxisSensor(global::GameController.npadId, global::GameController.npadStyle);
+				_currentNpadId = global::GameController.npadId;
+				_currentNpadStyle = global::GameController.npadStyle;
+			}
+			for (int i = 0; i < _handlesCount; i++)
+			{
+				global::nn.hid.SixAxisSensor.GetState(ref _states[i].native, _handles[i]);
+				_states[i].Update();
+			}
+		}
+		private static bool UpdatePadState()
+		{
+			global::nn.hid.NpadState handheldState = default;
+			global::nn.hid.NpadStyle handheldStyle = global::nn.hid.Npad.GetStyleSet(global::nn.hid.NpadId.Handheld);
+			global::nn.hid.NpadState no1State = default;
+			if (handheldStyle != global::nn.hid.NpadStyle.None)
+			{
+				global::nn.hid.Npad.GetState(ref handheldState, global::nn.hid.NpadId.Handheld, handheldStyle);
+				if (handheldState.buttons != global::nn.hid.NpadButton.None)
+				{
+					if (_currentNpadId != global::nn.hid.NpadId.Handheld || _currentNpadStyle != handheldStyle)
+						GetSixAxisSensor(global::nn.hid.NpadId.Handheld, handheldStyle);
+					_currentNpadId = global::nn.hid.NpadId.Handheld;
+					_currentNpadStyle = handheldStyle;
+					return true;
+				}
+			}
+			global::nn.hid.NpadStyle no1Style = global::nn.hid.Npad.GetStyleSet(global::nn.hid.NpadId.No1);
+			no1State = default;
+			if (no1Style != global::nn.hid.NpadStyle.None)
+			{
+				global::nn.hid.Npad.GetState(ref no1State, global::nn.hid.NpadId.No1, no1Style);
+				if (no1State.buttons != global::nn.hid.NpadButton.None)
+				{
+					if (_currentNpadId != global::nn.hid.NpadId.No1 || _currentNpadStyle != no1Style)
+						GetSixAxisSensor(global::nn.hid.NpadId.No1, no1Style);
+					_currentNpadId = global::nn.hid.NpadId.No1;
+					_currentNpadStyle = no1Style;
+					return true;
+				}
+			}
+			if (_currentNpadId == global::nn.hid.NpadId.Handheld && handheldStyle != global::nn.hid.NpadStyle.None)
+			{
+				_currentNpadId = global::nn.hid.NpadId.Handheld;
+				_currentNpadStyle = handheldStyle;
+				return true;
+			}
+			if (_currentNpadId == global::nn.hid.NpadId.No1 && no1Style != global::nn.hid.NpadStyle.None)
+			{
+				_currentNpadId = global::nn.hid.NpadId.No1;
+				_currentNpadStyle = no1Style;
+				return true;
+			}
+			_currentNpadId = global::nn.hid.NpadId.Invalid;
+			_currentNpadStyle = global::nn.hid.NpadStyle.Invalid;
+			return false;
+		}
+		private static void GetSixAxisSensor(global::nn.hid.NpadId id, global::nn.hid.NpadStyle style)
+		{
+			for (int i = 0; i < _handlesCount; i++)
+				global::nn.hid.SixAxisSensor.Stop(_handles[i]);
+			_handlesCount = global::nn.hid.SixAxisSensor.GetHandles(_handles, HandleMax, id, style);
+			for (int i = 0; i < _handlesCount; i++)
+			{
+				global::nn.hid.SixAxisSensor.Start(_handles[i]);
+				_states[i] = new global::Dpr.SixAxisSensorManager.SensorState();
+			}
+		}
+		static SixAxisSensorManager() { }
 		[global::System.FlagsAttribute]
 		public enum SixAxisSensorAttribute
 		{
@@ -65,7 +159,21 @@ namespace Dpr
 			public global::UnityEngine.Vector3 gravity;
 			public global::UnityEngine.Vector3 userAcceleration;
 			public global::nn.hid.SixAxisSensorState native;
-			public void Update() { /*@B 0x6009E5B*/ throw null; }
+			public void Update()
+			{
+				deltaTimeNanoSeconds = native.deltaTimeNanoSeconds;
+				samplingNumber = native.samplingNumber;
+				acceleration.Set(native.acceleration.x, native.acceleration.y, native.acceleration.z);
+				angularVelocity.Set(native.angularVelocity.x, native.angularVelocity.y, native.angularVelocity.z);
+				angle.Set(native.angle.x, native.angle.y, native.angle.z);
+				attributes = (global::Dpr.SixAxisSensorManager.SixAxisSensorAttribute)native.attributes;
+				global::nn.util.Float4 q = default;
+				native.GetQuaternion(ref q);
+				quaternion.Set(q.x, q.y, q.z, -q.w);
+				quaternion.Normalize();
+				gravity = global::UnityEngine.Quaternion.Inverse(quaternion) * new global::UnityEngine.Vector3(0f, -0.980665f, 0f);
+				userAcceleration = acceleration - gravity;
+			}
 			public SensorState() { }
 		}
 	}

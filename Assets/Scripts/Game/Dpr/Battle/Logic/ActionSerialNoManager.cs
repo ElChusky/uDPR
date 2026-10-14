@@ -4,9 +4,24 @@ namespace Dpr.Battle.Logic
 	public sealed class ActionSerialNoManager
 	{
 		private uint m_serialNo;
-		public ActionSerialNoManager() { /*@B 0x6006925*/ throw null; }
-		public void CopyFrom(in global::Dpr.Battle.Logic.ActionSerialNoManager src) { /*@B 0x6006926*/ throw null; }
-		public void Clear() { /*@B 0x6006927*/ throw null; }
-		public void AssignSerialNo(global::Dpr.Battle.Logic.ActionDesc actionDesc) { /*@B 0x6006928*/ throw null; }
+		public ActionSerialNoManager()
+		{
+			m_serialNo = 0;
+		}
+		public void CopyFrom(in global::Dpr.Battle.Logic.ActionSerialNoManager src)
+		{
+			m_serialNo = src.m_serialNo;
+		}
+		public void Clear()
+		{
+			m_serialNo = 0;
+		}
+		public void AssignSerialNo(global::Dpr.Battle.Logic.ActionDesc actionDesc)
+		{
+			if (m_serialNo == 0)
+				m_serialNo = 1;
+			actionDesc.serialNo = m_serialNo;
+			m_serialNo++;
+		}
 	}
 }
