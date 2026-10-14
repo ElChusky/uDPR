@@ -14,30 +14,30 @@ namespace Dpr.GMS
 	public class GMSSceneDataModel
 	{
 		private const int INIT_VOICE_SB_CAPACITY = 64;
-		private readonly global::UnityEngine.Rect VIEWPORT_RECT;
-		private readonly global::UnityEngine.Vector2 SCREE_SIZE;
+		private readonly global::UnityEngine.Rect VIEWPORT_RECT = new global::UnityEngine.Rect(-0.1f, -0.1f, 1.15f, 1.15f);
+		private readonly global::UnityEngine.Vector2 SCREE_SIZE = new global::UnityEngine.Vector2(1280f, 720f);
 		private global::XLSXContent.GMSMasterData gmsMasterData;
-		private global::Dpr.GMS.GMSPointDataContainer dataContainer;
-		private global::Dpr.GMS.GMSResourceContainer resourceContainer;
+		private global::Dpr.GMS.GMSPointDataContainer dataContainer = new global::Dpr.GMS.GMSPointDataContainer();
+		private global::Dpr.GMS.GMSResourceContainer resourceContainer = new global::Dpr.GMS.GMSResourceContainer();
 		private global::Dpr.UI.UIManager uiManagerPtr;
 		private global::UnityEngine.Camera mainCameraPtr;
 		private global::Dpr.GMS.GMSPointDataModel lastUpdatePointData;
-		private global::Dpr.GMS.AchievementInfo achievementInfo;
+		private global::Dpr.GMS.AchievementInfo achievementInfo = new global::Dpr.GMS.AchievementInfo();
 		private global::Dpr.UI.Keyguide keyguide;
-		private global::Dpr.GMS.KeyguidePattern keyguidePattern;
+		private global::Dpr.GMS.KeyguidePattern keyguidePattern = global::Dpr.GMS.KeyguidePattern.None;
 		private global::XLSXContent.ArenaInfo.SheetArenaData currentArenaData;
 		private global::Dpr.Message.MessageManager msgManagerPtr;
 		private global::Dpr.Message.MessageMsgFile monsNameMsgFile;
 		private global::Dpr.Message.MessageMsgFile gmsMsgFile;
-		private global::System.Collections.Generic.Dictionary<int, string> monsNameTable;
+		private global::System.Collections.Generic.Dictionary<int, string> monsNameTable = new global::System.Collections.Generic.Dictionary<int, string>();
 		private global::UnityEngine.Transform keyGuideParent;
 		private global::UnityEngine.RenderTexture renderTexture;
 		private global::UnionTradeManager.BoxPokeData evolvedTargetPokeParam;
-		private global::Dpr.GMS.GMSMode selectGMSMode;
+		private global::Dpr.GMS.GMSMode selectGMSMode = global::Dpr.GMS.GMSMode.Top;
 		private global::Dpr.GMS.SceneState nowSceneState;
 		private global::UnityEngine.Coroutine coroutineCreatePointHistoryData;
 		private global::Dpr.UI.BoxWindow.SelectedPokemon selectBoxPokemon;
-		private global::System.Text.StringBuilder voiceEventSb;
+		private global::System.Text.StringBuilder voiceEventSb = new global::System.Text.StringBuilder(64);
 		private global::UnityEngine.Color defaultFadeColor;
 		private global::SmartPoint.Components.Fader.FadeMode defaultFadeMode;
 		private int[] ngPokeNos;
@@ -62,12 +62,30 @@ namespace Dpr.GMS
 		public int LastSelectModeIndex { get { return this.lastSelectModeIndex; } }
 		public int TotalPutPointNum { get { return this.nowTotalPutPointNum; } }
 		public int MaxPutPointNum { get { return this.maxPointNum; } }
-		public bool IsPutComp { get { /*@B 0x6003FE5*/ throw null; } }
-		public bool CanControllCameraOnBrowsingMode { get { /*@B 0x6003FE9*/ throw null; } }
+		public bool IsPutComp { get { return nowTotalPutPointNum >= maxPointNum; } }
+		public bool CanControllCameraOnBrowsingMode {
+			get
+			{
+				if (selectGMSMode == global::Dpr.GMS.GMSMode.Browsing)
+				{
+					return nowTotalPutPointNum > 0;
+				}
+				return true;
+			}
+		}
 		public global::Dpr.Demo.Demo_Trade TradeDemoParam { get { return this.tradeDemoParam; } }
 		public global::Dpr.GMS.TradeResultData TradeData { get { return this.tradeResultData; } }
-		public int ReceivePointIndex { get { /*@B 0x6004016*/ throw null; } }
-		private bool IsRankMax { get { /*@B 0x600401E*/ throw null; } }
+		public int ReceivePointIndex {
+			get
+			{
+				if (tradeResultData.receiveData != null)
+				{
+					return tradeResultData.receiveData.pointIndex;
+				}
+				return 0;
+			}
+		}
+		private bool IsRankMax { get { return achievementStep >= gmsMasterData.PutRank.Length - 1; } }
 		public bool HasAchievementReward { get { return this.hasAchievementReward; } }
 		public void Initialize(global::UnityEngine.Transform keyGuideParent) {
 			nowSceneState = SceneState.Initialize;
@@ -880,6 +898,6 @@ namespace Dpr.GMS
 			GMSWork.SetStartBrowsingListIndex(browsingListIndex);
 			GMSWork.SetUserAchievementStep(achievementStep);
 		}
-		public GMSSceneDataModel() { /*@B 0x6004030*/ throw null; }
+		public GMSSceneDataModel() { }
 	}
 }

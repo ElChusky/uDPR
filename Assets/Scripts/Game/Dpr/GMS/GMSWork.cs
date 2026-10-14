@@ -4,9 +4,9 @@ namespace Dpr.GMS
 {
 	public static class GMSWork
 	{
-		public static ushort GetStartTradeListIndex { get { /*@B 0x6003E73*/ throw null; } }
-		public static ushort GetStartBrowsingListIndex { get { /*@B 0x6003E75*/ throw null; } }
-		public static byte GetUserAchievementStep { get { /*@B 0x6003E77*/ throw null; } }
+		public static ushort GetStartTradeListIndex { get { return global::PlayerWork.gmsData.tradeListIndex; } }
+		public static ushort GetStartBrowsingListIndex { get { return global::PlayerWork.gmsData.browsingListIndex; } }
+		public static byte GetUserAchievementStep { get { return global::PlayerWork.gmsData.achievementStep; } }
 		public static void SetStartTradeListIndex(ushort index) {
             PlayerWork.gmsData.tradeListIndex = index;
         }

@@ -8,19 +8,19 @@ namespace Dpr.GMS
 {
 	public class GMSMessageWindow
 	{
-		private readonly global::UnityEngine.Vector2 CENTER_WINDOW_POS;
-		private readonly global::UnityEngine.Vector2 MSG_WINDOW_POS;
+		private readonly global::UnityEngine.Vector2 CENTER_WINDOW_POS = new global::UnityEngine.Vector2(0f, 105f);
+		private readonly global::UnityEngine.Vector2 MSG_WINDOW_POS = new global::UnityEngine.Vector2(-195f, 105f);
 		private string[] choiceYesNoTexts;
 		private string[] choiceGMSModeTexts;
 		private string[] choiceTradeTexts;
 		private string[] choiceMarkedMonsDataTexts;
 		private string[] choiceMonsDataTexts;
 		private global::XLSXContent.GMSMasterData.SheetWindowMessage[] windowMsgDatas;
-		private global::Dpr.SubContents.ShowMessageWindow msgWindow;
-		private global::Dpr.UI.ContextMenuWindow.Param contextParam;
+		private global::Dpr.SubContents.ShowMessageWindow msgWindow = new global::Dpr.SubContents.ShowMessageWindow();
+		private global::Dpr.UI.ContextMenuWindow.Param contextParam = new global::Dpr.UI.ContextMenuWindow.Param();
 		private int prevUseMsgFileNameHash;
 		public bool IsOpen { get => msgWindow != null && (msgWindow.MsgWindowState != MsgWindowDataModel.MsgWindowState.Inactive || msgWindow.IsOpen); }
-		public global::Dpr.MsgWindow.MsgWindowDataModel.MsgWindowState MsgWindowState { get { /*@B 0x6003F89*/ throw null; } }
+		public global::Dpr.MsgWindow.MsgWindowDataModel.MsgWindowState MsgWindowState { get { return msgWindow.MsgWindowState; } }
 		public void Initialize() {
 			prevUseMsgFileNameHash = 0;
 			msgWindow.Setup("dlp_gmstation", PlayerWork.config.msg_speed, true);
@@ -169,6 +169,6 @@ namespace Dpr.GMS
 			contextMenuWindow.Open(contextParam);
 			contextMenuWindow.GetComponent<Canvas>().sortingOrder = 10;
 		}
-		public GMSMessageWindow() { /*@B 0x6003F99*/ throw null; }
+		public GMSMessageWindow() { }
 	}
 }

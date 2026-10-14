@@ -14,7 +14,7 @@ namespace Dpr.GMS
 		private global::UnityEngine.UI.Image attentionIconImage;
 		private global::UnityEngine.RectTransform matchingIconRect;
 		private global::UnityEngine.RectTransform attentionIconRect;
-		public global::UnityEngine.Vector3 MatchingIconPos { get { /*@B 0x6004095*/ throw null; } }
+		public global::UnityEngine.Vector3 MatchingIconPos { get { return matchingIconRect.position; } }
 		public void Initialize() {
 			matchingIconObj = this.FindDeep("MatchingIcon", true);
 			matchingIconImage = matchingIconObj.FindDeep("Icon", true).GetComponent<Image>();

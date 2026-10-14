@@ -13,8 +13,8 @@ namespace Dpr.GMS
 		private global::Dpr.GMS.TradeState currentTradeState;
 		private global::Dpr.GMS.AfterErrorDialogActID afterErrorDialogActID;
 		private global::Dpr.NetworkUtils.GMSTradeResult gmsTradeResult;
-		private global::Dpr.GMS.PointDataStatus pointDataStatus;
-		private global::Dpr.MsgWindow.WaitTimer randomWaitTimer;
+		private global::Dpr.GMS.PointDataStatus pointDataStatus = global::Dpr.GMS.PointDataStatus.None;
+		private global::Dpr.MsgWindow.WaitTimer randomWaitTimer = new global::Dpr.MsgWindow.WaitTimer();
 		private bool isMovedCamera;
 		private bool isCalledSave;
 		private bool canUseGMSNetwork;
@@ -24,14 +24,14 @@ namespace Dpr.GMS
 		private global::Dpr.GMS.UIPointMarkManager uiGMSMark;
 		private global::Dpr.GMS.UIPointListManager uiPointDataList;
 		private global::Dpr.GMS.UIAchievementAnim uiAchievementAnim;
-		private global::Dpr.GMS.GMSSceneDataModel dataModel;
-		private global::Dpr.GMS.GMSMessageWindow msgWindow;
-		private global::Dpr.GMS.GMSResourceLoader resourceLoader;
-		private global::Dpr.GMS.GMSResourceLoader asyncResourceLoader;
+		private global::Dpr.GMS.GMSSceneDataModel dataModel = new global::Dpr.GMS.GMSSceneDataModel();
+		private global::Dpr.GMS.GMSMessageWindow msgWindow = new global::Dpr.GMS.GMSMessageWindow();
+		private global::Dpr.GMS.GMSResourceLoader resourceLoader = new global::Dpr.GMS.GMSResourceLoader();
+		private global::Dpr.GMS.GMSResourceLoader asyncResourceLoader = new global::Dpr.GMS.GMSResourceLoader();
 		private global::Dpr.UI.UIManager uiManagerPtr;
 		private global::UnityEngine.GameObject earthObj;
 		private global::UnityEngine.Texture2D bgTexture;
-		private global::Dpr.SubContents.EffectEmitter effectEmitter;
+		private global::Dpr.SubContents.EffectEmitter effectEmitter = new global::Dpr.SubContents.EffectEmitter();
 		private void StartTradeFlow() {
 			// @01c005b0: ChangeSceneState inlined (its flag 0x4cbd832 mid-body; NetworkTrade has no case of its own).
 			ChangeSceneState(SceneState.NetworkTrade);
@@ -1403,6 +1403,6 @@ namespace Dpr.GMS
 					ChangeSceneState(SceneState.BackTitle);
 			}, true);
 		}
-		public GMSController() { /*@B 0x6003F11*/ throw null; }
+		public GMSController() { }
 	}
 }

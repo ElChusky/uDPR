@@ -4,7 +4,11 @@ namespace Dpr.GMS
 	public class ReceiveMonsDataModel : global::Dpr.GMS.ATradeMonsData
 	{
 		public global::Pml.PokePara.PokemonParam pokeParam;
-		public void Clear() { /*@B 0x6003F55*/ throw null; }
+		public void Clear() {
+			pokeParam = null;
+			coreData = null;
+			pointIndex = -1;
+		}
 		public ReceiveMonsDataModel() { }
 	}
 }

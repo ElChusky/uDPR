@@ -6,8 +6,8 @@ namespace Dpr.GMS
 	{
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image achieveMessageImage;
-		private readonly int startAnimHash;
-		private readonly int endAnimHash;
+		private readonly int startAnimHash = global::UnityEngine.Animator.StringToHash("ShowMessage");
+		private readonly int endAnimHash = global::UnityEngine.Animator.StringToHash("Wait");
 		private global::UnityEngine.RectTransform content;
 		private global::UnityEngine.Animator animator;
 		private global::Dpr.GMS.UIAchievementAnim.AnimState currentAnimState;
@@ -71,7 +71,7 @@ namespace Dpr.GMS
 		public void PlayAnimationSE(global::Dpr.GMS.GMSSoundPlayer.PlaySE_ID seID) {
 			GMSSoundPlayer.player.PlaySeByID(seID);
 		}
-		public UIAchievementAnim() { /*@B 0x600407D*/ throw null; }
+		public UIAchievementAnim() { }
 		private enum AnimState
 		{
 			WaitStartPlayAnim = 0,

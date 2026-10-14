@@ -9,11 +9,11 @@ namespace Dpr.GMS
 		public global::UnityEngine.Sprite receiveMonsLangIconSpr;
 		public global::UnityEngine.Sprite receiveMonsParentLangIconSpr;
 		protected global::Dpr.GMS.IntermediatePointData currentPointData;
-		protected global::System.Text.StringBuilder receiveMonsNameSb;
-		protected global::System.Text.StringBuilder receiveMonsNicknameSb;
-		protected global::System.Text.StringBuilder receiveMonsParentNameSb;
-		protected global::System.Text.StringBuilder dateTimeSb;
+		protected global::System.Text.StringBuilder receiveMonsNameSb = new global::System.Text.StringBuilder();
+		protected global::System.Text.StringBuilder receiveMonsNicknameSb = new global::System.Text.StringBuilder();
+		protected global::System.Text.StringBuilder receiveMonsParentNameSb = new global::System.Text.StringBuilder();
+		protected global::System.Text.StringBuilder dateTimeSb = new global::System.Text.StringBuilder();
 		protected int dataIndex;
-		public PointHistoryData() { /*@B 0x6003FC7*/ throw null; }
+		public PointHistoryData() { }
 	}
 }

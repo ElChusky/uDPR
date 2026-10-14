@@ -4,12 +4,17 @@ namespace Dpr.FureaiHiroba
 {
 	public sealed class PokeWalkingActionModel : global::Dpr.FureaiHiroba.PokeFureaiActionModel
 	{
-		private float coolTime;
+		private float coolTime = 25f;
 		public bool isNoneActionMember;
 		public bool isNoneStrayMember;
 		public int StopThreshold { get; private set; }
 		public int KyoroThreshold { get; private set; }
-		public PokeWalkingActionModel(global::XLSXContent.PokeWalkingActionNakayoshi.SheetSheet1 nakayoshi, global::XLSXContent.PokeWalkingActionSeikaku.SheetSheet1 seikaku) { /*@B 0x600348F*/ throw null; }
+		public PokeWalkingActionModel(global::XLSXContent.PokeWalkingActionNakayoshi.SheetSheet1 nakayoshi, global::XLSXContent.PokeWalkingActionSeikaku.SheetSheet1 seikaku) {
+			elapsedTime = global::UnityEngine.Random.Range(-2f, 2f);
+			corSystem = new global::Dpr.Field.Walking.CorSystem("");
+			StopThreshold = global::UnityEngine.Mathf.Clamp(seikaku.StopKakurituHosei + nakayoshi.StopKakurituHosei, 0, 100);
+			KyoroThreshold = StopThreshold + global::UnityEngine.Mathf.Clamp(seikaku.KyoroKakurituHosei + nakayoshi.KyoroKakurituHosei, 0, 100);
+		}
 		public global::Dpr.FureaiHiroba.PokeWalkingActionModel.PokeAction LotteryAction(float deltaTime) {
             if (!isNoneActionMember || corSystem.isPlaying || !isNoneStrayMember)
             {

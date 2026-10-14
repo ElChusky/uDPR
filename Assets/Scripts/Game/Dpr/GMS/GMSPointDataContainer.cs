@@ -7,8 +7,8 @@ namespace Dpr.GMS
 		private int[] refDataIndexArray;
 		private int hasDataNum;
 		public global::Dpr.GMS.GMSPointDataModel[] PointDatas { get { return this.pointDataModelArray; } }
-		public int[] RefDataIndexArray { get { /*@B 0x6003F33*/ throw null; } }
-		public int DataNum { get { /*@B 0x6003F34*/ throw null; } }
+		public int[] RefDataIndexArray { get { return refDataIndexArray; } }
+		public int DataNum { get { return pointDataModelArray.Length; } }
 		public int HasDataNum { get { return this.hasDataNum; } }
 		public void SetPointDatas(global::Dpr.GMS.GMSPointDataModel[] pointDataModelArray) {
 			this.pointDataModelArray = pointDataModelArray;

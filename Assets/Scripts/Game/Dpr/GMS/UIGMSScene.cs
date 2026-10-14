@@ -5,9 +5,9 @@ namespace Dpr.GMS
 {
 	public class UIGMSScene : global::UnityEngine.MonoBehaviour
 	{
-		private readonly int launchAnimHash;
-		private readonly int launchAnimInHash;
-		private readonly int idleAnimHash;
+		private readonly int launchAnimHash = global::UnityEngine.Animator.StringToHash("LaunchAnim");
+		private readonly int launchAnimInHash = global::UnityEngine.Animator.StringToHash("LaunchAnimIn");
+		private readonly int idleAnimHash = global::UnityEngine.Animator.StringToHash("LaunchAnimIdle");
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.GMS.UIGMSScene.SubkeyguideObj subkeyguideObj;
 		[global::UnityEngine.SerializeField]
@@ -142,14 +142,14 @@ namespace Dpr.GMS
 		public void PlayAnimationSE(global::Dpr.GMS.GMSSoundPlayer.PlaySE_ID seID) {
 			GMSSoundPlayer.player.PlaySeByID(seID);
 		}
-		public UIGMSScene() { /*@B 0x6004093*/ throw null; }
+		public UIGMSScene() { }
 		[global::System.Serializable]
 		private class SubkeyguideObj
 		{
 			public global::UnityEngine.UI.Image bgImg;
 			public global::UnityEngine.UI.Image iconImg;
 			public global::Dpr.UI.UIText text;
-			private bool isShow;
+			private bool isShow = true;
 			public void SetComponentEnabled(bool enabled) {
 				if (isShow == enabled)
 					return;
@@ -158,7 +158,7 @@ namespace Dpr.GMS
 				iconImg.enabled = enabled;
 				text.enabled = enabled;
 			}
-			public SubkeyguideObj() { /*@B 0x600A3A8*/ throw null; }
+			public SubkeyguideObj() { }
 		}
 		[global::System.Serializable]
 		public class PutPointObj
@@ -167,7 +167,7 @@ namespace Dpr.GMS
 			public global::Dpr.UI.UIText putPointNumText;
 			public global::UnityEngine.GameObject putPointCompContent;
 			public global::Dpr.UI.UIText putPointCompNumText;
-			private int currentPutPointNum;
+			private int currentPutPointNum = -1;
 			public void Setup(int maxPutNum) {
 				putPointCompNumText.text = maxPutNum + "";
 				SetPutPointNumText(0);
@@ -215,7 +215,7 @@ namespace Dpr.GMS
 				if (putPointCompContent.activeSelf != active)
 					putPointCompContent.SetActive(active);
 			}
-			public PutPointObj() { /*@B 0x600A3B3*/ throw null; }
+			public PutPointObj() { }
 		}
 		private enum AnimState
 		{

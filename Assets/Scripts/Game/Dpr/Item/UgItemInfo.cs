@@ -10,7 +10,7 @@ namespace Dpr.Item
 		private int _workNo;
 		private int _dummyCount;
 		private bool _dummyIsVanishNew;
-		private int _sortNum;
+		private int _sortNum = -1;
 		public int count { get => PlayerWork.GetUgItem(_workNo).Count; set {
                 var item = PlayerWork.GetUgItem(_workNo);
                 item.Count = Mathf.Clamp(value, 0, ItemMaxCount);
@@ -77,7 +77,9 @@ namespace Dpr.Item
 
                 return _sortNum;
             } }
-		public UgItemInfo(int item_no) { /*@B 0x6003E63*/ throw null; }
+		public UgItemInfo(int item_no) {
+			_workNo = item_no;
+		}
 		public int AddItem(int num = 1) {
             int maxCount = GetMaxCount();
             count = Mathf.Clamp(count + num, 0, maxCount);

@@ -5,7 +5,7 @@ namespace Dpr.GMS
 	public class GMSInput
 	{
 		public static global::Dpr.GMS.GMSInput input;
-		private global::GameController.LogicalInput localInput;
+		private global::GameController.LogicalInput localInput = new global::GameController.LogicalInput();
 		public static global::UnityEngine.Vector2 Analog { get {
 				// @01c06220: Vector2.Equals(Vector2) @0x29A1940 on the static field's address (b092 l.9), then a fresh ctor.
 				if (GameController.analogStickR.Equals(Vector2.zero))
@@ -129,7 +129,7 @@ namespace Dpr.GMS
 		private bool IsOn(int assignValue) {
 			return (localInput.on & assignValue) == assignValue;
 		}
-		public GMSInput() { /*@B 0x6003F7E*/ throw null; }
+		public GMSInput() { }
 		static GMSInput() { }
 		private enum KeyAssignId
 		{

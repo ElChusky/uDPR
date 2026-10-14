@@ -12,10 +12,10 @@ namespace Dpr.GMS
 		public global::Pml.MonsNo receiveMonsNo;
 		public ushort receiveMonsFormNo;
 		public global::Pml.Sex receiveMonsSex;
-		public global::Dpr.Message.MessageEnumData.MsgLangId receiveMonsLanguage;
-		public global::Dpr.Message.MessageEnumData.MsgLangId receiveMonsParentLanguage;
+		public global::Dpr.Message.MessageEnumData.MsgLangId receiveMonsLanguage = global::Dpr.Message.MessageEnumData.MsgLangId.JPN;
+		public global::Dpr.Message.MessageEnumData.MsgLangId receiveMonsParentLanguage = global::Dpr.Message.MessageEnumData.MsgLangId.JPN;
 		public string receiveMonsNickname;
 		public string receiveMonsParentName;
-		public IntermediatePointData() { /*@B 0x6003F39*/ throw null; }
+		public IntermediatePointData() { }
 	}
 }

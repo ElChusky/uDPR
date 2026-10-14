@@ -9,9 +9,13 @@ namespace Dpr.GMS
 		public byte day;
 		public global::Dpr.GMS.SendMonsDataModel sendData;
 		public global::Dpr.GMS.ReceiveMonsDataModel receiveData;
-		public string parentName;
-		public global::Dpr.Message.MessageEnumData.MsgLangId parentLangId;
-		public TradeResultData() { /*@B 0x6003F58*/ throw null; }
+		public string parentName = string.Empty;
+		public global::Dpr.Message.MessageEnumData.MsgLangId parentLangId = global::Dpr.Message.MessageEnumData.MsgLangId.JPN;
+		public TradeResultData() {
+			sendData = new global::Dpr.GMS.SendMonsDataModel();
+			receiveData = new global::Dpr.GMS.ReceiveMonsDataModel();
+			Clear();
+		}
 		public void Clear() {
 			year = 0;
 			month = 0;

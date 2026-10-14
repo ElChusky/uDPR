@@ -12,13 +12,13 @@ namespace Dpr.GMS
 		private bool bHasNewData;
 		public global::Dpr.GMS.PointHistoryDataModel[] HistoryDataArray { get { return this.historyDataArray; } }
 		public bool HasData { get { return this.bHasData; } }
-		public bool IsMaxData { get { /*@B 0x6003F9D*/ throw null; } }
+		public bool IsMaxData { get { return dataCount > 4; } }
 		public int DataCount { get { return this.dataCount; } }
 		public bool HasNewData { get { return this.bHasNewData; } }
 		public int MarkIndex { get { return this.markIndex; } }
-		public global::UnityEngine.Vector3 Normal { get { /*@B 0x6003FAE*/ throw null; } }
+		public global::UnityEngine.Vector3 Normal { get { return normal; } }
 		public bool IsView { get { return this.bIsView; } }
-		public global::UnityEngine.Vector2 ScreenPos { get { /*@B 0x6003FB0*/ throw null; } }
+		public global::UnityEngine.Vector2 ScreenPos { get { return screenPos; } }
 		public void CreateData(ushort index, string pointTitle, in global::UnityEngine.Vector3 point) {
 			this.pointTitle = pointTitle;
 			this.index = index;
@@ -151,6 +151,6 @@ namespace Dpr.GMS
 		public void SetScreenPosition(global::UnityEngine.Vector2 screenPos) {
 			this.screenPos = screenPos;
 		}
-		public GMSPointDataModel() { /*@B 0x6003FB3*/ throw null; }
+		public GMSPointDataModel() { }
 	}
 }
