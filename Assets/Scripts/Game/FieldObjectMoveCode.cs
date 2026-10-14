@@ -30,7 +30,7 @@ public class FieldObjectMoveCode
 	public int MoveLimitX;
 	public int MoveLimitZ;
 	public int Ev_Type;
-	public int mv_old_dir;
+	public int mv_old_dir = -1;
 	public int mv_dir;
 	private float _mv_targetYawAngle;
 	private float _mv_oldYawAngle;
@@ -134,49 +134,49 @@ public class FieldObjectMoveCode
 	public const int MV_RT3_CHECK_TYPE_X = 0;
 	public const int MV_RT3_CHECK_TYPE_Z = 1;
 	private global::FieldObjectMoveCode.FIELD_OBJ_MOVE_PROC_LIST _moveProc;
-	private static readonly int[] DATA_MvDirRndWaitTbl_Taiki;
-	private static readonly int[] DATA_MvDirRndWaitTbl_Move;
-	private static readonly int[] DATA_MvDirRndDirTbl;
-	private static readonly int[] DATA_MvDirRndDirTbl_UL;
-	private static readonly int[] DATA_MvDirRndDirTbl_UR;
-	private static readonly int[] DATA_MvDirRndDirTbl_DL;
-	private static readonly int[] DATA_MvDirRndDirTbl_DR;
-	private static readonly int[] DATA_MvDirRndDirTbl_UDL;
-	private static readonly int[] DATA_MvDirRndDirTbl_UDR;
-	private static readonly int[] DATA_MvDirRndDirTbl_ULR;
-	private static readonly int[] DATA_MvDirRndDirTbl_DLR;
-	private static readonly int[] DATA_MvDirRndDirTbl_UD;
-	private static readonly int[] DATA_MvDirRndDirTbl_LR;
-	private static readonly int[] DATA_MV_RND_DirTbl;
-	private static readonly int[] DATA_MV_RND_V_DirTbl;
-	private static readonly int[] DATA_MV_RND_H_DirTbl;
-	private static readonly int[] DATA_MvRtURLD_DirTbl;
-	private static readonly int[] DATA_MvRtRLDU_DirTbl;
-	private static readonly int[] DATA_MvRtDURL_DirTbl;
-	private static readonly int[] DATA_MvRtLDUR_DirTbl;
-	private static readonly int[] DATA_MvRtULRD_DirTbl;
-	private static readonly int[] DATA_MvRtLRDU_DirTbl;
-	private static readonly int[] DATA_MvRtDULR_DirTbl;
-	private static readonly int[] DATA_MvRtRDUL_DirTbl;
-	private static readonly int[] DATA_MvRtLUDR_DirTbl;
-	private static readonly int[] DATA_MvRtUDRL_DirTbl;
-	private static readonly int[] DATA_MvRtRLUD_DirTbl;
-	private static readonly int[] DATA_MvRtDRLU_DirTbl;
-	private static readonly int[] DATA_MvRtRUDL_DirTbl;
-	private static readonly int[] DATA_MvRtUDLR_DirTbl;
-	private static readonly int[] DATA_MvRtLRUD_DirTbl;
-	private static readonly int[] DATA_MvRtDLRU_DirTbl;
-	private static readonly int[] DATA_MvRtUL_DirTbl;
-	private static readonly int[] DATA_MvRtDR_DirTbl;
-	private static readonly int[] DATA_MvRtLD_DirTbl;
-	private static readonly int[] DATA_MvRtRU_DirTbl;
-	private static readonly int[] DATA_MvRtUR_DirTbl;
-	private static readonly int[] DATA_MvRtDL_DirTbl;
-	private static readonly int[] DATA_MvRtLU_DirTbl;
-	private static readonly int[] DATA_MvRtRD_DirTbl;
-	private static readonly int[] DATA_MvDirSpin_DirTbl;
-	private static readonly int[] DATA_MvDirKurukuru;
-	private static readonly int[] enable_code;
+	private static readonly int[] DATA_MvDirRndWaitTbl_Taiki = new int[] { 32, 64, 96, 128 };
+	private static readonly int[] DATA_MvDirRndWaitTbl_Move = new int[] { 0, 32, 64, 96, 128 };
+	private static readonly int[] DATA_MvDirRndDirTbl = new int[] { 0, 1, 2, 3 };
+	private static readonly int[] DATA_MvDirRndDirTbl_UL = new int[] { 0, 2 };
+	private static readonly int[] DATA_MvDirRndDirTbl_UR = new int[] { 0, 3 };
+	private static readonly int[] DATA_MvDirRndDirTbl_DL = new int[] { 1, 2 };
+	private static readonly int[] DATA_MvDirRndDirTbl_DR = new int[] { 1, 3 };
+	private static readonly int[] DATA_MvDirRndDirTbl_UDL = new int[] { 0, 1, 2 };
+	private static readonly int[] DATA_MvDirRndDirTbl_UDR = new int[] { 0, 1, 3 };
+	private static readonly int[] DATA_MvDirRndDirTbl_ULR = new int[] { 0, 2, 3 };
+	private static readonly int[] DATA_MvDirRndDirTbl_DLR = new int[] { 1, 2, 3 };
+	private static readonly int[] DATA_MvDirRndDirTbl_UD = new int[] { 0, 1 };
+	private static readonly int[] DATA_MvDirRndDirTbl_LR = new int[] { 2, 3 };
+	private static readonly int[] DATA_MV_RND_DirTbl = new int[] { 0, 1, 2, 3 };
+	private static readonly int[] DATA_MV_RND_V_DirTbl = new int[] { 0, 1 };
+	private static readonly int[] DATA_MV_RND_H_DirTbl = new int[] { 2, 3 };
+	private static readonly int[] DATA_MvRtURLD_DirTbl = new int[] { 0, 3, 2, 1 };
+	private static readonly int[] DATA_MvRtRLDU_DirTbl = new int[] { 3, 2, 1, 0 };
+	private static readonly int[] DATA_MvRtDURL_DirTbl = new int[] { 1, 0, 3, 2 };
+	private static readonly int[] DATA_MvRtLDUR_DirTbl = new int[] { 2, 1, 0, 3 };
+	private static readonly int[] DATA_MvRtULRD_DirTbl = new int[] { 2, 3, 1, 0 };
+	private static readonly int[] DATA_MvRtLRDU_DirTbl = new int[] { 2, 3, 1, 0 };
+	private static readonly int[] DATA_MvRtDULR_DirTbl = new int[] { 1, 0, 2, 3 };
+	private static readonly int[] DATA_MvRtRDUL_DirTbl = new int[] { 3, 1, 0, 2 };
+	private static readonly int[] DATA_MvRtLUDR_DirTbl = new int[] { 2, 0, 1, 3 };
+	private static readonly int[] DATA_MvRtUDRL_DirTbl = new int[] { 0, 1, 3, 2 };
+	private static readonly int[] DATA_MvRtRLUD_DirTbl = new int[] { 3, 2, 0, 1 };
+	private static readonly int[] DATA_MvRtDRLU_DirTbl = new int[] { 1, 3, 2, 0 };
+	private static readonly int[] DATA_MvRtRUDL_DirTbl = new int[] { 3, 0, 1, 2 };
+	private static readonly int[] DATA_MvRtUDLR_DirTbl = new int[] { 0, 1, 2, 3 };
+	private static readonly int[] DATA_MvRtLRUD_DirTbl = new int[] { 2, 3, 0, 1 };
+	private static readonly int[] DATA_MvRtDLRU_DirTbl = new int[] { 1, 2, 3, 0 };
+	private static readonly int[] DATA_MvRtUL_DirTbl = new int[] { 0, 2, 1, 3 };
+	private static readonly int[] DATA_MvRtDR_DirTbl = new int[] { 1, 3, 0, 2 };
+	private static readonly int[] DATA_MvRtLD_DirTbl = new int[] { 2, 1, 3, 0 };
+	private static readonly int[] DATA_MvRtRU_DirTbl = new int[] { 3, 0, 2, 1 };
+	private static readonly int[] DATA_MvRtUR_DirTbl = new int[] { 0, 3, 1, 2 };
+	private static readonly int[] DATA_MvRtDL_DirTbl = new int[] { 1, 2, 0, 3 };
+	private static readonly int[] DATA_MvRtLU_DirTbl = new int[] { 2, 0, 3, 1 };
+	private static readonly int[] DATA_MvRtRD_DirTbl = new int[] { 3, 1, 2, 0 };
+	private static readonly int[] DATA_MvDirSpin_DirTbl = new int[] { 0, 1, 2, 3 };
+	private static readonly int[] DATA_MvDirKurukuru = new int[] { 0, 2, 1, 3 };
+	private static readonly int[] enable_code = new int[] { 2, 6, 7, 8, 9, 10, 11, 12, 13, 45, 46, 18, 19, 255 };
 	private global::FieldObjectMoveCode.SUBWORK _subWork;
 	private const int DIR_H_TYPE = 0;
 	private const int DIR_V_TYPE = 1;
@@ -190,15 +190,57 @@ public class FieldObjectMoveCode
 	public global::System.Action<global::FieldObjectMoveCode> OnEyeAction;
 	private global::FieldObjectMoveCode.HitData _hitData;
 	public global::FieldObjectEntity Entity { get; private set; }
-	public int PlayerGridDistance { get; private set; }
+	public int PlayerGridDistance { get; private set; } = 9999;
 	public bool IsPlayerHeight { get; private set; }
 	public bool IsForceEyeHit { get; set; }
-	public global::UnityEngine.Vector3 MvParamGoalPos { get { /*@B 0x600016D*/ throw null; } }
-	public FieldObjectMoveCode() { /*@B 0x6000163*/ throw null; }
-	public void SetEntity(global::FieldObjectEntity entity) { /*@B 0x6000166*/ throw null; }
-	public bool IsMissing() { /*@B 0x600016E*/ throw null; }
-	public bool IsNoneStart() { /*@B 0x600016F*/ throw null; }
-	public void MVCodeStart() { /*@B 0x6000170*/ throw null; }
+	public global::UnityEngine.Vector3 MvParamGoalPos { get { return _mvParam.goalPos; } }
+	public FieldObjectMoveCode() { }
+	public void SetEntity(global::FieldObjectEntity entity) {
+        Entity = entity;
+        if (Entity is global::FieldPokemonEntity)
+        {
+            EntityType = 1;
+            pokeEntity = Entity as global::FieldPokemonEntity;
+        }
+        else if (Entity is global::FieldCharacterEntity)
+        {
+            EntityType = 2;
+            charaEntity = Entity as global::FieldCharacterEntity;
+        }
+        _isMissing = false;
+    }
+	public bool IsMissing() {
+        if (_isMissing)
+            return true;
+
+        if (Entity == null)
+        {
+            _isMissing = true;
+            return true;
+        }
+
+        return false;
+    }
+	public bool IsNoneStart() {
+        return _moveProc == null;
+    }
+	public void MVCodeStart() {
+        moveCache = new MoveCache();
+        moveCache.Pos = new global::UnityEngine.Vector3[MAX_MOVE_CACHE];
+        moveCache.Angle = new float[MAX_MOVE_CACHE];
+        _moveProc = GetMoveProc(MoveCode);
+        _moveProc.InitProc(0.0f);
+        SetMVCodeLimit();
+        DATA_FldOBJ_EventTypeInitProcTbl();
+        MvState = MV_STATE.Update;
+        _mvParam.goalPos = Entity.transform.position;
+        _mvParam.walkCountStart = false;
+        _mvParam.waitTime = 0.0f;
+        _mvParam.endWait = 0.0f;
+        _mvParam.goalDir = global::DIR.DIR_NOT;
+        _mvParam.isZeroFrameAngle = false;
+        _mvParam._isForceWalkAnime = false;
+    }
 	public void MVCodeStop() {
         if (MvState != MV_STATE.TrainerStop)
             MvState = MV_STATE.Stop;
@@ -206,7 +248,40 @@ public class FieldObjectMoveCode
         MoveCodeUpdateAfter(false, 0.0f); // time is never read (s0 not set @01d5660c)
         _stopPos = Entity.transform.position;
     }
-	public void MVCodeRestart() { /*@B 0x6000172*/ throw null; }
+	public void MVCodeRestart() {
+        if (_moveProc == null)
+        {
+            MVCodeStart();
+            return;
+        }
+
+        if (_moveProc.ReturnProc != null)
+            _moveProc.ReturnProc(0.0f);
+
+        if (Entity == null || Entity.transform == null)
+        {
+            Entity = null;
+            return;
+        }
+
+        if (_stopPos != Entity.transform.position)
+        {
+            _mvParam.seq_no = 0;
+            _mvParam.goalPos = Entity.transform.position;
+            _mvParam.walkCountStart = false;
+            _mvParam.waitTime = 0.0f;
+            _mvParam.endWait = 0.0f;
+            _mvParam.goalDir = global::DIR.DIR_NOT;
+        }
+
+        float diff = Entity.yawAngle - _mv_targetYawAngle;
+        if (diff > -0.001f && diff < 0.001f) // fcmp/b.le + b.pl: NaN takes the plain-store path
+            _mv_YawAngleTime = 1.0f;
+        _mv_targetYawAngle = Entity.yawAngle;
+
+        if (MvState != MV_STATE.TrainerStop)
+            MvState = MV_STATE.Update;
+    }
 	public void MVCodeChange(int code) {
         MoveCode = code;
         MVCodeStart();
@@ -217,7 +292,67 @@ public class FieldObjectMoveCode
 	public void MVCodeTrainerStop() {
         MvState = MV_STATE.TrainerStop;
     }
-	private global::FieldObjectMoveCode.FIELD_OBJ_MOVE_PROC_LIST GetMoveProc(int movecode) { /*@B 0x6000176*/ throw null; }
+	private global::FieldObjectMoveCode.FIELD_OBJ_MOVE_PROC_LIST GetMoveProc(int movecode) {
+        switch (movecode)
+        {
+            case MV_DMY: return new FIELD_OBJ_MOVE_PROC_LIST(MV_DMY, FieldOBJ_MoveInitProcDummy, FieldOBJ_MoveProcDummy, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_PLAYER: return new FIELD_OBJ_MOVE_PROC_LIST(MV_PLAYER, FieldOBJ_MoveInitProcDummy, FieldOBJ_MoveProcDummy, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_DIR_RND: return new FIELD_OBJ_MOVE_PROC_LIST(MV_DIR_RND, FieldOBJ_MoveDirRnd_Init, FieldOBJ_MoveDirRnd_Move, FieldOBJ_MoveDirRnd_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRnd_Init, FieldOBJ_MvRnd_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_V: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRndV_Init, FieldOBJ_MvRnd_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_H: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRndH_Init, FieldOBJ_MvRnd_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_UL: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveDirRndUL_Init, FieldOBJ_MoveDirRnd_Move, FieldOBJ_MoveDirRnd_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_UR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveDirRndUR_Init, FieldOBJ_MoveDirRnd_Move, FieldOBJ_MoveDirRnd_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_DL: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveDirRndDL_Init, FieldOBJ_MoveDirRnd_Move, FieldOBJ_MoveDirRnd_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_DR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveDirRndDR_Init, FieldOBJ_MoveDirRnd_Move, FieldOBJ_MoveDirRnd_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_UDL: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveDirRndUDL_Init, FieldOBJ_MoveDirRnd_Move, FieldOBJ_MoveDirRnd_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_UDR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveDirRndUDR_Init, FieldOBJ_MoveDirRnd_Move, FieldOBJ_MoveDirRnd_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_ULR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveDirRndULR_Init, FieldOBJ_MoveDirRnd_Move, FieldOBJ_MoveDirRnd_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_DLR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveDirRndDLR_Init, FieldOBJ_MoveDirRnd_Move, FieldOBJ_MoveDirRnd_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_UP: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveUp_Init, FieldOBJ_MoveDir_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_DOWN: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveDown_Init, FieldOBJ_MoveDir_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_LEFT: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveLeft_Init, FieldOBJ_MoveDir_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RIGHT: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRight_Init, FieldOBJ_MoveDir_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_SPIN_L: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveSpinLeft_Init, FieldOBJ_MoveSpin_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_SPIN_R: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveSpinRight_Init, FieldOBJ_MoveSpin_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RT2: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRoute2_Init, FieldOBJ_MoveRoute2_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTURLD: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteURLD_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTRLDU: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteRLDU_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTDURL: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteDURL_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTLDUR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteLDUR_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTULRD: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteULRD_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTLRDU: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteLRDU_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTDULR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteDULR_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTRDUL: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteRDUL_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTLUDR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteLUDR_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTUDRL: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteUDRL_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTRLUD: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteRLUD_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTDRLU: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteDRLU_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTRUDL: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteRUDL_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTUDLR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteUDLR_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTLRUD: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteLRUD_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTDLRU: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteDLRU_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTUL: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteUL_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTDR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteDR_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTLD: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteLD_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTRU: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteRU_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTUR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteUR_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTDL: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteDL_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTLU: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteLU_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RTRD: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRouteRD_Init, FieldOBJ_MoveRoute3_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_UD: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveDirRndUD_Init, FieldOBJ_MoveDirRnd_Move, FieldOBJ_MoveDirRnd_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_RND_LR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveDirRndLR_Init, FieldOBJ_MoveDirRnd_Move, FieldOBJ_MoveDirRnd_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_SEED: return new FIELD_OBJ_MOVE_PROC_LIST(MV_SEED, FieldOBJ_MoveSeed_Init, FieldOBJ_MoveSeed_Move, FieldOBJ_MoveSeed_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_PAIR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MovePair_Init, FieldOBJ_MovePair_Move, FieldOBJ_MovePair_Delete, FieldOBJ_MoveReturnProcDummy);
+            case MV_REWAR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MoveRewar_Init, FieldOBJ_MoveRewar_Move, FieldOBJ_MoveDeleteProcDummy, FieldOBJ_MoveReturnProcDummy);
+            case MV_TR_PAIR: return new FIELD_OBJ_MOVE_PROC_LIST(MV_RND, FieldOBJ_MovePairTr_Init, FieldOBJ_MovePairTr_Move, FieldOBJ_MovePairTr_Delete, FieldOBJ_MovePairTr_Return);
+            case MV_HIDE_SNOW: return new FIELD_OBJ_MOVE_PROC_LIST(MV_HIDE_SNOW, FieldOBJ_MoveHideSnow_Init, FieldOBJ_MoveHide_Move, FieldOBJ_MoveHide_Delete, FieldOBJ_MoveHide_Return);
+            case MV_HIDE_SAND: return new FIELD_OBJ_MOVE_PROC_LIST(MV_HIDE_SAND, FieldOBJ_MoveHideSand_Init, FieldOBJ_MoveHide_Move, FieldOBJ_MoveHide_Delete, FieldOBJ_MoveHide_Return);
+            case MV_HIDE_GRND: return new FIELD_OBJ_MOVE_PROC_LIST(MV_HIDE_GRND, FieldOBJ_MoveHideGround_Init, FieldOBJ_MoveHide_Move, FieldOBJ_MoveHide_Delete, FieldOBJ_MoveHide_Return);
+            case MV_HIDE_KUSA: return new FIELD_OBJ_MOVE_PROC_LIST(MV_HIDE_KUSA, FieldOBJ_MoveHideKusa_Init, FieldOBJ_MoveHide_Move, FieldOBJ_MoveHide_Delete, FieldOBJ_MoveHide_Return);
+            default: return null;
+        }
+    }
 	private void FieldOBJ_MoveInitProcDummy(float time) { }
 	private void FieldOBJ_MoveProcDummy(float time) { }
 	private void FieldOBJ_MoveDeleteProcDummy(float time) { }
@@ -1291,10 +1426,53 @@ public class FieldObjectMoveCode
 	private bool FieldOBJ_StatusBit_CheckEasy(int bit) {
         return (_objectStatus & bit) != 0;
     }
-	private bool IsSubProcActive() { /*@B 0x60001E5*/ throw null; }
-	private void DATA_FldOBJ_EventTypeInitProcTbl() { /*@B 0x60001E6*/ throw null; }
-	private bool DATA_FldOBJ_EventTypeStartCheckProcTbl() { /*@B 0x60001E7*/ throw null; }
-	private bool DATA_FldOBJ_EventTypeMoveProcTbl() { /*@B 0x60001E8*/ throw null; }
+	private bool IsSubProcActive() {
+        switch (Ev_Type)
+        {
+            case EV_TYPE_TRAINER_KYORO:
+            case EV_TYPE_TRAINER_SPIN_STOP_L:
+            case EV_TYPE_TRAINER_SPIN_STOP_R:
+                return _subWork.max_count > 0;
+            default:
+                return false;
+        }
+    }
+	private void DATA_FldOBJ_EventTypeInitProcTbl() {
+        switch (Ev_Type)
+        {
+            case EV_TYPE_TRAINER_KYORO:
+                SubMoveKyoro_Init();
+                break;
+            case EV_TYPE_TRAINER_SPIN_STOP_L:
+            case EV_TYPE_TRAINER_SPIN_STOP_R:
+                SubMoveSpinStop_Init();
+                break;
+        }
+    }
+	private bool DATA_FldOBJ_EventTypeStartCheckProcTbl() {
+        switch (Ev_Type)
+        {
+            case EV_TYPE_TRAINER_KYORO:
+                return SubMoveKyoro_StartCheck();
+            case EV_TYPE_TRAINER_SPIN_STOP_L:
+            case EV_TYPE_TRAINER_SPIN_STOP_R:
+                return SubMoveSpinStop_StartCheck();
+            default:
+                return false;
+        }
+    }
+	private bool DATA_FldOBJ_EventTypeMoveProcTbl() {
+        switch (Ev_Type)
+        {
+            case EV_TYPE_TRAINER_KYORO:
+                return SubMoveKyoro_Move();
+            case EV_TYPE_TRAINER_SPIN_STOP_L:
+            case EV_TYPE_TRAINER_SPIN_STOP_R:
+                return SubMoveSpinStop_Move();
+            default:
+                return false;
+        }
+    }
 	private bool FieldOBJ_MoveSub() {
         if (DATA_FldOBJ_EventTypeStartCheckProcTbl())
             return DATA_FldOBJ_EventTypeMoveProcTbl();
@@ -1304,7 +1482,24 @@ public class FieldObjectMoveCode
 	private bool SubStart() {
         return DATA_FldOBJ_EventTypeStartCheckProcTbl();
     }
-	private bool SubUpdate() { /*@B 0x60001EB*/ throw null; }
+	private bool SubUpdate() {
+        switch (Ev_Type)
+        {
+            case EV_TYPE_TRAINER_KYORO:
+                if (SubMoveKyoro_Move())
+                    return true;
+                break;
+            case EV_TYPE_TRAINER_SPIN_STOP_R:
+                if (SubMoveSpinStop_Move())
+                    return true;
+                break;
+            case EV_TYPE_TRAINER_SPIN_STOP_L:
+                if (SubMoveSpinStop_Move())
+                    return true;
+                break;
+        }
+        return false;
+    }
 	private void SubMoveNon_Init() {
         // Empty
     }
@@ -1318,7 +1513,23 @@ public class FieldObjectMoveCode
         _subWork = new SUBWORK();
         _subWork.max_count = MoveParam1;
     }
-	private bool SubMoveKyoro_StartCheck() { /*@B 0x60001F0*/ throw null; }
+	private bool SubMoveKyoro_StartCheck() {
+        switch (_subWork.check_seq_no)
+        {
+            case 0:
+                if (_subWork.walk_count >= _subWork.max_count)
+                {
+                    _subWork.check_seq_no = 2;
+                    _subWork.move_seq_no = 0;
+                    _subWork.walk_count = 0;
+                    return true;
+                }
+                break;
+            case 2:
+                return true;
+        }
+        return false;
+    }
 	private bool SubMoveKyoro_Move() {
         while (true)
         {
@@ -1380,7 +1591,21 @@ public class FieldObjectMoveCode
         _subWork.max_count = MoveParam1;
         _subWork.dir_type = Ev_Type == EV_TYPE_TRAINER_SPIN_STOP_L ? SPIN_STOP_L_TYPE : SPIN_STOP_R_TYPE;
     }
-	private bool SubMoveSpinStop_StartCheck() { /*@B 0x60001F3*/ throw null; }
+	private bool SubMoveSpinStop_StartCheck() {
+        if (_subWork.check_seq_no != 0)
+            return true;
+
+        if (_subWork.walk_count < _subWork.max_count)
+        {
+            _subWork.check_seq_no = 0;
+            return false;
+        }
+
+        _subWork.check_seq_no = 1;
+        _subWork.move_seq_no = 0;
+        _subWork.walk_count = 0;
+        return true;
+    }
 	private bool SubMoveSpinStop_Move() {
         while (true)
         {
@@ -1667,7 +1892,13 @@ public class FieldObjectMoveCode
         Entity.yawAngle = dir;
         return false;
     }
-	private void SetWait(int frame) { /*@B 0x60001FA*/ throw null; }
+	private void SetWait(int frame) {
+        if (frame > 0)
+            _mvParam.endWait = frame / 30.0f;
+        else
+            _mvParam.endWait = 0.0f;
+        _mvParam.waitTime = 0.0f;
+    }
 	private bool IsWaitEnd() {
         return _mvParam.endWait <= _mvParam.waitTime;
     }
@@ -2457,7 +2688,22 @@ public class FieldObjectMoveCode
 
         return false;
     }
-	public bool IsTrainer() { /*@B 0x6000209*/ throw null; }
+	public bool IsTrainer() {
+        switch (Ev_Type)
+        {
+            case EV_TYPE_TRAINER:
+            case EV_TYPE_TRAINER_EYEALL:
+            case EV_TYPE_ITEM:
+            case EV_TYPE_TRAINER_KYORO:
+            case EV_TYPE_TRAINER_SPIN_STOP_L:
+            case EV_TYPE_TRAINER_SPIN_STOP_R:
+            case EV_TYPE_TRAINER_SPIN_MOVE_L:
+            case EV_TYPE_TRAINER_SPIN_MOVE_R:
+                return true;
+            default:
+                return false;
+        }
+    }
 	public int EyeType() {
         switch (Ev_Type)
         {
@@ -2603,7 +2849,7 @@ public class FieldObjectMoveCode
                 break;
         }
     }
-	static FieldObjectMoveCode() { /*@B 0x600020D*/ throw null; }
+	static FieldObjectMoveCode() { }
 	public enum MV_STATE
 	{
 		Update = 0,
@@ -2656,7 +2902,13 @@ public class FieldObjectMoveCode
 		public global::System.Action<float> UpdateProc;
 		public global::System.Action<float> DeleteProc;
 		public global::System.Action<float> ReturnProc;
-		public FIELD_OBJ_MOVE_PROC_LIST(int movecode, global::System.Action<float> init, global::System.Action<float> proc, global::System.Action<float> del, global::System.Action<float> ret) { /*@B 0x60092EF*/ throw null; }
+		public FIELD_OBJ_MOVE_PROC_LIST(int movecode, global::System.Action<float> init, global::System.Action<float> proc, global::System.Action<float> del, global::System.Action<float> ret) {
+            MoveCode = movecode;
+            InitProc = init;
+            UpdateProc = proc;
+            DeleteProc = del;
+            ReturnProc = ret;
+        }
 	}
 	private enum DIRID
 	{
