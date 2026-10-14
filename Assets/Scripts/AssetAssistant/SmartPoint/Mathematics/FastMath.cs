@@ -5,8 +5,18 @@ namespace SmartPoint.Mathematics
 {
 	public class FastMath
 	{
-		public static global::UnityEngine.Quaternion RotationAxis(in global::UnityEngine.Vector3 V, float angle) { /*@B AssetAssistant:0x6000009*/ throw null; }
-		public static global::UnityEngine.Quaternion RotateZLocal(in global::UnityEngine.Quaternion Q, float Angle) { /*@B AssetAssistant:0x600000A*/ throw null; }
+		public static global::UnityEngine.Quaternion RotationAxis(in global::UnityEngine.Vector3 V, float angle) {
+			float inv = 1f / (float)Math.Sqrt(V.x * V.x + V.y * V.y + V.z * V.z);
+			float half = angle * 0.5f;
+			Vector3 axis = new Vector3(V.x * inv, inv * V.y, inv * V.z);
+			float sin = Mathf.Sin(half);
+			return new Quaternion(axis.x * sin, axis.y * sin, axis.z * sin, Mathf.Cos(half));
+		}
+		public static global::UnityEngine.Quaternion RotateZLocal(in global::UnityEngine.Quaternion Q, float Angle) {
+			float sin = (float)Math.Sin(Angle);
+			float cos = (float)Math.Cos(Angle);
+			return new Quaternion(Q.x * cos + Q.y * sin, Q.y * cos - Q.x * sin, Q.w * sin + Q.z * cos, Q.w * cos - Q.z * sin);
+		}
 		// @02bc8db0
 		public static global::UnityEngine.Vector3 GetForwardVector(in global::UnityEngine.Quaternion Q) {
             float x2 = Q.x + Q.x;

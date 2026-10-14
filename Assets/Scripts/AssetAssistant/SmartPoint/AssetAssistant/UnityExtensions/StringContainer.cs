@@ -3,7 +3,7 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
 {
 	public class StringContainer
 	{
-		private global::System.Collections.Generic.HashSet<string> _container;
+		private global::System.Collections.Generic.HashSet<string> _container = new global::System.Collections.Generic.HashSet<string>();
 		public void Add(string text) {
 			_container.Add(text);
 		}
@@ -13,6 +13,6 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
 		public string[] ToArray() {
 			return System.Linq.Enumerable.ToArray(_container);
 		}
-		public StringContainer() { /*@B AssetAssistant:0x6000202*/ throw null; }
+		public StringContainer() { }
 	}
 }

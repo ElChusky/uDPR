@@ -3,8 +3,17 @@ namespace SmartPoint.AssetAssistant
 {
 	internal static class StreamExtensions
 	{
-		public static void SerializeBinaryFormatter(this global::System.IO.Stream stream, object content) { /*@B AssetAssistant:0x6000114*/ throw null; }
-		public static object DeserializeBinaryFormatter(this global::System.IO.Stream stream) { /*@B AssetAssistant:0x6000115*/ throw null; }
-		private static global::System.Reflection.Assembly ResolveAssembly(object sender, global::System.ResolveEventArgs args) { /*@B AssetAssistant:0x6000116*/ throw null; }
+		public static void SerializeBinaryFormatter(this global::System.IO.Stream stream, object content) {
+			var formatter = new global::System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			formatter.AssemblyFormat = global::System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple;
+			formatter.Serialize(stream, content);
+		}
+		public static object DeserializeBinaryFormatter(this global::System.IO.Stream stream) {
+			var formatter = new global::System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			formatter.Binder = new IgnoreVersionBinder();
+			formatter.AssemblyFormat = global::System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple;
+			return formatter.Deserialize(stream);
+		}
+		private static global::System.Reflection.Assembly ResolveAssembly(object sender, global::System.ResolveEventArgs args) => global::System.Reflection.Assembly.GetAssembly(typeof(Sequencer));
 	}
 }

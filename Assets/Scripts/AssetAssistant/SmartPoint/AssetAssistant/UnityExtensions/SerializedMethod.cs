@@ -14,8 +14,16 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
 		public string assemblyQualifiedName { get { return this._assemblyQualifiedName; } }
 		public string methodName { get { return this._methodName; } }
 		public bool isStatic { get { return this._isStatic; } }
-		public SerializedMethod(string assemblyQualifiedName, string methodName, bool isStatic) { /*@B AssetAssistant:0x6000206*/ throw null; }
-		public SerializedMethod(global::System.Reflection.MethodInfo methodInfo) { /*@B AssetAssistant:0x6000207*/ throw null; }
+		public SerializedMethod(string assemblyQualifiedName, string methodName, bool isStatic) {
+			_assemblyQualifiedName = assemblyQualifiedName;
+			_methodName = methodName;
+			_isStatic = isStatic;
+		}
+		public SerializedMethod(global::System.Reflection.MethodInfo methodInfo) {
+			_assemblyQualifiedName = methodInfo.DeclaringType.AssemblyQualifiedName;
+			_methodName = methodInfo.Name;
+			_isStatic = methodInfo.IsStatic;
+		}
 		// Shipped property names (dump.cs TypeDefIndex 3081): assemblyQualifiedName / methodName / isStatic
 		// (get_* @02bc7c10 / @02bc7c20 / @02bc7c30); the stub's capitalised names are kept (no caller in the tree).
 		public void Invoke() {
@@ -32,7 +40,17 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
                 return;
             methodInfo.Invoke(obj, parameters);
         }
-		public global::System.Reflection.MethodInfo GetMethodInfo() { /*@B AssetAssistant:0x600020A*/ throw null; }
+		public global::System.Reflection.MethodInfo GetMethodInfo() {
+			if (string.IsNullOrEmpty(_assemblyQualifiedName))
+				return null;
+			global::System.Type type = global::System.Type.GetType(_assemblyQualifiedName);
+			if (type == null || string.IsNullOrEmpty(_methodName))
+				return null;
+			BindingFlags flags = _isStatic
+				? (BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+				: (BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			return type.GetMethod(_methodName, flags);
+		}
 		public global::System.RuntimeMethodHandle GetMethod() {
             // @02bc7e90: op_Equality → default; else the virtual get_MethodHandle (vslot 19, +0x260).
             MethodInfo methodInfo = GetMethodInfo();

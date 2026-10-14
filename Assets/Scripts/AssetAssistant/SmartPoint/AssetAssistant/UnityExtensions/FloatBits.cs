@@ -13,7 +13,10 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
 		private int bits;
 		[global::System.Runtime.InteropServices.FieldOffset(0)]
 		private uint ubits;
-		public FloatBits(float value) { /*@B AssetAssistant:0x60001F1*/ throw null; }
+		public FloatBits(float value) {
+			this = default(FloatBits);
+			fp = value;
+		}
 		public FloatBits(int value) {
 			// @02bc7520: str w1, [x0] — the int BITS, not a float conversion
 			this = default(FloatBits);
@@ -24,7 +27,9 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
 			this = default(FloatBits);
 			ubits = value;
 		}
-		public static implicit operator float(global::SmartPoint.AssetAssistant.UnityExtensions.FloatBits fpBits) { /*@B AssetAssistant:0x60001F4*/ throw null; }
+		public static implicit operator float(global::SmartPoint.AssetAssistant.UnityExtensions.FloatBits fpBits) {
+			return fpBits.fp;
+		}
 		public static implicit operator global::SmartPoint.AssetAssistant.UnityExtensions.FloatBits(float fp) {
             return new FloatBits(fp);
         }
@@ -50,7 +55,9 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
 			// @02bc75b0: fmov w0, s0
 			return new FloatBits(value).ubits;
 		}
-		public override string ToString() { /*@B AssetAssistant:0x60001FC*/ throw null; }
+		public override string ToString() {
+			return fp.ToString();
+		}
 		public global::SmartPoint.AssetAssistant.UnityExtensions.FloatBits Absolute() {
 			// @02bc75d0: ldr w8,[x0] ; and #0x7fffffff ; str w8,[x0] ; return
 			bits &= ~FP_SIGN_BITS;
