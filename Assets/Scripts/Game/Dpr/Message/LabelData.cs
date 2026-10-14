@@ -7,10 +7,11 @@ namespace Dpr.Message
 		public int labelIndex;
 		public int arrayIndex;
 		public string labelName;
-		public global::Dpr.Message.StyleInfo styleInfo;
+		public global::Dpr.Message.StyleInfo styleInfo = new global::Dpr.Message.StyleInfo();
 		public int[] attributeValueArray;
 		public global::Dpr.Message.TagData[] tagDataArray;
 		public global::Dpr.Message.WordData[] wordDataArray;
-		public LabelData() { /*@B 0x6003BC0*/ throw null; }
+		public LabelData() {
+		}
 	}
 }

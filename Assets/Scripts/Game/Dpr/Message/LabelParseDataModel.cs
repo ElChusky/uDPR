@@ -3,12 +3,17 @@ namespace Dpr.Message
 {
 	public class LabelParseDataModel
 	{
-		private global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList;
-		private global::System.Collections.Generic.List<string> stringList;
+		private global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> tagDataList = new global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel>();
+		private global::System.Collections.Generic.List<string> stringList = new global::System.Collections.Generic.List<string>();
 		public global::System.Collections.Generic.List<global::Dpr.Message.LabelTagDataModel> TagDataList { get { return this.tagDataList; } }
 		public global::System.Collections.Generic.List<string> StringList { get { return this.stringList; } }
-		public void AddTagDataModel(global::Dpr.Message.LabelTagDataModel tagDataModel) { /*@B 0x6003C66*/ throw null; }
-		public void AddStringData(string str) { /*@B 0x6003C67*/ throw null; }
-		public LabelParseDataModel() { /*@B 0x6003C68*/ throw null; }
+		public void AddTagDataModel(global::Dpr.Message.LabelTagDataModel tagDataModel) {
+			tagDataList.Add(tagDataModel);
+		}
+		public void AddStringData(string str) {
+			stringList.Add(str);
+		}
+		public LabelParseDataModel() {
+		}
 	}
 }
