@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SpecialDynamicResolution : global::Dpr.SequenceEditor.Macro
 	{
 		public bool enable;
-		public SpecialDynamicResolution(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A61*/ throw null; }
+		public SpecialDynamicResolution(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			enable = Macro.ParseBool(macro.GetValue("enable"), 1);
+		}
 	}
 }

@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 pos;
 		public bool relative;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public SoundBelugaMovePosition(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A72*/ throw null; }
+		public SoundBelugaMovePosition(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			relative = Macro.ParseBool(macro.GetValue("relative"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

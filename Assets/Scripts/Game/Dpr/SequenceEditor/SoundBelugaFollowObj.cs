@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_FOLLOW type;
 		public int trg;
 		public global::UnityEngine.Vector3 ofs;
-		public SoundBelugaFollowObj(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A76*/ throw null; }
+		public SoundBelugaFollowObj(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			type = Macro.Parse_SEQ_DEF_FOLLOW(macro.GetValue("type"));
+			trg = Macro.ParseInt(macro.GetValue("trg"));
+			ofs = Macro.ParseVector3(macro.GetValue("ofs"));
+		}
 	}
 }

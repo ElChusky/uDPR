@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public string @event;
 		public bool isAttrEffect;
-		public SoundPostEvent(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004ADE*/ throw null; }
+		public SoundPostEvent(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			@event = Macro.ParseString(macro.GetValue("event"));
+			isAttrEffect = Macro.ParseBool(macro.GetValue("isAttrEffect"), 0);
+		}
 	}
 }

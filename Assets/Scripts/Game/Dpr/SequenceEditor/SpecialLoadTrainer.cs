@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TRAINER trg;
 		public string traName;
-		public SpecialLoadTrainer(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A55*/ throw null; }
+		public SpecialLoadTrainer(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_TRAINER(macro.GetValue("trg"));
+			traName = Macro.ParseString(macro.GetValue("traName"));
+		}
 	}
 }

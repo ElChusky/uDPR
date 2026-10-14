@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SpecialDeleteKisekaeAnime : global::Dpr.SequenceEditor.Macro
 	{
 		public string file;
-		public SpecialDeleteKisekaeAnime(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A52*/ throw null; }
+		public SpecialDeleteKisekaeAnime(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			file = Macro.ParseString(macro.GetValue("file"));
+		}
 	}
 }

@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public float length;
 		public global::UnityEngine.Vector3 ofs;
-		public SoundBelugaAutoCameraRotate(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A77*/ throw null; }
+		public SoundBelugaAutoCameraRotate(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			length = Macro.ParseFloat(macro.GetValue("length"));
+			ofs = Macro.ParseVector3(macro.GetValue("ofs"));
+		}
 	}
 }

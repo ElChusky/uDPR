@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public bool poke;
 		public bool tra;
-		public SpecialCheckHitCameraAABBFlg(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A5B*/ throw null; }
+		public SpecialCheckHitCameraAABBFlg(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			poke = Macro.ParseBool(macro.GetValue("poke"), 1);
+			tra = Macro.ParseBool(macro.GetValue("tra"), 1);
+		}
 	}
 }

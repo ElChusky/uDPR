@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class SpecialSetTimeZone : global::Dpr.SequenceEditor.Macro
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_TIME_ZONE timeZone;
-		public SpecialSetTimeZone(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A60*/ throw null; }
+		public SpecialSetTimeZone(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			timeZone = Macro.Parse_SEQ_DEF_TIME_ZONE(macro.GetValue("timeZone"));
+		}
 	}
 }

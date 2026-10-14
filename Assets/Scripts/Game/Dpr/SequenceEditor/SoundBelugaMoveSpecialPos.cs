@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 ofs;
 		public bool isFlip;
 		public bool isRot;
-		public SoundBelugaMoveSpecialPos(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A74*/ throw null; }
+		public SoundBelugaMoveSpecialPos(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			pos = Macro.Parse_SEQ_DEF_SPPOS(macro.GetValue("pos"));
+			ofs = Macro.ParseVector3(macro.GetValue("ofs"));
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), 1);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), 1);
+		}
 	}
 }

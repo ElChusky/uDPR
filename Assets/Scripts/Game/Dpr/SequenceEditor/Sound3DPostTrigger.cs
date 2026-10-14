@@ -5,6 +5,8 @@ namespace Dpr.SequenceEditor
 	public class Sound3DPostTrigger : global::Dpr.SequenceEditor.Macro
 	{
 		public string trigger;
-		public Sound3DPostTrigger(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AEA*/ throw null; }
+		public Sound3DPostTrigger(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trigger = Macro.ParseString(macro.GetValue("trigger"));
+		}
 	}
 }
