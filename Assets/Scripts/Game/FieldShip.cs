@@ -8,12 +8,12 @@ using UnityEngine;
 public class FieldShip
 {
 	private global::FieldEventEntity Ship;
-	private global::Dpr.FieldFloatMove ShipSpeed;
-	private global::UnityEngine.Vector3 MoveVector;
-	private global::Dpr.FieldFloatMove CameraOffsetRate;
+	private global::Dpr.FieldFloatMove ShipSpeed = new global::Dpr.FieldFloatMove();
+	private global::UnityEngine.Vector3 MoveVector = global::UnityEngine.Vector3.zero;
+	private global::Dpr.FieldFloatMove CameraOffsetRate = new global::Dpr.FieldFloatMove();
 	private global::UnityEngine.Vector3 CameraOffsetA;
 	private global::UnityEngine.Vector3 CameraOffsetB;
-	private global::Dpr.FieldFloatMove ShipOffset;
+	private global::Dpr.FieldFloatMove ShipOffset = new global::Dpr.FieldFloatMove();
 	private global::UnityEngine.GameObject CameraAttachObject;
 	private global::UnityEngine.GameObject BlurEffectRotate;
 	private global::UnityEngine.GameObject BlurEffectParent;
@@ -287,7 +287,7 @@ public class FieldShip
                 break;
         }
     }
-	public FieldShip() { /*@B 0x6000248*/ throw null; }
+	public FieldShip() { }
 	private enum MapType
 	{
 		None = 0,

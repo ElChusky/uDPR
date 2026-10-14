@@ -3,52 +3,132 @@
 public class FieldPokemonEntity : global::FieldObjectEntity
 {
 	[global::UnityEngine.SerializeField]
-	private float scale;
+	private float scale = 1f;
 	[global::UnityEngine.SerializeField]
-	protected global::AnimationPlayer _animationPlayer;
+	protected global::AnimationPlayer _animationPlayer = new global::AnimationPlayer();
 	[global::UnityEngine.SerializeField]
 	protected global::SmartPoint.Components.SkinnedMeshRendererCluster[] _rendererClusters;
 	[global::UnityEngine.SerializeField]
-	protected global::Dpr.PokeAnimSound _pokeAnimSound;
+	protected global::Dpr.PokeAnimSound _pokeAnimSound = new global::Dpr.PokeAnimSound();
 	[global::UnityEngine.SerializeField]
 	protected bool[] _blinkEnables;
 	[global::UnityEngine.SerializeField]
 	public bool hasLandingSequence;
 	[global::UnityEngine.SerializeField]
-	public int eyeIndex;
+	public int eyeIndex = -1;
 	[global::UnityEngine.SerializeField]
-	public bool autoBlinkEnable;
+	public bool autoBlinkEnable = true;
 	[global::System.NonSerialized]
-	public bool updateEnable;
+	public bool updateEnable = true;
 	private global::UnityEngine.MaterialPropertyBlock _propertyBlock;
 	private global::UnityEngine.Transform _originBone;
-	private readonly int[] _blinkPatterns;
+	private readonly int[] _blinkPatterns = new int[] { 1, 2, 1 };
 	private const float BlinkIntervalMax = 12f;
 	private const float BlinkIntervalMin = 3f;
 	private float _blinkIntervalTime;
 	private float _blinkTime;
-	private int _blinkIndex;
-	private bool _enablePlayInitialIdleAnimation;
+	private int _blinkIndex = 1;
+	private bool _enablePlayInitialIdleAnimation = true;
 	private global::UnityEngine.Animator _animator;
 	private bool reOnEnable;
 	private int wait;
-	public override string entityType { get { /*@B 0x60007EF*/ throw null; } }
-	public bool[] blinkEnables { set { /*@B 0x60007F2*/ throw null; } }
+	public override string entityType { get { return "FieldPokemon"; } }
+	public bool[] blinkEnables { set { _blinkEnables = value; } }
 	public global::PokemonPrefabInfo PrefabInfo { get; private set; }
-	public global::SmartPoint.Components.SkinnedMeshRendererCluster[] rendererCluster { get { /*@B 0x60007F9*/ throw null; } }
+	public global::SmartPoint.Components.SkinnedMeshRendererCluster[] rendererCluster { get { return _rendererClusters; } }
 	public override global::AnimationPlayer GetAnimationPlayer() { return this._animationPlayer; }
 	public global::Dpr.PokeAnimSound GetPokeAnimSound() { return this._pokeAnimSound; }
-	protected override void Awake() { /*@B 0x60007F5*/ throw null; }
-	protected override void OnDestroy() { /*@B 0x60007F6*/ throw null; }
-	protected override void OnEnable() { /*@B 0x60007F7*/ throw null; }
-	protected override void OnDisable() { /*@B 0x60007F8*/ throw null; }
-	protected override void OnUpdate(float deltaTime) { /*@B 0x60007FA*/ throw null; }
-	protected override void OnLateUpdate(float deltaTime) { /*@B 0x60007FB*/ throw null; }
-	protected override bool SwitchToNext() { /*@B 0x60007FC*/ throw null; }
-	public int GetIdleAnimationIndex() { /*@B 0x60007FD*/ throw null; }
-	public int GetWalkAnimationIndex() { /*@B 0x60007FE*/ throw null; }
-	public void EnablePlayInitialIdleAnimation(bool enabled) { /*@B 0x60007FF*/ throw null; }
-	protected override void ProcessSequence(float deltaTime) { /*@B 0x6000800*/ throw null; }
+	protected override void Awake() {
+		base.Awake();
+		PokemonMaskController.Register(this);
+	}
+	protected override void OnDestroy() {
+		PokemonMaskController.Unregister(this);
+		base.OnDestroy();
+	}
+	protected override void OnEnable() {
+		base.OnEnable();
+		global::SmartPoint.Components.RenderPriorityController.Register(transform, _rendererClusters);
+		_animator = GetComponent<global::UnityEngine.Animator>();
+		_animationPlayer.InitializePlayables(_animator);
+		_propertyBlock = new global::UnityEngine.MaterialPropertyBlock();
+		_pokeAnimSound.Init(_animationPlayer);
+		if (_originBone == null)
+			_originBone = transform.Find("Origin");
+		PrefabInfo = GetComponent<global::PokemonPrefabInfo>();
+	}
+	protected override void OnDisable() {
+		global::SmartPoint.Components.RenderPriorityController.Unregister(transform);
+		_animationPlayer.Destroy();
+		_propertyBlock = null;
+		base.OnDisable();
+	}
+	protected override void OnUpdate(float deltaTime) {
+		if (!updateEnable)
+			return;
+		base.OnUpdate(deltaTime);
+		if (!isActiveAndEnabled)
+			return;
+		ReOnEnable();
+		_animationPlayer.AdvanaceTime(deltaTime);
+		if (_blinkEnables.Length != 0)
+		{
+			if (autoBlinkEnable && _blinkEnables[_animationPlayer.currentIndex] && _blinkIntervalTime > 0f)
+			{
+				_blinkTime += deltaTime;
+				if (_blinkTime >= _blinkIntervalTime)
+				{
+					_blinkIntervalTime = 0.1f;
+					_blinkTime = 0f;
+					_animationPlayer.SetAdditiveLayerTime(_blinkPatterns[_blinkIndex++] / 3f);
+					if (_blinkIndex == _blinkPatterns.Length)
+						_blinkIntervalTime = 0f;
+				}
+			}
+			else
+			{
+				_blinkIntervalTime = global::UnityEngine.Random.Range(BlinkIntervalMin, BlinkIntervalMax);
+				_blinkTime = 0f;
+				_blinkIndex = 0;
+				_animationPlayer.SetAdditiveLayerTime(-1f);
+			}
+		}
+		_pokeAnimSound.Update(transform);
+	}
+	protected override void OnLateUpdate(float deltaTime) {
+		if (!updateEnable)
+			return;
+		base.OnLateUpdate(deltaTime);
+		if (_originBone != null)
+		{
+			global::UnityEngine.Vector3 position = _originBone.localPosition;
+			position.x = 0f;
+			position.z = 0f;
+			_originBone.localPosition = position;
+			_originBone.localScale = new global::UnityEngine.Vector3(scale, scale, scale);
+		}
+	}
+	protected override bool SwitchToNext() { return base.SwitchToNext(); }
+	public int GetIdleAnimationIndex() {
+		int index = EventParams.IdleAnimOverride;
+		return index < 0 ? 0 : index;
+	}
+	public int GetWalkAnimationIndex() {
+		int index = EventParams.WalkAnimOverride;
+		return index < 0 ? 1 : index;
+	}
+	public void EnablePlayInitialIdleAnimation(bool enabled) { _enablePlayInitialIdleAnimation = enabled; }
+	protected override void ProcessSequence(float deltaTime) {
+		if (!updateEnable)
+			return;
+		if (currentSequence == global::BaseEntity.SequenceID.Initialize)
+		{
+			nextSequence = global::FieldObjectEntity.SequenceID.Active;
+			if (_enablePlayInitialIdleAnimation)
+				_animationPlayer.Play(GetIdleAnimationIndex(), 0.2f, 0f);
+		}
+		base.ProcessSequence(deltaTime);
+	}
 	private void AK_EffectStart00(int value) { }
 	private void AK_EffectStart01(int value) { }
 	private void AK_ButuriStart01(int value) { }
@@ -57,10 +137,30 @@ public class FieldPokemonEntity : global::FieldObjectEntity
 	private void AK_SEStart03(int value) { }
 	private void AK_SEStart04(int value) { }
 	private void AK_PartsMaterial01(int value) { }
-	private void AK_PartsSkel01(int value) { /*@B 0x6000809*/ throw null; }
-	public void SetAlwaysAnimateCullingMode() { /*@B 0x600080A*/ throw null; }
-	private void ReOnEnable() { /*@B 0x600080B*/ throw null; }
-	public FieldPokemonEntity() { /*@B 0x600080C*/ throw null; }
+	private void AK_PartsSkel01(int value) { _animationPlayer.layerWeight = value; }
+	public void SetAlwaysAnimateCullingMode() {
+		reOnEnable = true;
+		wait = 0;
+	}
+	private void ReOnEnable() {
+		if (!reOnEnable)
+			return;
+		if (_animator == null)
+			return;
+		wait++;
+		_animator.cullingMode = global::UnityEngine.AnimatorCullingMode.AlwaysAnimate;
+		if (wait == 3)
+		{
+			_animator.enabled = true;
+			reOnEnable = false;
+		}
+		else if (wait == 2)
+		{
+			_animator.enabled = false;
+			OnEnable();
+		}
+	}
+	public FieldPokemonEntity() { }
 	public class SequenceID : global::FieldObjectEntity.SequenceID
 	{
 		protected const int User = 12288;

@@ -11,18 +11,102 @@ public class FieldTobariGymWallEntity : global::FieldObjectEntity
 	private float LeftColX;
 	private float RightColX;
 	private bool RequestUpdateRoughlyColRect;
-	public override string entityType { get { /*@B 0x600080D*/ throw null; } }
+	public override string entityType { get { return "FieldCollision"; } }
 	public bool WallIsLeftLimit { get; set; }
 	public bool WallIsRightLimit { get; set; }
 	public float GymWallWorldLeftValue { get; set; }
 	public float GymWallWorldRightValue { get; set; }
-	protected override void Awake() { /*@B 0x6000816*/ throw null; }
-	protected override void OnUpdate(float deltaTime) { /*@B 0x6000817*/ throw null; }
-	public void ApplySaveData(in global::DPData.FIELD_OBJ_SAVE_DATA saveData) { /*@B 0x6000818*/ throw null; }
-	public void CreateSaveData(ref global::DPData.FIELD_OBJ_SAVE_DATA saveData) { /*@B 0x6000819*/ throw null; }
-	public void Setup() { /*@B 0x600081A*/ throw null; }
-	public void Moved(bool isLeft) { /*@B 0x600081B*/ throw null; }
-	private void SetupCol() { /*@B 0x600081C*/ throw null; }
-	public bool CheckHit(global::UnityEngine.Vector3 playerPos, global::UnityEngine.Vector3 playerVec) { /*@B 0x600081D*/ throw null; }
+	protected override void Awake() {
+		base.Awake();
+		GymWallWorldLeftValue = ToWorldValue(GymWallLeftValue);
+		GymWallWorldRightValue = ToWorldValue(GymWallRightValue);
+		isLanding = false;
+
+		float ToWorldValue(float localValue)
+		{
+			global::UnityEngine.Vector3 position = transform.localPosition;
+			position.x = localValue;
+			return transform.parent.TransformPoint(position).x;
+		}
+	}
+	protected override void OnUpdate(float deltaTime) {
+		base.OnUpdate(deltaTime);
+		if (isActiveAndEnabled && RequestUpdateRoughlyColRect)
+		{
+			SetupCol();
+			RequestUpdateRoughlyColRect = false;
+		}
+	}
+	public void ApplySaveData(in global::DPData.FIELD_OBJ_SAVE_DATA saveData) {
+		global::UnityEngine.Vector3 position = worldPosition;
+		if (saveData.mv_dir == 1)
+			position.x = GymWallWorldLeftValue;
+		else if (saveData.mv_dir == 2)
+			position.x = GymWallWorldRightValue;
+		SetPositionDirect(position);
+	}
+	public void CreateSaveData(ref global::DPData.FIELD_OBJ_SAVE_DATA saveData) {
+		if (WallIsLeftLimit)
+			saveData.mv_dir = 1;
+		else if (WallIsRightLimit)
+			saveData.mv_dir = 2;
+		else
+			saveData.mv_dir = 0;
+	}
+	public void Setup() {
+		isLanding = false;
+		WallIsLeftLimit = global::UnityEngine.Mathf.Abs(worldPosition.x - GymWallWorldLeftValue) < 0.01f;
+		WallIsRightLimit = global::UnityEngine.Mathf.Abs(worldPosition.x - GymWallWorldRightValue) < 0.01f;
+		Colliders = GetComponents<global::UnityEngine.BoxCollider>();
+		RequestUpdateRoughlyColRect = true;
+	}
+	public void Moved(bool isLeft) {
+		WallIsLeftLimit = isLeft;
+		WallIsRightLimit = !isLeft;
+		RequestUpdateRoughlyColRect = true;
+	}
+	private void SetupCol() {
+		RoughlyColRect.xMin = float.MaxValue;
+		RoughlyColRect.xMax = float.MinValue;
+		RoughlyColRect.yMin = float.MaxValue;
+		RoughlyColRect.yMax = float.MinValue;
+		bool bottomOff = (GymWallBottomColOff_Left && WallIsLeftLimit) || (GymWallBottomColOff_Right && WallIsRightLimit);
+		foreach (global::UnityEngine.BoxCollider collider in Colliders)
+		{
+			global::UnityEngine.Bounds bounds = collider.bounds;
+			collider.enabled = !(bottomOff && bounds.max.y <= 1.0001f);
+			RoughlyColRect.xMin = global::UnityEngine.Mathf.Min(RoughlyColRect.xMin, bounds.min.x);
+			RoughlyColRect.xMax = global::UnityEngine.Mathf.Max(RoughlyColRect.xMax, bounds.max.x);
+			RoughlyColRect.yMin = global::UnityEngine.Mathf.Min(RoughlyColRect.yMin, bounds.min.z);
+			RoughlyColRect.yMax = global::UnityEngine.Mathf.Max(RoughlyColRect.yMax, bounds.max.z);
+		}
+		RightColX = RoughlyColRect.xMin;
+		LeftColX = RoughlyColRect.xMax;
+		RoughlyColRect.xMin = RoughlyColRect.xMin - 1f;
+		RoughlyColRect.xMax = RoughlyColRect.xMax + 1f;
+		RoughlyColRect.yMin = RoughlyColRect.yMin - 1f;
+		RoughlyColRect.yMax = RoughlyColRect.yMax + 1f;
+	}
+	public bool CheckHit(global::UnityEngine.Vector3 playerPos, global::UnityEngine.Vector3 playerVec) {
+		if (playerPos.x < RoughlyColRect.xMin || playerPos.x > RoughlyColRect.xMax ||
+			playerPos.z < RoughlyColRect.yMin || playerPos.z > RoughlyColRect.yMax)
+			return false;
+		if (playerVec.x > 0f && (RightColX < playerPos.x || WallIsLeftLimit))
+			return false;
+		if (playerVec.x < 0f && (LeftColX > playerPos.x || WallIsRightLimit))
+			return false;
+		global::UnityEngine.Vector3 direction = playerVec.normalized;
+		if (global::UnityEngine.Mathf.Abs(direction.x) < 0.9238795f)
+			return false;
+		float distance = playerVec.magnitude;
+		global::UnityEngine.RaycastHit hitInfo;
+		foreach (global::UnityEngine.BoxCollider collider in Colliders)
+		{
+			global::UnityEngine.Ray ray = new global::UnityEngine.Ray(new global::UnityEngine.Vector3(playerPos.x, playerPos.y + 0.4f, playerPos.z), direction);
+			if (collider.Raycast(ray, out hitInfo, distance + 0.4f))
+				return true;
+		}
+		return false;
+	}
 	public FieldTobariGymWallEntity() { }
 }

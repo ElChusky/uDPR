@@ -6,20 +6,105 @@ public class FieldPokemonCenterMonitorEntity : global::FieldEventEntity
 	[global::UnityEngine.SerializeField]
 	private global::Dpr.UI.PokemonIcon[] pokemonIcons;
 	[global::UnityEngine.SerializeField]
-	private float defaultScale;
+	private float defaultScale = 1.4f;
 	[global::UnityEngine.SerializeField]
-	private float animationScale;
+	private float animationScale = 1.6f;
 	private global::UnityEngine.UI.Image[] pokemonImages;
-	private int currentDisplayIndex;
+	private int currentDisplayIndex = -1;
 	private float animationTime;
 	private float progressTime;
 	private bool isPlayingHealAnimation;
-	protected override void Awake() { /*@B 0x60007E7*/ throw null; }
-	protected override void OnUpdate(float deltaTime) { /*@B 0x60007E8*/ throw null; }
-	public void DisplayIcon(int index, int pokemonIndex) { /*@B 0x60007E9*/ throw null; }
-	public void PlayHealAnimation() { /*@B 0x60007EA*/ throw null; }
-	public void DestroyAllIcons() { /*@B 0x60007EB*/ throw null; }
-	private void DestroyIcon(int index) { /*@B 0x60007EC*/ throw null; }
-	private void SetScale(int index, float scale) { /*@B 0x60007ED*/ throw null; }
-	public FieldPokemonCenterMonitorEntity() { /*@B 0x60007EE*/ throw null; }
+	protected override void Awake() {
+		base.Awake();
+		isLanding = false;
+		if (canvas != null && canvas.worldCamera == null && GameManager.fieldCamera != null)
+		{
+			global::UnityEngine.Camera camera = GameManager.fieldCamera.GetComponent<global::UnityEngine.Camera>();
+			if (camera != null)
+			{
+				canvas.worldCamera = camera;
+				canvas.planeDistance = 0f;
+			}
+		}
+		pokemonImages = new global::UnityEngine.UI.Image[pokemonIcons.Length];
+		for (int i = 0; i < pokemonIcons.Length; i++)
+		{
+			global::UnityEngine.UI.Image image = pokemonIcons[i].GetComponent<global::UnityEngine.UI.Image>();
+			if (image != null)
+				pokemonImages[i] = image;
+		}
+		DestroyAllIcons();
+	}
+	protected override void OnUpdate(float deltaTime) {
+		base.OnUpdate(deltaTime);
+		if (currentDisplayIndex >= 0)
+		{
+			progressTime += deltaTime;
+			float t = progressTime / animationTime;
+			SetScale(currentDisplayIndex, global::UnityEngine.Mathf.Lerp(animationScale, defaultScale, t));
+			if (t >= 1f)
+				currentDisplayIndex = -1;
+		}
+		if (!isPlayingHealAnimation)
+			return;
+		progressTime += deltaTime;
+		float rate = progressTime / animationTime;
+		float scale;
+		if (rate >= 0.5f)
+		{
+			if (rate >= 1f)
+			{
+				isPlayingHealAnimation = false;
+				scale = defaultScale;
+			}
+			else
+			{
+				scale = global::UnityEngine.Mathf.Lerp(animationScale, defaultScale, (rate - 0.5f) * 2f);
+			}
+		}
+		else
+		{
+			scale = global::UnityEngine.Mathf.Lerp(defaultScale, animationScale, rate * 2f);
+		}
+		for (int i = 0; i < pokemonImages.Length; i++)
+			SetScale(i, scale);
+	}
+	public void DisplayIcon(int index, int pokemonIndex) {
+		canvas.gameObject.SetActive(true);
+		DestroyIcon(index);
+		if (pokemonIndex < PlayerWork.playerParty.GetMemberCount() && index < pokemonIcons.Length)
+		{
+			global::Pml.PokePara.PokemonParam param = PlayerWork.playerParty.GetMemberPointer((uint)pokemonIndex);
+			pokemonIcons[index].Load(param, -1, -1);
+			pokemonIcons[index].gameObject.SetActive(true);
+			SetScale(index, animationScale);
+			currentDisplayIndex = index;
+			animationTime = 0.1f;
+			progressTime = 0f;
+		}
+	}
+	public void PlayHealAnimation() {
+		for (int i = 0; i < pokemonImages.Length; i++)
+			SetScale(i, defaultScale);
+		currentDisplayIndex = -1;
+		animationTime = 0.3f;
+		progressTime = 0f;
+		isPlayingHealAnimation = true;
+	}
+	public void DestroyAllIcons() {
+		canvas.gameObject.SetActive(false);
+		for (int i = 0; i < pokemonIcons.Length; i++)
+			DestroyIcon(i);
+	}
+	private void DestroyIcon(int index) {
+		pokemonImages[index].gameObject.SetActive(false);
+		pokemonImages[index].sprite = null;
+		SetScale(index, defaultScale);
+	}
+	private void SetScale(int index, float scale) {
+		pokemonImages[index].rectTransform.SetLocalScaleX(scale);
+		pokemonImages[index].rectTransform.SetLocalScaleY(scale);
+		pokemonImages[index].rectTransform.SetLocalScaleZ(scale);
+	}
+	public FieldPokemonCenterMonitorEntity() { }
 }
