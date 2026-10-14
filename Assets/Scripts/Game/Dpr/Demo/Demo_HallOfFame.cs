@@ -11,8 +11,13 @@ namespace Dpr.Demo
 		private global::Dpr.SubContents.TimeLineText LevelText;
 		private global::Dpr.SubContents.TimeLineText PokeNameText;
 		private global::Dpr.SubContents.TimeLineText PlayerNameText;
-		private global::System.Collections.Generic.List<global::Pml.PokePara.PokemonParam> pokes;
-		public Demo_HallOfFame() { /*@B 0x600485D*/ throw null; }
+		private global::System.Collections.Generic.List<global::Pml.PokePara.PokemonParam> pokes = new global::System.Collections.Generic.List<global::Pml.PokePara.PokemonParam>();
+		public Demo_HallOfFame() {
+			UseCamera = true;
+			FadeColor = Color.black;
+			isDisablePostProcess = true;
+			DisableEnvironmentController = false;
+		}
 		public override void Destroy() {
 			base.Destroy();
 			timeLine = null;

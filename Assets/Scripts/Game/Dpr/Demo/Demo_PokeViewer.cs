@@ -20,7 +20,20 @@ namespace Dpr.Demo
 		private global::System.Collections.IEnumerator ienum;
 		private global::UnityEngine.Vector2 CircleSize;
 		private global::UnityEngine.Vector2 CirclePos;
-		public Demo_PokeViewer(global::Pml.MonsNo monsNo, ushort formNo, global::Pml.Sex sex) { /*@B 0x6004888*/ throw null; }
+		public Demo_PokeViewer(global::Pml.MonsNo monsNo, ushort formNo, global::Pml.Sex sex) {
+			FadeSetting(false, false, false, false);
+			this.monsNo = monsNo;
+			this.formNo = formNo;
+			this.sex = sex;
+			if (sex == global::Pml.Sex.NUM)
+			{
+				global::Pml.PokePara.PokemonParam pp = new global::Pml.PokePara.PokemonParam(monsNo, 1, 1);
+				this.sex = pp.GetSex();
+			}
+			UseCamera = false;
+			DisableEnvironmentController = false;
+			isUseAlpha = true;
+		}
 		public override void Destroy() {
 			base.Destroy();
 			PokemonViewer = null;

@@ -9,7 +9,13 @@ namespace Dpr.Demo
 		private global::Dpr.SubContents.TimeLineBinder timeLine;
 		public global::Pml.PokePara.PokemonParam gift_Pokemon;
 		public bool isGetMons;
-		public Demo_MysteryGift() { /*@B 0x6004870*/ throw null; }
+		public Demo_MysteryGift() {
+			UseCamera = true;
+			FadeColor = Color.black;
+			DisableEnvironmentController = false;
+			isDisablePostProcess = true;
+			isDisableMainCamera = true;
+		}
 		public override void Destroy() {
 			base.Destroy();
 			timeLine = null;

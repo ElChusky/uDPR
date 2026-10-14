@@ -7,7 +7,7 @@ namespace Dpr.Demo
 {
 	public class Demo_PoffinEat : global::Dpr.Demo.DemoBase
 	{
-		private global::System.Collections.Generic.List<global::UnityEngine.GameObject> Points;
+		private global::System.Collections.Generic.List<global::UnityEngine.GameObject> Points = new global::System.Collections.Generic.List<global::UnityEngine.GameObject>();
 		private global::Pml.PokePara.PokemonParam pokePara;
 		private global::DPData.PoffinData poffin;
 		private global::UnityEngine.GameObject Poffin3D;
@@ -15,8 +15,19 @@ namespace Dpr.Demo
 		private global::Effect.EffectData bgEff;
 		private bool isEndThrow;
 		public global::Dpr.Demo.ConditionParam ConditionParam { get; private set; }
-		public Demo_PoffinEat() { /*@B 0x6004877*/ throw null; }
-		public Demo_PoffinEat(global::Pml.PokePara.PokemonParam pokePara, global::DPData.PoffinData poffin) { /*@B 0x6004878*/ throw null; }
+		public Demo_PoffinEat() {
+			is2DBG = true;
+			bgType = BGType.PoffinEat;
+			pokePara = PlayerWork.playerParty.GetMemberPointer(0);
+			poffin = new global::DPData.PoffinData(0, 1, 1, new byte[] { 1, 1, 1, 1, 1 });
+		}
+		public Demo_PoffinEat(global::Pml.PokePara.PokemonParam pokePara, global::DPData.PoffinData poffin) {
+			bgType = BGType.PoffinEat;
+			is2DBG = true;
+			this.pokePara = pokePara;
+			this.poffin = poffin;
+			DisableEnvironmentController = true;
+		}
 		public override void Destroy() {
 			base.Destroy();
 			Points.Clear();
@@ -33,7 +44,10 @@ namespace Dpr.Demo
 			Messages.Add(CreateMsgWindowParam("dp_poffin_main", "DP_poffin_main_060", true));
 			Messages.Add(CreateMsgWindowParam("dp_poffin_main", "DP_poffin_main_061", true));
 		}
-		private global::System.Collections.IEnumerator test() { /*@B 0x600487B*/ throw null; }
+		private global::System.Collections.IEnumerator test() {
+			yield return new WaitForSeconds(3f);
+			yield return new WaitForSeconds(3f);
+		}
 		public override global::System.Collections.IEnumerator Enter() {
 			manager.transform.position += Vector3.one * 100.0f;
 			yield return LoadBackGround(null, true);

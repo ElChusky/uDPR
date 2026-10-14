@@ -8,14 +8,23 @@ namespace Dpr.Demo
 		public bool isEnd;
 		private global::UnityEngine.GameObject Model;
 		private global::UnityEngine.Object Asset;
-		public global::UnityEngine.Vector3 ModelPosition;
-		public global::UnityEngine.Vector3 ModelEulerAngles;
-		public global::UnityEngine.Vector3 ModelScale;
-		public global::UnityEngine.Vector3 ImageOffset;
+		public global::UnityEngine.Vector3 ModelPosition = global::UnityEngine.Vector3.zero;
+		public global::UnityEngine.Vector3 ModelEulerAngles = global::UnityEngine.Vector3.zero;
+		public global::UnityEngine.Vector3 ModelScale = global::UnityEngine.Vector3.one;
+		public global::UnityEngine.Vector3 ImageOffset = global::UnityEngine.Vector2.zero;
 		public global::System.Action<global::UnityEngine.GameObject> OnCreateModel;
-		private global::System.Collections.Generic.Dictionary<string, global::Dpr.Demo.Demo_ModelViewer.CacheParam> _cacheParams;
+		private global::System.Collections.Generic.Dictionary<string, global::Dpr.Demo.Demo_ModelViewer.CacheParam> _cacheParams = new global::System.Collections.Generic.Dictionary<string, global::Dpr.Demo.Demo_ModelViewer.CacheParam>();
 		private global::UnityEngine.Coroutine cor;
-		public Demo_ModelViewer(string AssetBundlePath, bool isDisableEndLight = true) { /*@B 0x6004868*/ throw null; }
+		public Demo_ModelViewer(string AssetBundlePath, bool isDisableEndLight = true) {
+			assetPath = AssetBundlePath;
+			UseStartEnterFade = false;
+			UseStartExitFade = false;
+			UseEndEnterFade = false;
+			UseEndExitFade = false;
+			UseCamera = true;
+			DisableEnvironmentController = true;
+			isUseAlpha = true;
+		}
 		public override void Destroy() {
 			base.Destroy();
 			Model = null;
