@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public string state;
 		public bool flg;
-		public PokemonMotionStateBool(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004955*/ throw null; }
+		public PokemonMotionStateBool(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			state = Macro.ParseString(macro.GetValue("state"));
+			flg = Macro.ParseBool(macro.GetValue("flg"));
+		}
 	}
 }

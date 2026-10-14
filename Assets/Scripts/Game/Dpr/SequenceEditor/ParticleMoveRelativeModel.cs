@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public int grpNo;
 		public string node;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public ParticleMoveRelativeModel(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x60049A6*/ throw null; }
+		public ParticleMoveRelativeModel(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			grpNo = Macro.ParseInt(macro.GetValue("grpNo"));
+			node = Macro.ParseString(macro.GetValue("node"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }

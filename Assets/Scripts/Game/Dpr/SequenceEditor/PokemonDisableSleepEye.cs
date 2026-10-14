@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public bool disable;
-		public PokemonDisableSleepEye(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A69*/ throw null; }
+		public PokemonDisableSleepEye(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			disable = Macro.ParseBool(macro.GetValue("disable"), true);
+		}
 	}
 }

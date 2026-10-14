@@ -7,6 +7,10 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_NODE node;
 		public global::UnityEngine.Vector3 ofs;
-		public PokemonLookAt(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004965*/ throw null; }
+		public PokemonLookAt(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			node = Macro.Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			ofs = Macro.ParseVector3(macro.GetValue("ofs"));
+		}
 	}
 }

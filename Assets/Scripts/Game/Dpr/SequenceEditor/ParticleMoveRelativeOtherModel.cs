@@ -15,6 +15,18 @@ namespace Dpr.SequenceEditor
 		public bool forceUpdate;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
 		public bool[] enableElem;
-		public ParticleMoveRelativeOtherModel(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004AAA*/ throw null; }
+		public ParticleMoveRelativeOtherModel(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			node = Macro.Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			pos = Macro.ParseVector3(macro.GetValue("pos"));
+			rate = Macro.ParseInt(macro.GetValue("rate"), 100);
+			isFlip = Macro.ParseBool(macro.GetValue("isFlip"), true);
+			isScale = Macro.ParseBool(macro.GetValue("isScale"), true);
+			isRot = Macro.ParseBool(macro.GetValue("isRot"), true);
+			isRotPos = Macro.ParseBool(macro.GetValue("isRotPos"), true);
+			forceUpdate = Macro.ParseBool(macro.GetValue("forceUpdate"));
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+			enableElem = Macro.ParseBoolArray(macro.GetValue("enableElem"), 1, 1, 1);
+		}
 	}
 }

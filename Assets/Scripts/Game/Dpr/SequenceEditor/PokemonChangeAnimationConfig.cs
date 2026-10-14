@@ -6,6 +6,9 @@ namespace Dpr.SequenceEditor
 	{
 		public global::Dpr.SequenceEditor.SEQ_DEF_POS trg;
 		public global::Dpr.SequenceEditor.SEQ_DEF_ANIMCONF type;
-		public PokemonChangeAnimationConfig(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600496D*/ throw null; }
+		public PokemonChangeAnimationConfig(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			trg = Macro.Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			type = Macro.Parse_SEQ_DEF_ANIMCONF(macro.GetValue("type"));
+		}
 	}
 }

@@ -8,6 +8,11 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 col;
 		public float alpha;
 		public global::Dpr.SequenceEditor.SEQ_DEF_MOVETYPE move;
-		public ParticleShaderParam(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A84*/ throw null; }
+		public ParticleShaderParam(global::Dpr.SequenceEditor.Macro macro) : base(macro) {
+			reset = Macro.ParseBool(macro.GetValue("reset"));
+			col = Macro.ParseVector3(macro.GetValue("col"), 1f, 1f, 1f);
+			alpha = Macro.ParseFloat(macro.GetValue("alpha"), 1f);
+			move = Macro.Parse_SEQ_DEF_MOVETYPE(macro.GetValue("move"));
+		}
 	}
 }
