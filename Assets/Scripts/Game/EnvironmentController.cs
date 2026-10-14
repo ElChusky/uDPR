@@ -17,17 +17,17 @@ public class EnvironmentController : global::UnityEngine.MonoBehaviour
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.Texture2D _CloudShadowTex;
 	[global::UnityEngine.SerializeField]
-	private global::UnityEngine.Vector2 _CloudSpeed;
+	private global::UnityEngine.Vector2 _CloudSpeed = new global::UnityEngine.Vector2(1f, 1f);
 	[global::UnityEngine.SerializeField]
-	private global::UnityEngine.Vector2 _CloudTiling;
+	private global::UnityEngine.Vector2 _CloudTiling = new global::UnityEngine.Vector2(0.01f, 0.01f);
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.ParticleSystem _rainEffect;
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.Texture2D _EnvironmentMap;
 	[global::UnityEngine.SerializeField]
-	private global::UnityEngine.Color _ShadowColor;
+	private global::UnityEngine.Color _ShadowColor = new global::UnityEngine.Color(0.625f, 0.625f, 0.625f);
 	[global::UnityEngine.SerializeField]
-	private global::UnityEngine.Color _SnowShadowColor;
+	private global::UnityEngine.Color _SnowShadowColor = new global::UnityEngine.Color(0.6f, 0.5f, 0.8f);
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0f, 1f)]
 	public float _Wetness;
@@ -36,22 +36,22 @@ public class EnvironmentController : global::UnityEngine.MonoBehaviour
 	public float _EmissionThreshold;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0f, 1f)]
-	public float _EmissionScale;
+	public float _EmissionScale = 1f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0f, 10f)]
-	public float _CloudShadowScale;
+	public float _CloudShadowScale = 1f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0f, 1f)]
 	public float _CloudShadowBase;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0f, 1f)]
-	public float _Blurry;
+	public float _Blurry = 1f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0f, 100f)]
-	public float _ShadowDistance;
+	public float _ShadowDistance = 20f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0f, 50f)]
-	public float _ShadowNearPlaneOffset;
+	public float _ShadowNearPlaneOffset = 3f;
 	[global::UnityEngine.SerializeField]
 	[global::UnityEngine.RangeAttribute(0f, 3f)]
 	public float _ShadowNormalBias;
@@ -87,44 +87,310 @@ public class EnvironmentController : global::UnityEngine.MonoBehaviour
 	private static readonly int _globalLightPowerID;
 	private static readonly int _additionalBlurryID;
 	private global::UnityEngine.Texture2D _mipTexture;
-	private bool _cloudShadowEnable;
+	private bool _cloudShadowEnable = true;
 	private bool _throughGlobal;
 	private float _savedShadowDistance;
 	private float _savedShadowNearPlaneOffset;
 	public global::EnvironmentSettings latestSettings;
 	public global::EnvironmentSettings.Parameters latestParameters;
-	public global::PeriodOfDay periodOfDay;
+	public global::PeriodOfDay periodOfDay = global::PeriodOfDay.Daytime;
 	[global::UnityEngine.HideInInspector]
 	public float AddLightIntensity;
 	[global::UnityEngine.HideInInspector]
 	public float AddCharacterLightIntensity;
 	[global::UnityEngine.HideInInspector]
 	public float AddPokeLightIntensity;
-	private static global::System.Collections.Generic.List<global::EnvironmentController> _environmentControllers;
+	private static global::System.Collections.Generic.List<global::EnvironmentController> _environmentControllers = new global::System.Collections.Generic.List<global::EnvironmentController>();
 	public static global::EnvironmentController global { get; set; }
 	public static float globalBumpScale { get; set; }
 	public static float globalLightPower { get; set; }
-	public static bool globalSnowFieldEnable { get { /*@B 0x6000E33*/ throw null; } set { /*@B 0x6000E34*/ throw null; } }
-	public static bool globalWaterFieldEnable { get { /*@B 0x6000E35*/ throw null; } set { /*@B 0x6000E36*/ throw null; } }
-	public bool cloudShadowEnable { set { /*@B 0x6000E37*/ throw null; } }
+	public static bool globalSnowFieldEnable { get {
+			if (global != null && global._snowField != null)
+				return global._snowField.activeSelf;
+			return false;
+		} set {
+			if (global != null && global._snowField != null)
+				global._snowField.SetActive(value);
+		} }
+	public static bool globalWaterFieldEnable { get {
+			if (global != null && global._waterField != null)
+				return global._waterField.activeSelf;
+			return false;
+		} set {
+			if (global != null && global._waterField != null)
+				global._waterField.SetActive(value);
+		} }
+	public bool cloudShadowEnable { set { this._cloudShadowEnable = value; } }
 	public global::UnityEngine.Texture2D cloudShadowTex { set { this._CloudShadowTex = value; } }
-	public float shadowDistance { get { return this._ShadowDistance; } set { /*@B 0x6000E3A*/ throw null; } }
-	public float shadowNearPlaneOffset { get { return this._ShadowNearPlaneOffset; } set { /*@B 0x6000E3C*/ throw null; } }
-	public global::EnvironmentController.ShaderMode shaderMode { get { return this._ShaderMode; } set { /*@B 0x6000E3E*/ throw null; } }
-	public bool throughGlobal { set { /*@B 0x6000E3F*/ throw null; } }
-	public bool IsActiveController() { /*@B 0x6000E40*/ throw null; }
-	public void SetActiveController() { /*@B 0x6000E41*/ throw null; }
-	private void OnEnable() { /*@B 0x6000E42*/ throw null; }
-	private void OnDisable() { /*@B 0x6000E43*/ throw null; }
-	private void OnUpdate(float deltaTime) { /*@B 0x6000E44*/ throw null; }
-	private static void SetKeyword(string keyword, bool state) { /*@B 0x6000E45*/ throw null; }
-	private void OnDestroy() { /*@B 0x6000E46*/ throw null; }
-	public void SetLight(global::EnvironmentSettings light, global::PeriodOfDay periodOfDay, float progress, float weight = 0f) { /*@B 0x6000E47*/ throw null; }
-	public void SetPokemonLight(global::EnvironmentSettings light, global::PeriodOfDay periodOfDay) { /*@B 0x6000E48*/ throw null; }
-	public void ResetShadowSettings() { /*@B 0x6000E49*/ throw null; }
-	public void OnValidate() { /*@B 0x6000E4A*/ throw null; }
-	public EnvironmentController() { /*@B 0x6000E4B*/ throw null; }
-	static EnvironmentController() { /*@B 0x6000E4C*/ throw null; }
+	public float shadowDistance { get { return this._ShadowDistance; } set { this._ShadowDistance = value; } }
+	public float shadowNearPlaneOffset { get { return this._ShadowNearPlaneOffset; } set { this._ShadowNearPlaneOffset = value; } }
+	public global::EnvironmentController.ShaderMode shaderMode { get { return this._ShaderMode; } set { this._ShaderMode = value; OnValidate(); } }
+	public bool throughGlobal { set { this._throughGlobal = value; } }
+	public bool IsActiveController() {
+		if (_environmentControllers.Count > 0)
+			return _environmentControllers[_environmentControllers.Count - 1] == this;
+		return false;
+	}
+	public void SetActiveController() {
+		if (IsActiveController())
+			return;
+		_environmentControllers.Remove(this);
+		_environmentControllers.Add(this);
+	}
+	private void OnEnable() {
+		SetActiveController();
+		_savedShadowDistance = global::UnityEngine.QualitySettings.shadowDistance;
+		_savedShadowNearPlaneOffset = global::UnityEngine.QualitySettings.shadowNearPlaneOffset;
+		global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+		if (!_throughGlobal)
+			global = this;
+		if (_light != null)
+		{
+			OnValidate();
+			return;
+		}
+		_light = GetComponent<global::UnityEngine.Light>();
+	}
+	private void OnDisable() {
+		_environmentControllers.Remove(this);
+		ResetShadowSettings();
+		global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+	}
+	private void OnUpdate(float deltaTime) {
+		if (callback != null)
+			callback(this, deltaTime);
+		float characterLightIntensity = parameters.CharacterLightIntensity + AddCharacterLightIntensity;
+		float pokeLightIntensity = parameters.PokeLightIntensity + AddPokeLightIntensity;
+		if (global::UnityEngine.QualitySettings.shadowDistance != _ShadowDistance)
+			global::UnityEngine.QualitySettings.shadowDistance = _ShadowDistance;
+		if (global::UnityEngine.QualitySettings.shadowNearPlaneOffset != _ShadowNearPlaneOffset)
+			global::UnityEngine.QualitySettings.shadowNearPlaneOffset = _ShadowNearPlaneOffset;
+		global::UnityEngine.Shader.SetGlobalColor(_characterLightColorID, parameters.CharacterLightColor * (global::UnityEngine.Color)new global::UnityEngine.Vector4(characterLightIntensity, characterLightIntensity, characterLightIntensity, 1f));
+		global::UnityEngine.Shader.SetGlobalColor(_characterReflectionColorID, parameters.CharacterReflectorColor);
+		global::UnityEngine.Shader.SetGlobalColor(_pokeLightColorID, parameters.PokeLightColor * (global::UnityEngine.Color)new global::UnityEngine.Vector4(pokeLightIntensity, pokeLightIntensity, pokeLightIntensity, 1f));
+		global::UnityEngine.Shader.SetGlobalColor(_pokeReflectionColorID, parameters.PokeReflectorColor);
+		global::UnityEngine.Shader.SetGlobalColor(_reflectionColorID, parameters.ReflectorColor);
+		global::UnityEngine.Shader.SetGlobalFloat(_vertexColorScaleID, parameters.VertexColorScale);
+		global::UnityEngine.Shader.SetGlobalFloat(_bloomThresholdID, parameters.BloomThreshold);
+		global::UnityEngine.Shader.SetGlobalFloat(_emissionScaleID, _EmissionScale);
+		global::UnityEngine.Shader.SetGlobalFloat(_emissionThresholdID, _EmissionThreshold);
+		global::UnityEngine.Shader.SetGlobalFloat(_WetnessID, _Wetness);
+		global::UnityEngine.Shader.SetGlobalFloat(_cloudScaleID, _CloudShadowScale);
+		global::UnityEngine.Shader.SetGlobalFloat(_cloudBaseID, 1f - _CloudShadowBase);
+		global::UnityEngine.Shader.SetGlobalFloat(_globalBumpScaleID, globalBumpScale);
+		global::UnityEngine.Shader.SetGlobalFloat(_globalLightPowerID, _throughGlobal ? 0f : globalLightPower - 1f);
+		global::UnityEngine.Shader.SetGlobalFloat(_additionalBlurryID, _Blurry);
+		global::UnityEngine.Shader.SetGlobalColor(_shadowColorID, (_WeatherMode == global::EnvironmentController.WeatherMode.Snow ? _SnowShadowColor : _ShadowColor) * 0.5f);
+		float time = global::GameManager.elapsedTimeOfDay * 60f;
+		float cloudX = time * _CloudSpeed.x;
+		if (!global::UnityEngine.Mathf.Approximately(_CloudTiling.x, 0f))
+			cloudX = cloudX % (1f / _CloudTiling.x);
+		float cloudY = time * _CloudSpeed.y;
+		if (!global::UnityEngine.Mathf.Approximately(_CloudTiling.y, 0f))
+			cloudY = cloudY % (1f / _CloudTiling.y);
+		global::UnityEngine.Shader.SetGlobalVector(_cloudParamID, new global::UnityEngine.Vector4(cloudX, cloudY, _CloudTiling.x, _CloudTiling.y));
+		global::UnityEngine.Shader.SetGlobalTexture(_cloudShadowID, (_CloudShadowTex == null || !_cloudShadowEnable) ? global::UnityEngine.Texture2D.blackTexture : _CloudShadowTex);
+		global::UnityEngine.Shader.SetGlobalTexture(_environmentMapID, _EnvironmentMap == null ? global::UnityEngine.Texture2D.whiteTexture : _EnvironmentMap);
+		global::UnityEngine.Shader.SetGlobalTexture(_snowTexID, _SnowTex);
+		global::UnityEngine.Shader.SetGlobalTexture(_snowNormalTexID, _SnowNormalTex != null ? _SnowNormalTex : global::UnityEngine.Texture2D.normalTexture);
+		global::UnityEngine.Shader.SetGlobalTexture(_noiseTexID, _NoiseTex != null ? _NoiseTex : global::UnityEngine.Texture2D.grayTexture);
+		if (_mipTexture != null)
+			global::UnityEngine.Shader.SetGlobalTexture(_mipTexID, _mipTexture);
+		if (_light != null)
+		{
+			_light.intensity = parameters.LightIntensity + AddLightIntensity;
+			_light.color = parameters.LightColor;
+			_light.transform.eulerAngles = parameters.PitchYaw;
+			_light.shadowNormalBias = _ShadowNormalBias;
+		}
+		global::SmartPoint.Rendering.DepthOfField.blurry = _Blurry;
+	}
+	private static void SetKeyword(string keyword, bool state) {
+		if (state)
+			global::UnityEngine.Shader.EnableKeyword(keyword);
+		else
+			global::UnityEngine.Shader.DisableKeyword(keyword);
+	}
+	private void OnDestroy() {
+		if (_environmentSound != null)
+		{
+			_environmentSound.source.loop = false;
+			_environmentSound.Stop();
+			_environmentSound = null;
+		}
+	}
+	public void SetLight(global::EnvironmentSettings light, global::PeriodOfDay periodOfDay, float progress, float weight = 0f) {
+		if (!isActiveAndEnabled)
+			return;
+		if (light == null)
+			return;
+		if (_environmentControllers.Count > 0 && _environmentControllers[_environmentControllers.Count - 1] != this)
+			return;
+		latestSettings = light;
+		this.periodOfDay = periodOfDay;
+		_cloudShadowEnable = light.CloudShadowEnable;
+		global::EnvironmentSettings.Parameters value = light.GetTransition(periodOfDay, weight);
+		latestParameters = value;
+		parameters.PitchYaw = new global::UnityEngine.Vector2(value.LightPitch, value.LightYaw);
+		parameters.LightColor = value.LightColor;
+		parameters.LightIntensity = value.LightIntensity;
+		parameters.ReflectorColor = value.ReflectorColor;
+		parameters.VertexColorScale = value.VertexColorScale;
+		parameters.BloomThreshold = value.BloomThreshold;
+		parameters.CharacterLightColor = value.CharacterLightColor;
+		parameters.CharacterLightIntensity = value.CharacterLightIntensity;
+		parameters.CharacterReflectorColor = value.CharacterReflectorColor;
+		parameters.PokeLightColor = value.PokeLightColor;
+		parameters.PokeLightIntensity = value.PokeLightIntensity;
+		parameters.PokeReflectorColor = value.PokeReflectorColor;
+		_EmissionThreshold = ((float)periodOfDay + progress) * 0.2f;
+		global::SmartPoint.Rendering.Fxaa.SetColorGrading(value.ColorGradingLookup, value.ColorGradingInfluence, value.NexColorGradingLookup, value.ColorGradingBlendWeight);
+		if (value.FogEnable)
+			global::SmartPoint.Rendering.Bloom.SetFogParameters(light.FogMode, value.FogStart, value.FogEnd, value.FogDensity, 100f, value.FogNearColor, value.FogFarColor);
+		else
+			global::SmartPoint.Rendering.Bloom.SetFogColorAlpha(0f, 0f);
+		_ShadowColor = value.ShadowColor;
+		_CloudShadowScale = value.CloudShadowScale;
+		_Blurry = value.Blurry;
+	}
+	public void SetPokemonLight(global::EnvironmentSettings light, global::PeriodOfDay periodOfDay) {
+		if (!isActiveAndEnabled)
+			return;
+		if (light == null)
+			return;
+		if (_environmentControllers.Count > 0 && _environmentControllers[_environmentControllers.Count - 1] != this)
+			return;
+		global::EnvironmentSettings.Parameters value = light[periodOfDay];
+		parameters.PokeLightColor = value.PokeLightColor;
+		parameters.PokeLightIntensity = value.PokeLightIntensity;
+		parameters.PokeReflectorColor = value.PokeReflectorColor;
+		float pokeLightIntensity = parameters.PokeLightIntensity;
+		global::UnityEngine.Shader.SetGlobalColor(_pokeLightColorID, parameters.PokeLightColor * (global::UnityEngine.Color)new global::UnityEngine.Vector4(pokeLightIntensity, pokeLightIntensity, pokeLightIntensity, 1f));
+		global::UnityEngine.Shader.SetGlobalColor(_pokeReflectionColorID, parameters.PokeReflectorColor);
+		if (_light != null)
+		{
+			_light.intensity = parameters.LightIntensity;
+			_light.color = parameters.LightColor;
+			_light.transform.eulerAngles = parameters.PitchYaw;
+			_light.shadowNormalBias = _ShadowNormalBias;
+		}
+	}
+	public void ResetShadowSettings() {
+		if (global::UnityEngine.QualitySettings.shadowDistance != _savedShadowDistance)
+			global::UnityEngine.QualitySettings.shadowDistance = _savedShadowDistance;
+		if (global::UnityEngine.QualitySettings.shadowNearPlaneOffset != _savedShadowNearPlaneOffset)
+			global::UnityEngine.QualitySettings.shadowNearPlaneOffset = _savedShadowNearPlaneOffset;
+	}
+	public void OnValidate() {
+		if (global != this)
+			return;
+		if (_ShaderMode == global::EnvironmentController.ShaderMode.MipLevelsOnly || _ShaderMode == global::EnvironmentController.ShaderMode.MipLevelsMixed)
+		{
+			if (!global::UnityEngine.Shader.IsKeywordEnabled("_MIPLEVEL_ONLY") && !global::UnityEngine.Shader.IsKeywordEnabled("_MIPLEVEL_MIXED"))
+			{
+				// shipped quirk: the binary destroys only when _mipTexture == null (op_Equality)
+				if (_mipTexture == null)
+				{
+					global::UnityEngine.Object.DestroyImmediate(_mipTexture);
+					_mipTexture = null;
+				}
+				global::UnityEngine.Color[] mipColors = new global::UnityEngine.Color[6];
+				mipColors[0] = new global::UnityEngine.Color(0f, 0f, 1f, 0.8f);
+				mipColors[1] = new global::UnityEngine.Color(0f, 0.5f, 1f, 0.4f);
+				mipColors[2] = new global::UnityEngine.Color(1f, 1f, 1f, 0f);
+				mipColors[3] = new global::UnityEngine.Color(1f, 0.7f, 0f, 0.2f);
+				mipColors[4] = new global::UnityEngine.Color(1f, 0.3f, 0f, 0.6f);
+				mipColors[5] = new global::UnityEngine.Color(1f, 0f, 0f, 0.8f);
+				global::UnityEngine.Texture2D texture = new global::UnityEngine.Texture2D(32, 32, global::UnityEngine.TextureFormat.ARGB32, true, true);
+				texture.filterMode = global::UnityEngine.FilterMode.Trilinear;
+				for (int mip = 0; mip < 6; mip++)
+				{
+					int size = 32 >> mip;
+					global::UnityEngine.Color color = mipColors[mip];
+					global::UnityEngine.Color[] pixels = new global::UnityEngine.Color[size * size];
+					for (int i = 0; i < pixels.Length; i++)
+						pixels[i] = color;
+					texture.SetPixels(pixels, mip);
+				}
+				texture.Apply(false);
+				_mipTexture = texture;
+			}
+		}
+		else if (_mipTexture == null)
+		{
+			// shipped quirk: same op_Equality test as above
+			global::UnityEngine.Object.DestroyImmediate(_mipTexture);
+			_mipTexture = null;
+		}
+		SetKeyword("_POSTPROCESS_DISABLE", _ShaderMode != global::EnvironmentController.ShaderMode.Default);
+		SetKeyword("_NORMAL_ONLY", _ShaderMode == global::EnvironmentController.ShaderMode.Normal);
+		SetKeyword("_TANGENT_ONLY", _ShaderMode == global::EnvironmentController.ShaderMode.VertexTangentOnly);
+		SetKeyword("_COLOR_ONLY", _ShaderMode == global::EnvironmentController.ShaderMode.Color);
+		SetKeyword("_VERTEXCOLOR_ONLY", _ShaderMode == global::EnvironmentController.ShaderMode.VertexColor);
+		SetKeyword("_FRESNEL_ONLY", _ShaderMode == global::EnvironmentController.ShaderMode.Fresnel);
+		SetKeyword("_GLOSSY_ONLY", _ShaderMode == global::EnvironmentController.ShaderMode.Glossy);
+		SetKeyword("_REFLECTIVITY_ONLY", _ShaderMode == global::EnvironmentController.ShaderMode.Relfectivity);
+		SetKeyword("_LIGHTINTENSITY_ONLY", _ShaderMode == global::EnvironmentController.ShaderMode.LightIntensity);
+		SetKeyword("_LIGHTREFLECTION_ONLY", _ShaderMode == global::EnvironmentController.ShaderMode.LightReflection);
+		SetKeyword("_LIGHTCOLOR_MIXED", _ShaderMode == global::EnvironmentController.ShaderMode.LightColorMixed);
+		SetKeyword("_EYERAY_ONLY", _ShaderMode == global::EnvironmentController.ShaderMode.TangentSpaceEyeRay);
+		SetKeyword("_MIPLEVEL_MIXED", _ShaderMode == global::EnvironmentController.ShaderMode.MipLevelsMixed);
+		SetKeyword("_MIPLEVEL_ONLY", _ShaderMode == global::EnvironmentController.ShaderMode.MipLevelsOnly);
+		SetKeyword("_ENVMAP_DISABLE", _ShaderMode == global::EnvironmentController.ShaderMode.EnvironmentMapDisable);
+		SetKeyword("_UTILITYCHANNEL_R", _ShaderMode == global::EnvironmentController.ShaderMode.UtilityMapChannelR);
+		SetKeyword("_UTILITYCHANNEL_G", _ShaderMode == global::EnvironmentController.ShaderMode.UtilityMapChannelG);
+		SetKeyword("_UTILITYCHANNEL_B", _ShaderMode == global::EnvironmentController.ShaderMode.UtilityMapChannelB);
+		SetKeyword("_UTILITYCHANNEL_A", _ShaderMode == global::EnvironmentController.ShaderMode.UtilityMapChannelA);
+		SetKeyword("_SNOW", _WeatherMode == global::EnvironmentController.WeatherMode.Snow);
+		SetKeyword("_RAIN", _WeatherMode == global::EnvironmentController.WeatherMode.Rain);
+		if (_WeatherMode == global::EnvironmentController.WeatherMode.Rain)
+		{
+			if (_environmentSound == null)
+			{
+				if (_rainEffect != null)
+					_rainEffect.Play();
+				_environmentSound = global::SmartPoint.Components.AudioPlayer.PlayEffect("rain", 1f);
+				if (_environmentSound != null)
+					_environmentSound.source.loop = true;
+			}
+		}
+		else if (_environmentSound != null)
+		{
+			if (_rainEffect != null)
+				_rainEffect.Stop();
+			_environmentSound.source.loop = false;
+			_environmentSound.Stop();
+			_environmentSound = null;
+		}
+	}
+	public EnvironmentController() { }
+	static EnvironmentController() {
+		globalBumpScale = 1f;
+		globalLightPower = 1f;
+		_reflectionColorID = global::UnityEngine.Shader.PropertyToID("_ReflectorColor");
+		_characterLightColorID = global::UnityEngine.Shader.PropertyToID("_CharacterLightColor");
+		_characterReflectionColorID = global::UnityEngine.Shader.PropertyToID("_CharacterReflectorColor");
+		_pokeLightColorID = global::UnityEngine.Shader.PropertyToID("_PokeLightColor");
+		_pokeReflectionColorID = global::UnityEngine.Shader.PropertyToID("_PokeReflectorColor");
+		_vertexColorScaleID = global::UnityEngine.Shader.PropertyToID("_VertexColorScale");
+		_bloomThresholdID = global::UnityEngine.Shader.PropertyToID("_BloomThreshold");
+		_emissionScaleID = global::UnityEngine.Shader.PropertyToID("_EmissionScale");
+		_emissionThresholdID = global::UnityEngine.Shader.PropertyToID("_EmissionThreshold");
+		_cloudShadowID = global::UnityEngine.Shader.PropertyToID("_CloudShadowTex");
+		_cloudParamID = global::UnityEngine.Shader.PropertyToID("_CloudParam");
+		_cloudScaleID = global::UnityEngine.Shader.PropertyToID("_CloudShadowScale");
+		_cloudBaseID = global::UnityEngine.Shader.PropertyToID("_CloudShadowBase");
+		_shadowColorID = global::UnityEngine.Shader.PropertyToID("_ShadowColor");
+		_environmentMapID = global::UnityEngine.Shader.PropertyToID("_EnvironmentMap");
+		_snowTexID = global::UnityEngine.Shader.PropertyToID("_SnowTex");
+		_snowNormalTexID = global::UnityEngine.Shader.PropertyToID("_SnowNormalTex");
+		_noiseTexID = global::UnityEngine.Shader.PropertyToID("_NoiseTex");
+		_mipTexID = global::UnityEngine.Shader.PropertyToID("_MipTex");
+		_WetnessID = global::UnityEngine.Shader.PropertyToID("_Wetness");
+		_globalBumpScaleID = global::UnityEngine.Shader.PropertyToID("_GlobalBumpScale");
+		_globalLightPowerID = global::UnityEngine.Shader.PropertyToID("_GlobalLightPower");
+		_additionalBlurryID = global::UnityEngine.Shader.PropertyToID("_AdditionalBlurry");
+	}
 	public enum ShaderMode
 	{
 		Default = 0,
@@ -157,35 +423,35 @@ public class EnvironmentController : global::UnityEngine.MonoBehaviour
 	public class Parameters
 	{
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color LightColor;
+		public global::UnityEngine.Color LightColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 5f)]
-		public float LightIntensity;
+		public float LightIntensity = 1.2f;
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color ReflectorColor;
+		public global::UnityEngine.Color ReflectorColor = global::UnityEngine.Color.gray;
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color CharacterLightColor;
-		[global::UnityEngine.SerializeField]
-		[global::UnityEngine.RangeAttribute(0f, 5f)]
-		public float CharacterLightIntensity;
-		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color CharacterReflectorColor;
-		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color PokeLightColor;
-		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color PokeReflectorColor;
+		public global::UnityEngine.Color CharacterLightColor = global::UnityEngine.Color.white;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 5f)]
-		public float PokeLightIntensity;
+		public float CharacterLightIntensity = 1.2f;
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Vector2 PitchYaw;
+		public global::UnityEngine.Color CharacterReflectorColor = global::UnityEngine.Color.gray;
+		[global::UnityEngine.SerializeField]
+		public global::UnityEngine.Color PokeLightColor = global::UnityEngine.Color.white;
+		[global::UnityEngine.SerializeField]
+		public global::UnityEngine.Color PokeReflectorColor = global::UnityEngine.Color.gray;
+		[global::UnityEngine.SerializeField]
+		[global::UnityEngine.RangeAttribute(0f, 5f)]
+		public float PokeLightIntensity = 1f;
+		[global::UnityEngine.SerializeField]
+		public global::UnityEngine.Vector2 PitchYaw = new global::UnityEngine.Vector2(70f, -30f);
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 1f)]
 		public float VertexColorScale;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 4f)]
-		public float BloomThreshold;
-		public Parameters() { /*@B 0x600969C*/ throw null; }
+		public float BloomThreshold = 1f;
+		public Parameters() { }
 	}
 	public delegate void UpdateCallback(global::EnvironmentController controller, float deltaTime);
 }
