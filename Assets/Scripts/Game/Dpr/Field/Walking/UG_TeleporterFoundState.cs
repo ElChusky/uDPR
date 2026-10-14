@@ -3,7 +3,9 @@ namespace Dpr.Field.Walking
 {
 	public class UG_TeleporterFoundState : global::Dpr.Field.Walking.UGBaseState
 	{
-		public UG_TeleporterFoundState(global::Dpr.Field.Walking.AIModel model) : base(default(global::Dpr.Field.Walking.AIModel)) { /*@B 0x6008A65*/ throw null; }
-		protected override void StateUpdate() { /*@B 0x6008A66*/ throw null; }
+		public UG_TeleporterFoundState(global::Dpr.Field.Walking.AIModel model) : base(model) { }
+		protected override void StateUpdate() {
+			base.StateUpdate();
+		}
 	}
 }

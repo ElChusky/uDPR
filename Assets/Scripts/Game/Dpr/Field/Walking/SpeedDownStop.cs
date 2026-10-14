@@ -3,7 +3,15 @@ namespace Dpr.Field.Walking
 {
 	public class SpeedDownStop : global::Dpr.Field.Walking.ActionModel
 	{
-		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) { /*@B 0x6008A8E*/ throw null; }
+		public override global::System.Collections.IEnumerator DoAction(global::Dpr.Field.Walking.AIModel model) {
+			global::UnityEngine.Vector3 moveVec = model.walkData.prevMoveVec;
+			float t = 0f;
+			yield return model.Loop(() => t < 1f, () =>
+			{
+				model.walkData.entity.moveVector = global::UnityEngine.Vector3.Lerp(moveVec, global::UnityEngine.Vector3.zero, t);
+				t += global::SmartPoint.AssetAssistant.Sequencer.elapsedTime;
+			});
+		}
 		public SpeedDownStop() { }
 	}
 }

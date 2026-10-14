@@ -12,14 +12,134 @@ namespace Dpr.Field.Walking
 		protected int colideStopCount;
 		public float searchWait;
 		protected global::Dpr.Field.Walking.AIUgModel model { get => (AIUgModel)base.model; }
-		public UGBaseState(global::Dpr.Field.Walking.AIModel model) : base(default(global::Dpr.Field.Walking.AIModel)) { /*@B 0x6008A55*/ throw null; }
-		protected override void StateUpdate() { /*@B 0x6008A56*/ throw null; }
-		protected void Move(float speed, float otherDist = 0f) { /*@B 0x6008A57*/ throw null; }
-		public bool LookPlayerIfNear(global::Dpr.Field.Walking.WalkData walkModel) { /*@B 0x6008A58*/ throw null; }
-		protected bool CheckArrive() { /*@B 0x6008A59*/ throw null; }
-		protected void LookAtTarget(global::UnityEngine.Vector3 pos, float rotSpeed) { /*@B 0x6008A5A*/ throw null; }
-		protected bool isDontEnterArea(global::UnityEngine.Vector3 NextPos, float addRange = 0f) { /*@B 0x6008A5B*/ throw null; }
-		protected global::UnityEngine.Vector3 GetRandomPoint(global::Ug.MoveType moveType) { /*@B 0x6008A5C*/ throw null; }
-		protected bool InSearchArea(global::UnityEngine.Vector3 pos) { /*@B 0x6008A5D*/ throw null; }
+		public UGBaseState(global::Dpr.Field.Walking.AIModel model) : base(model) {
+			rotSpeed = global::UnityEngine.Random.Range(0.5f, 1f);
+		}
+		protected override void StateUpdate() {
+			if (!model.transform.gameObject.activeInHierarchy)
+				return;
+			global::Dpr.Field.Walking.WalkData walk = model.walkData;
+			int collidedCount = model.charaModel.CollidedCount;
+			waitTime -= deltaTime;
+			changeTargetTime += deltaTime;
+			searchWait -= deltaTime;
+			bool isTimeOver = changeTargetTime > 10f;
+			if (searchWait < 0f && InSearchArea(global::EntityManager.activeFieldPlayer.worldPosition))
+			{
+				model.charaModel.controller.emoticon.Delete();
+				model.AI.ChangeState(typeof(global::Dpr.Field.Walking.UG_FoundState));
+			}
+			if (NextMovePoint == global::UnityEngine.Vector3.zero)
+			{
+				NextMovePoint = GetRandomPoint(model.moveType);
+			}
+			bool isStop = false;
+			if (CheckArrive())
+			{
+				changeTargetTime = 0f;
+				isStop = true;
+			}
+			else if (isTimeOver || collidedCount > 1)
+			{
+				if (!isTimeOver && (collidedCount > 1 || global::UnityEngine.Random.Range(0, 2) == 0))
+				{
+					isStop = true;
+				}
+				else if (waitTime < 0f)
+				{
+					rotSpeed = global::UnityEngine.Random.Range(1f, 2f);
+					colideStopCount = 0;
+					waitTime = -1f;
+					changeTargetTime = 0f;
+					NextMovePoint = GetRandomPoint(model.moveType);
+				}
+			}
+			if (isStop)
+			{
+				waitTime = global::UnityEngine.Random.Range(1f, 8f);
+				colideStopCount++;
+				if (collidedCount < 2)
+					NextMovePoint = GetRandomPoint(model.moveType);
+				else
+					NextMovePoint = model.transform.position - model.transform.forward;
+			}
+			if (collidedCount < 2 && waitTime < 0f)
+			{
+				walk.isNeedRun = false;
+				Move(2f, 0f);
+			}
+			else
+			{
+				walk.nowSpeed = 0f;
+			}
+			if (waitTime < 4f)
+			{
+				LookAtTarget(NextMovePoint, rotSpeed);
+			}
+		}
+		protected void Move(float speed, float otherDist = 0f) {
+			global::Dpr.Field.Walking.WalkData walk = model.walkData;
+			walk.Move(deltaTime, 10f, speed, otherDist);
+			global::UnityEngine.Vector3 nextPos = walk.entity.transform.position + walk.entity.moveVector;
+			if (!isDontEnterArea(nextPos) || isDontEnterArea(walk.entity.transform.position))
+			{
+				global::Dpr.SubContents.Utils.MoveTypeResult result = global::Dpr.SubContents.Utils.isEnterbleAttribute(nextPos, model.moveType, false);
+				bool notExistsCollision = global::Dpr.SubContents.Utils.isNotExistsCollision(nextPos);
+				if (result == global::Dpr.SubContents.Utils.MoveTypeResult.OK && notExistsCollision)
+					return;
+			}
+			walk.entity.moveVector = global::UnityEngine.Vector3.zero;
+		}
+		public bool LookPlayerIfNear(global::Dpr.Field.Walking.WalkData walkModel) {
+			if (playerDistance < 4f)
+			{
+				if (!model.charaModel.isForceAnimation)
+				{
+					corSys.Cancel();
+					walkModel.LookAtTarget(player.position, deltaTime, rotSpeed);
+				}
+				return true;
+			}
+			return false;
+		}
+		protected bool CheckArrive() {
+			if (NextMovePoint == global::UnityEngine.Vector3.zero)
+				return true;
+			return global::Dpr.SubContents.Utils.IsInDistance(model.transform.position, NextMovePoint, 0.4f);
+		}
+		protected void LookAtTarget(global::UnityEngine.Vector3 pos, float rotSpeed) {
+			model.walkData.LookAtTarget(pos, deltaTime, rotSpeed);
+		}
+		protected bool isDontEnterArea(global::UnityEngine.Vector3 NextPos, float addRange = 0f) {
+			for (int i = 0; i < model.entrancePosition.Count; i++)
+			{
+				if (model.entrancePosition[i] == global::UnityEngine.Vector3.zero)
+					continue;
+				if (global::Dpr.SubContents.Utils.IsInDistance(model.entrancePosition[i], NextPos, DOOR_DONT_MOVE_RANGE))
+					return true;
+			}
+			if (!global::Dpr.SubContents.Utils.IsInDistance(model.InitPos, NextPos, addRange + MOVE_AREA_RANGE))
+				return true;
+			global::Dpr.SubContents.Utils.MoveTypeResult result = global::Dpr.SubContents.Utils.isEnterbleAttribute(NextPos, model.moveType, false);
+			return result == global::Dpr.SubContents.Utils.MoveTypeResult.CantMoveType || result == global::Dpr.SubContents.Utils.MoveTypeResult.CantEnter;
+		}
+		protected global::UnityEngine.Vector3 GetRandomPoint(global::Ug.MoveType moveType) {
+			int distance = global::UnityEngine.Random.Range(1, 8);
+			int angle = global::UnityEngine.Random.Range(0, 360);
+			global::UnityEngine.Vector3 offset = global::UnityEngine.Quaternion.Euler(0f, angle, 0f) * new global::UnityEngine.Vector3(distance, 0f, 0f);
+			global::UnityEngine.Vector3 pos = model.InitPos + offset;
+			if (global::Dpr.SubContents.Utils.isEnterbleAttribute(pos, moveType, false) == global::Dpr.SubContents.Utils.MoveTypeResult.OK && global::Dpr.SubContents.Utils.isNotExistsCollision(pos))
+				return pos;
+			return global::UnityEngine.Vector3.zero;
+		}
+		protected bool InSearchArea(global::UnityEngine.Vector3 pos) {
+			if (isDontEnterArea(pos))
+				return false;
+			if (!global::Dpr.SubContents.Utils.IsInDistance(model.transform.position, pos, 5f))
+				return false;
+			global::UnityEngine.Vector3 dir = pos - model.transform.position;
+			global::UnityEngine.Vector3 cross = global::UnityEngine.Vector3.Cross(model.transform.forward, dir);
+			return global::UnityEngine.Vector3.Angle(model.transform.forward, dir) < 30f;
+		}
 	}
 }
