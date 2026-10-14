@@ -5,6 +5,9 @@ namespace Dpr.SequenceEditor
 	public class CameraAnimationEnd : global::Dpr.SequenceEditor.Macro
 	{
 		public bool isHoldPos;
-		public CameraAnimationEnd(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004981*/ throw null; }
+		public CameraAnimationEnd(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			isHoldPos = ParseBool(macro.GetValue("isHoldPos"), 1);
+		}
 	}
 }

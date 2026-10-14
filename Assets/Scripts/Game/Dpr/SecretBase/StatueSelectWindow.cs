@@ -157,8 +157,8 @@ namespace Dpr.SecretBase
 			CursorAttach();
 			ScrollCalc();
 		}
-		public StatueSelectWindow() { /*@B 0x60036C5*/ throw null; }
-		static StatueSelectWindow() { /*@B 0x60036C6*/ throw null; }
+		public StatueSelectWindow() { }
+		static StatueSelectWindow() { }
 		public class StatueItemCompare : global::System.Collections.Generic.IComparer<global::Dpr.SecretBase.StatueItem>
 		{
 			public int Compare(global::Dpr.SecretBase.StatueItem a, global::Dpr.SecretBase.StatueItem b) {
@@ -206,7 +206,7 @@ namespace Dpr.SecretBase
 					Destroy(this);
 				}
 			}
-			public NGMotionMono() { /*@B 0x600A1A6*/ throw null; }
+			public NGMotionMono() { }
 		}
 	}
 }

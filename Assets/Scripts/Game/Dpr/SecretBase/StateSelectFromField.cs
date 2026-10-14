@@ -6,7 +6,7 @@ namespace Dpr.SecretBase
 	{
 		private int selectIndex;
 		private string[] labelNames;
-		public StateSelectFromField() : base(default(global::Dpr.SecretBase.StatuePlacementEditController.State)) { /*@B 0x600358F*/ throw null; }
+		public StateSelectFromField() : base(global::Dpr.SecretBase.StatuePlacementEditController.State.SelectFromField) { }
 		public override void Enter(global::Dpr.SecretBase.StatuePlacementEditController owner) {
 			var placement = owner.PlacementManager.GetOverlapedPlacementData();
 			var effectData = masterData.GetStatueEffectData(placement.data.statueId);

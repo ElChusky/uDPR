@@ -3,7 +3,9 @@ namespace Dpr.Security
 {
 	public class SecurityFile
 	{
-		public static bool Check(string securityFileName) { /*@B 0x6003842*/ throw null; }
+		public static bool Check(string securityFileName) {
+		return new global::SdCardAccess().FileExists("sd", securityFileName);
+	}
 		public SecurityFile() { }
 	}
 }

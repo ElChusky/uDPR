@@ -8,6 +8,12 @@ namespace Dpr.SequenceEditor
 		public string anmFile;
 		public global::UnityEngine.Vector3 pos;
 		public bool isFlip;
-		public CameraAnimationPosition(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600497D*/ throw null; }
+		public CameraAnimationPosition(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			camFile = ParseString(macro.GetValue("camFile"));
+			anmFile = ParseString(macro.GetValue("anmFile"));
+			pos = ParseVector3(macro.GetValue("pos"));
+			isFlip = ParseBool(macro.GetValue("isFlip"));
+		}
 	}
 }

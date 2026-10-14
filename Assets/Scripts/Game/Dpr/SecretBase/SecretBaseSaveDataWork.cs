@@ -53,6 +53,9 @@ namespace Dpr.SecretBase
                 PlayerWork.UgRecord.myBase.ugStoneStatue[i] = statue;
             }
         }
-		static SecretBaseSaveDataWork() { /*@B 0x600354D*/ throw null; }
+		static SecretBaseSaveDataWork() {
+			ViewMode = true;
+			placementData = new global::System.Collections.Generic.List<global::Dpr.SecretBase.PlacementData>();
+		}
 	}
 }

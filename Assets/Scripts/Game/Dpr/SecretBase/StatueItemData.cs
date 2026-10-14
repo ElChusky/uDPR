@@ -7,8 +7,27 @@ namespace Dpr.SecretBase
 		public int pedestalId;
 		public int dir;
 		public global::UnityEngine.Vector2Int pos;
-		public StatueItemData(int statueId) { /*@B 0x60035C8*/ throw null; }
-		public StatueItemData(global::DPData.UgStoneStatue saveData) { /*@B 0x60035C9*/ throw null; }
-		public global::DPData.UgStoneStatue ToSaveData() { /*@B 0x60035CA*/ throw null; }
+		public StatueItemData(int statueId) {
+			this.statueId = statueId;
+			pedestalId = -1;
+			dir = 0;
+			pos = new global::UnityEngine.Vector2Int(0, 0);
+		}
+		public StatueItemData(global::DPData.UgStoneStatue saveData) {
+			statueId = saveData.statueId;
+			pedestalId = saveData.pedestalId;
+			dir = saveData.dir;
+			pos = new global::UnityEngine.Vector2Int(saveData.posX, saveData.posY);
+		}
+		public global::DPData.UgStoneStatue ToSaveData() {
+			return new global::DPData.UgStoneStatue
+			{
+				statueId = statueId,
+				pedestalId = pedestalId,
+				posX = pos.x,
+				posY = pos.y,
+				dir = dir,
+			};
+		}
 	}
 }

@@ -119,6 +119,6 @@ namespace Dpr.SecretBase
 		public bool IsDisable() {
 			return isDisable;
 		}
-		public StatueItem() { /*@B 0x600369D*/ throw null; }
+		public StatueItem() { }
 	}
 }

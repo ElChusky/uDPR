@@ -6,7 +6,7 @@ namespace Dpr.SecretBase
 	{
 		private int selectIndex;
 		private string[] labelNames;
-		public StateConfirmReset() : base(default(global::Dpr.SecretBase.StatuePlacementEditController.State)) { /*@B 0x6003572*/ throw null; }
+		public StateConfirmReset() : base(global::Dpr.SecretBase.StatuePlacementEditController.State.ConfirmReset) { }
 		public override void Enter(global::Dpr.SecretBase.StatuePlacementEditController owner) {
 			var param = new Dpr.MsgWindow.MsgWindowParam();
 			param.useMsgFile = owner.MsgFile;

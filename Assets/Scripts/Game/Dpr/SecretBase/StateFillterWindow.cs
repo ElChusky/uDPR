@@ -6,7 +6,7 @@ namespace Dpr.SecretBase
 	{
 		private string prevFooter;
 		public global::Dpr.SecretBase.StatuePlacementEditController Owner;
-		public StateFillterWindow() : base(default(global::Dpr.SecretBase.StatuePlacementEditController.State)) { /*@B 0x600357E*/ throw null; }
+		public StateFillterWindow() : base(global::Dpr.SecretBase.StatuePlacementEditController.State.FillterWindow) { }
 		public override void Enter(global::Dpr.SecretBase.StatuePlacementEditController owner) {
 			owner.FillterWindow.Show();
 			Owner = owner;

@@ -71,6 +71,6 @@ namespace Dpr.SecretBase
 				}
 			});
 		}
-		public StatueModelLoader() { /*@B 0x6003553*/ throw null; }
+		public StatueModelLoader() { }
 	}
 }

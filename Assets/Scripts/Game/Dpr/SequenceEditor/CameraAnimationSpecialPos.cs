@@ -10,6 +10,14 @@ namespace Dpr.SequenceEditor
 		public global::UnityEngine.Vector3 posOfs;
 		public bool isFlip;
 		public bool isRot;
-		public CameraAnimationSpecialPos(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004980*/ throw null; }
+		public CameraAnimationSpecialPos(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			camFile = ParseString(macro.GetValue("camFile"));
+			anmFile = ParseString(macro.GetValue("anmFile"));
+			posTrg = Parse_SEQ_DEF_SPPOS(macro.GetValue("posTrg"));
+			posOfs = ParseVector3(macro.GetValue("posOfs"));
+			isFlip = ParseBool(macro.GetValue("isFlip"), 1);
+			isRot = ParseBool(macro.GetValue("isRot"), 1);
+		}
 	}
 }

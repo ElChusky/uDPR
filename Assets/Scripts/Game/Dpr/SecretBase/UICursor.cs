@@ -40,6 +40,6 @@ namespace Dpr.SecretBase
 			}
 			rect.transform.localPosition = offset;
 		}
-		public UICursor() { /*@B 0x60036CA*/ throw null; }
+		public UICursor() { }
 	}
 }

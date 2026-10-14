@@ -3,31 +3,39 @@ namespace Dpr.SecretBase
 {
 	public class StatueEffectData
 	{
-		public ushort statueId { get { /*@B 0x60034C9*/ throw null; } }
-		public int ugItemId { get { /*@B 0x60034CA*/ throw null; } }
-		public global::Pml.MonsNo monsId { get { /*@B 0x60034CB*/ throw null; } }
-		public byte rarity { get { /*@B 0x60034CC*/ throw null; } }
-		public byte width { get { /*@B 0x60034CD*/ throw null; } }
-		public byte height { get { /*@B 0x60034CE*/ throw null; } }
-		public sbyte type1Id { get { /*@B 0x60034CF*/ throw null; } }
-		public sbyte type2Id { get { /*@B 0x60034D0*/ throw null; } }
-		public short[] PokeTypeEffect { get; }
-		public int MSLabelId { get { /*@B 0x60034D2*/ throw null; } }
-		public global::UnityEngine.Vector3 offset { get { /*@B 0x60034D3*/ throw null; } }
-		public float cameraDistance { get { /*@B 0x60034D4*/ throw null; } }
-		public bool isNormal { get { /*@B 0x60034D5*/ throw null; } }
-		public bool isLegend { get { /*@B 0x60034D6*/ throw null; } }
-		public bool isShiny { get { /*@B 0x60034D7*/ throw null; } }
-		public byte shader { get { /*@B 0x60034D8*/ throw null; } }
-		public string motionId { get { /*@B 0x60034D9*/ throw null; } }
-		public float motionFrame { get { /*@B 0x60034DA*/ throw null; } }
-		public ushort formNo { get { /*@B 0x60034DB*/ throw null; } }
-		public global::Pml.Sex sex { get { /*@B 0x60034DC*/ throw null; } }
-		public bool isRarePoke { get { /*@B 0x60034DD*/ throw null; } }
-		public bool isRareIcon { get { /*@B 0x60034DE*/ throw null; } }
-		public global::Pml.PokePara.RareType rareType { get { /*@B 0x60034DF*/ throw null; } }
+		public ushort statueId { get { return rawData.statueId; } }
+		public int ugItemId { get { return rawData.UgItemID; } }
+		public global::Pml.MonsNo monsId { get { return (global::Pml.MonsNo)rawData.monsId; } }
+		public byte rarity { get { return rawData.rarity; } }
+		public byte width { get { return rawData.width; } }
+		public byte height { get { return rawData.height; } }
+		public sbyte type1Id { get { return rawData.type1Id; } }
+		public sbyte type2Id { get { return rawData.type2Id; } }
+		public short[] PokeTypeEffect { get; } = new short[18];
+		public int MSLabelId { get { return rawData.MSLabelId; } }
+		public global::UnityEngine.Vector3 offset { get { return rawData.offset; } }
+		public float cameraDistance { get { return rawData.cameraDistance; } }
+		public bool isNormal { get { return rawData.rarity == 1; } }
+		public bool isLegend { get { return rawData.rarity == 5; } }
+		public bool isShiny { get { return rawData.rarity == 2 || rawData.rarity == 3; } }
+		public byte shader { get { return rawData.shader; } }
+		public string motionId { get { return rawData.motion; } }
+		public float motionFrame { get { return rawData.frame; } }
+		public ushort formNo { get { return rawData.FormNo; } }
+		public global::Pml.Sex sex { get { return rawData.Sex; } }
+		public bool isRarePoke { get { return rawData.Rare; } }
+		public bool isRareIcon { get { return rawData.rarity == 2; } }
+		public global::Pml.PokePara.RareType rareType { get { return rawData.Rare ? global::Pml.PokePara.RareType.CAPTURED : global::Pml.PokePara.RareType.NOT_RARE; } }
 		public global::XLSXContent.StatueEffectRawData.Sheettable rawData { get; }
-		public StatueEffectData(global::XLSXContent.StatueEffectRawData.Sheettable inRawData) { /*@B 0x60034E1*/ throw null; }
-		public global::XLSXContent.PokemonInfo.SheetCatalog GetPokeCatalog() { /*@B 0x60034E2*/ throw null; }
+		public StatueEffectData(global::XLSXContent.StatueEffectRawData.Sheettable inRawData) {
+			rawData = inRawData;
+			if (rawData.type1Id >= 0)
+				PokeTypeEffect[rawData.type1Id] = rawData.pokeTypeEffect[0];
+			if (rawData.type2Id >= 0)
+				PokeTypeEffect[rawData.type2Id] = rawData.pokeTypeEffect[1];
+		}
+		public global::XLSXContent.PokemonInfo.SheetCatalog GetPokeCatalog() {
+			return global::GameData.DataManager.GetPokemonCatalog((global::Pml.MonsNo)rawData.monsId, rawData.FormNo, rawData.Sex, rawData.Rare, false);
+		}
 	}
 }

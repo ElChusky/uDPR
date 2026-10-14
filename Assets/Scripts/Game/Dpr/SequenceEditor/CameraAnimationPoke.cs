@@ -13,6 +13,17 @@ namespace Dpr.SequenceEditor
 		public bool isScale;
 		public bool isRot;
 		public bool forceUpdate;
-		public CameraAnimationPoke(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600497C*/ throw null; }
+		public CameraAnimationPoke(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			camFile = ParseString(macro.GetValue("camFile"));
+			anmFile = ParseString(macro.GetValue("anmFile"));
+			trg = Parse_SEQ_DEF_POS(macro.GetValue("trg"));
+			node = Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			pos = ParseVector3(macro.GetValue("pos"));
+			isFlip = ParseBool(macro.GetValue("isFlip"), 1);
+			isScale = ParseBool(macro.GetValue("isScale"), 1);
+			isRot = ParseBool(macro.GetValue("isRot"), 1);
+			forceUpdate = ParseBool(macro.GetValue("forceUpdate"), 0);
+		}
 	}
 }

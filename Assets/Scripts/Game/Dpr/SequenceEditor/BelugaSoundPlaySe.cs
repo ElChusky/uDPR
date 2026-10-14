@@ -6,6 +6,10 @@ namespace Dpr.SequenceEditor
 	{
 		public string @event;
 		public bool is3d;
-		public BelugaSoundPlaySe(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A6D*/ throw null; }
+		public BelugaSoundPlaySe(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			@event = ParseString(macro.GetValue("event"));
+			is3d = ParseBool(macro.GetValue("is3d"), 1);
+		}
 	}
 }

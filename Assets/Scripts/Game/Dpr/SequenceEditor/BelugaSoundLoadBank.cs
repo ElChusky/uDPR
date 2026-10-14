@@ -5,6 +5,9 @@ namespace Dpr.SequenceEditor
 	public class BelugaSoundLoadBank : global::Dpr.SequenceEditor.Macro
 	{
 		public string name;
-		public BelugaSoundLoadBank(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A70*/ throw null; }
+		public BelugaSoundLoadBank(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			name = ParseString(macro.GetValue("name"));
+		}
 	}
 }

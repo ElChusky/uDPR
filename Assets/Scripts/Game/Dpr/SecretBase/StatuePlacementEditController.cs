@@ -445,8 +445,8 @@ namespace Dpr.SecretBase
 		private void AddStatueWindowItem(global::Dpr.SecretBase.StatueEffectData data) {
 			statueSelectWindow.AddItem(data);
 		}
-		public StatuePlacementEditController() { /*@B 0x6003602*/ throw null; }
-		static StatuePlacementEditController() { /*@B 0x6003603*/ throw null; }
+		public StatuePlacementEditController() { }
+		static StatuePlacementEditController() { }
 		public delegate void OnExit();
 		public enum State
 		{

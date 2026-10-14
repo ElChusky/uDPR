@@ -9,34 +9,49 @@ namespace Dpr.Sequence
 		public const int DEFAULT_SEQUENCE_SYSTEM_STEP_CNT = 1;
 		public const int MAX_COMMAND_NUM = 1024;
 		public const float ONE_FRAME_TIME = 0.033333f;
-		public static readonly global::UnityEngine.Color PARTICLE_MULTIPLY_RESET_COLOR;
-		public static readonly global::UnityEngine.Vector3 BACKGROUND_DEFAULT_POSITION;
-		public static readonly global::UnityEngine.Vector3 BACKGROUND_DEFAULT_ROTATION;
-		public static readonly global::UnityEngine.Vector3 BACKGROUND_DEFAULT_SCALE;
+		public static readonly global::UnityEngine.Color PARTICLE_MULTIPLY_RESET_COLOR = global::UnityEngine.Color.white;
+		public static readonly global::UnityEngine.Vector3 BACKGROUND_DEFAULT_POSITION = global::UnityEngine.Vector3.zero;
+		public static readonly global::UnityEngine.Vector3 BACKGROUND_DEFAULT_ROTATION = global::UnityEngine.Vector3.zero;
+		public static readonly global::UnityEngine.Vector3 BACKGROUND_DEFAULT_SCALE = global::UnityEngine.Vector3.one;
 		public const string WWISE_PLAY_VOICE_EV = "Play_PV_EV_{0:d3}_{1:d2}_{2}";
 		public const string WWISE_PLAY_VOICE_BTL = "Play_PV_Btl_{0:d3}_{1:d2}_{2}";
 		public const string WWISE_PLAY_VOICE_BTL_SWITCH = "Play_PV_Btl_{0:d3}_{1:d2}_00";
 		protected global::Dpr.Battle.View.BTLV_ENVIRONMENT_PARAM _environmentParam;
 		protected global::UnityEngine.Coroutine _seqFileLoadCoroutine;
 		protected global::System.Collections.Generic.List<global::UnityEngine.Coroutine> _preLoadCoroutines;
-		protected global::System.Collections.Generic.Dictionary<string, global::Audio.AudioData> _cachedSoundBank;
+		protected global::System.Collections.Generic.Dictionary<string, global::Audio.AudioData> _cachedSoundBank = new global::System.Collections.Generic.Dictionary<string, global::Audio.AudioData>();
 		protected int _step;
 		protected float _sequenceElapsedTime;
 		protected float _sequenceInterpolationTime;
 		public global::Dpr.SequenceEditor.SequenceFile SequenceFile { get; protected set; }
-		public int CurrentFrame { get; protected set; }
+		public int CurrentFrame { get; protected set; } = -1;
 		public float CurrentTime { get { return this._sequenceElapsedTime; } }
-		public int MaxFrame { get; protected set; }
-		public float MaxTime { get { /*@B 0x60048DB*/ throw null; } }
+		public int MaxFrame { get; protected set; } = -1;
+		public float MaxTime { get { return (1f / (float)global::UnityEngine.Application.targetFrameRate) * (float)MaxFrame; } }
 		protected global::System.Collections.Generic.List<global::Dpr.SequenceEditor.CommandParam> Commands { get; set; }
 		protected bool IsCommandSkip { get; set; }
 		public bool IsPause { get; protected set; }
-		public bool IsLoadedSequenceFile { get { /*@B 0x60048E2*/ throw null; } }
-		public bool IsPreLoaded { get { /*@B 0x60048E3*/ throw null; } }
+		public bool IsLoadedSequenceFile { get { return SequenceFile != null && Commands != null; } }
+		public bool IsPreLoaded { get { return _preLoadCoroutines.Count == 0; } }
 		public bool IsFinishSequence { get; protected set; }
 		protected bool IsInterpolationTime { get; set; }
-		public SequenceSystem() { /*@B 0x60048E8*/ throw null; }
-		public void Dispose() { /*@B 0x60048E9*/ throw null; }
+		public SequenceSystem() {
+			_step = 0;
+			_sequenceElapsedTime = 0f;
+			_seqFileLoadCoroutine = null;
+			_preLoadCoroutines = new global::System.Collections.Generic.List<global::UnityEngine.Coroutine>(MAX_COMMAND_NUM);
+			_cachedSoundBank = new global::System.Collections.Generic.Dictionary<string, global::Audio.AudioData>();
+			SequenceFile = null;
+			CurrentFrame = -1;
+			MaxFrame = -1;
+			Commands = new global::System.Collections.Generic.List<global::Dpr.SequenceEditor.CommandParam>(MAX_COMMAND_NUM);
+			IsCommandSkip = false;
+			IsPause = true;
+			IsFinishSequence = false;
+		}
+		public void Dispose() {
+			UnInitialize();
+		}
 		public virtual void UnInitialize() {
 			_sequenceElapsedTime = 0.0f;
 #if PC_UNLOCKED_FPS
@@ -66,7 +81,14 @@ namespace Dpr.Sequence
 		public abstract void LoadSequence(string path, bool isWaitCamera = false);
 		public abstract void SetPause(bool value);
 		public abstract void Stop();
-		public void Update(float deltaTime, int step = 1) { /*@B 0x60048EE*/ throw null; }
+		public void Update(float deltaTime, int step = 1) {
+			CheckPreLoadCount();
+			if (IsUpdateValid())
+			{
+				_step = step;
+				OnUpdate(deltaTime, step);
+			}
+		}
 		public void LateUpdate(float deltaTime) {
 			if (IsUpdateValid())
 			{
@@ -74,7 +96,13 @@ namespace Dpr.Sequence
 				StepFrame(deltaTime);
 			}
 		}
-		private bool IsUpdateValid() { /*@B 0x60048F0*/ throw null; }
+		private bool IsUpdateValid() {
+			if (IsPause)
+				return false;
+			if (SequenceFile == null)
+				return false;
+			return !IsFinishSequence;
+		}
 		protected void CheckPreLoadCount() {
 			if (_preLoadCoroutines.Count == 0)
 				return;
@@ -109,8 +137,17 @@ namespace Dpr.Sequence
 		}
 		protected virtual void OnUpdate(float deltaTime, int step) { }
 		protected virtual void OnLateUpdate(float deltaTime, int step) { }
-		protected virtual void OnComplete() { /*@B 0x60048F5*/ throw null; }
-		protected void SetSkipCommand(bool isSkip) { /*@B 0x60048F6*/ throw null; }
+		protected virtual void OnComplete() {
+			SequenceFile = null;
+			Commands = null;
+			CurrentFrame = -1;
+			_sequenceElapsedTime = 0f;
+			_sequenceInterpolationTime = 0f;
+			IsInterpolationTime = false;
+		}
+		protected void SetSkipCommand(bool isSkip) {
+			IsCommandSkip = isSkip;
+		}
 		public virtual void SkipFrame(int frame, bool isReset = true) {
 			float time = Mathe.FrameToSecond(frame);
 
@@ -126,9 +163,15 @@ namespace Dpr.Sequence
 			if (controller != null)
 				_environmentParam = new BTLV_ENVIRONMENT_PARAM(controller);
 		}
-		public global::Dpr.Battle.View.BTLV_ENVIRONMENT_PARAM GetEnvironmentParam() { /*@B 0x60048FB*/ throw null; }
-		public global::System.Collections.Generic.List<global::Dpr.SequenceEditor.CommandParam> FindCommands(global::Dpr.SequenceEditor.CommandNo commandNo) { /*@B 0x60048FC*/ throw null; }
-		static SequenceSystem() { /*@B 0x60048FD*/ throw null; }
+		public global::Dpr.Battle.View.BTLV_ENVIRONMENT_PARAM GetEnvironmentParam() {
+			return _environmentParam;
+		}
+		public global::System.Collections.Generic.List<global::Dpr.SequenceEditor.CommandParam> FindCommands(global::Dpr.SequenceEditor.CommandNo commandNo) {
+			if (Commands.IsNullOrEmpty())
+				return null;
+			return Commands.FindAll(x => x.CommandNo == commandNo);
+		}
+		static SequenceSystem() { }
 		// PC (s37): fractional 30 Hz frame not yet added to CurrentFrame
 		protected float _pcFrameFrac;
 	}

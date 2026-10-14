@@ -5,6 +5,9 @@ namespace Dpr.SequenceEditor
 	public class BelugaSoundAddEvent : global::Dpr.SequenceEditor.Macro
 	{
 		public string @event;
-		public BelugaSoundAddEvent(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A6F*/ throw null; }
+		public BelugaSoundAddEvent(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			@event = ParseString(macro.GetValue("event"));
+		}
 	}
 }

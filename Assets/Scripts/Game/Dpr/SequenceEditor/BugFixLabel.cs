@@ -4,6 +4,8 @@ namespace Dpr.SequenceEditor
 	[global::Dpr.SequenceEditor.MacroAttribute((global::Dpr.SequenceEditor.CommandNo)(964305978), "Black", "", "")]
 	public class BugFixLabel : global::Dpr.SequenceEditor.Macro
 	{
-		public BugFixLabel(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004A66*/ throw null; }
+		public BugFixLabel(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+		}
 	}
 }

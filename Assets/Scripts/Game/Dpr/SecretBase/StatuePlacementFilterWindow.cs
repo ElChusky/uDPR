@@ -336,7 +336,7 @@ namespace Dpr.SecretBase
 				CalcScroll();
 			}
 		}
-		public StatuePlacementFilterWindow() { /*@B 0x60036B7*/ throw null; }
+		public StatuePlacementFilterWindow() { }
 		private enum TopItemType
 		{
 			Type1 = 0,
@@ -358,7 +358,13 @@ namespace Dpr.SecretBase
 			public int category;
 			public int legend;
 			public FilterResult() { }
-			public FilterResult(int type1, int type2, int size, int category, int legend) { /*@B 0x600A1A1*/ throw null; }
+			public FilterResult(int type1, int type2, int size, int category, int legend) {
+				this.type1 = type1;
+				this.type2 = type2;
+				this.size = size;
+				this.category = category;
+				this.legend = legend;
+			}
 		}
 	}
 }

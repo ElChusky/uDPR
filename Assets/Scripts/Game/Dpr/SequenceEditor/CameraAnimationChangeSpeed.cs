@@ -5,6 +5,9 @@ namespace Dpr.SequenceEditor
 	public class CameraAnimationChangeSpeed : global::Dpr.SequenceEditor.Macro
 	{
 		public float speed;
-		public CameraAnimationChangeSpeed(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x6004984*/ throw null; }
+		public CameraAnimationChangeSpeed(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			speed = ParseFloat(macro.GetValue("speed"));
+		}
 	}
 }

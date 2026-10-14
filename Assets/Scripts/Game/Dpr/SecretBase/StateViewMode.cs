@@ -4,7 +4,7 @@ namespace Dpr.SecretBase
 {
 	public class StateViewMode : global::Dpr.SecretBase.StateBase<global::Dpr.SecretBase.StatuePlacementEditController.State, global::Dpr.SecretBase.StatuePlacementEditController>
 	{
-		public StateViewMode() : base(default(global::Dpr.SecretBase.StatuePlacementEditController.State)) { /*@B 0x60035A0*/ throw null; }
+		public StateViewMode() : base(global::Dpr.SecretBase.StatuePlacementEditController.State.ViewMode) { }
 		public override void Enter(global::Dpr.SecretBase.StatuePlacementEditController owner) {
 			var keyguide = Dpr.UI.UIManager.Instance.GetKeyguide(null, true);
 			keyguide.transform.localScale = new UnityEngine.Vector3(1f / owner.transform.localScale.x, 1f / owner.transform.localScale.y, 1f / owner.transform.localScale.z);

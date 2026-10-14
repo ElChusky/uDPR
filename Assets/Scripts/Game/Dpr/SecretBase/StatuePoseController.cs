@@ -85,7 +85,7 @@ namespace Dpr.SecretBase
 			// @01e398a0: byte-identical to StopAnimation (same init flag 0x4cbec35 / usage list)
 			StopAnimation();
 		}
-		public StatuePoseController() { /*@B 0x600355A*/ throw null; }
+		public StatuePoseController() { }
 		private enum Step
 		{
 			FirstFrame = 0,

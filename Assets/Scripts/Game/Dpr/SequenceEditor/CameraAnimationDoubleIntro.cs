@@ -15,6 +15,19 @@ namespace Dpr.SequenceEditor
 		public bool isFlip;
 		public bool isRot;
 		public bool forceUpdate;
-		public CameraAnimationDoubleIntro(global::Dpr.SequenceEditor.Macro macro) { /*@B 0x600497F*/ throw null; }
+		public CameraAnimationDoubleIntro(global::Dpr.SequenceEditor.Macro macro) : base(macro)
+		{
+			envfile = ParseString(macro.GetValue("envfile"));
+			motfileA = ParseString(macro.GetValue("motfileA"));
+			motfileB = ParseString(macro.GetValue("motfileB"));
+			motfileC = ParseString(macro.GetValue("motfileC"));
+			trgA = Parse_SEQ_DEF_POS(macro.GetValue("trgA"));
+			trgB = Parse_SEQ_DEF_POS(macro.GetValue("trgB"));
+			node = Parse_SEQ_DEF_NODE(macro.GetValue("node"));
+			pos = ParseVector3(macro.GetValue("pos"));
+			isFlip = ParseBool(macro.GetValue("isFlip"), 1);
+			isRot = ParseBool(macro.GetValue("isRot"), 1);
+			forceUpdate = ParseBool(macro.GetValue("forceUpdate"), 0);
+		}
 	}
 }
