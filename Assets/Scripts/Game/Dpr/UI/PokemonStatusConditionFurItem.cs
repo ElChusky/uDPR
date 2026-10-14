@@ -7,7 +7,10 @@ namespace Dpr.UI
 		private global::UnityEngine.Animator _animator;
 		public global::UnityEngine.Animator animator { get { return this._animator; } }
 		public global::UnityEngine.UI.Image image { get { return this._image; } }
-		private void Awake() { /*@B 0x600569B*/ throw null; }
+		private void Awake() {
+			_animator = gameObject.GetComponentInChildren<global::UnityEngine.Animator>(true);
+			_image = gameObject.GetComponentInChildren<global::UnityEngine.UI.Image>(true);
+		}
 		public PokemonStatusConditionFurItem() { }
 	}
 }

@@ -10,17 +10,36 @@ namespace Dpr.UI
 		protected global::UnityEngine.UI.RawImage _rawImageModelView;
 		protected global::UnityEngine.Transform _transBg;
 		public global::UnityEngine.UI.RawImage rawImageModelView { get { return this._rawImageModelView; } }
-		protected virtual void Awake() { /*@B 0x6005583*/ throw null; }
-		protected virtual void OnEnable() { /*@B 0x6005584*/ throw null; }
-		protected virtual void OnDisable() { /*@B 0x6005585*/ throw null; }
-		public void Clear(bool isFinish = false) { /*@B 0x6005586*/ throw null; }
-		public void UpdateTexture() { /*@B 0x6005587*/ throw null; }
+		protected virtual void Awake() {
+			_transBg = _imageModelBg.transform.parent;
+		}
+		protected virtual void OnEnable() {
+			global::SmartPoint.AssetAssistant.Sequencer.lateUpdate += OnLateUpdate;
+		}
+		protected virtual void OnDisable() {
+			global::SmartPoint.AssetAssistant.Sequencer.lateUpdate -= OnLateUpdate;
+		}
+		public void Clear(bool isFinish = false) {
+			if (isFinish)
+			{
+				_imageModelBg.transform.SetParent(_transBg, false);
+				_imageModelBg.transform.SetSiblingIndex(0);
+			}
+			global::Dpr.UI.UIManager.Instance.modelView.ClearModelView(isFinish);
+		}
+		public void UpdateTexture() {
+			if (_rawImageModelView != null)
+				_rawImageModelView.texture = global::Dpr.UI.UIManager.Instance.modelView.GetModelViewRenderTexture();
+		}
 		public void SetRawImageAlpha(float alpha) {
             // @01c5cff0: ONE get_color vcall (+0x290), v3 = alpha, set_color (+0x2a0)
             Color color = _rawImageModelView.color;
             _rawImageModelView.color = new Color(color.r, color.g, color.b, alpha);
         }
-		private void OnLateUpdate(float deltaTime) { /*@B 0x6005589*/ throw null; }
+		private void OnLateUpdate(float deltaTime) {
+			UpdateTexture();
+			UpdateAnimation(deltaTime);
+		}
 		protected virtual void UpdateAnimation(float deltaTime) { }
 		public ModelViewBase() { }
 	}

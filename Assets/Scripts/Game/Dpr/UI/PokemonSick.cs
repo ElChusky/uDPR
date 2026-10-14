@@ -12,7 +12,7 @@ namespace Dpr.UI
 		private global::DG.Tweening.Core.TweenerCore<float, float, global::DG.Tweening.Plugins.Options.FloatOptions> _fadeTw;
 		private const int _sickPoizon = 6;
 		private const int _sickDying = 7;
-		private static string[] _spriteNames;
+		private static string[] _spriteNames = new string[] { null, "cmn_ico_txt_sick_01_01", "cmn_ico_txt_sick_01_02", "cmn_ico_txt_sick_01_03", "cmn_ico_txt_sick_01_04", "cmn_ico_txt_sick_01_05", "cmn_ico_txt_sick_01_06", "cmn_ico_txt_sick_01_07" };
 		private int _sick;
 		public int sick { get { return this._sick; } }
 		public void Setup(global::Pml.PokePara.PokemonParam pokemonParam) {
@@ -52,6 +52,6 @@ namespace Dpr.UI
             _fadeTw = _canvasGroup.DOFade(0f, 1.5f).SetEase(Ease.InSine).SetLoops(-1, LoopType.Yoyo).SetLink(gameObject);
         }
 		public PokemonSick() { }
-		static PokemonSick() { /*@B 0x6005123*/ throw null; }
+		static PokemonSick() { }
 	}
 }

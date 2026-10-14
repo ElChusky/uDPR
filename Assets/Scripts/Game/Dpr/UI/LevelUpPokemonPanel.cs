@@ -32,14 +32,14 @@ namespace Dpr.UI
 		private uint minExp;
 		private uint maxExp;
 		private float expBarTweenDuration;
-		private global::System.Collections.Generic.List<global::Dpr.UI.LevelUpPokemonPanel.LearnWazaResult> newLearnWazaResultList;
+		private global::System.Collections.Generic.List<global::Dpr.UI.LevelUpPokemonPanel.LearnWazaResult> newLearnWazaResultList = new global::System.Collections.Generic.List<global::Dpr.UI.LevelUpPokemonPanel.LearnWazaResult>();
 		public global::Pml.PokePara.PokemonParam PokemonParam { get; set; }
 		public global::Dpr.UI.UILevelUp.PokemonStatus CurrentPokemonStatus { get; private set; }
 		public global::Dpr.UI.UILevelUp.PokemonStatus BeforePokemonStatus { get; private set; }
 		public global::System.Action OnGaugeUp { get; set; }
 		public global::System.Action OnLevelUp { get; set; }
 		public bool IsLevelUp { get; private set; }
-		public bool IsLearnWaza { get { /*@B 0x60054F5*/ throw null; } }
+		public bool IsLearnWaza { get { return newLearnWazaResultList.Count > 0; } }
 		public bool IsAnimation { get; private set; }
 		public bool IsActive { get; private set; }
 		public void SetActive(bool isActive) {
@@ -225,7 +225,7 @@ namespace Dpr.UI
 			Pml.Personal.PersonalSystem.LoadGrowTable(monsNo, formNo);
 			return Pml.Personal.PersonalSystem.GetMinExp(level);
 		}
-		public LevelUpPokemonPanel() { /*@B 0x600550C*/ throw null; }
+		public LevelUpPokemonPanel() { }
 		public struct LearnWazaResult
 		{
 			public global::Pml.WazaNo WazaNo;

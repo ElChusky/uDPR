@@ -11,20 +11,20 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Camera rtCamera;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector2Int rtSize;
+		private global::UnityEngine.Vector2Int rtSize = new global::UnityEngine.Vector2Int(1280, 720);
 		[global::UnityEngine.SerializeField]
 		private float modelPosY;
 		[global::UnityEngine.SerializeField]
 		private int objectLayer;
-		private global::System.Collections.Generic.Dictionary<int, global::Dpr.AssetBundleUnloader> unloaders;
+		private global::System.Collections.Generic.Dictionary<int, global::Dpr.AssetBundleUnloader> unloaders = new global::System.Collections.Generic.Dictionary<int, global::Dpr.AssetBundleUnloader>();
 		private global::Dpr.UI.MultiModelView.ViewModelData[] viewModelDataArray;
 		private global::UnityEngine.RenderTexture renderTexture;
 		private global::UnityEngine.Transform modelRoot;
-		private float modelViewPortSpace;
+		private float modelViewPortSpace = 1f;
 		private int modelViewCount;
 		public bool bIsInitialize { get; private set; }
 		public int ModelViewCount { get { return this.modelViewCount; } }
-		public int TotalModelViewCount { get { /*@B 0x60050FB*/ throw null; } }
+		public int TotalModelViewCount { get { return viewModelDataArray != null ? viewModelDataArray.Length : 0; } }
 		private void Start() {
 			if (bIsInitialize)
 				return;
@@ -181,7 +181,7 @@ namespace Dpr.UI
 
 			viewModelDataArray[index].entity.RequestAnimationState((BattleCharacterEntity.AnimationState)motionIndex);
 		}
-		public MultiModelView() { /*@B 0x6005101*/ throw null; }
+		public MultiModelView() { }
 		public class ViewModelData
 		{
 			public global::UnityEngine.GameObject modelObj;

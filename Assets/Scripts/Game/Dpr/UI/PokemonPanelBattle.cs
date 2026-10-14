@@ -24,14 +24,21 @@ namespace Dpr.UI
 		private global::Dpr.UI.PokemonPanelBattle.TokuseiDetailParam _tokuseiDetail;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.PokemonPanelBattle.MultiTrainerParam _multiTrainer;
-		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonBattleWazaItem> _items;
+		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonBattleWazaItem> _items = new global::System.Collections.Generic.List<global::Dpr.UI.PokemonBattleWazaItem>();
 		private int _selectIndex;
 		private bool _showDetail;
 		private global::UnityEngine.UI.VerticalLayoutGroup _verticalLayoutGroup;
 		private global::Dpr.Battle.Logic.BTL_POKEPARAM _battlePokemonParam;
-		private bool _isActived;
+		private bool _isActived = true;
 		public global::Dpr.Battle.Logic.BTL_POKEPARAM CurrentBTLParam { get { return this._battlePokemonParam; } }
-		private void Awake() { /*@B 0x6005656*/ throw null; }
+		private void Awake() {
+			if (_itemPrefab.gameObject.scene.name != null)
+			{
+				_itemPrefab.transform.SetParent(transform, false);
+				_itemPrefab.gameObject.SetActive(false);
+			}
+			_verticalLayoutGroup = _contents.GetComponent<global::UnityEngine.UI.VerticalLayoutGroup>();
+		}
 		public void Setup(global::Dpr.Battle.Logic.BTL_POKEPARAM battlePokemonParam, bool isWait, bool isMultiPlayer) {
 			_battlePokemonParam = battlePokemonParam;
 			_isActived = true;
@@ -204,7 +211,7 @@ namespace Dpr.UI
 			SetupDetail();
 			return true;
 		}
-		public PokemonPanelBattle() { /*@B 0x6005661*/ throw null; }
+		public PokemonPanelBattle() { }
 		[global::System.Serializable]
 		private class DetailParam
 		{

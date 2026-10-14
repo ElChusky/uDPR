@@ -9,17 +9,72 @@ namespace Dpr.UI
 		private global::KeyguideItem _itemPrefab;
 		private global::UnityEngine.Coroutine _coClose;
 		private bool _isOpen;
-		private void Awake() { /*@B 0x60050E2*/ throw null; }
-		public void Open(global::Dpr.UI.Keyguide.Param param) { /*@B 0x60050E3*/ throw null; }
-		public global::System.Collections.IEnumerator OpOpen(global::Dpr.UI.Keyguide.Param param) { /*@B 0x60050E4*/ throw null; }
-		public void Setup(global::Dpr.UI.Keyguide.Param param) { /*@B 0x60050E5*/ throw null; }
-		public void Close(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_) { /*@B 0x60050E6*/ throw null; }
-		public global::System.Collections.IEnumerator OpClose(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_) { /*@B 0x60050E7*/ throw null; }
-		public Keyguide() { /*@B 0x60050E8*/ throw null; }
+		private void Awake() {
+			if (_itemPrefab.gameObject.scene.name != null)
+			{
+				_itemPrefab.transform.SetParent(transform, false);
+				_itemPrefab.gameObject.SetActive(false);
+			}
+			_animator = GetComponentInChildren<global::UnityEngine.Animator>(true);
+		}
+		public void Open(global::Dpr.UI.Keyguide.Param param) {
+			// OpOpen iterator stub inlined
+			global::SmartPoint.AssetAssistant.Sequencer.Start(OpOpen(param));
+		}
+		public global::System.Collections.IEnumerator OpOpen(global::Dpr.UI.Keyguide.Param param) {
+			_isOpen = true;
+			OnOpen(_prevWindowId);
+			if (param != null)
+				Setup(param);
+
+			while (_coClose != null)
+				yield return null;
+
+			if (_animator != null)
+				yield return OpPlayOpenWindowAnimation(_prevWindowId, null);
+
+			_input.inputEnabled = true;
+		}
+		public void Setup(global::Dpr.UI.Keyguide.Param param) {
+			if (!_isOpen)
+			{
+				Open(param);
+				return;
+			}
+
+			if (_itemPrefab.transform.parent == _guideRoot)
+				_itemPrefab.transform.SetParent(transform, false);
+
+			for (int i = _guideRoot.childCount - 1; i >= 0; i--)
+				global::UnityEngine.Object.Destroy(_guideRoot.GetChild(i).gameObject);
+			_guideRoot.DetachChildren();
+
+			for (int i = 0; i < param.itemParams.Count; i++)
+			{
+				global::KeyguideItem item = global::UnityEngine.Object.Instantiate(_itemPrefab);
+				item.transform.SetParent(_guideRoot, false);
+				item.gameObject.SetActive(true);
+				item.Setup(param.itemParams[i]);
+			}
+		}
+		public void Close(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_) {
+			// OpClose iterator stub inlined
+			_coClose = global::SmartPoint.AssetAssistant.Sequencer.Start(OpClose(onClosed_));
+		}
+		public global::System.Collections.IEnumerator OpClose(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_) {
+			_isOpen = false;
+			global::Dpr.UI.UIManager.Instance._ClearKeyguide();
+			if (_animator != null)
+				yield return OpPlayCloseWindowAnimationAndWaiting(_prevWindowId);
+
+			onClosed_?.Invoke(this);
+			_coClose = null;
+		}
+		public Keyguide() { }
 		public class Param
 		{
-			public global::System.Collections.Generic.List<global::KeyguideItem.Param> itemParams;
-			public Param() { /*@B 0x600A9A2*/ throw null; }
+			public global::System.Collections.Generic.List<global::KeyguideItem.Param> itemParams = new global::System.Collections.Generic.List<global::KeyguideItem.Param>();
+			public Param() { }
 		}
 	}
 }

@@ -10,11 +10,11 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.Cursor _cursor;
 		public global::UnityEngine.Events.UnityAction onClosed;
-		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusMark> _marks;
+		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusMark> _marks = new global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusMark>();
 		private int _selectIndex;
 		private global::UnityEngine.Animator _animator;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private readonly int _animStateIn = global::UnityEngine.Animator.StringToHash("in");
+		private readonly int _animStateOut = global::UnityEngine.Animator.StringToHash("out");
 		private global::Dpr.UI.PokemonStatusMarkSetting.OpenState _openState;
 		public global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusMark> marks { get { return this._marks; } }
 		private void Awake() {
@@ -109,7 +109,7 @@ namespace Dpr.UI
 			_cursor.transform.SetParent(_marks[_selectIndex].transform, false);
 			return true;
 		}
-		public PokemonStatusMarkSetting() { /*@B 0x60056AA*/ throw null; }
+		public PokemonStatusMarkSetting() { }
 		private enum OpenState
 		{
 			Closed = 0,

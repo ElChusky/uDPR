@@ -7,8 +7,14 @@ namespace Dpr.UI
 		private global::UnityEngine.UI.Image _image;
 		private global::Pml.PokePara.BoxMarkColor _type;
 		public global::Pml.PokePara.BoxMarkColor type { get { return this._type; } }
-		public void Setup(global::Pml.PokePara.BoxMarkColor type) { /*@B 0x600569F*/ throw null; }
-		public void SetType(global::Pml.PokePara.BoxMarkColor type) { /*@B 0x60056A0*/ throw null; }
+		public void Setup(global::Pml.PokePara.BoxMarkColor type) {
+			// 16-byte tail jump to SetType (@01d96e40)
+			SetType(type);
+		}
+		public void SetType(global::Pml.PokePara.BoxMarkColor type) {
+			_type = type;
+			_image.color = global::Dpr.UI.UIManager.Instance.GetMarkColor((int)type);
+		}
 		public PokemonStatusMark() { }
 	}
 }

@@ -7,15 +7,27 @@ namespace Dpr.UI
 		private global::UnityEngine.Material _material;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Camera _camera;
-		private readonly int _propBgTexture;
-		private readonly int _propAlpha;
+		private readonly int _propBgTexture = global::UnityEngine.Shader.PropertyToID("_BgTex");
+		private readonly int _propAlpha = global::UnityEngine.Shader.PropertyToID("_Alpha");
 		public global::UnityEngine.Camera camera { get { return this._camera; } }
-		private void Awake() { /*@B 0x6005591*/ throw null; }
-		private void OnPreRender() { /*@B 0x6005592*/ throw null; }
-		private void OnPostRender() { /*@B 0x6005593*/ throw null; }
-		public void SetBgTexture(global::UnityEngine.Texture bgTexture) { /*@B 0x6005594*/ throw null; }
-		public void SetAlpha(float alpha) { /*@B 0x6005595*/ throw null; }
-		private void OnRenderImage(global::UnityEngine.RenderTexture src, global::UnityEngine.RenderTexture dest) { /*@B 0x6005596*/ throw null; }
-		public ModelViewReflectionCamera() { /*@B 0x6005597*/ throw null; }
+		private void Awake() {
+			_camera = GetComponent<global::UnityEngine.Camera>();
+		}
+		private void OnPreRender() {
+			global::UnityEngine.GL.invertCulling = true;
+		}
+		private void OnPostRender() {
+			global::UnityEngine.GL.invertCulling = false;
+		}
+		public void SetBgTexture(global::UnityEngine.Texture bgTexture) {
+			_material.SetTexture(_propBgTexture, bgTexture);
+		}
+		public void SetAlpha(float alpha) {
+			_material.SetFloat(_propAlpha, alpha);
+		}
+		private void OnRenderImage(global::UnityEngine.RenderTexture src, global::UnityEngine.RenderTexture dest) {
+			global::UnityEngine.Graphics.Blit(src, dest, _material);
+		}
+		public ModelViewReflectionCamera() { }
 	}
 }

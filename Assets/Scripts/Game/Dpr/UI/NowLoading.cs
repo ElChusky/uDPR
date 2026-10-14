@@ -8,12 +8,44 @@ namespace Dpr.UI
 		private float _waitTime;
 		private float _progressTime;
 		private bool _isWaiting;
-		private void Awake() { /*@B 0x6005102*/ throw null; }
-		public void Open(float waitTime = 5f, int sortOrder = 16390) { /*@B 0x6005103*/ throw null; }
-		public void Close() { /*@B 0x6005104*/ throw null; }
-		public void Setup(float waitTime = 5f, int sortOrder = 16390) { /*@B 0x6005105*/ throw null; }
-		private void OnUpdate(float deltaTime) { /*@B 0x6005106*/ throw null; }
-		private void SetActive(bool active) { /*@B 0x6005107*/ throw null; }
-		public NowLoading() { /*@B 0x6005108*/ throw null; }
+		private void Awake() {
+			_animatorLoading.gameObject.SetActive(false);
+		}
+		public void Open(float waitTime = 5f, int sortOrder = 16390) {
+			global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+			_progressTime = 0f;
+			_isWaiting = true;
+			Setup(waitTime, sortOrder);
+		}
+		public void Close() {
+			global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+			global::Dpr.UI.UIManager.Instance._ReleaseUIWindow(this);
+		}
+		public void Setup(float waitTime = 5f, int sortOrder = 16390) {
+			if (_isWaiting)
+			{
+				_isWaiting = _progressTime < waitTime;
+				_waitTime = waitTime;
+			}
+			global::UnityEngine.Canvas canvas = GetComponent<global::UnityEngine.Canvas>();
+			if (canvas != null)
+				canvas.sortingOrder = sortOrder;
+			_animatorLoading.gameObject.SetActive(!_isWaiting);
+		}
+		private void OnUpdate(float deltaTime) {
+			if (_isWaiting)
+			{
+				_progressTime += deltaTime;
+				if (_waitTime <= _progressTime)
+				{
+					_animatorLoading.gameObject.SetActive(true);
+					_isWaiting = false;
+				}
+			}
+		}
+		private void SetActive(bool active) {
+			_animatorLoading.gameObject.SetActive(active);
+		}
+		public NowLoading() { }
 	}
 }

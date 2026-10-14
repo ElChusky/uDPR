@@ -44,34 +44,34 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform _usableItemRoot;
 		[global::UnityEngine.SerializeField]
-		private float _formChangeLoadIconTiming;
+		private float _formChangeLoadIconTiming = 0.8f;
 		private int _stateBits;
 		private global::Dpr.UI.PokemonPartyItem.Param _param;
 		private bool isShowUsableItem;
-		private global::UnityEngine.Vector3 _offsetIconPos;
-		private global::UnityEngine.Vector3 _initIconPos;
+		private global::UnityEngine.Vector3 _offsetIconPos = global::UnityEngine.Vector3.zero;
+		private global::UnityEngine.Vector3 _initIconPos = global::UnityEngine.Vector3.zero;
 		private global::UnityEngine.Animator _animator;
-		public static readonly int animState0Normal;
-		public static readonly int animState0Select;
-		public static readonly int animState0DecideContext;
-		public static readonly int animState0Decide;
-		public static readonly int animState0Disable;
-		public static readonly int animState1Stop;
-		public static readonly int animState1Sick;
-		public static readonly int animState1SelectState0;
-		public static readonly int animState1State0;
-		public static readonly int animState1SelectState1;
-		public static readonly int animState1State1;
-		public static readonly int animState1SelectState2;
-		public static readonly int animState1State2;
-		public static readonly int animState1SelectState3;
-		public static readonly int animState1State3;
-		public static readonly int animState2Normal0;
-		public static readonly int animState2Normal1;
-		public static readonly int animState2Exchange0;
-		public static readonly int animState2Exchange1;
-		public static readonly int animState2Friend0;
-		public static readonly int animState2Friend1;
+		public static readonly int animState0Normal = global::UnityEngine.Animator.StringToHash("Normal");
+		public static readonly int animState0Select = global::UnityEngine.Animator.StringToHash("Select");
+		public static readonly int animState0DecideContext = global::UnityEngine.Animator.StringToHash("Context");
+		public static readonly int animState0Decide = global::UnityEngine.Animator.StringToHash("Decide");
+		public static readonly int animState0Disable = global::UnityEngine.Animator.StringToHash("Disable");
+		public static readonly int animState1Stop = global::UnityEngine.Animator.StringToHash("Stop");
+		public static readonly int animState1Sick = global::UnityEngine.Animator.StringToHash("Shiver");
+		public static readonly int animState1SelectState0 = global::UnityEngine.Animator.StringToHash("Jump_01_01");
+		public static readonly int animState1State0 = global::UnityEngine.Animator.StringToHash("Jump_02_01");
+		public static readonly int animState1SelectState1 = global::UnityEngine.Animator.StringToHash("Jump_01_02");
+		public static readonly int animState1State1 = global::UnityEngine.Animator.StringToHash("Jump_02_02");
+		public static readonly int animState1SelectState2 = global::UnityEngine.Animator.StringToHash("Jump_01_03");
+		public static readonly int animState1State2 = global::UnityEngine.Animator.StringToHash("Jump_02_03");
+		public static readonly int animState1SelectState3 = global::UnityEngine.Animator.StringToHash("Jump_01_04");
+		public static readonly int animState1State3 = global::UnityEngine.Animator.StringToHash("Jump_02_04");
+		public static readonly int animState2Normal0 = global::UnityEngine.Animator.StringToHash("Member_Normal");
+		public static readonly int animState2Normal1 = global::UnityEngine.Animator.StringToHash("Leader_Normal");
+		public static readonly int animState2Exchange0 = global::UnityEngine.Animator.StringToHash("Member_ItemExchang");
+		public static readonly int animState2Exchange1 = global::UnityEngine.Animator.StringToHash("Leader_ItemExchang");
+		public static readonly int animState2Friend0 = global::UnityEngine.Animator.StringToHash("FriendMember_Normal");
+		public static readonly int animState2Friend1 = global::UnityEngine.Animator.StringToHash("FriendLeader_Normal");
 		private global::UnityEngine.Coroutine _coroutine;
 		private global::Effect.EffectInstance _effectInstance;
 		private bool _isDestroy;
@@ -364,8 +364,8 @@ namespace Dpr.UI
 
             Audio.AudioManager.Instance.PlayVoice(Audio.AudioManager.Instance.GetIdByName(voiceData.WwiseEvent), Audio.AudioManager.Instance.GetIdByName(voiceData.stopEventId), _ => onComplete?.Invoke());
         }
-		public PokemonPartyItem() { /*@B 0x600568C*/ throw null; }
-		static PokemonPartyItem() { /*@B 0x600568D*/ throw null; }
+		public PokemonPartyItem() { }
+		static PokemonPartyItem() { }
 		[global::System.Serializable]
 		private class Contest
 		{
@@ -405,19 +405,19 @@ namespace Dpr.UI
 			public Param() { }
 			public class Contest
 			{
-				public bool isEntry;
-				public Contest() { /*@B 0x600BBA4*/ throw null; }
+				public bool isEntry = true;
+				public Contest() { }
 			}
 			public class Battle
 			{
 				public global::Dpr.Battle.Logic.BTL_POKEPARAM battlePokemonParam;
-				public int plateType;
-				public Battle() { /*@B 0x600BBA5*/ throw null; }
+				public int plateType = 1;
+				public Battle() { }
 			}
 			public class RotomSelect
 			{
-				public bool isEntry;
-				public RotomSelect() { /*@B 0x600BBA6*/ throw null; }
+				public bool isEntry = true;
+				public RotomSelect() { }
 			}
 		}
 	}

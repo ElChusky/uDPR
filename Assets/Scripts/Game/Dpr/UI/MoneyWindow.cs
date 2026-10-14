@@ -6,7 +6,7 @@ namespace Dpr.UI
 	{
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIText _money;
-		private int _prevMoney;
+		private int _prevMoney = -1;
 		public override void OnCreate() {
 			base.OnCreate();
 			_animator = GetComponentInChildren<Animator>(true);
@@ -46,6 +46,6 @@ namespace Dpr.UI
 
 			SetupMoney(false);
 		}
-		public MoneyWindow() { /*@B 0x60053A1*/ throw null; }
+		public MoneyWindow() { }
 	}
 }
