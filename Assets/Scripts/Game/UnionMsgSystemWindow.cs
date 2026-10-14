@@ -175,7 +175,7 @@ public class UnionMsgSystemWindow : global::UnionBaseMsgWindow
 		}
 		ClearMessage();
 	}
-	public UnionMsgSystemWindow() { /*@B 0x6001508*/ throw null; }
+	public UnionMsgSystemWindow() { }
 	public enum SystemBattleMessageType
 	{
 		CHECK_NICKNAME = 0,

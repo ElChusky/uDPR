@@ -4,10 +4,10 @@ public class UnionBattleRuleWindow : global::UnityEngine.MonoBehaviour
 {
 	private const int TAG_INDEX_RULE = 0;
 	private const int TAG_INDEX_PLAYER_NAME = 1;
-	private static readonly string TITLE_RULE_TEXT_LABEL;
-	private static readonly string TITLE_TARGET_TEXT_LABEL;
-	private static readonly string SELECT_RULE_TEXT_LABEL;
-	private static readonly string TARGET_PLAYER_NAME_TEXT_LABEL;
+	private static readonly string TITLE_RULE_TEXT_LABEL = "DLP_net_union_room_063";
+	private static readonly string TITLE_TARGET_TEXT_LABEL = "DLP_net_union_room_064";
+	private static readonly string SELECT_RULE_TEXT_LABEL = "DLP_net_union_room_109";
+	private static readonly string TARGET_PLAYER_NAME_TEXT_LABEL = "DLP_net_union_room_110";
 	[global::UnityEngine.SerializeField]
 	private global::Dpr.UI.UIText titleRuleText;
 	[global::UnityEngine.SerializeField]
@@ -105,5 +105,5 @@ public class UnionBattleRuleWindow : global::UnityEngine.MonoBehaviour
 		}
 	}
 	public UnionBattleRuleWindow() { }
-	static UnionBattleRuleWindow() { /*@B 0x60014AA*/ throw null; }
+	static UnionBattleRuleWindow() { }
 }

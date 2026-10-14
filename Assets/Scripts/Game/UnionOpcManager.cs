@@ -6,8 +6,8 @@ public class UnionOpcManager : global::OpcManager
 {
 	private const string INVALID_ASSET_NAME = "fc2003_00";
 	private const string UNION_SESSION_START_MESSAGE_FILE_NAME = "dlp_net_union_room";
-	private global::UnityEngine.Vector2 CONTEXT_MENU_POSITION;
-	private static readonly string[] UNION_START_MASSEAGES;
+	private global::UnityEngine.Vector2 CONTEXT_MENU_POSITION = new global::UnityEngine.Vector2(590f, 350f);
+	private static readonly string[] UNION_START_MASSEAGES = new string[] { "DLP_net_union_room_044", "DLP_net_union_room_045", "DLP_net_union_room_046", "DLP_net_union_room_047" };
 	public override void CreateCharacter(global::Dpr.NetworkUtils.INetData joinData) {
 		ANetData<JoinData> netJoinData = (ANetData<JoinData>)joinData;
 		if (_DataTable == null)
@@ -71,6 +71,6 @@ public class UnionOpcManager : global::OpcManager
 		// SetIsMultiMatchWait inlined (+0xed @019e08d4)
 		((UnionOpcController)opc).SetIsMultiMatchWait(isMatchWait);
 	}
-	public UnionOpcManager() { /*@B 0x60012EE*/ throw null; }
-	static UnionOpcManager() { /*@B 0x60012EF*/ throw null; }
+	public UnionOpcManager() { }
+	static UnionOpcManager() { }
 }

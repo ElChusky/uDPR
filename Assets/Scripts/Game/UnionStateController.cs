@@ -48,14 +48,31 @@ public class UnionStateController
 	[global::UnityEngine.SerializeField]
 	private global::UnityEngine.CanvasGroup _canvasGroup;
 	public global::UnionBattleRuleWindow unionBattleRuleWindow;
-	private int debugTargetStationIndex;
+	private int debugTargetStationIndex = -1;
 	public global::NetStateModel currentModel { get => _currentModel; set {
 			_currentModel = value;
 			if (_currentModel != null)
 				_currentModel.OnCancelCallBack = OnTalkEnd;
 		} }
-	public UnionStateController(global::OnlinePlayerCharacter onlinePlayer, global::UnionOpcManager opcManager, global::ZoneID zoneID, global::System.Action leaveUnionRoom, global::System.Action<int, byte> request, global::System.Action sendTransitionAfterFunc) { /*@B 0x600133E*/ throw null; }
-	public void SetCallBack(global::System.Action leaveUnionRoom, global::System.Action<int, byte> request, global::System.Action sendTransitionAfterFunc) { /*@B 0x600133F*/ throw null; }
+	public UnionStateController(global::OnlinePlayerCharacter onlinePlayer, global::UnionOpcManager opcManager, global::ZoneID zoneID, global::System.Action leaveUnionRoom, global::System.Action<int, byte> request, global::System.Action sendTransitionAfterFunc) {
+		// @019e4fe0
+		playerCharacter = onlinePlayer;
+		unionOpcManager = opcManager;
+		requestNetData = request;
+		leaveUnion = leaveUnionRoom;
+		sendIsTransitionAfter = sendTransitionAfterFunc;
+		isMultiMatchWait = false;
+		unionMatchWaitDataList = new global::System.Collections.Generic.List<global::Dpr.BattleMatching.UnionMatchWaitData>();
+		unionMatchWaitAllDataList = new global::System.Collections.Generic.List<global::Dpr.BattleMatching.UnionMatchWaitData>();
+		CreateContextMenu(zoneID);
+		CreateSystemController();
+	}
+	public void SetCallBack(global::System.Action leaveUnionRoom, global::System.Action<int, byte> request, global::System.Action sendTransitionAfterFunc) {
+		// @019ee790
+		requestNetData = request;
+		leaveUnion = leaveUnionRoom;
+		sendIsTransitionAfter = sendTransitionAfterFunc;
+	}
 	private void OnTalkEnd() {
 		// @019eea20: a plain field store (no set_currentModel flag)
 		_currentModel = null;

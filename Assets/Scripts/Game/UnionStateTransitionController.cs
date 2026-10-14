@@ -13,7 +13,7 @@ public class UnionStateTransitionController
 	private const float INIT_FADE_TIME = 1f;
 	public global::OpcState.OnlineState transitionState;
 	private int targetIndex;
-	private float _FadeInTime;
+	private float _FadeInTime = 1f;
 	private bool isFadeOut;
 	private bool isFadeOutEnd;
 	private global::System.Action closeWindowCallback;
@@ -25,14 +25,20 @@ public class UnionStateTransitionController
 	private global::System.Collections.Generic.List<global::Dpr.BattleMatching.UnionMatchWaitData> stanbyWaitDataList;
 	public global::UnionTradeManager tradeManager;
 	public global::BattleMatchingManager battleMatchingManager;
-	public global::RecodeMatching recodeMatchingManager;
-	public global::BallDecoMatching balldecoMatchingManager;
+	public global::RecodeMatching recodeMatchingManager = new global::RecodeMatching();
+	public global::BallDecoMatching balldecoMatchingManager = new global::BallDecoMatching();
 	public global::System.Action OnEndFadeOut;
 	public global::System.Func<bool> CreateUI;
 	private bool _isClearCall;
 	public bool isFade;
 	public global::UnionSystemController systemController { get; set; }
-	public UnionStateTransitionController() { /*@B 0x60013A7*/ throw null; }
+	public UnionStateTransitionController() {
+		// @019eea30
+		Sequencer.update -= MyUpdate;
+		Sequencer.update += MyUpdate;
+		stanbyWaitDataList = new global::System.Collections.Generic.List<global::Dpr.BattleMatching.UnionMatchWaitData>();
+		_isClearCall = false;
+	}
 	private void MyUpdate(float deltaTime) {
 		if (!isFadeOut)
 			return;

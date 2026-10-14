@@ -165,5 +165,7 @@ public class UnionBattleContextMenu : global::UnionContextMenu
 		requestData.data.RequestDataID = NetDataIsMatchWaitData.DataID;
 		requestData.SendReliableData(stationIndex);
 	}
-	public UnionBattleContextMenu() { /*@B 0x60010C7*/ throw null; }
+	public UnionBattleContextMenu() {
+		// @01b1f460 — base UnionContextMenu ctor inlined (its _menuMessageList initialiser)
+	}
 }

@@ -27,16 +27,16 @@ public class UnionRoomManager : global::Dpr.SubContents.NetUseManager<global::Un
 	private const int POSITION_DATA_MAX_SIZE = 12;
 	private const float GURUGURU_HEIGHT_UP = 10f;
 	private const string UNION_FRONT_DESK_CONTROLLER = "FdController";
-	private static readonly global::ZoneID[] enableZones;
+	private static readonly global::ZoneID[] enableZones = new global::ZoneID[] { global::ZoneID.UNION, global::ZoneID.UNION01, global::ZoneID.UNION02, global::ZoneID.UNION03 };
 	private global::XLSXContent.UnionCharacterTable.SheetSheet1[] _characterTable;
 	private global::XLSXContent.UnionNpcColorTable.SheetSheet1[] _npcColorTable;
-	private global::Dpr.NetworkUtils.NetJoinData netJoinData;
-	private global::Dpr.NetworkUtils.PosData[] posDataList;
+	private global::Dpr.NetworkUtils.NetJoinData netJoinData = new global::Dpr.NetworkUtils.NetJoinData();
+	private global::Dpr.NetworkUtils.PosData[] posDataList = new global::Dpr.NetworkUtils.PosData[12];
 	private int posDataIndex;
 	public global::UnionStateController stateController;
 	private global::UnityEngine.Coroutine waitInitCoroutine;
 	public global::ZoneID returnZoneID;
-	public int locatorIndex;
+	public int locatorIndex = 1;
 	public global::UnityEngine.Vector3 returnPosition;
 	protected global::UnityEngine.GameObject battleRuleDisplayUiObj;
 	private global::UnityEngine.GameObject batteStateDataWindow;
@@ -57,8 +57,8 @@ public class UnionRoomManager : global::Dpr.SubContents.NetUseManager<global::Un
 	private const float STATE_UPDATE_INTERVAL = 2f;
 	private float stateUpdateTime;
 	private global::OpcState.OnlineState nowTalkReserveState;
-	private global::Dpr.NetworkUtils.NetCharacterStateData stateData;
-	private global::FieldPlayerEntity player { get { /*@B 0x60012F0*/ throw null; } }
+	private global::Dpr.NetworkUtils.NetCharacterStateData stateData = new global::Dpr.NetworkUtils.NetCharacterStateData();
+	private global::FieldPlayerEntity player { get { return EntityManager.activeFieldPlayer; } }
 	public bool isBattle { get => battleMatchingManager != null && battleMatchingManager.IsStateBattle; }
 	private bool isTradeUIState { get => tradeManager != null && tradeManager.currentState != UnionTradeManager.TradeFlowState.NONE; }
 	private bool isBatteUIState { get => battleMatchingManager != null && !battleMatchingManager.IsStateNone; }
@@ -1553,8 +1553,8 @@ public class UnionRoomManager : global::Dpr.SubContents.NetUseManager<global::Un
 
         return null;
     }
-	public UnionRoomManager() { /*@B 0x600132E*/ throw null; }
-	static UnionRoomManager() { /*@B 0x600132F*/ throw null; }
+	public UnionRoomManager() { }
+	static UnionRoomManager() { }
 	public enum UNION_ERRORSTATE
 	{
 		NONE = 0,

@@ -205,5 +205,7 @@ public class UnionFrontDeskMsgWindow : global::UnionBaseMsgWindow
 	public void SetStartMessageNo(int startIndex) {
 		nowMessageNo = startIndex;
 	}
-	public UnionFrontDeskMsgWindow() { /*@B 0x60014C9*/ throw null; }
+	public UnionFrontDeskMsgWindow() {
+		// @01b26e20 — base UnionBaseMsgWindow ctor inlined (its Messages / DefMessages initialisers)
+	}
 }

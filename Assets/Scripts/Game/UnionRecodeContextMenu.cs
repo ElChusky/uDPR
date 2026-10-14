@@ -45,5 +45,5 @@ public class UnionRecodeContextMenu : global::UnionContextMenu
 	public void SetTransitionType() {
 		transitionType = 5;
 	}
-	public UnionRecodeContextMenu() { /*@B 0x60010E9*/ throw null; }
+	public UnionRecodeContextMenu() { }
 }

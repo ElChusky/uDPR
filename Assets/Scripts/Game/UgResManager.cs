@@ -35,7 +35,27 @@ public class UgResManager
 	public static global::UgDigFossilePosGroups UgDigFossilePosGroups { get; private set; }
 	public static global::UgAllDigFossilePos UgAllDigFossilePos { get; private set; }
 	public static global::XLSXContent.UgTamagoWazaIgnoreTable UgTamagoWazaIgnoreTable { get; private set; }
-	public static bool IsDataLoadEnd { get { /*@B 0x600100B*/ throw null; } }
+	public static bool IsDataLoadEnd { get {
+			// @01b199d0 — UgEncounts is a plain reference test; the rest are UnityEngine.Object tests
+			return UgEncounts != null
+				&& UgPokemonData != null
+				&& UgRandMark != null
+				&& UgMiniMap != null
+				&& UgIconImages != null
+				&& UgCanvasPrefab != null
+				&& UgEncountLevel != null
+				&& UgSpecialPokemon != null
+				&& UgPokemonPos != null
+				&& UgNpcPos != null
+				&& UgNpcList != null
+				&& UgNpcTalk != null
+				&& UgDrillUsablePositions != null
+				&& UgDigFossilePosGroups != null
+				&& UgAllDigFossilePos != null
+				&& UgTamagoWazaIgnoreTable != null
+				&& UgEmoticonSetPrefab != null
+				&& UgInfoSetPrefab != null;
+		} }
 	public static void UnLoad() {
         // @01b1a330 — every public table goes through its (inlined) private setter; UgFieldManagerPrefab (+0x30) and
         // _isDataLoadRequest (+0xa8) are never reset (shipped).
@@ -272,8 +292,15 @@ public class UgResManager
 
         _assetOpe.Clear();
     }
-	public static global::XLSXContent.UgEncount GetUgEncount(int randMarkID) { /*@B 0x6001014*/ throw null; }
-	public static global::XLSXContent.UgPokemonData.Sheettable GetUgPokeData(global::Pml.MonsNo monsNo) { /*@B 0x6001015*/ throw null; }
+	public static global::XLSXContent.UgEncount GetUgEncount(int randMarkID) {
+		// @01b1b3d0
+		UgRandMark.Sheettable mark = System.Array.Find(UgRandMark.table, x => x.id == randMarkID);
+		return UgEncounts[mark.FileName];
+	}
+	public static global::XLSXContent.UgPokemonData.Sheettable GetUgPokeData(global::Pml.MonsNo monsNo) {
+		// @01b1b540
+		return System.Array.Find(UgPokemonData.table, x => x.monsno == monsNo);
+	}
 	public UgResManager() { }
 	static UgResManager() { }
 	public class AppendData

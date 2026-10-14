@@ -28,5 +28,5 @@ public class UnionTradeContextMenu : global::UnionContextMenu
 		// @017e3f90: transitionType = 0x12 (OpcState.OnlineState.NOW_TRADE).
 		transitionType = (int)OpcState.OnlineState.NOW_TRADE;
 	}
-	public UnionTradeContextMenu() { /*@B 0x60010F1*/ throw null; }
+	public UnionTradeContextMenu() { }
 }
