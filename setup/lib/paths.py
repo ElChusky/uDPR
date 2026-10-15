@@ -25,7 +25,7 @@ CONFIG_PATH = os.environ.get("BDSP_SETUP_CONFIG") or os.path.join(DEFAULT_WORK, 
 
 def load_config():
     if os.path.exists(CONFIG_PATH):
-        with open(CONFIG_PATH, encoding="utf-8") as f:
+        with open(CONFIG_PATH, encoding="utf-8-sig") as f:      # -sig: Windows PowerShell 5.1 writes UTF-8 with a BOM
             return json.load(f)
     return {}
 
