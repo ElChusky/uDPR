@@ -5,21 +5,43 @@ namespace Xoroshiro128Plus
 	{
 		private global::Xoroshiro128Plus.Xoroshiro128Plus xoroshiro;
 		public global::Xoroshiro128Plus.Xoroshiro128Plus Internal { get { return this.xoroshiro; } }
-		public override int Next() { /*@B 0x6002A0C*/ throw null; }
-		public Xoroshiro128PlusRNG(ulong seed) { /*@B 0x6002A0D*/ throw null; }
-		public Xoroshiro128PlusRNG(global::System.Random r) { /*@B 0x6002A0E*/ throw null; }
-		public Xoroshiro128PlusRNG() { /*@B 0x6002A0F*/ throw null; }
-		public Xoroshiro128PlusRNG(ulong state0, ulong state1) { /*@B 0x6002A10*/ throw null; }
-		public Xoroshiro128PlusRNG(decimal bits) { /*@B 0x6002A11*/ throw null; }
-		public Xoroshiro128PlusRNG(byte[] bits, int startindex) { /*@B 0x6002A12*/ throw null; }
-		public Xoroshiro128PlusRNG(byte[] bits) { /*@B 0x6002A13*/ throw null; }
-		public Xoroshiro128PlusRNG(global::Xoroshiro128Plus.Xoroshiro128Plus other) { /*@B 0x6002A14*/ throw null; }
-		public Xoroshiro128PlusRNG(global::Xoroshiro128Plus.Xoroshiro128PlusRNG other) { /*@B 0x6002A15*/ throw null; }
-		private float fracture(float f) { /*@B 0x6002A16*/ throw null; }
-		public override int Next(int maxValue) { /*@B 0x6002A17*/ throw null; }
-		public override int Next(int minValue, int maxValue) { /*@B 0x6002A18*/ throw null; }
-		public override void NextBytes(byte[] buffer) { /*@B 0x6002A19*/ throw null; }
-		public override double NextDouble() { /*@B 0x6002A1A*/ throw null; }
-		protected override double Sample() { /*@B 0x6002A1B*/ throw null; }
+		public override int Next() { return base.Next(); }
+		public Xoroshiro128PlusRNG(ulong seed) { xoroshiro = new global::Xoroshiro128Plus.Xoroshiro128Plus(seed); }
+		public Xoroshiro128PlusRNG(global::System.Random r) { xoroshiro = new global::Xoroshiro128Plus.Xoroshiro128Plus(r); }
+		public Xoroshiro128PlusRNG() { xoroshiro = new global::Xoroshiro128Plus.Xoroshiro128Plus(); }
+		public Xoroshiro128PlusRNG(ulong state0, ulong state1) { xoroshiro = new global::Xoroshiro128Plus.Xoroshiro128Plus(state0, state1); }
+		public Xoroshiro128PlusRNG(decimal bits) { xoroshiro = new global::Xoroshiro128Plus.Xoroshiro128Plus(bits); }
+		public Xoroshiro128PlusRNG(byte[] bits, int startindex) {
+			if (bits.Length - startindex <= 0)
+			{
+				throw new global::System.ArgumentOutOfRangeException("bits");
+			}
+			byte[] array = new byte[bits.Length - startindex];
+			global::System.Array.Copy(bits, startindex, array, 0, array.Length);
+			if (array.Length < 16)
+			{
+				byte[] padded = new byte[16];
+				global::System.Array.Copy(array, padded, padded.Length);
+				array = padded;
+			}
+			xoroshiro = new global::Xoroshiro128Plus.Xoroshiro128Plus(global::System.BitConverter.ToUInt64(array, 0), global::System.BitConverter.ToUInt64(array, 8));
+		}
+		public Xoroshiro128PlusRNG(byte[] bits) {
+			byte[] array = bits;
+			if (array.Length < 16)
+			{
+				array = new byte[16];
+				global::System.Array.Copy(bits, array, array.Length);
+			}
+			xoroshiro = new global::Xoroshiro128Plus.Xoroshiro128Plus(global::System.BitConverter.ToUInt64(array, 0), global::System.BitConverter.ToUInt64(array, 8));
+		}
+		public Xoroshiro128PlusRNG(global::Xoroshiro128Plus.Xoroshiro128Plus other) { xoroshiro = new global::Xoroshiro128Plus.Xoroshiro128Plus(other); }
+		public Xoroshiro128PlusRNG(global::Xoroshiro128Plus.Xoroshiro128PlusRNG other) { xoroshiro = new global::Xoroshiro128Plus.Xoroshiro128Plus(other.xoroshiro); }
+		private float fracture(float f) { return (float)(Sample() * f); }
+		public override int Next(int maxValue) { return (int)global::System.Math.Floor(fracture(maxValue)); }
+		public override int Next(int minValue, int maxValue) { return (int)global::System.Math.Floor(minValue + fracture(maxValue - minValue)); }
+		public override void NextBytes(byte[] buffer) { xoroshiro.NextBytes(buffer); }
+		public override double NextDouble() { return xoroshiro.NextDouble(); }
+		protected override double Sample() { return NextDouble(); }
 	}
 }

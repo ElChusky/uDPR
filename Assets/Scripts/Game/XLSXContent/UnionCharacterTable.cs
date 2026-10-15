@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UnionCharacterTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UnionCharacterTable.SheetSheet1[] Sheet1;
-		public global::XLSXContent.UnionCharacterTable.SheetSheet1 this[int index] { get { /*@B 0x600928B*/ throw null; } }
+		public global::XLSXContent.UnionCharacterTable.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public UnionCharacterTable() { }
 		[global::System.Serializable]
 		public class SheetSheet1

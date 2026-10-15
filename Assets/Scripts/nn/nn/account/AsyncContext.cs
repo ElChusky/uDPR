@@ -4,8 +4,8 @@ namespace nn.account
 {
 	public sealed class AsyncContext : global::System.IDisposable
 	{
-		internal global::System.IntPtr _context;
-		public AsyncContext() { /*@B nn:0x6000347*/ throw null; }
+		internal global::System.IntPtr _context = IntPtr.Zero;
+		public AsyncContext() { _context = Create(); }
 		// @027c6f40: Dispose(false) inlined, then base.Finalize
 		~AsyncContext() { Dispose(false); }
 		// @027c7050

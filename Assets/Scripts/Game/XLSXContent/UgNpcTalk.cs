@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UgNpcTalk : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UgNpcTalk.SheetSheet1[] Sheet1;
-		public global::XLSXContent.UgNpcTalk.SheetSheet1 this[int index] { get { /*@B 0x600927B*/ throw null; } }
+		public global::XLSXContent.UgNpcTalk.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public UgNpcTalk() { }
 		[global::System.Serializable]
 		public class SheetSheet1

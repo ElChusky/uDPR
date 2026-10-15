@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class TowerMatchingTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.TowerMatchingTable.SheetTowerMatching[] TowerMatching;
-		public global::XLSXContent.TowerMatchingTable.SheetTowerMatching this[int index] { get { /*@B 0x60091F3*/ throw null; } }
+		public global::XLSXContent.TowerMatchingTable.SheetTowerMatching this[int index] { get { return TowerMatching[index]; } }
 		public TowerMatchingTable() { }
 		[global::System.Serializable]
 		public class SheetTowerMatching

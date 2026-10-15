@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class PokeWalkingActionNakayoshi : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.PokeWalkingActionNakayoshi.SheetSheet1[] Sheet1;
-		public global::XLSXContent.PokeWalkingActionNakayoshi.SheetSheet1 this[int index] { get { /*@B 0x600925F*/ throw null; } }
+		public global::XLSXContent.PokeWalkingActionNakayoshi.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public PokeWalkingActionNakayoshi() { }
 		[global::System.Serializable]
 		public class SheetSheet1

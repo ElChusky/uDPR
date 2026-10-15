@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class MonohiroiKinomi : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.MonohiroiKinomi.SheetSheet1[] Sheet1;
-		public global::XLSXContent.MonohiroiKinomi.SheetSheet1 this[int index] { get { /*@B 0x6009257*/ throw null; } }
+		public global::XLSXContent.MonohiroiKinomi.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public MonohiroiKinomi() { }
 		[global::System.Serializable]
 		public class SheetSheet1

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class StaffrollList : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.StaffrollList.SheetStaffroll[] Staffroll;
-		public global::XLSXContent.StaffrollList.SheetStaffroll this[int index] { get { /*@B 0x6009201*/ throw null; } }
+		public global::XLSXContent.StaffrollList.SheetStaffroll this[int index] { get { return Staffroll[index]; } }
 		public StaffrollList() { }
 		[global::System.Serializable]
 		public class SheetStaffroll

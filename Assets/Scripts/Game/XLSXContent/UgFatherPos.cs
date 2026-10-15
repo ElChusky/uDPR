@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UgFatherPos : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UgFatherPos.SheetPos[] Pos;
-		public global::XLSXContent.UgFatherPos.SheetPos this[int index] { get { /*@B 0x600921E*/ throw null; } }
+		public global::XLSXContent.UgFatherPos.SheetPos this[int index] { get { return Pos[index]; } }
 		public UgFatherPos() { }
 		[global::System.Serializable]
 		public class SheetPos

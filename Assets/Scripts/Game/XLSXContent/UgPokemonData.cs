@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UgPokemonData : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UgPokemonData.Sheettable[] table;
-		public global::XLSXContent.UgPokemonData.Sheettable this[int index] { get { /*@B 0x600927D*/ throw null; } }
+		public global::XLSXContent.UgPokemonData.Sheettable this[int index] { get { return table[index]; } }
 		public UgPokemonData() { }
 		[global::System.Serializable]
 		public class Sheettable

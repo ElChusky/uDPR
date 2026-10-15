@@ -12,7 +12,7 @@ namespace XLSXContent
 		public global::XLSXContent.MsgWindowData.SheetTextureResourceData[] TextureResourceData;
 		public global::XLSXContent.MsgWindowData.SheetAssetResourceData[] AssetResourceData;
 		public global::XLSXContent.MsgWindowData.SheetSoundTagData[] SoundTagData;
-		public global::XLSXContent.MsgWindowData.SheetSpeakerNameData this[int index] { get { /*@B 0x6009209*/ throw null; } }
+		public global::XLSXContent.MsgWindowData.SheetSpeakerNameData this[int index] { get { return SpeakerNameData[index]; } }
 		public MsgWindowData() { }
 		[global::System.Serializable]
 		public class SheetSpeakerNameData

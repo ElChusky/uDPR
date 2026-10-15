@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class TitleSettings : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.TitleSettings.SheetStaffroll[] Staffroll;
-		public global::XLSXContent.TitleSettings.SheetStaffroll this[int index] { get { /*@B 0x60091DA*/ throw null; } }
+		public global::XLSXContent.TitleSettings.SheetStaffroll this[int index] { get { return Staffroll[index]; } }
 		public TitleSettings() { }
 		[global::System.Serializable]
 		public class SheetStaffroll

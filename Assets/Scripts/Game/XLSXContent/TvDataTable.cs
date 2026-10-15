@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.TvDataTable.Sheetdata[] data;
 		public global::XLSXContent.TvDataTable.Sheetmix_record[] mix_record;
-		public global::XLSXContent.TvDataTable.Sheetdata this[int index] { get { /*@B 0x60091C5*/ throw null; } }
+		public global::XLSXContent.TvDataTable.Sheetdata this[int index] { get { return data[index]; } }
 		public TvDataTable() { }
 		[global::System.Serializable]
 		public class Sheetdata

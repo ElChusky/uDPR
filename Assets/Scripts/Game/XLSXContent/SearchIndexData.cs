@@ -9,7 +9,7 @@ namespace XLSXContent
 		public global::XLSXContent.SearchIndexData.SheetWazaName[] WazaName;
 		public global::XLSXContent.SearchIndexData.SheetTokusei[] Tokusei;
 		public global::XLSXContent.SearchIndexData.SheetItemName[] ItemName;
-		public global::XLSXContent.SearchIndexData.SheetIndexTable this[int index] { get { /*@B 0x6009203*/ throw null; } }
+		public global::XLSXContent.SearchIndexData.SheetIndexTable this[int index] { get { return IndexTable[index]; } }
 		public SearchIndexData() { }
 		[global::System.Serializable]
 		public class SheetIndexTable

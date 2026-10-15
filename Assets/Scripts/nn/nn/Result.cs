@@ -10,7 +10,7 @@ namespace nn
 		public const int DescriptionBitsCount = 13;
 		public const int DescriptionBitsMask = 8191;
 		public uint innerValue;
-		public Result(int module, int description) { /*@B nn:0x6000005*/ throw null; }
+		public Result(int module, int description) { innerValue = (uint)(module | (description << DescriptionBitsOffset)); }
 		// @027c6490
 		public bool IsSuccess() { return innerValue == 0; }
 		// @027c64a0: Nn.Abort(ToString()) with the pinvoke inlined (marshal, nn::Abort native, free)

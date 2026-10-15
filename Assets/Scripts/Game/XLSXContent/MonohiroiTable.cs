@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class MonohiroiTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.MonohiroiTable.SheetMonoHiroi[] MonoHiroi;
-		public global::XLSXContent.MonohiroiTable.SheetMonoHiroi this[int index] { get { /*@B 0x60091EB*/ throw null; } }
+		public global::XLSXContent.MonohiroiTable.SheetMonoHiroi this[int index] { get { return MonoHiroi[index]; } }
 		public MonohiroiTable() { }
 		[global::System.Serializable]
 		public class SheetMonoHiroi

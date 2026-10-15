@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UgEncount : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UgEncount.Sheettable[] table;
-		public global::XLSXContent.UgEncount.Sheettable this[int index] { get { /*@B 0x600926F*/ throw null; } }
+		public global::XLSXContent.UgEncount.Sheettable this[int index] { get { return table[index]; } }
 		public UgEncount() { }
 		[global::System.Serializable]
 		public class Sheettable

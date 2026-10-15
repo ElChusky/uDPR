@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.PokemonInfo.SheetCatalog[] Catalog;
 		public global::XLSXContent.PokemonInfo.SheetTrearuki[] Trearuki;
-		public global::XLSXContent.PokemonInfo.SheetCatalog this[int index] { get { /*@B 0x60091ED*/ throw null; } }
+		public global::XLSXContent.PokemonInfo.SheetCatalog this[int index] { get { return Catalog[index]; } }
 		public PokemonInfo() { }
 		[global::System.Serializable]
 		public class SheetCatalog

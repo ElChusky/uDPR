@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class TowerDoubleStockTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.TowerDoubleStockTable.SheetTowerDoubleStock[] TowerDoubleStock;
-		public global::XLSXContent.TowerDoubleStockTable.SheetTowerDoubleStock this[int index] { get { /*@B 0x60091F1*/ throw null; } }
+		public global::XLSXContent.TowerDoubleStockTable.SheetTowerDoubleStock this[int index] { get { return TowerDoubleStock[index]; } }
 		public TowerDoubleStockTable() { }
 		[global::System.Serializable]
 		public class SheetTowerDoubleStock

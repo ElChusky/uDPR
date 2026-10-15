@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class MapWarp : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.MapWarp.SheetData[] Data;
-		public global::XLSXContent.MapWarp.SheetData this[int index] { get { /*@B 0x60091B6*/ throw null; } }
+		public global::XLSXContent.MapWarp.SheetData this[int index] { get { return Data[index]; } }
 		public MapWarp() { }
 		[global::System.Serializable]
 		public class SheetData

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class PokeWalkingFormation : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.PokeWalkingFormation.SheetSheet1[] Sheet1;
-		public global::XLSXContent.PokeWalkingFormation.SheetSheet1 this[int index] { get { /*@B 0x6009263*/ throw null; } }
+		public global::XLSXContent.PokeWalkingFormation.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public PokeWalkingFormation() { }
 		[global::System.Serializable]
 		public class SheetSheet1

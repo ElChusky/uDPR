@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UgJumpPos : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UgJumpPos.SheetData[] Data;
-		public global::XLSXContent.UgJumpPos.SheetData this[int index] { get { /*@B 0x6009273*/ throw null; } }
+		public global::XLSXContent.UgJumpPos.SheetData this[int index] { get { return Data[index]; } }
 		public UgJumpPos() { }
 		[global::System.Serializable]
 		public class SheetData

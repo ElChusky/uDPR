@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class TownMapTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.TownMapTable.SheetData[] Data;
-		public global::XLSXContent.TownMapTable.SheetData this[int index] { get { /*@B 0x60091C3*/ throw null; } }
+		public global::XLSXContent.TownMapTable.SheetData this[int index] { get { return Data[index]; } }
 		public TownMapTable() { }
 		[global::System.Serializable]
 		public class SheetData

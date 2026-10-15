@@ -10,7 +10,7 @@ namespace XLSXContent
 		public global::XLSXContent.TrainerTable.SheetTrainerRematch[] TrainerRematch;
 		public global::XLSXContent.TrainerTable.SheetSealTemplate[] SealTemplate;
 		public global::XLSXContent.TrainerTable.SheetSkirtGraphicsChara[] SkirtGraphicsChara;
-		public global::XLSXContent.TrainerTable.SheetTrainerType this[int index] { get { /*@B 0x60091D7*/ throw null; } }
+		public global::XLSXContent.TrainerTable.SheetTrainerType this[int index] { get { return TrainerType[index]; } }
 		public TrainerTable() { }
 		[global::System.Serializable]
 		public class SheetTrainerType

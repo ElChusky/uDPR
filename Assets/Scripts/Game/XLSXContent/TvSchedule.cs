@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class TvSchedule : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.TvSchedule.SheetTimeTable[] TimeTable;
-		public global::XLSXContent.TvSchedule.SheetTimeTable this[int index] { get { /*@B 0x60091C7*/ throw null; } }
+		public global::XLSXContent.TvSchedule.SheetTimeTable this[int index] { get { return TimeTable[index]; } }
 		public TvSchedule() { }
 		[global::System.Serializable]
 		public class SheetTimeTable

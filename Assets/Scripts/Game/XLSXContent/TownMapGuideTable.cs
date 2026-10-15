@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class TownMapGuideTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.TownMapGuideTable.SheetGuide[] Guide;
-		public global::XLSXContent.TownMapGuideTable.SheetGuide this[int index] { get { /*@B 0x60091C1*/ throw null; } }
+		public global::XLSXContent.TownMapGuideTable.SheetGuide this[int index] { get { return Guide[index]; } }
 		public TownMapGuideTable() { }
 		[global::System.Serializable]
 		public class SheetGuide

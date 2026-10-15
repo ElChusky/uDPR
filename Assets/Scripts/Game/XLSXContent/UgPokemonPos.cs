@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UgPokemonPos : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UgPokemonPos.SheetSheet1[] Sheet1;
-		public global::XLSXContent.UgPokemonPos.SheetSheet1 this[int index] { get { /*@B 0x600927F*/ throw null; } }
+		public global::XLSXContent.UgPokemonPos.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public UgPokemonPos() { }
 		[global::System.Serializable]
 		public class SheetSheet1

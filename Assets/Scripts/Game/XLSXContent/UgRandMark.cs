@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UgRandMark : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UgRandMark.Sheettable[] table;
-		public global::XLSXContent.UgRandMark.Sheettable this[int index] { get { /*@B 0x6009281*/ throw null; } }
+		public global::XLSXContent.UgRandMark.Sheettable this[int index] { get { return table[index]; } }
 		public UgRandMark() { }
 		[global::System.Serializable]
 		public class Sheettable

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class StatueEffectRawData : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.StatueEffectRawData.Sheettable[] table;
-		public global::XLSXContent.StatueEffectRawData.Sheettable this[int index] { get { /*@B 0x6009235*/ throw null; } }
+		public global::XLSXContent.StatueEffectRawData.Sheettable this[int index] { get { return table[index]; } }
 		public StatueEffectRawData() { }
 		[global::System.Serializable]
 		public class Sheettable

@@ -7,7 +7,7 @@ namespace XLSXContent
 		public global::XLSXContent.SealTable.SheetSealData[] SealData;
 		public global::XLSXContent.SealTable.SheetEffectPositionOffset[] EffectPositionOffset;
 		public global::XLSXContent.SealTable.SheetFixedPositionEffect[] FixedPositionEffect;
-		public global::XLSXContent.SealTable.SheetSealData this[int index] { get { /*@B 0x6009215*/ throw null; } }
+		public global::XLSXContent.SealTable.SheetSealData this[int index] { get { return SealData[index]; } }
 		public SealTable() { }
 		[global::System.Serializable]
 		public class SheetSealData

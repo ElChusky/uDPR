@@ -7,7 +7,7 @@ namespace XLSXContent
 		public global::XLSXContent.UgMiniMap.SheetMap[] Map;
 		public global::XLSXContent.UgMiniMap.SheetIcon[] Icon;
 		public global::XLSXContent.UgMiniMap.SheetMapGroup[] MapGroup;
-		public global::XLSXContent.UgMiniMap.SheetMap this[int index] { get { /*@B 0x6009275*/ throw null; } }
+		public global::XLSXContent.UgMiniMap.SheetMap this[int index] { get { return Map[index]; } }
 		public UgMiniMap() { }
 		[global::System.Serializable]
 		public class SheetMap

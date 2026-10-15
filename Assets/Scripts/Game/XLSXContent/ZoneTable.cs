@@ -6,9 +6,9 @@ namespace XLSXContent
 	{
 		public global::ZoneID[] ZoneIDs;
 		public int Width;
-		public global::ZoneID this[int index] { get { /*@B 0x60091CB*/ throw null; } }
-		public global::ZoneID this[int gridX, int gridY] { get { /*@B 0x60091CC*/ throw null; } }
-		public int Length { get { /*@B 0x60091CD*/ throw null; } }
+		public global::ZoneID this[int index] { get { return ZoneIDs[index]; } }
+		public global::ZoneID this[int gridX, int gridY] { get { return ZoneIDs[gridX + Width * gridY]; } }
+		public int Length { get { return ZoneIDs.Length; } }
 		public ZoneTable() { }
 	}
 }

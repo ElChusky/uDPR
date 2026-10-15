@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UnderGroundFossilPos : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UnderGroundFossilPos.SheetData[] Data;
-		public global::XLSXContent.UnderGroundFossilPos.SheetData this[int index] { get { /*@B 0x6009289*/ throw null; } }
+		public global::XLSXContent.UnderGroundFossilPos.SheetData this[int index] { get { return Data[index]; } }
 		public UnderGroundFossilPos() { }
 		[global::System.Serializable]
 		public class SheetData
