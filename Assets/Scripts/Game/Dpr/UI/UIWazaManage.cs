@@ -11,7 +11,7 @@ namespace Dpr.UI
 {
 	public class UIWazaManage : global::Dpr.UI.UIWindow
 	{
-		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos;
+		private static readonly global::UnityEngine.Vector2 MsgWindowAnchorPos = new Vector2(0f, 100f);
 		private const string ConfirmRememberWazaMessageLabel = "SS_waza_remember_023";
 		private const string ConfirmDontRememberWazaMessageLabel = "SS_waza_remember_026";
 		private const string ConfirmUnlernWazaMessageLabel = "SS_waza_remember_037";
@@ -52,9 +52,9 @@ namespace Dpr.UI
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.WazaManageCondition statusPanelCondition;
 		private global::Dpr.UI.UIMsgWindowController msgWindowController;
-		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusTab> activeTabs;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusTab> activeTabs = new global::System.Collections.Generic.List<global::Dpr.UI.PokemonStatusTab>();
+		private readonly int _animStateIn = Animator.StringToHash("in");
+		private readonly int _animStateOut = Animator.StringToHash("out");
 		private int selectTabIndex;
 		private global::Dpr.UI.UIWazaManage.Param param;
 		public override void OnCreate() {
@@ -320,7 +320,26 @@ namespace Dpr.UI
 				Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_DECIDE, null);
 			}
 		}
-		private void UpdateSelectTab(float deltaTime) { /*@B 0x6005D3B*/ throw null; }
+		private void UpdateSelectTab(float deltaTime) {
+			int count = activeTabs.Count;
+			if (count == 0)
+				return;
+
+			bool isChanged;
+			if (IsPushButton(UIManager.StickLRight))
+				isChanged = SetSelectTabIndex((selectTabIndex + 1) % count);
+			else if (IsRepeatButton(UIManager.StickLRight))
+				isChanged = SetSelectTabIndex(Mathf.Min(selectTabIndex + 1, count - 1));
+			else if (IsPushButton(UIManager.StickLLeft))
+				isChanged = SetSelectTabIndex((selectTabIndex + count - 1) % count);
+			else if (IsRepeatButton(UIManager.StickLLeft))
+				isChanged = SetSelectTabIndex(Mathf.Max(selectTabIndex - 1, 0));
+			else
+				return;
+
+			if (isChanged)
+				Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_SELECT, null);
+		}
 		private void UpdateSelectWaza(float deltaTime) {
 			for (int i = 0; i < wazaStatusPanels.Length; i++)
 				wazaStatusPanels[i].UpdateSelect(deltaTime, i == selectTabIndex);
@@ -352,8 +371,8 @@ namespace Dpr.UI
 
 			return true;
 		}
-		public UIWazaManage() { /*@B 0x6005D3E*/ throw null; }
-		static UIWazaManage() { /*@B 0x6005D3F*/ throw null; }
+		public UIWazaManage() { }
+		static UIWazaManage() { }
 		public enum BootType
 		{
 			Remember = 0,

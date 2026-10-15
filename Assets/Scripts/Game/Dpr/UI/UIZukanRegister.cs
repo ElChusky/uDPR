@@ -18,8 +18,8 @@ namespace Dpr.UI
 		private const string ResultTradeMemberMessageLabel = "SS_pokedex_063";
 		private const string ResultSendToBoxMessageLabel = "SS_pokedex_064";
 		private const string CantTradePokemonMessageLabel = "SS_pokedex_124";
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private readonly int _animStateIn = global::UnityEngine.Animator.StringToHash("in");
+		private readonly int _animStateOut = global::UnityEngine.Animator.StringToHash("out");
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.ZukanDescriptionPanel descriptionPanel;
 		[global::UnityEngine.SerializeField]
@@ -33,7 +33,7 @@ namespace Dpr.UI
 		private bool isNotAddMember;
 		private bool isSkipAddMemberProc;
 		private global::Pml.PokePara.PokemonParam pokemonParam;
-		private global::Dpr.UI.UIZukanRegister.AddMemberResult addMemberResult;
+		private global::Dpr.UI.UIZukanRegister.AddMemberResult addMemberResult = global::Dpr.UI.UIZukanRegister.AddMemberResult.Cancel;
 		public event global::System.Action<global::Dpr.UI.UIZukanRegister.AddMemberResult> OnComplete;
 		public override void OnCreate() {
 			base.OnCreate();
@@ -522,7 +522,7 @@ namespace Dpr.UI
 				contextMenu.Open(param);
 			}, null);
 		}
-		public UIZukanRegister() { /*@B 0x6005EBE*/ throw null; }
+		public UIZukanRegister() { }
 		private enum BootType
 		{
 			Default = 0,

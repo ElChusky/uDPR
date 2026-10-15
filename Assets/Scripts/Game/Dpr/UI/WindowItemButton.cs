@@ -5,15 +5,17 @@ namespace Dpr.UI
 	{
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIText buttonNameText;
-		private global::Dpr.UI.UIInputController inputController;
+		private global::Dpr.UI.UIInputController inputController = new global::Dpr.UI.UIInputController();
 		public override bool IsShowArrowIcon { get { return false; } }
 		public override global::Dpr.UI.ItemType ItemType { get { return (global::Dpr.UI.ItemType)(1); } }
-		public void SetButtonText(string text) { /*@B 0x6005347*/ throw null; }
+		public void SetButtonText(string text) {
+			buttonNameText.text = text;
+		}
 		public override bool OnUpdate(float deltaTime) {
 			if (inputController.IsPushButton(UIManager.ButtonA, false))
 				onItemEvent?.Invoke(this);
 			return true;
 		}
-		public WindowItemButton() { /*@B 0x6005349*/ throw null; }
+		public WindowItemButton() { }
 	}
 }
