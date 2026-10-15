@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class FreeSanpoCanActions : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.FreeSanpoCanActions.SheetSheet1[] Sheet1;
-		public global::XLSXContent.FreeSanpoCanActions.SheetSheet1 this[int index] { get { /*@B 0x6009241*/ throw null; } }
+		public global::XLSXContent.FreeSanpoCanActions.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public FreeSanpoCanActions() { }
 		[global::System.Serializable]
 		public class SheetSheet1

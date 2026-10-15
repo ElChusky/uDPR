@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class DepositItemRawData : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.DepositItemRawData.SheetDeposit[] Deposit;
-		public global::XLSXContent.DepositItemRawData.SheetDeposit this[int index] { get { /*@B 0x6009231*/ throw null; } }
+		public global::XLSXContent.DepositItemRawData.SheetDeposit this[int index] { get { return Deposit[index]; } }
 		public DepositItemRawData() { }
 		[global::System.Serializable]
 		public class SheetDeposit

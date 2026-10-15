@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class EffectTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.EffectTable.SheetEffects[] Effects;
-		public global::XLSXContent.EffectTable.SheetEffects this[int index] { get { /*@B 0x6009292*/ throw null; } }
+		public global::XLSXContent.EffectTable.SheetEffects this[int index] { get { return Effects[index]; } }
 		public EffectTable() { }
 		[global::System.Serializable]
 		public class SheetEffects

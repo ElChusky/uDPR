@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class FreeSanpoPokeReactionArea : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.FreeSanpoPokeReactionArea.SheetSheet1[] Sheet1;
-		public global::XLSXContent.FreeSanpoPokeReactionArea.SheetSheet1 this[int index] { get { /*@B 0x6009249*/ throw null; } }
+		public global::XLSXContent.FreeSanpoPokeReactionArea.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public FreeSanpoPokeReactionArea() { }
 		[global::System.Serializable]
 		public class SheetSheet1

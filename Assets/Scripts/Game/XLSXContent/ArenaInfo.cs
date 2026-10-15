@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class ArenaInfo : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.ArenaInfo.SheetArenaData[] ArenaData;
-		public global::XLSXContent.ArenaInfo.SheetArenaData this[int index] { get { /*@B 0x6009197*/ throw null; } }
+		public global::XLSXContent.ArenaInfo.SheetArenaData this[int index] { get { return ArenaData[index]; } }
 		public ArenaInfo() { }
 		[global::System.Serializable]
 		public class SheetArenaData

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class KinomiData : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.KinomiData.SheetData[] Data;
-		public global::XLSXContent.KinomiData.SheetData this[int index] { get { /*@B 0x60091B0*/ throw null; } }
+		public global::XLSXContent.KinomiData.SheetData this[int index] { get { return Data[index]; } }
 		public KinomiData() { }
 		[global::System.Serializable]
 		public class SheetData

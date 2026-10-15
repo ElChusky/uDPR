@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class DebugAudioDatabase : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.DebugAudioDatabase.SheetState[] State;
-		public global::XLSXContent.DebugAudioDatabase.SheetState this[int index] { get { /*@B 0x60091E3*/ throw null; } }
+		public global::XLSXContent.DebugAudioDatabase.SheetState this[int index] { get { return State[index]; } }
 		public DebugAudioDatabase() { }
 		[global::System.Serializable]
 		public class SheetState

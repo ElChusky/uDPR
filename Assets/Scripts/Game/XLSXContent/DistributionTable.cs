@@ -9,7 +9,7 @@ namespace XLSXContent
 		public global::XLSXContent.DistributionTable.SheetDiamond_DungeonTable[] Diamond_DungeonTable;
 		public global::XLSXContent.DistributionTable.SheetPearl_FieldTable[] Pearl_FieldTable;
 		public global::XLSXContent.DistributionTable.SheetPearl_DungeonTable[] Pearl_DungeonTable;
-		public global::XLSXContent.DistributionTable.SheetMapDistribution this[int index] { get { /*@B 0x60091A4*/ throw null; } }
+		public global::XLSXContent.DistributionTable.SheetMapDistribution this[int index] { get { return MapDistribution[index]; } }
 		public DistributionTable() { }
 		[global::System.Serializable]
 		public class SheetMapDistribution
@@ -22,22 +22,22 @@ namespace XLSXContent
 		[global::System.Serializable]
 		public class SheetDiamond_FieldTable : global::XLSXContent.SheetDistributionTable
 		{
-			public SheetDiamond_FieldTable() { /*@B 0x600B9E2*/ throw null; }
+			public SheetDiamond_FieldTable() { }
 		}
 		[global::System.Serializable]
 		public class SheetDiamond_DungeonTable : global::XLSXContent.SheetDistributionTable
 		{
-			public SheetDiamond_DungeonTable() { /*@B 0x600B9E3*/ throw null; }
+			public SheetDiamond_DungeonTable() { }
 		}
 		[global::System.Serializable]
 		public class SheetPearl_FieldTable : global::XLSXContent.SheetDistributionTable
 		{
-			public SheetPearl_FieldTable() { /*@B 0x600B9E4*/ throw null; }
+			public SheetPearl_FieldTable() { }
 		}
 		[global::System.Serializable]
 		public class SheetPearl_DungeonTable : global::XLSXContent.SheetDistributionTable
 		{
-			public SheetPearl_DungeonTable() { /*@B 0x600B9E5*/ throw null; }
+			public SheetPearl_DungeonTable() { }
 		}
 	}
 }

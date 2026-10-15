@@ -16,7 +16,7 @@ namespace XLSXContent
 		public global::XLSXContent.ContestMasterDatas.SheetNPCData[] NPCData;
 		public global::XLSXContent.ContestMasterDatas.SheetNPCLevelData[] NPCLevelData;
 		public global::XLSXContent.ContestMasterDatas.SheetNPCCapsuleData[] NPCCapsuleData;
-		public global::XLSXContent.ContestMasterDatas.SheetContestData this[int index] { get { /*@B 0x600922D*/ throw null; } }
+		public global::XLSXContent.ContestMasterDatas.SheetContestData this[int index] { get { return ContestData[index]; } }
 		public ContestMasterDatas() { }
 		[global::System.Serializable]
 		public class SheetContestData

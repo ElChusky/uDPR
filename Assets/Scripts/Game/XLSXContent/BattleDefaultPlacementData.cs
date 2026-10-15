@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.BattleDefaultPlacementData.SheetDefaultCharaPlacementData[] DefaultCharaPlacementData;
 		public global::XLSXContent.BattleDefaultPlacementData.SheetDefaultCameraPlacementData[] DefaultCameraPlacementData;
-		public global::XLSXContent.BattleDefaultPlacementData.SheetDefaultCharaPlacementData this[int index] { get { /*@B 0x60091D1*/ throw null; } }
+		public global::XLSXContent.BattleDefaultPlacementData.SheetDefaultCharaPlacementData this[int index] { get { return DefaultCharaPlacementData[index]; } }
 		public BattleDefaultPlacementData() { }
 		[global::System.Serializable]
 		public class SheetDefaultCharaPlacementData

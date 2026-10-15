@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class FreeSanpoKuse : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.FreeSanpoKuse.SheetSheet1[] Sheet1;
-		public global::XLSXContent.FreeSanpoKuse.SheetSheet1 this[int index] { get { /*@B 0x6009245*/ throw null; } }
+		public global::XLSXContent.FreeSanpoKuse.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public FreeSanpoKuse() { }
 		[global::System.Serializable]
 		public class SheetSheet1

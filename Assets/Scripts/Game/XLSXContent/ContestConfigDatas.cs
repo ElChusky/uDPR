@@ -13,7 +13,7 @@ namespace XLSXContent
 		public global::XLSXContent.ContestConfigDatas.SheetResultMotion[] ResultMotion;
 		public global::XLSXContent.ContestConfigDatas.SheetValueData[] ValueData;
 		public global::XLSXContent.ContestConfigDatas.SheetStringData[] StringData;
-		public global::XLSXContent.ContestConfigDatas.SheetTapScoreData this[int index] { get { /*@B 0x600922B*/ throw null; } }
+		public global::XLSXContent.ContestConfigDatas.SheetTapScoreData this[int index] { get { return TapScoreData[index]; } }
 		public ContestConfigDatas() { }
 		[global::System.Serializable]
 		public class SheetTapScoreData

@@ -9,32 +9,32 @@ namespace XLSXContent
 		public global::XLSXContent.InputLimitTable.SheetK[] K;
 		public global::XLSXContent.InputLimitTable.SheetSC[] SC;
 		public global::XLSXContent.InputLimitTable.SheetTC[] TC;
-		public global::XLSXContent.InputLimitTable.SheetJ this[int index] { get { /*@B 0x60091AE*/ throw null; } }
+		public global::XLSXContent.InputLimitTable.SheetJ this[int index] { get { return J[index]; } }
 		public InputLimitTable() { }
 		[global::System.Serializable]
 		public class SheetJ : global::XLSXContent.SheetInputLimitTable
 		{
-			public SheetJ() { /*@B 0x600B9EC*/ throw null; }
+			public SheetJ() { }
 		}
 		[global::System.Serializable]
 		public class SheetEFIGS : global::XLSXContent.SheetInputLimitTable
 		{
-			public SheetEFIGS() { /*@B 0x600B9ED*/ throw null; }
+			public SheetEFIGS() { }
 		}
 		[global::System.Serializable]
 		public class SheetK : global::XLSXContent.SheetInputLimitTable
 		{
-			public SheetK() { /*@B 0x600B9EE*/ throw null; }
+			public SheetK() { }
 		}
 		[global::System.Serializable]
 		public class SheetSC : global::XLSXContent.SheetInputLimitTable
 		{
-			public SheetSC() { /*@B 0x600B9EF*/ throw null; }
+			public SheetSC() { }
 		}
 		[global::System.Serializable]
 		public class SheetTC : global::XLSXContent.SheetInputLimitTable
 		{
-			public SheetTC() { /*@B 0x600B9F0*/ throw null; }
+			public SheetTC() { }
 		}
 	}
 }

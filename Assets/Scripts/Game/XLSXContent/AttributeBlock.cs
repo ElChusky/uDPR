@@ -6,9 +6,9 @@ namespace XLSXContent
 	{
 		public int[] Attributes;
 		public int Width;
-		public int this[int index] { get { /*@B 0x60091DC*/ throw null; } }
-		public int this[int gridX, int gridY] { get { /*@B 0x60091DD*/ throw null; } }
-		public int Length { get { /*@B 0x60091DE*/ throw null; } }
+		public int this[int index] { get { return Attributes[index]; } }
+		public int this[int gridX, int gridY] { get { return Attributes[gridX + Width * gridY]; } }
+		public int Length { get { return Attributes.Length; } }
 		public AttributeBlock() { }
 	}
 }

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class BattleWaitCameraData : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.BattleWaitCameraData.SheetWaitCameraData[] WaitCameraData;
-		public global::XLSXContent.BattleWaitCameraData.SheetWaitCameraData this[int index] { get { /*@B 0x60091D5*/ throw null; } }
+		public global::XLSXContent.BattleWaitCameraData.SheetWaitCameraData this[int index] { get { return WaitCameraData[index]; } }
 		public BattleWaitCameraData() { }
 		[global::System.Serializable]
 		public class SheetWaitCameraData

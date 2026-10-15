@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class FieldCommonParam : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.FieldCommonParam.Sheetdata[] data;
-		public global::XLSXContent.FieldCommonParam.Sheetdata this[int index] { get { /*@B 0x60091A6*/ throw null; } }
+		public global::XLSXContent.FieldCommonParam.Sheetdata this[int index] { get { return data[index]; } }
 		public FieldCommonParam() { }
 		[global::System.Serializable]
 		public class Sheetdata

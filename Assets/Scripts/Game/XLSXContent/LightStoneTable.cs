@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class LightStoneTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.LightStoneTable.SheetData[] Data;
-		public global::XLSXContent.LightStoneTable.SheetData this[int index] { get { /*@B 0x6009269*/ throw null; } }
+		public global::XLSXContent.LightStoneTable.SheetData this[int index] { get { return Data[index]; } }
 		public LightStoneTable() { }
 		[global::System.Serializable]
 		public class SheetData

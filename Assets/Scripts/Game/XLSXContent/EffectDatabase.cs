@@ -8,7 +8,7 @@ namespace XLSXContent
 		public global::XLSXContent.EffectDatabase.SheetBattleEffectData[] BattleEffectData;
 		public global::XLSXContent.EffectDatabase.SheetContestEffectData[] ContestEffectData;
 		public global::XLSXContent.EffectDatabase.SheetMenuEffetData[] MenuEffetData;
-		public global::XLSXContent.EffectDatabase.SheetFieldEffectData this[int index] { get { /*@B 0x60091F9*/ throw null; } }
+		public global::XLSXContent.EffectDatabase.SheetFieldEffectData this[int index] { get { return FieldEffectData[index]; } }
 		public EffectDatabase() { }
 		[global::System.Serializable]
 		public class SheetFieldEffectData : global::Effect.EffectManager.FieldLoadParam

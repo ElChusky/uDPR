@@ -12,7 +12,7 @@ namespace XLSXContent
 		public global::XLSXContent.FieldEncountTable.Sheetmvpoke[] mvpoke;
 		public global::XLSXContent.FieldEncountTable.Sheetlegendpoke[] legendpoke;
 		public global::XLSXContent.FieldEncountTable.Sheetzui[] zui;
-		public global::XLSXContent.FieldEncountTable.Sheettable this[int index] { get { /*@B 0x60091FD*/ throw null; } }
+		public global::XLSXContent.FieldEncountTable.Sheettable this[int index] { get { return table[index]; } }
 		public FieldEncountTable() { }
 		[global::System.Serializable]
 		public class Sheettable

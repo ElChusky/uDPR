@@ -9,13 +9,34 @@ namespace SmartPoint.Rendering
 		protected global::UnityEngine.Material[] materialInstances;
 		private int initializedCount;
 		public global::UnityEngine.RenderTexture temporaryRT { get; set; }
-		public bool enabled { get; set; }
+		public bool enabled { get; set; } = true;
 		public global::UnityEngine.Camera camera { get; set; }
 		public global::UnityEngine.Transform target { get; set; }
-		public virtual global::UnityEngine.Rendering.CommandBuffer Build(global::UnityEngine.Rendering.RenderTargetIdentifier sourceRT, out global::UnityEngine.Rendering.RenderTargetIdentifier resultRT, bool feedbackCameraTarget = true) { /*@B 0x6002F31*/ throw null; }
-		protected void InstantiateMaterials() { /*@B 0x6002F32*/ throw null; }
+		public virtual global::UnityEngine.Rendering.CommandBuffer Build(global::UnityEngine.Rendering.RenderTargetIdentifier sourceRT, out global::UnityEngine.Rendering.RenderTargetIdentifier resultRT, bool feedbackCameraTarget = true) {
+			resultRT = sourceRT;
+			return null;
+		}
+		protected void InstantiateMaterials() {
+			if (initializedCount++ > 0)
+				return;
+
+			materialInstances = new global::UnityEngine.Material[materials.Length];
+			for (int i = 0; i < materials.Length; i++)
+				materialInstances[i] = new global::UnityEngine.Material(materials[i]);
+		}
 		public virtual void Update() { }
-		public virtual void Destroy() { /*@B 0x6002F34*/ throw null; }
-		public ImageEffectObject() { /*@B 0x6002F35*/ throw null; }
+		public virtual void Destroy() {
+			if (initializedCount == 0)
+				return;
+
+			initializedCount--;
+			if (materialInstances != null)
+			{
+				for (int i = 0; i < materialInstances.Length; i++)
+					global::UnityEngine.Object.DestroyImmediate(materialInstances[i]);
+				materialInstances = null;
+			}
+		}
+		public ImageEffectObject() { }
 	}
 }

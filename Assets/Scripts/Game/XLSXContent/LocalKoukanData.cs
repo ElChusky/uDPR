@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class LocalKoukanData : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.LocalKoukanData.Sheetdata[] data;
-		public global::XLSXContent.LocalKoukanData.Sheetdata this[int index] { get { /*@B 0x60091B4*/ throw null; } }
+		public global::XLSXContent.LocalKoukanData.Sheetdata this[int index] { get { return data[index]; } }
 		public LocalKoukanData() { }
 		[global::System.Serializable]
 		public class Sheetdata

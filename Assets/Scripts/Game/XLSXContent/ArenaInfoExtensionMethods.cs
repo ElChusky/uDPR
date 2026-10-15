@@ -3,6 +3,6 @@ namespace XLSXContent
 {
 	public static class ArenaInfoExtensionMethods
 	{
-		public static global::XLSXContent.ArenaInfo.SheetArenaData GetArenaData(this global::XLSXContent.ArenaInfo self, global::ArenaID arenaId) { /*@B 0x60091D9*/ throw null; }
+		public static global::XLSXContent.ArenaInfo.SheetArenaData GetArenaData(this global::XLSXContent.ArenaInfo self, global::ArenaID arenaId) { return self.ArenaData[(int)arenaId]; }
 	}
 }

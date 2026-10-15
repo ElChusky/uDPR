@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class HirobaEnterablePoke : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.HirobaEnterablePoke.SheetEnterablePoke[] EnterablePoke;
-		public global::XLSXContent.HirobaEnterablePoke.SheetEnterablePoke this[int index] { get { /*@B 0x6009253*/ throw null; } }
+		public global::XLSXContent.HirobaEnterablePoke.SheetEnterablePoke this[int index] { get { return EnterablePoke[index]; } }
 		public HirobaEnterablePoke() { }
 		[global::System.Serializable]
 		public class SheetEnterablePoke

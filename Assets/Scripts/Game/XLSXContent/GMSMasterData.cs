@@ -14,7 +14,7 @@ namespace XLSXContent
 		public global::XLSXContent.GMSMasterData.SheetCameraConfig[] CameraConfig;
 		public global::XLSXContent.GMSMasterData.SheetDistanceConfig[] DistanceConfig;
 		public global::XLSXContent.GMSMasterData.SheetValueData[] ValueData;
-		public global::XLSXContent.GMSMasterData.SheetPoints this[int index] { get { /*@B 0x6009265*/ throw null; } }
+		public global::XLSXContent.GMSMasterData.SheetPoints this[int index] { get { return Points[index]; } }
 		public GMSMasterData() { }
 		[global::System.Serializable]
 		public class SheetPoints

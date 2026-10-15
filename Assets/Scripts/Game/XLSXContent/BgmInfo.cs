@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class BgmInfo : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.BgmInfo.SheetBgmData[] BgmData;
-		public global::XLSXContent.BgmInfo.SheetBgmData this[int index] { get { /*@B 0x6009227*/ throw null; } }
+		public global::XLSXContent.BgmInfo.SheetBgmData this[int index] { get { return BgmData[index]; } }
 		public BgmInfo() { }
 		[global::System.Serializable]
 		public class SheetBgmData
