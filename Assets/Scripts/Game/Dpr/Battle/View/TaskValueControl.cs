@@ -6,7 +6,13 @@ namespace Dpr.Battle.View
 		protected TValue _from;
 		protected TValue _to;
 		protected global::System.Action<TValue> _onUpdate;
-		public TaskValueControl(TValue from, TValue to, global::System.Action<TValue> onUpdate) { /*@B 0x6005FEA*/ throw null; }
-		protected override void OnDispose() { /*@B 0x6005FEB*/ throw null; }
+		public TaskValueControl(TValue from, TValue to, global::System.Action<TValue> onUpdate) {
+			_from = from;
+			_to = to;
+			_onUpdate = onUpdate;
+		}
+		protected override void OnDispose() {
+			global::Dpr.Battle.View.Mem.Del(ref _onUpdate);
+		}
 	}
 }

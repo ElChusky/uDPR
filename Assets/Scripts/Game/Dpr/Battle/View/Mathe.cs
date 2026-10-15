@@ -137,7 +137,11 @@ namespace Dpr.Battle.View
             if (enableFlags[2])
                 retVec.z = vec.z;
         }
-		public static void Swap<T>(ref T a, ref T b) { /*@B 0x6005FA8*/ throw null; }
+		public static void Swap<T>(ref T a, ref T b) {
+			T tmp = a;
+			a = b;
+			b = tmp;
+		}
 		public static class Easing
 		{
 			public static global::UnityEngine.Vector4 EasedValue(global::UnityEngine.Vector4 from, global::UnityEngine.Vector4 to, float raito, global::DG.Tweening.Ease easingType) {

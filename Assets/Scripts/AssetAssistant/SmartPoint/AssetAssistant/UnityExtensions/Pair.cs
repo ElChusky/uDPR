@@ -5,7 +5,10 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
 	{
 		public T First { get; set; }
 		public U Second { get; set; }
-		public Pair() { /*@B AssetAssistant:0x60001D9*/ throw null; }
-		public Pair(T first, U second) { /*@B AssetAssistant:0x60001DA*/ throw null; }
+		public Pair() { }
+		public Pair(T first, U second) {
+			First = first;
+			Second = second;
+		}
 	}
 }

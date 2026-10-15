@@ -41,9 +41,15 @@ public static class EntityManager
 			return;
 		_baseEntities.Remove(entity);
 	}
-	public static T GetEntity<T>() where T : global::BaseEntity { /*@B 0x6000626*/ throw null; }
-	public static T[] GetEntities<T>() where T : global::BaseEntity { /*@B 0x6000627*/ throw null; }
-	public static T[] GetInheritedEntities<T>() where T : global::BaseEntity { /*@B 0x6000628*/ throw null; }
+	public static T GetEntity<T>() where T : global::BaseEntity {
+		return _baseEntities.Find(x => x.GetType() == typeof(T)) as T;
+	}
+	public static T[] GetEntities<T>() where T : global::BaseEntity {
+		return _baseEntities.Where(x => x.GetType() == typeof(T)).Cast<T>().ToArray();
+	}
+	public static T[] GetInheritedEntities<T>() where T : global::BaseEntity {
+		return _baseEntities.Where(x => x is T).Cast<T>().ToArray();
+	}
 	public static void BuildFieldEntities()
 	{
 		fieldPlayers = GetEntities<global::FieldPlayerEntity>();

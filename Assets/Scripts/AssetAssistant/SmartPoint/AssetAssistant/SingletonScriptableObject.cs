@@ -4,10 +4,28 @@ namespace SmartPoint.AssetAssistant
 	public abstract class SingletonScriptableObject<T> : global::UnityEngine.ScriptableObject where T : class, new()
 	{
 		private static T _instance;
-		public static string className { get { /*@B AssetAssistant:0x60001BC*/ throw null; } }
-		protected static T instance { get { /*@B AssetAssistant:0x60001BD*/ throw null; } }
-		protected virtual void OnEnable() { /*@B AssetAssistant:0x60001BE*/ throw null; }
-		protected SingletonScriptableObject() { /*@B AssetAssistant:0x60001BF*/ throw null; }
-		static SingletonScriptableObject() { /*@B AssetAssistant:0x60001C0*/ throw null; }
+		public static string className { get { return typeof(T).Name; } }
+		protected static T instance { get {
+			if (_instance == null)
+			{
+				if (global::UnityEngine.Application.isEditor)
+				{
+					if (global::SmartPoint.AssetAssistant.Sequencer.editorProxy != null)
+						global::UnityEngine.Debug.Log("Create Editor Proxy");
+				}
+				else
+				{
+					_instance = global::UnityEngine.Resources.Load(className) as T;
+				}
+			}
+			return _instance;
+		} }
+		protected virtual void OnEnable() {
+			if (_instance != null)
+				return;
+			_instance = this as T;
+		}
+		protected SingletonScriptableObject() { }
+		static SingletonScriptableObject() { }
 	}
 }

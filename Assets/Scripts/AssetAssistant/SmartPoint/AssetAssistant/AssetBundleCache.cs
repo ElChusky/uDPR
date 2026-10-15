@@ -70,7 +70,14 @@ namespace SmartPoint.AssetAssistant
                 }
                 return true;
             } }
-		public T FindFirstAsset<T>() where T : global::UnityEngine.Object { /*@B AssetAssistant:0x600003E*/ throw null; }
+		public T FindFirstAsset<T>() where T : global::UnityEngine.Object {
+			for (int i = 0; i < _loadedAssets.Length; i++)
+			{
+				if (_loadedAssets[i] is T)
+					return (T)_loadedAssets[i];
+			}
+			return null;
+		}
 		private AssetBundleCache() {
             // RefCounted() (referencedCount = 1) is inlined after the _loadedAssets initialiser.
         }

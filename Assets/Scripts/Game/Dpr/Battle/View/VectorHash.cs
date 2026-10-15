@@ -5,7 +5,7 @@ namespace Dpr.Battle.View
 	public class VectorHash<TKey, TElement> : global::System.IDisposable
 	{
 		private global::System.Collections.Generic.Dictionary<TKey, global::System.Collections.Generic.HashSet<TElement>> _elements;
-		public global::System.Collections.Generic.Dictionary<TKey, global::System.Collections.Generic.HashSet<TElement>> RawElements { get { /*@B 0x600605A*/ throw null; } }
+		public global::System.Collections.Generic.Dictionary<TKey, global::System.Collections.Generic.HashSet<TElement>> RawElements { get { return _elements; } }
 		public VectorHash(int capacity = 0) {
 			_elements = new Dictionary<TKey, HashSet<TElement>>(capacity);
 		}

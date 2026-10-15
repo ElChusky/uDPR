@@ -5,8 +5,24 @@ public class StaticQueue<T>
 	private int _startIndex;
 	private int _endIndex;
 	private int _count;
-	public int count { get { /*@B 0x6000911*/ throw null; } }
-	public StaticQueue(int Size) { /*@B 0x600090E*/ throw null; }
-	public void Enqueue(T data) { /*@B 0x600090F*/ throw null; }
-	public T Dequeue() { /*@B 0x6000910*/ throw null; }
+	public int count { get { return _count; } }
+	public StaticQueue(int Size) {
+		_param = new T[Size];
+	}
+	public void Enqueue(T data) {
+		if (_param.Length == 0)
+			return;
+		_param[_endIndex++] = data;
+		_endIndex %= _param.Length;
+		_count++;
+	}
+	public T Dequeue() {
+		if (_param.Length == 0)
+			return default(T);
+		T data = _param[_startIndex];
+		_param[_startIndex++] = default(T);
+		_startIndex %= _param.Length;
+		_count--;
+		return data;
+	}
 }
