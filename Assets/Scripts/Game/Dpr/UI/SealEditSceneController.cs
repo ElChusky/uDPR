@@ -107,7 +107,12 @@ namespace Dpr.UI
 			{
 				palletCategoryIds[index++] = categoryId;
 			}
+#if !SWITCH
+			// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+			maxPalletIndex = global::PcPlatform.PcIntDiv.Div(palletCategoryIds.Length, categoryButtons.Length);
+#else
 			maxPalletIndex = palletCategoryIds.Length / categoryButtons.Length;
+#endif
 			canSwitchPallet = palletCategoryIds.Length > categoryButtons.Length;
 			switchPalletIconObject.SetActive(canSwitchPallet);
 			isAllowSwicthPallet = canSwitchPallet;

@@ -719,7 +719,12 @@ namespace Dpr.UI
             {
                 ulong div = (ulong)Mathf.Pow(10.0f, i);
                 numImage[dispIndex + i].enabled = true;
+#if !SWITCH
+                // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                numImage[dispIndex + i].sprite = numSprite[global::PcPlatform.PcIntDiv.Div(global::PcPlatform.PcIntDiv.Rem(num, div * 10), div)];
+#else
                 numImage[dispIndex + i].sprite = numSprite[num % (div * 10) / div];
+#endif
             }
         }
 		public PoketchWindow() { }

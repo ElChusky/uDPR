@@ -160,7 +160,12 @@ namespace Dpr.UI
 				_input.inputEnabled = false;
 				AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_DONE, null);
 				// bare sdiv in the binary (@01d4c834): no zero guard
+#if !SWITCH
+				// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+				int canTradeNum = global::PcPlatform.PcIntDiv.Div(ItemWork.GetItemInfo((int)_selectShopItem.param.tradeItemNo).count, _selectShopItem.param.price);
+#else
 				int canTradeNum = ItemWork.GetItemInfo((int)_selectShopItem.param.tradeItemNo).count / _selectShopItem.param.price;
+#endif
 				int numForAdd = _selectShopItem.GetNumForAdd();
 				int num = Mathf.Min(canTradeNum, numForAdd);
 				if (num > 1)

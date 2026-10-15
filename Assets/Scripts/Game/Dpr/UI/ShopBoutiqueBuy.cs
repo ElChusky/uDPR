@@ -29,7 +29,12 @@ namespace Dpr.UI
             int charge = MoneyWork.Get();
             int price = _selectShopItem.param.data.Price;
             int numForAdd = _selectShopItem.GetNumForAdd();
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            int amount = global::UnityEngine.Mathf.Min(global::PcPlatform.PcIntDiv.Div(charge, price), numForAdd);
+#else
             int amount = global::UnityEngine.Mathf.Min(charge / price, numForAdd);
+#endif
             if (amount > 0)
             {
                 SequencePurchase(1);

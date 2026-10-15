@@ -167,7 +167,12 @@ namespace Dpr.UI
 					yield break;
 				}
 				yield return waitSecounds;
+#if !SWITCH
+				// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+				messageIndex = global::PcPlatform.PcIntDiv.Rem(messageIndex + 1, messageTypes.Length);
+#else
 				messageIndex = (messageIndex + 1) % messageTypes.Length;
+#endif
 			}
 		}
 		private void StopTownmapGuideMessageWindow() {

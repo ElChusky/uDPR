@@ -191,7 +191,12 @@ namespace Dpr.UI
 			if (input.IsPushButton(UIManager.ButtonX, false))
 			{
 				Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_DONE, null);
+#if !SWITCH
+				// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+				SelectRaderChartIndex(global::PcPlatform.PcIntDiv.Rem(_selectRaderChartIndex + 1, _raderChartRoot.childCount), false);
+#else
 				SelectRaderChartIndex((_selectRaderChartIndex + 1) % _raderChartRoot.childCount, false);
+#endif
 				return true;
 			}
 			return false;

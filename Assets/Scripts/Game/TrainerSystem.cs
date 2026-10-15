@@ -50,7 +50,12 @@ public static class TrainerSystem
             if (recordList.Count < 1)
                 return null;
 
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            var stock = recordList[(int)global::PcPlatform.PcIntDiv.Rem(random.NextUInt(), recordList.Count)];
+#else
             var stock = recordList[(int)(random.NextUInt() % recordList.Count)];
+#endif
             result.stockID = stock.ID;
             result.trainerID[0] = stock.TrainerID;
             result.personalRand[0] = random.NextULong();
@@ -64,7 +69,12 @@ public static class TrainerSystem
             if (recordList.Count < 1)
                 return null;
 
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            var stock = recordList[(int)global::PcPlatform.PcIntDiv.Rem(random.NextUInt(), recordList.Count)];
+#else
             var stock = recordList[(int)(random.NextUInt() % recordList.Count)];
+#endif
             result.stockID = stock.ID;
             result.trainerID[0] = stock.TrainerID[0];
             result.trainerID[1] = stock.TrainerID[1];

@@ -119,7 +119,12 @@ public class EncountDataWork
             return;
 
         int add = RandomGroupWork.RandomRange(1, GameManager.fieldEncountTable.mvpoke.Length);
+#if !SWITCH
+        // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+        int zoneIndex = global::PcPlatform.PcIntDiv.Rem(PlayerWork.Enc_SV_Data.MovePokeData[index].ZoneIDIndex + add, GameManager.fieldEncountTable.mvpoke.Length);
+#else
         int zoneIndex = (PlayerWork.Enc_SV_Data.MovePokeData[index].ZoneIDIndex + add) % GameManager.fieldEncountTable.mvpoke.Length;
+#endif
         PlayerWork.Enc_SV_Data.MovePokeData[index].ZoneIDIndex = zoneIndex;
     }
 	public static void MovePoke_PlayerEqualZoneNextZone(global::ZoneID zoneid) {
@@ -196,7 +201,12 @@ public class EncountDataWork
         int count = GameManager.fieldEncountTable.urayama.Length;
         HILL_BACK_DATA hillBack = PlayerWork.Enc_SV_Data.HillBackData;
         hillBack.EncTblIdx2 = hillBack.EncTblIdx1;
+#if !SWITCH
+        // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+        hillBack.EncTblIdx1 = (ushort)(global::PcPlatform.PcIntDiv.Rem(diff + hillBack.EncTblIdx1, count));
+#else
         hillBack.EncTblIdx1 = (ushort)((diff + hillBack.EncTblIdx1) % count);
+#endif
 
         ENC_SV_DATA data = PlayerWork.Enc_SV_Data;
         data.HillBackData = hillBack;
@@ -205,8 +215,14 @@ public class EncountDataWork
 	public static void SetUrayamaIndex(uint num) {
         int count = GameManager.fieldEncountTable.urayama.Length;
         HILL_BACK_DATA hillBack = PlayerWork.Enc_SV_Data.HillBackData;
+#if !SWITCH
+        // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+        hillBack.EncTblIdx1 = (ushort)global::PcPlatform.PcIntDiv.Rem(num, count);
+        hillBack.EncTblIdx2 = (ushort)(global::PcPlatform.PcIntDiv.Rem(hillBack.EncTblIdx1 + 1, count));
+#else
         hillBack.EncTblIdx1 = (ushort)(num % count);
         hillBack.EncTblIdx2 = (ushort)((hillBack.EncTblIdx1 + 1) % count);
+#endif
 
         ENC_SV_DATA data = PlayerWork.Enc_SV_Data;
         data.HillBackData = hillBack;

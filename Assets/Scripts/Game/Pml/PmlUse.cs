@@ -184,7 +184,12 @@ namespace Pml
         }
 		// @024a0290 (RandFunc inlined; unsigned `udiv` + `msub`, no zero guard)
 		public uint LimitRandFunc(uint max_range) {
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            return global::PcPlatform.PcIntDiv.Rem(RandFunc(), max_range);
+#else
             return RandFunc() % max_range;
+#endif
         }
 		public PmlUse() { }
 		static PmlUse() { }

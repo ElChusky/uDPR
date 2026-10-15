@@ -104,7 +104,12 @@ namespace Dpr.MsgWindow
 				uiTextArray[i].SetTextColor(newColor);
 		}
 		public void SetMessage(int textIndex, string message, bool hasSizetag) {
+#if !SWITCH
+			// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+			global::Dpr.MsgWindow.WindowMsgText text = hasSizetag ? sizeTagText : uiTextArray[global::PcPlatform.PcIntDiv.Rem(textIndex, uiTextArray.Length)];
+#else
 			global::Dpr.MsgWindow.WindowMsgText text = hasSizetag ? sizeTagText : uiTextArray[textIndex % uiTextArray.Length];
+#endif
 			text.SetText(message);
 		}
 		public void StartMovePositionY() {
@@ -117,7 +122,12 @@ namespace Dpr.MsgWindow
 			contentRect.anchoredPosition = startPosition + new global::UnityEngine.Vector2(0f, ratio * textHight);
 			if (isFinish)
 			{
+#if !SWITCH
+				// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+				uiTextArray[global::PcPlatform.PcIntDiv.Rem(topTextObjIndex, uiTextArray.Length)].SetPositionYByIndex(LastTextIndex, textLinePaddingOffset);
+#else
 				uiTextArray[topTextObjIndex % uiTextArray.Length].SetPositionYByIndex(LastTextIndex, textLinePaddingOffset);
+#endif
 				topTextObjIndex++;
 				return false;
 			}

@@ -169,15 +169,26 @@ public class ProceduralPlane : global::UnityEngine.MonoBehaviour
         Vector3[] vertices = new Vector3[vertexCount];
         for (int i = 0; i < vertexCount; i++)
         {
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            int x = global::PcPlatform.PcIntDiv.Rem(i, cols + 1);
+            int y = global::PcPlatform.PcIntDiv.Div(i, cols + 1);
+#else
             int x = i % (cols + 1);
             int y = i / (cols + 1);
+#endif
             vertices[i] = new Vector3(width * 0.5f - width / cols * x, 0.0f, height * 0.5f - height / rows * y);
         }
 
         List<int> triangles = new List<int>();
         for (int i = 0; i < rows * cols; i++)
         {
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            if (global::PcPlatform.PcIntDiv.Rem(i, cols + 1) == cols)
+#else
             if (i % (cols + 1) == cols)
+#endif
                 continue;
 
             triangles.Add(i);
@@ -191,8 +202,14 @@ public class ProceduralPlane : global::UnityEngine.MonoBehaviour
         Vector2[] uv = new Vector2[vertexCount];
         for (int i = 0; i < vertexCount; i++)
         {
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            int x = global::PcPlatform.PcIntDiv.Rem(i, cols + 1);
+            int y = global::PcPlatform.PcIntDiv.Div(i, cols + 1);
+#else
             int x = i % (cols + 1);
             int y = i / (cols + 1);
+#endif
             uv[i] = new Vector2(1.0f - 1.0f / cols * x, 1.0f - 1.0f / rows * y);
         }
 

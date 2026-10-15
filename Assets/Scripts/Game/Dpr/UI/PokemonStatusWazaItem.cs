@@ -52,7 +52,12 @@ namespace Dpr.UI
 			_cursorSwap.gameObject.SetActive(false);
 		}
 		private global::UnityEngine.Color GetPpColor(int pp, int ppMax) {
+#if !SWITCH
+			// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+			int rate = global::PcPlatform.PcIntDiv.Div(pp * 100, ppMax);
+#else
 			int rate = pp * 100 / ppMax;
+#endif
 			if (rate > 50)
 				return _ppColors[0];
 			if (rate > 25)

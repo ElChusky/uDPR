@@ -372,7 +372,12 @@ namespace SmartPoint.Components
 			public void Next() {
                 _currentIndex++;
                 // kept bare: AArch64 sdiv by 0 yields 0 on the Switch (@02095a18), throws on PC (lesson 139 #7)
+#if !SWITCH
+                // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                _currentIndex = global::PcPlatform.PcIntDiv.Rem(_currentIndex, _cells.Count);
+#else
                 _currentIndex %= _cells.Count;
+#endif
             }
 			public global::SmartPoint.Components.LayoutScrollView.Cell GetCurrentCell() {
                 return _cells[_currentIndex];

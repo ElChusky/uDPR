@@ -125,7 +125,12 @@ public class HoneyWork
             int index = (int)((id >> ((RareTreeCount - 1 - i) * 8)) & 0xff);
             while (true)
             {
+#if !SWITCH
+                // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                index = global::PcPlatform.PcIntDiv.Rem(index, treeCount);
+#else
                 index %= treeCount;
+#endif
                 if (!rareTrees.Contains(index))
                     break;
 

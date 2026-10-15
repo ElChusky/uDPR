@@ -131,7 +131,12 @@ namespace Dpr.UI
 		public void Setup(int itemCount, int selectIndex = 0, float scrollPos = 0f, bool isForceScroll = false) {
             this.itemCount = itemCount;
             int rowCount = Mathf.CeilToInt((float)itemCount / gridItemCount);
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            int viewRowCount = global::PcPlatform.PcIntDiv.Div(viewItemCount, gridItemCount);
+#else
             int viewRowCount = viewItemCount / gridItemCount;
+#endif
             contentSize = topPadding + bottomPadding + itemSize * rowCount + spacing * (rowCount - 1);
             maxScrollValue = Math.Max(contentSize - viewportSize, 0f);
             viewMaxIndex = Mathf.Max(itemCount - viewRowCount, 0);
@@ -165,7 +170,12 @@ namespace Dpr.UI
             else if (startIndex > 0)
             {
                 if (topPadding > 0)
+#if !SWITCH
+                    // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                    startIndex -= global::PcPlatform.PcIntDiv.Div(topPadding, itemSizeWithSpacing);
+#else
                     startIndex -= topPadding / itemSizeWithSpacing;
+#endif
                 startIndex -= paddingItemCount;
             }
 
@@ -189,7 +199,12 @@ namespace Dpr.UI
                 if (itemCount > viewItemCount)
                     ForceUpdateItems(currentIndex);
                 else
+#if !SWITCH
+                    // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                    SetScrollRectAnchorPosition(Math.Max(global::PcPlatform.PcIntDiv.Div(currentIndex, gridItemCount) != 0 ? contentSize - viewportSize : 0f, 0f));
+#else
                     SetScrollRectAnchorPosition(Math.Max(currentIndex / gridItemCount != 0 ? contentSize - viewportSize : 0f, 0f));
+#endif
             }
             else
             {
@@ -318,7 +333,12 @@ namespace Dpr.UI
             UpdateRendererItems(Mathf.CeilToInt(Mathf.Lerp(0f, contentSize - viewportSize, 1f - value)));
         }
 		private void UpdateRendererItems(int viewTopPos) {
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            int startIndex = Mathf.Min(gridItemCount * (global::PcPlatform.PcIntDiv.Div(viewTopPos - topPadding, itemSizeWithSpacing)), viewMaxIndex);
+#else
             int startIndex = Mathf.Min(gridItemCount * ((viewTopPos - topPadding) / itemSizeWithSpacing), viewMaxIndex);
+#endif
             int diff = startIndex - renderedStartIndex;
             if (diff > 0)
             {
@@ -374,7 +394,12 @@ namespace Dpr.UI
                 index++;
             }
 
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            SetLayoutGroupPadding(global::PcPlatform.PcIntDiv.Div(renderedStartIndex * itemSizeWithSpacing, gridItemCount) + topPadding);
+#else
             SetLayoutGroupPadding(renderedStartIndex * itemSizeWithSpacing / gridItemCount + topPadding);
+#endif
         }
 		private void ForceUpdateItems(int startIndex) {
             if (startIndex == 0)
@@ -416,7 +441,12 @@ namespace Dpr.UI
         }
 		private void RefreshScrollContentAnchorPosition() {
             float pos = ContentAnchorPos;
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            int selectTopPos = global::PcPlatform.PcIntDiv.Div(indexSelector.CurrentIndex, gridItemCount) * itemSizeWithSpacing;
+#else
             int selectTopPos = indexSelector.CurrentIndex / gridItemCount * itemSizeWithSpacing;
+#endif
             int beginScrollSize = beginScrollCount * itemSizeWithSpacing;
 
             float minPos = Mathf.Max(selectTopPos - beginScrollSize, 0);

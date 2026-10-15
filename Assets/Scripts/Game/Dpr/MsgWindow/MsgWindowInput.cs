@@ -20,13 +20,18 @@ namespace Dpr.MsgWindow
             localInput.Clear();
         }
 		public bool IsInputDecideButtonPush() {
+#if SWITCH
+            // s46: the shipped keyboard L debug key (inert on the console); on PC, L is the keyboard's right stick right (PcHid)
             if (global::UnityEngine.Input.GetKeyDown(global::UnityEngine.KeyCode.L))
                 return true;
+#endif
             return IsButtonPush(KeyAssignValue.InputDecide);
         }
 		public bool IsInputDecideButtonRelease() {
+#if SWITCH
             if (global::UnityEngine.Input.GetKeyUp(global::UnityEngine.KeyCode.L))
                 return true;
+#endif
             return IsButtonRelease(KeyAssignValue.InputDecide);
         }
 		private bool IsButtonPush(int assignValue) {

@@ -87,11 +87,21 @@ namespace Dpr.UI
 			int count = _markRoot.childCount;
 			int selectIndex;
 			if (input.IsPushButton(UIManager.StickLRight, false))
+#if !SWITCH
+				// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+				selectIndex = global::PcPlatform.PcIntDiv.Rem(_selectIndex + 1, count);
+#else
 				selectIndex = (_selectIndex + 1) % count;
+#endif
 			else if (input.IsRepeatButton(UIManager.StickLRight, false))
 				selectIndex = Mathf.Min(_selectIndex + 1, count - 1);
 			else if (input.IsPushButton(UIManager.StickLLeft, false))
+#if !SWITCH
+				// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+				selectIndex = global::PcPlatform.PcIntDiv.Rem(_selectIndex + count - 1, count);
+#else
 				selectIndex = (_selectIndex + count - 1) % count;
+#endif
 			else if (input.IsRepeatButton(UIManager.StickLLeft, false))
 				selectIndex = Mathf.Max(_selectIndex - 1, 0);
 			else

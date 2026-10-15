@@ -834,7 +834,12 @@ public class FieldObjectMoveCode
                     int hit = FieldOBJ_GoalPosCheck();
                     if ((hit & FLDOBJ_MOVE_HIT_BIT_LIM) != 0)
                     {
+#if !SWITCH
+                        // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                        _mvParam.turn_no = global::PcPlatform.PcIntDiv.Rem(_mvParam.turn_no + 1, tbl.Length);
+#else
                         _mvParam.turn_no = (_mvParam.turn_no + 1) % tbl.Length;
+#endif
                         _mvParam.seq_no = 0;
                         break;
                     }
@@ -888,7 +893,12 @@ public class FieldObjectMoveCode
                     }
 
                     int[] tbl = DATA_MoveDirTbl((DIRID)_mvParam.tbl_id);
+#if !SWITCH
+                    // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                    _mvParam.turn_no = global::PcPlatform.PcIntDiv.Rem(_mvParam.turn_no + 1, tbl.Length);
+#else
                     _mvParam.turn_no = (_mvParam.turn_no + 1) % tbl.Length;
+#endif
                     _mvParam.dir = tbl[_mvParam.turn_no];
                     break;
                 }

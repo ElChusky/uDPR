@@ -871,7 +871,12 @@ namespace Dpr.Field
                 minLv = inData.minlv;
             }
 
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            int lv = global::PcPlatform.PcIntDiv.Rem(RandomGroupWork.RandomValue(10000), maxLv - minLv + 1);
+#else
             int lv = RandomGroupWork.RandomValue(10000) % (maxLv - minLv + 1);
+#endif
 
             if (!inFldSpa.Egg && (inFldSpa.Spa == TokuseiNo.PURESSYAA || inFldSpa.Spa == TokuseiNo.HARIKIRI || inFldSpa.Spa == TokuseiNo.YARUKI))
             {

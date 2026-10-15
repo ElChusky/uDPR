@@ -35,8 +35,14 @@ namespace Dpr.UI
 		public void Setup(int count, int showPageIndex = 0, int selectIndex = 0) {
 			contentsItemCount = count;
 			// Bare sdiv / msub (@01a14c34 / 01a14c4c): no zero guard for viewItemMaxCount in the binary.
+#if !SWITCH
+			// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+			int pageCount = global::PcPlatform.PcIntDiv.Div(count, viewItemMaxCount);
+			if (global::PcPlatform.PcIntDiv.Rem(count, viewItemMaxCount) > 0)
+#else
 			int pageCount = count / viewItemMaxCount;
 			if (count % viewItemMaxCount > 0)
+#endif
 				pageCount++;
 			PageCount = pageCount;
 			pagingIndexSelector.Setup(0, pageCount - 1);

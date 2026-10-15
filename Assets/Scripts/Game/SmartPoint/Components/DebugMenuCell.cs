@@ -114,7 +114,12 @@ namespace SmartPoint.Components
 				case Controller.Selector:
 					{
 						int range = item.high - item.low + 1;
+#if !SWITCH
+						// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+						value = global::PcPlatform.PcIntDiv.Rem(item.selected - item.low + (scale == 1 ? 0 : (int)moveVector.y) + (range + (int)moveVector.x) * scale, range) + item.low;
+#else
 						value = (item.selected - item.low + (scale == 1 ? 0 : (int)moveVector.y) + (range + (int)moveVector.x) * scale) % range + item.low;
+#endif
 						item.selected = value;
 
 						if (observer._valueText != null)
@@ -130,7 +135,12 @@ namespace SmartPoint.Components
 
 				case Controller.List:
 					item.selected = item.selected + (scale == 1 ? 0 : (int)moveVector.y) + (item.values.Length + (int)moveVector.x) * scale;
+#if !SWITCH
+					// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+					item.selected = global::PcPlatform.PcIntDiv.Rem(item.selected, item.values.Length);
+#else
 					item.selected = item.selected % item.values.Length;
+#endif
 
 					if (item.onSelectedIndexChanged != null)
 						item.onSelectedIndexChanged(item.selected);
@@ -380,7 +390,12 @@ namespace SmartPoint.Components
 					return false;
 
 				values = newValues;
+#if !SWITCH
+				// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+				selected = global::PcPlatform.PcIntDiv.Rem(selected, values.Length);
+#else
 				selected = selected % values.Length;
+#endif
 				onSelectedIndexChanged?.Invoke(selected);
 				return true;
 			}

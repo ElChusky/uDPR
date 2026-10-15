@@ -1364,7 +1364,12 @@ namespace Dpr.UI
         }
 		public static int Repeat(int value, int start, int end) {
             int range = end - start + 1;
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            return global::PcPlatform.PcIntDiv.Rem(value - start + range, range) + start;
+#else
             return (value - start + range) % range + start;
+#endif
         }
 		public static void ScreenScaled(ref global::UnityEngine.Vector2 v) {
             float scaleX = Screen.width / 1280.0f;

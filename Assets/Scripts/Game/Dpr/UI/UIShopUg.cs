@@ -170,11 +170,26 @@ namespace Dpr.UI
 			// Bare `sdiv` (no zero guard, lesson 94): the Switch build yields 0 on unit / price 0, PC would throw.
 			int maxAmount;
 			if (_selectShopUgItem.IsUnderGroundItem())
+#if !SWITCH
+				// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+				maxAmount = global::PcPlatform.PcIntDiv.Div(maxHaveCount - _selectShopUgItem.GetUgItemInfo().count, buyItemData.unit);
+#else
 				maxAmount = (maxHaveCount - _selectShopUgItem.GetUgItemInfo().count) / buyItemData.unit;
+#endif
 			else
+#if !SWITCH
+				// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+				maxAmount = global::PcPlatform.PcIntDiv.Div(maxHaveCount - _selectShopUgItem.GetItemInfo().count - buyItemData.unit + 1, buyItemData.unit);
+#else
 				maxAmount = (maxHaveCount - _selectShopUgItem.GetItemInfo().count - buyItemData.unit + 1) / buyItemData.unit;
+#endif
 
+#if !SWITCH
+			// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+			maxAmount = Math.Min(maxAmount, global::PcPlatform.PcIntDiv.Div(buyItemData.haveCount, buyItemData.price));
+#else
 			maxAmount = Math.Min(maxAmount, buyItemData.haveCount / buyItemData.price);
+#endif
 			MessageWordSetHelper.SetUgItemNameWord(0, param.ugItemID);
 			msgWindow.ShowMessage("DLP_underground_526");
 			selectUgItemAmount.ShowSelectAmount(1, maxAmount, OnDecideAmount, null, amount =>

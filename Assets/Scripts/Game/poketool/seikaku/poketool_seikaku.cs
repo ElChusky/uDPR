@@ -27,7 +27,12 @@ namespace poketool.seikaku
                 poke.GetNativeTalentPower(PowerID.AGI));
         }
 		private static global::poketool.seikaku.poketool_seikaku.Seikaku2nd GetSeikaku2nd(uint personalRand, uint talent_hp, uint talent_atk, uint talent_def, uint talent_spatk, uint talent_spdef, uint talent_agi) {
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            uint index = (uint)global::PcPlatform.PcIntDiv.Rem(personalRand, s_power_priority.Length);
+#else
             uint index = (uint)(personalRand % s_power_priority.Length);
+#endif
             uint maxValue = 0;
             uint maxPriority = 0;
             for (int i = 0; i < (int)PowerID.NUM; i++)

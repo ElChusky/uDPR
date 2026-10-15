@@ -93,10 +93,20 @@ public class GameController
                 if (elapsed >= 0)
                 {
                     long prevElapsed = prevTicks - times[i] - start;
+#if !SWITCH
+                    // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                    repeat |= (global::PcPlatform.PcIntDiv.Div(elapsed, interval) != global::PcPlatform.PcIntDiv.Div(prevElapsed, interval)) ? bit : 0;
+#else
                     repeat |= (elapsed / interval != prevElapsed / interval) ? bit : 0;
+#endif
                     double rate = Math.Min((double)prevElapsed / (double)required_time, 1.0);
                     long accelInterval = (long)(rate * (double)(limit_intarval - interval) + (double)interval);
+#if !SWITCH
+                    // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                    accel |= (global::PcPlatform.PcIntDiv.Div(elapsed, accelInterval) != global::PcPlatform.PcIntDiv.Div(prevElapsed, accelInterval)) ? bit : 0;
+#else
                     accel |= (elapsed / accelInterval != prevElapsed / accelInterval) ? bit : 0;
+#endif
                 }
             }
         }

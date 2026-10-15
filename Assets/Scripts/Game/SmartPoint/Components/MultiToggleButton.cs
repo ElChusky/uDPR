@@ -15,7 +15,12 @@ namespace SmartPoint.Components
 		// @020a14b0
 		public override void OnPointerClick(global::UnityEngine.EventSystems.PointerEventData eventData) {
 			_index++;
+#if !SWITCH
+			// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+			_index = global::PcPlatform.PcIntDiv.Rem(_index, _sprites.Length);
+#else
 			_index %= _sprites.Length;
+#endif
 			SetImage();
 			base.OnPointerClick(eventData);
 		}

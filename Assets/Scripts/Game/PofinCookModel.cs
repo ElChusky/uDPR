@@ -81,7 +81,12 @@ public class PofinCookModel
 		param[4] = AjiParam[4] - AjiParam[0];
 
 		// bare `sdiv` @0205b6c4 (AArch64 divides by 0 to 0; kinomiData is never empty here)
+#if !SWITCH
+		// s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+		Taste = (byte)(global::PcPlatform.PcIntDiv.Div(Taste, kinomiData.Count) - kinomiData.Count - TeamHosei);
+#else
 		Taste = (byte)(Taste / kinomiData.Count - kinomiData.Count - TeamHosei);
+#endif
 
 		for (int i = 0; i < param.Length; i++)
 		{

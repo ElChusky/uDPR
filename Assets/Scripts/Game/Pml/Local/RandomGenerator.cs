@@ -22,7 +22,12 @@ namespace Pml.Local
 		// @024a0430: NextUInt then bare `udiv` / `msub` @024a044c — no zero guard in the binary (the base code's `max == 0 ? val :` was a PC guard;
 		// AArch64 udiv by 0 yields 0 so the Switch returns the raw value — kept bare like PmlUse.LimitRandFunc, brief lesson 139 #7)
 		public uint GetRand(uint max) {
+#if !SWITCH
+            // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+            return global::PcPlatform.PcIntDiv.Rem(m_rng.NextUInt(), max);
+#else
             return m_rng.NextUInt() % max;
+#endif
         }
 		public RandomGenerator() { }
 	}

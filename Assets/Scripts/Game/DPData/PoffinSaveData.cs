@@ -42,7 +42,12 @@ namespace DPData
             {
                 byte[] flavor = new byte[5];
                 flavor[0] = 10;
+#if !SWITCH
+                // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                Poffins[i] = new PoffinData((byte)global::PcPlatform.PcIntDiv.Rem(i + 10, mod), 10, 10, flavor);
+#else
                 Poffins[i] = new PoffinData((byte)((i + 10) % mod), 10, 10, flavor);
+#endif
             }
         }
 		public void SetNewFlag(global::DPData.PoffinData poffin, bool newFlag) {

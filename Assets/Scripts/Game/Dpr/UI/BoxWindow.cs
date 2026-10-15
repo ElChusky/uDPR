@@ -1976,7 +1976,12 @@ namespace Dpr.UI
                 {
                     Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_SLIDE, null);
                     int teamCount = _battleTeamScroll.baseParams.Count;
+#if !SWITCH
+                    // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                    int teamIndex = global::PcPlatform.PcIntDiv.Rem(teamCount + teamDir + _battleTeamScroll.GetParamIndex(), teamCount);
+#else
                     int teamIndex = (teamCount + teamDir + _battleTeamScroll.GetParamIndex()) % teamCount;
+#endif
                     _battleTeamScroll.Apply(teamIndex, null, _param, _searchData, _selected);
                     if (_fromNavigator != null && _fromTeamIndex == teamIndex && (_fromNavigator.userParam as NaviParam).itemType == NaviParam.ItemType.Party)
                         _battleTeamScroll.SetSelect(teamIndex, _hideIconIndexes);
@@ -1997,7 +2002,12 @@ namespace Dpr.UI
 
                 Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_SLIDE, null);
                 int trayCount = _trayScroll.baseParams.Count;
+#if !SWITCH
+                // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                int trayIndex = global::PcPlatform.PcIntDiv.Rem(trayCount + trayDir + _trayScroll.GetParamIndex(), trayCount);
+#else
                 int trayIndex = (trayCount + trayDir + _trayScroll.GetParamIndex()) % trayCount;
+#endif
                 List<int> hideIndexes = null;
                 if (_fromNavigator != null && (_fromNavigator.userParam as NaviParam).itemType == NaviParam.ItemType.Tray)
                     hideIndexes = _fromTrayIndex == trayIndex ? _hideIconIndexes : null;
@@ -2520,8 +2530,14 @@ namespace Dpr.UI
             {
                 if (GetNaviItem(navigators[i]).pokemonParam != null)
                 {
+#if !SWITCH
+                    // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                    int x = global::PcPlatform.PcIntDiv.Rem(i, width);
+                    int y = global::PcPlatform.PcIntDiv.Div(i, width);
+#else
                     int x = i % width;
                     int y = i / width;
+#endif
                     if (minX > x)
                         minX = x;
                     if (maxX < x)
@@ -2541,8 +2557,14 @@ namespace Dpr.UI
 
             for (int i = 0; i < navigators.Count; i++)
             {
+#if !SWITCH
+                // s46: the Switch's integer division (0 divisor -> 0 / dividend), PcIntDiv
+                int x = global::PcPlatform.PcIntDiv.Rem(i, width);
+                int y = global::PcPlatform.PcIntDiv.Div(i, width);
+#else
                 int x = i % width;
                 int y = i / width;
+#endif
                 if (x >= minX && x <= maxX && y >= minY && y <= maxY)
                 {
                     recieveList.Add(navigators[i]);
