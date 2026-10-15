@@ -51,6 +51,8 @@ NativeFormatImporter:
 SUPPORTED = {1, 3, 4, 5, 10, 12, 13, 25, 26, 27, 63, 28, 29, 74} | ASTC
 CRUNCH = {28: 10, 29: 12}   # DXT1Crunched -> DXT1, DXT5Crunched -> DXT5 (all levels via Unity's crunch, tools/crunch_unity)
 CRN = os.path.join(paths.SETUP, "bin", "crn_levels.exe")
+DISK_FLOOR_GB = 5.0   # checked before every batch (a batch writes up to ~1 GB)
+DISK_STOP = 3         # exit code: stopped on the disk floor (d7.py must not treat it as a pairing failure)
 
 
 def load_template():
@@ -198,6 +200,11 @@ def main():
     t0 = time.time()
     total_ok = total_err = 0
     for b0 in range(0, len(rows), a.batch):
+        free = shutil.disk_usage(ASSETS).free / 2 ** 30
+        if free < DISK_FLOOR_GB:
+            print(f"STOPPING: {free:.1f} GB free on the project's drive (floor {DISK_FLOOR_GB:.0f} GB) after {b0}/{len(rows)}; "
+                  "free some space and run the setup again - it continues here", flush=True)
+            return DISK_STOP
         batch = rows[b0:b0 + a.batch]
         jobs, meta, crunch_status = [], {}, {}
         env_file, env = None, None

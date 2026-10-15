@@ -63,6 +63,8 @@ def step(name):
         run("d7_map.py")
     elif name == "build":
         rc = run("d7_build.py", "--apply", allow_fail=True)
+        if rc == 3:                                  # d7_build.DISK_STOP
+            sys.exit("d7_build stopped on the disk floor - free some space on the project's drive and run the setup again")
         print("first build pass exit %d (pairing failures are repaired next)" % rc, flush=True)
     elif name == "repair":
         run("d7_repair_pairs.py", allow_fail=True)
