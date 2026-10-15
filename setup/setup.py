@@ -79,7 +79,15 @@ def build_stages():
     ]
 
 
-OPTIONAL = {"build"}
+OPTIONAL = {"build"}       # runs only when asked for (--build / setup.cmd -Build) - and then every time: a rebuild
+
+# Stage versions. Bump a stage's number when a change to it must reach setups that already ran it: the next setup.cmd runs that
+# stage again on the finished project (with BDSP_STAGE_FRESH=1, so the stage starts its own sub-steps over and may update what it
+# installed earlier), then `verify`. Only stages in RERUNNABLE are known to be safe on a finished project; a newer version of any
+# other stage stops with "this update needs a fresh setup". A NEW stage needs no version: setups that never ran it run it - so a
+# new stage must also work on a finished project (see fix_arrays). Stages missing here are version 1.
+VERSIONS = {}
+RERUNNABLE = {"fix_arrays", "wwise", "startup", "shaders", "verify"}
 
 
 NAMES = ["check", "export", "fix_arrays", "normalise", "merge", "wwise", "startup", "shaders", "containers", "atlas_spec", "sprite_bake",
@@ -103,6 +111,7 @@ def main():
     ap.add_argument("--keep-backups", action="store_true")
     ap.add_argument("--build", action="store_true", help="also run the optional build stage (standalone Windows game)")
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--plan", action="store_true", help="print what a run would do, run nothing")
     a = ap.parse_args()
     global paths
     if a.list:
@@ -133,24 +142,45 @@ def main():
             names = names[names.index(a.start):]
         if a.until:
             names = names[:names.index(a.until) + 1]
+    say = print if a.plan else log
+    ran = False                                  # a non-optional stage ran -> verify runs again at the end
     for n, what, cmds in stages:
         if n not in names:
             continue
         if n in OPTIONAL and not (a.build or a.only == n or a.start == n):
-            log("skip %-14s (optional - add --build / setup.cmd -Build)" % n)
+            say("skip %-14s (optional - add --build / setup.cmd -Build)" % n)
             continue
-        if state.get(n, {}).get("done") and not (a.only or a.start):
-            log("skip %-14s (done %s)" % (n, state[n]["done"]))
-            continue
+        st = state.get(n, {})
+        want_v, have_v = VERSIONS.get(n, 1), st.get("version", 1)
+        fresh = False
+        if st.get("done") and not (a.only or a.start) and n not in OPTIONAL:
+            if have_v < want_v:
+                if n not in RERUNNABLE:
+                    say("STOP %-14s version %d -> %d, and this stage cannot run again on a finished project" % (n, have_v, want_v))
+                    sys.exit("this update changes the '%s' stage, which needs a fresh setup: run setup.cmd in a new clone of the "
+                             "repository (your current project is left as it is)" % n)
+                say("UPDATE %-12s version %d -> %d: runs again on the finished project" % (n, have_v, want_v))
+                fresh = True
+            elif n == "verify" and ran:
+                say("AGAIN %-13s (stages ran above)" % n)
+            else:
+                say("skip %-14s (done %s)" % (n, st["done"]))
+                continue
         if cmds is None:
             sys.exit("stage '%s' is not ported yet - stopping before it" % n)
+        if a.plan:
+            say("RUN  %-14s %s" % (n, what))
+            if n not in OPTIONAL:
+                ran = True
+            continue
         log("STAGE %-13s %s" % (n, what))
+        env = dict(os.environ, BDSP_STAGE_FRESH="1") if fresh else None
         for cmd in cmds:
             with open(paths.work("logs", n + ".log"), "a", encoding="utf-8") as lf:
                 lf.write("\n=== %s %s\n" % (datetime.datetime.now().isoformat(timespec="seconds"), " ".join(cmd)))
                 lf.flush()
                 p = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                     text=True, encoding="utf-8", errors="replace")
+                                     text=True, encoding="utf-8", errors="replace", env=env)
                 for line in p.stdout:
                     lf.write(line)
                     print("    " + line.rstrip(), flush=True)
@@ -159,9 +189,13 @@ def main():
                 log("FAILED %s (exit %d) - see %s; fix and run again to resume here" % (n, rc,
                                                                                           paths.work("logs", n + ".log")))
                 sys.exit(rc)
-        state[n] = {"done": datetime.datetime.now().isoformat(timespec="seconds")}
+        state[n] = {"done": datetime.datetime.now().isoformat(timespec="seconds"), "version": VERSIONS.get(n, 1)}
         with open(state_path, "w", encoding="utf-8") as f:
             json.dump(state, f, indent=1)
+        if n not in OPTIONAL:
+            ran = True
+    if a.plan:
+        return
     log("finished: %s" % ", ".join(n for n in names if state.get(n, {}).get("done")))
 
 

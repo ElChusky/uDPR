@@ -44,6 +44,9 @@ crashlytics-build.properties
 !/Assets/link.xml.meta
 !/Assets/StreamingAssets/
 !/Assets/StreamingAssets.meta
+# this project's own (original) assets - see Assets/_Ours/README.md
+!/Assets/_Ours/
+!/Assets/_Ours.meta
 /Assets/StreamingAssets/*
 !/Assets/StreamingAssets/AK/
 !/Assets/StreamingAssets/AK.meta

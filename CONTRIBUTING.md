@@ -35,8 +35,24 @@ textures, sound banks, shipped bundles or built players. Do not add the Audiokin
 **PC layer (`Assets/Scripts/_Ours/PcPlatform`)** - PC input, display, saves and options live here, not inside game types, wherever
 possible.
 
+**Your own assets (`Assets/_Ours/`)** - the one tracked asset folder: original prefabs, UI, icons, materials or ScriptableObjects a
+feature needs. Commit each asset with its `.meta`; put assets loaded by name at runtime in `Assets/_Ours/Resources/`. See
+`Assets/_Ours/README.md`.
+
 **Setup (`setup/`)** - every stage must stay resumable (running `setup.cmd` again continues where it stopped) and must give the same
 result on every machine. Test a setup change on a fresh clone with a full `setup.cmd` run.
+
+**Changing the setup for people who already ran it** (`setup/setup.py`):
+
+- A change to the game's own exported assets (a scene, prefab, material or data asset) cannot ship as the edited file - each player
+  has their own export. Ship it as code, or as a setup stage that applies the change to every player's export.
+- A **new stage** runs on every existing setup at the player's next `setup.cmd` (it is not in their `SetupWork\state.json` yet), so
+  it must also work on a finished project - see how `fix_arrays` finds its folder.
+- A **changed stage** reaches existing setups only when you bump its number in `VERSIONS`. That stage then runs again on the finished
+  project with `BDSP_STAGE_FRESH=1` (its own sub-steps start over; it may replace what it installed earlier), followed by `verify`.
+  Only stages in `RERUNNABLE` may be bumped - add a stage there only after testing it on a finished project. Bumping any other stage
+  makes `setup.cmd` stop and ask for a fresh setup.
+- `setup.py --plan` prints what a run would do on a given `SetupWork\` without doing it.
 
 **Before you open the pull request**
 

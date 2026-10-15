@@ -10,6 +10,10 @@ Sub-steps, each recorded in <work>/build/steps.json (an interrupted run resumes 
    6 bundles   Unity BdspWinBuild.WinBuild.BuildBundlesFull (about 40 min, ~7 GB)
    7 player    Unity BdspWinBuild.WinBuild.BuildPlayerRelease (IL2CPP release player, bundles hard-linked)
 Inputs and reports live in <work>/build; the output in <project>/Builds (BdspWinBuild reads BDSP_SETUP_WORK / BDSP_DUMP_DATA).
+Every run after a finished build is a REBUILD (setup.cmd -Build after a git pull): all steps again, the bundles incrementally
+(Unity rewrites only the bundles whose content changed), the player into a new Builds/win64_<time> folder. A player folder
+hard-links the bundle files, so before the bundles step every bundle file an earlier player still shares gets its own copy - the
+earlier player keeps exactly the files it was built with.
 
   python -I setup/stages/build.py [--from STEP]
 """
@@ -17,6 +21,7 @@ import argparse
 import glob
 import json
 import os
+import shutil
 import subprocess
 import sys
 
@@ -57,6 +62,34 @@ def prereq():
     print("prerequisites OK (IL2CPP module; C++ tools: %s)" % vc.splitlines()[0], flush=True)
 
 
+def unshare_bundles():
+    """Give every bundle file that an earlier player folder hard-links its own copy (BdspWinBuild.LinkLayout links them; the
+    incremental bundle build rewrites a changed bundle in place, which would change it inside the earlier player too)."""
+    shared, size = [], 0
+    for d in ("bundles_win64", "bundles_win64_side"):
+        for dp, dn, fn in os.walk(os.path.join(paths.PROJECT, "Builds", d)):
+            for f in fn:
+                p = os.path.join(dp, f)
+                st = os.stat(p)
+                if st.st_nlink > 1:
+                    shared.append(p)
+                    size += st.st_size
+    if not shared:
+        print("bundles: no bundle file is shared with an earlier player", flush=True)
+        return
+    free = shutil.disk_usage(paths.PROJECT).free
+    if free - size < 8 * 2 ** 30:
+        sys.exit("an earlier player in Builds\\ shares %d bundle files (%.1f GB); keeping its own copies needs more free space than "
+                 "the drive has - delete the Builds\\win64_* folders you no longer need, then run setup.cmd -Build again"
+                 % (len(shared), size / 2 ** 30))
+    for p in shared:
+        tmp = p + ".unshare"
+        shutil.copy2(p, tmp)
+        os.replace(tmp, p)                   # the earlier player's link keeps the old file
+    print("bundles: %d files (%.1f GB) shared with an earlier player now have their own copy" % (len(shared), size / 2 ** 30),
+          flush=True)
+
+
 def step(name):
     if name == "prereq":
         prereq()
@@ -71,6 +104,8 @@ def step(name):
     elif name == "variants":
         run("shader_variants_shipped.py")
     else:
+        if name == "bundles":
+            unshare_bundles()
         method, tag = {"check": ("Check", "check"), "bundles": ("BuildBundlesFull", "bundles_full"),
                        "player": ("BuildPlayerRelease", "player_release")}[name]
         if not unity.run("BdspWinBuild.WinBuild." + method, "BDSP_WINBUILD_DONE %s OK" % tag, min_disk=8.0):
@@ -85,6 +120,10 @@ def main():
     done = json.load(open(state_path, encoding="utf-8")) if os.path.exists(state_path) else []
     if a.start:
         done = done[:STEPS.index(a.start)]
+    elif "player" in done:
+        print("build: the previous build finished - building again (bundles incrementally, the player into a new folder)",
+              flush=True)
+        done = []
     for name in STEPS:
         if name in done:
             print("build: %s already done" % name, flush=True)

@@ -58,7 +58,22 @@ The setup:
 It takes about **3 hours** on a high-end PC, longer on slower ones. Unity windows open and close by themselves - do not close them.
 
 If anything stops it, fix the reported problem and run `setup.cmd` again: it continues where it stopped. Logs: `SetupWork\logs\`.
-After a `git pull`, run `setup.cmd` again as well; it only runs what is not done yet.
+
+## Updating
+
+When the repository gets new features or fixes:
+
+1. **`git pull`** (or download the ZIP again and copy it over your folder - keep `SetupWork\` and `Builds\`).
+2. **`setup.cmd`** - it runs only what the update needs: new setup steps, and steps that changed in a way your project must get.
+   When nothing is needed it says so in a few seconds. If an update ever needs a completely fresh setup, it tells you and changes
+   nothing.
+3. **Open the project in Unity** - it recompiles the new code on its own.
+4. **`setup.cmd -Build`** if you play the standalone game - every `-Build` builds it again: only the asset bundles that changed are
+   rebuilt, and the new game goes into a new `Builds\win64_<time>` folder. Older build folders keep working; delete the ones you no
+   longer need.
+
+`setup\setup.py --plan` (run it with the setup's own Python: `SetupWork\bin\python\tools\python.exe -I setup\setup.py --plan`) prints
+what a run would do without doing it.
 
 ## Playing in the editor
 
@@ -69,7 +84,8 @@ game loads its assets straight from the project.
 
 Install Unity's **Windows Build Support (IL2CPP)** module (Unity Hub > Installs > 2019.4.27f1 > Add modules) and **Visual Studio 2022**
 (Build Tools or Community) with **Desktop development with C++**, then run **`setup.cmd -Build`**. After a finished setup it only runs
-the build: the asset-bundle plan, all 13,651 asset bundles (about 40 minutes and 7 GB) and the IL2CPP player.
+the build: the asset-bundle plan, all 13,651 asset bundles (about 40 minutes and 7 GB the first time; later builds redo only the
+bundles that changed) and the IL2CPP player.
 
 The game lands in `Builds\win64_<time>\Dpr.exe`; build reports in `SetupWork\build\reports\`. In the editor the same steps are in
 the menu **BDSP > Windows Build**.
@@ -132,6 +148,7 @@ Step by step for macOS: [docs/PORTING_MACOS.md](docs/PORTING_MACOS.md). Pull req
 |---|---|
 | `Assets/Scripts/{Game,AssetAssistant,DebugLog,nn,DOTweenPro}` | the game's C#, one file per type (`<Assembly>/<namespace>/<Type>.cs`) |
 | `Assets/Scripts/_Ours/PcPlatform` | this project's PC layer: input, display, saves, keyboard, frame clock |
+| `Assets/_Ours` | this project's own assets (the one tracked asset folder - see its README) |
 | `Assets/Editor` | editor tooling: the Windows build, audits, probes, the editor asset loader |
 | `setup/` | the automated setup (`setup.py` and its stages); `setup/data` holds the shader source recovered from the game's compiled shaders and the tables that make every setup produce the same project |
 | `Assets/Plugins/DOTween` | Demigiant DOTween 1.2.335, the version the game shipped |
