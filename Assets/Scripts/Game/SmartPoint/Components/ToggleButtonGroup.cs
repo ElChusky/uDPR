@@ -77,7 +77,7 @@ namespace SmartPoint.Components
 		[global::System.Serializable]
 		public class SelectEvent : global::UnityEngine.Events.UnityEvent<global::SmartPoint.Components.ToggleButton>
 		{
-			public SelectEvent() { /*@B 0x6009E3B*/ throw null; }
+			public SelectEvent() { }
 		}
 	}
 }

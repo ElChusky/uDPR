@@ -5,8 +5,12 @@ namespace SmartPoint.Components
 	{
 		[global::UnityEngine.SerializeField]
 		public global::SmartPoint.Components.SkinnedMeshRendererCluster[] rendererClusters;
-		protected void OnEnable() { /*@B 0x600303D*/ throw null; }
-		protected void OnDisable() { /*@B 0x600303E*/ throw null; }
+		protected void OnEnable() {
+			global::SmartPoint.Components.RenderPriorityController.Register(transform, rendererClusters);
+		}
+		protected void OnDisable() {
+			global::SmartPoint.Components.RenderPriorityController.Unregister(transform);
+		}
 		public SortedRenderCluster() { }
 	}
 }

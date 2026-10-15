@@ -9,7 +9,7 @@ namespace SmartPoint.Components
 		private global::SmartPoint.Components.ToggleButtonRaw[] _toggles;
 		[global::UnityEngine.SerializeField]
 		private global::SmartPoint.Components.ToggleButtonRawGroup.SelectEvent _onSelected;
-		private int _activeIndex;
+		private int _activeIndex = -1;
 		public global::SmartPoint.Components.ToggleButtonRaw.SubmitEvent onSubmit;
 		public int activeIndex { get => _activeIndex; set {
 				if (_toggles.Length == 0)
@@ -38,7 +38,7 @@ namespace SmartPoint.Components
 
 				EventSystem.current.SetSelectedGameObject(_toggles[_activeIndex].gameObject);
 			} }
-		public global::SmartPoint.Components.ToggleButtonRaw activeToggle { get { /*@B 0x6003058*/ throw null; } }
+		public global::SmartPoint.Components.ToggleButtonRaw activeToggle { get { return _toggles[_activeIndex]; } }
 		// @020a4270
 		private void OnEnable() {
 			if (_toggles.Length == 0)
@@ -117,11 +117,11 @@ namespace SmartPoint.Components
 			if (onSubmit != null)
 				onSubmit.Invoke(value);
 		}
-		public ToggleButtonRawGroup() { /*@B 0x600305F*/ throw null; }
+		public ToggleButtonRawGroup() { }
 		[global::System.Serializable]
 		public class SelectEvent : global::UnityEngine.Events.UnityEvent<global::SmartPoint.Components.ToggleButtonRaw>
 		{
-			public SelectEvent() { /*@B 0x6009E3D*/ throw null; }
+			public SelectEvent() { }
 		}
 	}
 }
