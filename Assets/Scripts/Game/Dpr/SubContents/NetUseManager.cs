@@ -14,9 +14,9 @@ namespace Dpr.SubContents
 		protected global::SessionManager sessionManager;
 		protected global::OnlinePlayerCharacter myPlayer;
 		protected global::Dpr.SubContents.MatchingParam matchingParam;
-		private global::Dpr.NetworkUtils.NetRequestData netRequestData;
+		private global::Dpr.NetworkUtils.NetRequestData netRequestData = new global::Dpr.NetworkUtils.NetRequestData();
 		private global::ZoneID[] enableZones;
-		private global::MapType enableMapType;
+		private global::MapType enableMapType = global::MapType.MAPTYPE_NOWHERE;
 		[global::UnityEngine.SpaceAttribute(30f)]
 		[global::UnityEngine.SerializeField]
 		private int createCharacterID;
@@ -50,7 +50,7 @@ namespace Dpr.SubContents
         }
 		protected abstract void Init();
 		protected abstract void MyUpdate(float deltaTime);
-		protected virtual void SetNetData(global::Dpr.NetworkUtils.INetData netDatas) { /*@B 0x600329B*/ throw null; }
+		protected virtual void SetNetData(global::Dpr.NetworkUtils.INetData netDatas) { }
 		protected abstract global::System.Collections.IEnumerator LoadAsset();
 		public abstract void SetMatchingParam(global::Dpr.SubContents.MatchingParam matchingParam);
 		public void SetEnableZone(global::ZoneID[] enableZones) {
@@ -110,32 +110,35 @@ namespace Dpr.SubContents
             netRequestData.data.RequestDataID = dataID;
             netRequestData.SendUnReliableDataToAll(TransportType.Station);
         }
-		public void Talk() { /*@B 0x60032A5*/ throw null; }
+		public void Talk() { }
 		public void _Debug_RemoveNetCharacter() {
             if (netDatas != null && netDatas.Count > destroyCharacterID && netDatas[destroyCharacterID] != null)
                 netDatas.RemoveAt(destroyCharacterID);
         }
-		public void _Debug_SaveCharacterPosition() { /*@B 0x60032A7*/ throw null; }
+		public void _Debug_SaveCharacterPosition() { }
 		private bool CheckSavePosCount() {
             return curSaveCount < saveCount;
         }
-		protected NetUseManager() { /*@B 0x60032A9*/ throw null; }
+		protected NetUseManager() { }
 		[global::System.Serializable]
 		public class OPCNetTestPosition
 		{
 			public global::UnityEngine.GameObject go;
-			public float radius;
-			public float speed;
+			public float radius = 2f;
+			public float speed = 2f;
 			private global::UnityEngine.Vector3 CurrentPos;
 			private global::UnityEngine.Vector3 InitPos;
-			public OPCNetTestPosition(global::UnityEngine.Vector3 InitPos) { /*@B 0x6009F73*/ throw null; }
+			public OPCNetTestPosition(global::UnityEngine.Vector3 InitPos) {
+				go = global::UnityEngine.GameObject.CreatePrimitive(global::UnityEngine.PrimitiveType.Cube);
+				this.InitPos = InitPos;
+			}
 			public void SetTsetPos() {
                 // @0231e0b0: sinf / cosf are the inlined Mathf.Sin / Mathf.Cos
                 CurrentPos = new Vector3(radius * Mathf.Sin(Time.time * speed) + InitPos.x, InitPos.y,
                     radius * Mathf.Cos(Time.time * speed) + InitPos.z);
                 go.transform.position = CurrentPos;
             }
-			public global::UnityEngine.Vector3 GetPos() { /*@B 0x6009F75*/ throw null; }
+			public global::UnityEngine.Vector3 GetPos() { return CurrentPos; }
 		}
 	}
 }

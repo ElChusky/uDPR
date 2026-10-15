@@ -41,7 +41,9 @@ namespace Dpr.Field.Walking
 			}
 			return false;
 		} }
-		public bool CheckState<T>() where T : global::Dpr.Field.Walking.AIStateBase { /*@B 0x6008AE7*/ throw null; }
+		public bool CheckState<T>() where T : global::Dpr.Field.Walking.AIStateBase {
+			return typeof(T) == nowState;
+		}
 		public void Update(global::Dpr.Field.Walking.WalkingCharacterModel Target, float baseOffsetScale, float baseSpeed) {
 			if (Target != null)
 			{

@@ -4,7 +4,7 @@ namespace Dpr.Battle.View.UI
 	[global::UnityEngine.RequireComponent(typeof(global::UnityEngine.UI.Image))]
 	public abstract class BUIButtonBase<T> : global::UnityEngine.EventSystems.UIBehaviour, global::Dpr.Battle.View.UI.IBattleUIButton<T> where T : global::Dpr.Battle.View.UI.BUIButtonBase<T>
 	{
-		private static readonly global::UnityEngine.Color DisableColor;
+		private static readonly global::UnityEngine.Color DisableColor = new global::UnityEngine.Color(0.8f, 0.8f, 0.8f);
 		[global::UnityEngine.SerializeField]
 		protected global::UnityEngine.UI.Image _backgroundImage;
 		[global::UnityEngine.SerializeField]
@@ -12,13 +12,13 @@ namespace Dpr.Battle.View.UI
 		[global::UnityEngine.SerializeField]
 		protected global::TMPro.TextMeshProUGUI _text;
 		[global::UnityEngine.SerializeField]
-		protected int _index;
+		protected int _index = -1;
 		[global::UnityEngine.SerializeField]
 		protected global::Dpr.Battle.View.UI.BUIButtonBase<T>.TransitionType _transition;
 		[global::UnityEngine.SerializeField]
 		protected global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType _state;
 		protected bool _isSelected;
-		protected bool _isEnabele;
+		protected bool _isEnabele = true;
 		private global::UnityEngine.RectTransform _cachedRectTransform;
 		protected global::System.Action _onSelected;
 		protected global::System.Action _onSubmit;
@@ -26,16 +26,52 @@ namespace Dpr.Battle.View.UI
 			OnChangeState(value ? global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType.Selected : global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType.None);
 		} }
 		public global::UnityEngine.RectTransform rectTransform { get { return this.GetComponentThis(ref _cachedRectTransform); } }
-		public global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType State { get { /*@B 0x600608E*/ throw null; } }
-		public int Index { get { /*@B 0x600608F*/ throw null; } protected set { /*@B 0x6006090*/ throw null; } }
-		public string Text { get { /*@B 0x6006091*/ throw null; } set { /*@B 0x6006092*/ throw null; } }
-		protected override void OnDestroy() { /*@B 0x6006093*/ throw null; }
-		public T SetOnSelected(global::System.Action onSelected) { /*@B 0x6006094*/ throw null; }
-		public T SetOnSubmit(global::System.Action onSubmit) { /*@B 0x6006095*/ throw null; }
-		public bool Submit() { /*@B 0x6006096*/ throw null; }
-		protected virtual void OnChangeState(global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType type) { /*@B 0x6006097*/ throw null; }
-		protected BUIButtonBase() { /*@B 0x6006098*/ throw null; }
-		static BUIButtonBase() { /*@B 0x6006099*/ throw null; }
+		public global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType State { get { return _state; } }
+		public int Index { get { return _index; } protected set { _index = value; } }
+		public string Text { get { return _text?.text ?? string.Empty; } set {
+			if (_text != null)
+				_text.text = value;
+		} }
+		protected override void OnDestroy() {
+			_cachedRectTransform = null;
+			_onSelected = null;
+			base.OnDestroy();
+		}
+		public T SetOnSelected(global::System.Action onSelected) {
+			_onSelected = onSelected;
+			return (T)this;
+		}
+		public T SetOnSubmit(global::System.Action onSubmit) {
+			_onSubmit = onSubmit;
+			return (T)this;
+		}
+		public bool Submit() {
+			if (_isEnabele)
+			{
+				global::Dpr.Battle.View.BattleViewCore.Instance.UISystem.PlaySe(global::AK.EVENTS.UI_COMMON_DECIDE);
+				global::Dpr.Battle.View.BattleViewCore.Instance.UISystem.CursorFrame.Play(global::Dpr.UI.Cursor.animStateDecide, 0, 0f);
+				_onSubmit?.Invoke();
+				return true;
+			}
+			global::Dpr.Battle.View.BattleViewCore.Instance.UISystem.PlaySe(global::AK.EVENTS.UI_COMMON_BEEP);
+			return false;
+		}
+		protected virtual void OnChangeState(global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType type) {
+			if (_index == -1)
+				return;
+			_state = type;
+			_isSelected = type == global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType.Selected;
+			if (type != global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType.Selected)
+				return;
+			_onSelected?.Invoke();
+			global::Dpr.UI.Cursor cursor = global::Dpr.Battle.View.BattleViewCore.Instance.UISystem.CursorFrame;
+			cursor.transform.SetParent(transform);
+			(cursor.transform as global::UnityEngine.RectTransform).sizeDelta = global::UnityEngine.Vector3.zero;
+			cursor.transform.localPosition = global::UnityEngine.Vector3.zero;
+			(cursor.transform as global::UnityEngine.RectTransform).anchoredPosition = global::UnityEngine.Vector2.zero;
+		}
+		protected BUIButtonBase() { }
+		static BUIButtonBase() { }
 		public enum TransitionType
 		{
 			Scale = 0,

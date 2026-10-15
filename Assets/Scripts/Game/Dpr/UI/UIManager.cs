@@ -561,7 +561,20 @@ namespace Dpr.UI
                 _objectPool.Destroies((UIWindowID)FindWindowDataIndex(assetName));
             }
         }
-		public T CreateUIWindow<T>(global::UIWindowID windowId) where T : global::Dpr.UI.UIWindow { /*@B 0x6005BF1*/ throw null; }
+		public T CreateUIWindow<T>(global::UIWindowID windowId) where T : global::Dpr.UI.UIWindow {
+			UIInstance instance = _objectPool.Create(windowId, true);
+			if (windowId != global::UIWindowID.CONTEXTMENU && windowId != global::UIWindowID.KEYGUIDE && windowId != global::UIWindowID.CONTEXTMENU_SCROLL && windowId != global::UIWindowID.DIALOG)
+			{
+				// @01cfa0b0: the result is tested and discarded (a stripped log)
+				bool isExist = GetExistWindow(windowId);
+			}
+			instance.uiWindow.transform.SetParent(_activeRoot, false);
+			instance.uiWindow.transform.localPosition = global::UnityEngine.Vector3.zero;
+			instance.windowId = windowId;
+			instance.uiWindow.instance = instance;
+			instance.uiWindow.OnCreate();
+			return instance.uiWindow as T;
+		}
 		public void ForceCrash(global::UnityEngine.Diagnostics.ForcedCrashCategory category = (global::UnityEngine.Diagnostics.ForcedCrashCategory)(2)) {
             global::UnityEngine.Diagnostics.Utils.ForceCrash(category);
         }
@@ -676,7 +689,19 @@ namespace Dpr.UI
                 UIWindow currentWindow = Instance.GetCurrentUIWindow<UIWindow>();
             }
         }
-		public T GetCurrentUIWindow<T>() where T : global::Dpr.UI.UIWindow { /*@B 0x6005BF5*/ throw null; }
+		public T GetCurrentUIWindow<T>() where T : global::Dpr.UI.UIWindow {
+			global::Dpr.UI.UIWindow window = GetForegroundWindow();
+			if (window == null)
+				return null;
+			if (window.canvas.sortingOrder >= 16384)
+				return window as T;
+			window = GetLastWindow();
+			if (window == null)
+				return null;
+			if (window.transform == null)
+				return null;
+			return window.transform.GetComponent<T>();
+		}
 		private global::Dpr.UI.UIWindow GetLastWindow() {
             for (int i = _activeRoot.childCount - 1; i >= 0; i--)
             {
@@ -722,7 +747,15 @@ namespace Dpr.UI
 
             return 0;
         }
-		public T GetExistWindow<T>() where T : global::Dpr.UI.UIWindow { /*@B 0x6005BFA*/ throw null; }
+		public T GetExistWindow<T>() where T : global::Dpr.UI.UIWindow {
+			for (int i = Instance.GetUIWindowCount() - 1; i >= 0; i--)
+			{
+				T window = Instance.GetUIWindowByIndex(i) as T;
+				if (window != null)
+					return window;
+			}
+			return null;
+		}
 		public global::Dpr.UI.UIWindow GetExistWindow(global::UIWindowID windowId) {
             // GetUIWindowCount is inlined (init flag 0x48d)
             for (int i = Instance.GetUIWindowCount() - 1; i >= 0; i--)

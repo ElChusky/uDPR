@@ -8,9 +8,11 @@ namespace Dpr.SecretBase
 		public void Initialize(global::Dpr.SecretBase.SecretBaseMasterDataManager masterData) {
 			this.masterData = masterData;
 		}
-		public StateBase(T type) { /*@B 0x60035C3*/ throw null; }
-		public virtual void Enter(Owner owner) { /*@B 0x60035C5*/ throw null; }
-		public virtual void Execute(Owner owner) { /*@B 0x60035C6*/ throw null; }
-		public virtual void Exit(Owner owner) { /*@B 0x60035C7*/ throw null; }
+		public StateBase(T type) {
+			Type = type;
+		}
+		public virtual void Enter(Owner owner) { }
+		public virtual void Execute(Owner owner) { }
+		public virtual void Exit(Owner owner) { }
 	}
 }

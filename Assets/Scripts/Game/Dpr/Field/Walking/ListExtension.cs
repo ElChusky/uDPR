@@ -3,11 +3,31 @@ namespace Dpr.Field.Walking
 {
 	public static class ListExtension
 	{
-		public static T GetRandomofMaxpriority<T>(this global::System.Collections.Generic.List<T> list) where T : global::Dpr.Field.Walking.ActionModel { /*@B 0x6008A6B*/ throw null; }
-		public static T GetRandom<T>(this global::System.Collections.Generic.List<T> list) { /*@B 0x6008A6C*/ throw null; }
-		public static void FindDoAll<T>(this global::System.Collections.Generic.List<T> list, global::Dpr.Field.Walking.ListExtension.FindDelegate<T> find, global::System.Action<T> act) { /*@B 0x6008A6D*/ throw null; }
-		public static TSource FindMin<TSource, TResult>(this global::System.Collections.Generic.IEnumerable<TSource> self, global::System.Func<TSource, TResult> selector) { /*@B 0x6008A6E*/ throw null; }
-		public static TSource FindMax<TSource, TResult>(this global::System.Collections.Generic.IEnumerable<TSource> self, global::System.Func<TSource, TResult> selector) { /*@B 0x6008A6F*/ throw null; }
+		public static T GetRandomofMaxpriority<T>(this global::System.Collections.Generic.List<T> list) where T : global::Dpr.Field.Walking.ActionModel {
+			float MaxPriority;
+			if (list.Count == 0)
+				return null;
+			MaxPriority = global::System.Linq.Enumerable.Max(list, x => x.priority);
+			return (T)global::Dpr.SubContents.RandomWithWeight.Lotto<global::Dpr.Field.Walking.ActionModel>(list.FindAll(x => x.priority == MaxPriority));
+		}
+		public static T GetRandom<T>(this global::System.Collections.Generic.List<T> list) {
+			if (list.Count == 0)
+				return default(T);
+			return list[global::UnityEngine.Random.Range(0, list.Count)];
+		}
+		public static void FindDoAll<T>(this global::System.Collections.Generic.List<T> list, global::Dpr.Field.Walking.ListExtension.FindDelegate<T> find, global::System.Action<T> act) {
+			for (int i = 0; i < list.Count; i++)
+			{
+				if (find(list[i]))
+					act(list[i]);
+			}
+		}
+		public static TSource FindMin<TSource, TResult>(this global::System.Collections.Generic.IEnumerable<TSource> self, global::System.Func<TSource, TResult> selector) {
+			return global::System.Linq.Enumerable.First(self, c => selector(c).Equals(global::System.Linq.Enumerable.Min(self, selector)));
+		}
+		public static TSource FindMax<TSource, TResult>(this global::System.Collections.Generic.IEnumerable<TSource> self, global::System.Func<TSource, TResult> selector) {
+			return global::System.Linq.Enumerable.First(self, c => selector(c).Equals(global::System.Linq.Enumerable.Max(self, selector)));
+		}
 		public delegate bool FindDelegate<T>(T model);
 	}
 }

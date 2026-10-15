@@ -3,11 +3,14 @@ namespace Dpr.SecretBase
 {
 	public class StateMachine<T, Owner> where T : global::System.Enum where Owner : class
 	{
-		private global::System.Collections.Generic.Dictionary<T, global::Dpr.SecretBase.StateBase<T, Owner>> states;
+		private global::System.Collections.Generic.Dictionary<T, global::Dpr.SecretBase.StateBase<T, Owner>> states = new global::System.Collections.Generic.Dictionary<T, global::Dpr.SecretBase.StateBase<T, Owner>>();
 		private global::Dpr.SecretBase.StateBase<T, Owner> current;
 		private global::Dpr.SecretBase.StateBase<T, Owner> prev;
 		private Owner owner;
-		public StateMachine(Owner owner) { /*@B 0x60035BB*/ throw null; }
+		public StateMachine(Owner owner) {
+			this.owner = owner;
+			states = new global::System.Collections.Generic.Dictionary<T, global::Dpr.SecretBase.StateBase<T, Owner>>();
+		}
 		public void AddState(global::Dpr.SecretBase.StateBase<T, Owner> state) {
 			states.Add(state.Type, state);
 		}

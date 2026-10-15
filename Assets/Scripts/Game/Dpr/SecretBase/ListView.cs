@@ -8,12 +8,12 @@ namespace Dpr.SecretBase
 		protected global::UnityEngine.RectTransform content;
 		[global::UnityEngine.SerializeField]
 		protected T itemBase;
-		protected global::System.Collections.Generic.List<T> itemList;
+		protected global::System.Collections.Generic.List<T> itemList = new global::System.Collections.Generic.List<T>();
 		private void Start() {
 			Init();
 		}
-		private void Update() { /*@B 0x600366F*/ throw null; }
-		protected virtual void Init() { /*@B 0x6003670*/ throw null; }
+		private void Update() { }
+		protected virtual void Init() { }
 		public virtual int AddItem(Data data) {
 			T item = Object.Instantiate<T>(itemBase, content);
 			if (!item.gameObject.activeSelf)
@@ -29,6 +29,6 @@ namespace Dpr.SecretBase
 
 			itemList.Clear();
 		}
-		public ListView() { /*@B 0x6003673*/ throw null; }
+		public ListView() { }
 	}
 }

@@ -7,10 +7,15 @@ namespace Dpr.Contest
 	{
 		private T prefab;
 		private global::UnityEngine.Transform parent;
-		private global::System.Collections.Generic.List<T> prefabPool;
-		public int PoolCount { get { /*@B 0x60046F7*/ throw null; } }
-		public global::System.Collections.Generic.List<T> PrefabPoolList { get { /*@B 0x60046F8*/ throw null; } }
-		~ObjectPoolSystem() { /*@B 0x60046F6*/ throw null; }
+		private global::System.Collections.Generic.List<T> prefabPool = new global::System.Collections.Generic.List<T>();
+		public int PoolCount { get { return prefabPool.Count; } }
+		public global::System.Collections.Generic.List<T> PrefabPoolList { get { return prefabPool; } }
+		~ObjectPoolSystem() {
+			prefabPool.Clear();
+			prefabPool = null;
+			parent = null;
+			prefab = null;
+		}
 		public void GeneratePoolFromPrefab(T prefab, int count) {
 			GeneratePoolFromPrefab(prefab, count, null);
 		}
@@ -75,6 +80,6 @@ namespace Dpr.Contest
 		public void ClearPool() {
 			prefabPool.Clear();
 		}
-		public ObjectPoolSystem() { /*@B 0x6004705*/ throw null; }
+		public ObjectPoolSystem() { }
 	}
 }

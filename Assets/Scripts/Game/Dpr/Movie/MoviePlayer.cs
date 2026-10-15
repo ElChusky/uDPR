@@ -79,7 +79,7 @@ namespace Dpr.Movie
             isUpdateVideoOnThisFrame = true;
         }
 #if SWITCH
-		private void OnMovieEvent(global::UnityEngine.Switch.SwitchVideoPlayer.Event FMVevent) { /*@B 0x60047B0*/ throw null; }
+		private void OnMovieEvent(global::UnityEngine.Switch.SwitchVideoPlayer.Event FMVevent) { }
 #endif
 		private void InitializeEditor(global::UnityEngine.UI.RawImage image, global::UnityEngine.Video.VideoPlayer videoPlayer) {
             var renderTexture = new RenderTexture(ResX, ResY, 0, RenderTextureFormat.ARGB32, 0);

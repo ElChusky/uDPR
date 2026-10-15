@@ -334,11 +334,22 @@ namespace Dpr.SequenceEditor
 		{
 			private TImageEffectObject _effectObject;
 			private bool _isEnable;
-			public TImageEffectObject EffectObject { get { /*@B 0x600A691*/ throw null; } }
-			public bool IsEnable { get { /*@B 0x600A692*/ throw null; } set { /*@B 0x600A693*/ throw null; } }
-			public PostEffect(global::Dpr.Battle.View.BattlePostProcessFilter filter) { /*@B 0x600A694*/ throw null; }
-			public PostEffect(TImageEffectObject effectObject) { /*@B 0x600A695*/ throw null; }
-			private void SetEnable(bool isEnabled) { /*@B 0x600A696*/ throw null; }
+			public TImageEffectObject EffectObject { get { return _effectObject; } }
+			public bool IsEnable { get { return _isEnable; } set {
+				_isEnable = value;
+				SetEnable(value);
+			} }
+			public PostEffect(global::Dpr.Battle.View.BattlePostProcessFilter filter) {
+				_effectObject = filter.GetEffect<TImageEffectObject>();
+			}
+			public PostEffect(TImageEffectObject effectObject) {
+				_effectObject = effectObject;
+			}
+			private void SetEnable(bool isEnabled) {
+				if (_effectObject == null)
+					return;
+				_effectObject.enabled = isEnabled;
+			}
 		}
 		public sealed class PostEffects
 		{

@@ -4,8 +4,8 @@ namespace Dpr.SecretBase
 	public class SelectItemBase<T> : global::UnityEngine.MonoBehaviour
 	{
 		protected T data;
-		public virtual void SetData(T value) { /*@B 0x6003684*/ throw null; }
-		public T GetData() { /*@B 0x6003685*/ throw null; }
-		public SelectItemBase() { /*@B 0x6003686*/ throw null; }
+		public virtual void SetData(T value) { data = value; }
+		public T GetData() { return data; }
+		public SelectItemBase() { }
 	}
 }

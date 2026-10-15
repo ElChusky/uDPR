@@ -7,14 +7,16 @@ namespace Dpr.NetworkUtils
 	public abstract class ANetData<T> : global::Dpr.NetworkUtils.INetData where T : struct
 	{
 		public static byte DataID;
-		public T data;
+		public T data = global::System.Activator.CreateInstance<T>();
 		private int fromStationIndex;
 		private static byte[] dataBuffer;
 		private static int dataSize;
-		public virtual byte GetDataID { get { /*@B 0x600393A*/ throw null; } }
-		public int FromStationIndex { get { /*@B 0x600393E*/ throw null; } }
-		public global::Dpr.NetworkUtils.INetData Clone { get { /*@B 0x600393F*/ throw null; } }
-		public ANetData() { /*@B 0x600393B*/ throw null; }
+		public virtual byte GetDataID { get { return DataID; } }
+		public int FromStationIndex { get { return fromStationIndex; } }
+		public global::Dpr.NetworkUtils.INetData Clone { get { return (global::Dpr.NetworkUtils.INetData)MemberwiseClone(); } }
+		public ANetData() {
+			CreateDataBuffer();
+		}
 		private void CreateDataBuffer() {
             if (dataBuffer != null)
                 return;
@@ -79,6 +81,6 @@ namespace Dpr.NetworkUtils
             Marshal.FreeHGlobal(ptr);
             return (T)obj;
         }
-		static ANetData() { /*@B 0x600394B*/ throw null; }
+		static ANetData() { }
 	}
 }

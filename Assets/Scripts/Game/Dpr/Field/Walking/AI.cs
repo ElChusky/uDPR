@@ -39,8 +39,16 @@ namespace Dpr.Field.Walking
 			nowState = null;
 			aiModel = null;
 		}
-		public T AddState<T>() where T : global::Dpr.Field.Walking.AIStateBase { /*@B 0x6008A0B*/ throw null; }
-		public void AddStateChecker<T>(global::Dpr.Field.Walking.StateChecker.Condition Condition) where T : global::Dpr.Field.Walking.AIStateBase { /*@B 0x6008A0C*/ throw null; }
+		public T AddState<T>() where T : global::Dpr.Field.Walking.AIStateBase {
+			T state = (T)global::System.Activator.CreateInstance(typeof(T), new object[] { aiModel });
+			AIStates.Add(state);
+			if (nowState == null)
+				nowState = state;
+			return state;
+		}
+		public void AddStateChecker<T>(global::Dpr.Field.Walking.StateChecker.Condition Condition) where T : global::Dpr.Field.Walking.AIStateBase {
+			stateCheckers.Add(new global::Dpr.Field.Walking.StateChecker(Condition, typeof(T)));
+		}
 		public global::Dpr.Field.Walking.AIStateBase ChangeState(global::System.Type type) {
 			global::Dpr.Field.Walking.AIStateBase state = AIStates.Find(x => x.GetType() == type);
 			global::Dpr.Field.Walking.CorSystem corSys = state.corSys;
@@ -62,6 +70,8 @@ namespace Dpr.Field.Walking
 			return nowState.GetType();
 		}
 		public global::Dpr.Field.Walking.AIStateBase GetNowState() { return this.nowState; }
-		public global::Dpr.Field.Walking.AIStateBase GetState<T>() where T : global::Dpr.Field.Walking.AIStateBase { /*@B 0x6008A10*/ throw null; }
+		public global::Dpr.Field.Walking.AIStateBase GetState<T>() where T : global::Dpr.Field.Walking.AIStateBase {
+			return AIStates.Find(x => x.GetType() == typeof(T));
+		}
 	}
 }

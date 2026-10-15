@@ -7,9 +7,9 @@ namespace Dpr.SecretBase
 	{
 		[global::UnityEngine.SerializeField]
 		protected global::Dpr.SecretBase.UICursor uiCursor;
-		protected float forcusScale;
+		protected float forcusScale = 1f;
 		[global::UnityEngine.SerializeField]
-		protected float forcusTime;
+		protected float forcusTime = 0.1f;
 		[global::UnityEngine.SerializeField]
 		private bool isScale;
 		[global::UnityEngine.SerializeField]
@@ -19,7 +19,7 @@ namespace Dpr.SecretBase
 		private void Start() {
             Init();
         }
-		private void Update() { /*@B 0x6003688*/ throw null; }
+		private void Update() { }
 		protected override void Init() {
             base.Init();
             CursorAttach();
@@ -106,7 +106,7 @@ namespace Dpr.SecretBase
 		public int GetItemCount() {
             return itemList.Count;
         }
-		public SelectWindow() { /*@B 0x6003696*/ throw null; }
+		public SelectWindow() { }
 		protected enum MoveState
 		{
 			Idle = 0,

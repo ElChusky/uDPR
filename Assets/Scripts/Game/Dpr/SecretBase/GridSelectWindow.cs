@@ -10,7 +10,7 @@ namespace Dpr.SecretBase
 		protected global::UnityEngine.UI.GridLayoutGroup grid;
 		protected float offset;
 		[global::UnityEngine.SerializeField]
-		protected float scrollSpeed;
+		protected float scrollSpeed = 0.5f;
 		protected global::UnityEngine.Vector3 dest;
 		protected global::Dpr.SecretBase.SelectWindow<T, Data>.MoveState moveStateHorizontal;
 		protected global::Dpr.SecretBase.SelectWindow<T, Data>.MoveState moveStateVertical;
@@ -183,6 +183,6 @@ namespace Dpr.SecretBase
 			float rowHeight = grid.cellSize.y + grid.spacing.y;
 			return (rowHeight * row + grid.padding.top + grid.cellSize.y * 0.5f - offset) / rectTransform.rect.height;
 		}
-		public GridSelectWindow() { /*@B 0x600366D*/ throw null; }
+		public GridSelectWindow() { }
 	}
 }
