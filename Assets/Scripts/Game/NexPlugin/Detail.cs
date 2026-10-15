@@ -839,58 +839,276 @@ namespace NexPlugin
 #else
 			private static bool DataStore_ResetRatingAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray dataIds, int transactional, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_ResetRatingAsyncByDataList", pNgsFacade); }
 #endif
-			public static bool ResetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> dataIds, bool transactional = true, int timeOut = 0, global::NexPlugin.DataStore.ResultListCB callback = null) { /*@B 0x6009B4C*/ throw null; }
+			public static bool ResetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> dataIds, bool transactional = true, int timeOut = 0, global::NexPlugin.DataStore.ResultListCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray dataIdsArray = CppArray.ListToArray(useptr, dataIds);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_ResetRatingAsyncByDataList(asyncId, pNgsFacade, ref dataIdsArray, transactional ? 1 : 0, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_GetPersistenceInfoAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong principalId, ushort slotId, int timeOut);
 #else
 			private static bool DataStore_GetPersistenceInfoAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong principalId, ushort slotId, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_GetPersistenceInfoAsync", pNgsFacade); }
 #endif
-			public static bool GetPersistenceInfoAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong principalId, ushort persistenceSlotId, int timeOut = 0, global::NexPlugin.DataStore.GetPersistenceInfoCB callback = null) { /*@B 0x6009B4E*/ throw null; }
+			public static bool GetPersistenceInfoAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong principalId, ushort persistenceSlotId, int timeOut = 0, global::NexPlugin.DataStore.GetPersistenceInfoCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!DataStore_GetPersistenceInfoAsync(asyncId, pNgsFacade, principalId, persistenceSlotId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_GetPersistenceInfoAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, ulong principalId, ref global::NexPlugin.Detail.CppArray persistenceSlotIds, int timeOut);
 #else
 			private static bool DataStore_GetPersistenceInfoAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, ulong principalId, ref global::NexPlugin.Detail.CppArray persistenceSlotIds, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_GetPersistenceInfoAsyncByDataList", pNgsFacade); }
 #endif
-			public static bool GetPersistenceInfoAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong principalId, global::System.Collections.Generic.List<ushort> persistenceSlotIds, int timeOut = 0, global::NexPlugin.DataStore.GetPersistenceInfoListCB callback = null) { /*@B 0x6009B50*/ throw null; }
+			public static bool GetPersistenceInfoAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong principalId, global::System.Collections.Generic.List<ushort> persistenceSlotIds, int timeOut = 0, global::NexPlugin.DataStore.GetPersistenceInfoListCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray slotIdsArray = CppArray.ListToArray(useptr, persistenceSlotIds);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_GetPersistenceInfoAsyncByDataList(asyncId, pNgsFacade, principalId, ref slotIdsArray, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_PerpetuateObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ushort slotId, ulong dataId, int deleteFlag, int timeOut);
 #else
 			private static bool DataStore_PerpetuateObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ushort slotId, ulong dataId, int deleteFlag, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_PerpetuateObjectAsync", pNgsFacade); }
 #endif
-			public static bool PerpetuateObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ushort persistenceSlotId, ulong dataId, bool deleteLastObject = true, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B52*/ throw null; }
+			public static bool PerpetuateObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ushort persistenceSlotId, ulong dataId, bool deleteLastObject = true, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!DataStore_PerpetuateObjectAsync(asyncId, pNgsFacade, persistenceSlotId, dataId, deleteLastObject ? 1 : 0, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_UnperpetuateObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ushort slotId, int deleteFlag, int timeOut);
 #else
 			private static bool DataStore_UnperpetuateObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ushort slotId, int deleteFlag, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_UnperpetuateObjectAsync", pNgsFacade); }
 #endif
-			public static bool UnperpetuateObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ushort persistenceSlotId, bool deleteLastObject = false, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B54*/ throw null; }
+			public static bool UnperpetuateObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ushort persistenceSlotId, bool deleteLastObject = false, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!DataStore_UnperpetuateObjectAsync(asyncId, pNgsFacade, persistenceSlotId, deleteLastObject ? 1 : 0, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_GetPasswordInfoAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut);
 #else
 			private static bool DataStore_GetPasswordInfoAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_GetPasswordInfoAsync", pNgsFacade); }
 #endif
-			public static bool GetPasswordInfoAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut = 0, global::NexPlugin.DataStore.GetPasswordInfoCB callback = null) { /*@B 0x6009B56*/ throw null; }
+			public static bool GetPasswordInfoAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut = 0, global::NexPlugin.DataStore.GetPasswordInfoCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!DataStore_GetPasswordInfoAsync(asyncId, pNgsFacade, dataId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_GetPasswordInfoAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray pParam, int timeOut);
 #else
 			private static bool DataStore_GetPasswordInfoAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_GetPasswordInfoAsyncByDataList", pNgsFacade); }
 #endif
-			public static bool GetPasswordInfoAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> dataIds, int timeOut = 0, global::NexPlugin.DataStore.GetPasswordInfoListCB callback = null) { /*@B 0x6009B58*/ throw null; }
-			private static void DataStore_PostResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B59*/ throw null; }
-			private static void DataStore_ResultListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B5A*/ throw null; }
-			private static void DataStore_SearchObjectResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B5B*/ throw null; }
-			private static void DataStore_GetObjectResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B5C*/ throw null; }
-			private static void DataStore_GetMetaResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B5D*/ throw null; }
-			private static void DataStore_GetMetaByDataListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B5E*/ throw null; }
-			private static void DataStore_RatingInfoResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B5F*/ throw null; }
-			private static void DataStore_RatingInfoAllSlotResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B60*/ throw null; }
-			private static void DataStore_RatingInfoListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B61*/ throw null; }
-			private static void DataStore_RatingInfosListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B62*/ throw null; }
-			private static void DataStore_RatingInfoWithLogResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B63*/ throw null; }
-			private static void DataStore_GetPersistenceInfoResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B64*/ throw null; }
-			private static void DataStore_GetPersistenceInfoListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B65*/ throw null; }
-			private static void DataStore_GetPasswordInfoResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B66*/ throw null; }
-			private static void DataStore_GetPasswordInfoListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B67*/ throw null; }
+			public static bool GetPasswordInfoAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> dataIds, int timeOut = 0, global::NexPlugin.DataStore.GetPasswordInfoListCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray dataIdsArray = CppArray.ListToArray(useptr, dataIds);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_GetPasswordInfoAsyncByDataList(asyncId, pNgsFacade, ref dataIdsArray, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
+			private static void DataStore_PostResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.PostCB cb = callback as NexPlugin.DataStore.PostCB;
+				if (cb != null)
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), asyncResult.GetUlong(asyncResult.pParam1));
+			}
+			private static void DataStore_ResultListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.ResultListCB cb = callback as NexPlugin.DataStore.ResultListCB;
+				if (cb != null)
+				{
+					List<DataStoreResult> resultList = new List<DataStoreResult>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						ExchangePtrToStruct<CppArray>(asyncResult.pParam1).ToList(ref resultList);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), resultList);
+				}
+			}
+			private static void DataStore_SearchObjectResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.SearchObjectCB cb = callback as NexPlugin.DataStore.SearchObjectCB;
+				if (cb != null)
+				{
+					DataStoreSearchResult result = new DataStoreSearchResult();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						result = DataStoreSearchResultInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), result);
+				}
+			}
+			private static void DataStore_GetObjectResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.GetObjectCB cb = callback as NexPlugin.DataStore.GetObjectCB;
+				if (cb != null)
+				{
+					byte[] data = new byte[0];
+					if (asyncResult.pParam1 != IntPtr.Zero)
+					{
+						int length = asyncResult.GetInt(asyncResult.pParam2);
+						if (length != 0)
+						{
+							data = new byte[length];
+							Marshal.Copy(asyncResult.pParam1, data, 0, length);
+						}
+					}
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), data);
+				}
+			}
+			private static void DataStore_GetMetaResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.GetMetaCB cb = callback as NexPlugin.DataStore.GetMetaCB;
+				if (cb != null)
+				{
+					DataStoreMetaInfo info = new DataStoreMetaInfo();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = DataStoreMetaInfoInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
+			private static void DataStore_GetMetaByDataListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.GetMetaListCB cb = callback as NexPlugin.DataStore.GetMetaListCB;
+				if (cb != null)
+				{
+					List<DataStoreMetaInfo> info = new List<DataStoreMetaInfo>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = ExchangePtrToStruct<CppArray>(asyncResult.pParam1).ToList<DataStoreMetaInfo, DataStoreMetaInfoInt>();
+					List<DataStoreResult> resultList = new List<DataStoreResult>();
+					if (asyncResult.pParam2 != IntPtr.Zero)
+						ExchangePtrToStruct<CppArray>(asyncResult.pParam2).ToList(ref resultList);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info, resultList);
+				}
+			}
+			private static void DataStore_RatingInfoResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.RatingInfoCB cb = callback as NexPlugin.DataStore.RatingInfoCB;
+				if (cb != null)
+				{
+					DataStoreRatingInfo info = new DataStoreRatingInfo();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = ExchangePtrToStruct<DataStoreRatingInfo>(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
+			private static void DataStore_RatingInfoAllSlotResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.RatingInfoAllSlotCB cb = callback as NexPlugin.DataStore.RatingInfoAllSlotCB;
+				if (cb != null)
+				{
+					Dictionary<sbyte, DataStoreRatingInfo> info = new Dictionary<sbyte, DataStoreRatingInfo>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+					{
+						List<DataStoreRatingInfo> list = new List<DataStoreRatingInfo>();
+						ExchangePtrToStruct<CppArray>(asyncResult.pParam1).ToList(ref list);
+						foreach (DataStoreRatingInfo item in list)
+							info.Add(item.GetSlot(), item);
+					}
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
+			private static void DataStore_RatingInfoListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.RatingInfoListCB cb = callback as NexPlugin.DataStore.RatingInfoListCB;
+				if (cb != null)
+				{
+					List<DataStoreRatingInfo> info = new List<DataStoreRatingInfo>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						ExchangePtrToStruct<CppArray>(asyncResult.pParam1).ToList(ref info);
+					List<DataStoreResult> resultList = new List<DataStoreResult>();
+					if (asyncResult.pParam2 != IntPtr.Zero)
+						ExchangePtrToStruct<CppArray>(asyncResult.pParam2).ToList(ref resultList);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info, resultList);
+				}
+			}
+			private static void DataStore_RatingInfosListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.RatingInfosListCB cb = callback as NexPlugin.DataStore.RatingInfosListCB;
+				if (cb != null)
+				{
+					List<Dictionary<sbyte, DataStoreRatingInfo>> info = new List<Dictionary<sbyte, DataStoreRatingInfo>>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = DataStore_ExchangeRatingInfosList(asyncResult.pParam1);
+					List<DataStoreResult> resultList = new List<DataStoreResult>();
+					if (asyncResult.pParam2 != IntPtr.Zero)
+						ExchangePtrToStruct<CppArray>(asyncResult.pParam2).ToList(ref resultList);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info, resultList);
+				}
+			}
+			private static void DataStore_RatingInfoWithLogResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.RatingInfoWithLogCB cb = callback as NexPlugin.DataStore.RatingInfoWithLogCB;
+				if (cb != null)
+				{
+					DataStoreRatingInfo info = new DataStoreRatingInfo();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = ExchangePtrToStruct<DataStoreRatingInfo>(asyncResult.pParam1);
+					DataStoreRatingLog log = new DataStoreRatingLog();
+					if (asyncResult.pParam2 != IntPtr.Zero)
+						log = DataStoreRatingLogInt.ExchangePtrToStruct(asyncResult.pParam2);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info, log);
+				}
+			}
+			private static void DataStore_GetPersistenceInfoResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.GetPersistenceInfoCB cb = callback as NexPlugin.DataStore.GetPersistenceInfoCB;
+				if (cb != null)
+				{
+					DataStorePersistenceInfo info = new DataStorePersistenceInfo();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = DataStorePersistenceInfoInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
+			private static void DataStore_GetPersistenceInfoListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.GetPersistenceInfoListCB cb = callback as NexPlugin.DataStore.GetPersistenceInfoListCB;
+				if (cb != null)
+				{
+					List<DataStorePersistenceInfo> info = new List<DataStorePersistenceInfo>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = ExchangePtrToStruct<CppArray>(asyncResult.pParam1).ToList<DataStorePersistenceInfo, DataStorePersistenceInfoInt>();
+					List<DataStoreResult> resultList = new List<DataStoreResult>();
+					if (asyncResult.pParam2 != IntPtr.Zero)
+						ExchangePtrToStruct<CppArray>(asyncResult.pParam2).ToList(ref resultList);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info, resultList);
+				}
+			}
+			private static void DataStore_GetPasswordInfoResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.GetPasswordInfoCB cb = callback as NexPlugin.DataStore.GetPasswordInfoCB;
+				if (cb != null)
+				{
+					DataStorePasswordInfo info = new DataStorePasswordInfo();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = DataStorePasswordInfoInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
+			private static void DataStore_GetPasswordInfoListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.DataStore.GetPasswordInfoListCB cb = callback as NexPlugin.DataStore.GetPasswordInfoListCB;
+				if (cb != null)
+				{
+					List<DataStorePasswordInfo> info = new List<DataStorePasswordInfo>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = ExchangePtrToStruct<CppArray>(asyncResult.pParam1).ToList<DataStorePasswordInfo, DataStorePasswordInfoInt>();
+					List<DataStoreResult> resultList = new List<DataStoreResult>();
+					if (asyncResult.pParam2 != IntPtr.Zero)
+						ExchangePtrToStruct<CppArray>(asyncResult.pParam2).ToList(ref resultList);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info, resultList);
+				}
+			}
 			// @020f6730
 			public static void Callback(global::NexPlugin.Detail.AsyncResultInt res, object callback) {
 				switch (res.asyncNum)
@@ -967,25 +1185,66 @@ namespace NexPlugin
 				private ulong dataId;
 				private ulong principalId;
 				private ushort persistenceSlotId;
-				public global::NexPlugin.DataStorePersistenceInfo ExchangeStruct() { /*@B 0x600BB31*/ throw null; }
-				public static global::NexPlugin.DataStorePersistenceInfo ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB32*/ throw null; }
-				public DataStorePersistenceInfoInt(global::NexPlugin.DataStorePersistenceInfo param) { /*@B 0x600BB33*/ throw null; }
+				public global::NexPlugin.DataStorePersistenceInfo ExchangeStruct() {
+					DataStorePersistenceInfo info = new DataStorePersistenceInfo();
+					info.dataId = dataId;
+					info.principalId = principalId;
+					info.persistenceSlotId = persistenceSlotId;
+					return info;
+				}
+				public static global::NexPlugin.DataStorePersistenceInfo ExchangePtrToStruct(global::System.IntPtr src) {
+					DataStorePersistenceInfoInt info = Detail.ExchangePtrToStruct<DataStorePersistenceInfoInt>(src);
+					return info.ExchangeStruct();
+				}
+				public DataStorePersistenceInfoInt(global::NexPlugin.DataStorePersistenceInfo param) {
+					if (param == null)
+						param = new DataStorePersistenceInfo();
+					dataId = param.dataId;
+					principalId = param.principalId;
+					persistenceSlotId = param.persistenceSlotId;
+				}
 			}
 			private struct DataStorePasswordInfoInt : global::NexPlugin.Detail.IExchangeList<global::NexPlugin.DataStorePasswordInfo>
 			{
 				private ulong dataId;
 				private ulong accessPassword;
 				private ulong updatePassword;
-				public global::NexPlugin.DataStorePasswordInfo ExchangeStruct() { /*@B 0x600BB34*/ throw null; }
-				public static global::NexPlugin.DataStorePasswordInfo ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB35*/ throw null; }
-				public DataStorePasswordInfoInt(global::NexPlugin.DataStorePasswordInfo param) { /*@B 0x600BB36*/ throw null; }
+				public global::NexPlugin.DataStorePasswordInfo ExchangeStruct() {
+					DataStorePasswordInfo info = new DataStorePasswordInfo();
+					info.dataId = dataId;
+					info.accessPassword = accessPassword;
+					info.updatePassword = updatePassword;
+					return info;
+				}
+				public static global::NexPlugin.DataStorePasswordInfo ExchangePtrToStruct(global::System.IntPtr src) {
+					DataStorePasswordInfoInt info = Detail.ExchangePtrToStruct<DataStorePasswordInfoInt>(src);
+					return info.ExchangeStruct();
+				}
+				public DataStorePasswordInfoInt(global::NexPlugin.DataStorePasswordInfo param) {
+					if (param == null)
+						param = new DataStorePasswordInfo();
+					dataId = param.dataId;
+					accessPassword = param.accessPassword;
+					updatePassword = param.updatePassword;
+				}
 			}
 			private struct DataStorePermissionInt : global::NexPlugin.Detail.IExchangeList<global::NexPlugin.DataStorePermission>
 			{
 				private global::NexPlugin.Detail.CppArray recipientIds;
 				private uint permission;
-				public global::NexPlugin.DataStorePermission ExchangeStruct() { /*@B 0x600BB37*/ throw null; }
-				public DataStorePermissionInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStorePermission param) { /*@B 0x600BB38*/ throw null; }
+				public global::NexPlugin.DataStorePermission ExchangeStruct() {
+					DataStorePermission result = new DataStorePermission();
+					result.permission = (NexPlugin.DataStore.Permission)permission;
+					result.recipientIds = new List<ulong>();
+					recipientIds.ToList(ref result.recipientIds);
+					return result;
+				}
+				public DataStorePermissionInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStorePermission param) {
+					if (param == null)
+						param = new DataStorePermission();
+					permission = (uint)param.permission;
+					recipientIds = CppArray.ListToArray(useptr, param.recipientIds);
+				}
 			}
 			private struct DataStoreMetaInfoInt : global::NexPlugin.Detail.IExchangeList<global::NexPlugin.DataStoreMetaInfo>
 			{
@@ -1006,15 +1265,53 @@ namespace NexPlugin
 				private global::NexPlugin.NpDateTime createdTime;
 				private global::NexPlugin.NpDateTime updatedTime;
 				private global::NexPlugin.NpDateTime expireTime;
-				public static global::NexPlugin.DataStoreMetaInfo ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB39*/ throw null; }
-				public global::NexPlugin.DataStoreMetaInfo ExchangeStruct() { /*@B 0x600BB3A*/ throw null; }
+				public static global::NexPlugin.DataStoreMetaInfo ExchangePtrToStruct(global::System.IntPtr src) {
+					DataStoreMetaInfoInt info = Detail.ExchangePtrToStruct<DataStoreMetaInfoInt>(src);
+					return info.ExchangeStruct();
+				}
+				public global::NexPlugin.DataStoreMetaInfo ExchangeStruct() {
+					DataStoreMetaInfo info = new DataStoreMetaInfo();
+					info.dataId = dataId;
+					if (!info.IsValid())
+						return info;
+					info.tags = new List<string>();
+					info.metaBinary = new List<byte>();
+					info.ratingInfo = new List<DataStoreRatingInfo>();
+					info.ownerId = ownerId;
+					info.size = size;
+					info.dataType = dataType;
+					info.period = period;
+					info.status = (NexPlugin.DataStore.DataStatus)status;
+					info.referDataId = referDataId;
+					info.flag = (NexPlugin.DataStore.DataFlag)flag;
+					info.name = name.ToStr();
+					meta.ToList(ref info.metaBinary);
+					ratingInfo.ToList(ref info.ratingInfo);
+					info.accessPermission = accessPermission.ExchangeStruct();
+					info.updatePermission = updatePermission.ExchangeStruct();
+					info.createdTime = createdTime;
+					info.updatedTime = updatedTime;
+					info.expireTime = expireTime;
+					List<CppArray> tagList = new List<CppArray>();
+					tags.ToList(ref tagList);
+					foreach (CppArray tag in tagList)
+						info.tags.Add(tag.ToStr());
+					return info;
+				}
 			}
 			private struct DataStoreSearchResultInt
 			{
 				private global::NexPlugin.Detail.CppArray result;
 				private uint totalCount;
 				private uint totalCountType;
-				public static global::NexPlugin.DataStoreSearchResult ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB3B*/ throw null; }
+				public static global::NexPlugin.DataStoreSearchResult ExchangePtrToStruct(global::System.IntPtr src) {
+					DataStoreSearchResultInt src_ = Detail.ExchangePtrToStruct<DataStoreSearchResultInt>(src);
+					DataStoreSearchResult searchResult = new DataStoreSearchResult();
+					searchResult.totalCount = src_.totalCount;
+					searchResult.totalCountType = (NexPlugin.DataStore.SearchResultTotalCountType)src_.totalCountType;
+					searchResult.result = src_.result.ToList<DataStoreMetaInfo, DataStoreMetaInfoInt>();
+					return searchResult;
+				}
 			}
 			private struct DataStoreRatingLogInt
 			{
@@ -1022,13 +1319,26 @@ namespace NexPlugin
 				private ulong pid;
 				private int ratingValue;
 				private bool isRated;
-				public static global::NexPlugin.DataStoreRatingLog ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB3C*/ throw null; }
+				public static global::NexPlugin.DataStoreRatingLog ExchangePtrToStruct(global::System.IntPtr src) {
+					DataStoreRatingLogInt src_ = Detail.ExchangePtrToStruct<DataStoreRatingLogInt>(src);
+					DataStoreRatingLog log = new DataStoreRatingLog();
+					log.ratingValue = src_.ratingValue;
+					log.lockExpirationTime = src_.lockExpirationTime;
+					log.pid = src_.pid;
+					log.isRated = src_.isRated;
+					return log;
+				}
 			}
 			private struct DataStorePersistenceInitParamInt
 			{
 				private ushort persistenceSlotId;
 				private byte deleteLastObject;
-				public DataStorePersistenceInitParamInt(global::NexPlugin.DataStorePersistenceInitParam param) { /*@B 0x600BB3D*/ throw null; }
+				public DataStorePersistenceInitParamInt(global::NexPlugin.DataStorePersistenceInitParam param) {
+					if (param == null)
+						param = new DataStorePersistenceInitParam();
+					persistenceSlotId = param.persistenceSlotId;
+					deleteLastObject = (byte)(param.deleteLastObject ? 1 : 0);
+				}
 			}
 			private struct DataStoreRatingInitParamInt
 			{
@@ -1041,7 +1351,19 @@ namespace NexPlugin
 				private short periodDuration;
 				private sbyte periodHour;
 				private sbyte slot;
-				public DataStoreRatingInitParamInt(global::NexPlugin.DataStoreRatingInitParam param) { /*@B 0x600BB3E*/ throw null; }
+				public DataStoreRatingInitParamInt(global::NexPlugin.DataStoreRatingInitParam param) {
+					if (param == null)
+						param = new DataStoreRatingInitParam();
+					initialValue = param.initialValue;
+					rangeMin = param.rangeMin;
+					rangeMax = param.rangeMax;
+					flag = (int)param.flag;
+					internalFlag = (int)param.internalFlag;
+					lockType = (int)param.lockType;
+					periodDuration = param.periodDuration;
+					periodHour = param.periodHour;
+					slot = param.slot;
+				}
 			}
 			private struct DataStorePreparePostParamInt
 			{
@@ -1056,14 +1378,41 @@ namespace NexPlugin
 				private uint dataFlag;
 				private ushort dataType;
 				private ushort period;
-				public DataStorePreparePostParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStorePreparePostParam param, uint size) { /*@B 0x600BB3F*/ throw null; }
-				public DataStorePreparePostParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStorePreparePostParam param) { /*@B 0x600BB40*/ throw null; }
+				public DataStorePreparePostParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStorePreparePostParam param, uint size) : this(useptr, param) {
+					this.size = size;
+				}
+				public DataStorePreparePostParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStorePreparePostParam param) {
+					if (param == null)
+						param = new DataStorePreparePostParam();
+					size = param.size;
+					dataFlag = (uint)param.flag;
+					dataType = param.dataType;
+					period = param.period;
+					accessPermission = new DataStorePermissionInt(useptr, param.accessPermission);
+					updatePermission = new DataStorePermissionInt(useptr, param.updatePermission);
+					persistenceInitParam = new DataStorePersistenceInitParamInt(param.persistenceInitParam);
+					name = CppArray.StringToArray(useptr, param.name);
+					tags = CppArray.StringsToArray(useptr, param.tags);
+					meta = CppArray.ListToArray(useptr, param.meta);
+					List<DataStoreRatingInitParamInt> ratingList = new List<DataStoreRatingInitParamInt>();
+					foreach (KeyValuePair<sbyte, DataStoreRatingInitParam> pair in param.ratingInitParams)
+					{
+						pair.Value.slot = pair.Key;
+						ratingList.Add(new DataStoreRatingInitParamInt(pair.Value));
+					}
+					ratingInitParams = CppArray.ListToArray(useptr, ratingList);
+				}
 			}
 			private struct ResultRangeInt
 			{
 				private uint offset;
 				private uint size;
-				public ResultRangeInt(global::NexPlugin.ResultRange param) { /*@B 0x600BB41*/ throw null; }
+				public ResultRangeInt(global::NexPlugin.ResultRange param) {
+					if (param == null)
+						param = new ResultRange();
+					offset = param.offset;
+					size = param.size;
+				}
 			}
 			private struct DataStoreSearchParamInt
 			{
@@ -1084,26 +1433,60 @@ namespace NexPlugin
 				private int totalCountEnabled;
 				private int useCache;
 				private global::NexPlugin.Detail.CppArray dataTypes;
-				public DataStoreSearchParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStoreSearchParam param) { /*@B 0x600BB42*/ throw null; }
+				public DataStoreSearchParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStoreSearchParam param) {
+					searchType = (uint)param.searchTarget;
+					ownerType = (uint)param.ownerType;
+					sortOrderColumn = (uint)param.resultOrderColumn;
+					sortOrder = (uint)param.resultOrder;
+					resultOption = (uint)param.resultOption;
+					minimalRatingFrequency = param.minimalRatingFrequency;
+					dataTypes = CppArray.ListToArray(useptr, param.dataTypes);
+					totalCountEnabled = param.totalCountEnabled ? 1 : 0;
+					useCache = param.useCache ? 1 : 0;
+					ownerIds = CppArray.ListToArray(useptr, param.ownerIds);
+					destinationIds = CppArray.ListToArray(useptr, param.destinationIds);
+					createdAfter = param.createdAfter;
+					createdBefore = param.createdBefore;
+					updatedAfter = param.updatedAfter;
+					updatedBefore = param.updatedBefore;
+					resultRange = new ResultRangeInt(param.resultRange);
+					tags = CppArray.StringsToArray(useptr, param.tags);
+				}
 			}
 			private struct DataStoreDeleteParamInt
 			{
 				private ulong dataId;
 				private ulong updatePassword;
-				public DataStoreDeleteParamInt(global::NexPlugin.DataStoreDeleteParam param) { /*@B 0x600BB43*/ throw null; }
+				public DataStoreDeleteParamInt(global::NexPlugin.DataStoreDeleteParam param) {
+					if (param == null)
+						param = new DataStoreDeleteParam();
+					dataId = param.dataId;
+					updatePassword = param.updatePassword;
+				}
 			}
 			private struct DataStorePrepareUpdateParamInt
 			{
 				private ulong dataId;
 				private ulong updatePassword;
 				private uint size;
-				public DataStorePrepareUpdateParamInt(global::NexPlugin.DataStorePrepareUpdateParam param) { /*@B 0x600BB44*/ throw null; }
+				public DataStorePrepareUpdateParamInt(global::NexPlugin.DataStorePrepareUpdateParam param) {
+					if (param == null)
+						param = new DataStorePrepareUpdateParam();
+					dataId = param.dataId;
+					updatePassword = param.updatePassword;
+					size = param.size;
+				}
 			}
 			private struct DataStorePersistenceTargetInt
 			{
 				private ulong ownerId;
 				private ushort persistenceSlotId;
-				public DataStorePersistenceTargetInt(global::NexPlugin.DataStorePersistenceTarget param) { /*@B 0x600BB45*/ throw null; }
+				public DataStorePersistenceTargetInt(global::NexPlugin.DataStorePersistenceTarget param) {
+					if (param == null)
+						param = new DataStorePersistenceTarget();
+					ownerId = param.ownerId;
+					persistenceSlotId = param.persistenceSlotId;
+				}
 			}
 			private struct DataStorePrepareGetParamInt
 			{
@@ -1111,13 +1494,25 @@ namespace NexPlugin
 				private ulong accessPassword;
 				private global::NexPlugin.Detail.DataStore.DataStorePersistenceTargetInt persistenceTarget;
 				private int useDataId;
-				public DataStorePrepareGetParamInt(global::NexPlugin.DataStorePrepareGetParam param) { /*@B 0x600BB46*/ throw null; }
+				public DataStorePrepareGetParamInt(global::NexPlugin.DataStorePrepareGetParam param) {
+					if (param == null)
+						param = new DataStorePrepareGetParam();
+					useDataId = param.dataId != 0 ? 1 : 0;
+					dataId = param.dataId;
+					accessPassword = param.accessPassword;
+					persistenceTarget = new DataStorePersistenceTargetInt(param.persistenceTarget);
+				}
 			}
 			private struct DataStoreTouchObjectParamInt
 			{
 				private ulong dataId;
 				private ulong accessPassword;
-				public DataStoreTouchObjectParamInt(global::NexPlugin.DataStoreTouchObjectParam param) { /*@B 0x600BB47*/ throw null; }
+				public DataStoreTouchObjectParamInt(global::NexPlugin.DataStoreTouchObjectParam param) {
+					if (param == null)
+						param = new DataStoreTouchObjectParam();
+					dataId = param.dataId;
+					accessPassword = param.accessPassword;
+				}
 			}
 			private struct DataStoreGetMetaParamInt
 			{
@@ -1126,7 +1521,15 @@ namespace NexPlugin
 				private global::NexPlugin.Detail.DataStore.DataStorePersistenceTargetInt persistenceTarget;
 				private uint resultOption;
 				private int useDataId;
-				public DataStoreGetMetaParamInt(global::NexPlugin.DataStoreGetMetaParam param) { /*@B 0x600BB48*/ throw null; }
+				public DataStoreGetMetaParamInt(global::NexPlugin.DataStoreGetMetaParam param) {
+					if (param == null)
+						param = new DataStoreGetMetaParam();
+					useDataId = param.dataId != 0 ? 1 : 0;
+					dataId = param.dataId;
+					resultOption = (uint)param.resultOption;
+					accessPassword = param.accessPassword;
+					persistenceTarget = new DataStorePersistenceTargetInt(param.persistenceTarget);
+				}
 			}
 			private struct DataStoreChangeMetaCompareParamInt
 			{
