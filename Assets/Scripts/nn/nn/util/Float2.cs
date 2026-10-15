@@ -5,7 +5,10 @@ namespace nn.util
 	{
 		public float x;
 		public float y;
-		public Float2(float x, float y) { /*@B nn:0x600001C*/ throw null; }
+		public Float2(float x, float y) {
+			this.x = x;
+			this.y = y;
+		}
 		// @02bfef80
 		public void Set(float x, float y) {
 			this.x = x;

@@ -6,7 +6,11 @@ namespace nn.util
 		public float x;
 		public float y;
 		public float z;
-		public Float3(float x, float y, float z) { /*@B nn:0x6000024*/ throw null; }
+		public Float3(float x, float y, float z) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+		}
 		// @02bff190
 		public void Set(float x, float y, float z) {
 			this.x = x;
