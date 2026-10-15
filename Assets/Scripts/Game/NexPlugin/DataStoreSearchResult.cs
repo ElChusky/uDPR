@@ -6,11 +6,22 @@ namespace NexPlugin
 		internal global::System.Collections.Generic.List<global::NexPlugin.DataStoreMetaInfo> result;
 		internal uint totalCount;
 		internal global::NexPlugin.DataStore.SearchResultTotalCountType totalCountType;
-		public DataStoreSearchResult() { /*@B 0x6002AB4*/ throw null; }
+		public DataStoreSearchResult() {
+			this.result = new global::System.Collections.Generic.List<global::NexPlugin.DataStoreMetaInfo>();
+		}
 		public uint GetTotalCount() { return this.totalCount; }
 		public global::System.Collections.Generic.List<global::NexPlugin.DataStoreMetaInfo> GetResult() { return this.result; }
 		public global::NexPlugin.DataStore.SearchResultTotalCountType GetTotalCountType() { return this.totalCountType; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002AB9*/ throw null; }
+		public override string ToString() {
+			var sb = new global::System.Text.StringBuilder();
+			sb.AppendFormat("DataStoreSearchResult: (totalCount={0}, totalCountType={1})", this.totalCount, this.totalCountType);
+			sb.AppendLine();
+			foreach (var info in this.result)
+			{
+				sb.AppendLine(info.ToString());
+			}
+			return sb.ToString();
+		}
 	}
 }

@@ -20,27 +20,46 @@ namespace NexPlugin
 		internal uint minimalRatingFrequency;
 		internal bool totalCountEnabled;
 		internal bool useCache;
-		public DataStoreSearchParam() { /*@B 0x6002AFE*/ throw null; }
+		public DataStoreSearchParam() {
+			this.Reset();
+		}
 		public void SetSearchType(global::NexPlugin.DataStore.SearchType searchType) { this.searchTarget = searchType; }
 		public global::NexPlugin.DataStore.SearchType GetSearchType() { return this.searchTarget; }
-		public void SetOwnerIds(global::System.Collections.Generic.List<ulong> ownerIds_) { /*@B 0x6002B01*/ throw null; }
+		public void SetOwnerIds(global::System.Collections.Generic.List<ulong> ownerIds_) {
+			this.ownerIds = ownerIds_ ?? new global::System.Collections.Generic.List<ulong>();
+		}
 		public global::System.Collections.Generic.List<ulong> GetOwnerIds() { return this.ownerIds; }
 		public void SetOwnerType(global::NexPlugin.DataStore.SearchTarget ownerType_) { this.ownerType = ownerType_; }
 		public global::NexPlugin.DataStore.SearchTarget GetOwnerType() { return this.ownerType; }
-		public void SetDestinationIds(global::System.Collections.Generic.List<ulong> destinationIds_) { /*@B 0x6002B05*/ throw null; }
+		public void SetDestinationIds(global::System.Collections.Generic.List<ulong> destinationIds_) {
+			this.destinationIds = destinationIds_ ?? new global::System.Collections.Generic.List<ulong>();
+		}
 		public global::System.Collections.Generic.List<ulong> GetDestinationIds() { return this.destinationIds; }
-		public void SetDataType(ushort dataType_) { /*@B 0x6002B07*/ throw null; }
-		public void SetDataType(global::System.Collections.Generic.List<ushort> dataTypes_) { /*@B 0x6002B08*/ throw null; }
-		public ushort GetDataType() { /*@B 0x6002B09*/ throw null; }
-		public void GetDataType(ref global::System.Collections.Generic.List<ushort> dataTypes_) { /*@B 0x6002B0A*/ throw null; }
-		public void SetCreatedAfter(global::NexPlugin.NpDateTime createdAfter_) { /*@B 0x6002B0B*/ throw null; }
-		public global::NexPlugin.NpDateTime GetCreatedAfter() { /*@B 0x6002B0C*/ throw null; }
-		public void SetCreatedBefore(global::NexPlugin.NpDateTime createdBefore_) { /*@B 0x6002B0D*/ throw null; }
-		public global::NexPlugin.NpDateTime GetCreatedBefore() { /*@B 0x6002B0E*/ throw null; }
-		public void SetUpdatedAfter(global::NexPlugin.NpDateTime updatedAfter_) { /*@B 0x6002B0F*/ throw null; }
-		public global::NexPlugin.NpDateTime GetUpdatedAfter() { /*@B 0x6002B10*/ throw null; }
-		public void SetUpdatedBefore(global::NexPlugin.NpDateTime updatedBefore_) { /*@B 0x6002B11*/ throw null; }
-		public global::NexPlugin.NpDateTime GetUpdatedBefore() { /*@B 0x6002B12*/ throw null; }
+		public void SetDataType(ushort dataType_) {
+			this.dataTypes.Clear();
+			this.dataTypes.Add(dataType_);
+		}
+		public void SetDataType(global::System.Collections.Generic.List<ushort> dataTypes_) {
+			this.dataTypes = dataTypes_ ?? new global::System.Collections.Generic.List<ushort>();
+		}
+		public ushort GetDataType() {
+			if (this.dataTypes.Count > 0)
+			{
+				return this.dataTypes[0];
+			}
+			return 0xFFFF;
+		}
+		public void GetDataType(ref global::System.Collections.Generic.List<ushort> dataTypes_) {
+			dataTypes_ = new global::System.Collections.Generic.List<ushort>(this.dataTypes);
+		}
+		public void SetCreatedAfter(global::NexPlugin.NpDateTime createdAfter_) { this.createdAfter = createdAfter_; }
+		public global::NexPlugin.NpDateTime GetCreatedAfter() { return this.createdAfter; }
+		public void SetCreatedBefore(global::NexPlugin.NpDateTime createdBefore_) { this.createdBefore = createdBefore_; }
+		public global::NexPlugin.NpDateTime GetCreatedBefore() { return this.createdBefore; }
+		public void SetUpdatedAfter(global::NexPlugin.NpDateTime updatedAfter_) { this.updatedAfter = updatedAfter_; }
+		public global::NexPlugin.NpDateTime GetUpdatedAfter() { return this.updatedAfter; }
+		public void SetUpdatedBefore(global::NexPlugin.NpDateTime updatedBefore_) { this.updatedBefore = updatedBefore_; }
+		public global::NexPlugin.NpDateTime GetUpdatedBefore() { return this.updatedBefore; }
 		public void SetSearchSortOrderColumn(global::NexPlugin.DataStore.SearchSortColumn resultOrderColumn_) { this.resultOrderColumn = resultOrderColumn_; }
 		public global::NexPlugin.DataStore.SearchSortColumn GetSearchSortOrderColumn() { return this.resultOrderColumn; }
 		public void SetSearchSortOrder(global::NexPlugin.DataStore.SearchSortOrder resultOrder_) { this.resultOrder = resultOrder_; }
@@ -49,16 +68,54 @@ namespace NexPlugin
 		public global::NexPlugin.ResultRange GetResultRange() { return this.resultRange; }
 		public void SetResultOption(global::NexPlugin.DataStore.ResultFlag resultOption_) { this.resultOption = resultOption_; }
 		public global::NexPlugin.DataStore.ResultFlag GetResultOption() { return this.resultOption; }
-		public void SetTags(global::System.Collections.Generic.List<string> tags_) { /*@B 0x6002B1B*/ throw null; }
+		public void SetTags(global::System.Collections.Generic.List<string> tags_) {
+			this.tags = tags_ ?? new global::System.Collections.Generic.List<string>();
+		}
 		public global::System.Collections.Generic.List<string> GetTags() { return this.tags; }
 		public void SetMinimalRatingFrequency(uint minimalRatingFrequency_) { this.minimalRatingFrequency = minimalRatingFrequency_; }
 		public uint GetMinimalRatingFrequency() { return this.minimalRatingFrequency; }
-		public void SetUseCache(bool useCache_) { /*@B 0x6002B1F*/ throw null; }
+		public void SetUseCache(bool useCache_) { this.useCache = useCache_; }
 		public bool GetUseCache() { return this.useCache; }
-		public void SetTotalCountEnabled(bool totalCountEnabled_) { /*@B 0x6002B21*/ throw null; }
+		public void SetTotalCountEnabled(bool totalCountEnabled_) { this.totalCountEnabled = totalCountEnabled_; }
 		public bool GetTotalCountEnabled() { return this.totalCountEnabled; }
-		private void Reset() { /*@B 0x6002B23*/ throw null; }
+		private void Reset() {
+			this.searchTarget = global::NexPlugin.DataStore.SearchType.SEARCH_TYPE_PUBLIC;
+			this.SetOwnerIds(new global::System.Collections.Generic.List<ulong>());
+			this.ownerType = global::NexPlugin.DataStore.SearchTarget.SEARCH_TARGET_ANYBODY;
+			this.SetDestinationIds(new global::System.Collections.Generic.List<ulong>());
+			this.SetDataType(new global::System.Collections.Generic.List<ushort>());
+			this.createdAfter = global::NexPlugin.NpDateTime.INVALID_DATE_TIME;
+			this.createdBefore = global::NexPlugin.NpDateTime.INVALID_DATE_TIME;
+			this.updatedAfter = global::NexPlugin.NpDateTime.INVALID_DATE_TIME;
+			this.updatedBefore = global::NexPlugin.NpDateTime.INVALID_DATE_TIME;
+			this.resultOrderColumn = global::NexPlugin.DataStore.SearchSortColumn.SEARCH_SORT_COLUMN_DATAID;
+			this.resultOrder = global::NexPlugin.DataStore.SearchSortOrder.SEARCH_SORT_ORDER_ASC;
+			this.resultRange = new global::NexPlugin.ResultRange(0u, 20u);
+			this.resultOption = (global::NexPlugin.DataStore.ResultFlag)0;
+			this.SetTags(new global::System.Collections.Generic.List<string>());
+			this.minimalRatingFrequency = 0;
+			this.totalCountEnabled = false;
+			this.useCache = false;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002B25*/ throw null; }
+		public override string ToString() {
+			var sb = new global::System.Text.StringBuilder();
+			sb.AppendFormat("DataStoreSearchParam: (searchTarget={0}, ", this.searchTarget);
+			sb.AppendFormat("ownerIds=({0}), ", this.ownerIds.JoinString());
+			sb.AppendFormat("ownerType={0}, ", this.ownerType);
+			sb.AppendFormat("destinationIds=({0}), ", this.destinationIds.JoinString());
+			sb.AppendFormat("dataTypes=({0}), ", this.dataTypes.JoinString());
+			sb.AppendFormat("createdAfter={0}, ", this.createdAfter.ToString());
+			sb.AppendFormat("updatedAfter={0}, ", this.updatedAfter.ToString());
+			sb.AppendFormat("resultOrderColumn={0}, ", this.resultOrderColumn);
+			sb.AppendFormat("resultOrder={0}, ", this.resultOrder);
+			sb.AppendFormat("resultRange={0}, ", this.resultRange.ToString());
+			sb.AppendFormat("resultOption={0}, ", this.resultOption);
+			sb.AppendFormat("tags=({0}), ", this.tags.JoinString());
+			sb.AppendFormat("minimalRatingFrequency={0}, ", this.minimalRatingFrequency);
+			sb.AppendFormat("useCache={0}, ", this.useCache);
+			sb.AppendFormat("totalCountEnabled={0}, ", this.totalCountEnabled);
+			return sb.ToString();
+		}
 	}
 }

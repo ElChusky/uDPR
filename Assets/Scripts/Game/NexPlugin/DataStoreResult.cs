@@ -6,6 +6,8 @@ namespace NexPlugin
 		public uint netErrCode;
 		public int returnErrCode;
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002A81*/ throw null; }
+		public override string ToString() {
+			return string.Format("DataStoreResult: (netErrCode={0}, returnErrCode={1})", this.netErrCode, this.returnErrCode);
+		}
 	}
 }

@@ -5,13 +5,21 @@ namespace NexPlugin
 	{
 		internal ulong dataId;
 		internal ulong accessPassword;
-		public DataStoreTouchObjectParam() { /*@B 0x6002B4C*/ throw null; }
+		public DataStoreTouchObjectParam() {
+			this.dataId = 0;
+			this.accessPassword = 0;
+		}
 		public void SetDataId(ulong dataId_) { this.dataId = dataId_; }
 		public ulong GetDataId() { return this.dataId; }
 		public void SetAccessPassword(ulong accessPassword_) { this.accessPassword = accessPassword_; }
 		public ulong GetAccessPassword() { return this.accessPassword; }
-		public void Reset() { /*@B 0x6002B51*/ throw null; }
+		public void Reset() {
+			this.dataId = 0;
+			this.accessPassword = 0;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002B53*/ throw null; }
+		public override string ToString() {
+			return string.Format("DataStoreTouchObjectParam: (dataId={0}, accessPassword={1})", this.dataId, this.accessPassword);
+		}
 	}
 }
