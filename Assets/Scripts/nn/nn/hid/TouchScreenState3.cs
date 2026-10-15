@@ -18,7 +18,40 @@ namespace nn.hid
 			private global::nn.hid.TouchState _value1;
 			private global::nn.hid.TouchState _value2;
 			public int Length { get { return 3; } }
-			public global::nn.hid.TouchState this[int index] { get { /*@B nn:0x600041B*/ throw null; } set { /*@B nn:0x600041C*/ throw null; } }
+			public global::nn.hid.TouchState this[int index]
+			{
+				get
+				{
+					switch (index)
+					{
+						case 0:
+							return _value0;
+						case 1:
+							return _value1;
+						case 2:
+							return _value2;
+						default:
+							throw new IndexOutOfRangeException();
+					}
+				}
+				set
+				{
+					switch (index)
+					{
+						case 0:
+							_value0 = value;
+							break;
+						case 1:
+							_value1 = value;
+							break;
+						case 2:
+							_value2 = value;
+							break;
+						default:
+							throw new IndexOutOfRangeException();
+					}
+				}
+			}
 			public int Count { get { return 3; } }
 			public bool IsReadOnly { get { return true; } }
 			// @02803bb0: the indexer and TouchState == inlined
@@ -54,8 +87,16 @@ namespace nn.hid
 			public override string ToString() {
 				return string.Format("{{{0},{1},{2}}}", _value0, _value1, _value2);
 			}
-			public global::System.Collections.Generic.IEnumerator<global::nn.hid.TouchState> GetEnumerator() { /*@B nn:0x6000423*/ throw null; }
-			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { /*@B nn:0x6000424*/ throw null; }
+			public global::System.Collections.Generic.IEnumerator<global::nn.hid.TouchState> GetEnumerator()
+			{
+				yield return _value0;
+				yield return _value1;
+				yield return _value2;
+			}
+			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
 			// @02804330 / @02804390 / @028043f0 / @02804450 / @028044b0: the array is fixed-size
 			public void Add(global::nn.hid.TouchState item) { throw new NotSupportedException(); }
 			public void Clear() { throw new NotSupportedException(); }

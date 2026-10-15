@@ -39,7 +39,45 @@ namespace nn.hid
 			private global::nn.hid.GesturePoint _value2;
 			private global::nn.hid.GesturePoint _value3;
 			public int Length { get { return 4; } }
-			public global::nn.hid.GesturePoint this[int index] { get { /*@B nn:0x60003EB*/ throw null; } set { /*@B nn:0x60003EC*/ throw null; } }
+			public global::nn.hid.GesturePoint this[int index]
+			{
+				get
+				{
+					switch (index)
+					{
+						case 0:
+							return _value0;
+						case 1:
+							return _value1;
+						case 2:
+							return _value2;
+						case 3:
+							return _value3;
+						default:
+							throw new IndexOutOfRangeException();
+					}
+				}
+				set
+				{
+					switch (index)
+					{
+						case 0:
+							_value0 = value;
+							break;
+						case 1:
+							_value1 = value;
+							break;
+						case 2:
+							_value2 = value;
+							break;
+						case 3:
+							_value3 = value;
+							break;
+						default:
+							throw new IndexOutOfRangeException();
+					}
+				}
+			}
 			public int Count { get { return 4; } }
 			public bool IsReadOnly { get { return true; } }
 			// @027d1570: the indexer and GesturePoint == inlined
@@ -75,8 +113,17 @@ namespace nn.hid
 			public override string ToString() {
 				return string.Format("{{{0},{1},{2},{3}}}", new object[] { _value0, _value1, _value2, _value3 });
 			}
-			public global::System.Collections.Generic.IEnumerator<global::nn.hid.GesturePoint> GetEnumerator() { /*@B nn:0x60003F3*/ throw null; }
-			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { /*@B nn:0x60003F4*/ throw null; }
+			public global::System.Collections.Generic.IEnumerator<global::nn.hid.GesturePoint> GetEnumerator()
+			{
+				yield return _value0;
+				yield return _value1;
+				yield return _value2;
+				yield return _value3;
+			}
+			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
 			// @027d1bc0 / @027d1c20 / @027d1c80 / @027d1ce0 / @027d1d40: the array is fixed-size
 			public void Add(global::nn.hid.GesturePoint item) { throw new NotSupportedException(); }
 			public void Clear() { throw new NotSupportedException(); }
