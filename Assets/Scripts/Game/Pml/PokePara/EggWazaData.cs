@@ -6,11 +6,53 @@ namespace Pml.PokePara
 		public const uint MAX_EGG_WAZA_NUM = 31u;
 		private bool m_isLoaded;
 		private global::XLSXContent.TamagoWazaTable.SheetData m_buffer;
-		public EggWazaData() { /*@B 0x6002530*/ throw null; }
-		public void Load(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x6002531*/ throw null; }
-		public uint GetEggWazaNum() { /*@B 0x6002532*/ throw null; }
-		public global::Pml.WazaNo GetEggWazaNo(uint eggWazaIndex) { /*@B 0x6002533*/ throw null; }
-		public bool IsContain(global::Pml.WazaNo wazano) { /*@B 0x6002534*/ throw null; }
-		private static uint GetDataID(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x6002535*/ throw null; }
+		public EggWazaData() {
+			m_buffer = null;
+			m_isLoaded = false;
+		}
+		public void Load(global::Pml.MonsNo monsno, ushort formno) {
+			uint dataID = GetDataID(monsno, formno);
+			m_buffer = global::Pml.PmlUse.Instance.TamagoWazaTable.Data[dataID];
+			m_isLoaded = true;
+		}
+		public uint GetEggWazaNum() {
+			if (!m_isLoaded)
+				return 0;
+			return (uint)m_buffer.wazaNo.Length;
+		}
+		public global::Pml.WazaNo GetEggWazaNo(uint eggWazaIndex) {
+			if (!m_isLoaded)
+				return global::Pml.WazaNo.NULL;
+
+			if (eggWazaIndex >= MAX_EGG_WAZA_NUM || eggWazaIndex >= GetEggWazaNum())
+			{
+				GFL.ASSERT(false);
+				return global::Pml.WazaNo.NULL;
+			}
+			return (global::Pml.WazaNo)m_buffer.wazaNo[eggWazaIndex];
+		}
+		public bool IsContain(global::Pml.WazaNo wazano) {
+			uint num = GetEggWazaNum();
+			for (uint i = 0; i < num; i++)
+			{
+				if (GetEggWazaNo(i) == wazano)
+					return true;
+			}
+			return false;
+		}
+		private static uint GetDataID(global::Pml.MonsNo monsno, ushort formno) {
+			if (global::Pml.Personal.PersonalSystem.GetMonsLabel(monsno) == 0)
+				return 0;
+			if (formno == 0)
+				return (uint)monsno;
+
+			global::XLSXContent.TamagoWazaTable.SheetData[] data = global::Pml.PmlUse.Instance.TamagoWazaTable.Data;
+			for (int i = (int)global::Pml.MonsNo.TAMAGO; i < data.Length; i++)
+			{
+				if (data[i].no == (ushort)monsno && data[i].formNo == formno)
+					return (uint)i;
+			}
+			return 0;
+		}
 	}
 }

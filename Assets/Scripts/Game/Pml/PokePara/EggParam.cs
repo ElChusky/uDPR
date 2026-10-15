@@ -5,12 +5,30 @@ namespace Pml.PokePara
 	{
 		public global::Pml.PokePara.InitialSpec spec;
 		public uint wazaCount;
-		public global::Pml.WazaNo[] wazano;
+		public global::Pml.WazaNo[] wazano = new global::Pml.WazaNo[4];
 		public uint ballID;
-		public bool[] isTalentDerivedFromFather;
-		public bool[] isTalentDerivedFromMother;
+		public bool[] isTalentDerivedFromFather = new bool[6];
+		public bool[] isTalentDerivedFromMother = new bool[6];
 		public uint derivedTalentCount;
 		public uint totalDeriveTalentCount;
-		public EggParam() { /*@B 0x6002502*/ throw null; }
+		public EggParam() {
+			spec = new InitialSpec();
+			wazaCount = 0;
+			ballID = 0;
+			derivedTalentCount = 0;
+			totalDeriveTalentCount = 0;
+			for (int i = 0; i < wazano.Length; i++)
+			{
+				wazano[i] = global::Pml.WazaNo.NULL;
+			}
+			for (int i = 0; i < isTalentDerivedFromFather.Length; i++)
+			{
+				isTalentDerivedFromFather[i] = false;
+			}
+			for (int i = 0; i < isTalentDerivedFromMother.Length; i++)
+			{
+				isTalentDerivedFromMother[i] = false;
+			}
+		}
 	}
 }
