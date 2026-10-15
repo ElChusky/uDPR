@@ -74,11 +74,15 @@ def build_stages():
         ("untag", "empty the runtime atlas tags of packed sprites (needed for Windows bundles)", [
             stage_cmd("sprite_untag.py", "--apply", "--project", P, "--backup", W("build", "sprite_untag_backup"))]),
         ("verify", "reimport, audits, play smoke (Unity editor)", [stage_cmd("verify.py")]),
+        ("build", "OPTIONAL (--build): standalone Windows game in Builds/ (bundles + IL2CPP player)", [stage_cmd("build.py")]),
     ]
 
 
+OPTIONAL = {"build"}
+
+
 NAMES = ["check", "export", "normalise", "merge", "wwise", "startup", "shaders", "containers", "atlas_spec", "sprite_bake",
-         "atlases", "placeholders", "sprite_restore", "d7", "untag", "verify"]
+         "atlases", "placeholders", "sprite_restore", "d7", "untag", "verify", "build"]
 
 
 def log(msg):
@@ -96,6 +100,7 @@ def main():
     ap.add_argument("--only", choices=NAMES)
     ap.add_argument("--until", choices=NAMES)
     ap.add_argument("--keep-backups", action="store_true")
+    ap.add_argument("--build", action="store_true", help="also run the optional build stage (standalone Windows game)")
     ap.add_argument("--list", action="store_true")
     a = ap.parse_args()
     global paths
@@ -129,6 +134,9 @@ def main():
             names = names[:names.index(a.until) + 1]
     for n, what, cmds in stages:
         if n not in names:
+            continue
+        if n in OPTIONAL and not (a.build or a.only == n or a.start == n):
+            log("skip %-14s (optional - add --build / setup.cmd -Build)" % n)
             continue
         if state.get(n, {}).get("done") and not (a.only or a.start):
             log("skip %-14s (done %s)" % (n, state[n]["done"]))

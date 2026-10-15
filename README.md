@@ -49,17 +49,14 @@ again: it continues where it stopped. Logs: `SetupWork\logs\`.
 Add this folder as a project in Unity Hub (Unity 2019.4.27f1), open `Assets/Scenes/level0.unity` and press Play. In the editor
 the game loads its assets straight from the project (`StartupSettings` target AssetDatabase).
 
-## Building for Windows
+## Building a standalone Windows game
 
-Menu **BDSP > Windows Build** (or `-executeMethod BdspWinBuild.WinBuild.<step>`):
+Install Unity's **Windows Build Support (IL2CPP)** module (Unity Hub > Installs > 2019.4.27f1 > Add modules) and **Visual Studio
+2022** (Build Tools or Community) with **Desktop development with C++**, then run **`setup.cmd -Build`** (after a finished setup it
+only runs the build: the shipped-bundle plan, all 13,651 asset bundles - about 40 minutes and 7 GB - and the IL2CPP player).
+The game lands in `Builds\win64_<time>\Dpr.exe`; reports in `SetupWork\build\reports\`.
 
-1. *Check* — verifies the bundle plan against the shipped manifest.
-2. *Build AssetBundles - FULL* — all 13,651 bundles plus the Windows asset manifest (`Dpr.bin`).
-3. *Build player - DEVELOPMENT / RELEASE* — the IL2CPP player in `build/win64_<time>/Dpr.exe`, with the bundles linked in.
-
-Each step restores every setting it changes; reports go to `work/winbuild/reports/`. With the environment variable
-`BDSP_BUILD_FLAVOUR=<name>` the bundles, manifest and player go to `build/bundles_win64_<name>`, `build/manifest_win64_<name>`
-and `build/win64_<name>_<time>` instead, so a rebuild never rewrites bundle files an existing player folder hard-links.
+In the editor the same steps are in the menu **BDSP > Windows Build** (each restores every setting it changes).
 
 ## PC options
 

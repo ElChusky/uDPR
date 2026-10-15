@@ -43,7 +43,7 @@ def run(method, marker=None, quit_after=False, timeout_min=0, min_disk=3.0, min_
         cmd.append("-quit")
     if paths.CFG.get("unity_batchmode"):
         cmd += ["-batchmode", "-nographics"]
-    env = dict(os.environ, BDSP_SETUP_WORK=paths.WORK)
+    env = dict(os.environ, BDSP_SETUP_WORK=paths.WORK, BDSP_DUMP_DATA=paths.DATA or "")
     proj_drive = os.path.splitdrive(paths.PROJECT)[0] + "\\"
     sys_drive = os.environ.get("SystemDrive", "C:") + "\\"
     t0 = time.time()

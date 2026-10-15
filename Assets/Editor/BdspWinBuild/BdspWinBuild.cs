@@ -41,13 +41,23 @@ namespace BdspWinBuild
         // ---- layout ------------------------------------------------------------------------------------------------------------
         static string Project { get { return Path.GetFullPath(Directory.GetCurrentDirectory()); } }
         static string Root { get { return Path.GetFullPath(Path.Combine(Project, "..")); } }
-        static string Work { get { return Path.Combine(Root, "work", "winbuild"); } }
+        // the automated setup (setup/setup.py) passes BDSP_SETUP_WORK (its work folder) and BDSP_DUMP_DATA (the dump's romfs/Data):
+        // inputs + reports then live in <work>/build, output in <project>/Builds; without them the workspace layout (Root = ..)
+        static string SetupWork { get { return Environment.GetEnvironmentVariable("BDSP_SETUP_WORK"); } }
+        static string Work { get { return string.IsNullOrEmpty(SetupWork) ? Path.Combine(Root, "work", "winbuild") : Path.Combine(SetupWork, "build"); } }
         static string Reports { get { return Path.Combine(Work, "reports"); } }
         static string Backups { get { return Path.Combine(Work, "backup"); } }
         static string StateFile { get { return Path.Combine(Work, "STATE.txt"); } }
         static string Plan(bool subset) { return Path.Combine(Work, subset ? "bundle_plan_subset.tsv" : "bundle_plan.tsv"); }
-        static string ShippedManifest { get { return Path.Combine(Root, "romfs", "Data", "StreamingAssets", "AssetAssistant", "Dpr.bin"); } }
-        static string BuildRoot { get { return Path.Combine(Root, "build"); } }
+        static string ShippedManifest
+        {
+            get
+            {
+                var data = Environment.GetEnvironmentVariable("BDSP_DUMP_DATA");
+                return Path.Combine(string.IsNullOrEmpty(data) ? Path.Combine(Root, "romfs", "Data") : data, "StreamingAssets", "AssetAssistant", "Dpr.bin");
+            }
+        }
+        static string BuildRoot { get { return string.IsNullOrEmpty(SetupWork) ? Path.Combine(Root, "build") : Path.Combine(Project, "Builds"); } }
         // s46 C5: BDSP_BUILD_FLAVOUR=<name> builds into build/bundles_win64_<name>[_side], build/manifest_win64_<name> and
         // build/win64_<name>_<stamp>, so a rebuild never rewrites the bundle files an existing player folder hard-links.
         // Unset = the original folders.

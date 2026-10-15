@@ -1,7 +1,9 @@
 # BDSP PC rebuild - one-command project setup (started by setup.cmd in the repository root).
 #
 #   setup.cmd [-Dump <folder with exefs\ and romfs\>] [-Unity <...\2019.4.27f1\Editor\Unity.exe>] [-Wwise <Unity project with the
-#             Launcher's Wwise integration>] [-Work <folder>] [-BatchMode]
+#             Launcher's Wwise integration>] [-Work <folder>] [-BatchMode] [-Build]
+#   -Build: also build the standalone Windows game (Builds\win64_<time>\Dpr.exe); needs Unity's "Windows Build Support (IL2CPP)"
+#           module and Visual Studio 2022 with "Desktop development with C++"
 #
 # What it does (each part is skipped when already done, so running it again resumes):
 #   1. finds Unity 2019.4.27f1 (Unity Hub's install folders); if missing, opens Unity Hub on that exact version and stops;
@@ -16,7 +18,8 @@ param(
     [string]$Unity,
     [string]$Wwise,
     [string]$Work,
-    [switch]$BatchMode
+    [switch]$BatchMode,
+    [switch]$Build
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'          # Invoke-WebRequest is many times slower with the progress bar
@@ -131,6 +134,7 @@ Say "Wwise: $Wwise"
 # 5. the setup proper
 $argv = @('-I', (Join-Path $PSScriptRoot 'setup.py'), '--dump', $Dump, '--unity', $Unity, '--wwise', $Wwise, '--assetripper', $ripper,
           '--work', $Work)
+if ($Build) { $argv += '--build' }
 if ($BatchMode) {
     $cfg = if (Test-Path $cfgPath) { Get-Content $cfgPath -Raw | ConvertFrom-Json } else { New-Object psobject }
     $cfg | Add-Member -NotePropertyName unity_batchmode -NotePropertyValue $true -Force
