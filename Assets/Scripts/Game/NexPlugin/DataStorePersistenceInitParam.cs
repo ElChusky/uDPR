@@ -5,13 +5,13 @@ namespace NexPlugin
 	{
 		internal ushort persistenceSlotId;
 		internal bool deleteLastObject;
-		public DataStorePersistenceInitParam(ushort persistenceSlotId = 65535, bool deleteLastObject = true) { /*@B 0x6002AC1*/ throw null; }
+		public DataStorePersistenceInitParam(ushort persistenceSlotId = 65535, bool deleteLastObject = true) { this.persistenceSlotId = persistenceSlotId; this.deleteLastObject = deleteLastObject; }
 		public void SetPersistenceSlotId(ushort persistenceSlotId_) { this.persistenceSlotId = persistenceSlotId_; }
 		public ushort GetPersistenceSlotId() { return this.persistenceSlotId; }
-		public void SetDeleteLastObject(bool deleteLastObject_) { /*@B 0x6002AC4*/ throw null; }
+		public void SetDeleteLastObject(bool deleteLastObject_) { this.deleteLastObject = deleteLastObject_; }
 		public bool GetDeleteLastObject() { return this.deleteLastObject; }
-		public void Reset() { /*@B 0x6002AC6*/ throw null; }
+		public void Reset() { this.persistenceSlotId = 65535; this.deleteLastObject = true; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002AC8*/ throw null; }
+		public override string ToString() { return string.Format("DataStorePersistenceInitParam: (persistenceSlotId={0}, deleteLastObject={1})", this.persistenceSlotId, this.deleteLastObject); }
 	}
 }

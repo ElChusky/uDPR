@@ -12,29 +12,29 @@ namespace NexPlugin
 		internal global::System.Collections.Generic.List<string> tags;
 		internal global::System.Collections.Generic.List<byte> metaBinary;
 		internal global::NexPlugin.DataStore.DataStatus status;
-		public DataStoreChangeMetaCompareParam() { /*@B 0x6002B60*/ throw null; }
-		public DataStoreChangeMetaCompareParam(global::NexPlugin.DataStore.ComparisonFlag comparisonFlag, global::NexPlugin.DataStoreMetaInfo metaInfo) { /*@B 0x6002B61*/ throw null; }
-		public void Set(global::NexPlugin.DataStore.ComparisonFlag comparisonFlag_, global::NexPlugin.DataStoreMetaInfo metaInfo_) { /*@B 0x6002B62*/ throw null; }
+		public DataStoreChangeMetaCompareParam() { Reset(); }
+		public DataStoreChangeMetaCompareParam(global::NexPlugin.DataStore.ComparisonFlag comparisonFlag, global::NexPlugin.DataStoreMetaInfo metaInfo) { Set(comparisonFlag, metaInfo); }
+		public void Set(global::NexPlugin.DataStore.ComparisonFlag comparisonFlag_, global::NexPlugin.DataStoreMetaInfo metaInfo_) { Reset(); if (metaInfo_ == null) { metaInfo_ = new global::NexPlugin.DataStoreMetaInfo(); } this.comparisonFlag = comparisonFlag_; if ((comparisonFlag_ & global::NexPlugin.DataStore.ComparisonFlag.COMPARISON_FLAG_NAME) != 0) { SetName(metaInfo_.name); } if ((comparisonFlag_ & global::NexPlugin.DataStore.ComparisonFlag.COMPARISON_FLAG_ACCESS_PERMISSION) != 0) { SetAccessPermission(metaInfo_.accessPermission); } if ((comparisonFlag_ & global::NexPlugin.DataStore.ComparisonFlag.COMPARISON_FLAG_UPDATE_PERMISSION) != 0) { SetUpdatePermission(metaInfo_.updatePermission); } if ((comparisonFlag_ & global::NexPlugin.DataStore.ComparisonFlag.COMPARISON_FLAG_PERIOD) != 0) { this.period = metaInfo_.period; } if ((comparisonFlag_ & global::NexPlugin.DataStore.ComparisonFlag.COMPARISON_FLAG_METABINARY) != 0) { SetMetaBinary(metaInfo_.metaBinary); } if ((comparisonFlag_ & global::NexPlugin.DataStore.ComparisonFlag.COMPARISON_FLAG_TAGS) != 0) { SetTags(metaInfo_.tags); } if ((comparisonFlag_ & global::NexPlugin.DataStore.ComparisonFlag.COMPARISON_FLAG_DATA_TYPE) != 0) { this.dataType = metaInfo_.dataType; } if ((comparisonFlag_ & global::NexPlugin.DataStore.ComparisonFlag.COMPARISON_FLAG_STATUS) != 0) { this.status = metaInfo_.status; } }
 		public void SetComparisonFlag(global::NexPlugin.DataStore.ComparisonFlag comparisonFlag_) { this.comparisonFlag = comparisonFlag_; }
 		public global::NexPlugin.DataStore.ComparisonFlag GetComparisonFlag() { return this.comparisonFlag; }
-		public void SetName(string name_) { /*@B 0x6002B65*/ throw null; }
+		public void SetName(string name_) { this.name = name_ ?? ""; }
 		public string GetName() { return this.name; }
-		public void SetAccessPermission(global::NexPlugin.DataStorePermission permission_) { /*@B 0x6002B67*/ throw null; }
+		public void SetAccessPermission(global::NexPlugin.DataStorePermission permission_) { if (permission_ == null) { permission_ = new global::NexPlugin.DataStorePermission(); } this.accessPermission = permission_; }
 		public global::NexPlugin.DataStorePermission GetAccessPermission() { return this.accessPermission; }
-		public void SetUpdatePermission(global::NexPlugin.DataStorePermission updatePermission_) { /*@B 0x6002B69*/ throw null; }
+		public void SetUpdatePermission(global::NexPlugin.DataStorePermission updatePermission_) { if (updatePermission_ == null) { updatePermission_ = new global::NexPlugin.DataStorePermission(); } this.updatePermission = updatePermission_; }
 		public global::NexPlugin.DataStorePermission GetUpdatePermission() { return this.updatePermission; }
 		public void SetPeriod(ushort period_) { this.period = period_; }
 		public ushort GetPeriod() { return this.period; }
-		public void SetTags(global::System.Collections.Generic.List<string> tags_) { /*@B 0x6002B6D*/ throw null; }
+		public void SetTags(global::System.Collections.Generic.List<string> tags_) { if (tags_ == null) { tags_ = new global::System.Collections.Generic.List<string>(); } this.tags = tags_; }
 		public global::System.Collections.Generic.List<string> GetTags() { return this.tags; }
-		public void SetMetaBinary(global::System.Collections.Generic.List<byte> meta) { /*@B 0x6002B6F*/ throw null; }
+		public void SetMetaBinary(global::System.Collections.Generic.List<byte> meta) { if (meta == null) { meta = new global::System.Collections.Generic.List<byte>(); } this.metaBinary = meta; }
 		public global::System.Collections.Generic.List<byte> GetMetaBinary() { return this.metaBinary; }
 		public void SetDataType(ushort dataType_) { this.dataType = dataType_; }
 		public ushort GetDataType() { return this.dataType; }
 		public void SetDataStatus(global::NexPlugin.DataStore.DataStatus status_) { this.status = status_; }
 		public global::NexPlugin.DataStore.DataStatus GetDataStatus() { return this.status; }
-		private void Reset() { /*@B 0x6002B75*/ throw null; }
+		private void Reset() { this.comparisonFlag = global::NexPlugin.DataStore.ComparisonFlag.COMPARISON_FLAG_NONE; SetName(""); this.accessPermission = new global::NexPlugin.DataStorePermission(global::NexPlugin.DataStore.Permission.PERMISSION_PRIVATE); this.updatePermission = new global::NexPlugin.DataStorePermission(global::NexPlugin.DataStore.Permission.PERMISSION_PRIVATE); this.period = 90; SetTags(new global::System.Collections.Generic.List<string>()); SetMetaBinary(new global::System.Collections.Generic.List<byte>()); this.dataType = 0; this.status = 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002B77*/ throw null; }
+		public override string ToString() { var sb = new global::System.Text.StringBuilder(); sb.AppendFormat("DataStoreChangeMetaCompareParam: (comparisonFlag={0}, ", this.comparisonFlag); sb.AppendFormat("name={0}, ", this.name); sb.AppendFormat("accessPermission=({0}), ", this.accessPermission.ToString()); sb.AppendFormat("updatePermission=({0}), ", this.updatePermission.ToString()); sb.AppendFormat("period={0}, ", this.period); sb.AppendFormat("dataType={0}, ", this.dataType); sb.AppendFormat("status={0}, ", this.status); sb.AppendFormat("tags=({0}), ", this.tags.JoinString()); sb.AppendFormat("metaBinary=({0}))", global::System.BitConverter.ToString(this.metaBinary.ToArray())); return sb.ToString(); }
 	}
 }

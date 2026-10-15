@@ -12,14 +12,14 @@ namespace NexPlugin
 		internal short periodDuration;
 		internal sbyte periodHour;
 		internal sbyte slot;
-		public DataStoreRatingInitParam() { /*@B 0x6002AD1*/ throw null; }
+		public DataStoreRatingInitParam() { Reset(); }
 		public void SetInitialValue(long initialValue_) { this.initialValue = initialValue_; }
-		public void SetRangeMin(int min_) { /*@B 0x6002AD3*/ throw null; }
-		public void SetRangeMax(int max) { /*@B 0x6002AD4*/ throw null; }
-		public void SetLock(global::NexPlugin.DataStoreRatingLockInitParam ratingLockInitParam) { /*@B 0x6002AD5*/ throw null; }
+		public void SetRangeMin(int min_) { this.rangeMin = min_; this.internalFlag |= global::NexPlugin.DataStore.RatingInternalFlag.RATING_INTERNAL_FLAG_USE_RANGE_MIN; }
+		public void SetRangeMax(int max) { this.rangeMax = max; this.internalFlag |= global::NexPlugin.DataStore.RatingInternalFlag.RATING_INTERNAL_FLAG_USE_RANGE_MAX; }
+		public void SetLock(global::NexPlugin.DataStoreRatingLockInitParam ratingLockInitParam) { if (ratingLockInitParam == null) { ratingLockInitParam = new global::NexPlugin.DataStoreRatingLockInitParam(); } this.lockType = ratingLockInitParam.lockType; this.periodDuration = ratingLockInitParam.periodDuration; this.periodHour = ratingLockInitParam.periodHour; }
 		public void SetFlag(global::NexPlugin.DataStore.RatingFlag flag_) { this.flag = flag_; }
-		public void Reset() { /*@B 0x6002AD7*/ throw null; }
+		public void Reset() { this.flag = 0; this.internalFlag = 0; this.lockType = global::NexPlugin.DataStore.RatingLockType.RATING_LOCK_NONE; this.periodDuration = 0; this.periodHour = 0; this.slot = 0; this.initialValue = 0; this.rangeMin = 0; this.rangeMax = 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002AD9*/ throw null; }
+		public override string ToString() { string s = string.Format("DataStoreRatingInitParam: (slot={0}, flag={1}, internalFlag={2}, lockType={3}, initialValue={4}, rangeMin={5}, rangeMax={6}, periodHour={7}", this.slot, this.flag, this.internalFlag, this.lockType, this.initialValue, this.rangeMin, this.rangeMax, this.periodHour); return string.Format("{0}, periodDuration={1})", s, (this.periodDuration < 0 ? (object)(global::NexPlugin.DataStore.RatingLockPeriod)this.periodDuration : (object)this.periodDuration)); }
 	}
 }

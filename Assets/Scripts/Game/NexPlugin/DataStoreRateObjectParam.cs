@@ -5,13 +5,13 @@ namespace NexPlugin
 	{
 		internal ulong accessPassword;
 		internal int ratingValue;
-		public DataStoreRateObjectParam() { /*@B 0x6002B9E*/ throw null; }
+		public DataStoreRateObjectParam() { Reset(); }
 		public void SetRatingValue(int ratingValue_) { this.ratingValue = ratingValue_; }
 		public int GetRatingValue() { return this.ratingValue; }
 		public void SetAccessPassword(ulong accessPassword_) { this.accessPassword = accessPassword_; }
 		public ulong GetAccessPassword() { return this.accessPassword; }
-		public void Reset() { /*@B 0x6002BA3*/ throw null; }
+		public void Reset() { this.ratingValue = 1; this.accessPassword = 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002BA5*/ throw null; }
+		public override string ToString() { return string.Format("DataStoreRateObjectParam: (ratingValue={0}, accessPassword={1})", this.ratingValue, this.accessPassword); }
 	}
 }

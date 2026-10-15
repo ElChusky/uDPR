@@ -20,7 +20,7 @@ namespace NexPlugin
 		internal global::System.Collections.Generic.List<string> tags;
 		internal global::System.Collections.Generic.List<global::NexPlugin.DataStoreRatingInfo> ratingInfo;
 		internal global::System.Collections.Generic.List<byte> metaBinary;
-		public DataStoreMetaInfo() { /*@B 0x6002A9F*/ throw null; }
+		public DataStoreMetaInfo() { this.dataId = 0; this.accessPermission = new global::NexPlugin.DataStorePermission(); this.updatePermission = new global::NexPlugin.DataStorePermission(); this.tags = new global::System.Collections.Generic.List<string>(); this.ratingInfo = new global::System.Collections.Generic.List<global::NexPlugin.DataStoreRatingInfo>(); this.metaBinary = new global::System.Collections.Generic.List<byte>(); }
 		public ulong GetDataId() { return this.dataId; }
 		public ulong GetOwnerId() { return this.ownerId; }
 		public uint GetSize() { return this.size; }
@@ -28,18 +28,18 @@ namespace NexPlugin
 		public ushort GetDataType() { return this.dataType; }
 		public global::NexPlugin.DataStorePermission GetAccessPermission() { return this.accessPermission; }
 		public global::NexPlugin.DataStorePermission GetUpdatePermission() { return this.updatePermission; }
-		public global::NexPlugin.NpDateTime GetCreatedTime() { /*@B 0x6002AA7*/ throw null; }
-		public global::NexPlugin.NpDateTime GetUpdatedTime() { /*@B 0x6002AA8*/ throw null; }
+		public global::NexPlugin.NpDateTime GetCreatedTime() { return this.createdTime; }
+		public global::NexPlugin.NpDateTime GetUpdatedTime() { return this.updatedTime; }
 		public ushort GetPeriod() { return this.period; }
 		public global::NexPlugin.DataStore.DataStatus GetDataStatus() { return this.status; }
 		public uint GetReferDataId() { return this.referDataId; }
 		public global::NexPlugin.DataStore.DataFlag GetDataFlag() { return this.flag; }
-		public global::NexPlugin.NpDateTime GetExpireTime() { /*@B 0x6002AAD*/ throw null; }
+		public global::NexPlugin.NpDateTime GetExpireTime() { return this.expireTime; }
 		public global::System.Collections.Generic.List<string> GetTags() { return this.tags; }
 		public global::System.Collections.Generic.List<global::NexPlugin.DataStoreRatingInfo> GetRating() { return this.ratingInfo; }
 		public global::System.Collections.Generic.List<byte> GetMetaBinary() { return this.metaBinary; }
-		public bool IsValid() { /*@B 0x6002AB1*/ throw null; }
+		public bool IsValid() { return this.dataId != 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002AB3*/ throw null; }
+		public override string ToString() { if (this.dataId == 0) { return "DataStoreMetaInfo: (data is invalid)"; } var sb = new global::System.Text.StringBuilder(); sb.AppendFormat("DataStoreMetaInfo: (dataId={0}, ", this.dataId); sb.AppendFormat("ownerId={0}, ", this.ownerId); sb.AppendFormat("size={0}, ", this.size); sb.AppendFormat("name={0}, ", this.name); sb.AppendFormat("dataType={0}, ", this.dataType); sb.AppendFormat("accessPermission=({0}), ", this.accessPermission.ToString()); sb.AppendFormat("updatePermission=({0}), ", this.updatePermission.ToString()); sb.AppendFormat("createdTime=({0}), ", this.createdTime.ToString()); sb.AppendFormat("updatedTime=({0}), ", this.updatedTime.ToString()); sb.AppendFormat("period={0}, ", this.period); sb.AppendFormat("status={0}, ", this.status); sb.AppendFormat("referDataId={0}, ", this.referDataId); sb.AppendFormat("dataFlag={0}, ", this.flag); sb.AppendFormat("expireTime=({0}), ", this.expireTime.ToString()); sb.AppendFormat("tags=({0}), ", this.tags.JoinString()); sb.AppendFormat("ratings=({0}), ", this.ratingInfo.JoinString()); sb.AppendFormat("metaBinary=({0}))", global::System.BitConverter.ToString(this.metaBinary.ToArray())); return sb.ToString(); }
 	}
 }

@@ -6,13 +6,13 @@ namespace NexPlugin
 		internal global::NexPlugin.DataStore.RatingLockType lockType;
 		internal short periodDuration;
 		internal sbyte periodHour;
-		public DataStoreRatingLockInitParam() { /*@B 0x6002AC9*/ throw null; }
-		private void Reset() { /*@B 0x6002ACA*/ throw null; }
-		public void SetIntervalLock(short intervalSec) { /*@B 0x6002ACB*/ throw null; }
-		public void SetPeriodicLock(global::NexPlugin.DataStore.RatingLockPeriod period, sbyte hour) { /*@B 0x6002ACC*/ throw null; }
-		public void SetDaysAfterLock(short days, sbyte hour) { /*@B 0x6002ACD*/ throw null; }
-		public void SetPermanentLock() { /*@B 0x6002ACE*/ throw null; }
+		public DataStoreRatingLockInitParam() { Reset(); }
+		private void Reset() { this.lockType = global::NexPlugin.DataStore.RatingLockType.RATING_LOCK_NONE; this.periodDuration = 0; this.periodHour = 0; }
+		public void SetIntervalLock(short intervalSec) { if (intervalSec >= 0) { this.lockType = global::NexPlugin.DataStore.RatingLockType.RATING_LOCK_INTERVAL; this.periodDuration = intervalSec; this.periodHour = 0; } }
+		public void SetPeriodicLock(global::NexPlugin.DataStore.RatingLockPeriod period, sbyte hour) { if (hour >= -23 && hour <= 23 && period < 0) { this.lockType = global::NexPlugin.DataStore.RatingLockType.RATING_LOCK_PERIOD; this.periodDuration = (short)period; this.periodHour = hour; } }
+		public void SetDaysAfterLock(short days, sbyte hour) { if (hour >= -23 && hour <= 23 && days >= 0) { this.lockType = global::NexPlugin.DataStore.RatingLockType.RATING_LOCK_PERIOD; this.periodDuration = days; this.periodHour = hour; } }
+		public void SetPermanentLock() { this.lockType = global::NexPlugin.DataStore.RatingLockType.RATING_LOCK_PERMANENT; this.periodDuration = 0; this.periodHour = 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002AD0*/ throw null; }
+		public override string ToString() { return string.Format("DataStoreRatingLockInitParam: (lockType={0}, periodHour={1}, periodDuration={2})", this.lockType, this.periodHour, (this.periodDuration < 0 ? (object)(global::NexPlugin.DataStore.RatingLockPeriod)this.periodDuration : (object)this.periodDuration)); }
 	}
 }

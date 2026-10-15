@@ -6,15 +6,15 @@ namespace NexPlugin
 		internal ulong dataId;
 		internal ulong accessPassword;
 		internal global::NexPlugin.DataStorePersistenceTarget persistenceTarget;
-		public DataStorePrepareGetParam() { /*@B 0x6002B42*/ throw null; }
-		public void SetDataId(ulong dataId_) { /*@B 0x6002B43*/ throw null; }
+		public DataStorePrepareGetParam() { Reset(); }
+		public void SetDataId(ulong dataId_) { if (this.persistenceTarget.Equals(new global::NexPlugin.DataStorePersistenceTarget())) { this.dataId = dataId_; } }
 		public ulong GetDataId() { return this.dataId; }
-		public void SetPersistenceTarget(global::NexPlugin.DataStorePersistenceTarget persistenceTarget_) { /*@B 0x6002B45*/ throw null; }
+		public void SetPersistenceTarget(global::NexPlugin.DataStorePersistenceTarget persistenceTarget_) { if (this.dataId != 0) { return; } if (persistenceTarget_ == null) { persistenceTarget_ = new global::NexPlugin.DataStorePersistenceTarget(); } this.persistenceTarget = persistenceTarget_; }
 		public global::NexPlugin.DataStorePersistenceTarget GetPersistenceTarget() { return this.persistenceTarget; }
 		public void SetAccessPassword(ulong accessPassword_) { this.accessPassword = accessPassword_; }
 		public ulong GetAccessPassword() { return this.accessPassword; }
-		public void Reset() { /*@B 0x6002B49*/ throw null; }
+		public void Reset() { this.dataId = 0; this.persistenceTarget = new global::NexPlugin.DataStorePersistenceTarget(); this.accessPassword = 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002B4B*/ throw null; }
+		public override string ToString() { return string.Format("DataStorePrepareGetParam: (dataId={0}, persistenceTarget=({1}), accessPassword={2})", this.dataId, this.persistenceTarget.ToString(), this.accessPassword); }
 	}
 }

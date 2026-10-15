@@ -14,33 +14,33 @@ namespace NexPlugin
 		internal global::System.Collections.Generic.Dictionary<sbyte, global::NexPlugin.DataStoreRatingInitParam> ratingInitParams;
 		internal global::System.Collections.Generic.List<byte> meta;
 		internal global::NexPlugin.DataStorePersistenceInitParam persistenceInitParam;
-		public DataStorePreparePostParam() { /*@B 0x6002ADA*/ throw null; }
+		public DataStorePreparePostParam() { Reset(); }
 		public void SetSize(uint size_) { this.size = size_; }
 		public uint GetSize() { return this.size; }
-		public void SetName(string name_) { /*@B 0x6002ADD*/ throw null; }
+		public void SetName(string name_) { this.name = name_ ?? ""; }
 		public string GetName() { return this.name; }
 		public void SetDataType(ushort dataType_) { this.dataType = dataType_; }
 		public ushort GetDataType() { return this.dataType; }
-		public void SetAccessPermission(global::NexPlugin.DataStorePermission permission_) { /*@B 0x6002AE1*/ throw null; }
+		public void SetAccessPermission(global::NexPlugin.DataStorePermission permission_) { if (permission_ == null) { permission_ = new global::NexPlugin.DataStorePermission(); } this.accessPermission = permission_; }
 		public global::NexPlugin.DataStorePermission GetAccessPermission() { return this.accessPermission; }
-		public void SetUpdatePermission(global::NexPlugin.DataStorePermission updatePermission_) { /*@B 0x6002AE3*/ throw null; }
+		public void SetUpdatePermission(global::NexPlugin.DataStorePermission updatePermission_) { if (updatePermission_ == null) { updatePermission_ = new global::NexPlugin.DataStorePermission(); } this.updatePermission = updatePermission_; }
 		public global::NexPlugin.DataStorePermission GetUpdatePermission() { return this.updatePermission; }
 		public void SetDataFlag(global::NexPlugin.DataStore.DataFlag flag_) { this.flag = flag_; }
 		public global::NexPlugin.DataStore.DataFlag GetDataFlag() { return this.flag; }
 		public void SetPeriod(ushort period_) { this.period = period_; }
 		public ushort GetPeriod() { return this.period; }
-		public void SetTags(global::System.Collections.Generic.List<string> tags_) { /*@B 0x6002AE9*/ throw null; }
+		public void SetTags(global::System.Collections.Generic.List<string> tags_) { if (tags_ == null) { tags_ = new global::System.Collections.Generic.List<string>(); } this.tags = tags_; }
 		public global::System.Collections.Generic.List<string> GetTags() { return this.tags; }
-		public void SetRatingSetting(global::System.Collections.Generic.Dictionary<sbyte, global::NexPlugin.DataStoreRatingInitParam> ratingInitParam) { /*@B 0x6002AEB*/ throw null; }
-		public void ClearRatingSetting() { /*@B 0x6002AEC*/ throw null; }
-		public bool AddRatingSetting(sbyte slot, global::NexPlugin.DataStoreRatingInitParam ratingInitParam) { /*@B 0x6002AED*/ throw null; }
+		public void SetRatingSetting(global::System.Collections.Generic.Dictionary<sbyte, global::NexPlugin.DataStoreRatingInitParam> ratingInitParam) { if (ratingInitParam == null) { ratingInitParam = new global::System.Collections.Generic.Dictionary<sbyte, global::NexPlugin.DataStoreRatingInitParam>(); } this.ratingInitParams = ratingInitParam; }
+		public void ClearRatingSetting() { this.ratingInitParams.Clear(); }
+		public bool AddRatingSetting(sbyte slot, global::NexPlugin.DataStoreRatingInitParam ratingInitParam) { if (ratingInitParam == null || this.ratingInitParams.ContainsKey(slot)) { return false; } this.ratingInitParams.Add(slot, ratingInitParam); return true; }
 		public global::System.Collections.Generic.Dictionary<sbyte, global::NexPlugin.DataStoreRatingInitParam> GetRatingSetting() { return this.ratingInitParams; }
-		public void SetMetaBinary(global::System.Collections.Generic.List<byte> meta_) { /*@B 0x6002AEF*/ throw null; }
+		public void SetMetaBinary(global::System.Collections.Generic.List<byte> meta_) { if (meta_ == null) { meta_ = new global::System.Collections.Generic.List<byte>(); } this.meta = meta_; }
 		public global::System.Collections.Generic.List<byte> GetMetaBinary() { return this.meta; }
-		public void SetPersistenceInitParam(global::NexPlugin.DataStorePersistenceInitParam persistenceInitParam_) { /*@B 0x6002AF1*/ throw null; }
+		public void SetPersistenceInitParam(global::NexPlugin.DataStorePersistenceInitParam persistenceInitParam_) { if (persistenceInitParam_ == null) { persistenceInitParam_ = new global::NexPlugin.DataStorePersistenceInitParam(); } this.persistenceInitParam = persistenceInitParam_; }
 		public global::NexPlugin.DataStorePersistenceInitParam GetPersistenceInitParam() { return this.persistenceInitParam; }
-		public void Reset() { /*@B 0x6002AF3*/ throw null; }
+		public void Reset() { this.size = 0; SetName(""); this.dataType = 0; this.accessPermission = new global::NexPlugin.DataStorePermission(global::NexPlugin.DataStore.Permission.PERMISSION_PRIVATE); this.updatePermission = new global::NexPlugin.DataStorePermission(global::NexPlugin.DataStore.Permission.PERMISSION_PRIVATE); this.flag = global::NexPlugin.DataStore.DataFlag.DATA_FLAG_NONE; this.period = 90; SetTags(new global::System.Collections.Generic.List<string>()); SetMetaBinary(new global::System.Collections.Generic.List<byte>()); SetPersistenceInitParam(new global::NexPlugin.DataStorePersistenceInitParam()); SetRatingSetting(new global::System.Collections.Generic.Dictionary<sbyte, global::NexPlugin.DataStoreRatingInitParam>()); }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002AF5*/ throw null; }
+		public override string ToString() { var sb = new global::System.Text.StringBuilder(); sb.AppendFormat("DataStorePreparePostParam: (size={0}, ", this.size); sb.AppendFormat("name={0}, ", this.name); sb.AppendFormat("dataType={0}, ", this.dataType); sb.AppendFormat("accessPermission=({0}), ", this.accessPermission.ToString()); sb.AppendFormat("updatePermission=({0}), ", this.updatePermission.ToString()); sb.AppendFormat("dataFlag={0}, ", this.flag); sb.AppendFormat("period={0}, ", this.period); sb.AppendFormat("persistenceInitParam=({0}), ", this.persistenceInitParam.ToString()); sb.AppendFormat("ratingInitParams=({0}), ", this.ratingInitParams.JoinString()); sb.AppendFormat("tags=({0}), ", this.tags.JoinString()); sb.AppendFormat("metaBinary=({0}))", global::System.BitConverter.ToString(this.meta.ToArray())); return sb.ToString(); }
 	}
 }

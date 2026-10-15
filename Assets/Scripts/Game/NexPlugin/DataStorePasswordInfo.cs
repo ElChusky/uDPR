@@ -6,12 +6,12 @@ namespace NexPlugin
 		internal ulong dataId;
 		internal ulong accessPassword;
 		internal ulong updatePassword;
-		public DataStorePasswordInfo() { /*@B 0x6002A8F*/ throw null; }
+		public DataStorePasswordInfo() { this.accessPassword = 0; this.updatePassword = 0; this.dataId = 0; }
 		public ulong GetDataId() { return this.dataId; }
 		public ulong GetAccessPassword() { return this.accessPassword; }
 		public ulong GetUpdatePassword() { return this.updatePassword; }
-		public bool IsValid() { /*@B 0x6002A93*/ throw null; }
+		public bool IsValid() { return this.dataId != 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002A95*/ throw null; }
+		public override string ToString() { if (this.dataId == 0) { return "DataStorePasswordInfo: (data is invalid)"; } return string.Format("DataStorePasswordInfo: (dataId={0}, accessPassword={1}, updatePassword={2})", this.dataId, this.accessPassword, this.updatePassword); }
 	}
 }
