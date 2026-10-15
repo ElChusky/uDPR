@@ -14,7 +14,7 @@ namespace XLSXContent
 		public global::XLSXContent.ShopTable.SheetBoutiqueShop[] BoutiqueShop;
 		public global::XLSXContent.ShopTable.SheetPalParkShop[] PalParkShop;
 		public global::XLSXContent.ShopTable.SheetTobariDepartment4FShop[] TobariDepartment4FShop;
-		public global::XLSXContent.ShopTable.SheetFS this[int index] { get { /*@B 0x60091BD*/ throw null; } }
+		public global::XLSXContent.ShopTable.SheetFS this[int index] { get { return FS[index]; } }
 		public ShopTable() { }
 		[global::System.Serializable]
 		public class SheetFS

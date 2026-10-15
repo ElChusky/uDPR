@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UgItemTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UgItemTable.Sheettable[] table;
-		public global::XLSXContent.UgItemTable.Sheettable this[int index] { get { /*@B 0x6009222*/ throw null; } }
+		public global::XLSXContent.UgItemTable.Sheettable this[int index] { get { return table[index]; } }
 		public UgItemTable() { }
 		[global::System.Serializable]
 		public class Sheettable

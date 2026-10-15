@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class Pedestal : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.Pedestal.SheetInfo[] Info;
-		public global::XLSXContent.Pedestal.SheetInfo this[int index] { get { /*@B 0x600926B*/ throw null; } }
+		public global::XLSXContent.Pedestal.SheetInfo this[int index] { get { return Info[index]; } }
 		public Pedestal() { }
 		[global::System.Serializable]
 		public class SheetInfo

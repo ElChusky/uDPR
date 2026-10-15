@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class ZenmetuZone : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.ZenmetuZone.Sheetdata[] data;
-		public global::XLSXContent.ZenmetuZone.Sheetdata this[int index] { get { /*@B 0x60091C9*/ throw null; } }
+		public global::XLSXContent.ZenmetuZone.Sheetdata this[int index] { get { return data[index]; } }
 		public ZenmetuZone() { }
 		[global::System.Serializable]
 		public class Sheetdata

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class StoneBoxRawData : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.StoneBoxRawData.SheetBox[] Box;
-		public global::XLSXContent.StoneBoxRawData.SheetBox this[int index] { get { /*@B 0x6009237*/ throw null; } }
+		public global::XLSXContent.StoneBoxRawData.SheetBox this[int index] { get { return Box[index]; } }
 		public StoneBoxRawData() { }
 		[global::System.Serializable]
 		public class SheetBox

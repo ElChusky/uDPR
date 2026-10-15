@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class TamaTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.TamaTable.Sheettable[] table;
-		public global::XLSXContent.TamaTable.Sheettable this[int index] { get { /*@B 0x6009219*/ throw null; } }
+		public global::XLSXContent.TamaTable.Sheettable this[int index] { get { return table[index]; } }
 		public TamaTable() { }
 		[global::System.Serializable]
 		public class Sheettable

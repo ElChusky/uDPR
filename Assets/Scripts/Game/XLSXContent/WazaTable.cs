@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.WazaTable.SheetWaza[] Waza;
 		public global::XLSXContent.WazaTable.SheetYubiwohuru[] Yubiwohuru;
-		public global::XLSXContent.WazaTable.SheetWaza this[int index] { get { /*@B 0x6009225*/ throw null; } }
+		public global::XLSXContent.WazaTable.SheetWaza this[int index] { get { return Waza[index]; } }
 		public WazaTable() { }
 		[global::System.Serializable]
 		public class SheetWaza

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UgFatherExpansion : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UgFatherExpansion.SheetExpansion[] Expansion;
-		public global::XLSXContent.UgFatherExpansion.SheetExpansion this[int index] { get { /*@B 0x600921C*/ throw null; } }
+		public global::XLSXContent.UgFatherExpansion.SheetExpansion this[int index] { get { return Expansion[index]; } }
 		public UgFatherExpansion() { }
 		[global::System.Serializable]
 		public class SheetExpansion

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class SecretbaseUpgrade : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.SecretbaseUpgrade.Sheetinfo[] info;
-		public global::XLSXContent.SecretbaseUpgrade.Sheetinfo this[int index] { get { /*@B 0x600926D*/ throw null; } }
+		public global::XLSXContent.SecretbaseUpgrade.Sheetinfo this[int index] { get { return info[index]; } }
 		public SecretbaseUpgrade() { }
 		[global::System.Serializable]
 		public class Sheetinfo

@@ -36,7 +36,7 @@ namespace XLSXContent
 		public global::XLSXContent.UIDatabase.SheetBoxOpenParam[] BoxOpenParam;
 		public global::XLSXContent.UIDatabase.SheetSealTemplate[] SealTemplate;
 		public global::XLSXContent.UIDatabase.SheetRankingDisplay[] RankingDisplay;
-		public global::XLSXContent.UIDatabase.SheetUIWindow this[int index] { get { /*@B 0x6009205*/ throw null; } }
+		public global::XLSXContent.UIDatabase.SheetUIWindow this[int index] { get { return UIWindow[index]; } }
 		public UIDatabase() { }
 		[global::System.Serializable]
 		public class SheetUIWindow

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class MoveAfterSaveGrid : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.MoveAfterSaveGrid.Sheetdata[] data;
-		public global::XLSXContent.MoveAfterSaveGrid.Sheetdata this[int index] { get { /*@B 0x60091B8*/ throw null; } }
+		public global::XLSXContent.MoveAfterSaveGrid.Sheetdata this[int index] { get { return data[index]; } }
 		public MoveAfterSaveGrid() { }
 		[global::System.Serializable]
 		public class Sheetdata

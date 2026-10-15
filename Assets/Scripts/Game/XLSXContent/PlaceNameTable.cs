@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class PlaceNameTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.PlaceNameTable.SheetDprPlaceName[] DprPlaceName;
-		public global::XLSXContent.PlaceNameTable.SheetDprPlaceName this[int index] { get { /*@B 0x60091BB*/ throw null; } }
+		public global::XLSXContent.PlaceNameTable.SheetDprPlaceName this[int index] { get { return DprPlaceName[index]; } }
 		public PlaceNameTable() { }
 		[global::System.Serializable]
 		public class SheetDprPlaceName

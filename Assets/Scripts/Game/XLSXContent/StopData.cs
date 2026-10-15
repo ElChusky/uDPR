@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class StopData : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.StopData.SheetData[] Data;
-		public global::XLSXContent.StopData.SheetData this[int index] { get { /*@B 0x60091BF*/ throw null; } }
+		public global::XLSXContent.StopData.SheetData this[int index] { get { return Data[index]; } }
 		public StopData() { }
 		[global::System.Serializable]
 		public class SheetData

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class StoneStatuEeffect : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.StoneStatuEeffect.Sheettable[] table;
-		public global::XLSXContent.StoneStatuEeffect.Sheettable this[int index] { get { /*@B 0x6009217*/ throw null; } }
+		public global::XLSXContent.StoneStatuEeffect.Sheettable this[int index] { get { return table[index]; } }
 		public StoneStatuEeffect() { }
 		[global::System.Serializable]
 		public class Sheettable

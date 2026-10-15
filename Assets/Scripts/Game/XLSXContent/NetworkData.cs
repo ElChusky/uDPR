@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.NetworkData.SheetErrorLogInfo[] ErrorLogInfo;
 		public global::XLSXContent.NetworkData.SheetErrorDialogInfo[] ErrorDialogInfo;
-		public global::XLSXContent.NetworkData.SheetErrorLogInfo this[int index] { get { /*@B 0x600920B*/ throw null; } }
+		public global::XLSXContent.NetworkData.SheetErrorLogInfo this[int index] { get { return ErrorLogInfo[index]; } }
 		public NetworkData() { }
 		[global::System.Serializable]
 		public class SheetErrorLogInfo

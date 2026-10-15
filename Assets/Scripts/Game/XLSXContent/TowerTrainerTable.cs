@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.TowerTrainerTable.SheetTrainerData[] TrainerData;
 		public global::XLSXContent.TowerTrainerTable.SheetTrainerPoke[] TrainerPoke;
-		public global::XLSXContent.TowerTrainerTable.SheetTrainerData this[int index] { get { /*@B 0x60091F7*/ throw null; } }
+		public global::XLSXContent.TowerTrainerTable.SheetTrainerData this[int index] { get { return TrainerData[index]; } }
 		public TowerTrainerTable() { }
 		[global::System.Serializable]
 		public class SheetTrainerData

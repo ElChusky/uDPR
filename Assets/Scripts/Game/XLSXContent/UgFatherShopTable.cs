@@ -11,27 +11,27 @@ namespace XLSXContent
 		public global::XLSXContent.UgFatherShopTable.Sheetsale01[] sale01;
 		public global::XLSXContent.UgFatherShopTable.Sheetsale02[] sale02;
 		public global::XLSXContent.UgFatherShopTable.SheetshopListData[] shopListData;
-		public global::XLSXContent.UgFatherShopTable.Sheetbuy01 this[int index] { get { /*@B 0x6009220*/ throw null; } }
+		public global::XLSXContent.UgFatherShopTable.Sheetbuy01 this[int index] { get { return buy01[index]; } }
 		public UgFatherShopTable() { }
 		[global::System.Serializable]
 		public class Sheetbuy01 : global::XLSXContent.UgFatherShopTable.SheetBuyBase
 		{
-			public Sheetbuy01() { /*@B 0x600BA86*/ throw null; }
+			public Sheetbuy01() { }
 		}
 		[global::System.Serializable]
 		public class Sheetbuy01diz : global::XLSXContent.UgFatherShopTable.SheetBuydizBase
 		{
-			public Sheetbuy01diz() { /*@B 0x600BA87*/ throw null; }
+			public Sheetbuy01diz() { }
 		}
 		[global::System.Serializable]
 		public class Sheetbuy02 : global::XLSXContent.UgFatherShopTable.SheetBuyBase
 		{
-			public Sheetbuy02() { /*@B 0x600BA88*/ throw null; }
+			public Sheetbuy02() { }
 		}
 		[global::System.Serializable]
 		public class Sheetbuy02diz : global::XLSXContent.UgFatherShopTable.SheetBuydizBase
 		{
-			public Sheetbuy02diz() { /*@B 0x600BA89*/ throw null; }
+			public Sheetbuy02diz() { }
 		}
 		public class SheetBuydizBase : global::XLSXContent.UgFatherShopTable.SheetBuyBase
 		{
@@ -42,7 +42,7 @@ namespace XLSXContent
 			public bool Thursday;
 			public bool Friday;
 			public bool Saturday;
-			public SheetBuydizBase() { /*@B 0x600BA8A*/ throw null; }
+			public SheetBuydizBase() { }
 		}
 		public class SheetBuyBase
 		{

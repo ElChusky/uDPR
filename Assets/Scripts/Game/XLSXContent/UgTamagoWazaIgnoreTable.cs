@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UgTamagoWazaIgnoreTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UgTamagoWazaIgnoreTable.SheetSheet1[] Sheet1;
-		public global::XLSXContent.UgTamagoWazaIgnoreTable.SheetSheet1 this[int index] { get { /*@B 0x6009285*/ throw null; } }
+		public global::XLSXContent.UgTamagoWazaIgnoreTable.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public UgTamagoWazaIgnoreTable() { }
 		[global::System.Serializable]
 		public class SheetSheet1

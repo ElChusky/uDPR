@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class NotesInfo : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.NotesInfo.SheetNoteData[] NoteData;
-		public global::XLSXContent.NotesInfo.SheetNoteData this[int index] { get { /*@B 0x600922F*/ throw null; } }
+		public global::XLSXContent.NotesInfo.SheetNoteData this[int index] { get { return NoteData[index]; } }
 		public NotesInfo() { }
 		[global::System.Serializable]
 		public class SheetNoteData

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class WaterSettings : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.WaterSettings.SheetSettings[] Settings;
-		public global::XLSXContent.WaterSettings.SheetSettings this[int index] { get { /*@B 0x6009207*/ throw null; } }
+		public global::XLSXContent.WaterSettings.SheetSettings this[int index] { get { return Settings[index]; } }
 		public WaterSettings() { }
 		[global::System.Serializable]
 		public class SheetSettings

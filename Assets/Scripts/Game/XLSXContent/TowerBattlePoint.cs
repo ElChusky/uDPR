@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class TowerBattlePoint : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.TowerBattlePoint.Sheetpoint[] point;
-		public global::XLSXContent.TowerBattlePoint.Sheetpoint this[int index] { get { /*@B 0x60091EF*/ throw null; } }
+		public global::XLSXContent.TowerBattlePoint.Sheetpoint this[int index] { get { return point[index]; } }
 		public TowerBattlePoint() { }
 		[global::System.Serializable]
 		public class Sheetpoint

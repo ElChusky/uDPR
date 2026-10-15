@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class UgEncountLevel : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.UgEncountLevel.SheetData[] Data;
-		public global::XLSXContent.UgEncountLevel.SheetData this[int index] { get { /*@B 0x6009271*/ throw null; } }
+		public global::XLSXContent.UgEncountLevel.SheetData this[int index] { get { return Data[index]; } }
 		public UgEncountLevel() { }
 		[global::System.Serializable]
 		public class SheetData
