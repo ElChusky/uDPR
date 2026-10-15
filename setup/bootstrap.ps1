@@ -116,7 +116,10 @@ if (-not (Wwise-Ready)) {
     if (-not (Test-Path (Join-Path $Wwise 'ProjectSettings'))) {
         Say "creating an empty Unity project for the Wwise integration: $Wwise (a Unity window opens and closes)"
         for ($i = 0; $i -lt 3 -and -not (Test-Path (Join-Path $Wwise 'ProjectSettings')); $i++) {
-            Start-Process -FilePath $Unity -ArgumentList @('-quit', '-createProject', "`"$Wwise`"", '-logFile', "`"$(Join-Path $Work 'wwise_create_project.log')`"") -Wait
+            # wait for Unity itself only: Start-Process -Wait would also wait for the C# compiler server (VBCSCompiler) Unity
+            # leaves running for minutes after a compile
+            $proc = Start-Process -FilePath $Unity -ArgumentList @('-quit', '-createProject', "`"$Wwise`"", '-logFile', "`"$(Join-Path $Work 'wwise_create_project.log')`"") -PassThru
+            $proc.WaitForExit()
         }
         if (-not (Test-Path (Join-Path $Wwise 'ProjectSettings'))) { Fail "Unity could not create $Wwise (see SetupWork\wwise_create_project.log)" }
     }
