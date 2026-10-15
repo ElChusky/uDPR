@@ -6,11 +6,6 @@
 > **Made with AI.** This project was made almost entirely with AI - Claude (Anthropic), through Claude Code - directed, tested and
 > reviewed by a human.
 
-<p align="center">
-  <img src="docs/screenshots/route201.jpg" width="49%" alt="Route 201 at 1920x1080">
-  <img src="docs/screenshots/pc_options.jpg" width="49%" alt="The PC rows of the Options menu">
-</p>
-
 **No game files are included.** You need your own legally obtained copy of Pokémon Brilliant Diamond, updated to v1.3.0 and
 dumped from your own Switch. How to dump it is not covered here.
 
