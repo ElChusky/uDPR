@@ -161,7 +161,7 @@ def main():
         state[n] = {"done": datetime.datetime.now().isoformat(timespec="seconds")}
         with open(state_path, "w", encoding="utf-8") as f:
             json.dump(state, f, indent=1)
-    log("finished: %s" % ", ".join(names))
+    log("finished: %s" % ", ".join(n for n in names if state.get(n, {}).get("done")))
 
 
 if __name__ == "__main__":
