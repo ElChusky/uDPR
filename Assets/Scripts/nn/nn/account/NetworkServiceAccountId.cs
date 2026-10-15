@@ -16,7 +16,7 @@ namespace nn.account
 		public bool Equals(global::nn.account.NetworkServiceAccountId other) { return id == other.id; }
 		// @027c7520: boxes this and calls ValueType.GetHashCode
 		public override int GetHashCode() { return base.GetHashCode(); }
-		public static bool operator ==(global::nn.account.NetworkServiceAccountId lhs, global::nn.account.NetworkServiceAccountId rhs) { /*@B nn:0x6000368*/ throw null; }
-		public static bool operator !=(global::nn.account.NetworkServiceAccountId lhs, global::nn.account.NetworkServiceAccountId rhs) { /*@B nn:0x6000369*/ throw null; }
+		public static bool operator ==(global::nn.account.NetworkServiceAccountId lhs, global::nn.account.NetworkServiceAccountId rhs) { return lhs.id == rhs.id; }
+		public static bool operator !=(global::nn.account.NetworkServiceAccountId lhs, global::nn.account.NetworkServiceAccountId rhs) { return lhs.id != rhs.id; }
 	}
 }

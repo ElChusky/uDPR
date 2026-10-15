@@ -4,8 +4,8 @@ namespace nn.friends
 {
 	public sealed class AsyncContext : global::System.IDisposable
 	{
-		internal global::System.IntPtr _context;
-		public AsyncContext() { /*@B nn:0x600026B*/ throw null; }
+		internal global::System.IntPtr _context = IntPtr.Zero;
+		public AsyncContext() { _context = Create(); }
 		// @027c9e20: Dispose(false) inlined, then base.Finalize
 		~AsyncContext() { Dispose(false); }
 		// @027c9f30
