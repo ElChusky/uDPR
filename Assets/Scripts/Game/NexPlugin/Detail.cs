@@ -1542,7 +1542,19 @@ namespace NexPlugin
 				private uint status;
 				private ushort dataType;
 				private ushort period;
-				public DataStoreChangeMetaCompareParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStoreChangeMetaCompareParam param) { /*@B 0x600BB49*/ throw null; }
+				public DataStoreChangeMetaCompareParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStoreChangeMetaCompareParam param) {
+					if (param == null)
+						param = new DataStoreChangeMetaCompareParam();
+					comparisonFlag = (uint)param.comparisonFlag;
+					status = (uint)param.status;
+					dataType = param.dataType;
+					period = param.period;
+					accessPermission = new DataStorePermissionInt(useptr, param.accessPermission);
+					updatePermission = new DataStorePermissionInt(useptr, param.updatePermission);
+					name = CppArray.StringToArray(useptr, param.name);
+					tags = CppArray.StringsToArray(useptr, param.tags);
+					metaBinary = CppArray.ListToArray(useptr, param.metaBinary);
+				}
 			}
 			private struct DataStoreChangeMetaParamInt
 			{
@@ -1559,19 +1571,45 @@ namespace NexPlugin
 				private global::NexPlugin.Detail.DataStore.DataStorePersistenceTargetInt persistenceTarget;
 				private ushort dataType;
 				private ushort period;
-				public DataStoreChangeMetaParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStoreChangeMetaParam param) { /*@B 0x600BB4A*/ throw null; }
+				public DataStoreChangeMetaParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.DataStoreChangeMetaParam param) {
+					if (param == null)
+						param = new DataStoreChangeMetaParam();
+					dataId = param.dataId;
+					updatePassword = param.updatePassword;
+					modifiesFlag = (uint)param.modifiesFlag;
+					dataStatus = (uint)param.status;
+					dataType = param.dataType;
+					period = param.period;
+					persistenceTarget = new DataStorePersistenceTargetInt(param.persistenceTarget);
+					accessPermission = new DataStorePermissionInt(useptr, param.accessPermission);
+					updatePermission = new DataStorePermissionInt(useptr, param.updatePermission);
+					name = CppArray.StringToArray(useptr, param.name);
+					tags = CppArray.StringsToArray(useptr, param.tags);
+					metaBinary = CppArray.ListToArray(useptr, param.metaBinary);
+					compareParam = new DataStoreChangeMetaCompareParamInt(useptr, param.compareParam);
+				}
 			}
 			private struct DataStoreRatingTargetInt
 			{
 				private ulong dataId;
 				private sbyte slot;
-				public DataStoreRatingTargetInt(global::NexPlugin.DataStoreRatingTarget param) { /*@B 0x600BB4B*/ throw null; }
+				public DataStoreRatingTargetInt(global::NexPlugin.DataStoreRatingTarget param) {
+					if (param == null)
+						param = new DataStoreRatingTarget();
+					dataId = param.dataId;
+					slot = param.slot;
+				}
 			}
 			private struct DataStoreRateObjectParamInt
 			{
 				private ulong accessPassword;
 				private int ratingValue;
-				public DataStoreRateObjectParamInt(global::NexPlugin.DataStoreRateObjectParam param) { /*@B 0x600BB4C*/ throw null; }
+				public DataStoreRateObjectParamInt(global::NexPlugin.DataStoreRateObjectParam param) {
+					if (param == null)
+						param = new DataStoreRateObjectParam();
+					accessPassword = param.accessPassword;
+					ratingValue = param.ratingValue;
+				}
 			}
 		}
 		public static class NgsFacade
@@ -1661,101 +1699,278 @@ namespace NexPlugin
 #else
 			private static bool Ranking_UploadCommonDataAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray commonData, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_UploadCommonDataAsync", pNgsFacade); }
 #endif
-			public static bool UploadCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<byte> commonData, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B73*/ throw null; }
+			public static bool UploadCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<byte> commonData, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray commonDataArray = CppArray.ListToArray(useptr, commonData);
+				asyncId = PublishAsyncId();
+				bool ret = Ranking_UploadCommonDataAsync(asyncId, pNgsFacade, ref commonDataArray, nexUniqueId, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Ranking_DeleteCommonDataAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut);
 #else
 			private static bool Ranking_DeleteCommonDataAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_DeleteCommonDataAsync", pNgsFacade); }
 #endif
-			public static bool DeleteCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B75*/ throw null; }
+			public static bool DeleteCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!Ranking_DeleteCommonDataAsync(asyncId, pNgsFacade, nexUniqueId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking_GetCommonDataAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut);
 #else
 			private static bool Ranking_GetCommonDataAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_GetCommonDataAsync", pNgsFacade); }
 #endif
-			public static bool GetCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.Ranking.GetCommonDataCB callback = null) { /*@B 0x6009B77*/ throw null; }
+			public static bool GetCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.Ranking.GetCommonDataCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!Ranking_GetCommonDataAsync(asyncId, pNgsFacade, nexUniqueId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking_UploadScoreAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Ranking.RankingScoreDataInt scoreData, ulong nexUniqueId, int timeOut);
 #else
 			private static bool Ranking_UploadScoreAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Ranking.RankingScoreDataInt scoreData, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_UploadScoreAsync", pNgsFacade); }
 #endif
-			public static bool UploadScoreAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.RankingScoreData scoreData, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B79*/ throw null; }
+			public static bool UploadScoreAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.RankingScoreData scoreData, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				RankingScoreDataInt scoreDataInt = new RankingScoreDataInt(scoreData);
+				asyncId = PublishAsyncId();
+				if (!Ranking_UploadScoreAsync(asyncId, pNgsFacade, ref scoreDataInt, nexUniqueId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking_DeleteScoreAsync(uint asyncId, global::System.IntPtr pNgsFacade, int useCategory, uint category, ulong nexUniqueId, int timeOut);
 #else
 			private static bool Ranking_DeleteScoreAsync(uint asyncId, global::System.IntPtr pNgsFacade, int useCategory, uint category, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_DeleteScoreAsync", pNgsFacade); }
 #endif
-			public static bool DeleteScoreAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useCategory, uint category, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B7B*/ throw null; }
+			public static bool DeleteScoreAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useCategory, uint category, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!Ranking_DeleteScoreAsync(asyncId, pNgsFacade, useCategory ? 1 : 0, category, nexUniqueId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking_GetRankingAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint rankingMode, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, ulong nexUniqueId, ulong principalId, int timeOut);
 #else
 			private static bool Ranking_GetRankingAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint rankingMode, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, ulong nexUniqueId, ulong principalId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_GetRankingAsync", pNgsFacade); }
 #endif
-			public static bool GetRankingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking.RankingMode rankingMode, uint category, global::NexPlugin.RankingOrderParam orderParam, ulong nexUniqueId, ulong principalId, int timeOut = 0, global::NexPlugin.Ranking.GetRankingCB callback = null) { /*@B 0x6009B7D*/ throw null; }
+			public static bool GetRankingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking.RankingMode rankingMode, uint category, global::NexPlugin.RankingOrderParam orderParam, ulong nexUniqueId, ulong principalId, int timeOut = 0, global::NexPlugin.Ranking.GetRankingCB callback = null) {
+				RankingOrderParamInt orderParamInt = new RankingOrderParamInt(orderParam);
+				asyncId = PublishAsyncId();
+				if (!Ranking_GetRankingAsync(asyncId, pNgsFacade, (uint)rankingMode, category, ref orderParamInt, nexUniqueId, principalId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking_GetRankingByPIDListAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray principalIdList, uint rankingMode, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, ulong nexUniqueId, int timeOut);
 #else
 			private static bool Ranking_GetRankingByPIDListAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray principalIdList, uint rankingMode, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_GetRankingByPIDListAsync", pNgsFacade); }
 #endif
-			public static bool GetRankingByPIDListAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> principalIdList, global::NexPlugin.Ranking.RankingMode rankingMode, uint category, global::NexPlugin.RankingOrderParam orderParam, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.Ranking.GetRankingCB callback = null) { /*@B 0x6009B7F*/ throw null; }
+			public static bool GetRankingByPIDListAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> principalIdList, global::NexPlugin.Ranking.RankingMode rankingMode, uint category, global::NexPlugin.RankingOrderParam orderParam, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.Ranking.GetRankingCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray principalIdArray = CppArray.ListToArray(useptr, principalIdList);
+				RankingOrderParamInt orderParamInt = new RankingOrderParamInt(orderParam);
+				asyncId = PublishAsyncId();
+				bool ret = Ranking_GetRankingByPIDListAsync(asyncId, pNgsFacade, ref principalIdArray, (uint)rankingMode, category, ref orderParamInt, nexUniqueId, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Ranking_GetRankingByUIDListAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray nexUniqueIdList, uint rankingMode, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, ulong nexUniqueId, int timeOut);
 #else
 			private static bool Ranking_GetRankingByUIDListAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray nexUniqueIdList, uint rankingMode, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_GetRankingByUIDListAsync", pNgsFacade); }
 #endif
-			public static bool GetRankingByUIDListAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> nexUniqueIdList, global::NexPlugin.Ranking.RankingMode rankingMode, uint category, global::NexPlugin.RankingOrderParam orderParam, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.Ranking.GetRankingCB callback = null) { /*@B 0x6009B81*/ throw null; }
+			public static bool GetRankingByUIDListAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> nexUniqueIdList, global::NexPlugin.Ranking.RankingMode rankingMode, uint category, global::NexPlugin.RankingOrderParam orderParam, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.Ranking.GetRankingCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray nexUniqueIdArray = CppArray.ListToArray(useptr, nexUniqueIdList);
+				RankingOrderParamInt orderParamInt = new RankingOrderParamInt(orderParam);
+				asyncId = PublishAsyncId();
+				bool ret = Ranking_GetRankingByUIDListAsync(asyncId, pNgsFacade, ref nexUniqueIdArray, (uint)rankingMode, category, ref orderParamInt, nexUniqueId, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Ranking_GetApproxOrderAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, uint score, ulong nexUniqueId, ulong principalId, int timeOut);
 #else
 			private static bool Ranking_GetApproxOrderAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, uint score, ulong nexUniqueId, ulong principalId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_GetApproxOrderAsync", pNgsFacade); }
 #endif
-			public static bool GetApproxOrderAsync(out uint asyncId, global::System.IntPtr pNgsFacade, uint category, global::NexPlugin.RankingOrderParam orderParam, uint score, ulong nexUniqueId, ulong principalId, int timeOut = 0, global::NexPlugin.Ranking.GetApproxOrderCB callback = null) { /*@B 0x6009B83*/ throw null; }
+			public static bool GetApproxOrderAsync(out uint asyncId, global::System.IntPtr pNgsFacade, uint category, global::NexPlugin.RankingOrderParam orderParam, uint score, ulong nexUniqueId, ulong principalId, int timeOut = 0, global::NexPlugin.Ranking.GetApproxOrderCB callback = null) {
+				RankingOrderParamInt orderParamInt = new RankingOrderParamInt(orderParam);
+				asyncId = PublishAsyncId();
+				if (!Ranking_GetApproxOrderAsync(asyncId, pNgsFacade, category, ref orderParamInt, score, nexUniqueId, principalId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking_GetStatsAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, uint flags, int timeOut);
 #else
 			private static bool Ranking_GetStatsAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, uint flags, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_GetStatsAsync", pNgsFacade); }
 #endif
-			public static bool GetStatsAsync(out uint asyncId, global::System.IntPtr pNgsFacade, uint category, global::NexPlugin.RankingOrderParam orderParam, global::NexPlugin.Ranking.StatsFlag flags, int timeOut = 0, global::NexPlugin.Ranking.GetStatsCB callback = null) { /*@B 0x6009B85*/ throw null; }
+			public static bool GetStatsAsync(out uint asyncId, global::System.IntPtr pNgsFacade, uint category, global::NexPlugin.RankingOrderParam orderParam, global::NexPlugin.Ranking.StatsFlag flags, int timeOut = 0, global::NexPlugin.Ranking.GetStatsCB callback = null) {
+				RankingOrderParamInt orderParamInt = new RankingOrderParamInt(orderParam);
+				asyncId = PublishAsyncId();
+				if (!Ranking_GetStatsAsync(asyncId, pNgsFacade, category, ref orderParamInt, (uint)flags, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking_ChangeAttributesAsync(uint asyncId, global::System.IntPtr pNgsFacade, int useCategory, uint category, ref global::NexPlugin.Detail.Ranking.RankingChangeAttributesParamInt changeParam, ulong nexUniqueId, int timeOut);
 #else
 			private static bool Ranking_ChangeAttributesAsync(uint asyncId, global::System.IntPtr pNgsFacade, int useCategory, uint category, ref global::NexPlugin.Detail.Ranking.RankingChangeAttributesParamInt changeParam, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_ChangeAttributesAsync", pNgsFacade); }
 #endif
-			public static bool ChangeAttributesAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useCategory, uint category, global::NexPlugin.RankingChangeAttributesParam changeParam, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B87*/ throw null; }
+			public static bool ChangeAttributesAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useCategory, uint category, global::NexPlugin.RankingChangeAttributesParam changeParam, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				RankingChangeAttributesParamInt changeParamInt = new RankingChangeAttributesParamInt(changeParam);
+				asyncId = PublishAsyncId();
+				if (!Ranking_ChangeAttributesAsync(asyncId, pNgsFacade, useCategory ? 1 : 0, category, ref changeParamInt, nexUniqueId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking_GetCachedTopXRankingAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, int timeOut);
 #else
 			private static bool Ranking_GetCachedTopXRankingAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint category, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_GetCachedTopXRankingAsync", pNgsFacade); }
 #endif
-			public static bool GetCachedTopXRankingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, uint category, global::NexPlugin.RankingOrderParam orderParam, int timeOut = 0, global::NexPlugin.Ranking.GetCachedTopXRankingCB callback = null) { /*@B 0x6009B89*/ throw null; }
+			public static bool GetCachedTopXRankingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, uint category, global::NexPlugin.RankingOrderParam orderParam, int timeOut = 0, global::NexPlugin.Ranking.GetCachedTopXRankingCB callback = null) {
+				RankingOrderParamInt orderParamInt = new RankingOrderParamInt(orderParam);
+				asyncId = PublishAsyncId();
+				if (!Ranking_GetCachedTopXRankingAsync(asyncId, pNgsFacade, category, ref orderParamInt, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking_GetCachedTopXRankingsAsync(uint asyncId, global::System.IntPtr pNgsFacade, int useOneRankingOrderParam, ref global::NexPlugin.Detail.CppArray categories, ref global::NexPlugin.Detail.CppArray orderParams, int timeOut);
 #else
 			private static bool Ranking_GetCachedTopXRankingsAsync(uint asyncId, global::System.IntPtr pNgsFacade, int useOneRankingOrderParam, ref global::NexPlugin.Detail.CppArray categories, ref global::NexPlugin.Detail.CppArray orderParams, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking_GetCachedTopXRankingsAsync", pNgsFacade); }
 #endif
-			public static bool GetCachedTopXRankingsAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useOneRankingOrderParam, global::System.Collections.Generic.List<uint> categories, global::System.Collections.Generic.List<global::NexPlugin.RankingOrderParam> orderParams, int timeOut = 0, global::NexPlugin.Ranking.GetCachedTopXRankingsCB callback = null) { /*@B 0x6009B8B*/ throw null; }
+			public static bool GetCachedTopXRankingsAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useOneRankingOrderParam, global::System.Collections.Generic.List<uint> categories, global::System.Collections.Generic.List<global::NexPlugin.RankingOrderParam> orderParams, int timeOut = 0, global::NexPlugin.Ranking.GetCachedTopXRankingsCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray categoriesArray = CppArray.ListToArray(useptr, categories);
+				RankingOrderParamInt dummy = new RankingOrderParamInt(new RankingOrderParam()); // shipped: built and discarded (keeps the ctor for ListToArray<U, T>)
+				CppArray orderParamsArray = CppArray.ListToArray<RankingOrderParamInt, RankingOrderParam>(useptr, orderParams);
+				asyncId = PublishAsyncId();
+				bool ret = Ranking_GetCachedTopXRankingsAsync(asyncId, pNgsFacade, useOneRankingOrderParam ? 1 : 0, ref categoriesArray, ref orderParamsArray, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern global::NexPlugin.RankingCachedResult.LocalUpdateState Ranking_LocalUpdate(ref global::System.IntPtr pNewResult, ref global::NexPlugin.Detail.Ranking.RankingCachedResultInt cachedResult, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, ref global::NexPlugin.Detail.Ranking.RankingScoreDataInt scoreData, ulong pid, ulong nexUniqueId, ref global::NexPlugin.NpDateTime utcCurrentTime, ref global::NexPlugin.Detail.CppArray pCommonData);
 #else
 			private static global::NexPlugin.RankingCachedResult.LocalUpdateState Ranking_LocalUpdate(ref global::System.IntPtr pNewResult, ref global::NexPlugin.Detail.Ranking.RankingCachedResultInt cachedResult, ref global::NexPlugin.Detail.Ranking.RankingOrderParamInt orderParam, ref global::NexPlugin.Detail.Ranking.RankingScoreDataInt scoreData, ulong pid, ulong nexUniqueId, ref global::NexPlugin.NpDateTime utcCurrentTime, ref global::NexPlugin.Detail.CppArray pCommonData) { return (RankingCachedResult.LocalUpdateState)PcPlatform.PcNex.RankingLocalUpdate("Ranking_LocalUpdate"); }
 #endif
-			public static global::NexPlugin.RankingCachedResult.LocalUpdateState LocalUpdate(out global::NexPlugin.RankingCachedResult newResult, global::NexPlugin.RankingCachedResult result, global::NexPlugin.RankingOrderParam orderParam, global::NexPlugin.RankingScoreData scoreData, ulong pid, ulong nexUniqueId, global::NexPlugin.NpDateTime utcCurrentTime, global::System.Collections.Generic.List<byte> pCommonData) { /*@B 0x6009B8D*/ throw null; }
+			public static global::NexPlugin.RankingCachedResult.LocalUpdateState LocalUpdate(out global::NexPlugin.RankingCachedResult newResult, global::NexPlugin.RankingCachedResult result, global::NexPlugin.RankingOrderParam orderParam, global::NexPlugin.RankingScoreData scoreData, ulong pid, ulong nexUniqueId, global::NexPlugin.NpDateTime utcCurrentTime, global::System.Collections.Generic.List<byte> pCommonData) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				IntPtr pNewResult = IntPtr.Zero;
+				RankingOrderParamInt orderParamInt = new RankingOrderParamInt(orderParam);
+				RankingScoreDataInt scoreDataInt = new RankingScoreDataInt(scoreData);
+				RankingCachedResultInt cachedResult = new RankingCachedResultInt(useptr, result);
+				if (pCommonData == null)
+					pCommonData = new List<byte>();
+				CppArray commonDataArray = CppArray.ListToArray(useptr, pCommonData);
+				RankingCachedResult.LocalUpdateState state = Ranking_LocalUpdate(ref pNewResult, ref cachedResult, ref orderParamInt, ref scoreDataInt, pid, nexUniqueId, ref utcCurrentTime, ref commonDataArray);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				newResult = new RankingCachedResult();
+				if (state == RankingCachedResult.LocalUpdateState.UPDATE_SUCCESS)
+				{
+					newResult = RankingCachedResultInt.ExchangePtrToStruct(pNewResult);
+					Ranking_DeleteCachedResult(pNewResult);
+				}
+				return state;
+			}
 #if SWITCH
 			private static extern void Ranking_DeleteCachedResult(global::System.IntPtr cachedResult);
 #else
 			private static void Ranking_DeleteCachedResult(global::System.IntPtr cachedResult) { PcPlatform.PcNex.FreeServiceResult("Ranking_DeleteCachedResult", cachedResult); }
 #endif
-			private static void Ranking_GetCommonDataResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B8F*/ throw null; }
-			private static void Ranking_GetRankingResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B90*/ throw null; }
+			private static void Ranking_GetCommonDataResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Ranking.GetCommonDataCB cb = callback as NexPlugin.Ranking.GetCommonDataCB;
+				if (cb != null)
+				{
+					List<byte> data = new List<byte>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						new CppArray(asyncResult.pParam1).ToList(ref data);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), data);
+				}
+			}
+			private static void Ranking_GetRankingResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Ranking.GetRankingCB cb = callback as NexPlugin.Ranking.GetRankingCB;
+				if (cb != null)
+				{
+					RankingResult info = new RankingResult();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = RankingResultInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
 			// inlined into Callback (@024d44f0 case 408): pParam1 -> rank
 			private static void Ranking_GetApproxOrderResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
 				NexPlugin.Ranking.GetApproxOrderCB cb = callback as NexPlugin.Ranking.GetApproxOrderCB;
 				if (cb != null)
 					cb(AsyncResultInt.GetAsyncResult(asyncResult), asyncResult.GetUint(asyncResult.pParam1));
 			}
-			private static void Ranking_GetStatsResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B92*/ throw null; }
-			private static void Ranking_GetCachedTopXRankingResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B93*/ throw null; }
-			private static void Ranking_GetCachedTopXRankingsResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009B94*/ throw null; }
+			private static void Ranking_GetStatsResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Ranking.GetStatsCB cb = callback as NexPlugin.Ranking.GetStatsCB;
+				if (cb != null)
+				{
+					RankingStats stats = new RankingStats();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						stats = ExchangePtrToStruct<RankingStats>(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), stats);
+				}
+			}
+			private static void Ranking_GetCachedTopXRankingResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Ranking.GetCachedTopXRankingCB cb = callback as NexPlugin.Ranking.GetCachedTopXRankingCB;
+				if (cb != null)
+				{
+					RankingCachedResult info = new RankingCachedResult();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = RankingCachedResultInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
+			private static void Ranking_GetCachedTopXRankingsResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Ranking.GetCachedTopXRankingsCB cb = callback as NexPlugin.Ranking.GetCachedTopXRankingsCB;
+				if (cb != null)
+				{
+					List<RankingCachedResult> info = new List<RankingCachedResult>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = new CppArray(asyncResult.pParam1).ToList<RankingCachedResult, RankingCachedResultInt>();
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
 			// @024d44f0
 			public static void Callback(global::NexPlugin.Detail.AsyncResultInt res, object callback) {
 				switch (res.asyncNum)
@@ -1801,17 +2016,60 @@ namespace NexPlugin
 				private uint order;
 				private byte group0;
 				private byte group1;
-				public global::NexPlugin.RankingRankData ExchangeStruct() { /*@B 0x600BB4D*/ throw null; }
-				public RankingRankDataInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.RankingRankData param) { /*@B 0x600BB4E*/ throw null; }
+				public global::NexPlugin.RankingRankData ExchangeStruct() {
+					RankingRankData data = new RankingRankData();
+					data.principalId = principalId;
+					data.order = order;
+					data.uniqueId = uniqueId;
+					data.category = category;
+					data.score = score;
+					data.param = param;
+					data.updateTime = updateTime;
+					data.group0 = group0;
+					data.group1 = group1;
+					data.commonData = new List<byte>();
+					commonData.ToList(ref data.commonData);
+					return data;
+				}
+				public RankingRankDataInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.RankingRankData param) {
+					if (param == null)
+						param = new RankingRankData();
+					principalId = param.principalId;
+					order = param.order;
+					uniqueId = param.uniqueId;
+					category = param.category;
+					score = param.score;
+					this.param = param.param;
+					updateTime = param.updateTime;
+					group0 = param.group0;
+					group1 = param.group1;
+					commonData = CppArray.ListToArray(useptr, param.commonData);
+				}
 			}
 			private struct RankingResultInt : global::NexPlugin.Detail.IExchangeList<global::NexPlugin.RankingResult>
 			{
 				private global::NexPlugin.Detail.CppArray rankDataList;
 				private global::NexPlugin.NpDateTime sinceTime;
 				private uint totalCount;
-				public static global::NexPlugin.RankingResult ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB4F*/ throw null; }
-				public global::NexPlugin.RankingResult ExchangeStruct() { /*@B 0x600BB50*/ throw null; }
-				public RankingResultInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.RankingResult param) { /*@B 0x600BB51*/ throw null; }
+				public static global::NexPlugin.RankingResult ExchangePtrToStruct(global::System.IntPtr src) {
+					RankingResultInt info = Detail.ExchangePtrToStruct<RankingResultInt>(src);
+					return info.ExchangeStruct();
+				}
+				public global::NexPlugin.RankingResult ExchangeStruct() {
+					RankingResult result = new RankingResult();
+					result.totalCount = totalCount;
+					result.sinceTime = sinceTime;
+					result.rankDataList = rankDataList.ToList<RankingRankData, RankingRankDataInt>();
+					return result;
+				}
+				public RankingResultInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.RankingResult param) {
+					if (param == null)
+						param = new RankingResult();
+					totalCount = param.totalCount;
+					sinceTime = param.sinceTime;
+					RankingRankDataInt dummy = new RankingRankDataInt(new List<IntPtr>(), new RankingRankData()); // shipped: built and discarded (keeps the ctor for ListToArray<U, T>)
+					rankDataList = CppArray.ListToArray<RankingRankDataInt, RankingRankData>(useptr, param.rankDataList);
+				}
 			}
 			private struct RankingCachedResultInt : global::NexPlugin.Detail.IExchangeList<global::NexPlugin.RankingCachedResult>
 			{
@@ -1819,9 +2077,29 @@ namespace NexPlugin
 				public global::NexPlugin.NpDateTime expiredTime;
 				public global::NexPlugin.Detail.Ranking.RankingResultInt rankingResult;
 				public uint maxLength;
-				public static global::NexPlugin.RankingCachedResult ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB52*/ throw null; }
-				public global::NexPlugin.RankingCachedResult ExchangeStruct() { /*@B 0x600BB53*/ throw null; }
-				public RankingCachedResultInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.RankingCachedResult param) { /*@B 0x600BB54*/ throw null; }
+				public static global::NexPlugin.RankingCachedResult ExchangePtrToStruct(global::System.IntPtr src) {
+					RankingCachedResultInt info = Detail.ExchangePtrToStruct<RankingCachedResultInt>(src);
+					return info.ExchangeStruct();
+				}
+				public global::NexPlugin.RankingCachedResult ExchangeStruct() {
+					RankingCachedResult result = new RankingCachedResult();
+					result.maxLength = maxLength;
+					result.createdTime = createdTime;
+					result.expiredTime = expiredTime;
+					RankingResult ranking = rankingResult.ExchangeStruct();
+					result.totalCount = ranking.totalCount;
+					result.sinceTime = ranking.sinceTime;
+					result.rankDataList = ranking.rankDataList;
+					return result;
+				}
+				public RankingCachedResultInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.RankingCachedResult param) {
+					if (param == null)
+						param = new RankingCachedResult();
+					maxLength = param.maxLength;
+					createdTime = param.createdTime;
+					expiredTime = param.expiredTime;
+					rankingResult = new RankingResultInt(useptr, param);
+				}
 			}
 			private struct RankingScoreDataInt
 			{
@@ -1832,7 +2110,17 @@ namespace NexPlugin
 				private byte updateMode;
 				private byte group0;
 				private byte group1;
-				public RankingScoreDataInt(global::NexPlugin.RankingScoreData param) { /*@B 0x600BB55*/ throw null; }
+				public RankingScoreDataInt(global::NexPlugin.RankingScoreData param) {
+					if (param == null)
+						param = new RankingScoreData();
+					this.param = param.param;
+					category = param.category;
+					score = param.score;
+					orderBy = (byte)param.orderBy;
+					updateMode = (byte)param.updateMode;
+					group0 = param.group0;
+					group1 = param.group1;
+				}
 			}
 			private struct RankingOrderParamInt
 			{
@@ -1842,7 +2130,16 @@ namespace NexPlugin
 				private byte timeScope;
 				private uint offset;
 				private byte length;
-				public RankingOrderParamInt(global::NexPlugin.RankingOrderParam param) { /*@B 0x600BB56*/ throw null; }
+				public RankingOrderParamInt(global::NexPlugin.RankingOrderParam param) {
+					if (param == null)
+						param = new RankingOrderParam();
+					orderCalc = (byte)param.orderCalculation;
+					groupIndex = (byte)param.groupIndex;
+					groupNum = param.groupNum;
+					timeScope = (byte)param.timeScope;
+					offset = param.offset;
+					length = param.length;
+				}
 			}
 			private struct RankingChangeAttributesParamInt
 			{
@@ -1850,7 +2147,14 @@ namespace NexPlugin
 				private byte modificationFlag;
 				private byte group0;
 				private byte group1;
-				public RankingChangeAttributesParamInt(global::NexPlugin.RankingChangeAttributesParam param) { /*@B 0x600BB57*/ throw null; }
+				public RankingChangeAttributesParamInt(global::NexPlugin.RankingChangeAttributesParam param) {
+					if (param == null)
+						param = new RankingChangeAttributesParam();
+					this.param = param.param;
+					modificationFlag = (byte)param.modificationFlag;
+					group0 = param.group0;
+					group1 = param.group1;
+				}
 			}
 		}
 		public static class Ranking2
@@ -1860,31 +2164,74 @@ namespace NexPlugin
 #else
 			private static bool Ranking2_PutScoreAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Ranking2.Ranking2ScoreDataInt pParam, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking2_PutScoreAsync", pNgsFacade); }
 #endif
-			public static bool PutScoreAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2ScoreData scoreData, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B97*/ throw null; }
+			public static bool PutScoreAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2ScoreData scoreData, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				Ranking2ScoreDataInt scoreDataInt = new Ranking2ScoreDataInt(scoreData);
+				asyncId = PublishAsyncId();
+				if (!Ranking2_PutScoreAsync(asyncId, pNgsFacade, ref scoreDataInt, nexUniqueId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking2_PutScoreListAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray pParam, ulong nexUniqueId, int timeOut);
 #else
 			private static bool Ranking2_PutScoreListAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray pParam, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking2_PutScoreListAsync", pNgsFacade); }
 #endif
-			public static bool PutScoreAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<global::NexPlugin.Ranking2ScoreData> scoreDataList, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B99*/ throw null; }
+			public static bool PutScoreAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<global::NexPlugin.Ranking2ScoreData> scoreDataList, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				Ranking2ScoreDataInt dummy = new Ranking2ScoreDataInt(new Ranking2ScoreData()); // shipped: built and discarded (keeps the ctor for ListToArray<U, T>)
+				CppArray scoreDataArray = CppArray.ListToArray<Ranking2ScoreDataInt, Ranking2ScoreData>(useptr, scoreDataList);
+				asyncId = PublishAsyncId();
+				bool ret = Ranking2_PutScoreListAsync(asyncId, pNgsFacade, ref scoreDataArray, nexUniqueId, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Ranking2_PutCommonDataAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Ranking2.Ranking2CommonDataInt commonData, ulong nexUniqueId, int timeOut);
 #else
 			private static bool Ranking2_PutCommonDataAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Ranking2.Ranking2CommonDataInt commonData, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking2_PutCommonDataAsync", pNgsFacade); }
 #endif
-			public static bool PutCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2CommonData commonData, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B9B*/ throw null; }
+			public static bool PutCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2CommonData commonData, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				Ranking2CommonDataInt commonDataInt = new Ranking2CommonDataInt(useptr, commonData);
+				asyncId = PublishAsyncId();
+				bool ret = Ranking2_PutCommonDataAsync(asyncId, pNgsFacade, ref commonDataInt, nexUniqueId, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Ranking2_GetCommonDataAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint optionFlags, ulong principalId, ulong nexUniqueId, int timeOut);
 #else
 			private static bool Ranking2_GetCommonDataAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint optionFlags, ulong principalId, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking2_GetCommonDataAsync", pNgsFacade); }
 #endif
-			public static bool GetCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2.Ranking2GetOptionFlags optionFlags, ulong principalId, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.Ranking2.GetCommonDataCB callback = null) { /*@B 0x6009B9D*/ throw null; }
+			public static bool GetCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2.Ranking2GetOptionFlags optionFlags, ulong principalId, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.Ranking2.GetCommonDataCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!Ranking2_GetCommonDataAsync(asyncId, pNgsFacade, (uint)optionFlags, principalId, nexUniqueId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking2_DeleteCommonDataAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut);
 #else
 			private static bool Ranking2_DeleteCommonDataAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking2_DeleteCommonDataAsync", pNgsFacade); }
 #endif
-			public static bool DeleteCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B9F*/ throw null; }
+			public static bool DeleteCommonDataAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong nexUniqueId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!Ranking2_DeleteCommonDataAsync(asyncId, pNgsFacade, nexUniqueId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking2_GetRankingAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Ranking2.Ranking2GetParamInt getParam, int timeOut);
 #else
