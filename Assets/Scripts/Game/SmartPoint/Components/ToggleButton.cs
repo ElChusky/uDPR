@@ -10,7 +10,7 @@ namespace SmartPoint.Components
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Sprite _targetSprite;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color _targetColor;
+		private global::UnityEngine.Color _targetColor = Color.white;
 		[global::UnityEngine.SerializeField]
 		private bool _isTarget;
 		[global::UnityEngine.SerializeField]
@@ -21,7 +21,16 @@ namespace SmartPoint.Components
 		private global::UnityEngine.Sprite _sourceSprite;
 		private global::UnityEngine.Color _sourceColor;
 		public int value { get { return this._value; } }
-		public bool isTarget { get { return this._isTarget; } set { /*@B 0x6003042*/ throw null; } }
+		public bool isTarget { get { return this._isTarget; } set {
+				if (_isTarget == value)
+					return;
+
+				_isTarget = value;
+				if (_targetObject != null)
+					_targetObject.SetActive(value);
+
+				UpdateImage();
+			} }
 		// @020a33c0
 		public override void OnPointerClick(global::UnityEngine.EventSystems.PointerEventData eventData) {
 			isTarget = !_isTarget;
@@ -65,6 +74,6 @@ namespace SmartPoint.Components
 				_image.color = _sourceColor;
 			}
 		}
-		public ToggleButton() { /*@B 0x6003047*/ throw null; }
+		public ToggleButton() { }
 	}
 }

@@ -8,7 +8,7 @@ namespace SmartPoint.Components
 	public class ToggleButtonRaw : global::UnityEngine.UI.Button
 	{
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color _targetColor;
+		private global::UnityEngine.Color _targetColor = Color.white;
 		[global::UnityEngine.SerializeField]
 		private bool _isTarget;
 		[global::UnityEngine.SerializeField]
@@ -19,7 +19,16 @@ namespace SmartPoint.Components
 		private global::UnityEngine.Color _sourceColor;
 		public global::SmartPoint.Components.ToggleButtonRaw.SubmitEvent onSubmit;
 		public int value { get { return this._value; } }
-		public bool isTarget { get { return this._isTarget; } set { /*@B 0x600304F*/ throw null; } }
+		public bool isTarget { get { return this._isTarget; } set {
+				if (_isTarget == value)
+					return;
+
+				_isTarget = value;
+				if (_targetObject != null)
+					_targetObject.SetActive(value);
+
+				UpdateImage();
+			} }
 		// @020a3d40
 		public override void OnPointerClick(global::UnityEngine.EventSystems.PointerEventData eventData) {
             isTarget = !_isTarget;
@@ -58,11 +67,11 @@ namespace SmartPoint.Components
 			else
 				_image.color = _sourceColor;
 		}
-		public ToggleButtonRaw() { /*@B 0x6003055*/ throw null; }
+		public ToggleButtonRaw() { }
 		[global::System.Serializable]
 		public class SubmitEvent : global::UnityEngine.Events.UnityEvent<int>
 		{
-			public SubmitEvent() { /*@B 0x6009E3C*/ throw null; }
+			public SubmitEvent() { }
 		}
 	}
 }
