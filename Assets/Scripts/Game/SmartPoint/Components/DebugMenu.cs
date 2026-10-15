@@ -251,7 +251,7 @@ namespace SmartPoint.Components
             _currentMenu = _currentMenu.GetParent();
             _currentMenu.visible = true;
         }
-		public DebugMenu() { /*@B 0x6002FA9*/ throw null; }
+		public DebugMenu() { }
 		static DebugMenu() { }
 		public delegate void EventCallback(bool visibled);
 		public delegate bool TryCallback();

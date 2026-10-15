@@ -24,20 +24,26 @@ namespace SmartPoint.Components
 		[global::UnityEngine.SerializeField]
 		private bool _displayOnStart;
 		[global::UnityEngine.SerializeField]
-		private bool _displayOnError;
+		private bool _displayOnError = true;
 		[global::UnityEngine.SerializeField]
 		private bool _displayWatch;
 		[global::UnityEngine.SerializeField]
-		private bool _isVisible;
+		private bool _isVisible = true;
 		public const int MaxLogCount = 256;
 		private string _lastCondition;
 		private bool _forceDisplay;
 		private bool _press;
 		private float _remainTime;
-		private static global::System.Collections.Generic.List<global::SmartPoint.Components.DebugMonitor.LogElement> _watchList;
-		private static global::System.Collections.Generic.Dictionary<string, global::SmartPoint.Components.DebugMonitor.LogElement> _watches;
+		private static global::System.Collections.Generic.List<global::SmartPoint.Components.DebugMonitor.LogElement> _watchList = new global::System.Collections.Generic.List<global::SmartPoint.Components.DebugMonitor.LogElement>();
+		private static global::System.Collections.Generic.Dictionary<string, global::SmartPoint.Components.DebugMonitor.LogElement> _watches = new global::System.Collections.Generic.Dictionary<string, global::SmartPoint.Components.DebugMonitor.LogElement>();
 		private int _nextLogID;
-		public static string logPath { get { /*@B 0x6002FB9*/ throw null; } }
+		public static string logPath { get {
+				if (global::UnityEngine.Application.isEditor)
+				{
+					return "./Logs/DebugMonitor";
+				}
+				return global::UnityEngine.Application.persistentDataPath + "/Logs/DebugMonitor";
+			} }
 		public static bool isVisible { get {
 				if (Instance == null)
 					return false;
@@ -393,8 +399,8 @@ namespace SmartPoint.Components
 			builder.Length = builder.Length - 1;
 			return builder.ToString();
 		}
-		public DebugMonitor() { /*@B 0x6002FD0*/ throw null; }
-		static DebugMonitor() { /*@B 0x6002FD1*/ throw null; }
+		public DebugMonitor() { }
+		static DebugMonitor() { }
 		[global::System.Serializable]
 		public class LogElement
 		{

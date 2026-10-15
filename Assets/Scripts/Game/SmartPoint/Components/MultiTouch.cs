@@ -5,7 +5,7 @@ namespace SmartPoint.Components
 {
 	public class MultiTouch
 	{
-		public static global::SmartPoint.Components.MultiTouch.Status status;
+		public static global::SmartPoint.Components.MultiTouch.Status status = new global::SmartPoint.Components.MultiTouch.Status();
 		// @020a1690
 		private static global::SmartPoint.Components.MultiTouch.Phase GetLogicalButton(global::SmartPoint.Components.MultiTouch.LogicalTapType type) {
             if (type == LogicalTapType.MouseLeft)
@@ -133,7 +133,7 @@ namespace SmartPoint.Components
             return status;
         }
 		public MultiTouch() { }
-		static MultiTouch() { /*@B 0x600306B*/ throw null; }
+		static MultiTouch() { }
 		public enum LogicalTapType
 		{
 			Z = 0,
