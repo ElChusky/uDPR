@@ -7,9 +7,9 @@ namespace NexPlugin
 	internal static class Detail
 	{
 		public const string DLL_NAME = "__Internal";
-		private static global::System.Collections.Generic.List<global::NexPlugin.NotificationEventCB> s_NotificationEventCB;
-		private static global::System.Collections.Generic.Dictionary<uint, object> s_NexAsyncCall;
-		private static uint m_AsyncId;
+		private static global::System.Collections.Generic.List<global::NexPlugin.NotificationEventCB> s_NotificationEventCB = new global::System.Collections.Generic.List<global::NexPlugin.NotificationEventCB>();
+		private static global::System.Collections.Generic.Dictionary<uint, object> s_NexAsyncCall = new global::System.Collections.Generic.Dictionary<uint, object>();
+		private static uint m_AsyncId = 0;
 		// @020f57d0: AsyncResultCB only (exact-class test); the AsyncResult is built field by field (GetAsyncResult inlined)
 		public static void GetAsyncResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
 			AsyncResultCB cb = callback as AsyncResultCB;
@@ -99,7 +99,7 @@ namespace NexPlugin
 			}
 			return dst;
 		}
-		static Detail() { /*@B 0x6002A4D*/ throw null; }
+		static Detail() { }
 		public struct AsyncResultInt
 		{
 			private long pad;
@@ -172,8 +172,8 @@ namespace NexPlugin
 		}
 		public static class Common
 		{
-			private static global::System.Collections.Generic.List<global::NexPlugin.Detail.AsyncResultInt> asyncResultList;
-			private static global::System.Collections.Generic.List<global::NexPlugin.NotificationEvent> notificationEventList;
+			private static global::System.Collections.Generic.List<global::NexPlugin.Detail.AsyncResultInt> asyncResultList = new global::System.Collections.Generic.List<global::NexPlugin.Detail.AsyncResultInt>();
+			private static global::System.Collections.Generic.List<global::NexPlugin.NotificationEvent> notificationEventList = new global::System.Collections.Generic.List<global::NexPlugin.NotificationEvent>();
 #if SWITCH
 			private static extern bool InitializeNexAsyncInt(uint asyncId, int threadMode);
 #else
@@ -293,7 +293,7 @@ namespace NexPlugin
 						break;
 				}
 			}
-			static Common() { /*@B 0x6009B0A*/ throw null; }
+			static Common() { }
 		}
 		public interface IExchangeList<T>
 		{
@@ -303,7 +303,9 @@ namespace NexPlugin
 		{
 			public int count;
 			public global::System.IntPtr ptr;
-			public CppArray(global::System.IntPtr src) { /*@B 0x6009B0C*/ throw null; }
+			public CppArray(global::System.IntPtr src) {
+				this = ExchangePtrToStruct<CppArray>(src);
+			}
 			// @01a893c0
 			public void ToArray<T>(ref T[] list, int size) {
 				if (list == null)
@@ -431,7 +433,22 @@ namespace NexPlugin
 		}
 		public static class DataStore
 		{
-			private static global::System.Collections.Generic.List<global::System.Collections.Generic.Dictionary<sbyte, global::NexPlugin.DataStoreRatingInfo>> DataStore_ExchangeRatingInfosList(global::System.IntPtr src) { /*@B 0x6009B16*/ throw null; }
+			private static global::System.Collections.Generic.List<global::System.Collections.Generic.Dictionary<sbyte, global::NexPlugin.DataStoreRatingInfo>> DataStore_ExchangeRatingInfosList(global::System.IntPtr src) {
+				List<Dictionary<sbyte, DataStoreRatingInfo>> result = new List<Dictionary<sbyte, DataStoreRatingInfo>>();
+				List<CppArray> arrays = new List<CppArray>();
+				CppArray array = ExchangePtrToStruct<CppArray>(src);
+				array.ToList(ref arrays);
+				foreach (CppArray item in arrays)
+				{
+					Dictionary<sbyte, DataStoreRatingInfo> infos = new Dictionary<sbyte, DataStoreRatingInfo>();
+					List<DataStoreRatingInfo> list = new List<DataStoreRatingInfo>();
+					item.ToList(ref list);
+					foreach (DataStoreRatingInfo info in list)
+						infos.Add(info.GetSlot(), info);
+					result.Add(infos);
+				}
+				return result;
+			}
 #if SWITCH
 			private static extern bool DataStore_PostObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStorePreparePostParamInt pParam, global::System.IntPtr pUpBuf, int timeOut);
 #else
@@ -443,49 +460,128 @@ namespace NexPlugin
 #else
 			private static bool DataStore_PostMetaAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStorePreparePostParamInt pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_PostMetaAsync", pNgsFacade); }
 #endif
-			public static bool PostMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStorePreparePostParam param, int timeOut = 0, global::NexPlugin.DataStore.PostCB callback = null) { /*@B 0x6009B1A*/ throw null; }
+			public static bool PostMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStorePreparePostParam param, int timeOut = 0, global::NexPlugin.DataStore.PostCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				DataStorePreparePostParamInt paramInt = new DataStorePreparePostParamInt(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_PostMetaAsync(asyncId, pNgsFacade, ref paramInt, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_PostMetaAsyncByDataID(uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, ref global::NexPlugin.Detail.DataStore.DataStorePreparePostParamInt pParam, int timeOut);
 #else
 			private static bool DataStore_PostMetaAsyncByDataID(uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, ref global::NexPlugin.Detail.DataStore.DataStorePreparePostParamInt pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_PostMetaAsyncByDataID", pNgsFacade); }
 #endif
-			public static bool PostMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, global::NexPlugin.DataStorePreparePostParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B1C*/ throw null; }
+			public static bool PostMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, global::NexPlugin.DataStorePreparePostParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				DataStorePreparePostParamInt paramInt = new DataStorePreparePostParamInt(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_PostMetaAsyncByDataID(asyncId, pNgsFacade, dataId, ref paramInt, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_PostMetaAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, int useOneParam, ref global::NexPlugin.Detail.CppArray dataIds, ref global::NexPlugin.Detail.CppArray param, int transactional, int timeOut);
 #else
 			private static bool DataStore_PostMetaAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, int useOneParam, ref global::NexPlugin.Detail.CppArray dataIds, ref global::NexPlugin.Detail.CppArray param, int transactional, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_PostMetaAsyncByDataList", pNgsFacade); }
 #endif
-			public static bool PostMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useOneParam, global::System.Collections.Generic.List<ulong> dataIds, global::System.Collections.Generic.List<global::NexPlugin.DataStorePreparePostParam> param, bool transactional = true, int timeOut = 0, global::NexPlugin.DataStore.ResultListCB callback = null) { /*@B 0x6009B1E*/ throw null; }
+			public static bool PostMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useOneParam, global::System.Collections.Generic.List<ulong> dataIds, global::System.Collections.Generic.List<global::NexPlugin.DataStorePreparePostParam> param, bool transactional = true, int timeOut = 0, global::NexPlugin.DataStore.ResultListCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray dataIdsArray = CppArray.ListToArray(useptr, dataIds);
+				CppArray paramArray = CppArray.ListToArray<DataStorePreparePostParamInt, DataStorePreparePostParam>(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_PostMetaAsyncByDataList(asyncId, pNgsFacade, useOneParam ? 1 : 0, ref dataIdsArray, ref paramArray, transactional ? 1 : 0, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_CompleteSuspendedPostObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray pParam, int timeOut);
 #else
 			private static bool DataStore_CompleteSuspendedPostObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_CompleteSuspendedPostObjectAsync", pNgsFacade); }
 #endif
-			public static bool CompleteSuspendedPostObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> dataIds, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B20*/ throw null; }
+			public static bool CompleteSuspendedPostObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> dataIds, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray dataIdsArray = CppArray.ListToArray(useptr, dataIds);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_CompleteSuspendedPostObjectAsync(asyncId, pNgsFacade, ref dataIdsArray, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_SearchObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreSearchParamInt pParam, int timeOut);
 #else
 			private static bool DataStore_SearchObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreSearchParamInt pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_SearchObjectAsync", pNgsFacade); }
 #endif
-			public static bool SearchObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreSearchParam param, int timeOut = 0, global::NexPlugin.DataStore.SearchObjectCB callback = null) { /*@B 0x6009B22*/ throw null; }
+			public static bool SearchObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreSearchParam param, int timeOut = 0, global::NexPlugin.DataStore.SearchObjectCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				DataStoreSearchParamInt paramInt = new DataStoreSearchParamInt(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_SearchObjectAsync(asyncId, pNgsFacade, ref paramInt, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_SearchObjectLightAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreSearchParamInt pParam, int timeOut);
 #else
 			private static bool DataStore_SearchObjectLightAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreSearchParamInt pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_SearchObjectLightAsync", pNgsFacade); }
 #endif
-			public static bool SearchObjectLightAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreSearchParam param, int timeOut = 0, global::NexPlugin.DataStore.SearchObjectCB callback = null) { /*@B 0x6009B24*/ throw null; }
+			public static bool SearchObjectLightAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreSearchParam param, int timeOut = 0, global::NexPlugin.DataStore.SearchObjectCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				DataStoreSearchParamInt paramInt = new DataStoreSearchParamInt(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_SearchObjectLightAsync(asyncId, pNgsFacade, ref paramInt, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_DeleteObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreDeleteParamInt pParam, int timeOut);
 #else
 			private static bool DataStore_DeleteObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreDeleteParamInt pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_DeleteObjectAsync", pNgsFacade); }
 #endif
-			public static bool DeleteObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreDeleteParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B26*/ throw null; }
+			public static bool DeleteObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreDeleteParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				DataStoreDeleteParamInt paramInt = new DataStoreDeleteParamInt(param);
+				asyncId = PublishAsyncId();
+				if (!DataStore_DeleteObjectAsync(asyncId, pNgsFacade, ref paramInt, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_DeleteObjectAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray param, int transactional, int timeOut);
 #else
 			private static bool DataStore_DeleteObjectAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray param, int transactional, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_DeleteObjectAsyncByDataList", pNgsFacade); }
 #endif
-			public static bool DeleteObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<global::NexPlugin.DataStoreDeleteParam> param, bool transactional = true, int timeOut = 0, global::NexPlugin.DataStore.ResultListCB callback = null) { /*@B 0x6009B28*/ throw null; }
+			public static bool DeleteObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<global::NexPlugin.DataStoreDeleteParam> param, bool transactional = true, int timeOut = 0, global::NexPlugin.DataStore.ResultListCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray paramArray = CppArray.ListToArray<DataStoreDeleteParamInt, DataStoreDeleteParam>(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_DeleteObjectAsyncByDataList(asyncId, pNgsFacade, ref paramArray, transactional ? 1 : 0, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_UpdateObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStorePrepareUpdateParamInt pParam, global::System.IntPtr pUpBuf, int timeOut);
 #else
@@ -497,97 +593,247 @@ namespace NexPlugin
 #else
 			private static bool DataStore_GetObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStorePrepareGetParamInt pParam, ulong getBufSize, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_GetObjectAsync", pNgsFacade); }
 #endif
-			public static bool GetObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStorePrepareGetParam param, ulong getBufSize, int timeOut = 0, global::NexPlugin.DataStore.GetObjectCB callback = null) { /*@B 0x6009B2C*/ throw null; }
+			public static bool GetObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStorePrepareGetParam param, ulong getBufSize, int timeOut = 0, global::NexPlugin.DataStore.GetObjectCB callback = null) {
+				DataStorePrepareGetParamInt paramInt = new DataStorePrepareGetParamInt(param);
+				asyncId = PublishAsyncId();
+				if (!DataStore_GetObjectAsync(asyncId, pNgsFacade, ref paramInt, getBufSize, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_TouchObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreTouchObjectParamInt param, int timeOut);
 #else
 			private static bool DataStore_TouchObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreTouchObjectParamInt param, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_TouchObjectAsync", pNgsFacade); }
 #endif
-			public static bool TouchObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreTouchObjectParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B2E*/ throw null; }
+			public static bool TouchObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreTouchObjectParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				DataStoreTouchObjectParamInt paramInt = new DataStoreTouchObjectParamInt(param);
+				asyncId = PublishAsyncId();
+				if (!DataStore_TouchObjectAsync(asyncId, pNgsFacade, ref paramInt, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_GetMetaAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreGetMetaParamInt pParam, int timeOut);
 #else
 			private static bool DataStore_GetMetaAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreGetMetaParamInt pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_GetMetaAsync", pNgsFacade); }
 #endif
-			public static bool GetMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreGetMetaParam param, int timeOut = 0, global::NexPlugin.DataStore.GetMetaCB callback = null) { /*@B 0x6009B30*/ throw null; }
+			public static bool GetMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreGetMetaParam param, int timeOut = 0, global::NexPlugin.DataStore.GetMetaCB callback = null) {
+				DataStoreGetMetaParamInt paramInt = new DataStoreGetMetaParamInt(param);
+				asyncId = PublishAsyncId();
+				if (!DataStore_GetMetaAsync(asyncId, pNgsFacade, ref paramInt, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_GetMetaAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, int useDataIds, ref global::NexPlugin.Detail.CppArray dataIds, ref global::NexPlugin.Detail.CppArray param, int timeOut);
 #else
 			private static bool DataStore_GetMetaAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, int useDataIds, ref global::NexPlugin.Detail.CppArray dataIds, ref global::NexPlugin.Detail.CppArray param, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_GetMetaAsyncByDataList", pNgsFacade); }
 #endif
-			public static bool GetMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useDataIds, global::System.Collections.Generic.List<ulong> dataIds, global::System.Collections.Generic.List<global::NexPlugin.DataStoreGetMetaParam> param, int timeOut = 0, global::NexPlugin.DataStore.GetMetaListCB callback = null) { /*@B 0x6009B32*/ throw null; }
+			public static bool GetMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useDataIds, global::System.Collections.Generic.List<ulong> dataIds, global::System.Collections.Generic.List<global::NexPlugin.DataStoreGetMetaParam> param, int timeOut = 0, global::NexPlugin.DataStore.GetMetaListCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray dataIdsArray = CppArray.ListToArray(useptr, dataIds);
+				CppArray paramArray = CppArray.ListToArray<DataStoreGetMetaParamInt, DataStoreGetMetaParam>(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_GetMetaAsyncByDataList(asyncId, pNgsFacade, useDataIds ? 1 : 0, ref dataIdsArray, ref paramArray, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_ChangeMetaAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreChangeMetaParamInt pParam, int timeOut);
 #else
 			private static bool DataStore_ChangeMetaAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreChangeMetaParamInt pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_ChangeMetaAsync", pNgsFacade); }
 #endif
-			public static bool ChangeMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreChangeMetaParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B34*/ throw null; }
+			public static bool ChangeMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreChangeMetaParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				DataStoreChangeMetaParamInt paramInt = new DataStoreChangeMetaParamInt(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_ChangeMetaAsync(asyncId, pNgsFacade, ref paramInt, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_ChangeMetaAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, int useDataIds, ref global::NexPlugin.Detail.CppArray dataIds, ref global::NexPlugin.Detail.CppArray param, int transactional, int timeOut);
 #else
 			private static bool DataStore_ChangeMetaAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, int useDataIds, ref global::NexPlugin.Detail.CppArray dataIds, ref global::NexPlugin.Detail.CppArray param, int transactional, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_ChangeMetaAsyncByDataList", pNgsFacade); }
 #endif
-			public static bool ChangeMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useDataIds, global::System.Collections.Generic.List<ulong> dataIds, global::System.Collections.Generic.List<global::NexPlugin.DataStoreChangeMetaParam> param, bool transactional = true, int timeOut = 0, global::NexPlugin.DataStore.ResultListCB callback = null) { /*@B 0x6009B36*/ throw null; }
+			public static bool ChangeMetaAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useDataIds, global::System.Collections.Generic.List<ulong> dataIds, global::System.Collections.Generic.List<global::NexPlugin.DataStoreChangeMetaParam> param, bool transactional = true, int timeOut = 0, global::NexPlugin.DataStore.ResultListCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray dataIdsArray = CppArray.ListToArray(useptr, dataIds);
+				CppArray paramArray = CppArray.ListToArray<DataStoreChangeMetaParamInt, DataStoreChangeMetaParam>(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_ChangeMetaAsyncByDataList(asyncId, pNgsFacade, useDataIds ? 1 : 0, ref dataIdsArray, ref paramArray, transactional ? 1 : 0, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_RateObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreRatingTargetInt pTarget, ref global::NexPlugin.Detail.DataStore.DataStoreRateObjectParamInt pRateParam, int timeOut);
 #else
 			private static bool DataStore_RateObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreRatingTargetInt pTarget, ref global::NexPlugin.Detail.DataStore.DataStoreRateObjectParamInt pRateParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_RateObjectAsync", pNgsFacade); }
 #endif
-			public static bool RateObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreRatingTarget target, global::NexPlugin.DataStoreRateObjectParam param, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoCB callback = null) { /*@B 0x6009B38*/ throw null; }
+			public static bool RateObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreRatingTarget target, global::NexPlugin.DataStoreRateObjectParam param, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoCB callback = null) {
+				DataStoreRatingTargetInt targetInt = new DataStoreRatingTargetInt(target);
+				DataStoreRateObjectParamInt paramInt = new DataStoreRateObjectParamInt(param);
+				asyncId = PublishAsyncId();
+				if (!DataStore_RateObjectAsync(asyncId, pNgsFacade, ref targetInt, ref paramInt, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_RateObjectAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, int useOneObjectParam, ref global::NexPlugin.Detail.CppArray target, ref global::NexPlugin.Detail.CppArray param, int transactional, int timeOut);
 #else
 			private static bool DataStore_RateObjectAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, int useOneObjectParam, ref global::NexPlugin.Detail.CppArray target, ref global::NexPlugin.Detail.CppArray param, int transactional, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_RateObjectAsyncByDataList", pNgsFacade); }
 #endif
-			public static bool RateObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useOneObjectParam, global::System.Collections.Generic.List<global::NexPlugin.DataStoreRatingTarget> target, global::System.Collections.Generic.List<global::NexPlugin.DataStoreRateObjectParam> param, bool transactional = true, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoListCB callback = null) { /*@B 0x6009B3A*/ throw null; }
+			public static bool RateObjectAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useOneObjectParam, global::System.Collections.Generic.List<global::NexPlugin.DataStoreRatingTarget> target, global::System.Collections.Generic.List<global::NexPlugin.DataStoreRateObjectParam> param, bool transactional = true, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoListCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray targetArray = CppArray.ListToArray<DataStoreRatingTargetInt, DataStoreRatingTarget>(useptr, target);
+				CppArray paramArray = CppArray.ListToArray<DataStoreRateObjectParamInt, DataStoreRateObjectParam>(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_RateObjectAsyncByDataList(asyncId, pNgsFacade, useOneObjectParam ? 1 : 0, ref targetArray, ref paramArray, transactional ? 1 : 0, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_RateObjectWithPostingAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreRatingTargetInt pParam, ref global::NexPlugin.Detail.DataStore.DataStoreRateObjectParamInt pObject, ref global::NexPlugin.Detail.DataStore.DataStorePreparePostParamInt pPostParam, int timeOut);
 #else
 			private static bool DataStore_RateObjectWithPostingAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreRatingTargetInt pParam, ref global::NexPlugin.Detail.DataStore.DataStoreRateObjectParamInt pObject, ref global::NexPlugin.Detail.DataStore.DataStorePreparePostParamInt pPostParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_RateObjectWithPostingAsync", pNgsFacade); }
 #endif
-			public static bool RateObjectWithPostingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreRatingTarget pParam, global::NexPlugin.DataStoreRateObjectParam pObject, global::NexPlugin.DataStorePreparePostParam pPostParam, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoCB callback = null) { /*@B 0x6009B3C*/ throw null; }
+			public static bool RateObjectWithPostingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreRatingTarget pParam, global::NexPlugin.DataStoreRateObjectParam pObject, global::NexPlugin.DataStorePreparePostParam pPostParam, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				DataStoreRatingTargetInt targetInt = new DataStoreRatingTargetInt(pParam);
+				DataStoreRateObjectParamInt objectInt = new DataStoreRateObjectParamInt(pObject);
+				DataStorePreparePostParamInt postParamInt = new DataStorePreparePostParamInt(useptr, pPostParam);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_RateObjectWithPostingAsync(asyncId, pNgsFacade, ref targetInt, ref objectInt, ref postParamInt, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_RateObjectsWithPostingAsync(uint asyncId, global::System.IntPtr pNgsFacade, int useOneParam, ref global::NexPlugin.Detail.CppArray pParam, ref global::NexPlugin.Detail.CppArray pObject, ref global::NexPlugin.Detail.CppArray pPostParam, int transactional, int timeOut);
 #else
 			private static bool DataStore_RateObjectsWithPostingAsync(uint asyncId, global::System.IntPtr pNgsFacade, int useOneParam, ref global::NexPlugin.Detail.CppArray pParam, ref global::NexPlugin.Detail.CppArray pObject, ref global::NexPlugin.Detail.CppArray pPostParam, int transactional, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_RateObjectsWithPostingAsync", pNgsFacade); }
 #endif
-			public static bool RateObjectsWithPostingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useOneParam, global::System.Collections.Generic.List<global::NexPlugin.DataStoreRatingTarget> pParam, global::System.Collections.Generic.List<global::NexPlugin.DataStoreRateObjectParam> pObject, global::System.Collections.Generic.List<global::NexPlugin.DataStorePreparePostParam> pPostParam, bool transactional, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoListCB callback = null) { /*@B 0x6009B3E*/ throw null; }
+			public static bool RateObjectsWithPostingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, bool useOneParam, global::System.Collections.Generic.List<global::NexPlugin.DataStoreRatingTarget> pParam, global::System.Collections.Generic.List<global::NexPlugin.DataStoreRateObjectParam> pObject, global::System.Collections.Generic.List<global::NexPlugin.DataStorePreparePostParam> pPostParam, bool transactional, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoListCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray targetArray = CppArray.ListToArray<DataStoreRatingTargetInt, DataStoreRatingTarget>(useptr, pParam);
+				CppArray objectArray = CppArray.ListToArray<DataStoreRateObjectParamInt, DataStoreRateObjectParam>(useptr, pObject);
+				// shipped: a default post param is converted with a throw-away pointer list and never used
+				DataStorePreparePostParamInt defaultPostParam = new DataStorePreparePostParamInt(new List<IntPtr>(), new DataStorePreparePostParam());
+				CppArray postParamArray = CppArray.ListToArray<DataStorePreparePostParamInt, DataStorePreparePostParam>(useptr, pPostParam);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_RateObjectsWithPostingAsync(asyncId, pNgsFacade, useOneParam ? 1 : 0, ref targetArray, ref objectArray, ref postParamArray, transactional ? 1 : 0, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_GetRatingAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreRatingTargetInt target, ulong accessPassword, int timeOut);
 #else
 			private static bool DataStore_GetRatingAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreRatingTargetInt target, ulong accessPassword, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_GetRatingAsync", pNgsFacade); }
 #endif
-			public static bool GetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreRatingTarget target, ulong accessPassword, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoCB callback = null) { /*@B 0x6009B40*/ throw null; }
+			public static bool GetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreRatingTarget target, ulong accessPassword, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoCB callback = null) {
+				DataStoreRatingTargetInt targetInt = new DataStoreRatingTargetInt(target);
+				asyncId = PublishAsyncId();
+				if (!DataStore_GetRatingAsync(asyncId, pNgsFacade, ref targetInt, accessPassword, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_GetRatingAllSlotAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut);
 #else
 			private static bool DataStore_GetRatingAllSlotAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_GetRatingAllSlotAsync", pNgsFacade); }
 #endif
-			public static bool GetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoAllSlotCB callback = null) { /*@B 0x6009B42*/ throw null; }
+			public static bool GetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoAllSlotCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!DataStore_GetRatingAllSlotAsync(asyncId, pNgsFacade, dataId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_GetRatingAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray dataIds, int timeOut);
 #else
 			private static bool DataStore_GetRatingAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray dataIds, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_GetRatingAsyncByDataList", pNgsFacade); }
 #endif
-			public static bool GetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> dataIds, int timeOut = 0, global::NexPlugin.DataStore.RatingInfosListCB callback = null) { /*@B 0x6009B44*/ throw null; }
+			public static bool GetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> dataIds, int timeOut = 0, global::NexPlugin.DataStore.RatingInfosListCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray dataIdsArray = CppArray.ListToArray(useptr, dataIds);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_GetRatingAsyncByDataList(asyncId, pNgsFacade, ref dataIdsArray, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_GetRatingWithLogAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreRatingTargetInt target, ulong accessPassword, int timeOut);
 #else
 			private static bool DataStore_GetRatingWithLogAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreRatingTargetInt target, ulong accessPassword, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_GetRatingWithLogAsync", pNgsFacade); }
 #endif
-			public static bool GetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreRatingTarget target, ulong accessPassword, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoWithLogCB callback = null) { /*@B 0x6009B46*/ throw null; }
+			public static bool GetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreRatingTarget target, ulong accessPassword, int timeOut = 0, global::NexPlugin.DataStore.RatingInfoWithLogCB callback = null) {
+				DataStoreRatingTargetInt targetInt = new DataStoreRatingTargetInt(target);
+				asyncId = PublishAsyncId();
+				if (!DataStore_GetRatingWithLogAsync(asyncId, pNgsFacade, ref targetInt, accessPassword, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_ResetRatingAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreRatingTargetInt target, ulong accessPassword, int timeOut);
 #else
 			private static bool DataStore_ResetRatingAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStoreRatingTargetInt target, ulong accessPassword, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_ResetRatingAsync", pNgsFacade); }
 #endif
-			public static bool ResetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreRatingTarget target, ulong accessPassword, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B48*/ throw null; }
+			public static bool ResetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStoreRatingTarget target, ulong accessPassword, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				DataStoreRatingTargetInt targetInt = new DataStoreRatingTargetInt(target);
+				asyncId = PublishAsyncId();
+				if (!DataStore_ResetRatingAsync(asyncId, pNgsFacade, ref targetInt, accessPassword, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_ResetRatingAllSlotAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut);
 #else
 			private static bool DataStore_ResetRatingAllSlotAsync(uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_ResetRatingAllSlotAsync", pNgsFacade); }
 #endif
-			public static bool ResetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009B4A*/ throw null; }
+			public static bool ResetRatingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, ulong dataId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!DataStore_ResetRatingAllSlotAsync(asyncId, pNgsFacade, dataId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool DataStore_ResetRatingAsyncByDataList(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray dataIds, int transactional, int timeOut);
 #else
