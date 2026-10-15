@@ -6,11 +6,11 @@ namespace nn.irsensor
 	public class ImageTransferProcessorManager
 	{
 		private global::nn.irsensor.ImageTransferProcessorState state;
-		private global::System.IntPtr pWorkBuffer;
+		private global::System.IntPtr pWorkBuffer = IntPtr.Zero;
 		private long workBufferSize;
 		private global::nn.irsensor.ImageTransferProcessorExConfig config;
 		private global::nn.irsensor.IrCameraHandle handle;
-		public global::nn.irsensor.ImageTransferProcessorState State { get { /*@B nn:0x60000DA*/ throw null; } }
+		public global::nn.irsensor.ImageTransferProcessorState State { get { return state; } }
 		public byte[] ImageBuffer { get; private set; }
 		// @02815be0: _Destroy inlined, then base.Finalize
 		~ImageTransferProcessorManager() { _Destroy(); }
@@ -69,6 +69,6 @@ namespace nn.irsensor
 			pWorkBuffer = IntPtr.Zero;
 			workBufferSize = 0;
 		}
-		public ImageTransferProcessorManager() { /*@B nn:0x60000E7*/ throw null; }
+		public ImageTransferProcessorManager() { }
 	}
 }

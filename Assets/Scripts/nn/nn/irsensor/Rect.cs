@@ -7,7 +7,12 @@ namespace nn.irsensor
 		public short y;
 		public short width;
 		public short height;
-		public Rect(short x, short y, short width, short height) { /*@B nn:0x60000C7*/ throw null; }
+		public Rect(short x, short y, short width, short height) {
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+		}
 		// @02bf9a90
 		public override string ToString() { return string.Format("(x:{0} y:{1} w:{2} h:{3})", new object[] { x, y, width, height }); }
 		// @02bf9c60
