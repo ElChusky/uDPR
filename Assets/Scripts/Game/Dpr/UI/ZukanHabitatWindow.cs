@@ -53,7 +53,12 @@ namespace Dpr.UI
 				global::UnityEngine.Vector2 cellPos = _townmap.ToCellPos(_townmap.cursorPos);
 				global::UnityEngine.Vector3 pos = _townmap.ToCellIconPos(cellPos);
 				if ((int)cellPos.y == 0)
+#if !SWITCH
+					// one cell down in world pixels (Townmap.PcUnit, s40)
+					pos.y += -24f * _townmap.PcUnit;
+#else
 					pos.y += -24f;
+#endif
 				_specialInfo.transform.position = pos;
 			}
 			else

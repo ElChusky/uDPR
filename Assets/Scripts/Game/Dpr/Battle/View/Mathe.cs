@@ -12,7 +12,12 @@ namespace Dpr.Battle.View
             return value;
         }
 		public static float FrameToSecond(in int frame) {
+#if PC_UNLOCKED_FPS
+            // PC (s37): frames are shipped 30 Hz frames (LogicRate), not the uncapped targetFrameRate
+            return 1.0f / PcPlatform.PcFrameClock.LogicRate * frame;
+#else
             return 1.0f / global::UnityEngine.Application.targetFrameRate * frame;
+#endif
         }
 		public static float FrameToSecond(in int frame, in int fps = 30) {
             return 1.0f / fps * frame;
@@ -23,7 +28,7 @@ namespace Dpr.Battle.View
 #if PC_UNLOCKED_FPS
             return (int)Math.Round(time / (1.0f / PcPlatform.PcFrameClock.LogicRate));
 #else
-            return (int)Math.Round(time / (1.0f / Application.targetFrameRate));
+            return (int)Math.Round(time / (1.0f / global::UnityEngine.Application.targetFrameRate));
 #endif
         }
 		public static int SecondToFrame(in float time, in int fps = 30) {

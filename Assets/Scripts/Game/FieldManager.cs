@@ -111,6 +111,10 @@ public class FieldManager
 				DailyEventWork.PenaltyCheck();
 				IsResume = true;
 			}
+#else
+			// PC: the focus mode / state tests use the Switch-only focus API; the shipped action runs on every notification
+			DailyEventWork.PenaltyCheck();
+			IsResume = true;
 #endif
 		};
 		SwitchNotification.Resume += (int a) =>
@@ -121,6 +125,10 @@ public class FieldManager
 				DailyEventWork.PenaltyCheck();
 				IsResume = true;
 			}
+#else
+			// PC: the focus-handling-mode test uses the Switch-only focus API; the shipped action runs on every notification
+			DailyEventWork.PenaltyCheck();
+			IsResume = true;
 #endif
 		};
 		Sequencer.onDestroy -= SeqOnDestroy;

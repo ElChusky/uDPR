@@ -14,7 +14,12 @@ namespace Dpr.Field.Walking
 		}
 		private global::System.Collections.IEnumerator WaitFrame(int count)
 		{
+#if PC_UNLOCKED_FPS
+			// PC (s37): count shipped 30 Hz frames (Ticks), not rendered frames
+			for (int i = 0; i < count; i += PcPlatform.PcFrameClock.Ticks)
+#else
 			for (int i = 0; i < count; i++)
+#endif
 			{
 				yield return null;
 			}

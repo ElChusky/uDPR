@@ -61,7 +61,11 @@ namespace Dpr.Battle.View
 			_iPtrNext = null;
 			_iPtrPrev = null;
 			_isSelfDelete = false;
+#if PC_UNLOCKED_FPS
+			_frame = 0; _pcFrameFrac = 0f;
+#else
 			_frame = 0;
+#endif
 			_lifeTime = 0;
 			_isStart = false;
 			_onFinished = null;

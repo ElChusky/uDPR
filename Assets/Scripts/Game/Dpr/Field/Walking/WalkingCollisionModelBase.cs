@@ -40,7 +40,23 @@ namespace Dpr.Field.Walking
 			bool jump = false;
 			bool isCollided = false;
 			float dotAngle = 0f;
+#if PC_UNLOCKED_FPS
+			// PC (s41): FastNormalize clears a vector shorter than sqrt(kEpsilon) = 0.0032 - one 30 Hz frame's move on the console, i.e. a
+			// cut below ~0.095 units/s. Per rendered frame it cut far faster walkers (2.8 units/s at 900 fps): Barry froze 0.1-0.3 short of
+			// his spot and walked in place beside a standing player (player report, s41). The shipped cut is applied to the 30 Hz-frame
+			// move, then the real vector is normalized; at 30 fps (FramesOf = 1) this is the shipped line.
+			float pcF = PcPlatform.PcFrameClock.FramesOf(deltaTime);
+			float distance;
+			if (pcF > 0f && pcF != 1f && global::SmartPoint.Mathematics.Vector3Ext.FastLengthSq(entity.moveVector * (1f / pcF)) >= global::UnityEngine.Vector3.kEpsilon)
+			{
+				distance = (float)global::System.Math.Sqrt(global::SmartPoint.Mathematics.Vector3Ext.FastLengthSq(entity.moveVector));
+				entity.moveVector = entity.moveVector * (1f / distance);
+			}
+			else
+				distance = global::SmartPoint.Mathematics.Vector3Ext.FastNormalize(ref entity.moveVector);
+#else
 			float distance = global::SmartPoint.Mathematics.Vector3Ext.FastNormalize(ref entity.moveVector);
+#endif
 			int mask;
 			if (isIgnoreJump)
 				mask = global::Layer.Obstacle;
@@ -51,7 +67,12 @@ namespace Dpr.Field.Walking
 			return isCollided;
 		}
 		public void UpdateCollisionCount() {
+#if PC_UNLOCKED_FPS
+			// PC (s37): the count is in shipped 30 Hz frames (Ticks)
+			CollidedCount = isCollidedAdd ? CollidedCount + PcPlatform.PcFrameClock.Ticks : 0;
+#else
 			CollidedCount = isCollidedAdd ? CollidedCount + 1 : 0;
+#endif
 		}
 		public bool CheckCollision(global::FieldObjectEntity target, float radius, float speed, bool CheckWeight = false, bool isCheckOnly = false, int targetPriority = 999, bool isCheckHeight = false) {
 			bool jump = false;

@@ -582,7 +582,12 @@ public class EvEntityCommand
 		else
 		{
 			_charEntity.NeckAngle.x = 0f;
+#if PC_UNLOCKED_FPS
+			// PC (s37): the neck step is per shipped 30 Hz frame (Frames of them this rendered frame)
+			if (System.Math.Abs(_neckAngle) < System.Math.Abs(_neckAngleDiff * PcPlatform.PcFrameClock.Frames))
+#else
 			if (System.Math.Abs(_neckAngle) < System.Math.Abs(_neckAngleDiff))
+#endif
 			{
 				_isNeckRotate = true;
 				index = 0;
@@ -595,8 +600,13 @@ public class EvEntityCommand
 			{
 				int walkIndex = _charEntity != null ? _charEntity.GetWalkAnimationIndex() : 1;
 				_entity.GetAnimationPlayer().Play(walkIndex, 0f, 0f);
+#if PC_UNLOCKED_FPS
+				_charEntity.yawAngle += _neckAngleDiff * PcPlatform.PcFrameClock.Frames;
+				_neckAngle -= _neckAngleDiff * PcPlatform.PcFrameClock.Frames;
+#else
 				_charEntity.yawAngle += _neckAngleDiff;
 				_neckAngle -= _neckAngleDiff;
+#endif
 			}
 		}
 		return true;

@@ -42,7 +42,11 @@ namespace Dpr.Sequence
 			_preLoadCoroutines = new global::System.Collections.Generic.List<global::UnityEngine.Coroutine>(MAX_COMMAND_NUM);
 			_cachedSoundBank = new global::System.Collections.Generic.Dictionary<string, global::Audio.AudioData>();
 			SequenceFile = null;
+#if PC_UNLOCKED_FPS
+			CurrentFrame = -1; _pcFrameFrac = 0f;
+#else
 			CurrentFrame = -1;
+#endif
 			MaxFrame = -1;
 			Commands = new global::System.Collections.Generic.List<global::Dpr.SequenceEditor.CommandParam>(MAX_COMMAND_NUM);
 			IsCommandSkip = false;
@@ -140,7 +144,11 @@ namespace Dpr.Sequence
 		protected virtual void OnComplete() {
 			SequenceFile = null;
 			Commands = null;
+#if PC_UNLOCKED_FPS
+			CurrentFrame = -1; _pcFrameFrac = 0f;
+#else
 			CurrentFrame = -1;
+#endif
 			_sequenceElapsedTime = 0f;
 			_sequenceInterpolationTime = 0f;
 			IsInterpolationTime = false;

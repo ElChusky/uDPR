@@ -30,6 +30,18 @@ public class FieldEventTrainEntity : global::FieldEventEntity
 		}
 		return dist;
 	}
+#if PC_UNLOCKED_FPS
+	// PC (s37): CalcAccDist with the integration step as a parameter (OnUpdate passes its per-rendered-frame step)
+	private float CalcAccDist(float accTime, float maxSpeed, float step) {
+		float time = 0f;
+		float dist = 0f;
+		while (time < accTime) {
+			time = global::UnityEngine.Mathf.Min(time + step, accTime);
+			dist += global::UnityEngine.Mathf.Lerp(0f, maxSpeed, time / accTime) * step;
+		}
+		return dist;
+	}
+#endif
 	private float ToWorldValue(float localValue) {
 		global::UnityEngine.Vector3 local = transform.localPosition;
 		local.z = localValue;
@@ -77,7 +89,14 @@ public class FieldEventTrainEntity : global::FieldEventEntity
 				else {
 					Play(AnimationIndex.Move_High);
 					float distance = global::UnityEngine.Mathf.Abs(targetZ - position.z);
+#if PC_UNLOCKED_FPS
+					// PC (s37): the 1/30 step follows the frame clock (as ported from the s37 sweep - see HANDOFF s46 C3c note on this factor)
+					float pcFrames = PcPlatform.PcFrameClock.FramesOf(deltaTime);
+					float pcStep = pcFrames > 0f ? (1f / 30f) / pcFrames : 1f / 30f;
+					float moveTime = (distance - CalcAccDist(decTime, maxSpeed, pcStep)) / maxSpeed + pcStep;
+#else
 					float moveTime = (distance - CalcAccDist(decTime, maxSpeed)) / maxSpeed + 1f / 30f;
+#endif
 					MoveRate.SetValue(0f);
 					MoveRate.MoveTime(1f, moveTime);
 					WaitArrival.SetValue(0f);

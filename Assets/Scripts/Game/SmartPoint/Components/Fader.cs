@@ -112,7 +112,12 @@ namespace SmartPoint.Components
 			}
 		}
 		private void OnUpdate(float deltaTime) {
+#if PC_UNLOCKED_FPS
+			// PC (s37): the shipped fixed 1/30 step per update -> the frame's real deltaTime
+			_fillPower += _speed * deltaTime;
+#else
 			_fillPower += _speed * 0.033333335f;
+#endif
 			if (_speed < 0f)
 			{
 				if (!(_fillPower > 0f))

@@ -31,6 +31,11 @@ namespace Dpr.UI
 		public string descMessageLabel { get { return this._descMessageLabel; } }
 		public int selectIndex { get { return this._selectIndex; } }
 		public int valueCount { get {
+#if !SWITCH
+			// PC rows (display / resolution / frame rate, s39) carry their own value list
+			if (_pcValues != null)
+				return _pcValues.Length;
+#endif
 			switch (_itemType)
 			{
 				case global::Dpr.UI.SettingMenuItem.ItemType.Selector:

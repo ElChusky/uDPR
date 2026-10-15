@@ -45,7 +45,14 @@ namespace Dpr.UnderGround.UgFather
 				itemParam.menuId = contextMenuIds[i];
 				param.itemParams[i] = itemParam;
 			}
+#if !SWITCH
+			// s40: a 1280x720 screen position -> world pixels with the game's own helper (UIManager.ScreenScaled; identity at 720p)
+			global::UnityEngine.Vector2 pcPosition = new global::UnityEngine.Vector2(1050f, 300f);
+			global::Dpr.UI.UIManager.ScreenScaled(ref pcPosition);
+			param.position = pcPosition;
+#else
 			param.position = new global::UnityEngine.Vector2(1050f, 300f);
+#endif
 			param.pivot = new global::UnityEngine.Vector2(1f, 1f);
 			param.useLoopAndRepeat = false;
 			var window = global::Dpr.UI.UIManager.Instance.CreateUIWindow<global::Dpr.UI.ContextMenuWindow>(global::UIWindowID.CONTEXTMENU);

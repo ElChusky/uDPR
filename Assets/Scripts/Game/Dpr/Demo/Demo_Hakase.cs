@@ -236,7 +236,14 @@ namespace Dpr.Demo
 					param.itemParams[i].text = msgFile.GetFormattedMessage(names[i]);
 					param.itemParams[i].messageIndex = i;
 				}
+#if !SWITCH
+				// s40: a 1280x720 screen position -> world pixels with the game's own helper (UIManager.ScreenScaled; identity at 720p)
+				global::UnityEngine.Vector2 pcPosition = new global::UnityEngine.Vector2(160f, 300f);
+				global::Dpr.UI.UIManager.ScreenScaled(ref pcPosition);
+				param.position = pcPosition;
+#else
 				param.position = new global::UnityEngine.Vector2(160f, 300f);
+#endif
 				param.minItemWidth = 122f;
 				param.useCancel = false;
 				param.useLoopAndRepeat = false;

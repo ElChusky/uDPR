@@ -257,7 +257,13 @@ namespace Dpr.UI
         }
 		public global::UnityEngine.Vector2 ToCellPos(global::UnityEngine.Vector3 iconPos) {
             var diff = iconPos - _cellRoot.position;
+#if !SWITCH
+            // cell size in world pixels (PcUnit, s40)
+            float unit = PcUnit;
+            return new Vector2(Mathf.FloorToInt(diff.x / (CellSize * unit)), Mathf.FloorToInt(diff.y / (-CellSize * unit)));
+#else
             return new Vector2(Mathf.FloorToInt(diff.x / CellSize), Mathf.FloorToInt(diff.y / -CellSize));
+#endif
         }
 		protected void SetPlayerPos(global::UnityEngine.Vector2 cellPos) {
             _player.transform.position = ToCellIconPos(cellPos);
@@ -285,35 +291,41 @@ namespace Dpr.UI
         }
 		protected bool UpdateDigitalMove(float deltaTime, global::Dpr.UI.UIInputController input) {
             var prevPos = _cursorPos;
+#if !SWITCH
+            // one cell per step in world pixels (PcUnit, s40)
+            float step = CellSize * PcUnit;
+#else
+            float step = CellSize;
+#endif
             if (input.IsOnButton(UIManager.StickLUp))
             {
                 if (input.IsPushOrRepeatButton(UIManager.StickLUp))
                 {
-                    _cursorPos.y += CellSize;
+                    _cursorPos.y += step;
                     if (input.IsOnButton(UIManager.StickLRight))
-                        _cursorPos.x += CellSize;
+                        _cursorPos.x += step;
                     else if (input.IsOnButton(UIManager.StickLLeft))
-                        _cursorPos.x += -CellSize;
+                        _cursorPos.x += -step;
                 }
             }
             else if (input.IsOnButton(UIManager.StickLDown))
             {
                 if (input.IsPushOrRepeatButton(UIManager.StickLDown))
                 {
-                    _cursorPos.y += -CellSize;
+                    _cursorPos.y += -step;
                     if (input.IsOnButton(UIManager.StickLRight))
-                        _cursorPos.x += CellSize;
+                        _cursorPos.x += step;
                     else if (input.IsOnButton(UIManager.StickLLeft))
-                        _cursorPos.x += -CellSize;
+                        _cursorPos.x += -step;
                 }
             }
             else if (input.IsPushOrRepeatButton(UIManager.StickLRight))
             {
-                _cursorPos.x += CellSize;
+                _cursorPos.x += step;
             }
             else if (input.IsPushOrRepeatButton(UIManager.StickLLeft))
             {
-                _cursorPos.x += -CellSize;
+                _cursorPos.x += -step;
             }
 
             if (prevPos.x == _cursorPos.x && prevPos.y == _cursorPos.y)
@@ -336,8 +348,15 @@ namespace Dpr.UI
                 Audio.AudioManager.Instance.PlaySe(AK.EVENTS.UI_MAP_ADSORPTION, null);
         }
 		protected void ClampCursorPos() {
+#if !SWITCH
+            // the bounds' UI-unit parts (cell sizes, the cell root's sizeDelta) in world pixels (PcUnit, s40)
+            float unit = PcUnit;
+            _cursorPos.x = Mathf.Clamp(_cursorPos.x, _cellRoot.position.x + (CellSize + CellSizeHalf) * unit, _cellRoot.position.x + (_cellRoot.sizeDelta.x - CellSizeHalf) * unit);
+            _cursorPos.y = Mathf.Clamp(_cursorPos.y, _cellRoot.position.y + (-_cellRoot.sizeDelta.y + CellSizeHalf) * unit, _cellRoot.position.y - CellSizeHalf * unit);
+#else
             _cursorPos.x = Mathf.Clamp(_cursorPos.x, _cellRoot.position.x + CellSize + CellSizeHalf, _cellRoot.position.x + _cellRoot.sizeDelta.x - CellSizeHalf);
             _cursorPos.y = Mathf.Clamp(_cursorPos.y, _cellRoot.position.y - _cellRoot.sizeDelta.y + CellSizeHalf, _cellRoot.position.y - CellSizeHalf);
+#endif
         }
 		protected bool UpdateAnalogMove(float deltaTime, global::Dpr.UI.UIInputController input) {
             if (!input.inputEnabled)
@@ -351,7 +370,12 @@ namespace Dpr.UI
             if (_moveVec.sqrMagnitude > 0f)
             {
                 var prevCellPos = ToCellPos(_cursorPos);
+#if !SWITCH
+                // the stick speed (UI units per 1/60 s) in world pixels (PcUnit, s40)
+                float speed = deltaTime * 60f * _cursorSpeed * PcUnit;
+#else
                 float speed = deltaTime * 60f * _cursorSpeed;
+#endif
                 _cursorPos.x += speed * _moveVec.x;
                 _cursorPos.y += speed * _moveVec.y;
                 ClampCursorPos();
@@ -403,7 +427,11 @@ namespace Dpr.UI
                         if (!Cell.UseData(neighbor) || !neighbor.IsFly(false))
                             continue;
 
+#if !SWITCH
+                        var dir = new Vector2(offset.x, -offset.y).normalized * (CellSize * PcUnit);
+#else
                         var dir = new Vector2(offset.x, -offset.y).normalized * CellSize;
+#endif
                         var target = iconPos;
                         target.x += dir.x;
                         target.y += dir.y;
@@ -415,7 +443,11 @@ namespace Dpr.UI
                         }
                     }
 
+#if !SWITCH
+                    if (nearest != null && minDistance <= _snapDistance * PcUnit)
+#else
                     if (nearest != null && minDistance <= _snapDistance)
+#endif
                     {
                         var snapCellPos = nearest.data.TownPosXZ;
                         SetCursorPos(snapCellPos);

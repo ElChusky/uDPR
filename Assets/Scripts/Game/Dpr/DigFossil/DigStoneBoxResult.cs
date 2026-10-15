@@ -155,7 +155,13 @@ namespace Dpr.DigFossil
 			switch (step)
 			{
 				case Step.IdleStatueLoding:
+#if PC_UNLOCKED_FPS
+					// PC (s37): the wait counts shipped 30 Hz frames (Ticks), not rendered frames
+					statueLoadWaitCount += PcPlatform.PcFrameClock.Ticks;
+					if (statueLoadWaitCount > 3 && statueModel != null && !statueModel.activeInHierarchy)
+#else
 					if (statueLoadWaitCount++ > 2 && statueModel != null && !statueModel.activeInHierarchy)
+#endif
 						ChangeStep(Step.FadeIn);
 					break;
 				case Step.IdleBoxGetMessage:

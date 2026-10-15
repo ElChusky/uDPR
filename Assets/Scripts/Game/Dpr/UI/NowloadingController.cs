@@ -57,7 +57,12 @@ namespace Dpr.UI
 			if (_animatorLoading.isActiveAndEnabled)
 			{
 				_animatorLoading.Play(animStatePlay, 0, _animTime);
+#if PC_UNLOCKED_FPS
+				// PC (s37): one shipped 1/30 step per 30 Hz frame of this rendered frame
+				_animTime += (1f / 30f) * PcPlatform.PcFrameClock.FramesOf(deltaTime) / _animLength;
+#else
 				_animTime += (1f / 30f) / _animLength;
+#endif
 			}
 		}
 		private void SetActive(bool active) {

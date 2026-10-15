@@ -169,7 +169,11 @@ public static class TransitionAnimation
         {
             UnityEngine.Vector3 scale = FieldManager.Instance.UG_Hole.transform.localScale;
             float deltaTime = UnityEngine.Time.deltaTime;
+#if PC_UNLOCKED_FPS
+            animeFlame += PcPlatform.PcFrameClock.Ticks; // PC (s37): count shipped 30 Hz frames
+#else
             animeFlame++;
+#endif
             float s = UnityEngine.Mathf.Min(scale.x + deltaTime * 30f, 2f);
             FieldManager.Instance.UG_Hole.transform.localScale = new UnityEngine.Vector3(s, s, s);
             yield return null;
@@ -235,7 +239,11 @@ public static class TransitionAnimation
         {
             UnityEngine.Vector3 scale = FieldManager.Instance.UG_Hole.transform.localScale;
             float deltaTime = UnityEngine.Time.deltaTime;
+#if PC_UNLOCKED_FPS
+            animeFlame += PcPlatform.PcFrameClock.Ticks; // PC (s37): count shipped 30 Hz frames
+#else
             animeFlame++;
+#endif
             float s = UnityEngine.Mathf.Max(scale.x + deltaTime * -20f, 0f);
             FieldManager.Instance.UG_Hole.transform.localScale = new UnityEngine.Vector3(s, s, s);
             yield return null;

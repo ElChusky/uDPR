@@ -46,7 +46,13 @@ namespace Dpr.Demo
             if (tex != null)
                 tex.Release();
             tex = null;
+#if !SWITCH
+            // at screen pixel density (PcRenderScale): DemoSceneManager shows it in a 1280x720-unit RawImage; timeline cameras share it
+            float k = PcPlatform.PcRenderScale.Factor;
+            tex = new global::UnityEngine.RenderTexture(PcPlatform.PcRenderScale.Px(1280, k), PcPlatform.PcRenderScale.Px(720, k), 24, isUseAlpha ? global::UnityEngine.RenderTextureFormat.ARGBHalf : global::UnityEngine.RenderTextureFormat.RGB111110Float);
+#else
             tex = new global::UnityEngine.RenderTexture(1280, 720, 24, isUseAlpha ? global::UnityEngine.RenderTextureFormat.ARGBHalf : global::UnityEngine.RenderTextureFormat.RGB111110Float);
+#endif
             tex.antiAliasing = 4;
             cam.targetTexture = null;
             if (isSetCamera)

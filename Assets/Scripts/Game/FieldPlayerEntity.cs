@@ -1163,7 +1163,11 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
                 accel = DataManager.FieldCommonParam[(int)ParamIndx.Gear4Accel];
             }
             float accelerationTime = _bicAccelerationTime;
+#if PC_UNLOCKED_FPS
+            float acceleration = _bicOldAcceleration + accel.param * accelerationTime * 30.0f * PcPlatform.PcFrameClock.Frames; // PC (s37): per-Update speed step -> per 30 Hz frame
+#else
             float acceleration = _bicOldAcceleration + accel.param * accelerationTime * 30.0f;
+#endif
             if (acceleration >= maxSpeed / 0.3f)
             {
                 _isBicMaxSpeed = true;
@@ -1444,8 +1448,16 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
             diff += 360.0f;
         if (diff > 180.0f)
             diff -= 360.0f;
+#if PC_UNLOCKED_FPS
+        // PC (s37): shipped = 0.4 of the remaining angle per 30 Hz frame -> 1 - 0.6^Frames per rendered frame; the snap test keeps the shipped 30 Hz step size
+        float pcDiff = diff % 360.0f;
+        float pcStep30 = pcDiff * 0.4f;
+        float step = pcDiff * (1f - Mathf.Pow(1f - 0.4f, PcPlatform.PcFrameClock.Frames));
+        yawAngle = pcStep30 * pcStep30 < 0.01f ? angle : yawAngle + step;
+#else
         float step = diff % 360.0f * 0.4f;
         yawAngle = step * step < 0.01f ? angle : yawAngle + step;
+#endif
         return yawAngle == angle;
     }
 	private bool IsIgnoreWalkCountZone(global::ZoneID zoneId) {
@@ -2022,7 +2034,11 @@ public class FieldPlayerEntity : global::FieldCharacterEntity
 
         float stopSpeed = DataManager.FieldCommonParam[(int)(PlayerWork.bicycleGear ? ParamIndx.BicStopSpd_High : ParamIndx.BicStopSpd_Low)].param;
         float decelerateTime = _bicDecelerateTime;
+#if PC_UNLOCKED_FPS
+        float acceleration = _bicOldAcceleration + stopSpeed * decelerateTime * 30.0f * PcPlatform.PcFrameClock.Frames; // PC (s37): per-Update speed step -> per 30 Hz frame
+#else
         float acceleration = _bicOldAcceleration + stopSpeed * decelerateTime * 30.0f;
+#endif
         _bicOldAcceleration = acceleration <= 0.0f ? 0.0f : acceleration;
         _bicDecelerateTime = Math.Min(decelerateTime + deltatime, 10.0f);
 

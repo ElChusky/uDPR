@@ -515,8 +515,17 @@ namespace Dpr.UI
             if (!gameObject.activeSelf)
                 gameObject.SetActive(true);
             _modelBgCamera.gameObject.SetActive(true);
+#if !SWITCH
+            // at screen pixel density (PcRenderScale), whole pixels so an unchanged view keeps its texture; the background camera's
+            // Constant Pixel Size canvas (UIManager) scaled with it. The camera aspect still comes from _modelViewSize.
+            float k = PcPlatform.PcRenderScale.Factor;
+            float width = PcPlatform.PcRenderScale.Px(_modelViewSize.x, k);
+            float height = PcPlatform.PcRenderScale.Px(_modelViewSize.y, k);
+            PcPlatform.PcRenderScale.ScaleCanvases(_modelBgCamera.camera, k);
+#else
             float width = _modelViewSize.x;
             float height = _modelViewSize.y;
+#endif
             if (_modelBgCamera.camera.targetTexture == null
                 || width != _modelBgCamera.camera.targetTexture.width
                 || height != _modelBgCamera.camera.targetTexture.height)

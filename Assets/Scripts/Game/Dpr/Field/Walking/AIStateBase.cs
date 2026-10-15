@@ -29,7 +29,12 @@ namespace Dpr.Field.Walking
 		public virtual void CommonUpdate()
 		{
 			list.Clear();
+#if PC_UNLOCKED_FPS
+			// PC (s37): one lottery roll per shipped 30 Hz frame - a rendered frame with no tick does not roll
+			if (ActionLotteryInterval < 0f && PcPlatform.PcFrameClock.Ticks > 0 && global::UnityEngine.Random.Range(0f, 0.999f) < ActionProbability)
+#else
 			if (ActionLotteryInterval < 0f && global::UnityEngine.Random.Range(0f, 0.999f) < ActionProbability)
+#endif
 			{
 				for (int i = 0; i < ActionList.Count; i++)
 				{

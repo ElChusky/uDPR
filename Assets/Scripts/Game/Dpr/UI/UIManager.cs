@@ -1687,11 +1687,16 @@ namespace Dpr.UI
             return FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.BADGE_ID_C07) && FlagWork.GetFlag(EvWork.FLAG_INDEX.FE_HIDEN_02_GET);
         }
 		public static int Fps() {
+#if PC_UNLOCKED_FPS
+            // PC (s37): the shipped value (vSyncCount 2 -> 30) as a fixed speed unit; PcFrameRate sets vSyncCount 0 to uncap a build
+            return PcPlatform.PcFrameClock.LogicRate;
+#else
             int fps = 60;
             if (QualitySettings.vSyncCount > 0)
                 fps = 60 / QualitySettings.vSyncCount;
 
             return fps;
+#endif
         }
 		public static global::Dpr.Message.MessageEnumData.MsgLangId GetCurrentLangId() {
             return MessageHelper.ConvertMsgId(PlayerWork.msgLangID);

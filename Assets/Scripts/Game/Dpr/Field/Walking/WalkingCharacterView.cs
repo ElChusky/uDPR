@@ -65,7 +65,14 @@ namespace Dpr.Field.Walking
 			}
 			float walkSpeed = model.walkData.walkSpeed * model.walkData.baseSpeed;
 			toRunSpeed = walkSpeed * 0.8f + model.walkData.baseSpeed * model.walkData.runSpeed * 0.2f;
+#if PC_UNLOCKED_FPS
+			// PC (s41): a partner NPC's nowSpeed (WalkData.NPCMove) is per second and the console's 1 / elapsedTime is always 30, so the
+			// shipped value is nowSpeed * 30. With the real frame rate Barry kept the Walk animation at speeds 30 fps shows as Wait -
+			// walking in place beside a standing player at high fps (player report, s41).
+			float speed = model.walkData.pcNowSpeedPerSecond ? PcPlatform.PcFrameClock.LogicRate * nowSpeed : 1f / deltaTime * nowSpeed;
+#else
 			float speed = 1f / deltaTime * nowSpeed;
+#endif
 			toRunSpeed = model.controller.isChousei ? toRunSpeed : 150f;
 			if (speed < walkSpeed * 0.5f)
 			{

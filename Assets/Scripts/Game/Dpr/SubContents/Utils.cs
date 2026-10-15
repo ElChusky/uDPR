@@ -502,7 +502,12 @@ namespace Dpr.SubContents
 			float speed = 10f;
 			while (!CheckHeight())
 			{
+#if PC_UNLOCKED_FPS
+				// PC (s37): the speed step is per shipped 30 Hz frame
+				speed += 0.5f * PcPlatform.PcFrameClock.Frames;
+#else
 				speed += 0.5f;
+#endif
 				float elapsedTime = Sequencer.elapsedTime;
 				entity.worldPosition = new Vector3(entity.worldPosition.x, elapsedTime * speed + entity.worldPosition.y, entity.worldPosition.z);
 				entity.yawAngle = elapsedTime * 1050f + entity.yawAngle;

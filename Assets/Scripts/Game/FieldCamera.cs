@@ -145,7 +145,12 @@ public class FieldCamera : global::UnityEngine.MonoBehaviour
 		_camera.transform.eulerAngles = angles + offsetAngle;
 		_camera.fieldOfView = _fov + _fovOffset;
 		Vector3 targetPosition = _target.position + offset + new Vector3(0f, 0.5f, 0f);
+#if PC_UNLOCKED_FPS
+		// PC (s37): the shipped per-30 Hz-frame factor (_cameraLerpRate / 30) compounded over the frame's 30 Hz frames; at 30 fps the shipped line
+		oldPosition = Vector3.Lerp(oldPosition, targetPosition, PcPlatform.PcFrameClock.FramesOf(deltaTime) == 1f ? _cameraLerpRate * deltaTime : 1f - Mathf.Pow(1f - Mathf.Clamp01(_cameraLerpRate / PcPlatform.PcFrameClock.LogicRate), PcPlatform.PcFrameClock.FramesOf(deltaTime)));
+#else
 		oldPosition = Vector3.Lerp(oldPosition, targetPosition, _cameraLerpRate * deltaTime);
+#endif
 		_camera.transform.position = oldPosition - _camera.transform.forward * (_targetRange + TargetRangeOffset.CurrentValue);
 		if (_fovOffset != _fovOffsetEnd)
 		{

@@ -268,8 +268,16 @@ public abstract class BattleObjectEntity : global::BaseEntity
 				if (!(_blinkIntervalTime >= blinkIntervalTimeMin))
 					return BlinkPhase.NONE;
 
+#if PC_UNLOCKED_FPS
+				// PC (s37): one roll per shipped 30 Hz frame - a rendered frame with no tick is not a roll
+				if (PcPlatform.PcFrameClock.Ticks == 0)
+					return BlinkPhase.NONE;
+				if (RandomGroupWork.RandomRange(0, PcPlatform.PcFrameClock.LogicRate * (blinkIntervalTimeMax - blinkIntervalTimeMin)) != 0)
+					return BlinkPhase.NONE;
+#else
 				if (RandomGroupWork.RandomRange(0, Application.targetFrameRate * (blinkIntervalTimeMax - blinkIntervalTimeMin)) != 0)
 					return BlinkPhase.NONE;
+#endif
 			}
 			if (_prevExecuteBlinkPhase != BlinkPhase.ONCE)
 				return BlinkPhase.ONCE;

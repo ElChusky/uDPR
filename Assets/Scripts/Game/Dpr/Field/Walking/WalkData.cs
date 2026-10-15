@@ -78,12 +78,21 @@ namespace Dpr.Field.Walking
 			float speed = global::UnityEngine.Mathf.Clamp(deltaTime * Accelarate + nowSpeed, 0f, max);
 			moveVec = entity.transform.TransformDirection(global::UnityEngine.Vector3.forward) * speed;
 			nowSpeed = speed;
+#if PC_UNLOCKED_FPS
+			// PC (s41): Move's nowSpeed is a per-frame step; NPCMove's is per second (WalkingCharacterView.AutoSelectAnimation reads this)
+			pcNowSpeedPerSecond = false;
+#endif
 		}
 		public void NPCMove(float deltaTime, float Accelarate, float BaseSpeed = 1.5f)
 		{
 			float rate = global::UnityEngine.Mathf.Clamp(distance - minDistance, 0f, 1f);
-			float max = global::UnityEngine.Mathf.Clamp(runSpeed * BaseSpeed, 0f, global::UnityEngine.Mathf.Max(rate * ((distance - minDistance) * 30f), 0f));
+			// @01cdd948: `fmax s11, s0, s11` = System.Math.Max (NaN-propagating); Mathf.Max would be `fcmp ; fcsel` (C3c fix)
+			float max = global::UnityEngine.Mathf.Clamp(runSpeed * BaseSpeed, 0f, global::System.Math.Max(rate * ((distance - minDistance) * 30f), 0f));
 			nowSpeed = global::UnityEngine.Mathf.Clamp(deltaTime * Accelarate + nowSpeed, 0f, max);
+#if PC_UNLOCKED_FPS
+			// PC (s41): this nowSpeed is per second (see Move)
+			pcNowSpeedPerSecond = true;
+#endif
 			moveVec = entity.transform.TransformDirection(global::UnityEngine.Vector3.forward) * (nowSpeed * deltaTime);
 		}
 		public global::UnityEngine.Vector3 MoveSimple(float deltaTime, float speed)
@@ -108,13 +117,26 @@ namespace Dpr.Field.Walking
 		{
 			global::UnityEngine.Quaternion look = global::UnityEngine.Quaternion.LookRotation(target - entity.transform.position);
 			float t = deltaTime * speed;
+#if PC_UNLOCKED_FPS
+			// PC (s37): R8 - the shipped per-30 Hz-frame factor (deltaTime * speed + 0.01 at 1/30, Lerp clamps it) applied FramesOf times
+			float pcF = PcPlatform.PcFrameClock.FramesOf(deltaTime);
+			float pcK = pcF == 1f ? t + 0.01f : 1f - global::UnityEngine.Mathf.Pow(1f - global::UnityEngine.Mathf.Clamp01(speed / PcPlatform.PcFrameClock.LogicRate + 0.01f), pcF);
+			entity.transform.rotation = global::UnityEngine.Quaternion.Lerp(entity.transform.rotation, look, pcK);
+#else
 			entity.transform.rotation = global::UnityEngine.Quaternion.Lerp(entity.transform.rotation, look, t + 0.01f);
+#endif
 			float angle = (look * global::UnityEngine.Quaternion.Inverse(entity.transform.rotation)).eulerAngles.y;
 			if (angle > 180f)
 			{
 				angle = global::UnityEngine.Mathf.Abs(angle - 360f);
 			}
+#if PC_UNLOCKED_FPS
+			// PC (s37): the threshold uses the per-30 Hz-frame deltaTime (deltaTime / FramesOf); at 30 fps it is the shipped deltaTime
+			float pcDt = pcF > 0f && pcF != 1f ? deltaTime / pcF : deltaTime;
+			isNeedRotate = moveVec.magnitude == 0f & pcDt * speed * angle > 0.2f;
+#else
 			isNeedRotate = moveVec.magnitude == 0f & t * angle > 0.2f;
+#endif
 			entity.transform.localEulerAngles = new global::UnityEngine.Vector3(0f, entity.transform.localEulerAngles.y, 0f);
 		}
 		public float GetAngle(global::UnityEngine.Vector3 target)

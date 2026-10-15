@@ -236,11 +236,21 @@ public class FieldCharacterEntity : global::FieldObjectEntity
 	private void LateUpdateNeckAngle(float deltaTime) {
 		global::FieldCharacterVariation variation = _variations[_currentVariation];
 		_updateNeckAngle2 = variation.neck.eulerAngles;
+#if PC_UNLOCKED_FPS
+		// PC (s37): the snap test uses the per-30 Hz-frame step; the approach compounds the shipped 5/30 factor over FramesOf frames
+		float pcNeckFrames = PcPlatform.PcFrameClock.FramesOf(deltaTime);
+		global::UnityEngine.Vector3 delta = (NeckAngle - _updateNeckAngle) * (pcNeckFrames > 0f ? deltaTime / pcNeckFrames : 0f) * 5f;
+		if (delta.sqrMagnitude < 0.001f)
+			_updateNeckAngle = NeckAngle;
+		else
+			_updateNeckAngle = _updateNeckAngle + (pcNeckFrames == 1f ? delta : (NeckAngle - _updateNeckAngle) * (1f - global::UnityEngine.Mathf.Pow(1f - 5f / PcPlatform.PcFrameClock.LogicRate, pcNeckFrames)));
+#else
 		global::UnityEngine.Vector3 delta = (NeckAngle - _updateNeckAngle) * deltaTime * 5f;
 		if (delta.sqrMagnitude < 0.001f)
 			_updateNeckAngle = NeckAngle;
 		else
 			_updateNeckAngle = _updateNeckAngle + delta;
+#endif
 		global::UnityEngine.Transform neck = variation.neck;
 		neck.localEulerAngles = neck.localEulerAngles + _updateNeckAngle;
 	}

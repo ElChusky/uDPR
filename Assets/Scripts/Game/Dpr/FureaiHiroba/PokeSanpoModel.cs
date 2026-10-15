@@ -28,7 +28,12 @@ namespace Dpr.FureaiHiroba
 			float distance = global::UnityEngine.Vector3.Distance(Player.position, transform.position);
 			isLookPlayer = distance < LookPlayerDistance || (isLookPlayer && distance < LookPlayerDistance + 1f);
 			isAddWalking = distance < WalkingAddDistance;
+#if PC_UNLOCKED_FPS
+			// PC (s37): one 1-in-30 roll per shipped 30 Hz frame - a rendered frame with no tick does not roll
+			if (PcPlatform.PcFrameClock.Ticks > 0 && global::UnityEngine.Random.Range(0, 30) == 0) {
+#else
 			if (global::UnityEngine.Random.Range(0, 30) == 0) {
+#endif
 				RandomOffsetPos = global::UnityEngine.Vector3.right * global::UnityEngine.Random.Range(-3, 3) + global::UnityEngine.Vector3.forward * global::UnityEngine.Random.Range(-3, 3);
 			}
 		}
