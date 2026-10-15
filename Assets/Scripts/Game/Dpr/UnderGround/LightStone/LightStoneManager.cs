@@ -19,32 +19,40 @@ namespace Dpr.UnderGround.LightStone
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.GameObject lightStonePrefab;
 		[global::UnityEngine.SerializeField]
-		private float pokemonDigRange;
+		private float pokemonDigRange = 5f;
 		[global::UnityEngine.SerializeField]
-		private float lightStoneGetRange;
+		private float lightStoneGetRange = 1f;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector3 getEffectOffset;
+		private global::UnityEngine.Vector3 getEffectOffset = global::UnityEngine.Vector3.zero;
 		[global::UnityEngine.SerializeField]
-		private float smallEffectScale;
+		private float smallEffectScale = 1.2f;
 		[global::UnityEngine.SerializeField]
-		private float largeEffectScale;
+		private float largeEffectScale = 1.5f;
 		[global::UnityEngine.SerializeField]
-		private float getEffectScale;
-		private global::System.Collections.Generic.Dictionary<global::ZoneID, global::XLSXContent.LightStonePosTable.SheetData> tableData;
-		private global::System.Collections.Generic.Dictionary<global::Dpr.UnderGround.LightStone.LightStoneManager.UgZoneID, global::XLSXContent.LightStoneTable.SheetData> bonusTableData;
-		private global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone> allDigletList;
-		private global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone> allDugtrioList;
-		private global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone> activeLightStoneList;
-		private global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone> deleteList;
+		private float getEffectScale = 1.2f;
+		private global::System.Collections.Generic.Dictionary<global::ZoneID, global::XLSXContent.LightStonePosTable.SheetData> tableData = new global::System.Collections.Generic.Dictionary<global::ZoneID, global::XLSXContent.LightStonePosTable.SheetData>();
+		private global::System.Collections.Generic.Dictionary<global::Dpr.UnderGround.LightStone.LightStoneManager.UgZoneID, global::XLSXContent.LightStoneTable.SheetData> bonusTableData = new global::System.Collections.Generic.Dictionary<global::Dpr.UnderGround.LightStone.LightStoneManager.UgZoneID, global::XLSXContent.LightStoneTable.SheetData>();
+		private global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone> allDigletList = new global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone>();
+		private global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone> allDugtrioList = new global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone>();
+		private global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone> activeLightStoneList = new global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone>();
+		private global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone> deleteList = new global::System.Collections.Generic.List<global::Dpr.UnderGround.LightStone.LightStone>();
 		private global::Effect.EffectData lightStoneSmallEfData;
 		private global::Effect.EffectData lightStoneLargeEfData;
 		private global::Effect.EffectData smokeEfData;
 		private global::Effect.EffectData lightStoneGetEfData;
 		private bool isBonus;
 		private global::DG.Tweening.Tween bonusTween;
-		private static global::System.Collections.Generic.Dictionary<global::Dpr.UnderGround.LightStone.LightStoneManager.UgZoneID, global::System.Collections.Generic.List<global::ZoneID>> UgZoneList;
-		public bool IsBonusTime { get { /*@B 0x600323D*/ throw null; } }
-		public int LightStoneCount { get { /*@B 0x600323E*/ throw null; } }
+		private static global::System.Collections.Generic.Dictionary<global::Dpr.UnderGround.LightStone.LightStoneManager.UgZoneID, global::System.Collections.Generic.List<global::ZoneID>> UgZoneList = new global::System.Collections.Generic.Dictionary<global::Dpr.UnderGround.LightStone.LightStoneManager.UgZoneID, global::System.Collections.Generic.List<global::ZoneID>>()
+		{
+			{ UgZoneID.UGA, new global::System.Collections.Generic.List<global::ZoneID>() { ZoneID.UGA01, ZoneID.UGA02, ZoneID.UGA03, ZoneID.UGA04, ZoneID.UGA05, ZoneID.UGA06, ZoneID.UGA07, ZoneID.UGA08, ZoneID.UGA09, ZoneID.UGA10 } },
+			{ UgZoneID.UGB, new global::System.Collections.Generic.List<global::ZoneID>() { ZoneID.UGB01, ZoneID.UGB02, ZoneID.UGB03, ZoneID.UGB04, ZoneID.UGB05, ZoneID.UGB06, ZoneID.UGB07 } },
+			{ UgZoneID.UGC, new global::System.Collections.Generic.List<global::ZoneID>() { ZoneID.UGC01 } },
+			{ UgZoneID.UGD, new global::System.Collections.Generic.List<global::ZoneID>() { ZoneID.UGD01, ZoneID.UGD02, ZoneID.UGD03, ZoneID.UGD04, ZoneID.UGD05 } },
+			{ UgZoneID.UGE, new global::System.Collections.Generic.List<global::ZoneID>() { ZoneID.UGE01, ZoneID.UGE02, ZoneID.UGE03, ZoneID.UGE04, ZoneID.UGE05 } },
+			{ UgZoneID.UGF, new global::System.Collections.Generic.List<global::ZoneID>() { ZoneID.UGF01, ZoneID.UGF02, ZoneID.UGF03, ZoneID.UGF04, ZoneID.UGF05, ZoneID.UGF06, ZoneID.UGF07 } },
+		};
+		public bool IsBonusTime { get { return UgFieldManager.Instance.isKousekiBonus; } }
+		public int LightStoneCount { get { return UgFieldManager.Instance.KousekiCount; } }
 		public int LightStoneMaxNum { get { return 40; } }
 		public int LightStoneCountMine { get; private set; }
 		public global::Effect.EffectData LightStoneSmallEfData { get { return this.lightStoneSmallEfData; } }
@@ -85,7 +93,14 @@ namespace Dpr.UnderGround.LightStone
 			yield return Dpr.SubContents.Utils.LoadEffect(EffectFieldID.EF_F_CHARA_DIVE_SANDSMOKE, e => smokeEfData = e);
 			yield return Dpr.SubContents.Utils.LoadEffect(EffectFieldID.EF_F_BG_STAR_GET, e => lightStoneGetEfData = e);
 		}
-		private void OnDestroy() { /*@B 0x600324D*/ throw null; }
+		private void OnDestroy() {
+			Sequencer.update -= OnUpdate;
+			if (UgFieldManager.Instance != null)
+				UgFieldManager.Instance.OnZoneChangeCallBack -= Setup;
+			if (!(FieldManager.Instance is null))
+				FieldManager.Instance.OnZoneChangeEvent -= RestartEffect;
+			Clear();
+		}
 		public void AddLightStone(int num) {
 			if (IsBonusTime)
 				return;
@@ -286,8 +301,8 @@ namespace Dpr.UnderGround.LightStone
 					return UgZoneID.NONE;
 			}
 		}
-		public LightStoneManager() { /*@B 0x600325D*/ throw null; }
-		static LightStoneManager() { /*@B 0x600325E*/ throw null; }
+		public LightStoneManager() { }
+		static LightStoneManager() { }
 		private enum UgZoneID
 		{
 			NONE = 0,

@@ -5,10 +5,29 @@ namespace Dpr.UnderGround.UgFather
 	{
 		protected global::Dpr.UnderGround.UgFather.UgFatherBase.OnEventEnd onEventEndCallback;
 		public global::FieldCharacterEntity FieldCharacterEntity { get; private set; }
-		public void Initialize(global::FieldCharacterEntity entity, global::Dpr.UnderGround.UgFather.UgFatherBase.OnEventEnd eventEndCallback) { /*@B 0x6003203*/ throw null; }
-		public virtual void OnTalkEvent() { /*@B 0x6003204*/ throw null; }
+		public void Initialize(global::FieldCharacterEntity entity, global::Dpr.UnderGround.UgFather.UgFatherBase.OnEventEnd eventEndCallback) {
+            FieldCharacterEntity = entity;
+            onEventEndCallback = eventEndCallback;
+        }
+		public virtual void OnTalkEvent() {
+            LookAtPlayer();
+        }
 		public virtual void OnUpdate(float deltaTime) { }
-		private void LookAtPlayer() { /*@B 0x6003206*/ throw null; }
+		private void LookAtPlayer() {
+            global::DIR dir;
+            switch (global::EntityManager.activeFieldPlayer.GetDir())
+            {
+                case global::DIR.DIR_DOWN: dir = global::DIR.DIR_UP; break;
+                case global::DIR.DIR_LEFT: dir = global::DIR.DIR_RIGHT; break;
+                case global::DIR.DIR_RIGHT: dir = global::DIR.DIR_LEFT; break;
+                case global::DIR.DIR_LEFTUP: dir = global::DIR.DIR_RIGHTDOWN; break;
+                case global::DIR.DIR_RIGHTUP: dir = global::DIR.DIR_LEFTDOWN; break;
+                case global::DIR.DIR_LEFTDOWN: dir = global::DIR.DIR_RIGHTUP; break;
+                case global::DIR.DIR_RIGHTDOWN: dir = global::DIR.DIR_LEFTUP; break;
+                default: dir = global::DIR.DIR_DOWN; break;
+            }
+            FieldCharacterEntity.SetDir(dir);
+        }
 		public UgFatherBase() { }
 		public delegate void OnEventEnd();
 	}
