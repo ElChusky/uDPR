@@ -5,7 +5,8 @@
 
 Unity = config key `unity`. Windowed by default (a window opens and closes by itself); config `unity_batchmode: true` adds
 -batchmode -nographics (needs a licence that allows it). The editor scripts get BDSP_SETUP_WORK = the setup's work folder.
-Every 20 s: free space on the project's drive and on the system drive (Unity's caches), free RAM; below a floor the editor's whole
+Every 20 s: free space on the project's drive and on the system drive (Unity's caches), and the memory Windows can still hand out
+(RAM + page file - free physical RAM alone is not a floor: on a 16 GB PC paging is normal); below a floor the editor's whole
 process tree is stopped. Success = exit code 0, no "Scripts have compiler errors", and the marker in the log when one is given.
 Log: <work>/logs/unity_<method>.log.
 """
@@ -21,21 +22,26 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import paths  # noqa: E402
 
 
-def free_ram_gb():
+def memory_gb():
+    """(free physical RAM, free commit = what Windows can still hand out from RAM + page file) in GB."""
     class M(ctypes.Structure):
         _fields_ = [("l", ctypes.c_ulong), ("ml", ctypes.c_ulong)] + [(n, ctypes.c_ulonglong) for n in
                                                                        ("t", "a", "tp", "ap", "tv", "av", "x")]
     m = M()
     m.l = ctypes.sizeof(M)
     ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(m))
-    return m.a / 2 ** 30
+    return m.a / 2 ** 30, m.ap / 2 ** 30
+
+
+def free_ram_gb():
+    return memory_gb()[0]
 
 
 def free_gb(path):
     return shutil.disk_usage(path).free / 2 ** 30
 
 
-def run(method, marker=None, quit_after=False, timeout_min=0, min_disk=3.0, min_sys=1.0, min_ram=6.0):
+def run(method, marker=None, quit_after=False, timeout_min=0, min_disk=3.0, min_sys=1.0, min_commit=3.0):
     unity = paths.need(paths.CFG.get("unity"), "unity")
     log = paths.work("logs", "unity_%s.log" % method.replace(".", "_"))
     cmd = [unity, "-projectPath", paths.PROJECT, "-logFile", log, "-executeMethod", method]
@@ -54,13 +60,14 @@ def run(method, marker=None, quit_after=False, timeout_min=0, min_disk=3.0, min_
     reason = None
     while p.poll() is None:
         time.sleep(20)
-        d, s, r = free_gb(proj_drive), free_gb(sys_drive), free_ram_gb()
+        d, s = free_gb(proj_drive), free_gb(sys_drive)
+        r, c = memory_gb()
         if d < min_disk:
             reason = "project drive %.1f GB free" % d
         elif s < min_sys:
             reason = "system drive %.1f GB free" % s
-        elif r < min_ram:
-            reason = "free RAM %.1f GB" % r
+        elif c < min_commit:
+            reason = "Windows is about to run out of memory (%.1f GB of RAM + page file left)" % c
         elif timeout_min and time.time() - t0 > timeout_min * 60:
             reason = "timeout %d min" % timeout_min
         if reason:
@@ -69,7 +76,8 @@ def run(method, marker=None, quit_after=False, timeout_min=0, min_disk=3.0, min_
             break
         if time.time() - last >= 300:
             last = time.time()
-            print("  %5.1f min | project drive %.1f GB free | RAM %.1f GB free" % ((time.time() - t0) / 60, d, r), flush=True)
+            print("  %5.1f min | project drive %.1f GB free | RAM %.1f GB free | RAM + page file %.1f GB free" % (
+                (time.time() - t0) / 60, d, r, c), flush=True)
     rc = p.wait()
     txt = open(log, encoding="utf-8", errors="replace").read() if os.path.exists(log) else ""
     ok = rc == 0 and not reason and "Scripts have compiler errors" not in txt and (marker is None or marker in txt)

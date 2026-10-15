@@ -5,10 +5,11 @@
 Drives AssetRipper's GUI server headless over its local HTTP API (the same calls the browser UI makes): start the server, apply the
 export settings (POST /Settings/Update, then read them back and verify), POST /LoadFolder <game root>, POST /Export/UnityProject
 <out>, then follow the log until "Finished post-export" and stop the server. Guards every 20 s: free space on the output drive and
-free RAM - below a floor the server is stopped (memory rules: disk budget before any run, one heavy job at a time).
+the memory Windows can still hand out (RAM + page file; free physical RAM alone is no floor - paging is normal on a 16 GB PC) -
+below a floor the server is stopped (memory rules: disk budget before any run, one heavy job at a time).
 
   python -I setup/stages/ar_export.py [--exe <AssetRipper.GUI.*.exe>] [--game <game root>] [--out <folder>] [--port 29232]
-        [--min-disk 2] [--min-ram 8] [--status <file>]
+        [--min-disk 2] [--min-commit 3] [--status <file>] [--heap-limit-gb N] [--workstation-gc]
 Defaults come from the setup config (setup/lib/paths.py): assetripper, dump, <work>/export. A half-finished export left by an
 interrupted run is removed first; a finished one is kept (EXPORT_DONE marker) and the stage succeeds without exporting again.
 
@@ -61,14 +62,19 @@ def http(port, path, form=None, timeout=7200):
         return e.code, ""
 
 
-def free_ram_gb():
+def memory_gb():
+    """(free physical RAM, free commit = what Windows can still hand out from RAM + page file) in GB."""
     class M(ctypes.Structure):
         _fields_ = [("l", ctypes.c_ulong), ("ml", ctypes.c_ulong)] + [(n, ctypes.c_ulonglong) for n in
                                                                        ("t", "a", "tp", "ap", "tv", "av", "x")]
     m = M()
     m.l = ctypes.sizeof(M)
     ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(m))
-    return m.a / 2 ** 30
+    return m.a / 2 ** 30, m.ap / 2 ** 30
+
+
+def free_ram_gb():
+    return memory_gb()[0]
 
 
 def proc_mem_gb(pid):
@@ -101,7 +107,7 @@ def main():
     ap.add_argument("--out", default=paths.EXPORT)
     ap.add_argument("--port", type=int, default=29232)
     ap.add_argument("--min-disk", type=float, default=2.0)
-    ap.add_argument("--min-ram", type=float, default=8.0)
+    ap.add_argument("--min-commit", type=float, default=3.0, help="GB of RAM + page file that must stay available")
     ap.add_argument("--status", default=None)
     ap.add_argument("--heap-limit-gb", type=float, default=0,
                     help="cap AssetRipper's .NET heap (DOTNET_GCHeapHardLimit) - memory measurements for smaller machines")
@@ -130,8 +136,8 @@ def main():
         shutil.rmtree(out)
     os.makedirs(work, exist_ok=True)
     drive = os.path.splitdrive(out)[0] + "\\"
-    say("START disk %s %.1f GB free, RAM %.1f GB free; floors disk %.1f RAM %.1f" % (
-        drive, shutil.disk_usage(drive).free / 2 ** 30, free_ram_gb(), a.min_disk, a.min_ram))
+    say("START disk %s %.1f GB free, RAM %.1f GB free, RAM + page file %.1f GB free; floors disk %.1f, RAM + page file %.1f" % (
+        drive, shutil.disk_usage(drive).free / 2 ** 30, *memory_gb(), a.min_disk, a.min_commit))
     env = dict(os.environ, DOTNET_Thread_DefaultStackSize="1000000", COMPlus_Thread_DefaultStackSize="1000000")
     if a.heap_limit_gb:
         env["DOTNET_GCHeapHardLimit"] = "%X" % int(a.heap_limit_gb * 2 ** 30)
@@ -196,7 +202,7 @@ def main():
         while True:
             time.sleep(20)
             disk = shutil.disk_usage(drive).free / 2 ** 30
-            ram = free_ram_gb()
+            ram, commit = memory_gb()
             tail = ""
             if os.path.exists(log):
                 with open(log, "rb") as f:
@@ -213,13 +219,13 @@ def main():
             if disk < a.min_disk:
                 stop("disk %.1f GB < %.1f" % (disk, a.min_disk))
                 sys.exit(1)
-            if ram < a.min_ram:
-                stop("free RAM %.1f GB < %.1f" % (ram, a.min_ram))
+            if commit < a.min_commit:
+                stop("Windows is about to run out of memory: RAM + page file %.1f GB free < %.1f" % (commit, a.min_commit))
                 sys.exit(1)
             if time.time() - last >= 120:
                 last = time.time()
-                say("%5.1f min | disk %.1f GB free | RAM %.1f GB free | %s | %s" % ((time.time() - t0) / 60, disk, ram,
-                                                                                  mem_text(srv.pid), tail))
+                say("%5.1f min | disk %.1f GB free | RAM %.1f GB free | RAM + page file %.1f GB free | %s | %s" % (
+                    (time.time() - t0) / 60, disk, ram, commit, mem_text(srv.pid), tail))
         exp.wait(timeout=60)
         with open(done_marker, "w", encoding="utf-8") as f:
             f.write(time.strftime("%Y-%m-%d %H:%M:%S") + "\n")
