@@ -165,6 +165,11 @@ def main():
 
     scan = json.load(open(a.containers, encoding="utf-8"))
     bmap = json.load(open(a.map, encoding="utf-8"))["bundles"]
+    # setup (W2): project files the game loads BY CONTAINER PATH. A packed sprite with several project copies (AssetRipper exports
+    # atlas-packed sprites more than once; the free 1.3.14 export gives the copies the SAME render-data key) must resolve to the
+    # copy the game loads - the GMS graphic-text atlases otherwise packed the Assets/Sprite/<name>_N copy instead. The container maps
+    # to the texture (<dir>/<name>.png); its sprite is the .asset beside it, so copies are matched by folder + name, not extension.
+    container_stems = {os.path.splitext(disk)[0] for b in bmap.values() for _dev, disk in b.get("paths", []) if disk}
     file_by_name = {b["file"]: n for n, b in bmap.items()}
     name_to_file = {n: b["file"] for n, b in bmap.items()}
 
@@ -299,7 +304,8 @@ def main():
                     dup_sprites.append((t["m_Name"], st["m_Name"], how, cands))
                 if how != "rdkey":
                     by_page[0] += 1
-                packed.append(sorted(cands)[0])
+                loaded = sorted(c for c in cands if os.path.splitext(c)[0] in container_stems)
+                packed.append(loaded[0] if loaded else sorted(cands)[0])
             sig = hashlib.sha1(json.dumps([t["m_Name"], t["m_Tag"], t["m_IsVariant"], names, packed, rdmap], sort_keys=True).encode()).hexdigest()
             if sig in sig_to_idx:
                 idx = sig_to_idx[sig]
@@ -473,7 +479,7 @@ def main():
         r.write("\nunresolved packed sprites:\n")
         for u in unresolved_sprites:
             r.write(f"  {u}\n")
-        r.write("\nduplicate rdkeys (first sorted taken):\n")
+        r.write("\nduplicate rdkeys (the container-loaded copy preferred, else first sorted):\n")
         for d in dup_sprites:
             r.write(f"  {d}\n")
         r.write("\npage issues:\n")
