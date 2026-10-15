@@ -15,17 +15,140 @@ namespace Dpr.UI
 		private global::Dpr.UI.ZukanHabitatSpecialInfo _specialInfo;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.ZukanHabitatTypeSelector _typeSelector;
-		public override void OnCreate() { /*@B 0x6005E60*/ throw null; }
-		public void Open(global::Dpr.UI.ZukanHabitatWindow.Param param, global::UIWindowID prevWindowId) { /*@B 0x6005E61*/ throw null; }
-		public global::System.Collections.IEnumerator OpOpen(global::Dpr.UI.ZukanHabitatWindow.Param param, global::UIWindowID prevWindowId) { /*@B 0x6005E62*/ throw null; }
-		private void OnCellChanged(global::Dpr.UI.Townmap.Cell cell, bool isReset) { /*@B 0x6005E63*/ throw null; }
-		private void SetupKeyguide(global::Dpr.UI.Townmap.Cell cell) { /*@B 0x6005E64*/ throw null; }
-		protected override bool IsFly(global::Dpr.UI.Townmap.Cell cell) { /*@B 0x6005E65*/ throw null; }
-		public override void Close(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) { /*@B 0x6005E66*/ throw null; }
-		public global::System.Collections.IEnumerator OpClose(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) { /*@B 0x6005E67*/ throw null; }
-		private void OnUpdate(float deltaTime) { /*@B 0x6005E68*/ throw null; }
-		private void EnableCursor() { /*@B 0x6005E69*/ throw null; }
-		private void UpdateCursor() { /*@B 0x6005E6A*/ throw null; }
+		public override void OnCreate() {
+			base.OnCreate();
+		}
+		public void Open(global::Dpr.UI.ZukanHabitatWindow.Param param, global::UIWindowID prevWindowId) {
+			// OpOpen's iterator construction is inlined here
+			global::SmartPoint.AssetAssistant.Sequencer.Start(OpOpen(param, prevWindowId));
+		}
+		public global::System.Collections.IEnumerator OpOpen(global::Dpr.UI.ZukanHabitatWindow.Param param, global::UIWindowID prevWindowId) {
+			OnOpen(prevWindowId);
+			// ZukanTimeZone.Set / ToConnectId inlined (table 0x3d5a560)
+			_timeZone.Set(global::Dpr.UI.ZukanTimeZone.ToConnectId(global::GameManager.currentPeriodOfDay));
+			_modelView.Setup(new global::Dpr.UI.PokemonModelView.Param
+			{
+				type = global::Dpr.UI.UIModelViewController.ModelViewType.Habitat,
+				pokemonParam = param.pokemonParam,
+				canvas = _canvas,
+			});
+			_townmap.Setup(param.pokemonParam, _timeZone.timeZone, OnCellChanged);
+			_typeSelector.SetType(_townmap.habitatType);
+			_cursor.SetActive(false);
+			// UpdateCursor inlined
+			UpdateCursor();
+			yield return OpPlayOpenWindowAnimation(prevWindowId);
+
+			// EnableCursor inlined
+			EnableCursor();
+			global::SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+			_input.inputEnabled = true;
+		}
+		private void OnCellChanged(global::Dpr.UI.Townmap.Cell cell, bool isReset) {
+			int habitatBits = cell != null ? cell.GetHabitatBits(_townmap.habitatType, _timeZone.timeZone) : 0;
+			if ((habitatBits & (int)global::Dpr.UI.Townmap.Cell.HabitatBits.All) != 0)
+			{
+				_specialInfo.gameObject.SetActive(true);
+				_specialInfo.Setup(habitatBits);
+				global::UnityEngine.Vector2 cellPos = _townmap.ToCellPos(_townmap.cursorPos);
+				global::UnityEngine.Vector3 pos = _townmap.ToCellIconPos(cellPos);
+				if ((int)cellPos.y == 0)
+					pos.y += -24f;
+				_specialInfo.transform.position = pos;
+			}
+			else
+			{
+				_specialInfo.gameObject.SetActive(false);
+			}
+			SetupKeyguide(cell);
+		}
+		private void SetupKeyguide(global::Dpr.UI.Townmap.Cell cell) {
+			global::Dpr.UI.Keyguide keyguide = global::Dpr.UI.UIManager.Instance.GetKeyguide(null, true);
+			keyguide.transform.SetParent(transform, false);
+			global::Dpr.UI.Keyguide.Param param = new global::Dpr.UI.Keyguide.Param();
+			if (IsFly(cell))
+				param.itemParams.Add(new global::KeyguideItem.Param() { keyguideId = global::KeyguideID.POKEDEX_DISTRIBUTION_FLY });
+			param.itemParams.Add(new global::KeyguideItem.Param() { keyguideId = global::KeyguideID.POKEDEX_DISTRIBUTION_LIST });
+			param.itemParams.Add(new global::KeyguideItem.Param() { keyguideId = global::KeyguideID.POKEDEX_DISTRIBUTION_BACK });
+			keyguide.Open(param);
+		}
+		protected override bool IsFly(global::Dpr.UI.Townmap.Cell cell) {
+			return base.IsFly(cell) && !_townmap.isNotfound;
+		}
+		public override void Close(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) {
+			// OpClose's iterator construction is inlined here
+			global::SmartPoint.AssetAssistant.Sequencer.Start(OpClose(onClosed_, nextWindowId));
+		}
+		public global::System.Collections.IEnumerator OpClose(global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed_, global::UIWindowID nextWindowId) {
+			_cursor.SetActive(false);
+			_modelView.Clear(true);
+			global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+			yield return OpPlayCloseWindowAnimationAndWaiting(nextWindowId);
+
+			global::Dpr.UI.UIManager.Instance._ReleaseUIWindow(this);
+			onClosed_?.Invoke(this);
+		}
+		private void OnUpdate(float deltaTime) {
+			if (global::Dpr.UI.UIManager.Instance.GetCurrentUIWindow<global::Dpr.UI.UIWindow>() != this)
+				return;
+			if (_modelView.OnUpdate(deltaTime, _input, 48, 0, 0, 0, 0))
+				return;
+			if (IsActiveMessageWindow())
+				return;
+
+			if (IsPushButton(global::Dpr.UI.UIManager.ButtonB, false))
+			{
+				global::Audio.AudioManager.Instance.PlaySe(global::AK.EVENTS.UI_MAP_CLOSE, null);
+				Close(onClosed, _prevWindowId);
+				return;
+			}
+			if (IsPushButton(global::Dpr.UI.UIManager.ButtonX, false))
+			{
+				global::Audio.AudioManager.Instance.PlaySe(global::AK.EVENTS.UI_COMMON_CANCEL, null);
+				global::ZukanWork.IsShowDescription = false;
+				Close(onClosed, _prevWindowId);
+				return;
+			}
+			if (IsPushButton(global::Dpr.UI.UIManager.ButtonA, false) && !_townmap.isNotfound)
+			{
+				Fly(_townmap);
+				return;
+			}
+
+			if (IsPushButton(0x40, false))
+			{
+				global::Audio.AudioManager.Instance.PlaySe(global::AK.EVENTS.UI_COMMON_DONE, null);
+				_timeZone.Move(-1);
+				_townmap.ShowHabitat(_townmap.habitatType, _timeZone.timeZone);
+			}
+			else if (IsPushButton(0x80, false))
+			{
+				global::Audio.AudioManager.Instance.PlaySe(global::AK.EVENTS.UI_COMMON_DONE, null);
+				_timeZone.Move(1);
+				_townmap.ShowHabitat(_townmap.habitatType, _timeZone.timeZone);
+			}
+			else if (IsPushButton(global::Dpr.UI.UIManager.ButtonPlusMinus, false))
+			{
+				global::Audio.AudioManager.Instance.PlaySe(global::AK.EVENTS.UI_COMMON_DECIDE, null);
+				_townmap.ShowHabitat((global::XLSXContent.SheetDistributionTable.HabitatType)(((int)_townmap.habitatType + 1) % 2), _timeZone.timeZone);
+				_typeSelector.SetType(_townmap.habitatType);
+			}
+			else
+			{
+				_townmap.OnUpdate(deltaTime, _input);
+				// UpdateCursor inlined
+				UpdateCursor();
+				return;
+			}
+			// EnableCursor inlined
+			EnableCursor();
+		}
+		private void EnableCursor() {
+			_cursor.gameObject.SetActive(!_townmap.isNotfound);
+		}
+		private void UpdateCursor() {
+			_cursor.transform.position = _townmap.cursorPos;
+		}
 		public ZukanHabitatWindow() { }
 		public class Param
 		{

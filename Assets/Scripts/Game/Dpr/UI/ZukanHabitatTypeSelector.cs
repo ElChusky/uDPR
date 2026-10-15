@@ -5,7 +5,19 @@ namespace Dpr.UI
 	{
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Image[] _icons;
-		public void SetType(global::XLSXContent.SheetDistributionTable.HabitatType habitatType) { /*@B 0x6005E5E*/ throw null; }
+		public void SetType(global::XLSXContent.SheetDistributionTable.HabitatType habitatType) {
+			switch (habitatType)
+			{
+				case global::XLSXContent.SheetDistributionTable.HabitatType.Field:
+					_icons[0].gameObject.SetActive(true);
+					_icons[1].gameObject.SetActive(false);
+					break;
+				case global::XLSXContent.SheetDistributionTable.HabitatType.Dungeon:
+					_icons[0].gameObject.SetActive(false);
+					_icons[1].gameObject.SetActive(true);
+					break;
+			}
+		}
 		public ZukanHabitatTypeSelector() { }
 	}
 }

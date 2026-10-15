@@ -98,8 +98,8 @@ namespace Dpr.UI
 		public bool IsShow { get; private set; }
 		public bool IsModelViewOnly { get; private set; }
 		public bool CanSwitchLanguage { get; private set; }
-		public bool CanShowMoving { get { /*@B 0x6005DB2*/ throw null; } }
-		public bool CanShowCompare { get { /*@B 0x6005DB3*/ throw null; } }
+		public bool CanShowMoving { get { return CurrentZukanInfo.GetStatus == GET_STATUS.GET; } }
+		public bool CanShowCompare { get { return CurrentZukanInfo.GetStatus == GET_STATUS.GET; } }
 		public void Initialize() {
 			zukanInfoIndexSelector = new IndexSelector(true, true, true);
 			languageButtonSelector.Initialize(OnSelectLanguageButton, OnUnSelectLanguageButton);

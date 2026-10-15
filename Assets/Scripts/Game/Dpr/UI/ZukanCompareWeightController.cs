@@ -7,10 +7,10 @@ namespace Dpr.UI
 {
 	public class ZukanCompareWeightController : global::UnityEngine.MonoBehaviour
 	{
-		private static readonly int AnimatorStateInitialize;
-		private static readonly int AnimatorParamStateId;
-		private static readonly int AnimatorParamSideId;
-		private static readonly int AnimatorParamWeightId;
+		private static readonly int AnimatorStateInitialize = global::UnityEngine.Animator.StringToHash("Ini");
+		private static readonly int AnimatorParamStateId = global::UnityEngine.Animator.StringToHash("stateId");
+		private static readonly int AnimatorParamSideId = global::UnityEngine.Animator.StringToHash("sideId");
+		private static readonly int AnimatorParamWeightId = global::UnityEngine.Animator.StringToHash("weightId");
 		private const int StateIdInitialize = -1;
 		private const int StateIdStart = 1;
 		private const int SideIdBalance = 0;
@@ -69,6 +69,6 @@ namespace Dpr.UI
 				playerImages[i].sprite = sprite;
 		}
 		public ZukanCompareWeightController() { }
-		static ZukanCompareWeightController() { /*@B 0x6005E3D*/ throw null; }
+		static ZukanCompareWeightController() { }
 	}
 }

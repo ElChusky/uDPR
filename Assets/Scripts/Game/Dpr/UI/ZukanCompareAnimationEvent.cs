@@ -5,8 +5,8 @@ namespace Dpr.UI
 {
 	public class ZukanCompareAnimationEvent : global::UnityEngine.MonoBehaviour
 	{
-		private static readonly uint[] CompareWeightSeIds;
-		private static readonly uint[] CompareHeightSeIds;
+		private static readonly uint[] CompareWeightSeIds = new uint[] { EVENTS.UI_ZUKAN_POKE_LAND, EVENTS.UI_ZUKAN_PL_FLY, EVENTS.UI_ZUKAN_PL_LAND, EVENTS.UI_ZUKAN_PL_FLY_HIGH, EVENTS.UI_ZUKAN_PL_FLY_HIGH2, EVENTS.UI_ZUKAN_PL_FLY_17, EVENTS.UI_ZUKAN_PL_FLY_18, EVENTS.UI_ZUKAN_PL_LAND_2 };
+		private static readonly uint[] CompareHeightSeIds = new uint[] { EVENTS.UI_MONITOR_NOISE, EVENTS.UI_MONITOR_NOISE_2 };
 		private global::Audio.AudioInstance currentAudioInstance;
 		public void PlayCompareWeightSe(int id) {
 			if (id < 0 || id >= CompareWeightSeIds.Length)
@@ -33,6 +33,6 @@ namespace Dpr.UI
 				currentAudioInstance.Stop();
 		}
 		public ZukanCompareAnimationEvent() { }
-		static ZukanCompareAnimationEvent() { /*@B 0x6005E1A*/ throw null; }
+		static ZukanCompareAnimationEvent() { }
 	}
 }
