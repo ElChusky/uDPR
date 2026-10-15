@@ -9,7 +9,14 @@ namespace NexPlugin
 		internal global::NexPlugin.Ranking.TimeScope timeScope;
 		internal uint offset;
 		internal byte length;
-		public RankingOrderParam() { /*@B 0x6002C44*/ throw null; }
+		public RankingOrderParam() {
+			this.orderCalculation = 0;
+			this.groupIndex = (global::NexPlugin.Ranking.FilterGroupIndex)255;
+			this.timeScope = (global::NexPlugin.Ranking.TimeScope)2;
+			this.offset = 0;
+			this.groupNum = 0;
+			this.length = 10;
+		}
 		public void SetOrderCalculation(global::NexPlugin.Ranking.OrderCalculation orderCalculation_) { this.orderCalculation = orderCalculation_; }
 		public global::NexPlugin.Ranking.OrderCalculation GetOrderCalculation() { return this.orderCalculation; }
 		public void SetFilterGroupIndex(global::NexPlugin.Ranking.FilterGroupIndex groupIndex_) { this.groupIndex = groupIndex_; }
@@ -23,6 +30,6 @@ namespace NexPlugin
 		public void SetLength(byte length_) { this.length = length_; }
 		public byte GetLength() { return this.length; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002C52*/ throw null; }
+		public override string ToString() { return string.Format("RankingOrderParam: (orderCalculation={0}, groupIndex={1}, groupNum={2}, timeScope={3}, offset={4}, length={5})", new object[] { this.orderCalculation, this.groupIndex, this.groupNum, this.timeScope, this.offset, this.length }); }
 	}
 }

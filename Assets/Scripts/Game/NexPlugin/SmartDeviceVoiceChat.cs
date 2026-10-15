@@ -6,12 +6,12 @@ namespace NexPlugin
 		public const uint DEFAULT_CHANNELID = 0u;
 		public const uint DEFAULT_HTTP_THREAD_PRIORITY = 16u;
 		public const uint INVALID_ROOMID = 0u;
-		public static bool ShowAppPageAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatShowAppPageParam param, global::NexPlugin.SmartDeviceVoiceChat.ShowAppPageCB callback = null) { /*@B 0x6002C05*/ throw null; }
-		public static bool ChangeVoiceChatChannelAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatChangeVoiceChatChannelParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6002C06*/ throw null; }
-		public static bool GetAvailabilityAsync(out uint asyncId, int timeOut = 0, global::NexPlugin.SmartDeviceVoiceChat.GetAvailabilityCB callback = null) { /*@B 0x6002C07*/ throw null; }
-		public static bool JoinRoomAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatJoinRoomParam param, int timeOut = 0, global::NexPlugin.SmartDeviceVoiceChat.JoinRoomCB callback = null) { /*@B 0x6002C08*/ throw null; }
-		public static bool LeaveRoomAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatLeaveRoomParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6002C09*/ throw null; }
-		public static bool LeaveRoom(global::NexPlugin.SmartDeviceVoiceChatLeaveRoomParam param) { /*@B 0x6002C0A*/ throw null; }
+		public static bool ShowAppPageAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatShowAppPageParam param, global::NexPlugin.SmartDeviceVoiceChat.ShowAppPageCB callback = null) { return global::NexPlugin.Detail.SmartDeviceVoiceChat.ShowAppPageAsync(out asyncId, param, callback); }
+		public static bool ChangeVoiceChatChannelAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatChangeVoiceChatChannelParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { return global::NexPlugin.Detail.SmartDeviceVoiceChat.ChangeVoiceChatChannelAsync(out asyncId, param, timeOut, callback); }
+		public static bool GetAvailabilityAsync(out uint asyncId, int timeOut = 0, global::NexPlugin.SmartDeviceVoiceChat.GetAvailabilityCB callback = null) { return global::NexPlugin.Detail.SmartDeviceVoiceChat.GetAvailabilityAsync(out asyncId, timeOut, callback); }
+		public static bool JoinRoomAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatJoinRoomParam param, int timeOut = 0, global::NexPlugin.SmartDeviceVoiceChat.JoinRoomCB callback = null) { return global::NexPlugin.Detail.SmartDeviceVoiceChat.JoinRoomAsync(out asyncId, param, timeOut, callback); }
+		public static bool LeaveRoomAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatLeaveRoomParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { return global::NexPlugin.Detail.SmartDeviceVoiceChat.LeaveRoomAsync(out asyncId, param, timeOut, callback); }
+		public static bool LeaveRoom(global::NexPlugin.SmartDeviceVoiceChatLeaveRoomParam param) { return global::NexPlugin.Detail.SmartDeviceVoiceChat.LeaveRoom(param); }
 #if SWITCH
 		public static extern bool GetLastAccountNnResult(ref global::nn.Result result);
 #else

@@ -6,17 +6,27 @@ namespace NexPlugin
 		internal global::System.Collections.Generic.List<uint> topics;
 		internal global::System.Collections.Generic.List<byte> binary;
 		internal string message;
-		public SubscriberPostContentParam() { /*@B 0x6002D13*/ throw null; }
-		public void SetTopic(global::System.Collections.Generic.List<uint> topics_) { /*@B 0x6002D14*/ throw null; }
-		public void SetTopic(uint topic_) { /*@B 0x6002D15*/ throw null; }
+		public SubscriberPostContentParam() { this.Reset(); }
+		public void SetTopic(global::System.Collections.Generic.List<uint> topics_) { this.topics = topics_ ?? new global::System.Collections.Generic.List<uint>(); }
+		public void SetTopic(uint topic_) { this.topics = new global::System.Collections.Generic.List<uint>(new uint[] { topic_ }); }
 		public global::System.Collections.Generic.List<uint> GetTopic() { return this.topics; }
-		public uint GetTopicSingle() { /*@B 0x6002D17*/ throw null; }
-		public void SetMessage(string message_) { /*@B 0x6002D18*/ throw null; }
+		public uint GetTopicSingle() {
+			if (this.topics != null && this.topics.Count != 0)
+			{
+				return this.topics[0];
+			}
+			return 0;
+		}
+		public void SetMessage(string message_) { this.message = message_ ?? ""; }
 		public string GetMessage() { return this.message; }
-		public void SetBinary(global::System.Collections.Generic.List<byte> binary_) { /*@B 0x6002D1A*/ throw null; }
+		public void SetBinary(global::System.Collections.Generic.List<byte> binary_) { this.binary = binary_ ?? new global::System.Collections.Generic.List<byte>(); }
 		public global::System.Collections.Generic.List<byte> GetBinary() { return this.binary; }
-		public void Reset() { /*@B 0x6002D1C*/ throw null; }
+		public void Reset() {
+			this.SetTopic(new global::System.Collections.Generic.List<uint>());
+			this.SetMessage("");
+			this.SetBinary(new global::System.Collections.Generic.List<byte>());
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002D1E*/ throw null; }
+		public override string ToString() { return string.Format("SubscriberPostContentParam: (message={0}, binary={1}, topics={2})", this.message, global::System.BitConverter.ToString(this.binary.ToArray()), this.topics.JoinString()); }
 	}
 }

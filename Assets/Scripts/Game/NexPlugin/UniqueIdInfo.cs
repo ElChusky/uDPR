@@ -5,14 +5,17 @@ namespace NexPlugin
 	{
 		internal ulong nexUniqueId;
 		internal ulong nexUniqueIdPassword;
-		public UniqueIdInfo() { /*@B 0x6002D38*/ throw null; }
-		public UniqueIdInfo(ulong nexUniqueId_, ulong nexUniqueIdPassword_) { /*@B 0x6002D39*/ throw null; }
+		public UniqueIdInfo() { this.nexUniqueId = 0; }
+		public UniqueIdInfo(ulong nexUniqueId_, ulong nexUniqueIdPassword_) {
+			this.nexUniqueId = nexUniqueId_;
+			this.nexUniqueIdPassword = nexUniqueIdPassword_;
+		}
 		public void SetUniqueId(ulong nexUniqueId_) { this.nexUniqueId = nexUniqueId_; }
 		public ulong GetUniqueId() { return this.nexUniqueId; }
 		public void SetPassword(ulong nexUniqueIdPassword_) { this.nexUniqueIdPassword = nexUniqueIdPassword_; }
 		public ulong GetPassword() { return this.nexUniqueIdPassword; }
-		public bool IsValid() { /*@B 0x6002D3E*/ throw null; }
+		public bool IsValid() { return this.nexUniqueId != 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002D40*/ throw null; }
+		public override string ToString() { return string.Format("UniqueIdInfo: (nexUniqueId={0}, nexUniqueIdPassword={1})", this.nexUniqueId, this.nexUniqueIdPassword); }
 	}
 }

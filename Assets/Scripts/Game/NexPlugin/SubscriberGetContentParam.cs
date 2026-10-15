@@ -7,7 +7,12 @@ namespace NexPlugin
 		internal uint offset;
 		internal ulong minimumContentId;
 		internal uint topic;
-		public SubscriberGetContentParam() { /*@B 0x6002D1F*/ throw null; }
+		public SubscriberGetContentParam() {
+			this.topic = 0xFFFFFFFFu;
+			this.size = 20;
+			this.offset = 0;
+			this.minimumContentId = 0;
+		}
 		public void SetTopic(uint topic_) { this.topic = topic_; }
 		public uint GetTopic() { return this.topic; }
 		public void SetSize(uint size_) { this.size = size_; }
@@ -16,8 +21,13 @@ namespace NexPlugin
 		public uint GetOffset() { return this.offset; }
 		public void SetMinimumContentId(ulong minimumContentId_) { this.minimumContentId = minimumContentId_; }
 		public ulong GetMinimumContentId() { return this.minimumContentId; }
-		public void Reset() { /*@B 0x6002D28*/ throw null; }
+		public void Reset() {
+			this.topic = 0xFFFFFFFFu;
+			this.size = 20;
+			this.offset = 0;
+			this.minimumContentId = 0;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002D2A*/ throw null; }
+		public override string ToString() { return string.Format("SubscriberGetContentParam: (topic={0}, size={1}, offset={2}, minimumContentId={3})", new object[] { this.topic, this.size, this.offset, this.minimumContentId }); }
 	}
 }

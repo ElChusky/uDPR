@@ -4,11 +4,11 @@ namespace NexPlugin
 	public class SmartDeviceVoiceChatLeaveRoomParam
 	{
 		internal ulong roomId;
-		public SmartDeviceVoiceChatLeaveRoomParam() { /*@B 0x6002CEF*/ throw null; }
+		public SmartDeviceVoiceChatLeaveRoomParam() { this.roomId = 0; }
 		public void SetRoomId(ulong roomId_) { this.roomId = roomId_; }
 		public ulong GetRoomId() { return this.roomId; }
-		public void Reset() { /*@B 0x6002CF2*/ throw null; }
+		public void Reset() { this.roomId = 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002CF4*/ throw null; }
+		public override string ToString() { return string.Format("SmartDeviceVoiceChatLeaveRoomParam: (roomId={0})", this.roomId); }
 	}
 }

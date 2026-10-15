@@ -5,13 +5,16 @@ namespace NexPlugin
 	{
 		internal uint offset;
 		internal uint size;
-		public ResultRange(uint uiOffset = 0u, uint uiSize = 20u) { /*@B 0x6002AF6*/ throw null; }
+		public ResultRange(uint uiOffset = 0u, uint uiSize = 20u) {
+			this.offset = uiOffset;
+			this.size = uiSize;
+		}
 		public void SetOffset(uint uiOffset = 0u) { this.offset = uiOffset; }
 		public uint GetOffset() { return this.offset; }
 		public void SetSize(uint uiSize = 20u) { this.size = uiSize; }
 		public uint GetSize() { return this.size; }
-		public static global::NexPlugin.ResultRange operator ++(global::NexPlugin.ResultRange r) { /*@B 0x6002AFB*/ throw null; }
+		public static global::NexPlugin.ResultRange operator ++(global::NexPlugin.ResultRange r) { return new global::NexPlugin.ResultRange(r.offset + r.size, r.size); }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002AFD*/ throw null; }
+		public override string ToString() { return string.Format("ResultRange: (offset={0}, size={1})", this.offset, this.size); }
 	}
 }

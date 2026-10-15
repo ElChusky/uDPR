@@ -13,7 +13,16 @@ namespace NexPlugin
 		internal global::System.Collections.Generic.List<byte> commonData;
 		internal byte group0;
 		internal byte group1;
-		public RankingRankData() { /*@B 0x6002C16*/ throw null; }
+		public RankingRankData() {
+			this.principalId = 0;
+			this.order = 0;
+			this.param = 0;
+			this.uniqueId = 0;
+			this.category = 0;
+			this.score = 0;
+			this.commonData = new global::System.Collections.Generic.List<byte>();
+			this.updateTime = global::NexPlugin.NpDateTime.Never;
+		}
 		public ulong GetPrincipalId() { return this.principalId; }
 		public ulong GetUniqueId() { return this.uniqueId; }
 		public uint GetOrder() { return this.order; }
@@ -23,8 +32,8 @@ namespace NexPlugin
 		public byte GetGroup1() { return this.group1; }
 		public ulong GetParam() { return this.param; }
 		public global::System.Collections.Generic.List<byte> GetCommonData() { return this.commonData; }
-		public global::NexPlugin.NpDateTime GetUpdateTime() { /*@B 0x6002C20*/ throw null; }
+		public global::NexPlugin.NpDateTime GetUpdateTime() { return this.updateTime; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002C22*/ throw null; }
+		public override string ToString() { return string.Format("RankingRankData: (principalId={0}, uniqueId={1}, order={2}, category={3}, score={4}, param={5}, group0={6}, group1={7}, commonData={8}, updateTime={9})", new object[] { this.principalId, this.uniqueId, this.order, this.category, this.score, this.param, this.group0, this.group1, global::System.BitConverter.ToString(this.commonData.ToArray()), this.updateTime.ToString() }); }
 	}
 }

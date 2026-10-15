@@ -7,7 +7,12 @@ namespace NexPlugin
 		internal global::NexPlugin.Ranking.ModificationFlag modificationFlag;
 		internal byte group0;
 		internal byte group1;
-		public RankingChangeAttributesParam() { /*@B 0x6002C53*/ throw null; }
+		public RankingChangeAttributesParam() {
+			this.param = 0;
+			this.modificationFlag = 0;
+			this.group0 = 0;
+			this.group1 = 0;
+		}
 		public void SetModificationFlag(global::NexPlugin.Ranking.ModificationFlag flag) { this.modificationFlag = flag; }
 		public global::NexPlugin.Ranking.ModificationFlag GetModificationFlag() { return this.modificationFlag; }
 		public void SetGroup0(byte group0_) { this.group0 = group0_; }
@@ -17,6 +22,6 @@ namespace NexPlugin
 		public void SetParam(ulong param_) { this.param = param_; }
 		public ulong GetParam() { return this.param; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002C5D*/ throw null; }
+		public override string ToString() { return string.Format("RankingChangeAttributesParam: (modificationFlag={0}, group0={1}, group1={2}, param={3})", new object[] { this.modificationFlag, this.group0, this.group1, this.param }); }
 	}
 }

@@ -6,13 +6,31 @@ namespace NexPlugin
 		internal uint maxLength;
 		internal global::NexPlugin.NpDateTime createdTime;
 		internal global::NexPlugin.NpDateTime expiredTime;
-		public RankingCachedResult() { /*@B 0x6002C2C*/ throw null; }
+		public RankingCachedResult() {
+			this.maxLength = 0;
+			this.createdTime = global::NexPlugin.NpDateTime.INVALID_DATE_TIME;
+			this.expiredTime = global::NexPlugin.NpDateTime.INVALID_DATE_TIME;
+		}
 		public uint GetMaxLength() { return this.maxLength; }
-		public global::NexPlugin.NpDateTime GetCreatedTime() { /*@B 0x6002C2E*/ throw null; }
-		public global::NexPlugin.NpDateTime GetExpiredTime() { /*@B 0x6002C2F*/ throw null; }
-		public global::NexPlugin.RankingCachedResult.LocalUpdateState LocalUpdate(global::NexPlugin.RankingOrderParam orderParam, global::NexPlugin.RankingScoreData scoreData, ulong pid, ulong nexUniqueId = 0UL, global::NexPlugin.NpDateTime utcCurrentTime = default, global::System.Collections.Generic.List<byte> pCommonData = null) { /*@B 0x6002C30*/ throw null; }
+		public global::NexPlugin.NpDateTime GetCreatedTime() { return this.createdTime; }
+		public global::NexPlugin.NpDateTime GetExpiredTime() { return this.expiredTime; }
+		public global::NexPlugin.RankingCachedResult.LocalUpdateState LocalUpdate(global::NexPlugin.RankingOrderParam orderParam, global::NexPlugin.RankingScoreData scoreData, ulong pid, ulong nexUniqueId = 0UL, global::NexPlugin.NpDateTime utcCurrentTime = default, global::System.Collections.Generic.List<byte> pCommonData = null) {
+			global::NexPlugin.RankingCachedResult newResult = null;
+			global::NexPlugin.RankingCachedResult.LocalUpdateState state = global::NexPlugin.Detail.Ranking.LocalUpdate(out newResult, this, orderParam, scoreData, pid, nexUniqueId, utcCurrentTime, pCommonData);
+			if (state == global::NexPlugin.RankingCachedResult.LocalUpdateState.UPDATE_SUCCESS)
+			{
+				this.maxLength = newResult.maxLength;
+				this.createdTime = newResult.createdTime;
+				this.expiredTime = newResult.expiredTime;
+				this.sinceTime = newResult.sinceTime;
+				this.totalCount = newResult.totalCount;
+				this.rankDataList.Clear();
+				this.rankDataList.AddRange(newResult.rankDataList);
+			}
+			return state;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002C32*/ throw null; }
+		public override string ToString() { return string.Format("RankingCachedResult: (maxLength={0}, createdTime={1}, expiredTime={2})\n{3}", new object[] { this.maxLength, this.createdTime.ToString(), this.expiredTime.ToString(), base.ToString() }); }
 		public enum LocalUpdateState
 		{
 			UPDATE_SUCCESS = 0,
