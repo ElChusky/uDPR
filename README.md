@@ -16,23 +16,38 @@ This repository's code was produced without any third-party reconstruction proje
   only from the binary.
 - `Assets/Scripts/_Ours/PcPlatform` is this workspace's own platform layer (PC input, display, saves, keyboard, frame clock).
 - `Assets/Editor` is this workspace's editor tooling (Windows build, audits, probes, the editor asset loader).
-- Vendor files: `Assets/Plugins/DOTween` (Demigiant DOTween 1.2.335, the shipped version) and `Assets/Wwise` (Audiokinetic
-  Wwise Unity Integration 2019.2.4).
+- `setup/` is the automated project setup (see below); `setup/data` holds the shader source recovered from the game's compiled
+  shaders and the tables that make every setup produce the same project.
+- Vendor files: `Assets/Plugins/DOTween` (Demigiant DOTween 1.2.335, the shipped version). The Audiokinetic Wwise Unity
+  Integration (2019.2.5) is **not** included: you install it yourself (below); the repository keeps only its `.meta` files and
+  this project's Wwise settings. See `THIRD_PARTY.md`.
 
 Player settings follow the shipped game (`productName` `Dpr`, `companyName` `DefaultCompany`, the shipped Graphics / Quality
 settings). The shipped code paths are kept: Switch-only code sits under `#if SWITCH`, and where the PC build changes a shipped
 statement (the unlocked frame rate, `PC_UNLOCKED_FPS`) the shipped statement stays in the `#else` arm.
 
-## Requirements
+## Setting up the project
 
-- Unity **2019.4.27f1** (the version the game was built with) with Windows Build Support (IL2CPP).
-- Visual Studio Build Tools with the C++ workload (IL2CPP compiles the game to native code).
-- Your own dump of the game; the setup and all working notes are in `../HANDOFF.md` of the workspace.
+You need:
+
+1. **Unity 2019.4.27f1** through Unity Hub (free Personal licence). `setup.cmd` opens Unity Hub on that version if it is missing.
+2. **Wwise 2019.2.5.7349** through the Audiokinetic Launcher (free account): the SDK (C++) with Microsoft > Windows (Visual
+   Studio 2019). The setup tells you the one Launcher step it needs.
+3. **Your own dump of Pokémon Brilliant Diamond v1.3.0** (with the update applied): a folder holding `exefs\` (with `main`)
+   and `romfs\` (with `Data\`).
+4. About **60 GB free** on the drive that holds this folder. The asset export and Unity's first import each used about 30 GB
+   of RAM on the reference machine; machines with less RAM are untested.
+
+Then run **`setup.cmd`** in this folder. It asks for the dump folder, downloads its own tools into `SetupWork\` (a portable
+Python and AssetRipper 1.3.14, each checked against a pinned checksum - nothing is installed system-wide), asks you to
+integrate Wwise into a folder it creates (one Audiokinetic Launcher step), and then runs unattended for several hours: Unity
+windows open and close by themselves - do not close them. If anything stops it, fix the reported problem and run `setup.cmd`
+again: it continues where it stopped. Logs: `SetupWork\logs\`.
 
 ## Playing in the editor
 
-Open `Assets/Scenes/level0.unity` and press Play. In the editor the game loads its assets straight from the project
-(`StartupSettings` target AssetDatabase).
+Add this folder as a project in Unity Hub (Unity 2019.4.27f1), open `Assets/Scenes/level0.unity` and press Play. In the editor
+the game loads its assets straight from the project (`StartupSettings` target AssetDatabase).
 
 ## Building for Windows
 
