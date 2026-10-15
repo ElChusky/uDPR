@@ -23,6 +23,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -81,6 +82,53 @@ def free_ram_gb():
 # 14 GB -> OutOfMemory while exporting, 20 GB -> complete (all 175,208 asset paths, 0 errors, 8.3 min, peak commit 21.2 GB).
 # Without a cap the GC grows to what the machine offers (~28 GB on a 96 GB PC), which pushes a 32 GB PC into paging.
 HEAP_GB = 20
+
+
+# Loading the dump (POST /LoadFolder) answers only when it is done - 1-2 min on the reference PC, much longer on a PC that pages.
+# AssetRipper's log tells where it is; these are its lines for BDSP v1.3.0 (measured 2026-10-15), in order.
+LOAD_PHASES = [("Attempting to read files", "looking at the dump"),
+               ("Collecting game files", "finding the game files"),
+               ("Collecting Streaming Assets", "finding the asset bundles"),
+               ("scripting backend", "reading the asset bundles and the game's code"),
+               ("Finished reading files", "processing the loaded assets")]
+BUNDLE_FOUND = "Asset bundle '"           # "Import : Asset bundle 'battle' has been found"
+BUNDLES = 14052                           # such lines in a v1.3.0 dump
+PROCESSING_STEPS = ["Creating Scene Definitions", "Main Asset Pairing", "Reconstruct AnimatorController Assets",
+                    "Reconstruct AudioMixer Assets", "Editor Format Conversion", "Lighting Data Assets",
+                    "Processing Scriptable Object Groups"]
+EXPORT_PROGRESS = re.compile(r"ExportProgress : \((\d+)/(\d+)\)")
+# The bundles are listed in seconds; reading their content logs nothing - AssetRipper's memory is the progress there (live run,
+# 2026-10-16: 0.7 GB -> 17.0 GB -> 18.5 GB at the end of loading, 55 s on the reference PC)
+LOADED_GB = 18.5
+LOAD_REPORT_S = 15                        # progress line cadence while loading / exporting
+EXPORT_REPORT_S = 30
+
+
+class LoadProgress:
+    def __init__(self):
+        self.phase, self.bundles, self.step = "starting", 0, 0
+
+    def feed(self, text):
+        for line in text.splitlines():
+            if BUNDLE_FOUND in line and "has been found" in line:
+                self.bundles += 1
+                continue
+            for key, phase in LOAD_PHASES:
+                if key in line:
+                    self.phase = phase
+            for i, s in enumerate(PROCESSING_STEPS):
+                if "Processing : " + s in line:
+                    self.step = i + 1
+
+    def text(self, mem_gb=None):
+        if self.phase == "reading the asset bundles and the game's code" and mem_gb is not None:
+            return "reading the asset bundles and the game's code: %.1f GB of about %g GB in memory" % (mem_gb, LOADED_GB)
+        if self.phase == "finding the asset bundles":
+            return "finding the asset bundles: {:,} of {:,} ({}%)".format(self.bundles, BUNDLES, 100 * self.bundles // BUNDLES)
+        if self.phase == "processing the loaded assets" and self.step:
+            return "processing the loaded assets: step %d of %d (%s)" % (self.step, len(PROCESSING_STEPS),
+                                                                          PROCESSING_STEPS[self.step - 1])
+        return self.phase
 
 
 def proc_mem_gb(pid):
@@ -147,11 +195,11 @@ def main():
         drive, shutil.disk_usage(drive).free / 2 ** 30, *memory_gb(), a.min_disk, a.min_commit))
     env = dict(os.environ, DOTNET_Thread_DefaultStackSize="1000000", COMPlus_Thread_DefaultStackSize="1000000")
     if a.heap_limit_gb:
-        env["DOTNET_GCHeapHardLimit"] = "%X" % int(a.heap_limit_gb * 2 ** 30)
+        env["DOTNET_GCHeapHardLimit"] = "%X" % int(a.heap_limit_gb * 2 ** 30)    # hex bytes; logged with GB below
     if a.workstation_gc:
         env["DOTNET_gcServer"] = "0"
-    say("GC environment: %s" % (", ".join("%s=%s" % (k, env[k]) for k in ("DOTNET_GCHeapHardLimit", "DOTNET_gcServer") if k in env)
-                                or "AssetRipper's defaults"))
+    say("AssetRipper memory: %s" % ("heap capped at %g GB" % a.heap_limit_gb if a.heap_limit_gb else "no cap") +
+        (", workstation GC" if a.workstation_gc else ""))
     srv = subprocess.Popen([a.exe, "--headless", "--port", str(a.port), "--log-path", log], cwd=os.path.dirname(a.exe), env=env,
                            stdout=open(os.path.join(work, os.path.basename(out) + "_stdout.log"), "w"), stderr=subprocess.STDOUT)
 
@@ -194,9 +242,50 @@ def main():
             stop("settings did not apply")
             sys.exit(1)
         t0 = time.time()
-        say("LoadFolder %s" % a.game)
-        code, _ = http(a.port, "/LoadFolder", {"Path": a.game})
-        say("LoadFolder http %s after %.0f s" % (code, time.time() - t0))
+        say("LoadFolder %s - AssetRipper reads the whole dump before it writes anything (progress every %d s)" % (
+            a.game, LOAD_REPORT_S))
+        result = {}
+
+        def load():
+            try:
+                result["code"] = http(a.port, "/LoadFolder", {"Path": a.game})[0]
+            except Exception as e:                 # noqa: BLE001 - reported below
+                result["error"] = e
+        loader = threading.Thread(target=load, daemon=True)
+        log_pos = os.path.getsize(log) if os.path.exists(log) else 0
+        loader.start()
+        progress, last_report = LoadProgress(), time.time()
+        while loader.is_alive():
+            loader.join(5)
+            if os.path.exists(log):
+                with open(log, "rb") as f:
+                    f.seek(log_pos)
+                    new = f.read()
+                log_pos += len(new)
+                text = new.decode("utf-8", "replace")
+                progress.feed(text)
+                if "OutOfMemoryException" in text:
+                    stop("AssetRipper ran out of memory while loading the dump")
+                    sys.exit("AssetRipper ran out of memory while loading the dump - close other programs and make sure Windows' "
+                             "page file can grow (it is on the system drive), then run the setup again; log: %s" % log)
+            disk = shutil.disk_usage(drive).free / 2 ** 30
+            ram, commit = memory_gb()
+            if srv.poll() is not None:
+                say("server exited by itself rc=%s while loading the dump" % srv.returncode)
+                sys.exit(1)
+            if commit < a.min_commit:
+                stop("Windows is about to run out of memory: RAM + page file %.1f GB free < %.1f" % (commit, a.min_commit))
+                sys.exit(1)
+            if loader.is_alive() and time.time() - last_report >= LOAD_REPORT_S:
+                last_report = time.time()
+                m = proc_mem_gb(srv.pid)
+                say("%5.1f min | loading: %s | RAM + page file %.1f GB free" % (
+                    (time.time() - t0) / 60, progress.text(m[2] if m else None), commit))
+        if "error" in result:
+            stop("loading the dump failed")
+            sys.exit("AssetRipper did not answer the load request: %s" % result["error"])
+        code = result["code"]
+        say("LoadFolder http %s after %.0f s (%d asset bundles)" % (code, time.time() - t0, progress.bundles))
         if code not in (200, 302):
             oom = os.path.exists(log) and "OutOfMemoryException" in open(log, encoding="utf-8", errors="replace").read()
             stop("loading the dump failed" + (" - AssetRipper ran out of memory" if oom else ""))
@@ -211,7 +300,7 @@ def main():
                                 "except Exception as e: print(e)\n",
                                 "http://localhost:%d/Export/UnityProject" % a.port, out], stdin=subprocess.DEVNULL)
         last = 0
-        read_to = 0
+        read_to = log_pos                       # the load lines were checked above
         while True:
             time.sleep(20)
             disk = shutil.disk_usage(drive).free / 2 ** 30
@@ -245,10 +334,18 @@ def main():
             if commit < a.min_commit:
                 stop("Windows is about to run out of memory: RAM + page file %.1f GB free < %.1f" % (commit, a.min_commit))
                 sys.exit(1)
-            if time.time() - last >= 120:
+            if time.time() - last >= EXPORT_REPORT_S:
                 last = time.time()
-                say("%5.1f min | disk %.1f GB free | RAM %.1f GB free | RAM + page file %.1f GB free | %s | %s" % (
-                    (time.time() - t0) / 60, disk, ram, commit, mem_text(srv.pid), tail))
+                prog = None
+                if os.path.exists(log):
+                    with open(log, "rb") as f:
+                        f.seek(max(0, os.path.getsize(log) - 65536))
+                        found = EXPORT_PROGRESS.findall(f.read().decode("utf-8", "replace"))
+                    if found:
+                        n, total = (int(x) for x in found[-1])
+                        prog = "exporting {:,} of {:,} assets ({}%)".format(n, total, 100 * n // total)
+                say("%5.1f min | %s | disk %.1f GB free | RAM + page file %.1f GB free | %s" % (
+                    (time.time() - t0) / 60, prog or tail, disk, commit, mem_text(srv.pid)))
         exp.wait(timeout=60)
         with open(done_marker, "w", encoding="utf-8") as f:
             f.write(time.strftime("%Y-%m-%d %H:%M:%S") + "\n")
