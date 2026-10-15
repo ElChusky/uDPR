@@ -9,9 +9,48 @@ namespace Effect
 		public global::UnityEngine.GameObject prefab { get { return this._prefab; } }
 		public bool isLooped { get { return this._isLooped; } }
 		public string assetBundleName { get { return this._assetBundleName; } }
-		public EffectData(string assetBundleName) { /*@B 0x60028E3*/ throw null; }
-		public void Setup(global::UnityEngine.GameObject prefab) { /*@B 0x60028E4*/ throw null; }
-		public static bool ComputeIsLooped(global::UnityEngine.GameObject prefab, out global::UnityEngine.ParticleSystem baseParticleSystem) { /*@B 0x60028E5*/ throw null; }
-		public override int Release() { /*@B 0x60028E6*/ throw null; }
+		public EffectData(string assetBundleName) {
+			_assetBundleName = assetBundleName;
+		}
+		public void Setup(global::UnityEngine.GameObject prefab) {
+			_prefab = prefab;
+			_isLooped = ComputeIsLooped(prefab, out global::UnityEngine.ParticleSystem baseParticleSystem);
+		}
+		public static bool ComputeIsLooped(global::UnityEngine.GameObject prefab, out global::UnityEngine.ParticleSystem baseParticleSystem) {
+			global::UnityEngine.ParticleSystem[] particleSystems = prefab.transform.GetComponentsInChildren<global::UnityEngine.ParticleSystem>(true);
+			baseParticleSystem = null;
+			if (particleSystems.Length == 0)
+				return false;
+			baseParticleSystem = particleSystems[0];
+			if (particleSystems[0].main.loop)
+				return true;
+			for (int i = 0; i < particleSystems.Length; i++)
+			{
+				global::UnityEngine.ParticleSystem ps = particleSystems[i];
+				if (ps.main.startLifetime.mode == global::UnityEngine.ParticleSystemCurveMode.Constant && float.IsInfinity(ps.main.startLifetime.constant))
+					return true;
+			}
+			var roots = new global::System.Collections.Generic.HashSet<global::UnityEngine.ParticleSystem>();
+			for (int i = 0; i < particleSystems.Length; i++)
+				roots.Add(particleSystems[i]);
+			for (int i = 0; i < particleSystems.Length; i++)
+			{
+				global::UnityEngine.ParticleSystem ps = particleSystems[i];
+				for (int j = 0; j < ps.subEmitters.subEmittersCount; j++)
+					roots.Remove(ps.subEmitters.GetSubEmitterSystem(j));
+			}
+			foreach (global::UnityEngine.ParticleSystem ps in roots)
+			{
+				if (ps.main.loop)
+					return true;
+			}
+			return false;
+		}
+		public override int Release() {
+			int count = base.Release();
+			if (count == 0 && global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Effect.EffectManager>.isInstantiated)
+				global::Effect.EffectManager.Instance._Unload(this);
+			return count;
+		}
 	}
 }
