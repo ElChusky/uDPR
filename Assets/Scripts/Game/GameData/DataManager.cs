@@ -39,14 +39,156 @@ namespace GameData
 		public static global::XLSXContent.FieldWazaCutInParam FieldWazaCutInParam;
 		public static global::XLSXContent.ZenmetuZone ZenmetuZone;
 		public static global::XLSXContent.MoveAfterSaveGrid MoveAfterSaveGrid;
-		private static global::GameData.DataManager.ComparerCatalog _comparerCatalog;
-		private static global::GameData.DataManager.ComparerKinomi _comparerKinomi;
+		private static global::GameData.DataManager.ComparerCatalog _comparerCatalog = new global::GameData.DataManager.ComparerCatalog();
+		private static global::GameData.DataManager.ComparerKinomi _comparerKinomi = new global::GameData.DataManager.ComparerKinomi();
 		public static global::XLSXContent.StatueEffectRawData statueEffectRawData;
-		public static global::System.Collections.IEnumerator StartUpLoad() { /*@B 0x600917D*/ throw null; }
-		public static global::System.Collections.IEnumerator Load(string assetBundleName) { /*@B 0x600917E*/ throw null; }
-		public static bool IsLoaded() { /*@B 0x600917F*/ throw null; }
-		public static global::XLSXContent.PokemonInfo.SheetCatalog GetPokemonCatalog(global::Pml.MonsNo monsNo, int formNo, global::Pml.Sex sex, bool isRare, bool isEgg = false) { /*@B 0x6009180*/ throw null; }
-		public static global::XLSXContent.PokemonInfo.SheetCatalog GetPokemonCatalog(int uniqueId) { /*@B 0x6009181*/ throw null; }
+		public static global::System.Collections.IEnumerator StartUpLoad() {
+            CharacterGraphics = null;
+            PlaceData = new global::System.Collections.Generic.Dictionary<string, global::XLSXContent.PlaceData>();
+            MapWarpData = new global::System.Collections.Generic.Dictionary<string, global::XLSXContent.MapWarp>();
+            StopData = new global::System.Collections.Generic.Dictionary<string, global::XLSXContent.StopData>();
+            yield return Load(string.Format("masterdatas"));
+            yield return Load_statueeffectdata();
+        }
+		public static global::System.Collections.IEnumerator Load(string assetBundleName) {
+            bool isAppendPml = false;
+            bool isAppendBattleData = false;
+            global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(assetBundleName, true, null, null);
+            yield return global::SmartPoint.AssetAssistant.AssetManager.DispatchRequests((eventType, name, asset) =>
+            {
+                if (asset is global::XLSXContent.CharacterGraphics)
+                    CharacterGraphics = asset as global::XLSXContent.CharacterGraphics;
+                else if (asset is global::XLSXContent.TrainerTable)
+                    TrainerTable = asset as global::XLSXContent.TrainerTable;
+                else if (asset is global::XLSXContent.PlaceData)
+                {
+                    if (PlaceData.ContainsKey(asset.name))
+                        PlaceData[asset.name] = asset as global::XLSXContent.PlaceData;
+                    else
+                        PlaceData.Add(asset.name, asset as global::XLSXContent.PlaceData);
+                }
+                else if (asset is global::XLSXContent.MapWarp)
+                {
+                    if (MapWarpData.ContainsKey(asset.name))
+                        MapWarpData[asset.name] = asset as global::XLSXContent.MapWarp;
+                    else
+                        MapWarpData.Add(asset.name, asset as global::XLSXContent.MapWarp);
+                }
+                else if (asset is global::XLSXContent.StopData)
+                {
+                    if (StopData.ContainsKey(asset.name))
+                        StopData[asset.name] = asset as global::XLSXContent.StopData;
+                    else
+                        StopData.Add(asset.name, asset as global::XLSXContent.StopData);
+                }
+                else if (asset is global::XLSXContent.MsgWindowData)
+                    global::Dpr.MsgWindow.MsgWindowManager.SetMsgWindowData(asset as global::XLSXContent.MsgWindowData);
+                else if (asset is global::XLSXContent.NetworkData)
+                    global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.NetworkUtils.NetworkManager>.Instance.SetupMasterData(asset as global::XLSXContent.NetworkData);
+                else if (asset is global::XLSXContent.ContestCommonData)
+                    ContestCommonData = asset as global::XLSXContent.ContestCommonData;
+                else if (asset is global::XLSXContent.GimmickGraphics)
+                    GimmickGraphics = asset as global::XLSXContent.GimmickGraphics;
+                else if (asset is global::XLSXContent.PokemonInfo)
+                    PokemonInfo = asset as global::XLSXContent.PokemonInfo;
+                else if (asset is global::XLSXContent.ContestWazaInfo)
+                    ContestWazaInfo = asset as global::XLSXContent.ContestWazaInfo;
+                else if (asset is global::XLSXContent.FieldCommonParam)
+                    FieldCommonParam = asset as global::XLSXContent.FieldCommonParam;
+                else if (asset is global::XLSXContent.FieldWazaCutInParam)
+                    FieldWazaCutInParam = asset as global::XLSXContent.FieldWazaCutInParam;
+                else if (asset is global::XLSXContent.ShopTable)
+                    ShopTable = asset as global::XLSXContent.ShopTable;
+                else if (asset is global::XLSXContent.CharacterDressData)
+                    CharacterDressData = asset as global::XLSXContent.CharacterDressData;
+                else if (asset is global::XLSXContent.KinomiData)
+                    KinomiData = asset as global::XLSXContent.KinomiData;
+                else if (asset is global::XLSXContent.KinomiPlaceData)
+                    KinomiPlaceData = asset as global::XLSXContent.KinomiPlaceData;
+                else if (asset is global::XLSXContent.HoneyTree)
+                    HoneyTree = asset as global::XLSXContent.HoneyTree;
+                else if (asset is global::XLSXContent.MonohiroiTable)
+                    MonohiroiTable = asset as global::XLSXContent.MonohiroiTable;
+                else if (asset is global::XLSXContent.UgJumpPos)
+                    UgJumpPos = asset as global::XLSXContent.UgJumpPos;
+                else if (asset is global::XLSXContent.TowerTrainerTable)
+                    TowerTrainerTable = asset as global::XLSXContent.TowerTrainerTable;
+                else if (asset is global::XLSXContent.TowerMatchingTable)
+                    TowerMatchingTable = asset as global::XLSXContent.TowerMatchingTable;
+                else if (asset is global::XLSXContent.TowerSingleStockTable)
+                    TowerSingleStockTable = asset as global::XLSXContent.TowerSingleStockTable;
+                else if (asset is global::XLSXContent.TowerDoubleStockTable)
+                    TowerDoubleStockTable = asset as global::XLSXContent.TowerDoubleStockTable;
+                else if (asset is global::XLSXContent.TowerBattlePoint)
+                    TowerBattlePoint = asset as global::XLSXContent.TowerBattlePoint;
+                else if (asset is global::TagPlaceData)
+                    TagPlaceData = asset as global::TagPlaceData;
+                else if (asset is global::XLSXContent.LocalKoukanData)
+                    LocalKoukanData = asset as global::XLSXContent.LocalKoukanData;
+                else if (asset is global::XLSXContent.TvDataTable)
+                    TvDataTable = asset as global::XLSXContent.TvDataTable;
+                else if (asset is global::XLSXContent.TvSchedule)
+                    TvSchedule = asset as global::XLSXContent.TvSchedule;
+                else if (asset is global::XLSXContent.AdventureNoteData)
+                {
+                    AdventureNoteData = asset as global::XLSXContent.AdventureNoteData;
+                    AdventureNoteDataDict = new global::System.Collections.Generic.Dictionary<int, global::System.Collections.Generic.List<global::XLSXContent.AdventureNoteData.SheetData>>();
+                    var data = (asset as global::XLSXContent.AdventureNoteData).Data;
+                    int version = global::PlayerWork.cassetVersion == CassetVersion.DPR_B ? 1 : 2;
+                    foreach (var item in data)
+                    {
+                        if (item.Version == 0 || item.Version == version)
+                        {
+                            global::System.Collections.Generic.List<global::XLSXContent.AdventureNoteData.SheetData> list = null;
+                            AdventureNoteDataDict.TryGetValue(item.Category, out list);
+                            if (list == null)
+                            {
+                                list = new global::System.Collections.Generic.List<global::XLSXContent.AdventureNoteData.SheetData>();
+                                AdventureNoteDataDict.Add(item.Category, list);
+                            }
+                            list.Add(item);
+                        }
+                    }
+                }
+                else if (asset is global::XLSXContent.ZenmetuZone)
+                    ZenmetuZone = asset as global::XLSXContent.ZenmetuZone;
+                else if (asset is global::XLSXContent.MoveAfterSaveGrid)
+                    MoveAfterSaveGrid = asset as global::XLSXContent.MoveAfterSaveGrid;
+            });
+            global::TrainerSystem.CheckTowerTable();
+            isAppendPml = global::Pml.PmlUse.Instance.AppendAssetBundleRequests();
+            isAppendBattleData = global::Dpr.Battle.Logic.BattleDataTableManager.Instance.AppendAssetBundleRequests();
+            if (isAppendBattleData || isAppendPml)
+            {
+                yield return global::SmartPoint.AssetAssistant.AssetManager.DispatchRequests((eventType, name, asset) =>
+                {
+                    if (isAppendPml)
+                        global::Pml.PmlUse.Instance.OnDispatchRequests(eventType, name, asset);
+                    if (isAppendBattleData)
+                        global::Dpr.Battle.Logic.BattleDataTableManager.Instance.OnDispatchRequests(eventType, name, asset);
+                });
+                global::Pml.PmlUse.Instance.OnAfterLoadAll();
+                global::Dpr.Battle.Logic.BattleDataTableManager.Instance.OnAfterLoadAll();
+            }
+            if (onPostLoadData != null)
+                onPostLoadData();
+            onPostLoadData = null;
+            global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(assetBundleName);
+        }
+		public static bool IsLoaded() {
+            return global::Pml.PmlUse.Instance.IsInitialized && CharacterGraphics != null;
+        }
+		public static global::XLSXContent.PokemonInfo.SheetCatalog GetPokemonCatalog(global::Pml.MonsNo monsNo, int formNo, global::Pml.Sex sex, bool isRare, bool isEgg = false) {
+            if (PokemonInfo == null)
+                return null;
+            return GetPokemonCatalog(GetUniqueID(monsNo, formNo, sex, isRare, isEgg));
+        }
+		public static global::XLSXContent.PokemonInfo.SheetCatalog GetPokemonCatalog(int uniqueId) {
+            int index = Array.BinarySearch(PokemonInfo.Catalog, uniqueId, _comparerCatalog);
+            if (index >= 0)
+                return PokemonInfo.Catalog[index];
+            return null;
+        }
 		public static int GetUniqueID(global::Pml.PokePara.PokemonParam pokemonParam) {
             if (pokemonParam == null)
                 return 0;
@@ -90,20 +232,43 @@ namespace GameData
 
             return null;
         }
-		public static float GetFieldCommonParam(global::FieldCommon.ParamIndx paramIndex) { /*@B 0x600918C*/ throw null; }
-		private static global::System.Collections.IEnumerator Load_statueeffectdata() { /*@B 0x600918D*/ throw null; }
-		public static global::XLSXContent.PokemonInfo.SheetTrearuki GetPokemonCatalogTrearuki(global::Pml.MonsNo monsNo, int formNo, global::Pml.Sex sex, bool isRare, bool isEgg = false) { /*@B 0x600918E*/ throw null; }
+		public static float GetFieldCommonParam(global::FieldCommon.ParamIndx paramIndex) {
+            return FieldCommonParam[(int)paramIndex].param;
+        }
+		private static global::System.Collections.IEnumerator Load_statueeffectdata() {
+            global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest("statueeffectdata", true, null, null);
+            yield return global::SmartPoint.AssetAssistant.AssetManager.DispatchRequests((eventType, assetName, asset) =>
+            {
+                if (eventType == global::SmartPoint.AssetAssistant.RequestEventType.Activated && asset is global::XLSXContent.StatueEffectRawData)
+                    statueEffectRawData = asset as global::XLSXContent.StatueEffectRawData;
+            });
+            global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle("statueeffectdata");
+        }
+		public static global::XLSXContent.PokemonInfo.SheetTrearuki GetPokemonCatalogTrearuki(global::Pml.MonsNo monsNo, int formNo, global::Pml.Sex sex, bool isRare, bool isEgg = false) {
+            if (PokemonInfo == null)
+                return null;
+            int uniqueId = GetUniqueID(monsNo, formNo, sex, isRare, isEgg);
+            // shipped quirk: the index is searched in Catalog, then used on Trearuki
+            int index = Array.BinarySearch(PokemonInfo.Catalog, uniqueId, _comparerCatalog);
+            if (index < 0)
+                return null;
+            return PokemonInfo.Trearuki[index];
+        }
 		public DataManager() { }
-		static DataManager() { /*@B 0x6009190*/ throw null; }
+		static DataManager() { }
 		public delegate void OnPostLoadDataDelegate();
 		private class ComparerCatalog : global::System.Collections.IComparer
 		{
-			public int Compare(object x, object y) { /*@B 0x600B9B6*/ throw null; }
+			public int Compare(object x, object y) {
+                return (x as global::XLSXContent.PokemonInfo.SheetCatalog).UniqueID - Convert.ToInt32(y);
+            }
 			public ComparerCatalog() { }
 		}
 		private class ComparerKinomi : global::System.Collections.IComparer
 		{
-			public int Compare(object x, object y) { /*@B 0x600B9B8*/ throw null; }
+			public int Compare(object x, object y) {
+                return (x as global::XLSXContent.KinomiData.SheetData).ItemNo - (global::Pml.ItemNo)y;
+            }
 			public ComparerKinomi() { }
 		}
 	}
