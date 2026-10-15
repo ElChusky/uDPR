@@ -19,23 +19,23 @@ namespace Dpr.UI
 		private global::EnvironmentSettings _environmentCharacter;
 		[global::UnityEngine.SerializeField]
 		private global::EnvironmentSettings _environmentPokemon;
-		private global::Dpr.UI.UIManager.EnvironmentControllerSaver _environmentControllerSaver;
+		private global::Dpr.UI.UIManager.EnvironmentControllerSaver _environmentControllerSaver = new global::Dpr.UI.UIManager.EnvironmentControllerSaver();
 		private bool _isActived;
 		private global::UnityEngine.Vector2 _modelViewSize;
-		private float _modelCameraFov;
-		private float _modelReflectionAlpha;
-		private global::UnityEngine.Vector2 _modelCameraCenterOffset;
-		private global::UnityEngine.Vector3 _modelOffset;
-		private global::UnityEngine.Vector3 _modelRotation;
-		private global::UnityEngine.Vector3 _modelAttachOffset;
-		private float _modelScale;
+		private float _modelCameraFov = float.NegativeInfinity;
+		private float _modelReflectionAlpha = float.NegativeInfinity;
+		private global::UnityEngine.Vector2 _modelCameraCenterOffset = global::UnityEngine.Vector2.zero;
+		private global::UnityEngine.Vector3 _modelOffset = global::UnityEngine.Vector3.zero;
+		private global::UnityEngine.Vector3 _modelRotation = global::UnityEngine.Vector3.zero;
+		private global::UnityEngine.Vector3 _modelAttachOffset = global::UnityEngine.Vector3.zero;
+		private float _modelScale = 1f;
 		private float _cameraRotationX;
 		private int _loadRequestModelId;
 		private global::Dpr.UI.UIModelViewController.ModelParam _modelParam;
-		private global::Dpr.UI.UIModelViewController.SaveCameraParam _saveCameraParam;
+		private global::Dpr.UI.UIModelViewController.SaveCameraParam _saveCameraParam = new global::Dpr.UI.UIModelViewController.SaveCameraParam();
 		public const int defaultCacheModelNum = 6;
-		private global::Dpr.CacheList<global::Dpr.UI.UIModelViewController.ModelParam> _cacheParams;
-		private global::Dpr.UI.UIModelViewController.ModelViewType _modelViewType;
+		private global::Dpr.CacheList<global::Dpr.UI.UIModelViewController.ModelParam> _cacheParams = new global::Dpr.CacheList<global::Dpr.UI.UIModelViewController.ModelParam>(defaultCacheModelNum);
+		private global::Dpr.UI.UIModelViewController.ModelViewType _modelViewType = global::Dpr.UI.UIModelViewController.ModelViewType.Party;
 		public global::Dpr.UI.UIModelViewController.ModelParam modelParam { get { return this._modelParam; } }
 		public global::UnityEngine.RectTransform modelBgRoot { get { return this._modelBgRoot; } }
 		public void SetModelViewType(global::Dpr.UI.UIModelViewController.ModelViewType type) { this._modelViewType = type; }
@@ -415,21 +415,214 @@ namespace Dpr.UI
                 return 0f;
             return battleEntity.GetAnimationPlayer().GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).CurrentRemaingTime;
         }
-		public int GetAnimationIndexByClipName(string clipName) { /*@B 0x60055CB*/ throw null; }
-		public bool IsPlayAnimation() { /*@B 0x60055CC*/ throw null; }
-		public void PauseAnimation(bool paused) { /*@B 0x60055CD*/ throw null; }
-		public void LoopAnimation(bool looped) { /*@B 0x60055CE*/ throw null; }
-		internal void _UpdateModelView() { /*@B 0x60055CF*/ throw null; }
-		public void SetupModelViewCameras(bool enableModelCamera) { /*@B 0x60055D0*/ throw null; }
-		private void SetupModelViewCamera(bool enableModelCamera, global::UnityEngine.Camera camera) { /*@B 0x60055D1*/ throw null; }
-		private void UpdateModelViewCameras() { /*@B 0x60055D2*/ throw null; }
-		private global::UnityEngine.Matrix4x4 ComputeReflectionMatrix(global::UnityEngine.Vector4 n) { /*@B 0x60055D3*/ throw null; }
-		void global::SmartPoint.AssetAssistant.IViewportChangeHandler.OnViewportChange(int screenWidth, int screenHeight) { /*@B 0x60055D4*/ throw null; }
-		public global::UnityEngine.RenderTexture GetModelViewRenderTexture() { /*@B 0x60055D5*/ throw null; }
-		public void ClearModelView(bool isFinish) { /*@B 0x60055D6*/ throw null; }
-		private void SetActive(bool enabled) { /*@B 0x60055D7*/ throw null; }
+		public int GetAnimationIndexByClipName(string clipName) {
+            if (_modelParam == null)
+                return -1;
+            global::UnityEngine.AnimationClip[] clips;
+            var animationPlayer = _modelParam.baseEntity.GetAnimationPlayer();
+            if (!(animationPlayer is null))
+            {
+                if (!animationPlayer.IsValidCurrentPlayable)
+                    return -1;
+                clips = animationPlayer.clips;
+            }
+            else
+            {
+                var battleEntity = _modelParam.baseEntity as global::BattleCharacterEntity;
+                if (battleEntity == null)
+                    return -1;
+                clips = battleEntity.GetAnimationPlayer().GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).Clips;
+            }
+            return global::System.Array.FindIndex(clips, x => x != null && !string.IsNullOrEmpty(x.name) && x.name.IndexOf(clipName) >= 0);
+        }
+		public bool IsPlayAnimation() {
+            if (_modelParam == null)
+                return false;
+            var animationPlayer = _modelParam.baseEntity.GetAnimationPlayer();
+            if (!(animationPlayer is null))
+            {
+                if (!animationPlayer.IsValidCurrentPlayable)
+                    return false;
+                return animationPlayer.IsPlayingEnd;
+            }
+            var battleEntity = _modelParam.baseEntity as global::BattleCharacterEntity;
+            if (battleEntity == null)
+                return false;
+            return battleEntity.GetAnimationPlayer().GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).IsPlayingEnd;
+        }
+		public void PauseAnimation(bool paused) {
+            if (_modelParam == null)
+                return;
+            var animationPlayer = _modelParam.baseEntity.GetAnimationPlayer();
+            if (!(animationPlayer is null))
+            {
+                if (!animationPlayer.IsValidCurrentPlayable)
+                    return;
+                if (paused)
+                    animationPlayer.Stop();
+                else
+                    animationPlayer.Resume();
+                return;
+            }
+            var battleEntity = _modelParam.baseEntity as global::BattleCharacterEntity;
+            if (battleEntity != null)
+                battleEntity.GetAnimationPlayer().GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).AnimationSpeed = paused ? 0f : 1f;
+        }
+		public void LoopAnimation(bool looped) {
+            if (_modelParam == null)
+                return;
+            var animationPlayer = _modelParam.baseEntity.GetAnimationPlayer();
+            if (!(animationPlayer is null))
+            {
+                if (!animationPlayer.IsValidCurrentPlayable)
+                    return;
+                animationPlayer.forceLoop = looped;
+                return;
+            }
+            var battleEntity = _modelParam.baseEntity as global::BattleCharacterEntity;
+            if (battleEntity != null)
+                battleEntity.GetAnimationPlayer().GetAnimationLayer(global::Dpr.Playables.BattleAnimationPlayer.LayerIndex.BaseLayer).IsForceLoop = looped;
+        }
+		internal void _UpdateModelView() {
+            if (_modelParam == null || _modelParam.root == null)
+                return;
+            if (!_modelParam.root.gameObject.activeSelf)
+                return;
+            if (!_modelEnvironmentController.IsActiveController())
+            {
+                _modelEnvironmentController.SetActiveController();
+                EnableModelLight(true, _modelViewType);
+            }
+            _modelEnvironmentController.SetLight(GetEnvironmentSettings(_modelViewType), global::PeriodOfDay.Daytime, 0f, 0f);
+            _modelParam.root.localPosition = _modelOffset;
+            _modelParam.root.localRotation = global::UnityEngine.Quaternion.Euler(_modelRotation.x, 0f, _modelRotation.z);
+            _modelParam.attachTo.localRotation = global::UnityEngine.Quaternion.Euler(0f, _modelRotation.y, 0f);
+            _modelParam.root.localScale = new global::UnityEngine.Vector3(_modelScale, _modelScale, _modelScale);
+            if (float.IsNegativeInfinity(_modelParam.attachPosY) && _modelParam.attachFrom != null)
+            {
+                _modelParam.attachPosY = _modelParam.attachFrom.position.y;
+                float diff = _modelParam.attachPosY - _modelParam.gameObject.transform.position.y;
+                var attachPos = _modelAttachOffset;
+                attachPos.y += diff;
+                _modelParam.attachTo.localPosition = attachPos;
+                var objectPos = _modelAttachOffset;
+                objectPos.y -= diff;
+                _modelParam.gameObject.transform.localPosition = objectPos;
+            }
+            UpdateModelViewCameras();
+        }
+		public void SetupModelViewCameras(bool enableModelCamera) {
+            if (!gameObject.activeSelf)
+                gameObject.SetActive(true);
+            _modelBgCamera.gameObject.SetActive(true);
+            float width = _modelViewSize.x;
+            float height = _modelViewSize.y;
+            if (_modelBgCamera.camera.targetTexture == null
+                || width != _modelBgCamera.camera.targetTexture.width
+                || height != _modelBgCamera.camera.targetTexture.height)
+            {
+                if (_modelBgCamera.camera.targetTexture != null)
+                    _modelBgCamera.camera.targetTexture.Release();
+                _modelBgCamera.camera.targetTexture = new global::UnityEngine.RenderTexture((int)width, (int)height, 24, global::UnityEngine.RenderTextureFormat.RGB111110Float);
+            }
+            SetupModelViewCamera(enableModelCamera, _modelCamera);
+            if (float.IsNegativeInfinity(_modelReflectionAlpha))
+            {
+                SetupModelViewCamera(false, _reflectionCamera.camera);
+                return;
+            }
+            SetupModelViewCamera(enableModelCamera, _reflectionCamera.camera);
+            _modelBgCamera.Setup();
+            _reflectionCamera.SetBgTexture(_modelBgCamera.renderTexture);
+            if (!float.IsNegativeInfinity(_modelReflectionAlpha))
+                _reflectionCamera.SetAlpha(_modelReflectionAlpha);
+        }
+		private void SetupModelViewCamera(bool enableModelCamera, global::UnityEngine.Camera camera) {
+            camera.aspect = _modelViewSize.x / _modelViewSize.y;
+            if (!float.IsNegativeInfinity(_modelCameraFov))
+                camera.fieldOfView = _modelCameraFov;
+            camera.targetTexture = _modelBgCamera.camera.targetTexture;
+            camera.gameObject.SetActive(false);
+            if (enableModelCamera)
+                camera.gameObject.SetActive(true);
+        }
+		private void UpdateModelViewCameras() {
+            if (_modelParam == null || _modelParam.root == null)
+                return;
+            _modelCamera.ResetProjectionMatrix();
+            var projection = _modelCamera.projectionMatrix;
+            projection.m02 = _modelCameraCenterOffset.x * 2f;
+            projection.m12 = _modelCameraCenterOffset.y * 2f;
+            _modelCamera.projectionMatrix = projection;
+            if (float.IsNegativeInfinity(_modelReflectionAlpha))
+                return;
+            _reflectionCamera.camera.ResetProjectionMatrix();
+            _reflectionCamera.camera.ResetWorldToCameraMatrix();
+            _reflectionCamera.camera.ResetCullingMatrix();
+            var pos = global::UnityEngine.Vector3.zero;
+            var normal = global::UnityEngine.Vector3.up;
+            float d = -global::UnityEngine.Vector3.Dot(normal, pos);
+            var plane = new global::UnityEngine.Vector4(normal.x, normal.y, normal.z, d);
+            var reflection = ComputeReflectionMatrix(plane);
+            _reflectionCamera.camera.worldToCameraMatrix = _modelCamera.worldToCameraMatrix * reflection;
+            _reflectionCamera.camera.projectionMatrix = _modelCamera.projectionMatrix;
+            var cullingCamera = _reflectionCamera.camera;
+            var ortho = global::UnityEngine.Matrix4x4.Ortho(-100f, 100f, -100f, 100f, 0.001f, 100f);
+            var translate = global::UnityEngine.Matrix4x4.Translate(global::UnityEngine.Vector3.forward * -100f / 2f);
+            cullingCamera.cullingMatrix = ortho * translate * _modelCamera.worldToCameraMatrix;
+        }
+		private global::UnityEngine.Matrix4x4 ComputeReflectionMatrix(global::UnityEngine.Vector4 n) {
+            global::UnityEngine.Matrix4x4 m;
+            m.m00 = -2f * n.x * n.x + 1f;
+            m.m01 = -2f * n.x * n.y;
+            m.m02 = -2f * n.x * n.z;
+            m.m03 = -2f * n.x * n.w;
+            m.m10 = -2f * n.x * n.y;
+            m.m11 = 1f - 2f * n.y * n.y;
+            m.m12 = -2f * n.y * n.z;
+            m.m13 = -2f * n.y * n.w;
+            m.m20 = -2f * n.x * n.z;
+            m.m21 = -2f * n.y * n.z;
+            m.m22 = 1f - 2f * n.z * n.z;
+            m.m23 = -2f * n.z * n.w;
+            m.m30 = 0f;
+            m.m31 = 0f;
+            m.m32 = 0f;
+            m.m33 = 1f;
+            return m;
+        }
+		void global::SmartPoint.AssetAssistant.IViewportChangeHandler.OnViewportChange(int screenWidth, int screenHeight) {
+            // @01a118b0: activeSelf is read, both outcomes return (shipped)
+            if (gameObject.activeSelf) { }
+        }
+		public global::UnityEngine.RenderTexture GetModelViewRenderTexture() {
+            if (_modelBgCamera != null)
+                return _modelBgCamera.camera.targetTexture;
+            return null;
+        }
+		public void ClearModelView(bool isFinish) {
+            if (_modelParam != null && !_modelParam.isDontClear)
+            {
+                _modelParam.Active(false);
+                _modelParam = null;
+            }
+            if (_modelCamera != null)
+                _modelCamera.gameObject.SetActive(false);
+            gameObject.SetActive(false);
+            SetActive(false);
+            if (isFinish)
+            {
+                if (_modelEnvironmentController.gameObject.activeSelf)
+                    _modelEnvironmentController.gameObject.SetActive(false);
+                _environmentControllerSaver.Restore();
+            }
+        }
+		private void SetActive(bool enabled) {
+            if (_isActived != enabled)
+                _isActived = enabled;
+        }
 		private void UnloadUnused() { }
-		public UIModelViewController() { /*@B 0x60055D9*/ throw null; }
+		public UIModelViewController() { }
 		public class ModelParam
 		{
 			public global::Dpr.UI.UIModelViewController.ModelViewType modelViewType;
@@ -442,19 +635,39 @@ namespace Dpr.UI
 			public global::UnityEngine.Transform root;
 			public global::UnityEngine.Transform attachTo;
 			public global::UnityEngine.Transform attachFrom;
-			public float attachPosY;
-			public void Active(bool enabled) { /*@B 0x600ABDE*/ throw null; }
-			public void Destroy() { /*@B 0x600ABDF*/ throw null; }
-			public bool IsEnableCache(global::Dpr.UI.UIModelViewController.ModelViewType modelViewType_, int uniqueId_) { /*@B 0x600ABE0*/ throw null; }
-			public ModelParam() { /*@B 0x600ABE1*/ throw null; }
+			public float attachPosY = float.NegativeInfinity;
+			public void Active(bool enabled) {
+                if (root != null)
+                    root.gameObject.SetActive(enabled);
+                if (attachTo != null && !attachTo.gameObject.activeSelf)
+                    attachTo.gameObject.SetActive(enabled);
+                if (gameObject != null && !gameObject.activeSelf)
+                    gameObject.SetActive(enabled);
+            }
+			public void Destroy() {
+                global::UnityEngine.Object.Destroy(gameObject);
+                global::UnityEngine.Object.Destroy(root.gameObject);
+                root = null;
+                attachTo = null;
+                attachFrom = null;
+                gameObject = null;
+                baseEntity = null;
+                assetBundleUnloader.Release();
+            }
+			public bool IsEnableCache(global::Dpr.UI.UIModelViewController.ModelViewType modelViewType_, int uniqueId_) {
+                if (((modelViewType ^ modelViewType_) & (global::Dpr.UI.UIModelViewController.ModelViewType.Pokemon | global::Dpr.UI.UIModelViewController.ModelViewType.Character)) != 0)
+                    return false;
+                return uniqueId == uniqueId_;
+            }
+			public ModelParam() { }
 		}
 		private class SaveCameraParam
 		{
 			public global::UnityEngine.Camera camera;
 			public bool actived;
 			public int cullMask;
-			public global::System.Collections.Generic.List<global::Dpr.UI.UIModelViewController.SaveCameraParam> subCameraParams;
-			public SaveCameraParam() { /*@B 0x600ABE2*/ throw null; }
+			public global::System.Collections.Generic.List<global::Dpr.UI.UIModelViewController.SaveCameraParam> subCameraParams = new global::System.Collections.Generic.List<global::Dpr.UI.UIModelViewController.SaveCameraParam>();
+			public SaveCameraParam() { }
 		}
 		[global::System.FlagsAttribute]
 		public enum ModelViewType
