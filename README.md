@@ -31,7 +31,8 @@ Known issues:
   Screen), **Resolution**, **Frame Rate** (30 FPS = the original pace, up to Unlimited) and **V-Sync**.
 - **Keyboard and gamepad** - full keyboard controls, and any XInput gamepad.
 - **Shipped save format** - saves are written in the game's own format.
-- **A real Unity project** - open it in the Unity editor and press Play; every scene, prefab and script is there to study or mod.
+- **A real Unity project** - open it in the Unity editor and press Play; every scene, prefab and script is there to study, mod, or
+  port to other platforms Unity supports.
 
 ## What you need
 
@@ -122,7 +123,17 @@ to download with an Audiokinetic account; the setup copies it in from your own i
 
 **Shining Pearl? Other versions?** Only Brilliant Diamond v1.3.0 is supported for now.
 
-**macOS or Linux?** The setup and the build are Windows-only.
+**Other platforms (macOS, Linux, ...)?** The setup (`setup.cmd`) runs on Windows, and Windows is the platform we build and test. But
+what the setup produces is an ordinary Unity 2019.4 project, and Unity can build it for any platform it supports - a port is open to
+anyone. What a port needs today:
+
+- the asset-bundle build (`Assets/Editor/BdspWinBuild`) targets Windows (`StandaloneWindows64`);
+- the PC layer's gamepad (XInput), software keyboard, timer resolution and restart code use Windows APIs - they are fenced off with
+  `UNITY_STANDALONE_WIN`, so another platform needs its own versions of them;
+- the Wwise integration must include the target platform;
+- the recovered shaders have only been tested with Direct3D 11.
+
+Pull requests for other platforms are welcome.
 
 **Can I share my build?** No. It contains the game's assets.
 
