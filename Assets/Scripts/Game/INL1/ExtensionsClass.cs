@@ -3,8 +3,8 @@ namespace INL1
 {
 	internal static class ExtensionsClass
 	{
-		private static global::System.Random rng;
+		private static global::System.Random rng = new global::System.Random();
 		public static void Shuffle<T>(this global::System.Collections.Generic.IList<T> list) { /*@B 0x600285C*/ throw null; }
-		static ExtensionsClass() { /*@B 0x600285D*/ throw null; }
+		static ExtensionsClass() { }
 	}
 }

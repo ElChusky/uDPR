@@ -6,8 +6,11 @@ namespace INL1
 {
 	public class PacketWriter : global::INL1.IlcaNetPacket
 	{
-		public PacketWriter() { /*@B 0x6002704*/ throw null; }
-		~PacketWriter() { /*@B 0x6002705*/ throw null; }
+		public PacketWriter() {
+			MyUserDataMax = 340u;
+			Reset();
+		}
+		~PacketWriter() { }
 		public virtual int RemainBytes() {
 			return (int)MyUserDataMax - (int)UserDataSizeNow();
 		}

@@ -4,11 +4,11 @@ namespace INL1
 	public class IlcaNetServerDataStoreService
 	{
 		private const int PokeCoreSize = 328;
-		private static bool GMStationTrading;
-		private static bool GMStationErrorSimulateFlag;
+		private static bool GMStationTrading = false;
+		private static bool GMStationErrorSimulateFlag = false;
 		private static byte[] downCoreBinary = new byte[332];
-		private static byte[] downSignatureBinary;
-		private static ushort recvPoint;
+		private static byte[] downSignatureBinary = new byte[256];
+		private static ushort recvPoint = 0;
 		public static bool GMStationTrade(global::UnityEngine.MonoBehaviour callobj, int targetPoint, global::INL1.IlcaNetServerValidate.CheckRequest cReq, byte[] upSignatureBinary, global::INL1.IlcaNetServerDataStoreService.IlcaNetServerDataStoreServiceGMStationTradeCallback userCallback, bool errorOn = false) {
 			if (userCallback == null)
 				return false;
@@ -76,7 +76,7 @@ namespace INL1
 			return false;
 		}
 		public IlcaNetServerDataStoreService() { }
-		static IlcaNetServerDataStoreService() { /*@B 0x60028B5*/ throw null; }
+		static IlcaNetServerDataStoreService() { }
 		public delegate void IlcaNetServerDataStoreServiceGMStationTradeCallback(bool isSuccess, global::INL1.IlcaNetServerDataStoreService.GMstationTradeStatusEnum result, bool playerCoreDataDelete);
 		public enum GMstationTradeStatusEnum
 		{

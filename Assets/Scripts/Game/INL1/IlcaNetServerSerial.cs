@@ -132,20 +132,20 @@ namespace INL1
 				}
 			}
 		}
-		public IlcaNetServerSerial() { /*@B 0x60027B2*/ throw null; }
+		public IlcaNetServerSerial() { }
 		static IlcaNetServerSerial() { }
 		[global::System.Serializable]
 		public class CheckSerialRequest
 		{
 			public string nuid;
-			public string rom;
-			public string serialcode;
+			public string rom = "48";
+			public string serialcode = "QQQAVTVN68RTPUT6";
 			public string tok;
-			public string langcode;
+			public string langcode = "01";
 			public static string Serialize(global::INL1.IlcaNetServerSerial.CheckSerialRequest data) {
 				return JsonUtility.ToJson(data);
 			}
-			public CheckSerialRequest() { /*@B 0x6009A3A*/ throw null; }
+			public CheckSerialRequest() { }
 		}
 		[global::System.Serializable]
 		public class SerialResponseAuth

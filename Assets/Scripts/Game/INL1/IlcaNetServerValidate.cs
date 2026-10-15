@@ -12,7 +12,7 @@ namespace INL1
 		private static byte[] nowPublicKeyBASE64;
 		private static byte[] nowPublicKeyBASE64Decode;
 		private static global::INL1.IlcaNetServerValidate.CheckResponse cres;
-		private static global::INL1.IlcaNetServerValidate.PublicKeyResponse pkres;
+		private static global::INL1.IlcaNetServerValidate.PublicKeyResponse pkres = new global::INL1.IlcaNetServerValidate.PublicKeyResponse();
 		private static global::UnityEngine.MonoBehaviour s_callobj;
 		private static global::INL1.IlcaNetServerValidate.CheckRequest s_cReq;
 		private static global::INL1.IlcaNetServer.IlcaNetServerAsyncCallback s_usercallback;
@@ -23,7 +23,10 @@ namespace INL1
 		private static byte[] buffValidate;
 		public const uint SignatureSize = 256u;
 		public const uint PublicKeySizeBASE64 = 392u;
-		static IlcaNetServerValidate() { /*@B 0x60027B4*/ throw null; }
+		static IlcaNetServerValidate() {
+			pkres.PublicKeyVersion = 0;
+			pkres.PublicKeyValueBASE64 = Encoding.UTF8.GetBytes(DefaultPublicKeyBASE64);
+		}
 		public static void Init(ushort publicKeyversion = 0, byte[] publicKey = default) {
             PublicKeySet(publicKeyversion, publicKey);
         }
@@ -239,7 +242,7 @@ namespace INL1
             checkDataForVerifySignature[creq.Data.Length + 3] = (byte)creq.GameMode;
             return ref checkDataForVerifySignature;
         }
-		public IlcaNetServerValidate() { /*@B 0x60027C4*/ throw null; }
+		public IlcaNetServerValidate() { }
 		[global::System.Serializable]
 		public class CheckRequest
 		{

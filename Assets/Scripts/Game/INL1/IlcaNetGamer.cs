@@ -4,14 +4,14 @@ namespace INL1
 	public class IlcaNetGamer : global::INL1.IlcaNetTransport
 	{
 		private bool isActive;
-		private int myGlobalIndex;
-		private int myLocalIndex;
+		private int myGlobalIndex = -1;
+		private int myLocalIndex = -1;
 		private bool isHomeGamer;
-		public string gamerName;
-		public byte nameStringLanguage;
+		public string gamerName = " ";
+		public byte nameStringLanguage = 1;
 		public int TURNenable;
-		public IlcaNetGamer() { /*@B 0x600289F*/ throw null; }
-		~IlcaNetGamer() { /*@B 0x60028A0*/ throw null; }
+		public IlcaNetGamer() { }
+		~IlcaNetGamer() { }
 		[global::System.ComponentModel.BrowsableAttribute(false)]
 		[global::System.ComponentModel.EditorBrowsableAttribute((global::System.ComponentModel.EditorBrowsableState)(1))]
 		public void Init() {

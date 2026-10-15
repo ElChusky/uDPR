@@ -4,28 +4,28 @@ namespace INL1
 {
 	public class IlcaNetServerDataStore : global::INL1.IlcaNetServer
 	{
-		private static global::INL1.IlcaNetServerDataStore.IlcaNetDataStoreCompleteCallback compDataStoreCallback;
-		private static global::INL1.IlcaNetServerDataStore.IlcaNetDataStoreCompleteCallback2 compDataStoreCallback2;
-		private static global::System.Diagnostics.Stopwatch sp;
+		private static global::INL1.IlcaNetServerDataStore.IlcaNetDataStoreCompleteCallback compDataStoreCallback = null;
+		private static global::INL1.IlcaNetServerDataStore.IlcaNetDataStoreCompleteCallback2 compDataStoreCallback2 = null;
+		private static global::System.Diagnostics.Stopwatch sp = new global::System.Diagnostics.Stopwatch();
 		private static global::System.TimeSpan span;
 		private static global::UnityEngine.MonoBehaviour s_callobj;
-		private static global::NexAssets.DataStore_Upload uploader;
-		private static global::NexAssets.DataStore_Download downloader;
+		private static global::NexAssets.DataStore_Upload uploader = new global::NexAssets.DataStore_Upload();
+		private static global::NexAssets.DataStore_Download downloader = new global::NexAssets.DataStore_Download();
 		private static global::System.Collections.Generic.List<global::NexPlugin.DataStoreRatingTarget> directSetRatingList;
 		private static global::INL1.IlcaNetServerDataStore.RateObjectParam directSetRatingParameter;
 		private static ulong directGetRatingParameter;
-		private static global::INL1.IlcaNetServerDataStore.GetMetaParam directGetMetaParameter;
-		private static global::INL1.IlcaNetServerDataStore.ChangeMetaParam directChangeMetaParameter;
-		private static byte[] dataUpdate;
-		private static global::INL1.IlcaNetServerDataStore.PrepareUpdateParam directUpdateParameter;
-		private static byte[] dataUpload;
-		private static global::INL1.IlcaNetServerDataStore.PreparePostParam directUploadParameter;
-		private static global::INL1.IlcaNetServerDataStore.SearchParam directSearchParameter;
-		private static ulong dataDownloadID;
-		private static uint maxDownloadDataBufferSize;
-		private static global::INL1.IlcaNetServerDataStore.PrepareGetParam directDownloadParameter;
+		private static global::INL1.IlcaNetServerDataStore.GetMetaParam directGetMetaParameter = null;
+		private static global::INL1.IlcaNetServerDataStore.ChangeMetaParam directChangeMetaParameter = null;
+		private static byte[] dataUpdate = null;
+		private static global::INL1.IlcaNetServerDataStore.PrepareUpdateParam directUpdateParameter = null;
+		private static byte[] dataUpload = null;
+		private static global::INL1.IlcaNetServerDataStore.PreparePostParam directUploadParameter = null;
+		private static global::INL1.IlcaNetServerDataStore.SearchParam directSearchParameter = null;
+		private static ulong dataDownloadID = 0;
+		private static uint maxDownloadDataBufferSize = 0;
+		private static global::INL1.IlcaNetServerDataStore.PrepareGetParam directDownloadParameter = null;
 		private static ulong dataDeleteID;
-		private static global::INL1.IlcaNetServerDataStore.DeleteParam directDeleteParameter;
+		private static global::INL1.IlcaNetServerDataStore.DeleteParam directDeleteParameter = null;
 		private static global::System.Collections.IEnumerator UpdateDataStore() {
 			while (true)
 			{
@@ -499,8 +499,8 @@ namespace INL1
 				FinalAsyncCoRoutine(s_callobj, ErrorFinalDeleteCallback);
 			}
 		}
-		public IlcaNetServerDataStore() { /*@B 0x6002792*/ throw null; }
-		static IlcaNetServerDataStore() { /*@B 0x6002793*/ throw null; }
+		public IlcaNetServerDataStore() { }
+		static IlcaNetServerDataStore() { }
 		public class PreparePostParam : global::NexPlugin.DataStorePreparePostParam
 		{
 			public PreparePostParam() { }

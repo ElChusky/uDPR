@@ -4,14 +4,14 @@ namespace INL1
 	public class IlcaNetTransport : global::INL1.IlcaNetBase
 	{
 		private ushort myPort;
-		protected int stationIndex;
+		protected int stationIndex = -1;
 		protected ulong constantId;
 		private static global::PiaPlugin.Result result;
-		private static ulong[] ValidityConstantID;
-		private static int hostStationIndex;
-		private static int thisStationIndex;
-		private static ulong hostStationConstantID;
-		private static ulong thisStationConstantID;
+		private static ulong[] ValidityConstantID = new ulong[17];
+		private static int hostStationIndex = -1;
+		private static int thisStationIndex = -1;
+		private static ulong hostStationConstantID = 0;
+		private static ulong thisStationConstantID = 0;
 		public static ulong debug_SendPeakCount;
 		public static ulong debug_RecvPeakCount;
 		public static ulong debug_SendPeakByte;
@@ -38,11 +38,11 @@ namespace INL1
 		private static ulong debug_RecvOldCount;
 		private static ulong debug_SendOldByte;
 		private static ulong debug_RecvOldByte;
-		private static int debugAnalysisIntervalCount;
+		private static int debugAnalysisIntervalCount = 0;
 		private const int debugAnalysisInterval = 30;
-		public IlcaNetTransport() { /*@B 0x600287E*/ throw null; }
-		~IlcaNetTransport() { /*@B 0x600287F*/ throw null; }
-		static IlcaNetTransport() { /*@B 0x6002880*/ throw null; }
+		public IlcaNetTransport() { }
+		~IlcaNetTransport() { }
+		static IlcaNetTransport() { }
 		[global::System.Diagnostics.ConditionalAttribute("INL1_DEBUG")]
 		public static void DebugCountReset() {
 			debug_SendCount = 0;

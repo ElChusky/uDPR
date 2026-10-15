@@ -7,13 +7,13 @@ namespace INL1
 	{
 		protected static global::INL1.IlcaNetServer.NexState serverState;
 		private static global::NexPlugin.AsyncResult serverAsyncResult;
-		private static global::INL1.IlcaNetServer.IlcaNetServerFinalAsyncCallback finalCallback;
+		private static global::INL1.IlcaNetServer.IlcaNetServerFinalAsyncCallback finalCallback = null;
 		private static global::System.Threading.Thread FinalAsyncCoRoutineCoreUpdateDispatchWTh;
-		private static bool isFinalAsyncCoRoutineCoreCallbackCompleted;
+		private static bool isFinalAsyncCoRoutineCoreCallbackCompleted = false;
 		private static global::System.Threading.Thread finalAsyncFWTh;
-		private static bool isFinalAsyncFinishWorkerCompleted;
-		private static global::INL1.IlcaNetServer.UserNexUniqueIdAcquireCallback unuiaCallback;
-		private static global::nn.account.AsyncContext pOutContext;
+		private static bool isFinalAsyncFinishWorkerCompleted = false;
+		private static global::INL1.IlcaNetServer.UserNexUniqueIdAcquireCallback unuiaCallback = null;
+		private static global::nn.account.AsyncContext pOutContext = new global::nn.account.AsyncContext();
 		public static bool Init(global::UnityEngine.MonoBehaviour callobj, global::nn.account.UserHandle uh, ulong nexUniqueId, ulong nexUniqueIdPassword) {
 			InitSub(callobj, uh);
 			if (NexAssets.Common.IsValidNexUniqueId(nexUniqueId))
@@ -354,8 +354,8 @@ namespace INL1
 			if (callback != null)
 				callback(false, IlcaNetServerCallbackEventType.NSAIDtokenGetAsync, IlcaNetServerCallbackResult.Error, 0, null);
 		}
-		public IlcaNetServer() { /*@B 0x6002762*/ throw null; }
-		static IlcaNetServer() { /*@B 0x6002763*/ throw null; }
+		public IlcaNetServer() { }
+		static IlcaNetServer() { }
 		protected enum NexState
 		{
 			Idle = 0,
