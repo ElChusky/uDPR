@@ -41,7 +41,28 @@ def free_gb(path):
     return shutil.disk_usage(path).free / 2 ** 30
 
 
+NO_LICENCE = "No valid Unity Editor license found"
+LICENCE_RETRIES = 2
+
+
 def run(method, marker=None, quit_after=False, timeout_min=0, min_disk=3.0, min_sys=1.0, min_commit=3.0):
+    """Run once; when the editor quits at startup for want of a licence (Unity's licensing client sometimes fails its own
+    check for a moment - seen in the dry run between two good runs), wait and try again, then explain what to do."""
+    for attempt in range(LICENCE_RETRIES + 1):
+        ok, txt, log = _run_once(method, marker, quit_after, timeout_min, min_disk, min_sys, min_commit)
+        if ok or NO_LICENCE not in txt:
+            return ok
+        kept = "%s.no_licence_%d" % (log, attempt + 1)
+        os.replace(log, kept)
+        if attempt < LICENCE_RETRIES:
+            print("unity: the editor found no valid licence at startup (log kept as %s) - trying again in 60 s" % kept, flush=True)
+            time.sleep(60)
+    print("PROBLEM Unity found no valid licence. Open Unity Hub, sign in, and check Preferences > Licenses shows an active "
+          "licence (a free Personal licence is enough); then run setup.cmd again.", flush=True)
+    return False
+
+
+def _run_once(method, marker, quit_after, timeout_min, min_disk, min_sys, min_commit):
     unity = paths.need(paths.CFG.get("unity"), "unity")
     log = paths.work("logs", "unity_%s.log" % method.replace(".", "_"))
     cmd = [unity, "-projectPath", paths.PROJECT, "-logFile", log, "-executeMethod", method]
@@ -84,7 +105,7 @@ def run(method, marker=None, quit_after=False, timeout_min=0, min_disk=3.0, min_
     print("unity: %s exit %s after %.1f min; compiler errors %s; marker %s -> %s" % (
         method, rc, (time.time() - t0) / 60, "Scripts have compiler errors" in txt,
         "-" if marker is None else (marker in txt), "OK" if ok else "FAILED"), flush=True)
-    return ok
+    return ok, txt, log
 
 
 def main():
