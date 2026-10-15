@@ -3,9 +3,35 @@ namespace Pml.PokePara
 {
 	public static class Encoder
 	{
-		public static unsafe ushort CalcChecksum(void* pData, uint dataSize) { /*@B 0x6002536*/ throw null; }
-		public static unsafe void Encode(void* pData, uint dataSize, uint key) { /*@B 0x6002537*/ throw null; }
-		public static unsafe void Decode(void* pData, uint dataSize, uint key) { /*@B 0x6002538*/ throw null; }
-		private static unsafe ushort CalcNextRandCode(uint* code) { /*@B 0x6002539*/ throw null; }
+		public static unsafe ushort CalcChecksum(void* pData, uint dataSize) {
+			ushort* data = (ushort*)pData;
+			ushort sum = 0;
+			uint count = dataSize / 2;
+			for (uint i = 0; i < count; i++)
+			{
+				sum += data[i];
+			}
+			return sum;
+		}
+		public static unsafe void Encode(void* pData, uint dataSize, uint key) {
+			ushort* data = (ushort*)pData;
+			uint count = dataSize / 2;
+			for (uint i = 0; i < count; i++)
+			{
+				data[i] ^= CalcNextRandCode(&key);
+			}
+		}
+		public static unsafe void Decode(void* pData, uint dataSize, uint key) {
+			ushort* data = (ushort*)pData;
+			uint count = dataSize / 2;
+			for (uint i = 0; i < count; i++)
+			{
+				data[i] ^= CalcNextRandCode(&key);
+			}
+		}
+		private static unsafe ushort CalcNextRandCode(uint* code) {
+			*code = *code * 0x41C64E6Du + 0x6073u;
+			return (ushort)(*code >> 16);
+		}
 	}
 }
