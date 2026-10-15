@@ -8,13 +8,59 @@ namespace Effect
 		private int _workMeshIndex;
 		private global::UnityEngine.CombineInstance[] _combineInstances;
 		public global::UnityEngine.Mesh mainMesh { get { return this._mainMesh; } }
-		public static global::Effect.MeshCombiner Create() { /*@B 0x6002920*/ throw null; }
-		public void Destroy() { /*@B 0x6002921*/ throw null; }
-		public void Clear() { /*@B 0x6002922*/ throw null; }
-		public global::UnityEngine.Mesh FetchMesh() { /*@B 0x6002923*/ throw null; }
-		public void CombineMeshes(global::UnityEngine.Matrix4x4 m) { /*@B 0x6002924*/ throw null; }
-		private static global::UnityEngine.Mesh CreateMesh() { /*@B 0x6002925*/ throw null; }
-		private static void DestroyMesh(global::UnityEngine.Mesh mesh) { /*@B 0x6002926*/ throw null; }
+		public static global::Effect.MeshCombiner Create() {
+			return new MeshCombiner { _mainMesh = CreateMesh() };
+		}
+		public void Destroy() {
+			DestroyMesh(_mainMesh);
+			_mainMesh = null;
+			if (_workMeshes != null)
+			{
+				foreach (var mesh in _workMeshes)
+					DestroyMesh(mesh);
+				_workMeshes = null;
+			}
+			_combineInstances = null;
+		}
+		public void Clear() {
+			_mainMesh.Clear();
+			if (_workMeshes != null)
+			{
+				foreach (var mesh in _workMeshes)
+					mesh.Clear();
+			}
+		}
+		public global::UnityEngine.Mesh FetchMesh() {
+			if (_workMeshes == null)
+				_workMeshes = new global::System.Collections.Generic.List<global::UnityEngine.Mesh>();
+			if (_workMeshIndex >= _workMeshes.Count)
+				_workMeshes.Add(CreateMesh());
+			return _workMeshes[_workMeshIndex++];
+		}
+		public void CombineMeshes(global::UnityEngine.Matrix4x4 m) {
+			int count = _workMeshIndex;
+			if (_combineInstances == null || _combineInstances.Length != count)
+			{
+				_combineInstances = new global::UnityEngine.CombineInstance[count];
+				for (int i = 0; i < count; i++)
+					_combineInstances[i].mesh = _workMeshes[i];
+			}
+			for (int i = 0; i < count; i++)
+				_combineInstances[i].transform = m;
+			_mainMesh.CombineMeshes(_combineInstances, false, true);
+			_workMeshIndex = 0;
+		}
+		private static global::UnityEngine.Mesh CreateMesh() {
+			var mesh = new global::UnityEngine.Mesh();
+			mesh.MarkDynamic();
+			return mesh;
+		}
+		private static void DestroyMesh(global::UnityEngine.Mesh mesh) {
+			if (global::UnityEngine.Application.isPlaying)
+				global::UnityEngine.Object.Destroy(mesh);
+			else
+				global::UnityEngine.Object.DestroyImmediate(mesh);
+		}
 		public MeshCombiner() { }
 	}
 }

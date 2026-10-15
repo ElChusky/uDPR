@@ -7,15 +7,15 @@ namespace Effect
 		[global::UnityEngine.SerializeField]
 		public global::UnityEngine.Vector4[] _UvScroll0 = new Vector4[3];
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Vector4[] _UvScroll1;
+		public global::UnityEngine.Vector4[] _UvScroll1 = new Vector4[3];
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Vector4[] _UvRotation;
+		public global::UnityEngine.Vector4[] _UvRotation = new Vector4[3];
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Vector4[] _UvScale0;
+		public global::UnityEngine.Vector4[] _UvScale0 = new Vector4[3];
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Vector4[] _UvScale1;
+		public global::UnityEngine.Vector4[] _UvScale1 = new Vector4[3];
 		[global::UnityEngine.SerializeField]
-		public global::UnityEngine.Color _MulColor;
+		public global::UnityEngine.Color _MulColor = Color.white;
 		private global::UnityEngine.ParticleSystem _particleSystem;
 		private global::UnityEngine.ParticleSystemRenderer _renderer;
 		private global::UnityEngine.MaterialPropertyBlock _propertyBlock;
@@ -33,21 +33,111 @@ namespace Effect
 		private static int _id_UvScale2;
 		private static int _id_MulColorEnabled;
 		private static int _id_MulColor;
-		public global::UnityEngine.ParticleSystem GetParticleSystem() { /*@B 0x60028C1*/ throw null; }
-		private void OnEnable() { /*@B 0x60028C2*/ throw null; }
-		private void OnDisable() { /*@B 0x60028C3*/ throw null; }
-		private void OnDestroy() { /*@B 0x60028C4*/ throw null; }
-		private void Start() { /*@B 0x60028C5*/ throw null; }
-		public void CreateRandom() { /*@B 0x60028C6*/ throw null; }
-		public void CreateRandom(int seed) { /*@B 0x60028C7*/ throw null; }
+		public global::UnityEngine.ParticleSystem GetParticleSystem() {
+			if (_renderer == null)
+				_renderer = GetComponent<ParticleSystemRenderer>();
+			if (_particleSystem == null)
+				_particleSystem = GetComponent<ParticleSystem>();
+			return _particleSystem;
+		}
+		private void OnEnable() {
+			_particleSystem = GetComponent<ParticleSystem>();
+			_renderer = GetComponent<ParticleSystemRenderer>();
+		}
+		private void OnDisable() {
+			_renderer = null;
+			_particleSystem = null;
+		}
+		private void OnDestroy() {
+			_particleSystem = null;
+			_renderer = null;
+			_random = null;
+			if (_propertyBlock != null)
+				_propertyBlock.Clear();
+			_propertyBlock = null;
+		}
+		private void Start() {
+			_random = new System.Random((int)_particleSystem.randomSeed);
+			SetupProperty();
+		}
+		public void CreateRandom() {
+			_random = new System.Random();
+		}
+		public void CreateRandom(int seed) {
+			_random = new System.Random(seed);
+		}
 		public float RandomRange(float min, float max) {
 			// @01f02c44–01f02c64: scvtf d0, w(Next()) ; fdiv by 2147483647.0 (0x41dfffffffc00000) ; fcvt s2 — a DOUBLE division
 			// (the base code's int / int was always 0, so every randomised UV parameter took its minimum).
 			return Mathf.Lerp(min, max, (float)(_random.Next() / (double)int.MaxValue));
 		}
-		public void SetupProperty() { /*@B 0x60028C9*/ throw null; }
-		public void SetMultiplyColor(global::UnityEngine.Color color) { /*@B 0x60028CA*/ throw null; }
-		public MaterialController() { /*@B 0x60028CB*/ throw null; }
-		static MaterialController() { /*@B 0x60028CC*/ throw null; }
+		public void SetupProperty() {
+			if (_propertyBlock == null)
+				_propertyBlock = new MaterialPropertyBlock();
+			if (_random == null)
+				_random = new System.Random();
+			if (_renderer == null)
+				return;
+			_renderer.GetPropertyBlock(_propertyBlock);
+			_propertyBlock.SetVector(_id_UvScroll0, new Vector4(
+				_UvScroll0[0].x + RandomRange(-_UvScroll0[0].z, _UvScroll0[0].z),
+				_UvScroll0[0].y + RandomRange(-_UvScroll0[0].w, _UvScroll0[0].w),
+				_UvScroll1[0].x, _UvScroll1[0].y));
+			_propertyBlock.SetVector(_id_UvScroll1, new Vector4(
+				_UvScroll0[1].x + RandomRange(-_UvScroll0[1].z, _UvScroll0[1].z),
+				_UvScroll0[1].y + RandomRange(-_UvScroll0[1].w, _UvScroll0[1].w),
+				_UvScroll1[1].x, _UvScroll1[1].y));
+			_propertyBlock.SetVector(_id_UvScroll2, new Vector4(
+				_UvScroll0[2].x + RandomRange(-_UvScroll0[2].z, _UvScroll0[2].z),
+				_UvScroll0[2].y + RandomRange(-_UvScroll0[2].w, _UvScroll0[2].w),
+				_UvScroll1[2].x, _UvScroll1[2].y));
+			_propertyBlock.SetVector(_id_UvRotation0, new Vector4(
+				_UvRotation[0].x + RandomRange(-_UvRotation[0].y, _UvRotation[0].y),
+				_UvRotation[0].z,
+				_UvRotation[1].x + RandomRange(-_UvRotation[1].y, _UvRotation[1].y),
+				_UvRotation[1].z));
+			_propertyBlock.SetVector(_id_UvRotation1, new Vector4(
+				_UvRotation[2].x + RandomRange(-_UvRotation[2].y, _UvRotation[2].y),
+				_UvRotation[2].z, 0f, 0f));
+			_propertyBlock.SetVector(_id_UvScale0, new Vector4(
+				_UvScale0[0].x + RandomRange(-_UvScale0[0].z, _UvScale0[0].z),
+				_UvScale0[0].y + RandomRange(-_UvScale0[0].w, _UvScale0[0].w),
+				_UvScale1[0].x, _UvScale1[0].y));
+			_propertyBlock.SetVector(_id_UvScale1, new Vector4(
+				_UvScale0[1].x + RandomRange(-_UvScale0[1].z, _UvScale0[1].z),
+				_UvScale0[1].y + RandomRange(-_UvScale0[1].w, _UvScale0[1].w),
+				_UvScale1[1].x, _UvScale1[1].y));
+			_propertyBlock.SetVector(_id_UvScale2, new Vector4(
+				_UvScale0[2].x + RandomRange(-_UvScale0[2].z, _UvScale0[2].z),
+				_UvScale0[2].y + RandomRange(-_UvScale0[2].w, _UvScale0[2].w),
+				_UvScale1[2].x, _UvScale1[2].y));
+			SetMultiplyColor(_MulColor);
+			_renderer.SetPropertyBlock(_propertyBlock);
+		}
+		public void SetMultiplyColor(global::UnityEngine.Color color) {
+			_MulColor = color;
+			if (_renderer == null)
+				return;
+			if (_propertyBlock == null)
+				SetupProperty();
+			_propertyBlock.SetColor(_id_MulColor, _MulColor);
+			_renderer.SetPropertyBlock(_propertyBlock);
+		}
+		public MaterialController() { }
+		static MaterialController() {
+			_id_Texture0_ST = Shader.PropertyToID("_Texture0_ST");
+			_id_Texture1_ST = Shader.PropertyToID("_Texture1_ST");
+			_id_Texture2_ST = Shader.PropertyToID("_Texture2_ST");
+			_id_UvScroll0 = Shader.PropertyToID("_UvScroll0");
+			_id_UvScroll1 = Shader.PropertyToID("_UvScroll1");
+			_id_UvScroll2 = Shader.PropertyToID("_UvScroll2");
+			_id_UvRotation0 = Shader.PropertyToID("_UvRotation0");
+			_id_UvRotation1 = Shader.PropertyToID("_UvRotation1");
+			_id_UvScale0 = Shader.PropertyToID("_UvScale0");
+			_id_UvScale1 = Shader.PropertyToID("_UvScale1");
+			_id_UvScale2 = Shader.PropertyToID("_UvScale2");
+			_id_MulColorEnabled = Shader.PropertyToID("_MulColorEnabled");
+			_id_MulColor = Shader.PropertyToID("_MulColor");
+		}
 	}
 }
