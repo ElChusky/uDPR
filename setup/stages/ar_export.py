@@ -71,6 +71,29 @@ def free_ram_gb():
     return m.a / 2 ** 30
 
 
+def proc_mem_gb(pid):
+    """(peak private commit, peak working set, current working set) of one process in GB, or None."""
+    class PMC(ctypes.Structure):
+        _fields_ = [("cb", ctypes.c_ulong), ("faults", ctypes.c_ulong)] + [(n, ctypes.c_size_t) for n in
+                                                                            ("pws", "ws", "qppp", "qpp", "qpnp", "qnp", "pf", "ppf")]
+    h = ctypes.windll.kernel32.OpenProcess(0x1000, False, pid)        # PROCESS_QUERY_LIMITED_INFORMATION
+    if not h:
+        return None
+    try:
+        c = PMC()
+        c.cb = ctypes.sizeof(PMC)
+        if not ctypes.windll.kernel32.K32GetProcessMemoryInfo(h, ctypes.byref(c), c.cb):
+            return None
+        return c.ppf / 2 ** 30, c.pws / 2 ** 30, c.ws / 2 ** 30
+    finally:
+        ctypes.windll.kernel32.CloseHandle(h)
+
+
+def mem_text(pid):
+    m = proc_mem_gb(pid)
+    return "AssetRipper peak commit %.1f GB, peak working set %.1f GB, now %.1f GB" % m if m else "AssetRipper memory n/a"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--exe", default=paths.CFG.get("assetripper"))
@@ -80,6 +103,9 @@ def main():
     ap.add_argument("--min-disk", type=float, default=2.0)
     ap.add_argument("--min-ram", type=float, default=8.0)
     ap.add_argument("--status", default=None)
+    ap.add_argument("--heap-limit-gb", type=float, default=0,
+                    help="cap AssetRipper's .NET heap (DOTNET_GCHeapHardLimit) - memory measurements for smaller machines")
+    ap.add_argument("--workstation-gc", action="store_true", help="DOTNET_gcServer=0 (one GC heap instead of one per CPU)")
     a = ap.parse_args()
     out = os.path.abspath(a.out)
     work = os.path.dirname(out)
@@ -107,6 +133,12 @@ def main():
     say("START disk %s %.1f GB free, RAM %.1f GB free; floors disk %.1f RAM %.1f" % (
         drive, shutil.disk_usage(drive).free / 2 ** 30, free_ram_gb(), a.min_disk, a.min_ram))
     env = dict(os.environ, DOTNET_Thread_DefaultStackSize="1000000", COMPlus_Thread_DefaultStackSize="1000000")
+    if a.heap_limit_gb:
+        env["DOTNET_GCHeapHardLimit"] = "%X" % int(a.heap_limit_gb * 2 ** 30)
+    if a.workstation_gc:
+        env["DOTNET_gcServer"] = "0"
+    say("GC environment: %s" % (", ".join("%s=%s" % (k, env[k]) for k in ("DOTNET_GCHeapHardLimit", "DOTNET_gcServer") if k in env)
+                                or "AssetRipper's defaults"))
     srv = subprocess.Popen([a.exe, "--headless", "--port", str(a.port), "--log-path", log], cwd=os.path.dirname(a.exe), env=env,
                            stdout=open(os.path.join(work, os.path.basename(out) + "_stdout.log"), "w"), stderr=subprocess.STDOUT)
 
@@ -172,10 +204,11 @@ def main():
                     lines = f.read().decode("utf-8", "replace").strip().splitlines()
                 tail = lines[-1][:120] if lines else ""
                 if any("Finished post-export" in l for l in lines):
-                    say("DONE after %.1f min; disk %.1f GB free, RAM %.1f GB free" % ((time.time() - t0) / 60, disk, ram))
+                    say("DONE after %.1f min; disk %.1f GB free, RAM %.1f GB free; %s" % ((time.time() - t0) / 60, disk, ram,
+                                                                                         mem_text(srv.pid)))
                     break
             if srv.poll() is not None:
-                say("server exited by itself rc=%s" % srv.returncode)
+                say("server exited by itself rc=%s; log tail: %s" % (srv.returncode, tail))
                 sys.exit(1)
             if disk < a.min_disk:
                 stop("disk %.1f GB < %.1f" % (disk, a.min_disk))
@@ -185,7 +218,8 @@ def main():
                 sys.exit(1)
             if time.time() - last >= 120:
                 last = time.time()
-                say("%5.1f min | disk %.1f GB free | RAM %.1f GB free | %s" % ((time.time() - t0) / 60, disk, ram, tail))
+                say("%5.1f min | disk %.1f GB free | RAM %.1f GB free | %s | %s" % ((time.time() - t0) / 60, disk, ram,
+                                                                                  mem_text(srv.pid), tail))
         exp.wait(timeout=60)
         with open(done_marker, "w", encoding="utf-8") as f:
             f.write(time.strftime("%Y-%m-%d %H:%M:%S") + "\n")
