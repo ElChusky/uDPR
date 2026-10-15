@@ -25,15 +25,15 @@ namespace Dpr.UI
 		private global::Dpr.UI.UIModelViewController _modelView;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Transform _blurBgRoot;
-		public static int StickLLeft;
-		public static int StickLRight;
-		public static int StickLUp;
-		public static int StickLDown;
-		public static int ButtonA;
-		public static int ButtonB;
-		public static int ButtonX;
-		public static int ButtonY;
-		public static int ButtonPlusMinus;
+		public static int StickLLeft = 0;
+		public static int StickLRight = 0;
+		public static int StickLUp = 0;
+		public static int StickLDown = 0;
+		public static int ButtonA = 0;
+		public static int ButtonB = 0;
+		public static int ButtonX = 0;
+		public static int ButtonY = 0;
+		public static int ButtonPlusMinus = 3072;
 		private const int _sortingOrderPoketch = 200;
 		private const int _sortingOrderWindow = 400;
 		private const int _sortingOrderContextMenu = 9900;
@@ -48,48 +48,59 @@ namespace Dpr.UI
 		private global::XLSXContent.DistributionTable _mdDistribution;
 		private global::XLSXContent.PlaceNameTable _mdPlaceName;
 		private global::XLSXContent.InputLimitTable _mdInputLimit;
-		private global::System.Collections.Generic.HashSet<int>[] _inputLimitHashSets;
+		private global::System.Collections.Generic.HashSet<int>[] _inputLimitHashSets = new HashSet<int>[(int)InputLimitType.Num];
 		private global::XLSXContent.SearchIndexData _mdSearchIndexData;
-		private global::System.Collections.Generic.Dictionary<global::Pml.BallId, global::Dpr.UI.UIManager.MonsterBallParam> _spriteMonsterBallDict;
+		private global::System.Collections.Generic.Dictionary<global::Pml.BallId, global::Dpr.UI.UIManager.MonsterBallParam> _spriteMonsterBallDict = new Dictionary<BallId, MonsterBallParam>();
 		private global::UnityEngine.Sprite _spriteMonsterBallStrange;
 		private global::UnityEngine.Sprite _spriteMonsterBallIllegal;
-		private global::System.Collections.Generic.List<global::Dpr.UI.UIManager.SpriteAtlasParam> _spriteAtlasParams;
+		private global::System.Collections.Generic.List<global::Dpr.UI.UIManager.SpriteAtlasParam> _spriteAtlasParams = new List<SpriteAtlasParam>();
 		private global::Dpr.UI.Keyguide _keyguide;
 		private int _InitializeStateBits;
 		private global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onXMenuClosed;
 		private bool _fureaiLimit;
-		public static global::UnityEngine.Events.UnityAction<global::ZoneID, int> onWazaFly;
-		public static global::UnityEngine.Events.UnityAction<int> onDressChanged;
-		public static global::System.Func<global::Dpr.UI.UIManager.FieldWazaParam, global::Dpr.UI.UIManager.FieldUseResult> onFieldWaza;
-		public static global::System.Func<global::Dpr.Item.ItemInfo, global::Dpr.UI.UIManager.FieldUseResult> onUseFieldItem;
-		public static global::System.Action<int, int, global::Dpr.Item.ItemInfo> onUseItemInBattle;
-		public static global::System.Action<global::FieldPoketch.HidenWazaType> onUseHidenWaza;
-		public static global::System.Func<global::UnityEngine.Vector2, global::FieldPoketch.DowsingResult> onUseDowsing;
-		private global::ObjectPool<global::UIWindowID, global::Dpr.UI.UIManager.UIInstance> _objectPool;
-		private global::ObjectPool<global::TransitionID, global::Dpr.UI.UIManager.TransitionInstance> _objectPoolTransition;
-		private global::System.Collections.Generic.List<global::Dpr.UI.UIManager.TransitionInstance> _transitionInstances;
-		private global::TransitionID _transitionId;
+		public static global::UnityEngine.Events.UnityAction<global::ZoneID, int> onWazaFly = null;
+		public static global::UnityEngine.Events.UnityAction<int> onDressChanged = null;
+		public static global::System.Func<global::Dpr.UI.UIManager.FieldWazaParam, global::Dpr.UI.UIManager.FieldUseResult> onFieldWaza = null;
+		public static global::System.Func<global::Dpr.Item.ItemInfo, global::Dpr.UI.UIManager.FieldUseResult> onUseFieldItem = null;
+		public static global::System.Action<int, int, global::Dpr.Item.ItemInfo> onUseItemInBattle = null;
+		public static global::System.Action<global::FieldPoketch.HidenWazaType> onUseHidenWaza = null;
+		public static global::System.Func<global::UnityEngine.Vector2, global::FieldPoketch.DowsingResult> onUseDowsing = null;
+		private global::ObjectPool<global::UIWindowID, global::Dpr.UI.UIManager.UIInstance> _objectPool = new ObjectPool<UIWindowID, UIInstance>();
+		private global::ObjectPool<global::TransitionID, global::Dpr.UI.UIManager.TransitionInstance> _objectPoolTransition = new ObjectPool<TransitionID, TransitionInstance>();
+		private global::System.Collections.Generic.List<global::Dpr.UI.UIManager.TransitionInstance> _transitionInstances = new List<TransitionInstance>();
+		private global::TransitionID _transitionId = (TransitionID)(-1);
 		private bool _isFadeTransition;
-		private global::Dpr.CacheList<global::Dpr.UI.UIManager.CacheSpritePokemonParam> _cacheSpritePokemons;
+		private global::Dpr.CacheList<global::Dpr.UI.UIManager.CacheSpritePokemonParam> _cacheSpritePokemons = new Dpr.CacheList<CacheSpritePokemonParam>(10);
 		private global::UnityEngine.UI.RawImage _blurBg;
-		private global::Dpr.UI.UIManager.BlugBgParam _blurBgParam;
+		private global::Dpr.UI.UIManager.BlugBgParam _blurBgParam = new BlugBgParam();
 		private float _debugInstrument;
-		private string[] _databaseAssetBundleNames;
+		private string[] _databaseAssetBundleNames = new string[] { "masterdatas/uimasterdatas" };
 		private bool _isLoadedDatabase;
-		private global::System.Collections.Generic.Dictionary<global::Dpr.UI.UIManager.AtlasSpriteKey, global::UnityEngine.Sprite> _atlasSpriteDict;
-		private string _assetPathIndexdata;
-		private global::UIWindowID[] _transitionWindowIds;
+		private global::System.Collections.Generic.Dictionary<global::Dpr.UI.UIManager.AtlasSpriteKey, global::UnityEngine.Sprite> _atlasSpriteDict = new Dictionary<AtlasSpriteKey, Sprite>();
+		private string _assetPathIndexdata = "searchdatas/indexdata";
+		private global::UIWindowID[] _transitionWindowIds = new UIWindowID[] { (UIWindowID)(-2), (UIWindowID)(-2) };
 		private global::Dpr.UI.XMenuTop _xMenu;
-		private static global::Dpr.UI.UIManager.ComparerPokemonIcon _comparerPokemonIcon;
-		private static global::Dpr.UI.UIManager.ComparerAshiatoIcon _comparerAshiatoIcon;
-		private static global::Dpr.UI.UIManager.ComparerZukanDisplay _comparerZukanDisplay;
-		private static global::Dpr.UI.UIManager.ComparerPokemonVoice _comparerPokemonVoice;
-		private static global::Dpr.UI.UIManager.ComparerZukanCompareHeight _comparerZukanCompareHeight;
-		private static readonly global::Dpr.UI.UIManager.LangParam[] _langParams;
-		private static global::System.Collections.Generic.List<global::Dpr.UI.UIManager.PokemonParamMapping> _pokemonParamMappings;
-		private static int _id_GrayscaleAmount;
-		private static global::Dpr.UI.UIManager.ComparerTownMapGuide _comparerTownMapGuide;
-		private static global::Dpr.UI.UIManager.ComparerPlaceName _comparerPlaceName;
+		private static global::Dpr.UI.UIManager.ComparerPokemonIcon _comparerPokemonIcon = new ComparerPokemonIcon();
+		private static global::Dpr.UI.UIManager.ComparerAshiatoIcon _comparerAshiatoIcon = new ComparerAshiatoIcon();
+		private static global::Dpr.UI.UIManager.ComparerZukanDisplay _comparerZukanDisplay = new ComparerZukanDisplay();
+		private static global::Dpr.UI.UIManager.ComparerPokemonVoice _comparerPokemonVoice = new ComparerPokemonVoice();
+		private static global::Dpr.UI.UIManager.ComparerZukanCompareHeight _comparerZukanCompareHeight = new ComparerZukanCompareHeight();
+		private static readonly global::Dpr.UI.UIManager.LangParam[] _langParams = new LangParam[]
+        {
+            new LangParam { langId = MessageEnumData.MsgLangId.JPN, label = "SS_status_83", ietfTags = new string[] { "ja" } },
+            new LangParam { langId = MessageEnumData.MsgLangId.USA, label = "SS_status_84", ietfTags = new string[] { "en-US" } },
+            new LangParam { langId = MessageEnumData.MsgLangId.ESP, label = "SS_status_85", ietfTags = new string[] { "es" } },
+            new LangParam { langId = MessageEnumData.MsgLangId.FRA, label = "SS_status_86", ietfTags = new string[] { "fr" } },
+            new LangParam { langId = MessageEnumData.MsgLangId.DEU, label = "SS_status_87", ietfTags = new string[] { "de" } },
+            new LangParam { langId = MessageEnumData.MsgLangId.ITA, label = "SS_status_88", ietfTags = new string[] { "it" } },
+            new LangParam { langId = MessageEnumData.MsgLangId.KOR, label = "SS_status_91", ietfTags = new string[] { "ko" } },
+            new LangParam { langId = MessageEnumData.MsgLangId.TCH, label = "SS_status_92", ietfTags = new string[] { "zh-Hant" } },
+            new LangParam { langId = MessageEnumData.MsgLangId.SCH, label = "SS_status_93", ietfTags = new string[] { "zh-Hans" } },
+        };
+		private static global::System.Collections.Generic.List<global::Dpr.UI.UIManager.PokemonParamMapping> _pokemonParamMappings = new List<PokemonParamMapping>();
+		private static int _id_GrayscaleAmount = Shader.PropertyToID("_GrayscaleAmount");
+		private static global::Dpr.UI.UIManager.ComparerTownMapGuide _comparerTownMapGuide = new ComparerTownMapGuide();
+		private static global::Dpr.UI.UIManager.ComparerPlaceName _comparerPlaceName = new ComparerPlaceName();
 		private global::Dpr.UI.NowloadingController _nowLoadingController;
 		public static bool isInitialized { get { return _instance != null && (_instance._InitializeStateBits & (int)InitializeStateBit.Loaded) == (int)InitializeStateBit.Loaded; } }
 		public global::TransitionID transitionId { get { return this._transitionId; } }
@@ -1405,17 +1416,72 @@ namespace Dpr.UI
 		public global::XLSXContent.PlaceNameTable.SheetDprPlaceName GetPlaceNameData(global::ZoneID zoneId) {
             return GetPlaceNameData((int)zoneId);
         }
-		public global::XLSXContent.PlaceNameTable.SheetDprPlaceName GetPlaceNameData(int placeId) { /*@B 0x6005C4E*/ throw null; }
-		public global::XLSXContent.UIDatabase.SheetCharacterBag GetPlayerCharacterBagData() { /*@B 0x6005C4F*/ throw null; }
-		public global::XLSXContent.UIDatabase.SheetCharacterBag GetCharacterBagData(int characterDressId) { /*@B 0x6005C50*/ throw null; }
-		public void RegisterNowloading(global::Dpr.UI.NowloadingController nowloding) { /*@B 0x6005C51*/ throw null; }
-		public void NowLoadingOpen(float waitTime = 5f, int sortOrder = 16390, bool isBackground = false) { /*@B 0x6005C52*/ throw null; }
-		public void NowLoadingClose() { /*@B 0x6005C53*/ throw null; }
-		public void UseDSPlayerItem() { /*@B 0x6005C54*/ throw null; }
-		public void FadeinBlurBg(float time = 0.5f, global::UnityEngine.Events.UnityAction onComplete = null) { /*@B 0x6005C55*/ throw null; }
-		public void FadeoutBlurBg(float time = 0.5f, global::UnityEngine.Events.UnityAction onComplete = null) { /*@B 0x6005C56*/ throw null; }
-		public bool IsActiveFadeBlur() { /*@B 0x6005C57*/ throw null; }
-		public void SetActiveFadeBlur(bool enabled) { /*@B 0x6005C58*/ throw null; }
+		public global::XLSXContent.PlaceNameTable.SheetDprPlaceName GetPlaceNameData(int placeId) {
+            int searchResult = Array.BinarySearch(_mdPlaceName.DprPlaceName, placeId, _comparerPlaceName);
+            if (searchResult < 0) searchResult = 0;
+
+            return _mdPlaceName.DprPlaceName[searchResult];
+        }
+		public global::XLSXContent.UIDatabase.SheetCharacterBag GetPlayerCharacterBagData() {
+            bool sex = PlayerWork.playerSex;
+            int characterDressId;
+            if (FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.SYS_FLAG_CYCLINGROAD))
+                characterDressId = sex ? 13 : 113;
+            else
+                characterDressId = PlayerWork.playerFashion;
+
+            return GetCharacterBagData(characterDressId);
+        }
+		public global::XLSXContent.UIDatabase.SheetCharacterBag GetCharacterBagData(int characterDressId) {
+            return _mdUis.CharacterBag.FirstOrDefault(x => x.Index == characterDressId);
+        }
+		public void RegisterNowloading(global::Dpr.UI.NowloadingController nowloding) {
+            _nowLoadingController = nowloding;
+        }
+		public void NowLoadingOpen(float waitTime = 5f, int sortOrder = 16390, bool isBackground = false) {
+            _nowLoadingController.EnableBackground(isBackground);
+            _nowLoadingController.Open(waitTime, sortOrder);
+        }
+		public void NowLoadingClose() {
+            if (_nowLoadingController.gameObject.activeSelf)
+            {
+                _nowLoadingController.Close();
+                _nowLoadingController.EnableBackground(false);
+            }
+        }
+		public void UseDSPlayerItem() {
+            bool isDsPlayer = ItemWork.IsDsPlayer();
+            ItemWork.SetDsPlayer(!isDsPlayer);
+            Audio.AudioManager.Instance.SetBgmEvent(isDsPlayer ? AK.EVENTS.DSPLAYER_OFF : AK.EVENTS.DSPLAYER_ON, false);
+        }
+		public void FadeinBlurBg(float time = 0.5f, global::UnityEngine.Events.UnityAction onComplete = null) {
+            if (!_blurBgRoot.gameObject.activeSelf)
+                _blurBgRoot.gameObject.SetActive(true);
+
+            _blurBgParam.onComplete?.Invoke();
+            _blurBgParam.fadeType = BlugBgParam.FadeType.In;
+            _blurBgParam.srcAlpha = _blurBg.color.a;
+            _blurBgParam.destAlpha = 1f;
+            _blurBgParam.time = 0f;
+            _blurBgParam.maxTime = time;
+            _blurBgParam.onComplete = onComplete;
+            _blurBgParam.isCapture = false;
+        }
+		public void FadeoutBlurBg(float time = 0.5f, global::UnityEngine.Events.UnityAction onComplete = null) {
+            _blurBgParam.onComplete?.Invoke();
+            _blurBgParam.fadeType = BlugBgParam.FadeType.Out;
+            _blurBgParam.srcAlpha = _blurBg.color.a;
+            _blurBgParam.destAlpha = 0f;
+            _blurBgParam.time = 0f;
+            _blurBgParam.maxTime = time;
+            _blurBgParam.onComplete = onComplete;
+        }
+		public bool IsActiveFadeBlur() {
+            return _blurBgRoot.gameObject.activeSelf;
+        }
+		public void SetActiveFadeBlur(bool enabled) {
+            _blurBgRoot.gameObject.SetActive(enabled);
+        }
 		internal void _CaptureBlueImage(bool enabled) {
             // @017ab0e0: the packet C names the static `STATIC_0x38(Graphics)`; the listing loads SmartPoint.Rendering.DepthOfField_TypeInfo
             // (+0x38 = DepthOfField.instance, +0x78 = blurredRT = the inlined `strongerBlurTexture` getter)
@@ -1480,7 +1546,9 @@ namespace Dpr.UI
             float alpha = Mathf.Lerp(_blurBgParam.srcAlpha, _blurBgParam.destAlpha, rate);
             _blurBg.color = new Color(_blurBg.color.r, _blurBg.color.g, _blurBg.color.b, alpha);
         }
-		public static float FrameCountToSeconds(int frameCount) { /*@B 0x6005C5B*/ throw null; }
+		public static float FrameCountToSeconds(int frameCount) {
+            return frameCount / 30f;
+        }
 		public global::XLSXContent.SheetDistributionTable[] GetDistributionDatas(bool isField = true) {
             bool isDiamond = PlayerWork.cassetVersion == CassetVersion.DPR_B;
             if (isField)
@@ -1488,17 +1556,57 @@ namespace Dpr.UI
 
             return isDiamond ? (SheetDistributionTable[])_mdDistribution.Diamond_DungeonTable : _mdDistribution.Pearl_DungeonTable;
         }
-		public static bool IsUnion() { /*@B 0x6005C5D*/ throw null; }
-		public global::System.Collections.Generic.HashSet<int> GetInputLimitHashSet(global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(-1)) { /*@B 0x6005C5E*/ throw null; }
-		public static int GetDigit(int num) { /*@B 0x6005C5F*/ throw null; }
+		public static bool IsUnion() {
+            return PlayerWork.zoneID == ZoneID.UNION01 || PlayerWork.zoneID == ZoneID.UNION02 || PlayerWork.zoneID == ZoneID.UNION03;
+        }
+		public global::System.Collections.Generic.HashSet<int> GetInputLimitHashSet(global::Dpr.Message.MessageEnumData.MsgLangId langId = (global::Dpr.Message.MessageEnumData.MsgLangId)(-1)) {
+            // GetCurrentLangId is inlined (init flag 0x497); jump table @03d22426
+            if (langId <= 0)
+                langId = GetCurrentLangId();
+
+            switch (langId)
+            {
+                case MessageEnumData.MsgLangId.JPN:
+                    return _inputLimitHashSets[(int)InputLimitType.JPN];
+                case MessageEnumData.MsgLangId.KOR:
+                    return _inputLimitHashSets[(int)InputLimitType.KOR];
+                case MessageEnumData.MsgLangId.SCH:
+                    return _inputLimitHashSets[(int)InputLimitType.SCH];
+                case MessageEnumData.MsgLangId.TCH:
+                    return _inputLimitHashSets[(int)InputLimitType.TCH];
+                default:
+                    return _inputLimitHashSets[(int)InputLimitType.EFIGS];
+            }
+        }
+		public static int GetDigit(int num) {
+            if (num == 0)
+                return 1;
+
+            return (int)Mathf.Log10(num) + 1;
+        }
 		public static void UnloadUnusedAssets(bool isGcCollect = false) {
             Sequencer.Start(OpUnloadUnusedAssets(isGcCollect));
         }
-		public static global::System.Collections.IEnumerator OpUnloadUnusedAssets(bool isGcCollect = false) { /*@B 0x6005C61*/ throw null; }
-		public void EnableFureaiLimit(bool enabled) { /*@B 0x6005C62*/ throw null; }
+		public static global::System.Collections.IEnumerator OpUnloadUnusedAssets(bool isGcCollect = false) {
+            float beginTime = Time.realtimeSinceStartup;
+            if (isGcCollect)
+                GC.Collect();
+
+            yield return UnityEngine.Resources.UnloadUnusedAssets();
+
+            // discarded read (stripped log of the elapsed time)
+            float endTime = Time.realtimeSinceStartup;
+        }
+		public void EnableFureaiLimit(bool enabled) {
+            _fureaiLimit = enabled;
+        }
 		public bool IsFureaiLimit() { return this._fureaiLimit; }
-		private static long GetUsedMemorySize() { /*@B 0x6005C64*/ throw null; }
-		private static long GetUnusedMemorySize() { /*@B 0x6005C65*/ throw null; }
+		private static long GetUsedMemorySize() {
+            return UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong();
+        }
+		private static long GetUnusedMemorySize() {
+            return UnityEngine.Profiling.Profiler.GetTotalUnusedReservedMemoryLong();
+        }
 		public static bool IsLumpingRibbon(int ribbonNo) {
             return ribbonNo == (int)RibbonNo.LUMPING_CONTEST || ribbonNo == (int)RibbonNo.LUMPING_TOWER;
         }
@@ -1521,21 +1629,60 @@ namespace Dpr.UI
             }
             return Instance.GetAtlasSprite(SpriteAtlasID.TEXTUREMASS, name);
         }
-		public static string ToBinaryString(int val) { /*@B 0x6005C69*/ throw null; }
-		public static bool IsLeanFly() { /*@B 0x6005C6A*/ throw null; }
-		public static int Fps() { /*@B 0x6005C6B*/ throw null; }
-		public static global::Dpr.Message.MessageEnumData.MsgLangId GetCurrentLangId() { /*@B 0x6005C6C*/ throw null; }
+		public static string ToBinaryString(int val) {
+            return Convert.ToString(val, 2);
+        }
+		public static bool IsLeanFly() {
+            return FlagWork.GetSysFlag(EvWork.SYSFLAG_INDEX.BADGE_ID_C07) && FlagWork.GetFlag(EvWork.FLAG_INDEX.FE_HIDEN_02_GET);
+        }
+		public static int Fps() {
+            int fps = 60;
+            if (QualitySettings.vSyncCount > 0)
+                fps = 60 / QualitySettings.vSyncCount;
+
+            return fps;
+        }
+		public static global::Dpr.Message.MessageEnumData.MsgLangId GetCurrentLangId() {
+            return MessageHelper.ConvertMsgId(PlayerWork.msgLangID);
+        }
 		public static void SetAllObjectLayer(global::UnityEngine.GameObject obj, int layer) {
             obj.layer = layer;
             var trans = obj.transform;
             for (int i = 0; i < trans.childCount; i++)
                 SetAllObjectLayer(trans.GetChild(i).gameObject, layer);
         }
-		public static bool IsFieldOpenMenu() { /*@B 0x6005C6E*/ throw null; }
-		public void EnableFadeTransition(bool enabled) { /*@B 0x6005C6F*/ throw null; }
-		public static global::UnityEngine.Sprite CastSprite(object asset) { /*@B 0x6005C70*/ throw null; }
-		public UIManager() { /*@B 0x6005C71*/ throw null; }
-		static UIManager() { /*@B 0x6005C72*/ throw null; }
+		public static bool IsFieldOpenMenu() {
+            if (Instance == null)
+                return false;
+
+            // GetUIWindowCount is inlined (init flag 0x48d)
+            int count = Instance.GetUIWindowCount();
+            int windowCount = count;
+            for (int i = 0; i < count; i++)
+            {
+                UIWindow window = Instance.GetUIWindowByIndex(i);
+                if (window is PoketchWindow || window is AutoSaveWindow)
+                    windowCount--;
+            }
+            if (windowCount > 0)
+                return true;
+
+            return FieldPoketch.IsControlPoketch();
+        }
+		public void EnableFadeTransition(bool enabled) {
+            _isFadeTransition = enabled;
+        }
+		public static global::UnityEngine.Sprite CastSprite(object asset) {
+            Sprite sprite = asset as Sprite;
+            if (sprite == null)
+            {
+                Texture2D texture = asset as Texture2D;
+                sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+            }
+            return sprite;
+        }
+		public UIManager() { }
+		static UIManager() { }
 		private enum InputLimitType
 		{
 			JPN = 0,
@@ -1560,10 +1707,26 @@ namespace Dpr.UI
 			public string variantAssetBundleName;
 			public global::UnityEngine.U2D.SpriteAtlas spriteAtlas;
 			public global::System.Action<global::UnityEngine.U2D.SpriteAtlas> atlasCallback;
-			public void Clear() { /*@B 0x600AF4E*/ throw null; }
-			public void SetSpriteAtlas(global::UnityEngine.U2D.SpriteAtlas spriteAtlas_) { /*@B 0x600AF4F*/ throw null; }
-			public void SetAtlasCallback(global::System.Action<global::UnityEngine.U2D.SpriteAtlas> atlasCallback_) { /*@B 0x600AF50*/ throw null; }
-			private void Call() { /*@B 0x600AF51*/ throw null; }
+			public void Clear() {
+                spriteAtlas = null;
+            }
+			public void SetSpriteAtlas(global::UnityEngine.U2D.SpriteAtlas spriteAtlas_) {
+                spriteAtlas = spriteAtlas_;
+                // Call() is inlined (no init flag)
+                Call();
+            }
+			public void SetAtlasCallback(global::System.Action<global::UnityEngine.U2D.SpriteAtlas> atlasCallback_) {
+                if (atlasCallback != null)
+                    return;
+
+                atlasCallback = atlasCallback_;
+                // Call() is inlined (no init flag)
+                Call();
+            }
+			private void Call() {
+                if (spriteAtlas != null)
+                    atlasCallback?.Invoke(spriteAtlas);
+            }
 			public SpriteAtlasParam() { }
 		}
 		[global::System.FlagsAttribute]
@@ -1593,21 +1756,34 @@ namespace Dpr.UI
 		public class UIInstance : global::IObjectPoolInstance
 		{
 			private global::Dpr.UI.UIWindow _uiWindow;
-			private global::UIWindowID _windowId;
+			private global::UIWindowID _windowId = (UIWindowID)(-1);
 			public global::Dpr.UI.UIWindow uiWindow { get { return this._uiWindow; } }
 			public global::UIWindowID windowId { get { return this._windowId; } set { this._windowId = value; } }
-			void global::IObjectPoolInstance.SetGameObject(global::UnityEngine.GameObject obj) { /*@B 0x600AF57*/ throw null; }
-			global::UnityEngine.GameObject global::IObjectPoolInstance.GetGameObject() { /*@B 0x600AF58*/ throw null; }
+			void global::IObjectPoolInstance.SetGameObject(global::UnityEngine.GameObject obj) {
+                _uiWindow = obj.GetComponent<UIWindow>();
+            }
+			global::UnityEngine.GameObject global::IObjectPoolInstance.GetGameObject() {
+                if (_uiWindow == null)
+                    return null;
+
+                return _uiWindow.gameObject;
+            }
 			void global::IObjectPoolInstance.OnCreate() { }
-			void global::IObjectPoolInstance.OnRelease() { /*@B 0x600AF5A*/ throw null; }
-			public UIInstance() { /*@B 0x600AF5B*/ throw null; }
+			void global::IObjectPoolInstance.OnRelease() {
+                _uiWindow = null;
+            }
+			public UIInstance() { }
 		}
 		private class TransitionInstance : global::IObjectPoolInstance
 		{
 			public global::Dpr.UI.UITransition transition;
 			public global::TransitionID transitionId;
-			void global::IObjectPoolInstance.SetGameObject(global::UnityEngine.GameObject obj) { /*@B 0x600AF5C*/ throw null; }
-			global::UnityEngine.GameObject global::IObjectPoolInstance.GetGameObject() { /*@B 0x600AF5D*/ throw null; }
+			void global::IObjectPoolInstance.SetGameObject(global::UnityEngine.GameObject obj) {
+                transition = obj.GetComponent<Dpr.UI.UITransition>();
+            }
+			global::UnityEngine.GameObject global::IObjectPoolInstance.GetGameObject() {
+                return transition.gameObject;
+            }
 			void global::IObjectPoolInstance.OnCreate() { }
 			void global::IObjectPoolInstance.OnRelease() { }
 			public TransitionInstance() { }
@@ -1616,7 +1792,10 @@ namespace Dpr.UI
 		{
 			public int uniqueId;
 			public global::UnityEngine.Sprite sprite;
-			public void Destroy() { /*@B 0x600AF61*/ throw null; }
+			public void Destroy() {
+                UnityEngine.Object.Destroy(sprite);
+                sprite = null;
+            }
 			public CacheSpritePokemonParam() { }
 		}
 		private class BlugBgParam
@@ -1625,12 +1804,12 @@ namespace Dpr.UI
 			public float srcAlpha;
 			public float destAlpha;
 			public float time;
-			public float maxTime;
+			public float maxTime = 0.5f;
 			public global::UnityEngine.Events.UnityAction onComplete;
 			public bool isCapture;
 			public global::UnityEngine.RenderTexture captureBlurTexture;
 			public global::UnityEngine.Texture2D blankTexture;
-			public BlugBgParam() { /*@B 0x600AF63*/ throw null; }
+			public BlugBgParam() { }
 			public enum FadeType
 			{
 				In = 0,
@@ -1642,8 +1821,31 @@ namespace Dpr.UI
 			public bool isSaved;
 			public bool actived;
 			public bool enabled;
-			public void Save(bool isReset = false) { /*@B 0x600AF64*/ throw null; }
-			public void Restore() { /*@B 0x600AF65*/ throw null; }
+			public void Save(bool isReset = false) {
+                if (isReset)
+                    Restore();
+
+                if (isSaved)
+                    return;
+
+                if (EnvironmentController.global == null)
+                    return;
+
+                isSaved = true;
+                actived = EnvironmentController.global.gameObject.activeSelf;
+                enabled = EnvironmentController.global.enabled;
+            }
+			public void Restore() {
+                if (!isSaved)
+                    return;
+
+                isSaved = false;
+                if (EnvironmentController.global == null)
+                    return;
+
+                EnvironmentController.global.gameObject.SetActive(actived);
+                EnvironmentController.global.enabled = enabled;
+            }
 			public EnvironmentControllerSaver() { }
 		}
 		private struct AtlasSpriteKey
@@ -1653,27 +1855,47 @@ namespace Dpr.UI
 		}
 		private class ComparerPokemonIcon : global::System.Collections.IComparer
 		{
-			public int Compare(object x, object y) { /*@B 0x600AF67*/ throw null; }
+			public int Compare(object x, object y) {
+                return (x as XLSXContent.UIDatabase.SheetPokemonIcon).UniqueID - Convert.ToInt32(y);
+            }
 			public ComparerPokemonIcon() { }
 		}
 		private class ComparerAshiatoIcon : global::System.Collections.IComparer
 		{
-			public int Compare(object x, object y) { /*@B 0x600AF69*/ throw null; }
+			public int Compare(object x, object y) {
+                int a = (x as XLSXContent.UIDatabase.SheetAshiatoIcon).UniqueID;
+                int b = Convert.ToInt32(y);
+                if (a < b)
+                    return -1;
+
+                return a > b ? 1 : 0;
+            }
 			public ComparerAshiatoIcon() { }
 		}
 		private class ComparerZukanDisplay : global::System.Collections.IComparer
 		{
-			public int Compare(object x, object y) { /*@B 0x600AF6B*/ throw null; }
+			public int Compare(object x, object y) {
+                return (x as XLSXContent.UIDatabase.SheetZukanDisplay).UniqueID - Convert.ToInt32(y);
+            }
 			public ComparerZukanDisplay() { }
 		}
 		private class ComparerPokemonVoice : global::System.Collections.IComparer
 		{
-			public int Compare(object x, object y) { /*@B 0x600AF6D*/ throw null; }
+			public int Compare(object x, object y) {
+                return (x as XLSXContent.UIDatabase.SheetPokemonVoice).UniqueID - Convert.ToInt32(y);
+            }
 			public ComparerPokemonVoice() { }
 		}
 		private class ComparerZukanCompareHeight : global::System.Collections.IComparer
 		{
-			public int Compare(object x, object y) { /*@B 0x600AF6F*/ throw null; }
+			public int Compare(object x, object y) {
+                int a = (x as XLSXContent.UIDatabase.SheetZukanCompareHeight).UniqueID;
+                int b = Convert.ToInt32(y);
+                if (a < b)
+                    return -1;
+
+                return a > b ? 1 : 0;
+            }
 			public ComparerZukanCompareHeight() { }
 		}
 		private class LangParam
@@ -1688,7 +1910,7 @@ namespace Dpr.UI
 			public global::Dpr.Battle.Logic.BTL_POKEPARAM battlePokemonParam;
 			public global::Pml.PokePara.PokemonParam pokemonParam;
 			public byte clientId;
-			public bool isFriend { get { /*@B 0x600AF72*/ throw null; } }
+			public bool isFriend { get { return clientId != BattleViewCore.Instance.ViewSystem.GetClientID(); } }
 			public PokemonParamMapping() { }
 		}
 		public class DuplicateImageMaterialParam
@@ -1699,12 +1921,16 @@ namespace Dpr.UI
 		}
 		private class ComparerTownMapGuide : global::System.Collections.IComparer
 		{
-			public int Compare(object x, object y) { /*@B 0x600AF75*/ throw null; }
+			public int Compare(object x, object y) {
+                return (x as XLSXContent.TownMapGuideTable.SheetGuide).Id - Convert.ToInt32(y);
+            }
 			public ComparerTownMapGuide() { }
 		}
 		private class ComparerPlaceName : global::System.Collections.IComparer
 		{
-			public int Compare(object x, object y) { /*@B 0x600AF77*/ throw null; }
+			public int Compare(object x, object y) {
+                return (x as XLSXContent.PlaceNameTable.SheetDprPlaceName).Index - Convert.ToInt32(y);
+            }
 			public ComparerPlaceName() { }
 		}
 	}
