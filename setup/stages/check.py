@@ -21,7 +21,8 @@ FINGERPRINTS = [
     ("romfs/Data/StreamingAssets/AssetAssistant/Dpr.bin", "9c8159aa1aed650b9187d74b4e4d93d3174e7102", 5278300),
 ]
 MIN_FREE_GB = 60          # export 23 -> assets ~31, Unity Library ~15-20, D7 work files, margin
-MIN_RAM_GB = 32           # AssetRipper peaked ~30 GB, the first import ~27 GB (measured on a 96 GB machine)
+MIN_RAM_GB = 24           # the export needs ~21 GB (AssetRipper, heap capped at 20 GB - ar_export.HEAP_GB); Unity's first import
+                          # peaked ~16 GB (atlas build); below this Windows' page file makes up the difference
 PY_PACKAGES = ["UnityPy", "numpy", "PIL", "texture2ddecoder"]
 
 
@@ -97,8 +98,9 @@ def main():
         print("disk: %.1f GB free" % free)
     ram = total_ram_gb()
     if ram < MIN_RAM_GB:
-        warn.append("RAM: %.0f GB installed; the export and the first Unity import each used ~30 GB on the reference machine"
-                    % ram)
+        sysfree = shutil.disk_usage(os.environ.get("SystemDrive", "C:") + "\\").free / 2 ** 30
+        warn.append("RAM: %.0f GB installed; the asset export needs about 21 GB, so Windows will use its page file (slower). Keep "
+                    "the page file system-managed and about 15 GB free on the system drive (now %.0f GB free)" % (ram, sysfree))
     for w_ in warn:
         print("WARNING " + w_)
     for b in bad:

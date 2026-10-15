@@ -44,7 +44,9 @@ Known issues:
    checks it against the v1.3.0 files and stops on anything else.
 5. **About 60 GB free** on the drive that holds this folder (about 45 GB stays in use afterwards; building the standalone game
    adds about 10 GB).
-6. **RAM:** 32 GB recommended.
+6. **RAM: 32 GB recommended.** The asset export needs about 21 GB of memory and Unity's first import up to about 16 GB. With 16 GB of
+   RAM, Windows makes up the difference from its page file: slower, and it needs the page file to be system-managed (the default)
+   with about 15 GB free on the system drive. 16 GB has not been tested on a real 16 GB PC yet.
 
 To build the standalone game you also need Unity's **Windows Build Support (IL2CPP)** module and **Visual Studio 2022** (Build Tools or
 Community) with **Desktop development with C++** - see [Building the Windows game](#building-the-windows-game).

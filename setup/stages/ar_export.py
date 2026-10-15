@@ -77,6 +77,12 @@ def free_ram_gb():
     return memory_gb()[0]
 
 
+# AssetRipper's .NET heap cap. Measured on BDSP v1.3.0 (2026-10-15, work/setup/memtest): 10 GB -> OutOfMemory while loading,
+# 14 GB -> OutOfMemory while exporting, 20 GB -> complete (all 175,208 asset paths, 0 errors, 8.3 min, peak commit 21.2 GB).
+# Without a cap the GC grows to what the machine offers (~28 GB on a 96 GB PC), which pushes a 32 GB PC into paging.
+HEAP_GB = 20
+
+
 def proc_mem_gb(pid):
     """(peak private commit, peak working set, current working set) of one process in GB, or None."""
     class PMC(ctypes.Structure):
@@ -109,8 +115,9 @@ def main():
     ap.add_argument("--min-disk", type=float, default=2.0)
     ap.add_argument("--min-commit", type=float, default=3.0, help="GB of RAM + page file that must stay available")
     ap.add_argument("--status", default=None)
-    ap.add_argument("--heap-limit-gb", type=float, default=0,
-                    help="cap AssetRipper's .NET heap (DOTNET_GCHeapHardLimit) - memory measurements for smaller machines")
+    ap.add_argument("--heap-limit-gb", type=float, default=float(paths.CFG.get("assetripper_heap_gb", HEAP_GB)),
+                    help="cap AssetRipper's .NET heap (DOTNET_GCHeapHardLimit); 0 = no cap. Default %d (config "
+                         "assetripper_heap_gb)" % HEAP_GB)
     ap.add_argument("--workstation-gc", action="store_true", help="DOTNET_gcServer=0 (one GC heap instead of one per CPU)")
     a = ap.parse_args()
     out = os.path.abspath(a.out)
