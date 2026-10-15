@@ -9,13 +9,13 @@ namespace Dpr.UnderGround
 	{
 		private global::UnityEngine.RectTransform View;
 		private global::Dpr.UI.UIText uiText;
-		private static readonly global::UnityEngine.Vector3 HidePos;
-		private static readonly global::UnityEngine.Vector3 ViewPos;
-		public float duration;
+		private static readonly global::UnityEngine.Vector3 HidePos = new global::UnityEngine.Vector3(0f, 34f, 0f);
+		private static readonly global::UnityEngine.Vector3 ViewPos = new global::UnityEngine.Vector3(0f, 0f, 0f);
+		public float duration = 0.8f;
 		private global::DG.Tweening.Sequence anim;
 		public bool isPlaying;
-		private global::System.Collections.Generic.List<global::System.ValueTuple<global::Dpr.Message.PlayerNameData, bool, float>> StockPlayerMessageList;
-		private global::System.Collections.Generic.List<global::System.ValueTuple<string, float>> StockKousekiMessageList;
+		private global::System.Collections.Generic.List<global::System.ValueTuple<global::Dpr.Message.PlayerNameData, bool, float>> StockPlayerMessageList = new global::System.Collections.Generic.List<global::System.ValueTuple<global::Dpr.Message.PlayerNameData, bool, float>>();
+		private global::System.Collections.Generic.List<global::System.ValueTuple<string, float>> StockKousekiMessageList = new global::System.Collections.Generic.List<global::System.ValueTuple<string, float>>();
 		private const string UG_MSG_FILE = "dlp_underground";
 		private const string Label_EnterOtherPlayer = "DLP_underground_758";
 		private const string Label_ExitOtherPlayer = "DLP_underground_759";
@@ -98,7 +98,7 @@ namespace Dpr.UnderGround
 			string message = MessageManager.Instance.GetMsgFile(UG_MSG_FILE).GetFormattedMessage(Label_StartKousekiSagashi);
 			SetText(message, 1.5f);
 		}
-		public UgInfoSet() { /*@B 0x60031E6*/ throw null; }
-		static UgInfoSet() { /*@B 0x60031E7*/ throw null; }
+		public UgInfoSet() { }
+		static UgInfoSet() { }
 	}
 }

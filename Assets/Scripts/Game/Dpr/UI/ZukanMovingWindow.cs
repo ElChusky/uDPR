@@ -23,7 +23,7 @@ namespace Dpr.UI
 		private bool _animPaused;
 		private global::Dpr.UI.ZukanMovingWindow.Param _param;
 		private global::XLSXContent.UIDatabase.SheetPokemonVoice _voiceData;
-		public global::Dpr.UI.ZukanMovingWindow.AudioEffectParam _saveAudioEffectParam;
+		public global::Dpr.UI.ZukanMovingWindow.AudioEffectParam _saveAudioEffectParam = new global::Dpr.UI.ZukanMovingWindow.AudioEffectParam();
 		public override void OnCreate() {
             base.OnCreate();
         }
@@ -102,7 +102,41 @@ namespace Dpr.UI
             UIManager.Instance._ReleaseUIWindow(this);
             onClosed_?.Invoke(this);
         }
-		private void OnUpdate(float deltaTime) { /*@B 0x6005EA3*/ throw null; }
+		private void OnUpdate(float deltaTime) {
+			if (UIManager.Instance.GetCurrentUIWindow<UIWindow>() != this)
+				return;
+
+			UpdateVoice(deltaTime);
+			if (_modelView.OnUpdate(deltaTime, _input, 0, UIManager.StickLLeft, UIManager.StickLRight, UIManager.StickLUp, UIManager.StickLDown))
+				return;
+
+			if (IsPushButton(UIManager.ButtonB))
+			{
+				AudioManager.Instance.PlaySe(AK.EVENTS.UI_COMMON_CANCEL);
+				Close(onClosed, _prevWindowId);
+			}
+			else if (IsPushButton(UIManager.ButtonY))
+			{
+				_animPaused = false;
+				_modelView.Pause(false);
+				_modelView.PlayAnimation(true);
+			}
+			else if (IsPushButton(UIManager.ButtonX))
+			{
+				_animPaused = !_animPaused;
+				_modelView.Pause(_animPaused);
+			}
+			else if (IsPushButton(UIManager.ButtonPlusMinus))
+			{
+				_repeat.SetRepeat(!_repeat.isRepeat);
+			}
+			else if (IsPushButton(UIManager.ButtonA))
+			{
+				if (_voiceInstance != null)
+					_voiceInstance.Stop();
+				PlayVoice();
+			}
+		}
 		private void UpdateVoice(float deltaTime, bool isRepeatChecked = true) {
             if (_voiceInstance != null)
                 _voiceInstance.SetRTPCValue(AK.GAME_PARAMETERS.POKEDEXPITCH, _animPaused ? -1.0f : 0.0f);
@@ -139,14 +173,14 @@ namespace Dpr.UI
 
             UpdateVoice(0.0f, false);
         }
-		public ZukanMovingWindow() { /*@B 0x6005EA6*/ throw null; }
+		public ZukanMovingWindow() { }
 		[global::System.Serializable]
 		private class RepeatParam
 		{
 			public global::UnityEngine.UI.Image image;
 			public global::UnityEngine.Sprite[] sprites;
 			[global::System.NonSerialized]
-			public float delayTime;
+			public float delayTime = float.NegativeInfinity;
 			public bool isRepeat { get => image.sprite == sprites[1]; }
 			public void Setup() {
                 image.sprite = sprites[0];
@@ -158,7 +192,7 @@ namespace Dpr.UI
                 else
                     image.sprite = sprites[0];
             }
-			public RepeatParam() { /*@B 0x600B11E*/ throw null; }
+			public RepeatParam() { }
 		}
 		public class Param
 		{

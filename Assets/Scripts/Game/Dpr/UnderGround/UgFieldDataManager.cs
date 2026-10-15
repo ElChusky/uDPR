@@ -119,12 +119,15 @@ namespace Dpr.UnderGround
 					Hyouta = asset;
 			}, false, true, Dpr.SubContents.Utils.AssetUnloader.ID_UG_COMMON);
 		}
-		public UgFieldDataManager() { /*@B 0x6003155*/ throw null; }
+		public UgFieldDataManager() { }
 		public struct FossilPosData
 		{
 			public global::ZoneID zoneID;
 			public global::XLSXContent.UnderGroundFossilPos.SheetData[] PosDataList;
-			public FossilPosData(global::XLSXContent.UnderGroundFossilPos.SheetData[] data) { /*@B 0x6009E6D*/ throw null; }
+			public FossilPosData(global::XLSXContent.UnderGroundFossilPos.SheetData[] data) {
+				PosDataList = data;
+				zoneID = data[0].ZoneID;
+			}
 			public global::UnityEngine.Vector2Int GetRandomPos(int pointNo) {
 				Vector2Int start = PosDataList[pointNo].start;
 				Vector2Int end = PosDataList[pointNo].end;

@@ -14,8 +14,8 @@ namespace Dpr.UnderGround
 		private global::Dpr.MsgWindow.MsgWindowParam msgParam;
 		private bool isShowFinishedMessage;
 		private int seq;
-		public byte NPC_ID { get { /*@B 0x60031E9*/ throw null; } }
-		public string NameLabel { get { /*@B 0x60031EA*/ throw null; } }
+		public byte NPC_ID { get { return (byte)NpcData.NpcId; } }
+		public string NameLabel { get { return NpcData.NameLabel; } }
 		public void InputUpdate(float deltaTime) {
 			if (!Utils.PushAorB || !isShowFinishedMessage)
 				return;
@@ -41,7 +41,13 @@ namespace Dpr.UnderGround
 			isShowFinishedMessage = false;
 			param.onFinishedShowAllMessage = () => isShowFinishedMessage = true;
 		}
-		public UgNPCTalkModel(global::XLSXContent.UgNpcList.SheetSheet1 Npc) { /*@B 0x60031ED*/ throw null; }
+		public UgNPCTalkModel(global::XLSXContent.UgNpcList.SheetSheet1 Npc) {
+			global::XLSXContent.UgNpcTalk.SheetSheet1[] sheet = UgResManager.UgNpcTalk.Sheet1;
+			NpcData = Npc;
+			global::XLSXContent.UgNpcTalk.SheetSheet1[] talks = global::System.Array.FindAll(sheet, x => !x.IsPatch);
+			global::XLSXContent.UgNpcTalk.SheetSheet1 talk = talks[global::UnityEngine.Random.Range(0, talks.Length)];
+			talkMessageLabel = Npc.Sex != global::Pml.Sex.MALE ? talk.FemaleTalkLabel : talk.MaleTalkLabel;
+		}
 		public void Aisatsu() {
 			int langId = (int)MessageManager.Instance.UserLanguageID;
 			langId = langId > 6 ? langId - 1 : langId;
@@ -60,6 +66,17 @@ namespace Dpr.UnderGround
 			MessageWordSetHelper.SetTrainerNameWord(0, NpcData.NameLabel);
 			SetShowFinished(msgParam);
 		}
-		public void TalkMessage() { /*@B 0x60031F0*/ throw null; }
+		public void TalkMessage() {
+			msgParam = Utils.CreateMsgWindowParam("dlp_underground", talkMessageLabel, false, true);
+			msgParam.originalSpeakerName = MessageManager.Instance.GetSimpleMessage("dp_trainers_name", NpcData.NameLabel);
+			SetShowFinished(msgParam);
+			msgParam.onFinishedCloseWindow = () =>
+			{
+				NPCTalkEnd = true;
+				seq = 0;
+				Sequencer.update -= InputUpdate;
+				window = null;
+			};
+		}
 	}
 }

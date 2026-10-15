@@ -22,7 +22,7 @@ namespace Dpr.UnderGround
 		[global::UnityEngine.SerializeField]
 		private int d_digGroupID;
 		public static global::Dpr.UnderGround.UgFieldManager Instance;
-		public static bool isFallEnter;
+		public static bool isFallEnter = false;
 		public bool isUgExiting;
 		public bool isErrorDialogVisible;
 		public global::System.Action OnCloseErrorDialog;
@@ -31,7 +31,7 @@ namespace Dpr.UnderGround
 		private global::System.Action OnFinishBusy;
 		private global::System.Action OnCreateOtherSecretBase;
 		private bool IsBase;
-		public bool isLoadedOrVisit;
+		public bool isLoadedOrVisit = true;
 		private global::UgNetworkManager ugNetManager;
 		public float KousekiBonusTime;
 		public byte KousekiCount;
@@ -53,10 +53,10 @@ namespace Dpr.UnderGround
 		private const string ENTER_BASE = "DLP_underground_285";
 		private const string ENTER_BASE_FRIEND = "DLP_underground_475";
 		public global::XLSXContent.StatueEffectRawData ugStatueEffectData;
-		public static bool isDebug_RarePoke;
-		public static bool isForceRareColor;
-		private static readonly string[] Y_MENU_LABEL;
-		private static readonly string[] Y_MENU_LABEL_ONLINE;
+		public static bool isDebug_RarePoke = false;
+		public static bool isForceRareColor = false;
+		private static readonly string[] Y_MENU_LABEL = new string[] { "DLP_underground_430", "DLP_underground_370", "DLP_underground_371" };
+		private static readonly string[] Y_MENU_LABEL_ONLINE = new string[] { "DLP_underground_615", "DLP_underground_430", "DLP_underground_370", "DLP_underground_371" };
 		private global::Dpr.UnderGround.UgFieldDataManager dataMng;
 		public static global::Dpr.UnderGround.UgFieldManager.DigData digData;
 		private static global::System.Collections.Generic.List<global::Dpr.UnderGround.UgFieldManager.DigPointModel> DigPoints;
@@ -68,7 +68,7 @@ namespace Dpr.UnderGround
 		public global::FieldObjectEntity NpcEntity;
 		public global::Dpr.UnderGround.StatueBuff statueBuff;
 		public global::DPData.UgSecretBase nowBaseModel;
-		private int nowBasePlayerIndex;
+		private int nowBasePlayerIndex = -1;
 		private global::UgNetworkManager.UgOnlinePlayerData nowBasePlayerData;
 		public global::DPData.UgSecretBase EffectiveBase;
 		public global::System.Collections.Generic.List<global::Dpr.UnderGround.UgFieldManager.SecretBaseModel> SecretBases;
@@ -79,19 +79,19 @@ namespace Dpr.UnderGround
 		public static bool isEnableInput;
 		public global::System.Action OnDestroyCallBack;
 		public global::System.Action OnZoneChangeCallBack;
-		public static bool isStartLeave;
-		public static bool isGuruGuruAnimEnd;
+		public static bool isStartLeave = false;
+		public static bool isGuruGuruAnimEnd = false;
 		private float OnZoneChangeTime;
 		private bool isDebugDraw;
 		[global::UnityEngine.SerializeField]
-		private float duration;
+		private float duration = 0.85f;
 		[global::UnityEngine.SerializeField]
-		private float searchSize;
+		private float searchSize = 900f;
 		[global::UnityEngine.SerializeField]
-		private float searchDist;
+		private float searchDist = 9f;
 		[global::UnityEngine.SerializeField]
-		private float TalkDistance;
-		private global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> buffPosList;
+		private float TalkDistance = 3f;
+		private global::System.Collections.Generic.List<global::UnityEngine.Vector2Int> buffPosList = new global::System.Collections.Generic.List<global::UnityEngine.Vector2Int>(20);
 		private bool isSearching;
 		private global::UnityEngine.Transform _dummy;
 		[global::Dpr.SubContents.ButtonAttribute("SearchDigPoint", "SearchDigPoint", new object[] {  })]
@@ -112,8 +112,8 @@ namespace Dpr.UnderGround
 		[global::Dpr.SubContents.ButtonAttribute("D_ResetNPCTalkCount", "D_ResetNPCTalkCount", new object[] {  })]
 		public int Button06;
 		public global::Dpr.UnderGround.UgNPCTalkModel NpcTalkModel;
-		private bool[] results;
-		private static readonly global::UnityEngine.Vector3[] eightDirect;
+		private bool[] results = new bool[8];
+		private static readonly global::UnityEngine.Vector3[] eightDirect = new global::UnityEngine.Vector3[] { new Vector3(-1f, 0f, -1f), new Vector3(0f, 0f, -1f), new Vector3(1f, 0f, -1f), new Vector3(-1f, 0f, 0f), new Vector3(1f, 0f, 0f), new Vector3(-1f, 0f, 1f), new Vector3(0f, 0f, 1f), new Vector3(1f, 0f, 1f) };
 		[global::Dpr.SubContents.ButtonAttribute("DebugCheckWalls", "DebugCheckWalls", new object[] {  })]
 		public int button111;
 		[global::Dpr.SubContents.ButtonAttribute("DebugCreateTonarihori", "デバッグ隣堀生成", new object[] {  })]
@@ -127,14 +127,14 @@ namespace Dpr.UnderGround
 		[global::Dpr.SubContents.ButtonAttribute("AddKousekiCount", "AddKousekiCount", new object[] {  })]
 		public int Button010;
 		private bool _isInitAddUpdate;
-		private int myStationIndex { get { /*@B 0x6003159*/ throw null; } }
-		public bool isKousekiBonus { get { /*@B 0x600315A*/ throw null; } }
-		private bool IsKousekiFull { get { /*@B 0x600315B*/ throw null; } }
+		private int myStationIndex { get { return NetworkManager.Instance.MyStationIndex; } }
+		public bool isKousekiBonus { get { return KousekiBonusTime > 0f; } }
+		private bool IsKousekiFull { get { return KousekiCount >= KOUSEKI_BONUS_START_NUM; } }
 		public global::UgMiniMapComponent Minimap { get { return this.miniMap; } }
-		public global::UgNetworkManager.UgOnlinePlayerData nowBasePlayerInfo { get { /*@B 0x600315E*/ throw null; } }
-		public bool isOtherBase { get { /*@B 0x600315F*/ throw null; } }
-		public static bool isOnline { get { /*@B 0x6003160*/ throw null; } }
-		public static bool isJoinOther { get { /*@B 0x6003161*/ throw null; } }
+		public global::UgNetworkManager.UgOnlinePlayerData nowBasePlayerInfo { get { return nowBasePlayerIndex != -1 ? nowBasePlayerData : null; } }
+		public bool isOtherBase { get { return nowBasePlayerIndex != -1 && nowBasePlayerData != null; } }
+		public static bool isOnline { get { return SmartPoint.AssetAssistant.SingletonMonoBehaviour<UgNetworkManager>.isInstantiated && NetworkManager.SessionState == IlcaNetSessionState.SS_Gaming; } }
+		public static bool isJoinOther { get { return NetworkManager.Instance.IsJoinOtherPlayer(); } }
 		public int effectiveBasePlayerIndex { get; private set; }
 		public static bool isInstantiated { get => Instance != null; }
 		private global::UnityEngine.Transform dummy { get {
@@ -1798,8 +1798,8 @@ namespace Dpr.UnderGround
             SmartPoint.AssetAssistant.Sequencer.update -= InputUpdate;
             SmartPoint.AssetAssistant.Sequencer.update += InputUpdate;
         }
-		public UgFieldManager() { /*@B 0x60031CF*/ throw null; }
-		static UgFieldManager() { /*@B 0x60031D0*/ throw null; }
+		public UgFieldManager() { }
+		static UgFieldManager() { }
 		public enum NowZoneType
 		{
 			Way = 0,
@@ -1819,9 +1819,11 @@ namespace Dpr.UnderGround
 		{
 			private global::Dpr.UnderGround.UgFieldManager mng;
 			public bool PrevSceneisDigFossil;
-			public global::System.Collections.Generic.List<global::Dpr.UnderGround.UgFieldManager.DigPointModel> DigPoints { get { /*@B 0x6009E7D*/ throw null; } }
-			public global::System.Collections.Generic.List<global::Dpr.UnderGround.UgFieldManager.SecretBaseModel> SecretBases { get { /*@B 0x6009E7E*/ throw null; } }
-			public DigData(global::Dpr.UnderGround.UgFieldManager mng) { /*@B 0x6009E7F*/ throw null; }
+			public global::System.Collections.Generic.List<global::Dpr.UnderGround.UgFieldManager.DigPointModel> DigPoints { get { return UgFieldManager.DigPoints; } }
+			public global::System.Collections.Generic.List<global::Dpr.UnderGround.UgFieldManager.SecretBaseModel> SecretBases { get { return UgFieldManager.Instance.SecretBases; } }
+			public DigData(global::Dpr.UnderGround.UgFieldManager mng) {
+				this.mng = mng;
+			}
 		}
 		[global::System.Serializable]
 		public class DigPointModel : global::Dpr.UnderGround.UgFieldManager.MiniMapUIModelBase
@@ -1831,9 +1833,11 @@ namespace Dpr.UnderGround
 			public global::UnityEngine.Transform EffectTra;
 			public global::Effect.EffectInstance effIns;
 			private bool isKirakiraNow;
-			private static readonly global::UnityEngine.Vector3[] directs;
-			private static readonly global::UnityEngine.Vector2Int[] offsets;
-			public DigPointModel(int x, int y, int staionIndex) { /*@B 0x6009E80*/ throw null; }
+			private static readonly global::UnityEngine.Vector3[] directs = new global::UnityEngine.Vector3[] { new Vector3(0f, 0f, 1f), new Vector3(1f, 0f, 0f), new Vector3(-1f, 0f, 0f) };
+			private static readonly global::UnityEngine.Vector2Int[] offsets = new global::UnityEngine.Vector2Int[] { new Vector2Int(0, 1), new Vector2Int(1, 0), new Vector2Int(-1, 0) };
+			public DigPointModel(int x, int y, int staionIndex) {
+				gridPos = new Vector2Int(x, y);
+			}
 			public global::UnityEngine.Vector2Int GetEffOffset() {
                 for (int i = 0; i < directs.Length; i++)
                 {
@@ -1888,7 +1892,7 @@ namespace Dpr.UnderGround
                     }, eff => isKirakiraNow = false);
                 }, true);
             }
-			static DigPointModel() { /*@B 0x6009E86*/ throw null; }
+			static DigPointModel() { }
 		}
 		public abstract class MiniMapUIModelBase
 		{
@@ -1910,7 +1914,13 @@ namespace Dpr.UnderGround
 			public int StationIndex;
 			public global::UnityEngine.GameObject go;
 			public global::DPData.UgSecretBase data;
-			public SecretBaseModel(global::DPData.UgSecretBase secretBase, bool isFriends, global::UnityEngine.GameObject go, int stationIndex) { /*@B 0x6009E8D*/ throw null; }
+			public SecretBaseModel(global::DPData.UgSecretBase secretBase, bool isFriends, global::UnityEngine.GameObject go, int stationIndex) {
+				data = secretBase;
+				this.go = go;
+				gridPos = new Vector2Int(data.posX, data.posY);
+				this.isFriends = isFriends;
+				StationIndex = stationIndex;
+			}
 			public bool IsCollide() {
                 if (go == null || image == null || image.gameObject == null)
                     return false;
