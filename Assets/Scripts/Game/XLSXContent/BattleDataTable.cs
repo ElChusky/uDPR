@@ -23,7 +23,7 @@ namespace XLSXContent
 		public global::XLSXContent.BattleDataTable.SheetDisableBlinkPokemon[] DisableBlinkPokemon;
 		public global::XLSXContent.BattleDataTable.SheetPokemonMotionBlendTime[] PokemonMotionBlendTime;
 		public global::XLSXContent.BattleDataTable.SheetInterpolationSequence[] InterpolationSequence;
-		public global::XLSXContent.BattleDataTable.SheetBattleSetupEffectData this[int index] { get { /*@B 0x60091CF*/ throw null; } }
+		public global::XLSXContent.BattleDataTable.SheetBattleSetupEffectData this[int index] { get { return BattleSetupEffectData[index]; } }
 		public BattleDataTable() { }
 		[global::System.Serializable]
 		public class SheetBattleSetupEffectData

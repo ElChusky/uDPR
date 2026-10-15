@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class FreeSanpoGridPosition : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.FreeSanpoGridPosition.SheetSheet1[] Sheet1;
-		public global::XLSXContent.FreeSanpoGridPosition.SheetSheet1 this[int index] { get { /*@B 0x6009243*/ throw null; } }
+		public global::XLSXContent.FreeSanpoGridPosition.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public FreeSanpoGridPosition() { }
 		[global::System.Serializable]
 		public class SheetSheet1

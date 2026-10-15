@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class FieldWalkingKinomiSeikakuTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.FieldWalkingKinomiSeikakuTable.SheetSheet1[] Sheet1;
-		public global::XLSXContent.FieldWalkingKinomiSeikakuTable.SheetSheet1 this[int index] { get { /*@B 0x6009239*/ throw null; } }
+		public global::XLSXContent.FieldWalkingKinomiSeikakuTable.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public FieldWalkingKinomiSeikakuTable() { }
 		[global::System.Serializable]
 		public class SheetSheet1

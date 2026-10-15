@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class HirobaPokeTalk : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.HirobaPokeTalk.SheetSheet1[] Sheet1;
-		public global::XLSXContent.HirobaPokeTalk.SheetSheet1 this[int index] { get { /*@B 0x6009255*/ throw null; } }
+		public global::XLSXContent.HirobaPokeTalk.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public HirobaPokeTalk() { }
 		[global::System.Serializable]
 		public class SheetSheet1

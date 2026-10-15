@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class AddPersonalTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.AddPersonalTable.SheetAddPersonal[] AddPersonal;
-		public global::XLSXContent.AddPersonalTable.SheetAddPersonal this[int index] { get { /*@B 0x600920D*/ throw null; } }
+		public global::XLSXContent.AddPersonalTable.SheetAddPersonal this[int index] { get { return AddPersonal[index]; } }
 		public AddPersonalTable() { }
 		[global::System.Serializable]
 		public class SheetAddPersonal

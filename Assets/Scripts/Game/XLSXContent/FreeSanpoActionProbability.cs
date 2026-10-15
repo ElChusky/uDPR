@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class FreeSanpoActionProbability : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.FreeSanpoActionProbability.SheetSheet1[] Sheet1;
-		public global::XLSXContent.FreeSanpoActionProbability.SheetSheet1 this[int index] { get { /*@B 0x600923F*/ throw null; } }
+		public global::XLSXContent.FreeSanpoActionProbability.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public FreeSanpoActionProbability() { }
 		[global::System.Serializable]
 		public class SheetSheet1

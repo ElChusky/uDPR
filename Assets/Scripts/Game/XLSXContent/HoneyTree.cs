@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.HoneyTree.SheetHoneyTreeIndex[] HoneyTreeIndex;
 		public global::XLSXContent.HoneyTree.SheetHoneyTreeShake[] HoneyTreeShake;
-		public global::XLSXContent.HoneyTree.SheetHoneyTreeIndex this[int index] { get { /*@B 0x60091AC*/ throw null; } }
+		public global::XLSXContent.HoneyTree.SheetHoneyTreeIndex this[int index] { get { return HoneyTreeIndex[index]; } }
 		public HoneyTree() { }
 		[global::System.Serializable]
 		public class SheetHoneyTreeIndex

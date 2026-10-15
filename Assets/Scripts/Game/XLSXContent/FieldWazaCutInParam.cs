@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.FieldWazaCutInParam.SheetPokemonParam[] PokemonParam;
 		public global::XLSXContent.FieldWazaCutInParam.SheetCommonParam[] CommonParam;
-		public global::XLSXContent.FieldWazaCutInParam.SheetPokemonParam this[int index] { get { /*@B 0x60091A8*/ throw null; } }
+		public global::XLSXContent.FieldWazaCutInParam.SheetPokemonParam this[int index] { get { return PokemonParam[index]; } }
 		public FieldWazaCutInParam() { }
 		[global::System.Serializable]
 		public class SheetPokemonParam

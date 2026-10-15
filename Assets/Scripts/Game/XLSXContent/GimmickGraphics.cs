@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class GimmickGraphics : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.GimmickGraphics.SheetData[] Data;
-		public global::XLSXContent.GimmickGraphics.SheetData this[int index] { get { /*@B 0x60091AA*/ throw null; } }
+		public global::XLSXContent.GimmickGraphics.SheetData this[int index] { get { return Data[index]; } }
 		public GimmickGraphics() { }
 		[global::System.Serializable]
 		public class SheetData

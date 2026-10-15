@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.MapInfo.SheetZoneData[] ZoneData;
 		public global::XLSXContent.MapInfo.SheetCamera[] Camera;
-		public global::XLSXContent.MapInfo.SheetZoneData this[int index] { get { /*@B 0x60091FF*/ throw null; } }
+		public global::XLSXContent.MapInfo.SheetZoneData this[int index] { get { return ZoneData[index]; } }
 		public MapInfo() { }
 		[global::System.Serializable]
 		public class SheetZoneData

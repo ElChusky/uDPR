@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class CharcterAnimeTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.CharcterAnimeTable.Sheetcliplist[] cliplist;
-		public global::XLSXContent.CharcterAnimeTable.Sheetcliplist this[int index] { get { /*@B 0x60091A2*/ throw null; } }
+		public global::XLSXContent.CharcterAnimeTable.Sheetcliplist this[int index] { get { return cliplist[index]; } }
 		public CharcterAnimeTable() { }
 		[global::System.Serializable]
 		public class Sheetcliplist

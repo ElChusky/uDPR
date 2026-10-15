@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.AdventureNoteData.SheetData[] Data;
 		public global::XLSXContent.AdventureNoteData.SheetTIPS[] TIPS;
-		public global::XLSXContent.AdventureNoteData.SheetData this[int index] { get { /*@B 0x6009195*/ throw null; } }
+		public global::XLSXContent.AdventureNoteData.SheetData this[int index] { get { return Data[index]; } }
 		public AdventureNoteData() { }
 		[global::System.Serializable]
 		public class SheetData

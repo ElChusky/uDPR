@@ -7,7 +7,7 @@ namespace XLSXContent
 		public global::XLSXContent.BattleSetupEffectLots.SheetAttEffTable[] AttEffTable;
 		public global::XLSXContent.BattleSetupEffectLots.SheetRuleEffTable[] RuleEffTable;
 		public global::XLSXContent.BattleSetupEffectLots.SheetArenaEffTable[] ArenaEffTable;
-		public global::XLSXContent.BattleSetupEffectLots.SheetAttEffTable this[int index] { get { /*@B 0x60091D3*/ throw null; } }
+		public global::XLSXContent.BattleSetupEffectLots.SheetAttEffTable this[int index] { get { return AttEffTable[index]; } }
 		public BattleSetupEffectLots() { }
 		[global::System.Serializable]
 		public class SheetAttEffTable

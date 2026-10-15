@@ -6,8 +6,17 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.AttributeBlock[] AttributeBlocks;
 		public int Width;
-		public global::XLSXContent.AttributeBlock this[int index] { get { /*@B 0x60091E0*/ throw null; } }
-		public global::XLSXContent.AttributeBlock this[int gridX, int gridY] { get { /*@B 0x60091E1*/ throw null; } }
+		public global::XLSXContent.AttributeBlock this[int index] { get { return AttributeBlocks[index]; } }
+		public global::XLSXContent.AttributeBlock this[int gridX, int gridY] { get {
+			if (gridX < 0 || gridY < 0)
+				return null;
+
+			int index = gridX + Width * gridY;
+			if (index >= AttributeBlocks.Length)
+				return null;
+
+			return AttributeBlocks[index];
+		} }
 		public AttributeMatrix() { }
 	}
 }

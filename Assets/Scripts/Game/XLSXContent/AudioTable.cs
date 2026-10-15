@@ -8,7 +8,7 @@ namespace XLSXContent
 		public global::XLSXContent.AudioTable.SheetBgm[] Bgm;
 		public global::XLSXContent.AudioTable.SheetSe[] Se;
 		public global::XLSXContent.AudioTable.SheetVoice[] Voice;
-		public global::XLSXContent.AudioTable.SheetGroup this[int index] { get { /*@B 0x600928F*/ throw null; } }
+		public global::XLSXContent.AudioTable.SheetGroup this[int index] { get { return Group[index]; } }
 		public AudioTable() { }
 		[global::System.Serializable]
 		public class SheetGroup

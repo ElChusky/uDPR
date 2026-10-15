@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class ContestWazaInfo : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.ContestWazaInfo.SheetContestWazaData[] ContestWazaData;
-		public global::XLSXContent.ContestWazaInfo.SheetContestWazaData this[int index] { get { /*@B 0x60091E9*/ throw null; } }
+		public global::XLSXContent.ContestWazaInfo.SheetContestWazaData this[int index] { get { return ContestWazaData[index]; } }
 		public ContestWazaInfo() { }
 		[global::System.Serializable]
 		public class SheetContestWazaData

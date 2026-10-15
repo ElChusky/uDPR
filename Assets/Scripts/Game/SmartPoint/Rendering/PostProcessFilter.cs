@@ -11,12 +11,101 @@ namespace SmartPoint.Rendering
 		private global::UnityEngine.Camera _camera;
 		private global::UnityEngine.RenderTexture _renderTexture;
 		private global::UnityEngine.Rendering.CommandBuffer[] _commandBuffers;
-		public void OnViewportChange(int width, int height) { /*@B 0x6002F59*/ throw null; }
+		public void OnViewportChange(int width, int height) {
+			Reset();
+		}
 		public T GetEffect<T>() where T : global::SmartPoint.Rendering.ImageEffectObject { /*@B 0x6002F5A*/ throw null; }
-		public void OnEnable() { /*@B 0x6002F5B*/ throw null; }
-		public void Reset() { /*@B 0x6002F5C*/ throw null; }
-		public void OnPreCull() { /*@B 0x6002F5D*/ throw null; }
-		private void OnDisable() { /*@B 0x6002F5E*/ throw null; }
+		public void OnEnable() {
+			if (global::UnityEngine.Application.isPlaying)
+				Reset();
+		}
+		public void Reset() {
+			OnDisable();
+			if (_effects == null)
+				return;
+
+			if (_camera == null)
+				_camera = GetComponent<global::UnityEngine.Camera>();
+
+			int width;
+			int height;
+			if (_camera?.targetTexture != null)
+			{
+				width = _camera.targetTexture.width;
+				height = _camera.targetTexture.height;
+			}
+			else
+			{
+				width = global::SmartPoint.AssetAssistant.Sequencer.screenWidth;
+				height = global::SmartPoint.AssetAssistant.Sequencer.screenHeight;
+			}
+
+			if (_renderTexture == null)
+			{
+				_renderTexture = new global::UnityEngine.RenderTexture(width, height, 24, global::UnityEngine.RenderTextureFormat.ARGB32);
+				_renderTexture.autoGenerateMips = false;
+			}
+
+			global::UnityEngine.Rendering.RenderTargetIdentifier rt = global::UnityEngine.Rendering.BuiltinRenderTextureType.CameraTarget;
+			_commandBuffers = new global::UnityEngine.Rendering.CommandBuffer[_effects.Length];
+			for (int i = 0; i < _effects.Length; i++)
+			{
+				var effect = _effects[i];
+				if (effect == null)
+					continue;
+
+				effect.temporaryRT = _renderTexture;
+				effect.camera = _camera;
+				_commandBuffers[i] = effect.Build(rt, out rt, i == _effects.Length - 1);
+				_camera.AddCommandBuffer(global::UnityEngine.Rendering.CameraEvent.BeforeImageEffects, _commandBuffers[i]);
+			}
+		}
+		public void OnPreCull() {
+			if (_effects == null)
+				return;
+
+			for (int i = 0; i < _effects.Length; i++)
+			{
+				var effect = _effects[i];
+				if (effect != null)
+					effect.Update();
+			}
+		}
+		private void OnDisable() {
+			if (_camera == null)
+				return;
+
+			if (_renderTexture != null)
+			{
+				global::UnityEngine.Object.DestroyImmediate(_renderTexture);
+				_renderTexture = null;
+			}
+
+			if (_commandBuffers != null)
+			{
+				for (int i = 0; i < _commandBuffers.Length; i++)
+				{
+					var buffer = _commandBuffers[i];
+					if (buffer != null)
+					{
+						_camera.RemoveCommandBuffer(global::UnityEngine.Rendering.CameraEvent.BeforeImageEffects, buffer);
+						_commandBuffers[i].Clear();
+						_commandBuffers[i] = null;
+					}
+				}
+				_commandBuffers = null;
+			}
+
+			if (_effects == null)
+				return;
+
+			for (int i = 0; i < _effects.Length; i++)
+			{
+				var effect = _effects[i];
+				if (effect != null)
+					effect.Destroy();
+			}
+		}
 		public PostProcessFilter() { }
 	}
 }

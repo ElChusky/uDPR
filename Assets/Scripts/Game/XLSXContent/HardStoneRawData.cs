@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class HardStoneRawData : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.HardStoneRawData.SheetHardStone[] HardStone;
-		public global::XLSXContent.HardStoneRawData.SheetHardStone this[int index] { get { /*@B 0x6009233*/ throw null; } }
+		public global::XLSXContent.HardStoneRawData.SheetHardStone this[int index] { get { return HardStone[index]; } }
 		public HardStoneRawData() { }
 		[global::System.Serializable]
 		public class SheetHardStone

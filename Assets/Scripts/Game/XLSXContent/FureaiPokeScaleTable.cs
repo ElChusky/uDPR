@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class FureaiPokeScaleTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.FureaiPokeScaleTable.SheetTable[] Table;
-		public global::XLSXContent.FureaiPokeScaleTable.SheetTable this[int index] { get { /*@B 0x6009251*/ throw null; } }
+		public global::XLSXContent.FureaiPokeScaleTable.SheetTable this[int index] { get { return Table[index]; } }
 		public FureaiPokeScaleTable() { }
 		[global::System.Serializable]
 		public class SheetTable

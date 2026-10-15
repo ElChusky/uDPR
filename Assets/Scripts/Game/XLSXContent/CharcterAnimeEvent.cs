@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class CharcterAnimeEvent : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.CharcterAnimeEvent.SheetanimeEvent[] animeEvent;
-		public global::XLSXContent.CharcterAnimeEvent.SheetanimeEvent this[int index] { get { /*@B 0x60091A0*/ throw null; } }
+		public global::XLSXContent.CharcterAnimeEvent.SheetanimeEvent this[int index] { get { return animeEvent[index]; } }
 		public CharcterAnimeEvent() { }
 		[global::System.Serializable]
 		public class SheetanimeEvent

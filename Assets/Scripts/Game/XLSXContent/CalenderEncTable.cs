@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.CalenderEncTable.Sheetdata[] data;
 		public global::XLSXContent.CalenderEncTable.Sheetweather[] weather;
-		public global::XLSXContent.CalenderEncTable.Sheetdata this[int index] { get { /*@B 0x60091FB*/ throw null; } }
+		public global::XLSXContent.CalenderEncTable.Sheetdata this[int index] { get { return data[index]; } }
 		public CalenderEncTable() { }
 		[global::System.Serializable]
 		public class Sheetdata

@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class FieldWalkingPokeTalk : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.FieldWalkingPokeTalk.SheetSheet1[] Sheet1;
-		public global::XLSXContent.FieldWalkingPokeTalk.SheetSheet1 this[int index] { get { /*@B 0x600923D*/ throw null; } }
+		public global::XLSXContent.FieldWalkingPokeTalk.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public FieldWalkingPokeTalk() { }
 		[global::System.Serializable]
 		public class SheetSheet1

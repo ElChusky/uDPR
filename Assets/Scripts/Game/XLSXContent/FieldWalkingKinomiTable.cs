@@ -7,7 +7,7 @@ namespace XLSXContent
 		public global::XLSXContent.FieldWalkingKinomiTable.SheetA[] A;
 		public global::XLSXContent.FieldWalkingKinomiTable.SheetB[] B;
 		public global::XLSXContent.FieldWalkingKinomiTable.SheetC[] C;
-		public global::XLSXContent.FieldWalkingKinomiTable.SheetA this[int index] { get { /*@B 0x600923B*/ throw null; } }
+		public global::XLSXContent.FieldWalkingKinomiTable.SheetA this[int index] { get { return A[index]; } }
 		public FieldWalkingKinomiTable() { }
 		[global::System.Serializable]
 		public class SheetA

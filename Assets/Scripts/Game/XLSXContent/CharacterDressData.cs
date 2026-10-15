@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class CharacterDressData : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.CharacterDressData.SheetData[] Data;
-		public global::XLSXContent.CharacterDressData.SheetData this[int index] { get { /*@B 0x600919D*/ throw null; } }
+		public global::XLSXContent.CharacterDressData.SheetData this[int index] { get { return Data[index]; } }
 		public CharacterDressData() { }
 		[global::System.Serializable]
 		public class SheetData

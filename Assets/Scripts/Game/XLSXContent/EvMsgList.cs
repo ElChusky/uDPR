@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class EvMsgList : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.EvMsgList.Sheetmsg[] msg;
-		public global::XLSXContent.EvMsgList.Sheetmsg this[int index] { get { /*@B 0x6009191*/ throw null; } }
+		public global::XLSXContent.EvMsgList.Sheetmsg this[int index] { get { return msg[index]; } }
 		public EvMsgList() { }
 		[global::System.Serializable]
 		public class Sheetmsg

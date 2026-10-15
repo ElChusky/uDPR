@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class MapAttributeExTable : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.MapAttributeExTable.SheetData[] Data;
-		public global::XLSXContent.MapAttributeExTable.SheetData this[int index] { get { /*@B 0x60091E5*/ throw null; } }
+		public global::XLSXContent.MapAttributeExTable.SheetData this[int index] { get { return Data[index]; } }
 		public MapAttributeExTable() { }
 		[global::System.Serializable]
 		public class SheetData

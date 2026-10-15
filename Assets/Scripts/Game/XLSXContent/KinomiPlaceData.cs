@@ -5,7 +5,7 @@ namespace XLSXContent
 	public class KinomiPlaceData : global::UnityEngine.ScriptableObject
 	{
 		public global::XLSXContent.KinomiPlaceData.SheetSheet1[] Sheet1;
-		public global::XLSXContent.KinomiPlaceData.SheetSheet1 this[int index] { get { /*@B 0x60091B2*/ throw null; } }
+		public global::XLSXContent.KinomiPlaceData.SheetSheet1 this[int index] { get { return Sheet1[index]; } }
 		public KinomiPlaceData() { }
 		[global::System.Serializable]
 		public class SheetSheet1

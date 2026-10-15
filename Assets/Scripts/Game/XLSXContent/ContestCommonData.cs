@@ -6,7 +6,7 @@ namespace XLSXContent
 	{
 		public global::XLSXContent.ContestCommonData.SheetContestCategory[] ContestCategory;
 		public global::XLSXContent.ContestCommonData.SheetContestRank[] ContestRank;
-		public global::XLSXContent.ContestCommonData.SheetContestCategory this[int index] { get { /*@B 0x6009229*/ throw null; } }
+		public global::XLSXContent.ContestCommonData.SheetContestCategory this[int index] { get { return ContestCategory[index]; } }
 		public ContestCommonData() { }
 		[global::System.Serializable]
 		public class SheetContestCategory
