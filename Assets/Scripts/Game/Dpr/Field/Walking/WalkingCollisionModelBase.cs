@@ -96,7 +96,14 @@ namespace Dpr.Field.Walking
 			float length = global::SmartPoint.Mathematics.Vector3Ext.FastNormalize(ref dir);
 			if (!(length <= radius + 0.01f))
 				return false;
+#if PC_UNLOCKED_FPS
+			// PC (s46 C5): the shipped minimum push 0.02 is per Update = per 30 Hz frame on the console; per rendered frame it is
+			// 0.02 x Frames, else a walker within reach of the player (or another walker) drifts away fps/30 times faster - at
+			// uncapped fps the walker beside the player slid off before a talk could start (s41 note, s42 R201 repro).
+			global::UnityEngine.Vector3 move = walkData.moveVec + dir * global::UnityEngine.Mathf.Clamp(radius - length, 0.02f * PcPlatform.PcFrameClock.Frames, 100f);
+#else
 			global::UnityEngine.Vector3 move = walkData.moveVec + dir * global::UnityEngine.Mathf.Clamp(radius - length, 0.02f, 100f);
+#endif
 			float moveLength = global::SmartPoint.Mathematics.Vector3Ext.FastNormalize(ref move);
 			global::UnityEngine.Vector3 result = global::CollisionUtility.CollideObstacle(transform.position, 0.4f, move, moveLength * speed, out jump, out isCollided, out dotAngle, global::Layer.Obstacle | global::Layer.Jump, 0.99f);
 			if (!isCheckOnly)

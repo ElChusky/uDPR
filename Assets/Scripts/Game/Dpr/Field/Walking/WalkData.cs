@@ -75,7 +75,14 @@ namespace Dpr.Field.Walking
 			}
 			baseSpeed = BaseSpeed;
 			float max = global::UnityEngine.Mathf.Min(num, (isNeedRun ? runSpeed : walkSpeed) * BaseSpeed * deltaTime);
+#if PC_UNLOCKED_FPS
+			// PC (s46 C5): here nowSpeed is a per-frame STEP (the cap above is speed * deltaTime), and the shipped per-Update
+			// increment deltaTime * Accelarate is per 30 Hz frame. Per rendered frame the step grows by that x FramesOf(deltaTime),
+			// so the speed in units per second rises at the 30 fps rate (it reached full speed 30/fps times sooner; s41 note).
+			float speed = global::UnityEngine.Mathf.Clamp(deltaTime * Accelarate * PcPlatform.PcFrameClock.FramesOf(deltaTime) + nowSpeed, 0f, max);
+#else
 			float speed = global::UnityEngine.Mathf.Clamp(deltaTime * Accelarate + nowSpeed, 0f, max);
+#endif
 			moveVec = entity.transform.TransformDirection(global::UnityEngine.Vector3.forward) * speed;
 			nowSpeed = speed;
 #if PC_UNLOCKED_FPS
