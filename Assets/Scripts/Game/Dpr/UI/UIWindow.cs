@@ -38,7 +38,49 @@ namespace Dpr.UI
 			if (_animEvent != null)
 				_animEvent.onTransition = OnTransition;
 		}
-		public void RegisterCloseOnOpenWindow<T>(global::UnityEngine.Color color, float duration, global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosedAction) where T : global::Dpr.UI.UIWindow { /*@B 0x6005C8D*/ throw null; }
+		public void RegisterCloseOnOpenWindow<T>(global::UnityEngine.Color color, float duration, global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosedAction) where T : global::Dpr.UI.UIWindow {
+			global::System.Collections.IEnumerator OnPreClose()
+			{
+				Color beforeColor = global::SmartPoint.Components.Fader.fillColor;
+				global::SmartPoint.Components.Fader.fadeMode = global::SmartPoint.Components.Fader.FadeMode.Color;
+				global::SmartPoint.Components.Fader.fillColor = color;
+				global::SmartPoint.Components.Fader.FadeOut(duration);
+				while (global::SmartPoint.Components.Fader.fadeOutProgress != 1f)
+					yield return null;
+
+				global::SmartPoint.Components.Fader.fillColor = beforeColor;
+			}
+			global::System.Collections.IEnumerator OnClosed(UIWindow window)
+			{
+				while (global::SmartPoint.Components.Fader.fadeOutProgress != 1f)
+					yield return null;
+
+				float time = Time.realtimeSinceStartup;
+				if (onClosedAction != null)
+					onClosedAction.Invoke(window);
+
+				while (UIManager.Instance.GetCurrentUIWindow<T>() == null)
+					yield return null;
+
+				time = duration - (Time.realtimeSinceStartup - time);
+				while (time > 0f)
+				{
+					yield return null;
+					time -= Time.deltaTime;
+				}
+
+				Color beforeColor = global::SmartPoint.Components.Fader.fillColor;
+				global::SmartPoint.Components.Fader.fadeMode = global::SmartPoint.Components.Fader.FadeMode.Color;
+				global::SmartPoint.Components.Fader.fillColor = color;
+				global::SmartPoint.Components.Fader.FadeIn(duration);
+				while (global::SmartPoint.Components.Fader.fadeInProgress != 1f)
+					yield return null;
+
+				global::SmartPoint.Components.Fader.fillColor = beforeColor;
+			}
+			onPreClose = _ => global::SmartPoint.AssetAssistant.Sequencer.Start(OnPreClose());
+			onClosed += w => global::SmartPoint.AssetAssistant.Sequencer.Start(OnClosed(w));
+		}
 		protected virtual void OnDestroy() { }
 		protected virtual void OnTransition(global::TransitionID transitionId, global::Dpr.UI.UITransition.FadeType fadeType) {
 			_transitionFadeType = fadeType;
@@ -183,7 +225,37 @@ namespace Dpr.UI
 			return contextMenu;
 		}
 		protected virtual void OnAddContextMenuYesNoItemParams(global::System.Collections.Generic.List<global::Dpr.UI.ContextMenuItem.Param> contextMenuItemParams) { }
-		protected global::System.Collections.IEnumerator FadeTransition<T>(global::UnityEngine.Color color, float duration, global::System.Action action) where T : global::Dpr.UI.UIWindow { /*@B 0x6005CA4*/ throw null; }
+		protected global::System.Collections.IEnumerator FadeTransition<T>(global::UnityEngine.Color color, float duration, global::System.Action action) where T : global::Dpr.UI.UIWindow {
+			UIManager.Instance.EnableFadeTransition(true);
+			_input.inputEnabled = false;
+			Color beforeFillColor = global::SmartPoint.Components.Fader.fillColor;
+			global::SmartPoint.Components.Fader.fadeMode = global::SmartPoint.Components.Fader.FadeMode.Color;
+			global::SmartPoint.Components.Fader.fillColor = color;
+			global::SmartPoint.Components.Fader.FadeOut(duration);
+			while (global::SmartPoint.Components.Fader.fadeOutProgress != 1f)
+				yield return null;
+
+			float time = Time.realtimeSinceStartup;
+			if (action != null)
+				action.Invoke();
+
+			while (UIManager.Instance.GetCurrentUIWindow<T>() == null)
+				yield return null;
+
+			time = duration - (Time.realtimeSinceStartup - time);
+			while (time > 0f)
+			{
+				yield return null;
+				time -= Time.deltaTime;
+			}
+
+			global::SmartPoint.Components.Fader.FadeIn(duration);
+			while (global::SmartPoint.Components.Fader.fadeInProgress != 1f)
+				yield return null;
+
+			global::SmartPoint.Components.Fader.fillColor = beforeFillColor;
+			UIManager.Instance.EnableFadeTransition(false);
+		}
 		public UIWindow() { }
 		static UIWindow() { }
 	}

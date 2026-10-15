@@ -14,7 +14,17 @@ namespace SmartPoint.Rendering
 		public void OnViewportChange(int width, int height) {
 			Reset();
 		}
-		public T GetEffect<T>() where T : global::SmartPoint.Rendering.ImageEffectObject { /*@B 0x6002F5A*/ throw null; }
+		public T GetEffect<T>() where T : global::SmartPoint.Rendering.ImageEffectObject {
+			if (_effects != null)
+			{
+				for (int i = 0; i < _effects.Length; i++)
+				{
+					if (_effects[i] is T effect)
+						return effect;
+				}
+			}
+			return null;
+		}
 		public void OnEnable() {
 			if (global::UnityEngine.Application.isPlaying)
 				Reset();

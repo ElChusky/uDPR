@@ -3,6 +3,15 @@ namespace NexPlugin
 {
 	internal static class IEnumerableExtensions
 	{
-		public static string JoinString<T>(this global::System.Collections.Generic.IEnumerable<T> values) { /*@B 0x6002A3F*/ throw null; }
+		public static string JoinString<T>(this global::System.Collections.Generic.IEnumerable<T> values) {
+			global::System.Text.StringBuilder sb = new global::System.Text.StringBuilder();
+			foreach (T value in values)
+			{
+				if (sb.Length != 0)
+					sb.Append(", ");
+				sb.Append(value.ToString());
+			}
+			return sb.ToString();
+		}
 	}
 }

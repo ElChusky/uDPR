@@ -5,18 +5,78 @@ namespace SmartPoint.Components
 	{
 		private bool _loaded;
 		private static T _instance;
-		protected virtual string key { get { /*@B 0x6003029*/ throw null; } }
-		protected static T instance { get { /*@B 0x6003031*/ throw null; } }
-		protected virtual void Initialization() { /*@B 0x600302A*/ throw null; }
-		protected virtual bool CustomLoadOperation() { /*@B 0x600302B*/ throw null; }
-		protected virtual bool CustomSaveOperation() { /*@B 0x600302C*/ throw null; }
-		protected virtual bool CustomLoadAsyncOperation() { /*@B 0x600302D*/ throw null; }
-		protected virtual bool CustomSaveAsyncOperation() { /*@B 0x600302E*/ throw null; }
-		protected virtual void OnPostLoad() { /*@B 0x600302F*/ throw null; }
-		protected virtual void OnPreSave() { /*@B 0x6003030*/ throw null; }
-		public static void Load(bool forceReload = false, bool isAsync = false) { /*@B 0x6003032*/ throw null; }
-		public static void Save(bool isAsync = false) { /*@B 0x6003033*/ throw null; }
-		public static void Clear() { /*@B 0x6003034*/ throw null; }
-		protected PlayerPrefsProvider() { /*@B 0x6003035*/ throw null; }
+		protected virtual string key { get { return typeof(T).Name; } }
+		protected static T instance { get {
+			if (_instance == null)
+			{
+				_instance = new T();
+				(_instance as PlayerPrefsProvider<T>).Initialization();
+			}
+			return _instance;
+		}  }
+		protected virtual void Initialization() { }
+		protected virtual bool CustomLoadOperation() { return false; }
+		protected virtual bool CustomSaveOperation() { return false; }
+		protected virtual bool CustomLoadAsyncOperation() {
+			if (CustomLoadOperation())
+			{
+				OnPostLoad();
+				return true;
+			}
+			return false;
+		}
+		protected virtual bool CustomSaveAsyncOperation() {
+			OnPreSave();
+			return CustomSaveOperation();
+		}
+		protected virtual void OnPostLoad() { }
+		protected virtual void OnPreSave() { }
+		public static void Load(bool forceReload = false, bool isAsync = false) {
+			if (instance == null)
+				return;
+			if (!forceReload && (_instance as PlayerPrefsProvider<T>)._loaded)
+				return;
+			if (isAsync)
+			{
+				if ((_instance as PlayerPrefsProvider<T>).CustomLoadAsyncOperation())
+					return;
+			}
+			else if ((_instance as PlayerPrefsProvider<T>).CustomLoadOperation())
+			{
+				(_instance as PlayerPrefsProvider<T>).OnPostLoad();
+				return;
+			}
+			string key = (_instance as PlayerPrefsProvider<T>).key;
+			string json = global::UnityEngine.PlayerPrefs.GetString(key);
+			if (string.IsNullOrEmpty(json))
+				return;
+			global::UnityEngine.JsonUtility.FromJsonOverwrite(json, _instance);
+			(_instance as PlayerPrefsProvider<T>).OnPostLoad();
+			(_instance as PlayerPrefsProvider<T>)._loaded = true;
+			global::UnityEngine.Debug.Log("PlayerPrefs Loaded: " + key);
+		}
+		public static void Save(bool isAsync = false) {
+			if (instance == null)
+				return;
+			if (isAsync)
+			{
+				if ((_instance as PlayerPrefsProvider<T>).CustomSaveAsyncOperation())
+					return;
+			}
+			else
+			{
+				(_instance as PlayerPrefsProvider<T>).OnPreSave();
+				if ((_instance as PlayerPrefsProvider<T>).CustomSaveOperation())
+					return;
+			}
+			string json = global::UnityEngine.JsonUtility.ToJson(_instance, false);
+			global::UnityEngine.PlayerPrefs.SetString((_instance as PlayerPrefsProvider<T>).key, json);
+		}
+		public static void Clear() {
+			_instance = new T();
+			(_instance as PlayerPrefsProvider<T>).Initialization();
+			Save(false);
+		}
+		protected PlayerPrefsProvider() { }
 	}
 }

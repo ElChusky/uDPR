@@ -454,7 +454,19 @@ namespace NexPlugin
 #else
 			private static bool DataStore_PostObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStorePreparePostParamInt pParam, global::System.IntPtr pUpBuf, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_PostObjectAsync", pNgsFacade); }
 #endif
-			public static bool PostObjectAsync<T>(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStorePreparePostParam param, T[] array, int timeOut = 0, global::NexPlugin.DataStore.PostCB callback = null) where T : struct { /*@B 0x6009B18*/ throw null; }
+			public static bool PostObjectAsync<T>(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStorePreparePostParam param, T[] array, int timeOut = 0, global::NexPlugin.DataStore.PostCB callback = null) where T : struct {
+				List<IntPtr> useptr = new List<IntPtr>();
+				IntPtr pUpBuf = Detail.CopyStruct(array);
+				useptr.Add(pUpBuf);
+				DataStorePreparePostParamInt paramInt = new DataStorePreparePostParamInt(useptr, param, (uint)(Marshal.SizeOf(typeof(T)) * array.Length));
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_PostObjectAsync(asyncId, pNgsFacade, ref paramInt, pUpBuf, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_PostMetaAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStorePreparePostParamInt pParam, int timeOut);
 #else
@@ -587,7 +599,19 @@ namespace NexPlugin
 #else
 			private static bool DataStore_UpdateObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStorePrepareUpdateParamInt pParam, global::System.IntPtr pUpBuf, int timeOut) { return PcPlatform.PcNex.ServiceCall("DataStore_UpdateObjectAsync", pNgsFacade); }
 #endif
-			public static bool UpdateObjectAsync<T>(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStorePrepareUpdateParam param, T[] array, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) where T : struct { /*@B 0x6009B2A*/ throw null; }
+			public static bool UpdateObjectAsync<T>(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.DataStorePrepareUpdateParam param, T[] array, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) where T : struct {
+				List<IntPtr> useptr = new List<IntPtr>();
+				IntPtr pUpBuf = Detail.CopyStruct(array);
+				useptr.Add(pUpBuf);
+				DataStorePrepareUpdateParamInt paramInt = new DataStorePrepareUpdateParamInt(param);
+				asyncId = PublishAsyncId();
+				bool ret = DataStore_UpdateObjectAsync(asyncId, pNgsFacade, ref paramInt, pUpBuf, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, true);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool DataStore_GetObjectAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.DataStore.DataStorePrepareGetParamInt pParam, ulong getBufSize, int timeOut);
 #else

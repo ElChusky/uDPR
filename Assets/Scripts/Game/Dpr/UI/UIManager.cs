@@ -733,8 +733,26 @@ namespace Dpr.UI
             }
             return null;
         }
-		public global::System.Collections.Generic.List<T> GetExistWindows<T>() where T : global::Dpr.UI.UIWindow { /*@B 0x6005BFC*/ throw null; }
-		public int GetExistWindowCount<T>() where T : global::Dpr.UI.UIWindow { /*@B 0x6005BFD*/ throw null; }
+		public global::System.Collections.Generic.List<T> GetExistWindows<T>() where T : global::Dpr.UI.UIWindow {
+			var windows = new global::System.Collections.Generic.List<T>();
+			for (int i = Instance.GetUIWindowCount() - 1; i >= 0; i--)
+			{
+				T window = Instance.GetUIWindowByIndex(i) as T;
+				if (window != null)
+					windows.Add(window);
+			}
+			return windows;
+		}
+		public int GetExistWindowCount<T>() where T : global::Dpr.UI.UIWindow {
+			int count = 0;
+			for (int i = Instance.GetUIWindowCount() - 1; i >= 0; i--)
+			{
+				T window = Instance.GetUIWindowByIndex(i) as T;
+				if (window != null)
+					count++;
+			}
+			return count;
+		}
 		public global::Dpr.UI.UIWindow GetReduplicationWindow(global::Dpr.UI.UIWindow baseWindow) {
             // GetUIWindowCount is inlined (init flag 0x48d)
             for (int i = Instance.GetUIWindowCount() - 1; i >= 0; i--)
