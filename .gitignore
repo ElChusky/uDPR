@@ -58,3 +58,7 @@ crashlytics-build.properties
 !/Assets/Wwise/ScriptableObjects/*.asset
 !/Assets/Wwise/LauncherInfo.json
 /Assets/Wwise/Editor/ProjectData/AkWwiseProjectData.asset*
+
+# Automated setup: intermediate files and tools (setup/setup.py --work defaults here)
+/SetupWork/
+__pycache__/
