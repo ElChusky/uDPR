@@ -7,22 +7,22 @@ namespace NexAssets
 		[global::UnityEngine.SerializeField]
 		private uint httpThreadPriority;
 		[global::UnityEngine.SerializeField]
-		private uint httpBufferSize;
+		private uint httpBufferSize = 32768;
 		[global::UnityEngine.SerializeField]
-		private uint timeoutBytesPerSecond;
+		private uint timeoutBytesPerSecond = 167;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 3600000f)]
-		private int minimumTimeoutMilliSecond;
+		private int minimumTimeoutMilliSecond = 60000;
 		[global::UnityEngine.SerializeField]
-		private uint httpSendSocketBufferSize;
+		private uint httpSendSocketBufferSize = 65536;
 		[global::UnityEngine.SerializeField]
-		private uint httpRecvSocketBufferSize;
+		private uint httpRecvSocketBufferSize = 65536;
 		public uint GetHttpThreadPrioritySetting() { return httpThreadPriority; }
 		public uint GetHttpBufferSizeSetting() { return httpBufferSize; }
 		public uint GetTimeoutBytesPerSecondSetting() { return timeoutBytesPerSecond; }
 		public int GetMinimumTimeoutMilliSecondSetting() { return minimumTimeoutMilliSecond; }
 		public uint GetHttpSendSocketBufferSizeSetting() { return httpSendSocketBufferSize; }
 		public uint GetHttpRecvSocketBufferSizeSetting() { return httpRecvSocketBufferSize; }
-		public DataStoreBaseParam() { /*@B 0x6002D94*/ throw null; }
+		public DataStoreBaseParam() { }
 	}
 }

@@ -10,29 +10,29 @@ namespace NexAssets
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.DataStore.DataStatus dataStatus;
 		[global::UnityEngine.SerializeField]
-		private string name;
+		private string name = "";
 		[global::UnityEngine.SerializeField]
-		private global::System.Collections.Generic.List<string> tags;
+		private global::System.Collections.Generic.List<string> tags = new global::System.Collections.Generic.List<string>();
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 365f)]
-		private ushort period;
+		private ushort period = 90;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 65534f)]
 		private ushort dataType;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.DataStore.Permission accessPermission;
+		private global::NexPlugin.DataStore.Permission accessPermission = global::NexPlugin.DataStore.Permission.PERMISSION_PRIVATE;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.DataStore.Permission updatePermission;
+		private global::NexPlugin.DataStore.Permission updatePermission = global::NexPlugin.DataStore.Permission.PERMISSION_PRIVATE;
 		[global::UnityEngine.SerializeField]
-		private bool isUsePersistenceSlotId;
+		private bool isUsePersistenceSlotId = true;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 15f)]
-		private ushort persistenceSlotId;
+		private ushort persistenceSlotId = 65535;
 		[global::UnityEngine.SerializeField]
-		private string dataId;
+		private string dataId = "0";
 		private ulong dataId_;
 		[global::UnityEngine.SerializeField]
-		private global::NexAssets.DataStoreChangeMetaCompareParam dataStoreChangeMetaCompareParam;
+		private global::NexAssets.DataStoreChangeMetaCompareParam dataStoreChangeMetaCompareParam = new global::NexAssets.DataStoreChangeMetaCompareParam();
 		public void Validate() {
 			// InspectorUtility.GetUlong (b193) inlined @01f878a4–01f87928 (TryParse, Min / Max with 0 / ulong.MaxValue)
 			dataId_ = InspectorUtility.GetUlong(dataId);
@@ -64,6 +64,6 @@ namespace NexAssets
 			param.SetChangeMetaCompareParam(dataStoreChangeMetaCompareParam.GetDataStoreChangeMetaCompareParam());
 			return param;
 		}
-		public DataStoreChangeMetaParam() { /*@B 0x6002DA8*/ throw null; }
+		public DataStoreChangeMetaParam() { }
 	}
 }

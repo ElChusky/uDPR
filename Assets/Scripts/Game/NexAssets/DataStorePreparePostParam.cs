@@ -7,25 +7,25 @@ namespace NexAssets
 	public class DataStorePreparePostParam
 	{
 		[global::UnityEngine.SerializeField]
-		private string name;
+		private string name = "";
 		[global::UnityEngine.SerializeField]
-		private global::System.Collections.Generic.List<string> tags;
+		private global::System.Collections.Generic.List<string> tags = new global::System.Collections.Generic.List<string>();
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 365f)]
-		private ushort period;
+		private ushort period = 90;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 65534f)]
 		private ushort dataType;
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.DataStore.DataFlag dataFlag;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.DataStore.Permission accessPermission;
+		private global::NexPlugin.DataStore.Permission accessPermission = global::NexPlugin.DataStore.Permission.PERMISSION_PRIVATE;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.DataStore.Permission updatePermission;
+		private global::NexPlugin.DataStore.Permission updatePermission = global::NexPlugin.DataStore.Permission.PERMISSION_PRIVATE;
 		[global::UnityEngine.SerializeField]
-		private global::NexAssets.DataStorePersistenceInitParam persistenceInitParam;
+		private global::NexAssets.DataStorePersistenceInitParam persistenceInitParam = new global::NexAssets.DataStorePersistenceInitParam();
 		[global::UnityEngine.SerializeField]
-		private global::System.Collections.Generic.List<global::NexAssets.DataStoreRatingInitParam> dataStoreRatingInitParamList;
+		private global::System.Collections.Generic.List<global::NexAssets.DataStoreRatingInitParam> dataStoreRatingInitParamList = new global::System.Collections.Generic.List<global::NexAssets.DataStoreRatingInitParam>();
 		public void Validate() {
 			InspectorUtility.ValidateTag(tags);
 			InspectorUtility.ValidateList(dataStoreRatingInitParamList, 16);
@@ -53,6 +53,6 @@ namespace NexAssets
 			param.SetRatingSetting(ratingSetting);
 			return param;
 		}
-		public DataStorePreparePostParam() { /*@B 0x6002D9D*/ throw null; }
+		public DataStorePreparePostParam() { }
 	}
 }

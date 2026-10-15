@@ -567,7 +567,76 @@ namespace NexAssets
             }
             return s_AutoLoginState;
         }
-		private global::NexAssets.Common.ASYNCSTATE GetLoginUserParam(global::nn.account.UserHandle userHandle, out global::nn.account.NetworkServiceAccountId nsaId, out byte[] tokenCache, bool autoLogin = false) { /*@B 0x6002D7F*/ throw null; }
+		private global::NexAssets.Common.ASYNCSTATE GetLoginUserParam(global::nn.account.UserHandle userHandle, out global::nn.account.NetworkServiceAccountId nsaId, out byte[] tokenCache, bool autoLogin = false) {
+			nn.Result result = default;
+			Uid uid = default;
+			nn.Result userIdResult = default;
+			bool done = false;
+			ulong size = 0;
+			nsaId = default;
+			tokenCache = null;
+			if (!NexPlugin.Common.IsInitializedNex() || !NexPlugin.Common.IsNetworkConnected())
+				return ASYNCSTATE.NOT_NEXINIT;
+			int userCount = 0;
+			uid = default;
+			Uid[] users = new Uid[8];
+			if (userHandle.Equals(default(UserHandle)))
+				return ASYNCSTATE.NGS_USERHANDLE_ERROR;
+			userIdResult = Account.GetUserId(ref uid, userHandle);
+			if (!userIdResult.IsSuccess())
+				return ASYNCSTATE.NGS_USERHANDLE_ERROR;
+			Account.ListOpenUsers(ref userCount, users);
+			if (Array.IndexOf(users, uid) == -1)
+				return ASYNCSTATE.NGS_USERHANDLE_ERROR;
+			while (true)
+			{
+				result = NetworkServiceAccount.EnsureAvailable(userHandle);
+				if (!result.IsSuccess())
+				{
+					SetAutoLoginResultError(result);
+					return Account.ResultCancelledByUser.Includes(result) ? ASYNCSTATE.NGS_USER_CANCEL : ASYNCSTATE.NGS_ENSUREAVAILABLE_ERROR;
+				}
+				result = NetworkServiceAccount.GetId(ref nsaId, userHandle);
+				if (!result.IsSuccess())
+				{
+					if (NetworkServiceAccount.ResultNetworkServiceAccountUnavailable.Includes(result))
+						continue;
+					SetAutoLoginResultError(result);
+					return ASYNCSTATE.NGS_GETID_ERROR;
+				}
+				AsyncContext context = new AsyncContext();
+				result = NetworkServiceAccount.EnsurIdTokenCacheAsync(context, userHandle);
+				if (result.IsSuccess())
+				{
+					done = false;
+					do
+					{
+						global::System.Threading.Thread.Sleep(100);
+						context.HasDone(ref done);
+					} while (!done);
+					result = context.GetResult();
+					if (result.IsSuccess())
+					{
+						size = 0;
+						byte[] buffer = new byte[3072];
+						result = NetworkServiceAccount.LoadIdTokenCache(ref size, buffer, userHandle);
+						if (result.IsSuccess())
+						{
+							tokenCache = buffer;
+							return ASYNCSTATE.NONE;
+						}
+						if (NetworkServiceAccount.ResultNetworkServiceAccountUnavailable.Includes(result) || NetworkServiceAccount.ResultTokenCacheUnavailable.Includes(result))
+							continue;
+						SetAutoLoginResultError(result);
+						return ASYNCSTATE.NGS_LOADIDTOKENCACHE_ERROR;
+					}
+				}
+				if (NetworkServiceAccount.ResultNetworkServiceAccountUnavailable.Includes(result))
+					continue;
+				SetAutoLoginResultError(result);
+				return ASYNCSTATE.NGS_ENSURIDTOKENCACHE_ERROR;
+			}
+		}
 		private global::NexAssets.Common.ASYNCSTATE NGSLoginInf(ref uint async_id) {
             s_AutoLoginResult = new AsyncResult();
             return LoginAsync(ref async_id, GetNgsInfo(), new NgsFacade.LoginCB(CoreLoginCB));
@@ -650,7 +719,7 @@ namespace NexAssets
             // empty in the binary (@01f82e90 `ret`)
         }
 		public Common() { }
-		static Common() { /*@B 0x6002D8D*/ throw null; }
+		static Common() { }
 		public enum CALL_DISPATCH
 		{
 			UPDATE = 1,
@@ -717,52 +786,52 @@ namespace NexAssets
 		private class NEX_INIT_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public global::NexPlugin.AsyncResultCB callback;
-			public NEX_INIT_ARG() { /*@B 0x6009CAD*/ throw null; }
+			public NEX_INIT_ARG() { }
 		}
 		private class GETUID_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public int timeOut;
 			public global::NexPlugin.Utility.AcquireNexUniqueIdCB callback;
-			public GETUID_ARG() { /*@B 0x6009CAE*/ throw null; }
+			public GETUID_ARG() { }
 		}
 		private class GETUIDWITHPASSWD_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public int timeOut;
 			public global::NexPlugin.Utility.AcquireNexUniqueIdWithPasswordCB callback;
-			public GETUIDWITHPASSWD_ARG() { /*@B 0x6009CAF*/ throw null; }
+			public GETUIDWITHPASSWD_ARG() { }
 		}
 		private class ASCUIDWITHPID_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public global::NexPlugin.UniqueIdInfo info;
 			public int timeOut;
 			public global::NexPlugin.AsyncResultCB callback;
-			public ASCUIDWITHPID_ARG() { /*@B 0x6009CB0*/ throw null; }
+			public ASCUIDWITHPID_ARG() { }
 		}
 		private class ASCUIDWITHPIDLIST_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public global::System.Collections.Generic.List<global::NexPlugin.UniqueIdInfo> info;
 			public int timeOut;
 			public global::NexPlugin.AsyncResultCB callback;
-			public ASCUIDWITHPIDLIST_ARG() { /*@B 0x6009CB1*/ throw null; }
+			public ASCUIDWITHPIDLIST_ARG() { }
 		}
 		private class GETASCUIDWITHPID_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public int timeOut;
 			public global::NexPlugin.Utility.GetAssociatedNexUniqueIdWithMyPrincipalIdCB callback;
-			public GETASCUIDWITHPID_ARG() { /*@B 0x6009CB2*/ throw null; }
+			public GETASCUIDWITHPID_ARG() { }
 		}
 		private class GETASCUIDWITHPIDLIST_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public int timeOut;
 			public global::NexPlugin.Utility.GetAssociatedNexUniqueIdWithMyPrincipalIdListCB callback;
-			public GETASCUIDWITHPIDLIST_ARG() { /*@B 0x6009CB3*/ throw null; }
+			public GETASCUIDWITHPIDLIST_ARG() { }
 		}
 		private class GETINTEGERSETTINGS_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public uint index;
 			public int timeOut;
 			public global::NexPlugin.Utility.GetIntegerSettingsCB callback;
-			public GETINTEGERSETTINGS_ARG() { /*@B 0x6009CB4*/ throw null; }
+			public GETINTEGERSETTINGS_ARG() { }
 		}
 		protected struct ApiCallsFrequency
 		{

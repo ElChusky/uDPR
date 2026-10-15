@@ -13,30 +13,30 @@ namespace NexAssets
 		private const int MAX_MEMORY = 10240;
 		private const int MIN_RESERVEMEMORY = 40;
 		[global::UnityEngine.SerializeField]
-		private string gameServerId;
+		private string gameServerId = "0";
 		[global::UnityEngine.SerializeField]
-		private string accessKey;
+		private string accessKey = "";
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(1000f, 60000f)]
-		private int timeOut;
+		private int timeOut = 30000;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(300f, 10240f)]
-		private uint pluginMemSize;
+		private uint pluginMemSize = 2048;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.Common.ThreadMode threadMode;
+		private global::NexPlugin.Common.ThreadMode threadMode = global::NexPlugin.Common.ThreadMode.ThreadModeSafeTransportBuffer;
 		[global::UnityEngine.SerializeField]
-		private global::NexAssets.Common.CALL_DISPATCH callDispatch;
+		private global::NexAssets.Common.CALL_DISPATCH callDispatch = global::NexAssets.Common.CALL_DISPATCH.UPDATE | global::NexAssets.Common.CALL_DISPATCH.LATEUPDATE;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 60000f)]
 		private uint dispatchTimeOut;
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.Common.DispachFlag dispatchFlag;
 		[global::UnityEngine.SerializeField]
-		private bool autoLogin;
+		private bool autoLogin = true;
 		[global::UnityEngine.SerializeField]
-		private bool autoLogout;
+		private bool autoLogout = true;
 		[global::UnityEngine.SerializeField]
-		private int coreNo;
+		private int coreNo = 1;
 		public global::NexAssets.Common.NEX_INIT_PARAM GetNexInitParam() {
 			uint serverId;
 			try
@@ -61,6 +61,6 @@ namespace NexAssets
 			param.coreNo = coreNo;
 			return param;
 		}
-		public NexInitParam() { /*@B 0x6002DC8*/ throw null; }
+		public NexInitParam() { }
 	}
 }

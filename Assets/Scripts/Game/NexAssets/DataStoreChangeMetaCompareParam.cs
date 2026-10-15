@@ -10,19 +10,19 @@ namespace NexAssets
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.DataStore.DataStatus dataStatus;
 		[global::UnityEngine.SerializeField]
-		private string name;
+		private string name = "";
 		[global::UnityEngine.SerializeField]
-		private global::System.Collections.Generic.List<string> tags;
+		private global::System.Collections.Generic.List<string> tags = new global::System.Collections.Generic.List<string>();
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 365f)]
-		private ushort period;
+		private ushort period = 90;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 65534f)]
 		private ushort dataType;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.DataStore.Permission accessPermission;
+		private global::NexPlugin.DataStore.Permission accessPermission = global::NexPlugin.DataStore.Permission.PERMISSION_PRIVATE;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.DataStore.Permission updatePermission;
+		private global::NexPlugin.DataStore.Permission updatePermission = global::NexPlugin.DataStore.Permission.PERMISSION_PRIVATE;
 		public void Validate() {
 			InspectorUtility.ValidateTag(tags);
 		}
@@ -40,6 +40,6 @@ namespace NexAssets
 			param.SetUpdatePermission(new DataStorePermission(updatePermission));
 			return param;
 		}
-		public DataStoreChangeMetaCompareParam() { /*@B 0x6002DAB*/ throw null; }
+		public DataStoreChangeMetaCompareParam() { }
 	}
 }

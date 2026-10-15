@@ -21,7 +21,7 @@ namespace NexAssets
 		[global::UnityEngine.SerializeField]
 		private bool isUseMax;
 		[global::UnityEngine.SerializeField]
-		private global::NexAssets.DataStoreRatingLockInitParam dataStoreRatingLockInitParam;
+		private global::NexAssets.DataStoreRatingLockInitParam dataStoreRatingLockInitParam = new global::NexAssets.DataStoreRatingLockInitParam();
 		public sbyte GetSlot() {
 			return slot;
 		}
@@ -38,6 +38,6 @@ namespace NexAssets
 			param.SetLock(dataStoreRatingLockInitParam.GetDataStoreRatingLockInitParam());
 			return param;
 		}
-		public DataStoreRatingInitParam() { /*@B 0x6002DA3*/ throw null; }
+		public DataStoreRatingInitParam() { }
 	}
 }
