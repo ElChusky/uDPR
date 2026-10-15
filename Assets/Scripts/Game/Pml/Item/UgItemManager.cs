@@ -9,8 +9,13 @@ namespace Pml.Item
 		private global::XLSXContent.PedestalTable m_pedestalTable;
 		private global::XLSXContent.StoneStatuEeffect m_stoneStatuEeffect;
 		public static global::Pml.Item.UgItemManager Instance { get; }
-		public int UgItemTotal { get { /*@B 0x600229D*/ throw null; } }
-		public void Initialize(global::XLSXContent.UgItemTable ugItemTable, global::XLSXContent.TamaTable tamaTable, global::XLSXContent.PedestalTable pedestalTable, global::XLSXContent.StoneStatuEeffect stoneStatuEeffect) { /*@B 0x600229E*/ throw null; }
+		public int UgItemTotal { get { return m_ugItemTable.table.Length; } }
+		public void Initialize(global::XLSXContent.UgItemTable ugItemTable, global::XLSXContent.TamaTable tamaTable, global::XLSXContent.PedestalTable pedestalTable, global::XLSXContent.StoneStatuEeffect stoneStatuEeffect) {
+            m_ugItemTable = ugItemTable;
+            m_tamaTable = tamaTable;
+            m_pedestalTable = pedestalTable;
+            m_stoneStatuEeffect = stoneStatuEeffect;
+        }
 		// @0249f6c0 (GetUgItemData inlined: Raw, else m_ugItemTable[0] by `bl` get_Item; ItemTableID < 0)
 		public bool IsExclusiveUseUG(int ugItemId) {
             return GetUgItemData(ugItemId).ItemTableID < 0;
@@ -101,6 +106,8 @@ namespace Pml.Item
             return GetUgItemDataRaw(ugItemId).StonestatueeffectID > 0;
         }
 		public UgItemManager() { }
-		static UgItemManager() { /*@B 0x60022AE*/ throw null; }
+		static UgItemManager() {
+            Instance = new UgItemManager();
+        }
 	}
 }

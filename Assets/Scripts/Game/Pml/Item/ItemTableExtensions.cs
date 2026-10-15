@@ -3,8 +3,168 @@ namespace Pml.Item
 {
 	public static class ItemTableExtensions
 	{
-		public static int GetParam(this global::XLSXContent.ItemTable.SheetItem prm, global::Pml.Item.ItemData.PrmID prmID) { /*@B 0x6002286*/ throw null; }
-		public static int GetWorkRecoverItem(this global::XLSXContent.ItemTable.SheetItem prm, global::Pml.Item.ItemData.PrmID prmID) { /*@B 0x6002287*/ throw null; }
+		public static int GetParam(this global::XLSXContent.ItemTable.SheetItem prm, global::Pml.Item.ItemData.PrmID prmID) {
+            switch (prmID)
+            {
+                case ItemData.PrmID.ITEMNUMBER:
+                    return prm.no;
+                case ItemData.PrmID.PRICE:
+                    return prm.price;
+                case ItemData.PrmID.WAT_PRICE:
+                    return 0;
+                case ItemData.PrmID.BP_PRICE:
+                    return prm.bp_price;
+                case ItemData.PrmID.ICONID:
+                    return prm.iconid;
+                case ItemData.PrmID.EQUIP:
+                    return prm.eqp;
+                case ItemData.PrmID.ATTACK:
+                    return prm.atc;
+                case ItemData.PrmID.TUIBAMU_EFF:
+                    return prm.tuibamu_eff;
+                case ItemData.PrmID.NAGE_EFF:
+                    return (int)(prm.flags0 & ItemData.FLAG0_MASK_NAGE_EFF);
+                case ItemData.PrmID.NAGE_ATC:
+                    return prm.nage_atc;
+                case ItemData.PrmID.SIZEN_ATC:
+                    return prm.sizen_atc;
+                case ItemData.PrmID.SIZEN_TYPE:
+                    return prm.sizen_type;
+                case ItemData.PrmID.IMP:
+                    return (int)((prm.flags0 >> 1) & 1);
+                case ItemData.PrmID.CNV:
+                    return (int)((prm.flags0 >> 2) & 1);
+                case ItemData.PrmID.F_POCKET:
+                    return prm.fld_pocket;
+                case ItemData.PrmID.F_FUNC:
+                    return prm.field_func;
+                case ItemData.PrmID.B_FUNC:
+                    return prm.battle_func;
+                case ItemData.PrmID.WORK_TYPE:
+                    return (int)((prm.flags0 >> 7) & 1);
+                case ItemData.PrmID.ITEM_TYPE:
+                    return prm.type;
+                case ItemData.PrmID.SPEND:
+                    return (int)((prm.flags0 >> 3) & 1);
+                case ItemData.PrmID.USE_SPEND:
+                    return (int)((prm.flags0 >> 5) & 1);
+                case ItemData.PrmID.SORT:
+                    return prm.sort;
+                case ItemData.PrmID.GROUP:
+                    return prm.group;
+                case ItemData.PrmID.GROUPID:
+                    return prm.group_id;
+                case ItemData.PrmID.SET_TO_POKE:
+                    return (int)((prm.flags0 >> 6) & 1);
+                case ItemData.PrmID.B_SELECTABLE:
+                    return (int)((prm.flags0 >> 4) & 1);
+                case ItemData.PrmID.INACTIVE:
+                    return (int)(prm.flags0 >> 31);
+            }
+            if ((prm.flags0 & ItemData.FLAG0_MASK_WORK_TYPE) == 0)
+                return prm.wk_cmn;
+            return prm.GetWorkRecoverItem(prmID);
+        }
+		public static int GetWorkRecoverItem(this global::XLSXContent.ItemTable.SheetItem prm, global::Pml.Item.ItemData.PrmID prmID) {
+            switch (prmID)
+            {
+                case ItemData.PrmID.SLEEP_RCV:
+                    return (int)((prm.flags0 >> 15) & 1);
+                case ItemData.PrmID.POISON_RCV:
+                    return (int)((prm.flags0 >> 16) & 1);
+                case ItemData.PrmID.BURN_RCV:
+                    return (int)((prm.flags0 >> 17) & 1);
+                case ItemData.PrmID.ICE_RCV:
+                    return (int)((prm.flags0 >> 18) & 1);
+                case ItemData.PrmID.PARALYZE_RCV:
+                    return (int)((prm.flags0 >> 19) & 1);
+                case ItemData.PrmID.PANIC_RCV:
+                    return (int)((prm.flags0 >> 20) & 1);
+                case ItemData.PrmID.MEROMERO_RCV:
+                    return (int)((prm.flags0 >> 21) & 1);
+                case ItemData.PrmID.ABILITY_GUARD:
+                    return (int)((prm.flags0 >> 8) & 1);
+                case ItemData.PrmID.DEATH_RCV:
+                    return (int)((prm.flags0 >> 22) & 1);
+                case ItemData.PrmID.ALL_DEATH_RCV:
+                    return (int)((prm.flags0 >> 23) & 1);
+                case ItemData.PrmID.LV_UP:
+                    return (int)((prm.flags0 >> 9) & 1);
+                case ItemData.PrmID.EVOLUTION:
+                    return (int)((prm.flags0 >> 24) & 1);
+                case ItemData.PrmID.ATTACK_UP:
+                    return prm.wk_atc_up;
+                case ItemData.PrmID.DEFENCE_UP:
+                    return prm.wk_def_up;
+                case ItemData.PrmID.SP_ATTACK_UP:
+                    return prm.wk_spa_up;
+                case ItemData.PrmID.SP_DEFENCE_UP:
+                    return prm.wk_spd_up;
+                case ItemData.PrmID.AGILITY_UP:
+                    return prm.wk_agi_up;
+                case ItemData.PrmID.HIT_UP:
+                    return prm.wk_hit_up;
+                case ItemData.PrmID.CRITICAL_UP:
+                    return prm.wk_critical_up;
+                case ItemData.PrmID.PP_UP:
+                    return (int)((prm.flags0 >> 12) & 1);
+                case ItemData.PrmID.PP_3UP:
+                    return (int)((prm.flags0 >> 13) & 1);
+                case ItemData.PrmID.PP_RCV:
+                    return (int)((prm.flags0 >> 10) & 1);
+                case ItemData.PrmID.ALL_PP_RCV:
+                    return (int)((prm.flags0 >> 11) & 1);
+                case ItemData.PrmID.HP_RCV:
+                    if ((prm.flags0 & (ItemData.FLAG0_MASK_DEATH_RCV | ItemData.FLAG0_MASK_ALLDEATH_RCV)) != 0)
+                        return 0;
+                    return prm.wk_prm_hp_rcv != 0 ? 1 : 0;
+                case ItemData.PrmID.HP_EXP:
+                    return prm.wk_prm_hp_exp != 0 ? 1 : 0;
+                case ItemData.PrmID.POWER_EXP:
+                    return prm.wk_prm_pow_exp != 0 ? 1 : 0;
+                case ItemData.PrmID.DEFENCE_EXP:
+                    return prm.wk_prm_def_exp != 0 ? 1 : 0;
+                case ItemData.PrmID.AGILITY_EXP:
+                    return prm.wk_prm_agi_exp != 0 ? 1 : 0;
+                case ItemData.PrmID.SP_ATTACK_EXP:
+                    return prm.wk_prm_spa_exp != 0 ? 1 : 0;
+                case ItemData.PrmID.SP_DEFENCE_EXP:
+                    return prm.wk_prm_spd_exp != 0 ? 1 : 0;
+                case ItemData.PrmID.EXP_LIMIT_FLAG:
+                    return (int)((prm.flags0 >> 14) & 1);
+                case ItemData.PrmID.FRIEND1:
+                    return prm.wk_friend1 != 0 ? 1 : 0;
+                case ItemData.PrmID.FRIEND2:
+                    return prm.wk_friend2 != 0 ? 1 : 0;
+                case ItemData.PrmID.FRIEND3:
+                    return prm.wk_friend3 != 0 ? 1 : 0;
+                case ItemData.PrmID.HP_EXP_POINT:
+                    return prm.wk_prm_hp_exp;
+                case ItemData.PrmID.POWER_EXP_POINT:
+                    return prm.wk_prm_pow_exp;
+                case ItemData.PrmID.DEFENCE_EXP_POINT:
+                    return prm.wk_prm_def_exp;
+                case ItemData.PrmID.AGILITY_EXP_POINT:
+                    return prm.wk_prm_agi_exp;
+                case ItemData.PrmID.SP_ATTACK_EXP_POINT:
+                    return prm.wk_prm_spa_exp;
+                case ItemData.PrmID.SP_DEFENCE_EXP_POINT:
+                    return prm.wk_prm_spd_exp;
+                case ItemData.PrmID.HP_RCV_POINT:
+                    return prm.wk_prm_hp_rcv;
+                case ItemData.PrmID.PP_RCV_POINT:
+                    return prm.wk_prm_pp_rcv;
+                case ItemData.PrmID.FRIEND1_POINT:
+                    return prm.wk_friend1;
+                case ItemData.PrmID.FRIEND2_POINT:
+                    return prm.wk_friend2;
+                case ItemData.PrmID.FRIEND3_POINT:
+                    return prm.wk_friend3;
+                default:
+                    GFL.ASSERT(false, "Invalid ItemData::PrmID");
+                    return 0;
+            }
+        }
 		// @0249bdc0: every GetParam below is inlined (bit 7 WORK_TYPE test + GetWorkRecoverItem's flag 0x4cc2575 per call);
 		// status bits SLEEP..PANIC form a 6-bit mask, single-status masks map through the value table @03d48d88 {2,3,2,4,2,2,2,5}
 		public static uint GetHealingItemType(this global::XLSXContent.ItemTable.SheetItem item) {

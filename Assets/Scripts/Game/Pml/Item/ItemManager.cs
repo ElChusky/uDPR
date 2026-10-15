@@ -3,11 +3,13 @@ namespace Pml.Item
 {
 	public class ItemManager
 	{
-		private static global::Pml.Item.ItemManager s_Instance;
+		private static global::Pml.Item.ItemManager s_Instance = new global::Pml.Item.ItemManager();
 		private global::XLSXContent.ItemTable m_alldata;
-		public static global::Pml.Item.ItemManager Instance { get { /*@B 0x6002275*/ throw null; } }
+		public static global::Pml.Item.ItemManager Instance { get { return s_Instance; } }
 		public void Load(global::XLSXContent.ItemTable data) { this.m_alldata = data; }
-		public int GetParam(ushort itemno, global::Pml.Item.ItemData.PrmID prmID, bool isCheckActive = true) { /*@B 0x6002277*/ throw null; }
+		public int GetParam(ushort itemno, global::Pml.Item.ItemData.PrmID prmID, bool isCheckActive = true) {
+            return Get(itemno, isCheckActive).GetParam(prmID);
+        }
 		// @0249eec0 (Get + GetBallID inlined)
 		public global::Pml.BallId ItemID2BallID(ushort itemno) {
             return Get(itemno).GetBallID();
@@ -75,13 +77,38 @@ namespace Pml.Item
 		public bool IsGroupOf(ushort itemno, byte itemgroup) {
             return Get(itemno).IsGroupOf(itemgroup);
         }
-		public bool GroupIdToItemNo(byte itemgroup, byte groupid, out ushort o_pItemNo) { /*@B 0x6002281*/ throw null; }
-		public global::XLSXContent.ItemTable.SheetItem Get(ushort itemno, bool isCheckActive = true) { /*@B 0x6002282*/ throw null; }
+		public bool GroupIdToItemNo(byte itemgroup, byte groupid, out ushort o_pItemNo) {
+            var items = m_alldata.Item;
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i].group == itemgroup && items[i].group_id == groupid)
+                {
+                    o_pItemNo = (ushort)i;
+                    return true;
+                }
+            }
+            o_pItemNo = 0;
+            return false;
+        }
+		public global::XLSXContent.ItemTable.SheetItem Get(ushort itemno, bool isCheckActive = true) {
+            var items = m_alldata.Item;
+            for (int i = 0; i < items.Length; i++)
+            {
+                var item = items[i];
+                if (item.no == itemno)
+                {
+                    if (item != null && (item.no == 0 || !isCheckActive || (item.flags0 & 0x80000000u) == 0))
+                        return item;
+                    break;
+                }
+            }
+            return items[0];
+        }
 		// @0249f130: `(ballid - 1) > 25` unsigned → NULL or above URUTORABOORU
 		public static bool IsStrangeBall(global::Pml.BallId ballid) {
             return (uint)((int)ballid - 1) > 25;
         }
 		public ItemManager() { }
-		static ItemManager() { /*@B 0x6002285*/ throw null; }
+		static ItemManager() { }
 	}
 }

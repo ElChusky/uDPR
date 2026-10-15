@@ -5,9 +5,36 @@ namespace Pml.Personal
 	{
 		private const ushort WAZAOBOE_END_CODE = 65535;
 		private const int UNITLEN_AR = 2;
-		public static ushort GetLevel(this global::XLSXContent.WazaOboeTable.SheetWazaOboe self, int index) { /*@B 0x6002254*/ throw null; }
-		public static ushort GetWazaNo(this global::XLSXContent.WazaOboeTable.SheetWazaOboe self, int index) { /*@B 0x6002255*/ throw null; }
-		public static int GetValidCodeNum(this global::XLSXContent.WazaOboeTable.SheetWazaOboe self) { /*@B 0x6002256*/ throw null; }
-		public static global::Pml.Personal.OboeWazaKind GetOboeWazaKind(this global::XLSXContent.WazaOboeTable.SheetWazaOboe self, ushort data_index) { /*@B 0x6002257*/ throw null; }
+		public static ushort GetLevel(this global::XLSXContent.WazaOboeTable.SheetWazaOboe self, int index) {
+            int i = index * UNITLEN_AR;
+            if (i >= self.ar.Length)
+                return 0;
+            return self.ar[i];
+        }
+		public static ushort GetWazaNo(this global::XLSXContent.WazaOboeTable.SheetWazaOboe self, int index) {
+            int i = index * UNITLEN_AR + 1;
+            if (i >= self.ar.Length)
+                return 0;
+            return self.ar[i];
+        }
+		public static int GetValidCodeNum(this global::XLSXContent.WazaOboeTable.SheetWazaOboe self) {
+            if (self.ar.Length < UNITLEN_AR)
+                return 0;
+            return self.ar.Length / UNITLEN_AR;
+        }
+		// @024a2060 (GetValidCodeNum + GetLevel inlined)
+		public static global::Pml.Personal.OboeWazaKind GetOboeWazaKind(this global::XLSXContent.WazaOboeTable.SheetWazaOboe self, ushort data_index) {
+            if (data_index >= self.GetValidCodeNum())
+            {
+                GFL.ASSERT(false);
+                return OboeWazaKind.LEVEL;
+            }
+            ushort level = self.GetLevel(data_index);
+            if (level == 0)
+                return OboeWazaKind.EVOLVE;
+            if (level == 1)
+                return OboeWazaKind.BASE;
+            return OboeWazaKind.LEVEL;
+        }
 	}
 }

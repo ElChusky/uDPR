@@ -32,7 +32,9 @@ namespace Pml.Item
 		public const int FLAG0_MASK_EVOLUTION = 16777216;
 		public const int FLAG0_MASK_INACTIVE = -2147483648;
 		public const int PP_UP_WAZAMAX_MIN = 5;
-		public static int GetParam(ushort itemno, global::Pml.Item.ItemData.PrmID prmID) { /*@B 0x6002258*/ throw null; }
+		public static int GetParam(ushort itemno, global::Pml.Item.ItemData.PrmID prmID) {
+            return ItemManager.Instance.Get(itemno).GetParam(prmID);
+        }
 		// @0249bc70 (Get inlined, tail `b` the extension)
 		public static uint GetHealingItemType(ushort itemno) {
             return ItemManager.Instance.Get(itemno).GetHealingItemType();
