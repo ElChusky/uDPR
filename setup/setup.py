@@ -11,6 +11,7 @@ kept in <work>/config.json.
 """
 import argparse
 import datetime
+import importlib
 import json
 import os
 import subprocess
@@ -24,31 +25,60 @@ STAGES_DIR = os.path.join(paths.SETUP, "stages")
 
 
 def stage_cmd(script, *args):
-    return PY + [os.path.join(STAGES_DIR, script)] + list(args)
+    return PY + [os.path.join(STAGES_DIR, script)] + [str(x) for x in args]
 
 
-# (name, what it does, command or None while not ported yet)
-STAGES = [
-    ("check", "preflight: dump, Unity, Wwise, tools, disk, RAM", stage_cmd("check.py")),
-    ("export", "AssetRipper exports the dump into <work>/export", stage_cmd("ar_export.py")),
-    ("normalise", "the export's random asset GUIDs -> this project's GUIDs; package/Wwise/DOTween script references",
-     stage_cmd("normalise_guids.py")),
-    ("merge", "move the exported asset folders into Assets/ (sound banks Switch -> Windows)", stage_cmd("merge.py")),
-    ("wwise", "copy the Wwise integration files in; AkInitializer.LateUpdate / AkGameObj.SetPosition public",
-     stage_cmd("wwise.py")),
-    ("startup", "StartupSettings: load assets from the project in the editor", None),
-    ("shaders", "install the recovered shaders over the exported placeholders", None),
-    ("containers", "scan the shipped bundles' container tables; map them to project files", None),
-    ("atlas_spec", "SpriteAtlas rebuild spec from the shipped atlases", None),
-    ("sprite_bake", "bake the atlas binding into packed sprites", None),
-    ("atlases", "first Unity import + build the sprite atlases (Unity editor)", None),
-    ("placeholders", "point the exported SpriteAtlas placeholders at the rebuilt atlases; write bundle_map.tsv", None),
-    ("sprite_restore", "restore the shipped sprite geometry", None),
-    ("d7", "every texture holds the shipped texels (incl. the editor template + verify steps)", None),
-    ("untag", "empty the runtime atlas tags of packed sprites (needed for Windows bundles)", None),
-    ("verify", "reimport, audits, play smoke (Unity editor)", None),
-]
-NAMES = [s[0] for s in STAGES]
+def unity_cmd(method, marker=None, *extra):
+    return PY + [os.path.join(paths.SETUP, "lib", "unity.py"), "--method", method] + (["--marker", marker] if marker else []) \
+        + list(extra)
+
+
+def build_stages():
+    """(name, what it does, [command, ...] or None while not ported yet) - built after the config is written, so the paths in
+    the commands are the configured ones."""
+    W, AA, P = paths.work, paths.AA, paths.PROJECT
+    return [
+        ("check", "preflight: dump, Unity, Wwise, tools, disk, RAM", [stage_cmd("check.py")]),
+        ("export", "AssetRipper exports the dump into <work>/export", [stage_cmd("ar_export.py")]),
+        ("normalise", "the export's random asset GUIDs -> this project's GUIDs; package/Wwise/DOTween script references",
+         [stage_cmd("normalise_guids.py")]),
+        ("merge", "move the exported asset folders into Assets/ (sound banks Switch -> Windows)", [stage_cmd("merge.py")]),
+        ("wwise", "copy the Wwise integration files in; AkInitializer.LateUpdate / AkGameObj.SetPosition public",
+         [stage_cmd("wwise.py")]),
+        ("startup", "StartupSettings: load assets from the project in the editor", [stage_cmd("startup.py")]),
+        ("shaders", "install the recovered shaders over the exported placeholders", [stage_cmd("shaders.py")]),
+        ("containers", "scan the shipped bundles' container tables; map them to project files", [
+            stage_cmd("bundle_containers.py", "scan", AA, "--out", W("atlas", "bundle_containers.json")),
+            stage_cmd("bundle_containers.py", "map", "--containers", W("atlas", "bundle_containers.json"), "--project", P,
+                      "--out", W("atlas", "bundle_map.json"), "--report", W("atlas", "bundle_map_report.txt"))]),
+        ("atlas_spec", "SpriteAtlas rebuild spec from the shipped atlases", [
+            stage_cmd("spriteatlas_spec.py", "--aa", AA, "--containers", W("atlas", "bundle_containers.json"),
+                      "--map", W("atlas", "bundle_map.json"), "--project", P, "--out", W("atlas", "spriteatlas_spec.json"),
+                      "--report", W("atlas", "spriteatlas_report.txt"))]),
+        ("sprite_bake", "bake the atlas binding into packed sprites", [
+            stage_cmd("sprite_bake.py", "--spec", W("atlas", "spriteatlas_spec.json"), "--project", P,
+                      "--backup", W("atlas", "sprite_bake_backup"), "--report", W("atlas", "sprite_bake_report.txt"),
+                      "--apply")]),
+        ("atlases", "first Unity import + build the sprite atlases (Unity editor; the first import takes long)", [
+            unity_cmd("BdspAtlas.BuildAll", "BDSP_ATLAS_BUILD_DONE"),
+            stage_cmd("pin_atlases.py")]),
+        ("placeholders", "point the exported SpriteAtlas placeholders at the rebuilt atlases; write bundle_map.tsv", [
+            stage_cmd("placeholders.py"),
+            stage_cmd("bundle_containers.py", "map", "--containers", W("atlas", "bundle_containers.json"), "--project", P,
+                      "--out", W("atlas", "bundle_map.json"), "--report", W("atlas", "bundle_map_report.txt"),
+                      "--tsv", paths.TSV)]),
+        ("sprite_restore", "restore the shipped sprite geometry", [
+            stage_cmd("sprite_shipped_index.py"),
+            stage_cmd("sprite_restore_shipped.py", "--apply")]),
+        ("d7", "every texture holds the shipped texels (incl. the editor template + verify steps)", None),
+        ("untag", "empty the runtime atlas tags of packed sprites (needed for Windows bundles)", [
+            stage_cmd("sprite_untag.py", "--apply", "--project", P, "--backup", W("build", "sprite_untag_backup"))]),
+        ("verify", "reimport, audits, play smoke (Unity editor)", None),
+    ]
+
+
+NAMES = ["check", "export", "normalise", "merge", "wwise", "startup", "shaders", "containers", "atlas_spec", "sprite_bake",
+         "atlases", "placeholders", "sprite_restore", "d7", "untag", "verify"]
 
 
 def log(msg):
@@ -68,9 +98,10 @@ def main():
     ap.add_argument("--keep-backups", action="store_true")
     ap.add_argument("--list", action="store_true")
     a = ap.parse_args()
+    global paths
     if a.list:
-        for n, what, cmd in STAGES:
-            print("%-15s %s%s" % (n, what, "" if cmd else "   [not ported yet]"))
+        for n, what, cmds in build_stages():
+            print("%-15s %s%s" % (n, what, "" if cmds else "   [not ported yet]"))
         return
     cfg = dict(paths.CFG)
     for k in ("dump", "unity", "wwise", "assetripper", "work"):
@@ -83,6 +114,9 @@ def main():
     with open(paths.CONFIG_PATH, "w", encoding="utf-8") as f:
         json.dump(cfg, f, indent=1)
     os.environ["BDSP_SETUP_CONFIG"] = paths.CONFIG_PATH
+    paths = importlib.reload(paths)              # the configured paths, for the stage commands built below
+    stages = build_stages()
+    assert [s[0] for s in stages] == NAMES
     state_path = paths.work("state.json")
     state = json.load(open(state_path, encoding="utf-8")) if os.path.exists(state_path) else {}
     names = NAMES
@@ -93,27 +127,29 @@ def main():
             names = names[names.index(a.start):]
         if a.until:
             names = names[:names.index(a.until) + 1]
-    for n, what, cmd in STAGES:
+    for n, what, cmds in stages:
         if n not in names:
             continue
         if state.get(n, {}).get("done") and not (a.only or a.start):
             log("skip %-14s (done %s)" % (n, state[n]["done"]))
             continue
-        if cmd is None:
+        if cmds is None:
             sys.exit("stage '%s' is not ported yet - stopping before it" % n)
         log("STAGE %-13s %s" % (n, what))
-        with open(paths.work("logs", n + ".log"), "a", encoding="utf-8") as lf:
-            lf.write("\n=== %s %s\n" % (datetime.datetime.now().isoformat(timespec="seconds"), " ".join(cmd)))
-            lf.flush()
-            p = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                 text=True, encoding="utf-8", errors="replace")
-            for line in p.stdout:
-                lf.write(line)
-                print("    " + line.rstrip(), flush=True)
-            rc = p.wait()
-        if rc != 0:
-            log("FAILED %s (exit %d) - see %s; fix and run again to resume here" % (n, rc, paths.work("logs", n + ".log")))
-            sys.exit(rc)
+        for cmd in cmds:
+            with open(paths.work("logs", n + ".log"), "a", encoding="utf-8") as lf:
+                lf.write("\n=== %s %s\n" % (datetime.datetime.now().isoformat(timespec="seconds"), " ".join(cmd)))
+                lf.flush()
+                p = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                     text=True, encoding="utf-8", errors="replace")
+                for line in p.stdout:
+                    lf.write(line)
+                    print("    " + line.rstrip(), flush=True)
+                rc = p.wait()
+            if rc != 0:
+                log("FAILED %s (exit %d) - see %s; fix and run again to resume here" % (n, rc,
+                                                                                          paths.work("logs", n + ".log")))
+                sys.exit(rc)
         state[n] = {"done": datetime.datetime.now().isoformat(timespec="seconds")}
         with open(state_path, "w", encoding="utf-8") as f:
             json.dump(state, f, indent=1)

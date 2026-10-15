@@ -67,7 +67,10 @@ public static class BdspD7
     public static void Verify()
     {
         var sb = new StringBuilder();
-        var work = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "work", "s34"));
+        // the automated setup passes its work folder in BDSP_SETUP_WORK; without it the workspace layout ../work/s34
+        var setupWork = Environment.GetEnvironmentVariable("BDSP_SETUP_WORK");
+        var work = string.IsNullOrEmpty(setupWork) ? Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "work", "s34"))
+                                                   : Path.Combine(setupWork, "d7");
         try
         {
             var list = Path.Combine(work, "d7_verify.txt");

@@ -37,7 +37,14 @@ public static class BdspAtlas
     const string Phase = "bdsp_atlas_phase", Targets = "bdsp_atlas_targets", OldMode = "bdsp_atlas_oldmode";
     static int frames;
 
-    static string Work() { var d = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "work", "s32")); Directory.CreateDirectory(d); return d; }
+    // the automated setup (setup/setup.py) passes its work folder in BDSP_SETUP_WORK; without it the workspace layout ../work/s32
+    static string Work()
+    {
+        var setup = Environment.GetEnvironmentVariable("BDSP_SETUP_WORK");
+        var d = string.IsNullOrEmpty(setup) ? Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "work", "s32"))
+                                            : Path.Combine(setup, "atlas");
+        Directory.CreateDirectory(d); return d;
+    }
     static string ReportPath() => Path.Combine(Work(), "atlas_probe_" + SessionState.GetString("bdsp_atlas_stamp", "x") + ".txt");
     static void Log(string s) { File.AppendAllText(ReportPath(), s + "\n"); Debug.Log("[BdspAtlas] " + s); }
     static string Sha1(string path) { using (var h = SHA1.Create()) return BitConverter.ToString(h.ComputeHash(File.ReadAllBytes(path))).Replace("-", "").ToLowerInvariant(); }

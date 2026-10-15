@@ -57,14 +57,22 @@ def main():
             copied += 1
     print("copied %d, already identical %d, skipped (no .meta of ours) %d: %s" % (
         copied, same, skipped, ", ".join(sorted(set(os.path.splitext(x)[1] or x for x in skipped_list)))))
-    # every Wwise file we have a .meta for must now exist
+    # every Wwise file / folder we have a .meta for must now exist. Folders the integration fills only at edit time
+    # (Editor/ProjectData) are created empty; InstallConfig.json is the Launcher's own record, empty in this project.
     missing = []
     for dp, dn, fn in os.walk(dst):
         for f in fn:
             if f.endswith(".meta"):
                 target = os.path.join(dp, f[:-5])
-                if not os.path.exists(target):
-                    missing.append(os.path.relpath(target, dst).replace("\\", "/"))
+                if os.path.exists(target):
+                    continue
+                rel = os.path.relpath(target, dst).replace("\\", "/")
+                if "folderAsset: yes" in open(os.path.join(dp, f), encoding="utf-8", errors="replace").read():
+                    os.makedirs(target, exist_ok=True)
+                elif rel == "InstallConfig.json":
+                    open(target, "wb").close()
+                else:
+                    missing.append(rel)
     if missing:
         for m in missing[:20]:
             print("  missing: " + m)

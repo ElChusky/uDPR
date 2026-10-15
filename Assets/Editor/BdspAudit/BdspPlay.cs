@@ -25,6 +25,9 @@ public static class BdspPlay
     // Output folder: ../work/<session>/, the session read from ../work/play_session.txt (s33+), default s32 (the folder Phase 4 used).
     static string Work()
     {
+        // the automated setup passes its work folder in BDSP_SETUP_WORK (output then goes to <work>/play)
+        var setup = Environment.GetEnvironmentVariable("BDSP_SETUP_WORK");
+        if (!string.IsNullOrEmpty(setup)) { var sd = Path.Combine(setup, "play"); Directory.CreateDirectory(sd); return sd; }
         string session = "s32";
         var f = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "work", "play_session.txt"));
         if (File.Exists(f) && File.ReadAllText(f).Trim().Length > 0) session = File.ReadAllText(f).Trim();

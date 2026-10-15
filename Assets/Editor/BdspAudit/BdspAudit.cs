@@ -17,7 +17,10 @@ public static class BdspAudit
 {
     static string WorkDir()
     {
-        var d = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "work", "s31"));
+        // the automated setup passes its work folder in BDSP_SETUP_WORK; without it the workspace layout ../work/s31
+        var setup = Environment.GetEnvironmentVariable("BDSP_SETUP_WORK");
+        var d = string.IsNullOrEmpty(setup) ? Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "work", "s31"))
+                                            : Path.Combine(setup, "audit");
         Directory.CreateDirectory(d); return d;
     }
 
