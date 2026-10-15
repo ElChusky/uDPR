@@ -1443,9 +1443,11 @@ namespace Dpr.SealPreview
 			m_seqKeepResource = isKeepResource;
 		}
 		private bool __WaitSequence__() { return m_sequenceSeq == BattleViewSystem.SequenceSeq.NONE; }
+#if PC_UNLOCKED_FPS
 		private int __PcTicks__ { get { return _pcSimulatedFrame ? 1 : PcPlatform.PcFrameClock.Ticks; } }
 		// PC (s37): SetupIntro runs whole shipped frames inside one rendered frame (OnUpdate in a loop with no yield); there each
 		// OnUpdate call is one 30 Hz tick. Everywhere else the frame counters advance by the shared 30 Hz clock.
 		private bool _pcSimulatedFrame;
+#endif
 	}
 }

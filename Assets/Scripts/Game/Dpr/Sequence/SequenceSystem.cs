@@ -27,7 +27,14 @@ namespace Dpr.Sequence
 		public int CurrentFrame { get; protected set; } = -1;
 		public float CurrentTime { get { return this._sequenceElapsedTime; } }
 		public int MaxFrame { get; protected set; } = -1;
+#if PC_UNLOCKED_FPS
+		// PC (s46 C5): sequence frames are shipped 30 Hz frames (the shipped getter is Mathe.FrameToSecond inlined, @01e3c200). With the
+		// uncapped / capped targetFrameRate (-1, 60, ...) every battle / contest sequence completed early and destroyed models whose
+		// delete tasks were still running (contest: "Entry number 1!" froze on a destroyed ball).
+		public float MaxTime { get { return (1f / (float)PcPlatform.PcFrameClock.LogicRate) * (float)MaxFrame; } }
+#else
 		public float MaxTime { get { return (1f / (float)global::UnityEngine.Application.targetFrameRate) * (float)MaxFrame; } }
+#endif
 		protected global::System.Collections.Generic.List<global::Dpr.SequenceEditor.CommandParam> Commands { get; set; }
 		protected bool IsCommandSkip { get; set; }
 		public bool IsPause { get; protected set; }

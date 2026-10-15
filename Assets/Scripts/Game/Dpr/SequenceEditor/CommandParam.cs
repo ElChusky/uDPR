@@ -12,8 +12,14 @@ namespace Dpr.SequenceEditor
 		public global::Dpr.SequenceEditor.CommandNo CommandNo;
 		public global::Dpr.SequenceEditor.Macro Macro;
 		public global::System.Collections.Generic.List<global::Dpr.SequenceEditor.GroupOption> GroupOption;
+#if PC_UNLOCKED_FPS
+		// PC (s37): sequence frames are shipped 30 Hz frames (LogicRate), not the uncapped targetFrameRate
 		public float StartTime { get => 1.0f / PcPlatform.PcFrameClock.LogicRate * StartFrame; }
 		public float EndTime { get => 1.0f / PcPlatform.PcFrameClock.LogicRate * EndFrame; }
+#else
+		public float StartTime { get => 1.0f / global::UnityEngine.Application.targetFrameRate * StartFrame; }
+		public float EndTime { get => 1.0f / global::UnityEngine.Application.targetFrameRate * EndFrame; }
+#endif
 		public CommandParam() { }
 		public CommandParam(global::Dpr.SequenceEditor.CommandParam other) {
 			Group = other.Group;
