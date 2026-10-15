@@ -2237,43 +2237,149 @@ namespace NexPlugin
 #else
 			private static bool Ranking2_GetRankingAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Ranking2.Ranking2GetParamInt getParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking2_GetRankingAsync", pNgsFacade); }
 #endif
-			public static bool GetRankingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2GetParam getParam, int timeOut = 0, global::NexPlugin.Ranking2.GetRankingCB callback = null) { /*@B 0x6009BA1*/ throw null; }
+			public static bool GetRankingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2GetParam getParam, int timeOut = 0, global::NexPlugin.Ranking2.GetRankingCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				Ranking2GetParamInt getParamInt = new Ranking2GetParamInt(useptr, getParam);
+				asyncId = PublishAsyncId();
+				bool ret = Ranking2_GetRankingAsync(asyncId, pNgsFacade, ref getParamInt, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Ranking2_GetRankingByListAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Ranking2.Ranking2GetByListParamInt getParam, ref global::NexPlugin.Detail.CppArray principalIdList, int timeOut);
 #else
 			private static bool Ranking2_GetRankingByListAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Ranking2.Ranking2GetByListParamInt getParam, ref global::NexPlugin.Detail.CppArray principalIdList, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking2_GetRankingByListAsync", pNgsFacade); }
 #endif
-			public static bool GetRankingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2GetByListParam getParam, global::System.Collections.Generic.List<ulong> principalIdList, int timeOut = 0, global::NexPlugin.Ranking2.GetRankingCB callback = null) { /*@B 0x6009BA3*/ throw null; }
+			public static bool GetRankingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2GetByListParam getParam, global::System.Collections.Generic.List<ulong> principalIdList, int timeOut = 0, global::NexPlugin.Ranking2.GetRankingCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				Ranking2GetByListParamInt getParamInt = new Ranking2GetByListParamInt(useptr, getParam);
+				CppArray principalIdArray = CppArray.ListToArray(useptr, principalIdList);
+				asyncId = PublishAsyncId();
+				bool ret = Ranking2_GetRankingByListAsync(asyncId, pNgsFacade, ref getParamInt, ref principalIdArray, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Ranking2_GetCategorySettingAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint category, int timeOut);
 #else
 			private static bool Ranking2_GetCategorySettingAsync(uint asyncId, global::System.IntPtr pNgsFacade, uint category, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking2_GetCategorySettingAsync", pNgsFacade); }
 #endif
-			public static bool GetCategorySettingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, uint category, int timeOut = 0, global::NexPlugin.Ranking2.GetCategorySettingCB callback = null) { /*@B 0x6009BA5*/ throw null; }
+			public static bool GetCategorySettingAsync(out uint asyncId, global::System.IntPtr pNgsFacade, uint category, int timeOut = 0, global::NexPlugin.Ranking2.GetCategorySettingCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!Ranking2_GetCategorySettingAsync(asyncId, pNgsFacade, category, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking2_GetRankingChartAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Ranking2ChartInfoInput info, int timeOut);
 #else
 			private static bool Ranking2_GetRankingChartAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Ranking2ChartInfoInput info, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking2_GetRankingChartAsync", pNgsFacade); }
 #endif
-			public static bool GetRankingChartAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2ChartInfoInput info, int timeOut = 0, global::NexPlugin.Ranking2.GetRanking2ChartInfoCB callback = null) { /*@B 0x6009BA7*/ throw null; }
+			public static bool GetRankingChartAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2ChartInfoInput info, int timeOut = 0, global::NexPlugin.Ranking2.GetRanking2ChartInfoCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!Ranking2_GetRankingChartAsync(asyncId, pNgsFacade, ref info, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Ranking2_GetRankingChartsAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray info, int timeOut);
 #else
 			private static bool Ranking2_GetRankingChartsAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray info, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking2_GetRankingChartsAsync", pNgsFacade); }
 #endif
-			public static bool GetRankingChartAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<global::NexPlugin.Ranking2ChartInfoInput> info, int timeOut = 0, global::NexPlugin.Ranking2.GetRanking2ChartInfoListCB callback = null) { /*@B 0x6009BA9*/ throw null; }
+			public static bool GetRankingChartAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<global::NexPlugin.Ranking2ChartInfoInput> info, int timeOut = 0, global::NexPlugin.Ranking2.GetRanking2ChartInfoListCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray infoArray = CppArray.ListToArray(useptr, info);
+				asyncId = PublishAsyncId();
+				bool ret = Ranking2_GetRankingChartsAsync(asyncId, pNgsFacade, ref infoArray, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Ranking2_GetEstimateScoreRankAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Ranking2EstimateScoreRankInput info, int timeOut);
 #else
 			private static bool Ranking2_GetEstimateScoreRankAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Ranking2EstimateScoreRankInput info, int timeOut) { return PcPlatform.PcNex.ServiceCall("Ranking2_GetEstimateScoreRankAsync", pNgsFacade); }
 #endif
-			public static bool GetEstimateScoreRankAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2EstimateScoreRankInput info, int timeOut = 0, global::NexPlugin.Ranking2.GetRanking2EstimateScoreRankCB callback = null) { /*@B 0x6009BAB*/ throw null; }
-			private static void Ranking2_GetCommonDataResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BAC*/ throw null; }
-			private static void Ranking2_GetRankingResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BAD*/ throw null; }
-			private static void Ranking2_GetCategorySettingResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BAE*/ throw null; }
-			private static void Ranking2_GetRanking2ChartInfoResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BAF*/ throw null; }
-			private static void Ranking2_GetRanking2ChartInfoListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BB0*/ throw null; }
-			private static void Ranking2_GetRanking2EstimateScoreRankResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BB1*/ throw null; }
+			public static bool GetEstimateScoreRankAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.Ranking2EstimateScoreRankInput info, int timeOut = 0, global::NexPlugin.Ranking2.GetRanking2EstimateScoreRankCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!Ranking2_GetEstimateScoreRankAsync(asyncId, pNgsFacade, ref info, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
+			private static void Ranking2_GetCommonDataResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Ranking2.GetCommonDataCB cb = callback as NexPlugin.Ranking2.GetCommonDataCB;
+				if (cb != null)
+				{
+					Ranking2CommonData data = new Ranking2CommonData();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						data = Ranking2CommonDataInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), data);
+				}
+			}
+			private static void Ranking2_GetRankingResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Ranking2.GetRankingCB cb = callback as NexPlugin.Ranking2.GetRankingCB;
+				if (cb != null)
+				{
+					Ranking2Info info = new Ranking2Info();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = Ranking2InfoInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
+			private static void Ranking2_GetCategorySettingResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Ranking2.GetCategorySettingCB cb = callback as NexPlugin.Ranking2.GetCategorySettingCB;
+				if (cb != null)
+				{
+					Ranking2CategorySetting setting = new Ranking2CategorySetting();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						setting = Ranking2CategorySettingInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), setting);
+				}
+			}
+			private static void Ranking2_GetRanking2ChartInfoResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Ranking2.GetRanking2ChartInfoCB cb = callback as NexPlugin.Ranking2.GetRanking2ChartInfoCB;
+				if (cb != null)
+				{
+					Ranking2ChartInfo info = new Ranking2ChartInfo();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = Ranking2ChartInfoInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
+			private static void Ranking2_GetRanking2ChartInfoListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Ranking2.GetRanking2ChartInfoListCB cb = callback as NexPlugin.Ranking2.GetRanking2ChartInfoListCB;
+				if (cb != null)
+				{
+					List<Ranking2ChartInfo> info = new List<Ranking2ChartInfo>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = new CppArray(asyncResult.pParam1).ToList<Ranking2ChartInfo, Ranking2ChartInfoInt>();
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
+			private static void Ranking2_GetRanking2EstimateScoreRankResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Ranking2.GetRanking2EstimateScoreRankCB cb = callback as NexPlugin.Ranking2.GetRanking2EstimateScoreRankCB;
+				if (cb != null)
+				{
+					Ranking2EstimateScoreRankOutput info = new Ranking2EstimateScoreRankOutput();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = ExchangePtrToStruct<Ranking2EstimateScoreRankOutput>(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
 			// @024d89f0
 			public static void Callback(global::NexPlugin.Detail.AsyncResultInt res, object callback) {
 				switch (res.asyncNum)
@@ -2309,9 +2415,23 @@ namespace NexPlugin
 			{
 				public global::NexPlugin.Detail.CppArray binaryData;
 				public global::NexPlugin.Detail.CppArray userName;
-				public static global::NexPlugin.Ranking2CommonData ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB58*/ throw null; }
-				public global::NexPlugin.Ranking2CommonData ExchangeStruct() { /*@B 0x600BB59*/ throw null; }
-				public Ranking2CommonDataInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.Ranking2CommonData param) { /*@B 0x600BB5A*/ throw null; }
+				public static global::NexPlugin.Ranking2CommonData ExchangePtrToStruct(global::System.IntPtr src) {
+					Ranking2CommonDataInt info = Detail.ExchangePtrToStruct<Ranking2CommonDataInt>(src);
+					return info.ExchangeStruct();
+				}
+				public global::NexPlugin.Ranking2CommonData ExchangeStruct() {
+					Ranking2CommonData data = new Ranking2CommonData();
+					data.binaryData = new List<byte>();
+					data.userName = userName.ToStr();
+					binaryData.ToList(ref data.binaryData);
+					return data;
+				}
+				public Ranking2CommonDataInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.Ranking2CommonData param) {
+					if (param == null)
+						param = new Ranking2CommonData();
+					binaryData = CppArray.ListToArray(useptr, param.binaryData);
+					userName = CppArray.StringToArray(useptr, param.userName);
+				}
 			}
 			private struct Ranking2RankDataInt : global::NexPlugin.Detail.IExchangeList<global::NexPlugin.Ranking2RankData>
 			{
@@ -2321,7 +2441,16 @@ namespace NexPlugin
 				private uint rank;
 				private uint score;
 				private ulong principalId;
-				public global::NexPlugin.Ranking2RankData ExchangeStruct() { /*@B 0x600BB5B*/ throw null; }
+				public global::NexPlugin.Ranking2RankData ExchangeStruct() {
+					Ranking2RankData data = new Ranking2RankData();
+					data.misc = misc;
+					data.nexUniqueId = nexUniqueId;
+					data.principalId = principalId;
+					data.rank = rank;
+					data.score = score;
+					data.commonData = commonData.ExchangeStruct();
+					return data;
+				}
 			}
 			private struct Ranking2InfoInt
 			{
@@ -2329,7 +2458,15 @@ namespace NexPlugin
 				private uint numRankedIn;
 				private uint lowestRank;
 				private int season;
-				public static global::NexPlugin.Ranking2Info ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB5C*/ throw null; }
+				public static global::NexPlugin.Ranking2Info ExchangePtrToStruct(global::System.IntPtr src) {
+					Ranking2InfoInt info = Detail.ExchangePtrToStruct<Ranking2InfoInt>(src);
+					Ranking2Info result = new Ranking2Info();
+					result.rankDataList = info.ranking2RankDataList.ToList<Ranking2RankData, Ranking2RankDataInt>();
+					result.numRankedIn = info.numRankedIn;
+					result.lowestRank = info.lowestRank;
+					result.season = info.season;
+					return result;
+				}
 			}
 			private struct Ranking2CategorySettingInt
 			{
@@ -2342,7 +2479,20 @@ namespace NexPlugin
 				private byte resetDay;
 				private ushort resetMonth;
 				private byte scoreorder;
-				public static global::NexPlugin.Ranking2CategorySetting ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB5D*/ throw null; }
+				public static global::NexPlugin.Ranking2CategorySetting ExchangePtrToStruct(global::System.IntPtr src) {
+					Ranking2CategorySettingInt info = Detail.ExchangePtrToStruct<Ranking2CategorySettingInt>(src);
+					Ranking2CategorySetting setting = new Ranking2CategorySetting();
+					setting.minScore = info.minScore;
+					setting.maxScore = info.maxScore;
+					setting.lowestRank = info.lowestRank;
+					setting.maxSeasonsToGoBack = info.maxSeasonsToGoBack;
+					setting.resetMode = info.resetMode;
+					setting.resetHour = info.resetHour;
+					setting.resetDay = info.resetDay;
+					setting.resetMonth = info.resetMonth;
+					setting.scoreOrder = info.scoreorder == 1;
+					return setting;
+				}
 			}
 			private struct Ranking2ChartInfoInt : global::NexPlugin.Detail.IExchangeList<global::NexPlugin.Ranking2ChartInfo>
 			{
@@ -2364,15 +2514,45 @@ namespace NexPlugin
 				private double estimateAverageScore;
 				private global::NexPlugin.Detail.CppArray quantities;
 				private byte binsSize;
-				public static global::NexPlugin.Ranking2ChartInfo ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB5E*/ throw null; }
-				public global::NexPlugin.Ranking2ChartInfo ExchangeStruct() { /*@B 0x600BB5F*/ throw null; }
+				public static global::NexPlugin.Ranking2ChartInfo ExchangePtrToStruct(global::System.IntPtr src) {
+					Ranking2ChartInfoInt info = Detail.ExchangePtrToStruct<Ranking2ChartInfoInt>(src);
+					return info.ExchangeStruct();
+				}
+				public global::NexPlugin.Ranking2ChartInfo ExchangeStruct() {
+					Ranking2ChartInfo info = new Ranking2ChartInfo();
+					info.index = index;
+					info.category = category;
+					info.season = season;
+					info.samplingRate = samplingRate;
+					info.scoreOrder = scoreOrder == 1;
+					info.estimateLength = estimateLength;
+					info.estimateHighestScore = estimateHighestScore;
+					info.estimateLowestScore = estimateLowestScore;
+					info.estimateMedianScore = estimateMedianScore;
+					info.highestBinsScore = highestBinsScore;
+					info.lowestBinsScore = lowestBinsScore;
+					info.binsWidth = binsWidth;
+					info.attribute1 = attribute1;
+					info.attribute2 = attribute2;
+					info.createTime = createTime;
+					info.estimateAverageScore = estimateAverageScore;
+					quantities.ToList(ref info.quantities);
+					info.binsSize = binsSize;
+					return info;
+				}
 			}
 			private struct Ranking2ScoreDataInt
 			{
 				private uint category;
 				private uint score;
 				private ulong misc;
-				public Ranking2ScoreDataInt(global::NexPlugin.Ranking2ScoreData param) { /*@B 0x600BB60*/ throw null; }
+				public Ranking2ScoreDataInt(global::NexPlugin.Ranking2ScoreData param) {
+					if (param == null)
+						param = new Ranking2ScoreData();
+					category = param.category;
+					score = param.score;
+					misc = param.misc;
+				}
 			}
 			private struct Ranking2GetParamInt
 			{
@@ -2385,7 +2565,19 @@ namespace NexPlugin
 				private uint sortFlags;
 				private byte mode;
 				private byte numSeasonsToGoBack;
-				public Ranking2GetParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.Ranking2GetParam param) { /*@B 0x600BB61*/ throw null; }
+				public Ranking2GetParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.Ranking2GetParam param) {
+					if (param == null)
+						param = new Ranking2GetParam();
+					nexUniqueId = param.nexUniqueId;
+					principalId = param.principalId;
+					category = param.category;
+					offset = param.offset;
+					length = param.length;
+					optionFlags = (uint)param.optionFlags;
+					sortFlags = (uint)param.sortFlags;
+					mode = (byte)param.mode;
+					numSeasonsToGoBack = param.numSeasonsToGoBack;
+				}
 			}
 			private struct Ranking2GetByListParamInt
 			{
@@ -2395,7 +2587,16 @@ namespace NexPlugin
 				private uint optionFlags;
 				private uint sortFlags;
 				private byte numSeasonsToGoBack;
-				public Ranking2GetByListParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.Ranking2GetByListParam param) { /*@B 0x600BB62*/ throw null; }
+				public Ranking2GetByListParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.Ranking2GetByListParam param) {
+					if (param == null)
+						param = new Ranking2GetByListParam();
+					category = param.category;
+					offset = param.offset;
+					length = param.length;
+					optionFlags = (uint)param.optionFlags;
+					sortFlags = (uint)param.sortFlags;
+					numSeasonsToGoBack = param.numSeasonsToGoBack;
+				}
 			}
 		}
 		public static class SmartDeviceVoiceChat
@@ -2405,45 +2606,105 @@ namespace NexPlugin
 #else
 			private static bool SmartDeviceVoiceChat_ShowAppPageAsync(uint asyncId, ref global::NexPlugin.Detail.SmartDeviceVoiceChat.SmartDeviceVoiceChatShowAppPageParamInt pParam) { return PcPlatform.PcNex.ServiceCall("SmartDeviceVoiceChat_ShowAppPageAsync"); }
 #endif
-			public static bool ShowAppPageAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatShowAppPageParam param, global::NexPlugin.SmartDeviceVoiceChat.ShowAppPageCB callback = null) { /*@B 0x6009BB4*/ throw null; }
+			public static bool ShowAppPageAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatShowAppPageParam param, global::NexPlugin.SmartDeviceVoiceChat.ShowAppPageCB callback = null) {
+				SmartDeviceVoiceChatShowAppPageParamInt paramInt = new SmartDeviceVoiceChatShowAppPageParamInt(ref param);
+				asyncId = PublishAsyncId();
+				if (!SmartDeviceVoiceChat_ShowAppPageAsync(asyncId, ref paramInt))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool SmartDeviceVoiceChat_ChangeVoiceChatChannelAsync(uint asyncId, ref global::NexPlugin.Detail.SmartDeviceVoiceChat.SmartDeviceVoiceChatChangeVoiceChatChannelParamInt pParam, int timeOut);
 #else
 			private static bool SmartDeviceVoiceChat_ChangeVoiceChatChannelAsync(uint asyncId, ref global::NexPlugin.Detail.SmartDeviceVoiceChat.SmartDeviceVoiceChatChangeVoiceChatChannelParamInt pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("SmartDeviceVoiceChat_ChangeVoiceChatChannelAsync"); }
 #endif
-			public static bool ChangeVoiceChatChannelAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatChangeVoiceChatChannelParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009BB6*/ throw null; }
+			public static bool ChangeVoiceChatChannelAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatChangeVoiceChatChannelParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				SmartDeviceVoiceChatChangeVoiceChatChannelParamInt paramInt = new SmartDeviceVoiceChatChangeVoiceChatChannelParamInt(param);
+				asyncId = PublishAsyncId();
+				if (!SmartDeviceVoiceChat_ChangeVoiceChatChannelAsync(asyncId, ref paramInt, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool SmartDeviceVoiceChat_GetAvailabilityAsync(uint asyncId, int timeOut);
 #else
 			private static bool SmartDeviceVoiceChat_GetAvailabilityAsync(uint asyncId, int timeOut) { return PcPlatform.PcNex.ServiceCall("SmartDeviceVoiceChat_GetAvailabilityAsync"); }
 #endif
-			public static bool GetAvailabilityAsync(out uint asyncId, int timeOut = 0, global::NexPlugin.SmartDeviceVoiceChat.GetAvailabilityCB callback = null) { /*@B 0x6009BB8*/ throw null; }
+			public static bool GetAvailabilityAsync(out uint asyncId, int timeOut = 0, global::NexPlugin.SmartDeviceVoiceChat.GetAvailabilityCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!SmartDeviceVoiceChat_GetAvailabilityAsync(asyncId, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool SmartDeviceVoiceChat_JoinRoomAsync(uint asyncId, ref global::NexPlugin.Detail.SmartDeviceVoiceChat.SmartDeviceVoiceChatJoinRoomParamInt pParam, int timeOut = 0);
 #else
 			private static bool SmartDeviceVoiceChat_JoinRoomAsync(uint asyncId, ref global::NexPlugin.Detail.SmartDeviceVoiceChat.SmartDeviceVoiceChatJoinRoomParamInt pParam, int timeOut = 0) { return PcPlatform.PcNex.ServiceCall("SmartDeviceVoiceChat_JoinRoomAsync"); }
 #endif
-			public static bool JoinRoomAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatJoinRoomParam param, int timeOut = 0, global::NexPlugin.SmartDeviceVoiceChat.JoinRoomCB callback = null) { /*@B 0x6009BBA*/ throw null; }
+			public static bool JoinRoomAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatJoinRoomParam param, int timeOut = 0, global::NexPlugin.SmartDeviceVoiceChat.JoinRoomCB callback = null) {
+				SmartDeviceVoiceChatJoinRoomParamInt paramInt = new SmartDeviceVoiceChatJoinRoomParamInt(param);
+				asyncId = PublishAsyncId();
+				if (!SmartDeviceVoiceChat_JoinRoomAsync(asyncId, ref paramInt, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool SmartDeviceVoiceChat_LeaveRoomAsync(uint asyncId, ref global::NexPlugin.Detail.SmartDeviceVoiceChat.SmartDeviceVoiceChatLeaveRoomParamInt pParam, int timeOut = 0);
 #else
 			private static bool SmartDeviceVoiceChat_LeaveRoomAsync(uint asyncId, ref global::NexPlugin.Detail.SmartDeviceVoiceChat.SmartDeviceVoiceChatLeaveRoomParamInt pParam, int timeOut = 0) { return PcPlatform.PcNex.ServiceCall("SmartDeviceVoiceChat_LeaveRoomAsync"); }
 #endif
-			public static bool LeaveRoomAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatLeaveRoomParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009BBC*/ throw null; }
+			public static bool LeaveRoomAsync(out uint asyncId, global::NexPlugin.SmartDeviceVoiceChatLeaveRoomParam param, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				SmartDeviceVoiceChatLeaveRoomParamInt paramInt = new SmartDeviceVoiceChatLeaveRoomParamInt(param);
+				asyncId = PublishAsyncId();
+				if (!SmartDeviceVoiceChat_LeaveRoomAsync(asyncId, ref paramInt, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool SmartDeviceVoiceChat_LeaveRoom(ref global::NexPlugin.Detail.SmartDeviceVoiceChat.SmartDeviceVoiceChatLeaveRoomParamInt pParam);
 #else
 			private static bool SmartDeviceVoiceChat_LeaveRoom(ref global::NexPlugin.Detail.SmartDeviceVoiceChat.SmartDeviceVoiceChatLeaveRoomParamInt pParam) { return PcPlatform.PcNex.ServiceCall("SmartDeviceVoiceChat_LeaveRoom"); }
 #endif
-			public static bool LeaveRoom(global::NexPlugin.SmartDeviceVoiceChatLeaveRoomParam param) { /*@B 0x6009BBE*/ throw null; }
+			public static bool LeaveRoom(global::NexPlugin.SmartDeviceVoiceChatLeaveRoomParam param) {
+				SmartDeviceVoiceChatLeaveRoomParamInt paramInt = new SmartDeviceVoiceChatLeaveRoomParamInt(param);
+				return SmartDeviceVoiceChat_LeaveRoom(ref paramInt);
+			}
 			// inlined into Callback (@024daaa0 case 1103): pParam1 -> availability (uint != 0)
 			private static void SmartDeviceVoiceChat_GetAvailabilityResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
 				NexPlugin.SmartDeviceVoiceChat.GetAvailabilityCB cb = callback as NexPlugin.SmartDeviceVoiceChat.GetAvailabilityCB;
 				if (cb != null)
 					cb(AsyncResultInt.GetAsyncResult(asyncResult), asyncResult.GetUint(asyncResult.pParam1) != 0);
 			}
-			private static void SmartDeviceVoiceChat_JoinRoomResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BC0*/ throw null; }
-			private static void SmartDeviceVoiceChat_ShowAppPageResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BC1*/ throw null; }
+			private static void SmartDeviceVoiceChat_JoinRoomResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.SmartDeviceVoiceChat.JoinRoomCB cb = callback as NexPlugin.SmartDeviceVoiceChat.JoinRoomCB;
+				if (cb != null)
+				{
+					SmartDeviceVoiceChatJoinRoomResult result = new SmartDeviceVoiceChatJoinRoomResult();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						result = SmartDeviceVoiceChatJoinRoomResultInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), result);
+				}
+			}
+			private static void SmartDeviceVoiceChat_ShowAppPageResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.SmartDeviceVoiceChat.ShowAppPageCB cb = callback as NexPlugin.SmartDeviceVoiceChat.ShowAppPageCB;
+				if (cb != null)
+				{
+					SmartDeviceVoiceChatShowAppPageResult result = new SmartDeviceVoiceChatShowAppPageResult();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						result = SmartDeviceVoiceChatShowAppPageResultInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), result);
+				}
+			}
 			// @024daaa0
 			public static void Callback(global::NexPlugin.Detail.AsyncResultInt res, object callback) {
 				switch (res.asyncNum)
@@ -2466,84 +2727,198 @@ namespace NexPlugin
 			private struct SmartDeviceVoiceChatJoinRoomResultInt
 			{
 				private ulong roomId;
-				public SmartDeviceVoiceChatJoinRoomResultInt(global::NexPlugin.SmartDeviceVoiceChatJoinRoomResult param) { /*@B 0x600BB63*/ throw null; }
-				public static global::NexPlugin.SmartDeviceVoiceChatJoinRoomResult ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB64*/ throw null; }
+				public SmartDeviceVoiceChatJoinRoomResultInt(global::NexPlugin.SmartDeviceVoiceChatJoinRoomResult param) {
+					if (param == null)
+						param = new SmartDeviceVoiceChatJoinRoomResult();
+					roomId = param.roomId;
+				}
+				public static global::NexPlugin.SmartDeviceVoiceChatJoinRoomResult ExchangePtrToStruct(global::System.IntPtr src) {
+					SmartDeviceVoiceChatJoinRoomResultInt info = Detail.ExchangePtrToStruct<SmartDeviceVoiceChatJoinRoomResultInt>(src);
+					SmartDeviceVoiceChatJoinRoomResult result = new SmartDeviceVoiceChatJoinRoomResult();
+					result.roomId = info.roomId;
+					return result;
+				}
 			}
 			private struct SmartDeviceVoiceChatShowAppPageResultInt
 			{
 				private int status;
-				public SmartDeviceVoiceChatShowAppPageResultInt(global::NexPlugin.SmartDeviceVoiceChatShowAppPageResult param) { /*@B 0x600BB65*/ throw null; }
-				public static global::NexPlugin.SmartDeviceVoiceChatShowAppPageResult ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB66*/ throw null; }
+				public SmartDeviceVoiceChatShowAppPageResultInt(global::NexPlugin.SmartDeviceVoiceChatShowAppPageResult param) {
+					if (param == null)
+						param = new SmartDeviceVoiceChatShowAppPageResult();
+					status = (int)param.status;
+				}
+				public static global::NexPlugin.SmartDeviceVoiceChatShowAppPageResult ExchangePtrToStruct(global::System.IntPtr src) {
+					SmartDeviceVoiceChatShowAppPageResultInt info = Detail.ExchangePtrToStruct<SmartDeviceVoiceChatShowAppPageResultInt>(src);
+					SmartDeviceVoiceChatShowAppPageResult result = new SmartDeviceVoiceChatShowAppPageResult();
+					result.status = (NexPlugin.SmartDeviceVoiceChat.ShowAppResultStatus)info.status;
+					return result;
+				}
 			}
 			private struct SmartDeviceVoiceChatJoinRoomParamInt
 			{
 				private ulong sessionId;
 				private uint gameMode;
 				private uint channelId;
-				public SmartDeviceVoiceChatJoinRoomParamInt(global::NexPlugin.SmartDeviceVoiceChatJoinRoomParam param) { /*@B 0x600BB67*/ throw null; }
+				public SmartDeviceVoiceChatJoinRoomParamInt(global::NexPlugin.SmartDeviceVoiceChatJoinRoomParam param) {
+					if (param == null)
+						param = new SmartDeviceVoiceChatJoinRoomParam();
+					sessionId = param.sessionId;
+					gameMode = param.gameMode;
+					channelId = param.channelId;
+				}
 			}
 			private struct SmartDeviceVoiceChatLeaveRoomParamInt
 			{
 				private ulong roomId;
-				public SmartDeviceVoiceChatLeaveRoomParamInt(global::NexPlugin.SmartDeviceVoiceChatLeaveRoomParam param) { /*@B 0x600BB68*/ throw null; }
+				public SmartDeviceVoiceChatLeaveRoomParamInt(global::NexPlugin.SmartDeviceVoiceChatLeaveRoomParam param) {
+					if (param == null)
+						param = new SmartDeviceVoiceChatLeaveRoomParam();
+					roomId = param.roomId;
+				}
 			}
 			private struct SmartDeviceVoiceChatChangeVoiceChatChannelParamInt
 			{
 				private ulong roomId;
 				private uint channelId;
-				public SmartDeviceVoiceChatChangeVoiceChatChannelParamInt(global::NexPlugin.SmartDeviceVoiceChatChangeVoiceChatChannelParam param) { /*@B 0x600BB69*/ throw null; }
+				public SmartDeviceVoiceChatChangeVoiceChatChannelParamInt(global::NexPlugin.SmartDeviceVoiceChatChangeVoiceChatChannelParam param) {
+					if (param == null)
+						param = new SmartDeviceVoiceChatChangeVoiceChatChannelParam();
+					roomId = param.roomId;
+					channelId = param.channelId;
+				}
 			}
 			private struct SmartDeviceVoiceChatShowAppPageParamInt
 			{
 				private global::nn.account.UserHandle userHandle;
-				public SmartDeviceVoiceChatShowAppPageParamInt(ref global::NexPlugin.SmartDeviceVoiceChatShowAppPageParam param) { /*@B 0x600BB6A*/ throw null; }
+				public SmartDeviceVoiceChatShowAppPageParamInt(ref global::NexPlugin.SmartDeviceVoiceChatShowAppPageParam param) {
+					if (param == null)
+						param = new SmartDeviceVoiceChatShowAppPageParam();
+					userHandle = param.userHandle;
+				}
 			}
 		}
 		public static class Subscriber
 		{
-			private static global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::NexPlugin.SubscriberContent>> Exchange(global::System.IntPtr src) { /*@B 0x6009BC3*/ throw null; }
+			private static global::System.Collections.Generic.List<global::System.Collections.Generic.List<global::NexPlugin.SubscriberContent>> Exchange(global::System.IntPtr src) {
+				List<List<SubscriberContent>> result = new List<List<SubscriberContent>>();
+				List<CppArray> arrays = new List<CppArray>();
+				CppArray array = new CppArray(src);
+				array.ToList(ref arrays);
+				foreach (CppArray item in arrays)
+					result.Add(item.ToList<SubscriberContent, SubscriberContentInt>());
+				return result;
+			}
 #if SWITCH
 			private static extern bool Subscriber_PostContentAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Subscriber.SubscriberPostContentParamInt pParam, int timeOut);
 #else
 			private static bool Subscriber_PostContentAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Subscriber.SubscriberPostContentParamInt pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("Subscriber_PostContentAsync", pNgsFacade); }
 #endif
-			public static bool PostContentAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.SubscriberPostContentParam param, int timeOut = 0, global::NexPlugin.Subscriber.PostContentCB callback = null) { /*@B 0x6009BC5*/ throw null; }
+			public static bool PostContentAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.SubscriberPostContentParam param, int timeOut = 0, global::NexPlugin.Subscriber.PostContentCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				SubscriberPostContentParamInt paramInt = new SubscriberPostContentParamInt(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = Subscriber_PostContentAsync(asyncId, pNgsFacade, ref paramInt, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Subscriber_GetContentAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Subscriber.SubscriberGetContentParamInt pParam, int timeOut);
 #else
 			private static bool Subscriber_GetContentAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.Subscriber.SubscriberGetContentParamInt pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("Subscriber_GetContentAsync", pNgsFacade); }
 #endif
-			public static bool GetContentAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.SubscriberGetContentParam param, int timeOut = 0, global::NexPlugin.Subscriber.GetContentCB callback = null) { /*@B 0x6009BC7*/ throw null; }
+			public static bool GetContentAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::NexPlugin.SubscriberGetContentParam param, int timeOut = 0, global::NexPlugin.Subscriber.GetContentCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				SubscriberGetContentParamInt paramInt = new SubscriberGetContentParamInt(param);
+				asyncId = PublishAsyncId();
+				bool ret = Subscriber_GetContentAsync(asyncId, pNgsFacade, ref paramInt, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Subscriber_GetContentsAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray pParam, int timeOut);
 #else
 			private static bool Subscriber_GetContentsAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray pParam, int timeOut) { return PcPlatform.PcNex.ServiceCall("Subscriber_GetContentsAsync", pNgsFacade); }
 #endif
-			public static bool GetContentAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<global::NexPlugin.SubscriberGetContentParam> param, int timeOut = 0, global::NexPlugin.Subscriber.GetContentsCB callback = null) { /*@B 0x6009BC9*/ throw null; }
+			public static bool GetContentAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<global::NexPlugin.SubscriberGetContentParam> param, int timeOut = 0, global::NexPlugin.Subscriber.GetContentsCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				SubscriberGetContentParamInt dummy = new SubscriberGetContentParamInt(new SubscriberGetContentParam()); // shipped: built and discarded (keeps the ctor for ListToArray<U, T>)
+				CppArray paramArray = CppArray.ListToArray<SubscriberGetContentParamInt, SubscriberGetContentParam>(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = Subscriber_GetContentsAsync(asyncId, pNgsFacade, ref paramArray, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Subscriber_DeleteContentAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray topics, ulong contentId, int timeOut);
 #else
 			private static bool Subscriber_DeleteContentAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray topics, ulong contentId, int timeOut) { return PcPlatform.PcNex.ServiceCall("Subscriber_DeleteContentAsync", pNgsFacade); }
 #endif
-			public static bool DeleteContentAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<uint> topics, ulong contentId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009BCB*/ throw null; }
+			public static bool DeleteContentAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<uint> topics, ulong contentId, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray topicsArray = CppArray.ListToArray(useptr, topics);
+				asyncId = PublishAsyncId();
+				bool ret = Subscriber_DeleteContentAsync(asyncId, pNgsFacade, ref topicsArray, contentId, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Subscriber_GetFriendUserStatusesAsync(uint asyncId, global::System.IntPtr pNgsFacade, int timeOut);
 #else
 			private static bool Subscriber_GetFriendUserStatusesAsync(uint asyncId, global::System.IntPtr pNgsFacade, int timeOut) { return PcPlatform.PcNex.ServiceCall("Subscriber_GetFriendUserStatusesAsync", pNgsFacade); }
 #endif
-			public static bool GetFriendUserStatusesAsync(out uint asyncId, global::System.IntPtr pNgsFacade, int timeOut = 0, global::NexPlugin.Subscriber.GetSubscriberUserStatusInfoCB callback = null) { /*@B 0x6009BCD*/ throw null; }
+			public static bool GetFriendUserStatusesAsync(out uint asyncId, global::System.IntPtr pNgsFacade, int timeOut = 0, global::NexPlugin.Subscriber.GetSubscriberUserStatusInfoCB callback = null) {
+				asyncId = PublishAsyncId();
+				if (!Subscriber_GetFriendUserStatusesAsync(asyncId, pNgsFacade, timeOut))
+					return false;
+				if (callback != null)
+					AddNexResultCallback(asyncId, callback);
+				return true;
+			}
 #if SWITCH
 			private static extern bool Subscriber_GetFriendUserStatusesWithKeyAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray keys, int timeOut);
 #else
 			private static bool Subscriber_GetFriendUserStatusesWithKeyAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray keys, int timeOut) { return PcPlatform.PcNex.ServiceCall("Subscriber_GetFriendUserStatusesWithKeyAsync", pNgsFacade); }
 #endif
-			public static bool GetFriendUserStatusesAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<byte> keys, int timeOut = 0, global::NexPlugin.Subscriber.GetSubscriberUserStatusInfoCB callback = null) { /*@B 0x6009BCF*/ throw null; }
+			public static bool GetFriendUserStatusesAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<byte> keys, int timeOut = 0, global::NexPlugin.Subscriber.GetSubscriberUserStatusInfoCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray keysArray = CppArray.ListToArray(useptr, keys);
+				asyncId = PublishAsyncId();
+				bool ret = Subscriber_GetFriendUserStatusesWithKeyAsync(asyncId, pNgsFacade, ref keysArray, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Subscriber_GetUserStatusesAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray users, ref global::NexPlugin.Detail.CppArray keys, int timeOut);
 #else
 			private static bool Subscriber_GetUserStatusesAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray users, ref global::NexPlugin.Detail.CppArray keys, int timeOut) { return PcPlatform.PcNex.ServiceCall("Subscriber_GetUserStatusesAsync", pNgsFacade); }
 #endif
-			public static bool GetUserStatusesAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> users, global::System.Collections.Generic.List<byte> keys, int timeOut = 0, global::NexPlugin.Subscriber.GetSubscriberUserStatusInfoCB callback = null) { /*@B 0x6009BD1*/ throw null; }
+			public static bool GetUserStatusesAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> users, global::System.Collections.Generic.List<byte> keys, int timeOut = 0, global::NexPlugin.Subscriber.GetSubscriberUserStatusInfoCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray usersArray = CppArray.ListToArray(useptr, users);
+				CppArray keysArray = CppArray.ListToArray(useptr, keys);
+				asyncId = PublishAsyncId();
+				bool ret = Subscriber_GetUserStatusesAsync(asyncId, pNgsFacade, ref usersArray, ref keysArray, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Subscriber_UpdateUserStatusAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray param, int isNotify, int timeOut);
 #else
