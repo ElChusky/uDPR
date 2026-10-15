@@ -7,8 +7,8 @@ namespace nn.hid
 		public int y;
 		// @027d0b00
 		public override string ToString() { return string.Format("({0} {1})", x, y); }
-		public static bool operator ==(global::nn.hid.GesturePoint lhs, global::nn.hid.GesturePoint rhs) { /*@B nn:0x6000124*/ throw null; }
-		public static bool operator !=(global::nn.hid.GesturePoint lhs, global::nn.hid.GesturePoint rhs) { /*@B nn:0x6000125*/ throw null; }
+		public static bool operator ==(global::nn.hid.GesturePoint lhs, global::nn.hid.GesturePoint rhs) { return lhs.x == rhs.x && lhs.y == rhs.y; }
+		public static bool operator !=(global::nn.hid.GesturePoint lhs, global::nn.hid.GesturePoint rhs) { return lhs.x != rhs.x || lhs.y != rhs.y; }
 		// @027d0be0: exact-class test, then the two fields of the unboxed copy
 		public override bool Equals(object right) {
 			if (!(right is GesturePoint))

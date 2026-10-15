@@ -6,9 +6,12 @@ namespace nn.hid
 		public const int Max = 32767;
 		public int x;
 		public int y;
-		public float fx { get { /*@B nn:0x600010A*/ throw null; } }
-		public float fy { get { /*@B nn:0x600010B*/ throw null; } }
-		public void Clear() { /*@B nn:0x600010C*/ throw null; }
+		public float fx { get { return (float)x / Max; } }
+		public float fy { get { return (float)y / Max; } }
+		public void Clear() {
+			x = 0;
+			y = 0;
+		}
 		// @027ce690
 		public override string ToString() { return string.Format("({0,6} {1,6})", x, y); }
 	}

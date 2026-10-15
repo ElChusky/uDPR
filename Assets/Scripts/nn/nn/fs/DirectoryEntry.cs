@@ -12,7 +12,7 @@ namespace nn.fs
 		private byte _reserved4;
 		private byte _reserved5;
 		private long fileSize;
-		public global::nn.fs.EntryType entryType { get { /*@B nn:0x60001D3*/ throw null; } set { /*@B nn:0x60001D4*/ throw null; } }
+		public global::nn.fs.EntryType entryType { get { return (global::nn.fs.EntryType)_entryType; } set { _entryType = (sbyte)value; } }
 		// @027cdb70: a directory prints "name/", anything else "name : size"
 		public override string ToString() {
 			if (_entryType == (sbyte)EntryType.Directory)
