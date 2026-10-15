@@ -16,6 +16,7 @@ Idempotent: a second run finds nothing. Runs on the export before `normalise`; o
 """
 import argparse
 import collections
+import json
 import os
 import re
 import sys
@@ -65,7 +66,13 @@ def main():
     ap.add_argument("--root")
     ap.add_argument("--dry", action="store_true")
     a = ap.parse_args()
-    root = a.root or (paths.EXPORT_ASSETS if os.path.isdir(paths.EXPORT_ASSETS) else paths.ASSETS)
+    root = a.root
+    if not root:
+        # before `merge` the assets are in the export; after it (an older setup resumed) they are in Assets/ - the export folder
+        # still exists then (the merge leaves the export's Scripts behind), so decide by the setup state, not by the folder
+        state_path = paths.work("state.json")
+        state = json.load(open(state_path, encoding="utf-8")) if os.path.exists(state_path) else {}
+        root = paths.ASSETS if state.get("merge", {}).get("done") else paths.EXPORT_ASSETS
     if not os.path.isdir(root):
         sys.exit("no exported assets at %s" % root)
     print("fix_arrays: %s%s" % (root, " (dry run)" if a.dry else ""), flush=True)
