@@ -1,7 +1,50 @@
-# Unity
+# CustomBDSP clean project
+# Unity-generated
 /Library/
 /Temp/
+/Obj/
+/Build/
+/Builds/
 /Logs/
-/obj/
+/UserSettings/
+/MemoryCaptures/
+/Recordings/
 *.csproj
 *.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.unityproj
+*.tmp
+.vs/
+.vscode/
+.idea/
+*.pdb.meta
+*.mdb.meta
+sysinfo.txt
+crashlytics-build.properties
+
+# The game's assets are exported from the user's own dump (tools/assetripper_export.sh) and never committed.
+# Committed under Assets/: Scripts, Editor, Plugins (DOTween vendor), Wwise (Audiokinetic vendor), link.xml,
+# StreamingAssets/AK (Wwise marker) and the folder metas of these.
+/Assets/*
+!/Assets/Scripts/
+!/Assets/Scripts.meta
+!/Assets/Editor/
+!/Assets/Editor.meta
+!/Assets/Plugins/
+!/Assets/Plugins.meta
+!/Assets/Wwise/
+!/Assets/Wwise.meta
+!/Assets/WwiseSettings.xml
+!/Assets/WwiseSettings.xml.meta
+!/Assets/link.xml
+!/Assets/link.xml.meta
+!/Assets/StreamingAssets/
+!/Assets/StreamingAssets.meta
+/Assets/StreamingAssets/*
+!/Assets/StreamingAssets/AK/
+!/Assets/StreamingAssets/AK.meta
+/Assets/Wwise/Editor/ProjectData/AkWwiseProjectData.asset*
