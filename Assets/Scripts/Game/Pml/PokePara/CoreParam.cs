@@ -7,41 +7,143 @@ namespace Pml.PokePara
 	public class CoreParam
 	{
 		public const int DATASIZE = 328;
-		private static byte[] sCoreSerializeBuffer;
+		private static byte[] sCoreSerializeBuffer = new byte[DATASIZE];
 		private const byte TOKUSEI_INDEX_ERROR = 255;
 		public const byte BIRTH_FRIENDSHIP = 100;
 		protected byte[] m_coreData;
 		protected byte[] m_calcData;
 		protected global::Pml.PokePara.Accessor m_accessor;
-		public byte[] GetCoreData() { /*@B 0x60023CD*/ throw null; }
-		public byte[] GetCalcData() { /*@B 0x60023CE*/ throw null; }
+		public byte[] GetCoreData() {
+            return m_coreData;
+        }
+		public byte[] GetCalcData() {
+            return m_calcData;
+        }
 		public global::Pml.PokePara.Accessor GetAccessor() { return this.m_accessor; }
-		public static sbyte GetPowerTransformBySeikaku(ushort seikaku, global::Pml.PokePara.PowerID powerId) { /*@B 0x60023D0*/ throw null; }
-		public static void CheckPublicDataSize() { /*@B 0x60023D1*/ throw null; }
-		public static bool IsRareFromValue(uint id, uint colorRnd) { /*@B 0x60023D2*/ throw null; }
-		public uint GetPower(global::Pml.PokePara.PowerID powerId) { /*@B 0x60023D3*/ throw null; }
-		public uint GetMaxHp() { /*@B 0x60023D4*/ throw null; }
-		public uint GetHp() { /*@B 0x60023D5*/ throw null; }
-		public void SetHp(uint value) { /*@B 0x60023D6*/ throw null; }
-		public void ReduceHp(uint value) { /*@B 0x60023D7*/ throw null; }
-		public void ReduceNowHp(uint value) { /*@B 0x60023D8*/ throw null; }
-		public void RecoverHp(uint value) { /*@B 0x60023D9*/ throw null; }
-		public void RecoverHpFull() { /*@B 0x60023DA*/ throw null; }
-		public bool IsHpFull() { /*@B 0x60023DB*/ throw null; }
-		public bool IsHpZero() { /*@B 0x60023DC*/ throw null; }
-		public void RecoverAll() { /*@B 0x60023DD*/ throw null; }
-		public void SetMaxHp(uint value) { /*@B 0x60023DE*/ throw null; }
-		protected void SetAtk(ushort value) { /*@B 0x60023DF*/ throw null; }
-		protected void SetDef(ushort value) { /*@B 0x60023E0*/ throw null; }
-		protected void SetSpAtk(ushort value) { /*@B 0x60023E1*/ throw null; }
-		protected void SetSpDef(ushort value) { /*@B 0x60023E2*/ throw null; }
-		protected void SetAgi(ushort value) { /*@B 0x60023E3*/ throw null; }
-		public bool HaveSick() { /*@B 0x60023E4*/ throw null; }
-		public global::Pml.PokePara.Sick GetSick() { /*@B 0x60023E5*/ throw null; }
-		public void SetSick(global::Pml.PokePara.Sick sick) { /*@B 0x60023E6*/ throw null; }
-		public void RecoverSick() { /*@B 0x60023E7*/ throw null; }
-		public uint GetLevel() { /*@B 0x60023E8*/ throw null; }
-		public uint GetExp() { /*@B 0x60023E9*/ throw null; }
+		public static sbyte GetPowerTransformBySeikaku(ushort seikaku, global::Pml.PokePara.PowerID powerId) {
+            return CalcTool.GetPowerTransformBySeikaku(seikaku, powerId);
+        }
+		public static void CheckPublicDataSize() {
+            GFL.ASSERT(true);
+        }
+		public static bool IsRareFromValue(uint id, uint colorRnd) {
+            return CalcTool.IsRareColor(id, colorRnd);
+        }
+		public uint GetPower(global::Pml.PokePara.PowerID powerId) {
+            switch (powerId)
+            {
+                case PowerID.HP:
+                    return GetMaxHp();
+                case PowerID.ATK:
+                    return GetAtk();
+                case PowerID.DEF:
+                    return GetDef();
+                case PowerID.SPATK:
+                    return GetSpAtk();
+                case PowerID.SPDEF:
+                    return GetSpDef();
+                case PowerID.AGI:
+                    return GetAgi();
+                default:
+                    GFL.ASSERT(false);
+                    return 0;
+            }
+        }
+		public uint GetMaxHp() {
+            if (m_accessor.HaveCalcData())
+                return m_accessor.GetMaxHp();
+
+            return CalcMaxHp();
+        }
+		public uint GetHp() {
+            if (m_accessor.HaveCalcData())
+                return m_accessor.GetHp();
+
+            // shipped: without calc data the current HP is the computed max HP
+            return CalcMaxHp();
+        }
+		public void SetHp(uint value) {
+            var maxHp = m_accessor.GetMaxHp();
+            m_accessor.SetHp((ushort)((maxHp < value) ? maxHp : value));
+        }
+		public void ReduceHp(uint value) {
+            // shipped: subtracts from the MAX hp, not the current hp
+            var maxHp = m_accessor.GetMaxHp();
+            m_accessor.SetHp((ushort)((maxHp > value) ? (maxHp - value) : 0));
+        }
+		public void ReduceNowHp(uint value) {
+            var maxHp = m_accessor.GetMaxHp();
+            var hp = m_accessor.GetHp();
+            var newHp = hp - value;
+            if (maxHp < newHp)
+                newHp = maxHp;
+
+            m_accessor.SetHp((ushort)((hp > value) ? newHp : 0));
+        }
+		public void RecoverHp(uint value) {
+            var maxHp = m_accessor.GetMaxHp();
+            var newHp = m_accessor.GetHp() + value;
+            m_accessor.SetHp((ushort)((maxHp < newHp) ? maxHp : newHp));
+        }
+		public void RecoverHpFull() {
+            m_accessor.SetHp((ushort)m_accessor.GetMaxHp());
+        }
+		public bool IsHpFull() {
+            if (!m_accessor.HaveCalcData())
+                return true;
+
+            return m_accessor.GetMaxHp() == m_accessor.GetHp();
+        }
+		public bool IsHpZero() {
+            if (!m_accessor.HaveCalcData())
+                return false;
+
+            return m_accessor.GetHp() == 0;
+        }
+		public void RecoverAll() {
+            RecoverHpFull();
+            RecoverSick();
+            RecoverWazaPPAll();
+        }
+		public void SetMaxHp(uint value) {
+            m_accessor.SetMaxHp((ushort)value);
+        }
+		protected void SetAtk(ushort value) {
+            m_accessor.SetAtk(value);
+        }
+		protected void SetDef(ushort value) {
+            m_accessor.SetDef(value);
+        }
+		protected void SetSpAtk(ushort value) {
+            m_accessor.SetSpAtk(value);
+        }
+		protected void SetSpDef(ushort value) {
+            m_accessor.SetSpDef(value);
+        }
+		protected void SetAgi(ushort value) {
+            m_accessor.SetAgi(value);
+        }
+		public bool HaveSick() {
+            return m_accessor.GetSick() != 0;
+        }
+		public global::Pml.PokePara.Sick GetSick() {
+            return (Sick)m_accessor.GetSick();
+        }
+		public void SetSick(global::Pml.PokePara.Sick sick) {
+            m_accessor.SetSick((uint)sick);
+        }
+		public void RecoverSick() {
+            m_accessor.SetSick(0);
+        }
+		public uint GetLevel() {
+            if (m_accessor.HaveCalcData())
+                return m_accessor.GetLevel();
+
+            return CalcLevel();
+        }
+		public uint GetExp() {
+            return m_accessor.GetExp();
+        }
 		public void SetExp(uint value) {
             var maxExp = PersonalSystem.GetGrowTable(GetMonsNo(), GetFormNo()).GetMinExp(PmlConstants.MAX_POKE_LEVEL);
             m_accessor.SetExp((value <= maxExp) ? value : maxExp);
@@ -50,7 +152,12 @@ namespace Pml.PokePara
 		public void AddExp(uint value) {
             SetExp(GetExp() + value);
         }
-		public uint GetExpForCurrentLevel() { /*@B 0x60023EC*/ throw null; }
+		public uint GetExpForCurrentLevel() {
+            var monsno = GetMonsNo();
+            var formno = GetFormNo();
+            var level = (byte)GetLevel();
+            return PersonalSystem.GetGrowTable(monsno, formno).GetMinExp(level);
+        }
 		public uint GetExpForNextLevel() {
             var nextLevel = (byte)Math.Min(GetLevel() + 1, (uint)PmlConstants.MAX_POKE_LEVEL);
             return PersonalSystem.GetGrowTable(GetMonsNo(), GetFormNo()).GetMinExp(nextLevel);
@@ -202,7 +309,14 @@ namespace Pml.PokePara
                     return 0;
             }
         }
-		public uint GetTotalEffortPower() { /*@B 0x60023F7*/ throw null; }
+		public uint GetTotalEffortPower() {
+            return m_accessor.GetEffortHp()
+                + m_accessor.GetEffortAtk()
+                + m_accessor.GetEffortDef()
+                + m_accessor.GetEffortSpAtk()
+                + m_accessor.GetEffortSpDef()
+                + m_accessor.GetEffortAgi();
+        }
 		public void ChangeEffortPower(global::Pml.PokePara.PowerID powerId, uint value) {
             var effort = (byte)AdjustEffortPower(GetEffortPower(powerId), value);
 
@@ -248,9 +362,26 @@ namespace Pml.PokePara
             var effort = GetEffortPower(powerId);
             ChangeEffortPower(powerId, (value <= effort) ? (effort - value) : 0);
         }
-		public global::Pml.PokePara.GState GetGState() { /*@B 0x60023FB*/ throw null; }
-		public void SetGState(global::Pml.PokePara.GState state) { /*@B 0x60023FC*/ throw null; }
-		public bool IsG() { /*@B 0x60023FD*/ throw null; }
+		public global::Pml.PokePara.GState GetGState() {
+            if (m_accessor.HaveCalcData())
+                return m_accessor.GetGState();
+
+            return GState.NONE;
+        }
+		public void SetGState(global::Pml.PokePara.GState state) {
+            if (!m_accessor.HaveCalcData())
+                return;
+
+            m_accessor.SetGState(state);
+            UpdateCalcDatas();
+        }
+		public bool IsG() {
+            if (!m_accessor.HaveCalcData())
+                return false;
+
+            var state = GetGState();
+            return state == GState.G_GENERAL || state == GState.G_SPECIAL;
+        }
 		public void ChangeEffortG(byte value) {
             if (value > PmlConstants.MAX_EFFORT_G)
                 value = PmlConstants.MAX_EFFORT_G;
@@ -287,7 +418,26 @@ namespace Pml.PokePara
                     return 0;
             }
         }
-		public uint GetPower_NotG(global::Pml.PokePara.PowerID powerID) { /*@B 0x6002403*/ throw null; }
+		public uint GetPower_NotG(global::Pml.PokePara.PowerID powerID) {
+            switch (powerID)
+            {
+                case PowerID.HP:
+                    return CalcMaxHp_NotG();
+                case PowerID.ATK:
+                    return CalcAtk_NotG();
+                case PowerID.DEF:
+                    return CalcDef_NotG();
+                case PowerID.SPATK:
+                    return CalcSpAtk_NotG();
+                case PowerID.SPDEF:
+                    return CalcSpDef_NotG();
+                case PowerID.AGI:
+                    return CalcAgi_NotG();
+                default:
+                    GFL.ASSERT(false);
+                    return 0;
+            }
+        }
 		public bool IsSpecialGEnable() {
             return m_accessor.IsSpecialGEnable();
         }
@@ -297,8 +447,12 @@ namespace Pml.PokePara
 		public void SetSpecialGDisable() {
             m_accessor.SetSpecialGFlag(false);
         }
-		public global::Pml.MonsNo GetMonsNo() { /*@B 0x6002407*/ throw null; }
-		public ushort GetFormNo() { /*@B 0x6002408*/ throw null; }
+		public global::Pml.MonsNo GetMonsNo() {
+            return m_accessor.GetMonsNo();
+        }
+		public ushort GetFormNo() {
+            return m_accessor.GetFormNo();
+        }
 		public void ChangeMonsNo(global::Pml.MonsNo newMonsno, ushort newFormno) {
             if (GetMonsNo() == newMonsno)
                 return;
@@ -321,10 +475,37 @@ namespace Pml.PokePara
 
             UpdateCalcDatas();
         }
-		public global::Pml.WazaNo GetWazaNo(byte index) { /*@B 0x600240A*/ throw null; }
-		public byte GetWazaCount() { /*@B 0x600240B*/ throw null; }
-		public bool HaveWaza(global::Pml.WazaNo wazano) { /*@B 0x600240C*/ throw null; }
-		public byte GetWazaIndex(global::Pml.WazaNo wazano) { /*@B 0x600240D*/ throw null; }
+		public global::Pml.WazaNo GetWazaNo(byte index) {
+            return m_accessor.GetWazaNo(index);
+        }
+		public byte GetWazaCount() {
+            byte count = 0;
+            for (byte i = 0; i < PmlConstants.MAX_WAZA_NUM; i++)
+            {
+                if (m_accessor.GetWazaNo(i) != WazaNo.NULL)
+                    count++;
+            }
+
+            return count;
+        }
+		public bool HaveWaza(global::Pml.WazaNo wazano) {
+            for (byte i = 0; i < PmlConstants.MAX_WAZA_NUM; i++)
+            {
+                if (m_accessor.GetWazaNo(i) == wazano)
+                    return true;
+            }
+
+            return false;
+        }
+		public byte GetWazaIndex(global::Pml.WazaNo wazano) {
+            for (byte i = 0; i < PmlConstants.MAX_WAZA_NUM; i++)
+            {
+                if (m_accessor.GetWazaNo(i) == wazano)
+                    return i;
+            }
+
+            return PmlConstants.MAX_WAZA_NUM;
+        }
 		public void SetDefaultWaza() {
             RemoveWaza(0);
             RemoveWaza(1);
@@ -345,9 +526,54 @@ namespace Pml.PokePara
                 PushWaza((WazaNo)wazaOboe.GetWazaNo(i));
             }
         }
-		public void PushWaza(global::Pml.WazaNo wazano) { /*@B 0x600240F*/ throw null; }
-		public void SetWaza(byte wazaIndex, global::Pml.WazaNo wazano) { /*@B 0x6002410*/ throw null; }
-		public void RemoveWaza(byte wazaIndex) { /*@B 0x6002411*/ throw null; }
+		public void PushWaza(global::Pml.WazaNo wazano) {
+            if (HaveWaza(wazano))
+                return;
+
+            for (byte i = 0; i < PmlConstants.MAX_WAZA_NUM; i++)
+            {
+                if (m_accessor.GetWazaNo(i) == WazaNo.NULL)
+                {
+                    SetWaza(i, wazano);
+                    return;
+                }
+            }
+
+            for (byte i = 1; i < PmlConstants.MAX_WAZA_NUM; i++)
+            {
+                var srcWazano = m_accessor.GetWazaNo(i);
+                var pp = m_accessor.GetPP(i);
+                var upCount = m_accessor.GetWazaPPUpCount(i);
+                m_accessor.SetWazaNo((byte)(i - 1), (uint)srcWazano);
+                m_accessor.SetPP((byte)(i - 1), pp);
+                m_accessor.SetWazaPPUpCount((byte)(i - 1), upCount);
+            }
+
+            SetWaza(PmlConstants.MAX_WAZA_NUM - 1, wazano);
+        }
+		public void SetWaza(byte wazaIndex, global::Pml.WazaNo wazano) {
+            if (wazaIndex >= PmlConstants.MAX_WAZA_NUM)
+            {
+                GFL.ASSERT(false);
+                return;
+            }
+
+            var maxPP = global::Pml.WazaData.WazaDataSystem.GetMaxPP(wazano, 0);
+            m_accessor.SetWazaNo(wazaIndex, (uint)wazano);
+            m_accessor.SetWazaPPUpCount(wazaIndex, 0);
+            m_accessor.SetPP(wazaIndex, (byte)maxPP);
+        }
+		public void RemoveWaza(byte wazaIndex) {
+            if (wazaIndex >= PmlConstants.MAX_WAZA_NUM)
+            {
+                GFL.ASSERT(false);
+                return;
+            }
+
+            m_accessor.SetWazaNo(wazaIndex, (uint)WazaNo.NULL);
+            m_accessor.SetWazaPPUpCount(wazaIndex, 0);
+            m_accessor.SetPP(wazaIndex, 0);
+        }
 		public void RemoveDuplicatedWaza() {
             for (byte i = 0; i < PmlConstants.MAX_WAZA_NUM - 1; i++)
             {
@@ -425,8 +651,19 @@ namespace Pml.PokePara
 		public global::Pml.WazaNo GetTamagoWazaNo(byte index) {
             return m_accessor.GetTamagoWazaNo(index);
         }
-		public void SetTamagoWazaNo(byte index, global::Pml.WazaNo wazano) { /*@B 0x600241A*/ throw null; }
-		public void ClearTamagoWaza() { /*@B 0x600241B*/ throw null; }
+		public void SetTamagoWazaNo(byte index, global::Pml.WazaNo wazano) {
+            if (index >= PmlConstants.MAX_WAZA_NUM)
+            {
+                GFL.ASSERT(false);
+                return;
+            }
+
+            m_accessor.SetTamagoWazaNo(index, (uint)wazano);
+        }
+		public void ClearTamagoWaza() {
+            for (byte i = 0; i < PmlConstants.MAX_WAZA_NUM; i++)
+                m_accessor.SetTamagoWazaNo(i, (uint)WazaNo.NULL);
+        }
 		public void InheriteTamagoWaza(global::Pml.PokePara.CoreParam teacher) {
             if (GetMonsNo() != teacher.GetMonsNo())
                 return;
@@ -570,16 +807,35 @@ namespace Pml.PokePara
 
             return wazaList;
         }
-		public uint GetWazaPP(byte wazaIndex) { /*@B 0x6002422*/ throw null; }
-		public uint GetWazaMaxPP(byte index) { /*@B 0x6002423*/ throw null; }
-		public void SetWazaPP(byte wazaIndex, byte value) { /*@B 0x6002424*/ throw null; }
+		public uint GetWazaPP(byte wazaIndex) {
+            return m_accessor.GetPP(wazaIndex);
+        }
+		public uint GetWazaMaxPP(byte index) {
+            return global::Pml.WazaData.WazaDataSystem.GetMaxPP(m_accessor.GetWazaNo(index), m_accessor.GetWazaPPUpCount(index));
+        }
+		public void SetWazaPP(byte wazaIndex, byte value) {
+            var maxPP = GetWazaMaxPP(wazaIndex);
+            m_accessor.SetPP(wazaIndex, (byte)((maxPP < value) ? maxPP : value));
+        }
 		public void ReduceWazaPP(byte wazaIndex, byte value) {
             var pp = m_accessor.GetPP(wazaIndex);
             SetWazaPP(wazaIndex, (value <= pp) ? (byte)(pp - value) : (byte)0);
         }
-		public void RecoverWazaPP(byte wazaIndex) { /*@B 0x6002426*/ throw null; }
-		public void RecoverWazaPP(byte wazaIndex, byte recvValue) { /*@B 0x6002427*/ throw null; }
-		public void RecoverWazaPPAll() { /*@B 0x6002428*/ throw null; }
+		public void RecoverWazaPP(byte wazaIndex) {
+            RecoverWazaPP(wazaIndex, (byte)GetWazaMaxPP(wazaIndex));
+        }
+		public void RecoverWazaPP(byte wazaIndex, byte recvValue) {
+            if (m_accessor.GetWazaNo(wazaIndex) == WazaNo.NULL)
+                return;
+
+            var maxPP = GetWazaMaxPP(wazaIndex);
+            var pp = m_accessor.GetPP(wazaIndex);
+            SetWazaPP(wazaIndex, (byte)Math.Min((uint)(pp + recvValue), maxPP));
+        }
+		public void RecoverWazaPPAll() {
+            for (byte i = 0; i < PmlConstants.MAX_WAZA_NUM; i++)
+                RecoverWazaPP(i);
+        }
 		public bool CanUsePointUp(byte wazaIndex) {
             return m_accessor.GetWazaPPUpCount(wazaIndex) < PmlConstants.MAX_WAZAPP_UPCOUNT;
         }
@@ -588,7 +844,9 @@ namespace Pml.PokePara
             IncWazaPPUpCount(wazaIndex);
             RecoverWazaPP(wazaIndex, (byte)(m_accessor.GetPP(wazaIndex) - pp));
         }
-		public uint GetWazaPPUpCount(byte wazaIndex) { /*@B 0x600242B*/ throw null; }
+		public uint GetWazaPPUpCount(byte wazaIndex) {
+            return m_accessor.GetWazaPPUpCount(wazaIndex);
+        }
 		public void SetWazaPPUpCount(byte wazaIndex, byte value) {
             if (value > PmlConstants.MAX_WAZAPP_UPCOUNT)
                 value = PmlConstants.MAX_WAZAPP_UPCOUNT;
@@ -610,14 +868,18 @@ namespace Pml.PokePara
 		public void ClearWazaRecordFlag() {
             m_accessor.ClearWazaRecordFlag();
         }
-		public void ClearBankUniqueID() { /*@B 0x6002432*/ throw null; }
+		public void ClearBankUniqueID() {
+            m_accessor.ClearBankUniqueID();
+        }
 		public ulong GetBankUniqueID() {
             return m_accessor.GetBankUniqueID();
         }
 		public void SetBankUniqueID(ulong value) {
             m_accessor.SetBankUniqueID(value);
         }
-		public global::Pml.Sex GetSex() { /*@B 0x6002435*/ throw null; }
+		public global::Pml.Sex GetSex() {
+            return m_accessor.GetSex();
+        }
 		public byte GetSexVector() {
             return (byte)PersonalSystem.GetPersonalData(GetMonsNo(), GetFormNo()).GetParam(ParamID.SEX);
         }
@@ -761,11 +1023,15 @@ namespace Pml.PokePara
             m_accessor.SetOthersFriendship((byte)PersonalSystem.GetPersonalData(GetMonsNo(), GetFormNo()).GetParam(ParamID.INITIAL_FRIENDSHIP));
             return false;
         }
-		public bool IsOwnedOriginalParent() { /*@B 0x6002449*/ throw null; }
+		public bool IsOwnedOriginalParent() {
+            return !m_accessor.GetOwnedOthersFlag();
+        }
 		public bool HaveNickName() {
             return m_accessor.HaveNickName();
         }
-		public string GetNickName() { /*@B 0x600244B*/ throw null; }
+		public string GetNickName() {
+            return m_accessor.GetNickName();
+        }
 		public void SetNickName(string nickName) {
             m_accessor.SetNickName(nickName);
             m_accessor.SetNickNameFlag(true);
@@ -834,8 +1100,29 @@ namespace Pml.PokePara
             var friendship = GetOthersFriendship();
             SetOthersFriendship((friendship < value) ? 0 : (friendship - value));
         }
-		public bool IsEgg(global::Pml.PokePara.EggCheckType type) { /*@B 0x600245C*/ throw null; }
-		public void SetEggFlag() { /*@B 0x600245D*/ throw null; }
+		public bool IsEgg(global::Pml.PokePara.EggCheckType type) {
+            var isTamago = m_accessor.IsTamago();
+            var isFuseiTamago = m_accessor.IsFuseiTamago();
+
+            switch (type)
+            {
+                case EggCheckType.ONLY_LEGAL_EGG:
+                    return isTamago && !isFuseiTamago;
+                case EggCheckType.ONLY_ILLEGAL_EGG:
+                    return isFuseiTamago;
+                case EggCheckType.BOTH_EGG:
+                    return isTamago || isFuseiTamago;
+                default:
+                    GFL.ASSERT(false);
+                    return false;
+            }
+        }
+		public void SetEggFlag() {
+            if (IsEgg(EggCheckType.ONLY_ILLEGAL_EGG))
+                return;
+
+            m_accessor.SetTamagoFlag(true);
+        }
 		public void ChangeEgg() {
             if (IsEgg(EggCheckType.ONLY_ILLEGAL_EGG))
                 return;
@@ -859,8 +1146,12 @@ namespace Pml.PokePara
                 GFL.ASSERT(false);
             }
         }
-		public ushort GetItem() { /*@B 0x6002460*/ throw null; }
-		public void SetItem(ushort itemno) { /*@B 0x6002461*/ throw null; }
+		public ushort GetItem() {
+            return (ushort)m_accessor.GetItemNo();
+        }
+		public void SetItem(ushort itemno) {
+            m_accessor.SetItemNo(itemno);
+        }
 		public void RemoveItem() {
             SetItem(0);
         }
@@ -948,7 +1239,9 @@ namespace Pml.PokePara
 		public uint GetID() {
             return m_accessor.GetID();
         }
-		public uint GetPersonalRnd() { /*@B 0x6002470*/ throw null; }
+		public uint GetPersonalRnd() {
+            return m_accessor.GetPersonalRnd();
+        }
 		public uint GetCheckSum() {
             return m_accessor.GetCheckSum();
         }
@@ -989,10 +1282,18 @@ namespace Pml.PokePara
 
             return (PokeType)PersonalSystem.GetPersonalData(monsno, GetFormNo()).GetParam(ParamID.TYPE2);
         }
-		public string GetParentName() { /*@B 0x6002478*/ throw null; }
-		public void SetParentName(string name) { /*@B 0x6002479*/ throw null; }
-		public global::Pml.Sex GetParentSex() { /*@B 0x600247A*/ throw null; }
-		public void SetParentSex(global::Pml.Sex sex) { /*@B 0x600247B*/ throw null; }
+		public string GetParentName() {
+            return m_accessor.GetOyaName();
+        }
+		public void SetParentName(string name) {
+            m_accessor.SetOyaName(name);
+        }
+		public global::Pml.Sex GetParentSex() {
+            return m_accessor.GetOyasex();
+        }
+		public void SetParentSex(global::Pml.Sex sex) {
+            m_accessor.SetOyasex(sex);
+        }
 		public uint GetMemories(global::Pml.PokePara.Memories memoriesKind) {
             switch (memoriesKind)
             {
@@ -1199,16 +1500,24 @@ namespace Pml.PokePara
             for (var mark = BoxMark.MARK_1; mark < BoxMark.MARK_NUM; mark++)
                 markContainer.markColor[(int)mark] = GetBoxMark(mark);
         }
-		public uint GetLangId() { /*@B 0x600248E*/ throw null; }
-		public void SetLangId(uint langId) { /*@B 0x600248F*/ throw null; }
+		public uint GetLangId() {
+            return m_accessor.GetLangId();
+        }
+		public void SetLangId(uint langId) {
+            m_accessor.SetLangId((byte)langId);
+        }
 		public uint GetCassetteVersion() {
             return m_accessor.GetCassetteVersion();
         }
 		public void SetCassetteVersion(uint version) {
             m_accessor.SetCassetteVersion(version);
         }
-		public uint GetGetBall() { /*@B 0x6002492*/ throw null; }
-		public void SetGetBall(uint value) { /*@B 0x6002493*/ throw null; }
+		public uint GetGetBall() {
+            return m_accessor.GetGetBall();
+        }
+		public void SetGetBall(uint value) {
+            m_accessor.SetGetBall((byte)value);
+        }
 		public byte GetBattleRomMark() {
             return m_accessor.GetBattleRomMark();
         }
@@ -1254,7 +1563,9 @@ namespace Pml.PokePara
 		public void RemoveRibbon(uint ribbonNo) {
             m_accessor.RemoveRibbon(ribbonNo);
         }
-		public void RemoveAllRibbon() { /*@B 0x60024A0*/ throw null; }
+		public void RemoveAllRibbon() {
+            m_accessor.RemoveAllRibbon();
+        }
 		public void SetLumpingRibbon(global::Pml.PokePara.LumpingRibbon ribbonId, uint num) {
             m_accessor.SetLumpingRibbon(ribbonId, num);
         }
@@ -1284,8 +1595,12 @@ namespace Pml.PokePara
 		public void SetEquipRibbonNo(byte ribbonNo) {
             m_accessor.SetEquipRibbonNo(ribbonNo);
         }
-		public bool HavePokerusJustNow() { /*@B 0x60024A8*/ throw null; }
-		public bool HavePokerusUntilNow() { /*@B 0x60024A9*/ throw null; }
+		public bool HavePokerusJustNow() {
+            return (m_accessor.GetPokerus() & 0xF) != 0;
+        }
+		public bool HavePokerusUntilNow() {
+            return (m_accessor.GetPokerus() & 0xFF) != 0;
+        }
 		public bool HavePokerusPast() {
             return HavePokerusUntilNow() && !HavePokerusJustNow();
         }
@@ -1304,7 +1619,9 @@ namespace Pml.PokePara
             GFL.ASSERT(true);
             SetPokerus((byte)pokerus);
         }
-		public void InfectPokerusWith(global::Pml.PokePara.CoreParam target) { /*@B 0x60024AC*/ throw null; }
+		public void InfectPokerusWith(global::Pml.PokePara.CoreParam target) {
+            target.SetPokerus(GetPokerus());
+        }
 		public void DecreasePokerusDayCount(int passedDayCount) {
             var pokerus = GetPokerus();
             if ((pokerus & 0xFF) == 0)
@@ -1318,12 +1635,26 @@ namespace Pml.PokePara
             GFL.ASSERT((newPokerus & 0xFF) != 0);
             SetPokerus((byte)newPokerus);
         }
-		public uint GetPokerus() { /*@B 0x60024AE*/ throw null; }
-		public void SetPokerus(uint pokerus) { /*@B 0x60024AF*/ throw null; }
-		public bool GetEventPokeFlag() { /*@B 0x60024B0*/ throw null; }
-		public void SetEventPokeFlag(bool flag) { /*@B 0x60024B1*/ throw null; }
-		public bool HaveOfficialBattleRights() { /*@B 0x60024B2*/ throw null; }
-		public void GrantOfficialBattleRights() { /*@B 0x60024B3*/ throw null; }
+		public uint GetPokerus() {
+            return m_accessor.GetPokerus();
+        }
+		public void SetPokerus(uint pokerus) {
+            m_accessor.SetPokerus((byte)pokerus);
+        }
+		public bool GetEventPokeFlag() {
+            return m_accessor.IsEventPokemon();
+        }
+		public void SetEventPokeFlag(bool flag) {
+            m_accessor.SetEventPokemonFlag(flag);
+        }
+		public bool HaveOfficialBattleRights() {
+            return m_accessor.GetOfficialBattleEnableFlag();
+        }
+		public void GrantOfficialBattleRights() {
+            SetDefaultWaza();
+            ClearTamagoWaza();
+            m_accessor.SetOfficialBattleEnableFlag(true);
+        }
 		public void RemoveAllRotomWaza() {
             for (byte wazaIndex = 0; wazaIndex < PmlConstants.MAX_WAZA_NUM; wazaIndex++)
             {
@@ -1337,7 +1668,24 @@ namespace Pml.PokePara
                 }
             }
         }
-		public void SetRotomWaza(byte wazaIndex) { /*@B 0x60024B5*/ throw null; }
+		public void SetRotomWaza(byte wazaIndex) {
+            var formno = GetFormNo();
+            var rotomWazano = CalcTool.GetRotomuWazaNo(formno);
+            var wazaCount = GetWazaCount();
+
+            if (formno == 0)
+            {
+                if (wazaCount == 0)
+                    SetWaza(0, WazaNo.DENKISYOKKU);
+
+                return;
+            }
+
+            if (wazaCount < PmlConstants.MAX_WAZA_NUM)
+                PushWaza(rotomWazano);
+            else
+                SetWaza(wazaIndex, rotomWazano);
+        }
 		public global::Pml.PokePara.LoveLevel CheckLoveLevel(global::Pml.PokePara.CoreParam partner) {
             var eggGroup1 = new uint[2];
             PersonalSystem.LoadPersonalData(GetMonsNo(), GetFormNo());
@@ -1359,67 +1707,262 @@ namespace Pml.PokePara
 
             return CalcTool.CalcLoveLevel(monsno1, GetID(), monsno2, partner.GetID());
         }
-		public bool GetPokeJobFlag(byte jobIndex) { /*@B 0x60024B7*/ throw null; }
-		public void SetPokeJobFlag(byte jobIndex) { /*@B 0x60024B8*/ throw null; }
-		public void RemovePokeJobFlag(byte jobIndex) { /*@B 0x60024B9*/ throw null; }
-		public void ClearPokeJobFlag() { /*@B 0x60024BA*/ throw null; }
-		public byte GetCampFriendship() { /*@B 0x60024BB*/ throw null; }
-		public void SetCampFriendship(uint value) { /*@B 0x60024BC*/ throw null; }
-		public void AddCampFriendship(uint value) { /*@B 0x60024BD*/ throw null; }
-		public void SubCampFriendship(uint value) { /*@B 0x60024BE*/ throw null; }
-		public byte GetEnjoy() { /*@B 0x60024BF*/ throw null; }
-		public void SetEnjoy(uint value) { /*@B 0x60024C0*/ throw null; }
+		public bool GetPokeJobFlag(byte jobIndex) {
+            return m_accessor.GetPokeJobFlag(jobIndex);
+        }
+		public void SetPokeJobFlag(byte jobIndex) {
+            m_accessor.SetPokeJobFlag(jobIndex, true);
+        }
+		public void RemovePokeJobFlag(byte jobIndex) {
+            m_accessor.SetPokeJobFlag(jobIndex, false);
+        }
+		public void ClearPokeJobFlag() {
+            m_accessor.ClearPokeJobFlag();
+        }
+		public byte GetCampFriendship() {
+            return m_accessor.GetCampFriendship();
+        }
+		public void SetCampFriendship(uint value) {
+            m_accessor.SetCampFriendship((byte)((value < PmlConstants.MAX_CAMP_FRIENDSHIP) ? value : PmlConstants.MAX_CAMP_FRIENDSHIP));
+        }
+		public void AddCampFriendship(uint value) {
+            SetCampFriendship(GetCampFriendship() + value);
+        }
+		public void SubCampFriendship(uint value) {
+            var friendship = GetCampFriendship();
+            SetCampFriendship((friendship < value) ? 0 : (friendship - value));
+        }
+		public byte GetEnjoy() {
+            return m_accessor.GetEnjoy();
+        }
+		public void SetEnjoy(uint value) {
+            m_accessor.SetEnjoy((byte)((value < PmlConstants.MAX_ENJOY) ? value : PmlConstants.MAX_ENJOY));
+        }
 		public void AddEnjoy(byte value) {
             SetEnjoy((uint)GetEnjoy() + value);
         }
-		public void SubEnjoy(byte value) { /*@B 0x60024C2*/ throw null; }
-		public uint GetPalma() { /*@B 0x60024C3*/ throw null; }
-		public void SetPalma(uint value) { /*@B 0x60024C4*/ throw null; }
-		public bool GetDprIllegalFlag() { /*@B 0x60024C5*/ throw null; }
-		public void SetDprIllegalFlag(bool flag) { /*@B 0x60024C6*/ throw null; }
-		public bool StartFastMode() { /*@B 0x60024C7*/ throw null; }
-		public bool EndFastMode(bool validFlag) { /*@B 0x60024C8*/ throw null; }
-		public bool IsFastMode() { /*@B 0x60024C9*/ throw null; }
-		public void Clear() { /*@B 0x60024CA*/ throw null; }
-		public bool IsNull() { /*@B 0x60024CB*/ throw null; }
-		public bool HaveCalcParam() { /*@B 0x60024CC*/ throw null; }
-		public void CopyFrom(global::Pml.PokePara.CoreParam pSrcParam) { /*@B 0x60024CD*/ throw null; }
-		public void RecalculateCalcData() { /*@B 0x60024CE*/ throw null; }
-		public virtual unsafe void Serialize_Core(void* buffer) { /*@B 0x60024CF*/ throw null; }
-		public virtual void Serialize_Core(byte[] buffer) { /*@B 0x60024D0*/ throw null; }
+		public void SubEnjoy(byte value) {
+            var enjoy = GetEnjoy();
+            SetEnjoy((enjoy < value) ? 0u : (uint)(enjoy - value));
+        }
+		public uint GetPalma() {
+            return m_accessor.GetPalma();
+        }
+		public void SetPalma(uint value) {
+            m_accessor.SetPalma(value);
+        }
+		public bool GetDprIllegalFlag() {
+            return m_accessor.GetDprIllegalFlag();
+        }
+		public void SetDprIllegalFlag(bool flag) {
+            m_accessor.SetDprIllegalFlag(flag);
+        }
+		public bool StartFastMode() {
+            if (m_accessor.IsFastMode())
+                return false;
+
+            m_accessor.StartFastMode();
+            return true;
+        }
+		public bool EndFastMode(bool validFlag) {
+            if (m_accessor.IsFastMode() && validFlag)
+            {
+                m_accessor.EndFastMode();
+                return true;
+            }
+
+            return false;
+        }
+		public bool IsFastMode() {
+            return m_accessor.IsFastMode();
+        }
+		public void Clear() {
+            m_accessor.ClearData();
+        }
+		public bool IsNull() {
+            return m_accessor.GetMonsNo() == MonsNo.NULL;
+        }
+		public bool HaveCalcParam() {
+            return m_accessor.HaveCalcData();
+        }
+		public void CopyFrom(global::Pml.PokePara.CoreParam pSrcParam) {
+            pSrcParam.Serialize_Core(sCoreSerializeBuffer);
+            Deserialize_Core(sCoreSerializeBuffer);
+        }
+		public void RecalculateCalcData() {
+            UpdateCalcDatas();
+        }
+		public virtual unsafe void Serialize_Core(void* buffer) {
+            m_accessor.Serialize_CoreData(buffer);
+        }
+		public virtual void Serialize_Core(byte[] buffer) {
+            m_accessor.Serialize_CoreData(buffer);
+        }
 		public virtual unsafe void Deserialize_Core(void* serializedData) {
             m_accessor.Deserialize_CoreData(serializedData);
         }
 		public virtual void Deserialize_Core(byte[] serializedData) {
             m_accessor.Deserialize_CoreData(serializedData);
         }
-		public CoreParam() { /*@B 0x60024D3*/ throw null; }
-		public CoreParam(global::Pml.MonsNo monsno, ushort level, ulong id) { /*@B 0x60024D4*/ throw null; }
-		public CoreParam(global::Pml.PokePara.InitialSpec spec) { /*@B 0x60024D5*/ throw null; }
-		protected void InitCoreData() { /*@B 0x60024D6*/ throw null; }
-		protected void SetIllegalParam() { /*@B 0x60024D7*/ throw null; }
-		protected void CheckIllegalParam() { /*@B 0x60024D8*/ throw null; }
-		protected void UpdateCalcDatas(bool keepDead = true) { /*@B 0x60024D9*/ throw null; }
-		protected void UpdateLevel() { /*@B 0x60024DA*/ throw null; }
-		protected void UpdateMaxHP() { /*@B 0x60024DB*/ throw null; }
-		protected void UpdateMaxHpAndCorrectHp(bool keepDead = true) { /*@B 0x60024DC*/ throw null; }
-		protected void UpdateAtk() { /*@B 0x60024DD*/ throw null; }
-		protected void UpdateDef() { /*@B 0x60024DE*/ throw null; }
-		protected void UpdateSpAtk() { /*@B 0x60024DF*/ throw null; }
-		protected void UpdateSpDef() { /*@B 0x60024E0*/ throw null; }
-		protected void UpdateAgi() { /*@B 0x60024E1*/ throw null; }
-		protected uint GetAtk() { /*@B 0x60024E2*/ throw null; }
-		protected uint GetDef() { /*@B 0x60024E3*/ throw null; }
-		protected uint GetSpAtk() { /*@B 0x60024E4*/ throw null; }
-		protected uint GetSpDef() { /*@B 0x60024E5*/ throw null; }
-		protected uint GetAgi() { /*@B 0x60024E6*/ throw null; }
-		protected byte CalcLevel() { /*@B 0x60024E7*/ throw null; }
-		protected ushort CalcMaxHp() { /*@B 0x60024E8*/ throw null; }
-		protected ushort CalcAtk() { /*@B 0x60024E9*/ throw null; }
-		protected ushort CalcDef() { /*@B 0x60024EA*/ throw null; }
-		protected ushort CalcSpAtk() { /*@B 0x60024EB*/ throw null; }
-		protected ushort CalcSpDef() { /*@B 0x60024EC*/ throw null; }
-		protected ushort CalcAgi() { /*@B 0x60024ED*/ throw null; }
+		public CoreParam() {
+            m_coreData = Factory.CreateCoreData();
+            m_accessor = new Accessor();
+            m_accessor.AttachDecodedData(m_coreData, null);
+        }
+		public CoreParam(global::Pml.MonsNo monsno, ushort level, ulong id) {
+            m_coreData = Factory.CreateCoreData(monsno, level, id);
+            m_accessor = new Accessor();
+            m_accessor.AttachEncodedData(m_coreData, null);
+            InitCoreData();
+            CheckIllegalParam();
+        }
+		public CoreParam(global::Pml.PokePara.InitialSpec spec) {
+            m_coreData = Factory.CreateCoreData(spec);
+            m_accessor = new Accessor();
+            m_accessor.AttachEncodedData(m_coreData, null);
+            InitCoreData();
+            CheckIllegalParam();
+        }
+		protected void InitCoreData() {
+            SetLangId((uint)PmlUse.Instance.LangId);
+            SetDefaultWaza();
+            SetDefaultNickName();
+            RecoverAll();
+        }
+		protected void SetIllegalParam() {
+            m_accessor.SetFuseiTamagoFlag(true);
+        }
+		protected void CheckIllegalParam() {
+            var monsno = GetMonsNo();
+            var formno = GetFormNo();
+
+            if (monsno == MonsNo.NULL)
+                return;
+
+            if (!PersonalSystem.CheckPokeExist(monsno, formno))
+                SetIllegalParam();
+        }
+		protected void UpdateCalcDatas(bool keepDead = true) {
+            var isFastModeStarted = StartFastMode();
+
+            UpdateLevel();
+            UpdateMaxHpAndCorrectHp(keepDead);
+            UpdateAtk();
+            UpdateDef();
+            UpdateSpAtk();
+            UpdateSpDef();
+            UpdateAgi();
+
+            EndFastMode(isFastModeStarted);
+        }
+		protected void UpdateLevel() {
+            m_accessor.SetLevel(CalcLevel());
+        }
+		protected void UpdateMaxHP() {
+            m_accessor.SetMaxHp(CalcMaxHp());
+        }
+		protected void UpdateMaxHpAndCorrectHp(bool keepDead = true) {
+            var oldMaxHp = GetMaxHp();
+            var oldHp = GetHp();
+
+            UpdateMaxHP();
+
+            if (oldHp == 0 && keepDead)
+                return;
+
+            var newMaxHp = GetMaxHp();
+            uint newHp;
+            if (newMaxHp < oldMaxHp)
+                newHp = (newMaxHp < oldHp) ? newMaxHp : oldHp;
+            else
+                newHp = oldHp + (newMaxHp - oldMaxHp);
+
+            m_accessor.SetHp((ushort)newHp);
+        }
+		protected void UpdateAtk() {
+            m_accessor.SetAtk(CalcAtk());
+        }
+		protected void UpdateDef() {
+            m_accessor.SetDef(CalcDef());
+        }
+		protected void UpdateSpAtk() {
+            m_accessor.SetSpAtk(CalcSpAtk());
+        }
+		protected void UpdateSpDef() {
+            m_accessor.SetSpDef(CalcSpDef());
+        }
+		protected void UpdateAgi() {
+            m_accessor.SetAgi(CalcAgi());
+        }
+		protected uint GetAtk() {
+            if (m_accessor.HaveCalcData())
+                return m_accessor.GetAtk();
+
+            return CalcAtk();
+        }
+		protected uint GetDef() {
+            if (m_accessor.HaveCalcData())
+                return m_accessor.GetDef();
+
+            return CalcDef();
+        }
+		protected uint GetSpAtk() {
+            if (m_accessor.HaveCalcData())
+                return m_accessor.GetSpAtk();
+
+            return CalcSpAtk();
+        }
+		protected uint GetSpDef() {
+            if (m_accessor.HaveCalcData())
+                return m_accessor.GetSpDef();
+
+            return CalcSpDef();
+        }
+		protected uint GetAgi() {
+            if (m_accessor.HaveCalcData())
+                return m_accessor.GetAgi();
+
+            return CalcAgi();
+        }
+		protected byte CalcLevel() {
+            return CalcTool.CalcLevel(GetMonsNo(), GetFormNo(), GetExp());
+        }
+		protected ushort CalcMaxHp() {
+            if (IsG())
+                return CalcMaxHp_G();
+
+            return CalcMaxHp_NotG();
+        }
+		protected ushort CalcAtk() {
+            if (IsG())
+                return CalcAtk_G();
+
+            return CalcAtk_NotG();
+        }
+		protected ushort CalcDef() {
+            if (IsG())
+                return CalcDef_G();
+
+            return CalcDef_NotG();
+        }
+		protected ushort CalcSpAtk() {
+            if (IsG())
+                return CalcSpAtk_G();
+
+            return CalcSpAtk_NotG();
+        }
+		protected ushort CalcSpDef() {
+            if (IsG())
+                return CalcSpDef_G();
+
+            return CalcSpDef_NotG();
+        }
+		protected ushort CalcAgi() {
+            if (IsG())
+                return CalcAgi_G();
+
+            return CalcAgi_NotG();
+        }
 		protected ushort CalcMaxHp_G() {
             return CalcMaxHp_NotG();
         }
@@ -1481,8 +2024,24 @@ namespace Pml.PokePara
             var effort = GetEffortPower(PowerID.AGI);
             return CalcTool.CalcAgi(level, (ushort)basic, (ushort)talent, (ushort)effort, GetSeikakuHosei());
         }
-		protected void changeWazaByFormChange(ushort nextFormno, global::Pml.PokePara.CoreParam.FormChangeResult pResult = null) { /*@B 0x60024FA*/ throw null; }
-		protected void changeWazaByFormChange_Learn(global::Pml.WazaNo learnWaza, global::Pml.PokePara.CoreParam.FormChangeResult pResult = null) { /*@B 0x60024FB*/ throw null; }
+		protected void changeWazaByFormChange(ushort nextFormno, global::Pml.PokePara.CoreParam.FormChangeResult pResult = null) {
+            // shipped: the monsno is read but no species-specific form-change waza case survives in the binary
+            var monsno = GetMonsNo();
+
+            RemoveDuplicatedWaza();
+            CloseUpWazaPos();
+        }
+		protected void changeWazaByFormChange_Learn(global::Pml.WazaNo learnWaza, global::Pml.PokePara.CoreParam.FormChangeResult pResult = null) {
+            var result = AddWazaIfEmptyExist(learnWaza);
+
+            if (pResult == null)
+                return;
+
+            if (result == WazaLearningResult.SUCCEEDED)
+                pResult.SetAddedWaza(learnWaza);
+            else if (result == WazaLearningResult.FAILED_FULL)
+                pResult.SetAddFailedWaza(learnWaza);
+        }
 		protected void changeWazaByFormChange_Forget(global::Pml.WazaNo forgetWaza, global::Pml.WazaNo supplyWaza, global::Pml.PokePara.CoreParam.FormChangeResult pResult = null) {
             if (GetWazaCount() == 1 && GetWazaNo(0) == forgetWaza)
             {
@@ -1526,37 +2085,138 @@ namespace Pml.PokePara
                 pResult.SetAddedWaza(learnWaza);
             }
         }
-		protected uint AdjustEffortPower(uint beforeValue, uint afterValue) { /*@B 0x60024FE*/ throw null; }
-		static CoreParam() { /*@B 0x60024FF*/ throw null; }
+		protected uint AdjustEffortPower(uint beforeValue, uint afterValue) {
+            if (afterValue > PmlConstants.MAX_EFFORT_POWER)
+                afterValue = PmlConstants.MAX_EFFORT_POWER;
+
+            if (afterValue <= beforeValue)
+                return afterValue;
+
+            var total = GetTotalEffortPower() + (afterValue - beforeValue);
+            if (total > PmlConstants.MAX_TOTAL_EFFORT_POWER)
+                afterValue -= total - PmlConstants.MAX_TOTAL_EFFORT_POWER;
+
+            return afterValue;
+        }
+		static CoreParam() {
+        }
 		public class WazaLearnWork
 		{
-			private global::Pml.WazaNo[] m_checkedWazaArray;
+			private global::Pml.WazaNo[] m_checkedWazaArray = new global::Pml.WazaNo[65];
 			private uint m_checkedWazaNum;
-			public WazaLearnWork() { /*@B 0x60099BD*/ throw null; }
-			public void Clear() { /*@B 0x60099BE*/ throw null; }
-			public void AddCheckedWaza(global::Pml.WazaNo waza) { /*@B 0x60099BF*/ throw null; }
-			public bool IsCheckedWaza(global::Pml.WazaNo waza) { /*@B 0x60099C0*/ throw null; }
+			public WazaLearnWork() {
+                Clear();
+            }
+			public void Clear() {
+                m_checkedWazaNum = 0;
+                for (int i = 0; i < m_checkedWazaArray.Length; i++)
+                    m_checkedWazaArray[i] = WazaNo.NULL;
+            }
+			public void AddCheckedWaza(global::Pml.WazaNo waza) {
+                if (IsCheckedWaza(waza))
+                    return;
+
+                if (m_checkedWazaNum >= m_checkedWazaArray.Length)
+                {
+                    GFL.ASSERT(false);
+                    return;
+                }
+
+                m_checkedWazaArray[m_checkedWazaNum] = waza;
+                m_checkedWazaNum++;
+            }
+			public bool IsCheckedWaza(global::Pml.WazaNo waza) {
+                for (int i = 0; i < m_checkedWazaArray.Length; i++)
+                {
+                    if (m_checkedWazaArray[i] == waza)
+                        return true;
+                }
+
+                return false;
+            }
 		}
 		public class FormChangeResult
 		{
-			private global::Pml.WazaNo[] m_addedWaza;
-			private global::Pml.WazaNo[] m_removedWaza;
-			private global::Pml.WazaNo[] m_addFailedWaza;
-			public FormChangeResult() { /*@B 0x60099C1*/ throw null; }
-			public byte GetAddedWazaNum() { /*@B 0x60099C2*/ throw null; }
-			public global::Pml.WazaNo GetAddedWaza(byte idx) { /*@B 0x60099C3*/ throw null; }
-			public byte GetRemovedWazaNum() { /*@B 0x60099C4*/ throw null; }
-			public global::Pml.WazaNo GetRemovedWaza(byte idx) { /*@B 0x60099C5*/ throw null; }
-			public byte GetAddFailedWazaNum() { /*@B 0x60099C6*/ throw null; }
-			public global::Pml.WazaNo GetAddFaildedWaza(byte idx) { /*@B 0x60099C7*/ throw null; }
-			public void Clear() { /*@B 0x60099C8*/ throw null; }
-			public void SetAddedWaza(global::Pml.WazaNo wazano) { /*@B 0x60099C9*/ throw null; }
-			public void SetRemovedWaza(global::Pml.WazaNo wazano) { /*@B 0x60099CA*/ throw null; }
-			public void SetAddFailedWaza(global::Pml.WazaNo wazano) { /*@B 0x60099CB*/ throw null; }
-			private void add(global::Pml.WazaNo[] pArray, global::Pml.WazaNo wazano) { /*@B 0x60099CC*/ throw null; }
-			private void set(global::Pml.WazaNo[] pArray, global::Pml.WazaNo wazano) { /*@B 0x60099CD*/ throw null; }
-			private global::Pml.WazaNo get(global::Pml.WazaNo[] pArray, byte idx) { /*@B 0x60099CE*/ throw null; }
-			private byte getCount(global::Pml.WazaNo[] pArray) { /*@B 0x60099CF*/ throw null; }
+			private global::Pml.WazaNo[] m_addedWaza = new global::Pml.WazaNo[PmlConstants.MAX_WAZA_NUM];
+			private global::Pml.WazaNo[] m_removedWaza = new global::Pml.WazaNo[PmlConstants.MAX_WAZA_NUM];
+			private global::Pml.WazaNo[] m_addFailedWaza = new global::Pml.WazaNo[PmlConstants.MAX_WAZA_NUM];
+			public FormChangeResult() {
+                Clear();
+            }
+			public byte GetAddedWazaNum() {
+                return getCount(m_addedWaza);
+            }
+			public global::Pml.WazaNo GetAddedWaza(byte idx) {
+                return get(m_addedWaza, idx);
+            }
+			public byte GetRemovedWazaNum() {
+                return getCount(m_removedWaza);
+            }
+			public global::Pml.WazaNo GetRemovedWaza(byte idx) {
+                return get(m_removedWaza, idx);
+            }
+			public byte GetAddFailedWazaNum() {
+                return getCount(m_addFailedWaza);
+            }
+			public global::Pml.WazaNo GetAddFaildedWaza(byte idx) {
+                return get(m_addFailedWaza, idx);
+            }
+			public void Clear() {
+                for (int i = 0; i < PmlConstants.MAX_WAZA_NUM; i++)
+                {
+                    m_addedWaza[i] = WazaNo.NULL;
+                    m_removedWaza[i] = WazaNo.NULL;
+                    m_addFailedWaza[i] = WazaNo.NULL;
+                }
+            }
+			public void SetAddedWaza(global::Pml.WazaNo wazano) {
+                add(m_addedWaza, wazano);
+            }
+			public void SetRemovedWaza(global::Pml.WazaNo wazano) {
+                add(m_removedWaza, wazano);
+            }
+			public void SetAddFailedWaza(global::Pml.WazaNo wazano) {
+                add(m_addFailedWaza, wazano);
+            }
+			private void add(global::Pml.WazaNo[] pArray, global::Pml.WazaNo wazano) {
+                for (byte i = 0; i < pArray.Length; i++)
+                {
+                    if (pArray[i] == WazaNo.NULL)
+                    {
+                        pArray[i] = wazano;
+                        return;
+                    }
+                }
+            }
+			private void set(global::Pml.WazaNo[] pArray, global::Pml.WazaNo wazano) {
+                for (byte i = 0; i < pArray.Length; i++)
+                {
+                    if (pArray[i] == WazaNo.NULL)
+                    {
+                        pArray[i] = wazano;
+                        return;
+                    }
+                }
+            }
+			private global::Pml.WazaNo get(global::Pml.WazaNo[] pArray, byte idx) {
+                if (idx >= pArray.Length)
+                {
+                    GFL.ASSERT(false);
+                    return WazaNo.NULL;
+                }
+
+                return pArray[idx];
+            }
+			private byte getCount(global::Pml.WazaNo[] pArray) {
+                byte i;
+                for (i = 0; i < pArray.Length; i++)
+                {
+                    if (pArray[i] == WazaNo.NULL)
+                        break;
+                }
+
+                return i;
+            }
 		}
 	}
 }
