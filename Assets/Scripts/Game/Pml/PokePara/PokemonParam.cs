@@ -4,22 +4,67 @@ namespace Pml.PokePara
 	public sealed class PokemonParam : global::Pml.PokePara.CoreParam
 	{
 		public const int DATASIZE = 344;
-		private static byte[] sParamSerializeBuffer;
-		public PokemonParam() { /*@B 0x600255B*/ throw null; }
-		public PokemonParam(global::Pml.MonsNo monsno, ushort level, ulong id) { /*@B 0x600255C*/ throw null; }
-		public PokemonParam(global::Pml.PokePara.InitialSpec spec) { /*@B 0x600255D*/ throw null; }
-		public PokemonParam(global::Pml.PokePara.PokemonParam src) { /*@B 0x600255E*/ throw null; }
-		public PokemonParam(global::Pml.PokePara.CoreParam src) { /*@B 0x600255F*/ throw null; }
-		public void Setup(global::Pml.PokePara.InitialSpec spec) { /*@B 0x6002560*/ throw null; }
-		public void Serialize_Full(byte[] buffer) { /*@B 0x6002561*/ throw null; }
-		public override void Serialize_Core(byte[] buffer) { /*@B 0x6002562*/ throw null; }
-		public void Deserialize_Full(byte[] serializedData) { /*@B 0x6002563*/ throw null; }
-		public override void Deserialize_Core(byte[] serializedData) { /*@B 0x6002564*/ throw null; }
-		public void CopyFrom(global::Pml.PokePara.PokemonParam pSrcParam) { /*@B 0x6002565*/ throw null; }
-		public string GetNoparseNickName() { /*@B 0x6002566*/ throw null; }
-		public void Dump() { /*@B 0x6002567*/ throw null; }
-		private void CreateAndAttachCalcData() { /*@B 0x6002568*/ throw null; }
-		private void InitCalcData() { /*@B 0x6002569*/ throw null; }
-		static PokemonParam() { /*@B 0x600256A*/ throw null; }
+		private static byte[] sParamSerializeBuffer = new byte[344];
+		public PokemonParam() {
+			CreateAndAttachCalcData();
+		}
+		public PokemonParam(global::Pml.MonsNo monsno, ushort level, ulong id) : base(monsno, level, id) {
+			CreateAndAttachCalcData();
+			InitCalcData();
+		}
+		public PokemonParam(global::Pml.PokePara.InitialSpec spec) : base(spec) {
+			CreateAndAttachCalcData();
+			InitCalcData();
+		}
+		public PokemonParam(global::Pml.PokePara.PokemonParam src) {
+			CreateAndAttachCalcData();
+			CopyFrom(src);
+		}
+		public PokemonParam(global::Pml.PokePara.CoreParam src) {
+			CreateAndAttachCalcData();
+			base.CopyFrom(src);
+			InitCalcData();
+		}
+		public void Setup(global::Pml.PokePara.InitialSpec spec) {
+			global::Pml.PokePara.Factory.SetupCoreData(m_coreData, spec);
+			InitCoreData();
+			InitCalcData();
+		}
+		public void Serialize_Full(byte[] buffer) {
+			m_accessor.Serialize_FullData(buffer);
+		}
+		public override void Serialize_Core(byte[] buffer) {
+			m_accessor.Serialize_CoreData(buffer);
+		}
+		public void Deserialize_Full(byte[] serializedData) {
+			m_accessor.Deserialize_FullData(serializedData);
+		}
+		public override void Deserialize_Core(byte[] serializedData) {
+			m_accessor.Deserialize_CoreData(serializedData);
+			InitCalcData();
+		}
+		public void CopyFrom(global::Pml.PokePara.PokemonParam pSrcParam) {
+			pSrcParam.Serialize_Full(sParamSerializeBuffer);
+			Deserialize_Full(sParamSerializeBuffer);
+		}
+		public string GetNoparseNickName() {
+			return "<noparse>" + GetNickName() + "</noparse>";
+		}
+		public void Dump() {
+			GFL.ASSERT(false);
+		}
+		private void CreateAndAttachCalcData() {
+			m_calcData = global::Pml.PokePara.Factory.CreateCalcData(m_accessor.GetPersonalRnd());
+			m_accessor.AttachEncodedData(m_coreData, m_calcData);
+		}
+		private void InitCalcData() {
+			bool isFastModeStarted = StartFastMode();
+			m_accessor.ClearCalcData();
+			UpdateCalcDatas(true);
+			RecoverAll();
+			EndFastMode(isFastModeStarted);
+		}
+		static PokemonParam() {
+		}
 	}
 }

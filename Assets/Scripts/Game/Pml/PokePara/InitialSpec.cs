@@ -25,7 +25,48 @@ namespace Pml.PokePara
 		public byte talentVNum;
 		public ushort weight;
 		public ushort height;
-		public InitialSpec() { /*@B 0x6002559*/ throw null; }
-		public void CopyFrom(global::Pml.PokePara.InitialSpec src) { /*@B 0x600255A*/ throw null; }
+		public InitialSpec() {
+			id = INIT_SPEC_ID_RANDOM;
+			personalRnd = INIT_SPEC_PERSONALRND_RANDOM;
+			rareRnd = INIT_SPEC_RARE_RANDOM;
+			monsno = global::Pml.MonsNo.TAMAGO;
+			formno = 0;
+			level = 1;
+			sex = 0xff;
+			seikaku = 0xffff;
+			tokuseiIndex = 0xff;
+			rareTryCount = 1;
+			randomSeed = 0;
+			isRandomSeedEnable = false;
+			weight = 0x100;
+			height = 0x100;
+			friendship = 0xffff;
+			talentVNum = 0;
+			talentPower = new ushort[6];
+			for (int i = 0; i < 6; i++)
+			{
+				talentPower[i] = 0xffff;
+			}
+		}
+		public void CopyFrom(global::Pml.PokePara.InitialSpec src) {
+			randomSeed = src.randomSeed;
+			isRandomSeedEnable = src.isRandomSeedEnable;
+			personalRnd = src.personalRnd;
+			personalRnd = src.personalRnd;
+			rareRnd = src.rareRnd;
+			id = src.id;
+			monsno = src.monsno;
+			formno = src.formno;
+			level = src.level;
+			sex = src.sex;
+			seikaku = src.seikaku;
+			tokuseiIndex = src.tokuseiIndex;
+			rareTryCount = src.rareTryCount;
+			global::System.Array.Copy(src.talentPower, talentPower, src.talentPower.Length);
+			friendship = src.friendship;
+			talentVNum = src.talentVNum;
+			weight = src.weight;
+			height = src.height;
+		}
 	}
 }

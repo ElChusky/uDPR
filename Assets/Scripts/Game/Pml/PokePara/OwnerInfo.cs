@@ -7,8 +7,23 @@ namespace Pml.PokePara
 		public byte sex;
 		public byte langID;
 		public string name;
-		public OwnerInfo() { /*@B 0x60025A9*/ throw null; }
-		public OwnerInfo(in global::DPData.MYSTATUS ownerStatus) { /*@B 0x60025AA*/ throw null; }
-		public void CopyFrom(global::Pml.PokePara.OwnerInfo src) { /*@B 0x60025AB*/ throw null; }
+		public OwnerInfo() {
+			trainerId = 0;
+			sex = 0;
+			langID = 0;
+			name = "";
+		}
+		public OwnerInfo(in global::DPData.MYSTATUS ownerStatus) {
+			trainerId = ownerStatus.id;
+			sex = (byte)(ownerStatus.sex ? 0 : 1);
+			langID = ownerStatus.region_code;
+			name = ownerStatus.name;
+		}
+		public void CopyFrom(global::Pml.PokePara.OwnerInfo src) {
+			trainerId = src.trainerId;
+			sex = src.sex;
+			langID = src.langID;
+			name = src.name;
+		}
 	}
 }
