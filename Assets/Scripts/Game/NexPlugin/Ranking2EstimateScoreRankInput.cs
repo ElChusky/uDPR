@@ -12,8 +12,12 @@ namespace NexPlugin
 		public void SetNumSeasonsToGoBack(byte numSeasonsToGoBack_) { this.numSeasonsToGoBack = numSeasonsToGoBack_; }
 		public uint GetScore() { return this.score; }
 		public void SetScore(uint score_) { this.score = score_; }
-		public void Reset() { /*@B 0x6002CDD*/ throw null; }
+		public void Reset() {
+			this.numSeasonsToGoBack = 0;
+			this.category = 0;
+			this.score = 0;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002CDF*/ throw null; }
+		public override string ToString() { return string.Format("Ranking2EstimateScoreRankInput: (category={0}, score={1}, numSeasonsToGoBack={2})", this.category, this.score, this.numSeasonsToGoBack); }
 	}
 }

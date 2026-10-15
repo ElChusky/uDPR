@@ -5,13 +5,25 @@ namespace NexPlugin
 	{
 		internal global::System.Collections.Generic.List<byte> binaryData;
 		internal string userName;
-		public Ranking2CommonData() { /*@B 0x6002C5E*/ throw null; }
+		public Ranking2CommonData() {
+			this.userName = "";
+			this.binaryData = new global::System.Collections.Generic.List<byte>();
+		}
 		public string GetUserName() { return this.userName; }
 		public void SetUserName(string userName_) { this.userName = userName_; }
 		public global::System.Collections.Generic.List<byte> GetBinaryData() { return this.binaryData; }
-		public void SetBinaryData(global::System.Collections.Generic.List<byte> binaryData_) { /*@B 0x6002C62*/ throw null; }
-		public void Reset() { /*@B 0x6002C63*/ throw null; }
+		public void SetBinaryData(global::System.Collections.Generic.List<byte> binaryData_) {
+			if (binaryData_ == null)
+			{
+				binaryData_ = new global::System.Collections.Generic.List<byte>();
+			}
+			this.binaryData = binaryData_;
+		}
+		public void Reset() {
+			this.userName = "";
+			this.binaryData = new global::System.Collections.Generic.List<byte>();
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002C65*/ throw null; }
+		public override string ToString() { return string.Format("Ranking2CommonData: (userName={0}, binaryData=({1}))", this.userName, global::System.BitConverter.ToString(this.binaryData.ToArray())); }
 	}
 }

@@ -12,7 +12,17 @@ namespace NexPlugin
 		internal global::NexPlugin.Ranking2.Ranking2SortFlags sortFlags;
 		internal global::NexPlugin.Ranking2.Ranking2Mode mode;
 		internal byte numSeasonsToGoBack;
-		public Ranking2GetParam() { /*@B 0x6002CAA*/ throw null; }
+		public Ranking2GetParam() {
+			this.mode = global::NexPlugin.Ranking2.Ranking2Mode.USER_RANKING;
+			this.numSeasonsToGoBack = 0;
+			this.category = 0;
+			this.offset = 0;
+			this.length = 10;
+			this.nexUniqueId = 0;
+			this.principalId = 0;
+			this.optionFlags = global::NexPlugin.Ranking2.Ranking2GetOptionFlags.NOTHING;
+			this.sortFlags = global::NexPlugin.Ranking2.Ranking2SortFlags.NOTHING;
+		}
 		public global::NexPlugin.Ranking2.Ranking2Mode GetMode() { return this.mode; }
 		public void SetMode(global::NexPlugin.Ranking2.Ranking2Mode mode_) { this.mode = mode_; }
 		public uint GetCategory() { return this.category; }
@@ -31,8 +41,20 @@ namespace NexPlugin
 		public void SetSortFlags(global::NexPlugin.Ranking2.Ranking2SortFlags sortFlags_) { this.sortFlags = sortFlags_; }
 		public global::NexPlugin.Ranking2.Ranking2GetOptionFlags GetOptionFlags() { return this.optionFlags; }
 		public void SetOptionFlags(global::NexPlugin.Ranking2.Ranking2GetOptionFlags optionFlags_) { this.optionFlags = optionFlags_; }
-		public void Reset() { /*@B 0x6002CBD*/ throw null; }
+		public void Reset() {
+			this.mode = global::NexPlugin.Ranking2.Ranking2Mode.USER_RANKING;
+			this.numSeasonsToGoBack = 0;
+			this.category = 0;
+			this.offset = 0;
+			this.length = 10;
+			this.nexUniqueId = 0;
+			this.principalId = 0;
+			this.optionFlags = global::NexPlugin.Ranking2.Ranking2GetOptionFlags.NOTHING;
+			this.sortFlags = global::NexPlugin.Ranking2.Ranking2SortFlags.NOTHING;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002CBF*/ throw null; }
+		public override string ToString() {
+			return string.Format("Ranking2GetParam: (category={0}, mode={1}, offset={2}, length={3}, numSeasonsToGoBack={4}, sortFlags={5}, optionFlags={6}, principalId={7}, nexUniqueId={8})", new object[] { this.category, this.mode, this.offset, this.length, this.numSeasonsToGoBack, this.sortFlags, this.optionFlags, this.principalId, this.nexUniqueId });
+		}
 	}
 }

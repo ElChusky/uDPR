@@ -16,13 +16,15 @@ namespace NexPlugin
 		public uint GetMinScore() { return this.minScore; }
 		public uint GetMaxScore() { return this.maxScore; }
 		public bool GetScoreOrder() { return this.scoreOrder; }
-		public uint GetLowestRank() { /*@B 0x6002C7A*/ throw null; }
+		public uint GetLowestRank() { return this.lowestRank; }
 		public byte GetMaxSeasonsToGoBack() { return this.maxSeasonsToGoBack; }
 		public byte GetResetMode() { return this.resetMode; }
 		public byte GetResetHour() { return this.resetHour; }
 		public byte GetResetDay() { return this.resetDay; }
 		public ushort GetResetMonth() { return this.resetMonth; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002C81*/ throw null; }
+		public override string ToString() {
+			return string.Format("Ranking2CategorySetting: (minScore={0}, maxScore={1}, lowestRank={2}, resetMonth={3}, resetDay={4}, resetHour={5}, resetMode={6}, maxSeasonsToGoBack={7}, scoreOrder={8})", new object[] { this.minScore, this.maxScore, this.lowestRank, this.resetMonth, this.resetDay, this.resetHour, this.resetMode, this.maxSeasonsToGoBack, this.scoreOrder });
+		}
 	}
 }

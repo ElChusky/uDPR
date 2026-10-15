@@ -10,16 +10,45 @@ namespace NexPlugin
 		public byte minute;
 		public byte second;
 		private byte isNotNever;
-		public static readonly global::NexPlugin.NpDateTime INVALID_DATE_TIME;
-		public static readonly global::NexPlugin.NpDateTime Future;
-		public static readonly global::NexPlugin.NpDateTime PERMANENT_DATE_TIME;
-		public static readonly global::NexPlugin.NpDateTime Never;
-		public NpDateTime(global::System.DateTime dt) { /*@B 0x6002A5C*/ throw null; }
-		public NpDateTime(short srcYear, byte srcMonth, byte srcDay, byte srcHour, byte srcMinute, byte srcSecond) { /*@B 0x6002A5D*/ throw null; }
-		public NpDateTime(global::System.IntPtr src) { /*@B 0x6002A5E*/ throw null; }
-		public NpDateTime(bool notnever) { /*@B 0x6002A5F*/ throw null; }
+		public static readonly global::NexPlugin.NpDateTime INVALID_DATE_TIME = new global::NexPlugin.NpDateTime(9999, 12, 31, 23, 59, 59);
+		public static readonly global::NexPlugin.NpDateTime Future = new global::NexPlugin.NpDateTime(9999, 12, 31, 23, 59, 59);
+		public static readonly global::NexPlugin.NpDateTime PERMANENT_DATE_TIME = new global::NexPlugin.NpDateTime(9999, 12, 31, 0, 0, 0);
+		public static readonly global::NexPlugin.NpDateTime Never = new global::NexPlugin.NpDateTime(false);
+		public NpDateTime(global::System.DateTime dt) {
+			this.year = (short)dt.Year;
+			this.month = (byte)dt.Month;
+			this.day = (byte)dt.Day;
+			this.hour = (byte)dt.Hour;
+			this.minute = (byte)dt.Minute;
+			this.second = (byte)dt.Second;
+			this.isNotNever = 1;
+		}
+		public NpDateTime(short srcYear, byte srcMonth, byte srcDay, byte srcHour, byte srcMinute, byte srcSecond) {
+			this.year = srcYear;
+			this.month = srcMonth;
+			this.day = srcDay;
+			this.hour = srcHour;
+			this.minute = srcMinute;
+			this.second = srcSecond;
+			this.isNotNever = 1;
+		}
+		public NpDateTime(global::System.IntPtr src) {
+			this = global::NexPlugin.Detail.ExchangePtrToStruct<global::NexPlugin.NpDateTime>(src);
+		}
+		public NpDateTime(bool notnever) {
+			this.year = 0;
+			this.month = 0;
+			this.day = 0;
+			this.hour = 0;
+			this.minute = 0;
+			this.second = 0;
+			this.isNotNever = notnever ? (byte)1 : (byte)0;
+		}
 		public void Trace() { }
-		internal string ToString() { /*@B 0x6002A61*/ throw null; }
-		static NpDateTime() { /*@B 0x6002A62*/ throw null; }
+		internal string ToString() {
+			return string.Format("{0:D4}-{1:D2}-{2:D2} {3:D2}:{4:D2}:{5:D2}", new object[] { this.year, this.month, this.day, this.hour, this.minute, this.second });
+		}
+		static NpDateTime() {
+		}
 	}
 }

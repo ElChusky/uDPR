@@ -21,12 +21,12 @@ namespace NexPlugin
 		internal double estimateAverageScore;
 		internal global::System.Collections.Generic.List<uint> quantities;
 		internal byte binsSize;
-		public global::NexPlugin.NpDateTime GetCreateTime() { /*@B 0x6002C82*/ throw null; }
+		public global::NexPlugin.NpDateTime GetCreateTime() { return this.createTime; }
 		public uint GetIndex() { return this.index; }
 		public uint GetCategory() { return this.category; }
 		public uint GetSeason() { return this.season; }
-		public uint GetBinsSize() { /*@B 0x6002C86*/ throw null; }
-		public bool IsValid() { /*@B 0x6002C87*/ throw null; }
+		public uint GetBinsSize() { return this.binsSize; }
+		public bool IsValid() { return this.binsSize != 0; }
 		public uint GetSamplingRate() { return this.samplingRate; }
 		public bool GetScoreOrder() { return this.scoreOrder; }
 		public uint GetEstimateLength() { return this.estimateLength; }
@@ -39,9 +39,31 @@ namespace NexPlugin
 		public uint GetBinsWidth() { return this.binsWidth; }
 		public uint GetAttribute1() { return this.attribute1; }
 		public uint GetAttribute2() { return this.attribute2; }
-		public global::System.Collections.Generic.List<uint> GetQuantities() { /*@B 0x6002C94*/ throw null; }
+		public global::System.Collections.Generic.List<uint> GetQuantities() { return new global::System.Collections.Generic.List<uint>(this.quantities); }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002C96*/ throw null; }
+		public override string ToString() {
+			global::System.Text.StringBuilder sb = new global::System.Text.StringBuilder();
+			sb.AppendFormat("Ranking2ChartInfo: (createTime=({0}), ", this.createTime.ToString());
+			sb.AppendFormat("index={0}, ", this.index);
+			sb.AppendFormat("category={0}, ", this.category);
+			sb.AppendFormat("season={0}, ", this.season);
+			sb.AppendFormat("binsSize={0}, ", this.binsSize);
+			sb.AppendFormat("IsValid={0}, ", this.IsValid());
+			sb.AppendFormat("samplingRate={0}, ", this.samplingRate);
+			sb.AppendFormat("scoreOrder={0}, ", this.scoreOrder);
+			sb.AppendFormat("estimateLength={0}, ", this.estimateLength);
+			sb.AppendFormat("estimateHighestScore={0}, ", this.estimateHighestScore);
+			sb.AppendFormat("estimateLowestScore={0}, ", this.estimateLowestScore);
+			sb.AppendFormat("estimateMedianScore={0}, ", this.estimateMedianScore);
+			sb.AppendFormat("estimateAverageScore={0}, ", this.estimateAverageScore);
+			sb.AppendFormat("highestBinsScore={0}, ", this.highestBinsScore);
+			sb.AppendFormat("lowestBinsScore={0}, ", this.lowestBinsScore);
+			sb.AppendFormat("binsWidth={0}, ", this.binsWidth);
+			sb.AppendFormat("attribute1={0}, ", this.attribute1);
+			sb.AppendFormat("attribute2={0}, ", this.attribute2);
+			sb.AppendFormat("quantities=({0})), ", this.quantities.JoinString());
+			return sb.ToString();
+		}
 		public Ranking2ChartInfo() { }
 	}
 }

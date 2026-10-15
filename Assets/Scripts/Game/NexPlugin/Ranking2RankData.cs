@@ -9,7 +9,9 @@ namespace NexPlugin
 		internal uint rank;
 		internal uint score;
 		internal global::NexPlugin.Ranking2CommonData commonData;
-		public Ranking2RankData() { /*@B 0x6002C66*/ throw null; }
+		public Ranking2RankData() {
+			this.commonData = new global::NexPlugin.Ranking2CommonData();
+		}
 		public uint GetRank() { return this.rank; }
 		public uint GetScore() { return this.score; }
 		public ulong GetPrincipalId() { return this.principalId; }
@@ -17,6 +19,8 @@ namespace NexPlugin
 		public global::NexPlugin.Ranking2CommonData GetCommonData() { return this.commonData; }
 		public ulong GetMisc() { return this.misc; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002C6E*/ throw null; }
+		public override string ToString() {
+			return string.Format("Ranking2RankData: (rank={0}, score={1}, principalId={2}, nexUniqueId={3}, misc={4}, commonData=({5}))", new object[] { this.rank, this.score, this.principalId, this.nexUniqueId, this.misc, this.commonData.ToString() });
+		}
 	}
 }

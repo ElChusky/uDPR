@@ -9,7 +9,14 @@ namespace NexPlugin
 		internal global::NexPlugin.Ranking2.Ranking2GetOptionFlags optionFlags;
 		internal global::NexPlugin.Ranking2.Ranking2SortFlags sortFlags;
 		internal byte numSeasonsToGoBack;
-		public Ranking2GetByListParam() { /*@B 0x6002CC0*/ throw null; }
+		public Ranking2GetByListParam() {
+			this.numSeasonsToGoBack = 0;
+			this.sortFlags = global::NexPlugin.Ranking2.Ranking2SortFlags.NOTHING;
+			this.category = 0;
+			this.offset = 0;
+			this.length = 10;
+			this.optionFlags = global::NexPlugin.Ranking2.Ranking2GetOptionFlags.NOTHING;
+		}
 		public uint GetCategory() { return this.category; }
 		public void SetCategory(uint category_) { this.category = category_; }
 		public byte GetNumSeasonsToGoBack() { return this.numSeasonsToGoBack; }
@@ -22,8 +29,17 @@ namespace NexPlugin
 		public void SetSortFlags(global::NexPlugin.Ranking2.Ranking2SortFlags sortFlags_) { this.sortFlags = sortFlags_; }
 		public global::NexPlugin.Ranking2.Ranking2GetOptionFlags GetOptionFlags() { return this.optionFlags; }
 		public void SetOptionFlags(global::NexPlugin.Ranking2.Ranking2GetOptionFlags optionFlags_) { this.optionFlags = optionFlags_; }
-		public void Reset() { /*@B 0x6002CCD*/ throw null; }
+		public void Reset() {
+			this.numSeasonsToGoBack = 0;
+			this.sortFlags = global::NexPlugin.Ranking2.Ranking2SortFlags.NOTHING;
+			this.category = 0;
+			this.offset = 0;
+			this.length = 10;
+			this.optionFlags = global::NexPlugin.Ranking2.Ranking2GetOptionFlags.NOTHING;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002CCF*/ throw null; }
+		public override string ToString() {
+			return string.Format("Ranking2GetByListParam: (category={0}, offset={1}, length={2}, numSeasonsToGoBack={3}, sortFlags={4}, optionFlags={5})", new object[] { this.category, this.offset, this.length, this.numSeasonsToGoBack, this.sortFlags, this.optionFlags });
+		}
 	}
 }
