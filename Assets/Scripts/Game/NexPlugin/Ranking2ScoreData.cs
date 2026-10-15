@@ -6,15 +6,23 @@ namespace NexPlugin
 		internal uint category;
 		internal uint score;
 		internal ulong misc;
-		public Ranking2ScoreData() { /*@B 0x6002CA0*/ throw null; }
+		public Ranking2ScoreData() {
+			this.category = 0;
+			this.score = 0;
+			this.misc = 0;
+		}
 		public uint GetCategory() { return this.category; }
 		public void SetCategory(uint category_) { this.category = category_; }
 		public uint GetScore() { return this.score; }
 		public void SetScore(uint score_) { this.score = score_; }
 		public ulong GetMisc() { return this.misc; }
 		public void SetMisc(ulong misc_) { this.misc = misc_; }
-		public void Reset() { /*@B 0x6002CA7*/ throw null; }
+		public void Reset() {
+			this.category = 0;
+			this.score = 0;
+			this.misc = 0;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002CA9*/ throw null; }
+		public override string ToString() { return string.Format("Ranking2ScoreData: (category={0}, score={1}, misc={2})", this.category, this.score, this.misc); }
 	}
 }

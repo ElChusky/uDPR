@@ -9,8 +9,11 @@ namespace NexPlugin
 		public void SetChartIndex(uint index) { this.chartIndex = index; }
 		public byte GetNumSeasonsToGoBack() { return this.numSeasonsToGoBack; }
 		public void SetNumSeasonsToGoBack(byte numSeasonsToGoBack_) { this.numSeasonsToGoBack = numSeasonsToGoBack_; }
-		public void Reset() { /*@B 0x6002CD4*/ throw null; }
+		public void Reset() {
+			this.chartIndex = 0;
+			this.numSeasonsToGoBack = 0;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002CD6*/ throw null; }
+		public override string ToString() { return string.Format("Ranking2ChartInfoInput: (chartIndex={0}, numSeasonsToGoBack={1}", this.chartIndex, this.numSeasonsToGoBack); }
 	}
 }

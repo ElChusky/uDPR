@@ -16,7 +16,9 @@ namespace NexPlugin
 		public ulong GetParam2() { return this.param2; }
 		public string GetStringParam() { return this.stringParam; }
 		public void Trace() { }
-		internal string ToString() { /*@B 0x6002A5A*/ throw null; }
+		internal string ToString() {
+			return string.Format("NotificationEvent: (pid={0} Type={1} SubType={2} param1={3} param2={4} string={5})", new object[] { this.pid, this.type, this.subType, this.param1, this.param2, this.stringParam });
+		}
 		public NotificationEvent() { }
 	}
 }

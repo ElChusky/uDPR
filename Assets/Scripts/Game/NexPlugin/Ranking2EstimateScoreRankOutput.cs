@@ -16,6 +16,8 @@ namespace NexPlugin
 		public uint GetSamplingRate() { return this.samplingRate; }
 		public uint GetLength() { return this.length; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002C9F*/ throw null; }
+		public override string ToString() {
+			return string.Format("Ranking2EstimateScoreRankOutput: (rank={0}, score={1}, category={2}, season={3}, samplingRate={4}, length={5})", new object[] { this.rank, this.score, this.category, this.season, this.samplingRate, this.length });
+		}
 	}
 }
