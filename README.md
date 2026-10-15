@@ -30,8 +30,8 @@ not been played through on PC yet, so expect bugs - please report them (see [Con
    Hub on that exact version if it is missing.
 3. **Wwise 2019.2.5.7349** through the [Audiokinetic Launcher](https://www.audiokinetic.com/download/) (free account): the SDK (C++)
    with Microsoft > Windows (Visual Studio 2019). The setup tells you the one Launcher step it needs.
-4. **Your dump of Pokémon Brilliant Diamond v1.3.0**: a folder holding `exefs\` (with `main`) and `romfs\` (with `Data\`). The setup
-   checks it against the v1.3.0 files and stops on anything else.
+4. **Your dump of Pokémon Brilliant Diamond v1.3.0** (the base game with the v1.3.0 update applied): a folder holding `exefs\` (with
+   `main`) and `romfs\` (with `Data\`). The setup checks it against the v1.3.0 files and stops on anything else.
 5. **About 60 GB free** on the drive that holds this folder (about 45 GB stays in use afterwards; building the standalone game
    adds about 10 GB).
 6. **RAM: 32 GB recommended.** The asset export needs about 21 GB of memory and Unity's first import up to about 16 GB. With 16 GB of
@@ -58,6 +58,7 @@ The setup:
 It takes about **3 hours** on a high-end PC, longer on slower ones. Unity windows open and close by themselves - do not close them.
 
 If anything stops it, fix the reported problem and run `setup.cmd` again: it continues where it stopped. Logs: `SetupWork\logs\`.
+The setup window's own text is kept in `SetupWork\logs\bootstrap.log`. To use a different dump folder later: `setup.cmd -Dump <folder>`.
 
 ## Updating
 
