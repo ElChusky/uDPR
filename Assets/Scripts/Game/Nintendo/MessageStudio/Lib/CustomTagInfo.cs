@@ -6,6 +6,10 @@ namespace Nintendo.MessageStudio.Lib
 		public ushort Tag { get; private set; }
 		public ushort TagGroup { get; private set; }
 		public byte[] Params { get; private set; }
-		public CustomTagInfo(ushort group, ushort tag, byte[] param) { /*@B 0x6002677*/ throw null; }
+		public CustomTagInfo(ushort group, ushort tag, byte[] param) {
+			Params = param;
+			TagGroup = group;
+			Tag = tag;
+		}
 	}
 }

@@ -3,20 +3,51 @@ namespace Nintendo.MessageStudio.Lib
 {
 	public abstract class BinLibmsFileBase : global::System.IDisposable
 	{
-		private global::System.IntPtr resourceFilePtr;
-		private global::System.IntPtr fileObjectPtr;
+		private global::System.IntPtr resourceFilePtr = global::System.IntPtr.Zero;
+		private global::System.IntPtr fileObjectPtr = global::System.IntPtr.Zero;
 		private static global::Nintendo.MessageStudio.Lib.LoadResource loadResourceFunc;
 		private bool disposedValue;
 		protected global::System.IntPtr FileObjectPtr { get { return this.fileObjectPtr; } }
-		public bool IsFileLoaded { get { /*@B 0x60025C2*/ throw null; } }
-		public static void SetLoadResourceFunc(global::Nintendo.MessageStudio.Lib.LoadResource func) { /*@B 0x60025C3*/ throw null; }
-		public void Load(string fileName) { /*@B 0x60025C4*/ throw null; }
-		protected void ResetResourceFilePtr(global::System.IntPtr resourceFilePtr) { /*@B 0x60025C5*/ throw null; }
-		protected virtual void Dispose(bool disposing) { /*@B 0x60025C6*/ throw null; }
-		~BinLibmsFileBase() { /*@B 0x60025C7*/ throw null; }
-		public void Dispose() { /*@B 0x60025C8*/ throw null; }
+		public bool IsFileLoaded { get { return this.fileObjectPtr != global::System.IntPtr.Zero; } }
+		public static void SetLoadResourceFunc(global::Nintendo.MessageStudio.Lib.LoadResource func) { loadResourceFunc = func; }
+		public void Load(string fileName) {
+			Dispose();
+			this.resourceFilePtr = loadResourceFunc(fileName);
+			if (this.resourceFilePtr != global::System.IntPtr.Zero)
+			{
+				this.fileObjectPtr = InitObject(this.resourceFilePtr);
+			}
+		}
+		protected void ResetResourceFilePtr(global::System.IntPtr resourceFilePtr) {
+			Dispose();
+			this.resourceFilePtr = resourceFilePtr;
+			if (resourceFilePtr != global::System.IntPtr.Zero)
+			{
+				this.fileObjectPtr = InitObject(this.resourceFilePtr);
+			}
+		}
+		protected virtual void Dispose(bool disposing) {
+			if (this.disposedValue)
+				return;
+			if (this.fileObjectPtr != global::System.IntPtr.Zero)
+			{
+				CloseObject(this.fileObjectPtr);
+				this.fileObjectPtr = global::System.IntPtr.Zero;
+			}
+			if (this.resourceFilePtr != global::System.IntPtr.Zero)
+			{
+				global::System.Runtime.InteropServices.Marshal.FreeHGlobal(this.resourceFilePtr);
+				this.resourceFilePtr = global::System.IntPtr.Zero;
+			}
+			this.disposedValue = true;
+		}
+		~BinLibmsFileBase() { Dispose(false); }
+		public void Dispose() {
+			Dispose(true);
+			global::System.GC.SuppressFinalize(this);
+		}
 		protected abstract global::System.IntPtr InitObject(global::System.IntPtr resourcePtr);
 		protected abstract void CloseObject(global::System.IntPtr objectPtr);
-		protected BinLibmsFileBase() { /*@B 0x60025CB*/ throw null; }
+		protected BinLibmsFileBase() { }
 	}
 }

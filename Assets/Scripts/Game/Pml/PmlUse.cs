@@ -4,7 +4,7 @@ namespace Pml
 	public class PmlUse
 	{
 		private static global::Pml.PmlUse s_Instance;
-		private static readonly string[] AB_PERSONALS;
+		private static readonly string[] AB_PERSONALS = new string[] { "personal_masterdatas" };
 		public bool isAutoLoad;
 		private global::XLSXContent.PersonalTable personalTotal;
 		private global::XLSXContent.GrowTable growTableTotal;
@@ -25,7 +25,13 @@ namespace Pml
 		private global::Pml.PokePara.EvolveManager evolveManager;
 		private bool isABAppended;
 		private bool isInitialized;
-		public static global::Pml.PmlUse Instance { get { /*@B 0x600218D*/ throw null; } }
+		public static global::Pml.PmlUse Instance { get {
+			if (s_Instance == null)
+			{
+				s_Instance = new PmlUse();
+			}
+			return s_Instance;
+		} }
 		public global::XLSXContent.TamagoWazaTable TamagoWazaTable { get { return this.tamagoWazaTotal; } }
 		public global::XLSXContent.AddPersonalTable AddPersonalTable { get { return this.addPersonalTotal; } }
 		public global::XLSXContent.SealTable SealTable { get { return this.sealTotal; } }
@@ -48,12 +54,129 @@ namespace Pml
                     pedestalTableTotal == null ||
                     stoneStatuEeffectTotal == null);
             } }
-		public int LangId { get { /*@B 0x600219A*/ throw null; } }
-		public byte CassetVersion { get { /*@B 0x600219B*/ throw null; } }
-		private bool IsPmlAssetBundleName(string name) { /*@B 0x6002194*/ throw null; }
-		public bool AppendAssetBundleRequests() { /*@B 0x6002195*/ throw null; }
-		public bool OnDispatchRequests(global::SmartPoint.AssetAssistant.RequestEventType eventType, string name, global::UnityEngine.Object asset) { /*@B 0x6002196*/ throw null; }
-		public void OnAfterLoadAll() { /*@B 0x6002198*/ throw null; }
+		public int LangId { get { return (int)global::Dpr.Message.MessageHelper.ConvertMsgId(PlayerWork.msgLangID); } }
+		public byte CassetVersion { get { return (byte)PlayerWork.cassetVersion; } }
+		private bool IsPmlAssetBundleName(string name) { return global::System.Array.IndexOf(AB_PERSONALS, name) >= 0; }
+		public bool AppendAssetBundleRequests() {
+			if (this.isInitialized || this.isABAppended)
+				return false;
+			this.isABAppended = true;
+			for (int i = 0; i < AB_PERSONALS.Length; i++)
+			{
+				global::SmartPoint.AssetAssistant.AssetManager.AppendAssetBundleRequest(AB_PERSONALS[i], true, null, null);
+			}
+			return true;
+		}
+		public bool OnDispatchRequests(global::SmartPoint.AssetAssistant.RequestEventType eventType, string name, global::UnityEngine.Object asset) {
+			if (this.isInitialized)
+				return false;
+			if (eventType == global::SmartPoint.AssetAssistant.RequestEventType.Cached)
+			{
+				if (IsPmlAssetBundleName(name))
+				{
+					global::SmartPoint.AssetAssistant.AssetManager.UnloadAssetBundle(name);
+					return true;
+				}
+			}
+			else if (eventType == global::SmartPoint.AssetAssistant.RequestEventType.Activated)
+			{
+				if (asset is global::XLSXContent.PersonalTable)
+				{
+					this.personalTotal = asset as global::XLSXContent.PersonalTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.GrowTable)
+				{
+					this.growTableTotal = asset as global::XLSXContent.GrowTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.EvolveTable)
+				{
+					this.evolveTableTotal = asset as global::XLSXContent.EvolveTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.WazaOboeTable)
+				{
+					this.wazaOboeTotal = asset as global::XLSXContent.WazaOboeTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.WazaTable)
+				{
+					this.wazaDataTotal = asset as global::XLSXContent.WazaTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.ItemTable)
+				{
+					this.itemPrmTotal = asset as global::XLSXContent.ItemTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.TamagoWazaTable)
+				{
+					this.tamagoWazaTotal = asset as global::XLSXContent.TamagoWazaTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.AddPersonalTable)
+				{
+					this.addPersonalTotal = asset as global::XLSXContent.AddPersonalTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.SealTable)
+				{
+					this.sealTotal = asset as global::XLSXContent.SealTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.UgItemTable)
+				{
+					this.ugItemPrmTotal = asset as global::XLSXContent.UgItemTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.TamaTable)
+				{
+					this.tamaTableTotal = asset as global::XLSXContent.TamaTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.PedestalTable)
+				{
+					this.pedestalTableTotal = asset as global::XLSXContent.PedestalTable;
+					return true;
+				}
+				if (asset is global::XLSXContent.StoneStatuEeffect)
+				{
+					this.stoneStatuEeffectTotal = asset as global::XLSXContent.StoneStatuEeffect;
+					return true;
+				}
+				if (asset is global::XLSXContent.UgFatherPos)
+				{
+					this.ugfPosTotal = asset as global::XLSXContent.UgFatherPos;
+					return true;
+				}
+				if (asset is global::XLSXContent.UgFatherExpansion)
+				{
+					this.ugfExpansionTotal = asset as global::XLSXContent.UgFatherExpansion;
+					return true;
+				}
+				if (asset is global::XLSXContent.UgFatherShopTable)
+				{
+					this.ugfShopTotal = asset as global::XLSXContent.UgFatherShopTable;
+					return true;
+				}
+			}
+			return false;
+		}
+		public void OnAfterLoadAll() {
+			if (this.isInitialized)
+				return;
+			global::Pml.PokePara.Accessor.Initialize();
+			global::Pml.PokePara.CoreParam.CheckPublicDataSize();
+			global::Pml.PokePara.CoreParam.CheckPublicDataSize();
+			global::Pml.Personal.PersonalSystem.Initialize(this.personalTotal, this.wazaOboeTotal, this.growTableTotal, this.evolveTableTotal);
+			global::Pml.WazaData.WazaDataSystem.Initialize(this.wazaDataTotal);
+			global::Pml.Item.ItemManager.Instance.Load(this.itemPrmTotal);
+			global::Pml.Item.UgItemManager.Instance.Initialize(this.ugItemPrmTotal, this.tamaTableTotal, this.pedestalTableTotal, this.stoneStatuEeffectTotal);
+			global::Pml.UgFather.UgFatherDataManager.Instance.Initialize(this.ugfPosTotal, this.ugfExpansionTotal, this.ugfShopTotal);
+			this.evolveManager = new global::Pml.PokePara.EvolveManager();
+			this.isInitialized = true;
+		}
 		public global::Pml.PokePara.EvolveManager GetEvolveManager() { return this.evolveManager; }
 		// @024a0200 (tail `b` UnityEngine.Random.Range(int, int))
 		public uint RandFunc() {
@@ -64,6 +187,6 @@ namespace Pml
             return RandFunc() % max_range;
         }
 		public PmlUse() { }
-		static PmlUse() { /*@B 0x600219F*/ throw null; }
+		static PmlUse() { }
 	}
 }

@@ -5813,6 +5813,6 @@ namespace Pml
 			int index = System.Array.IndexOf(table, s);
 			return index < 0 ? 0 : index;
 		}
-		static DebugViewTable() { /*@B 0x600218C*/ throw null; }
+		static DebugViewTable() { }
 	}
 }

@@ -3,33 +3,101 @@ namespace Nintendo.MessageStudio.Lib
 {
 	public class BinMsgFile : global::Nintendo.MessageStudio.Lib.BinLibmsFileBase
 	{
-		public void SetMSBTFileData(byte[] byteDataArray) { /*@B 0x60025D0*/ throw null; }
-		protected override global::System.IntPtr InitObject(global::System.IntPtr resourcePtr) { /*@B 0x60025D1*/ throw null; }
-		protected override void CloseObject(global::System.IntPtr objectPtr) { /*@B 0x60025D2*/ throw null; }
-		public int SearchMessageBlock(string block) { /*@B 0x60025D3*/ throw null; }
-		public global::Nintendo.MessageStudio.Lib.BlockInfo GetBlockInfo(string block) { /*@B 0x60025D4*/ throw null; }
-		public byte[] GetAttributes(string label) { /*@B 0x60025D5*/ throw null; }
-		public byte[] GetAttributes(int index) { /*@B 0x60025D6*/ throw null; }
-		public sbyte GetInt8Attribute(byte[] attr, int index) { /*@B 0x60025D7*/ throw null; }
-		public byte GetUInt8Attribute(byte[] attr, int index) { /*@B 0x60025D8*/ throw null; }
-		public short GetInt16Attribute(byte[] attr, int index) { /*@B 0x60025D9*/ throw null; }
-		public ushort GetUInt16Attribute(byte[] attr, int index) { /*@B 0x60025DA*/ throw null; }
-		public int GetInt32Attribute(byte[] attr, int index) { /*@B 0x60025DB*/ throw null; }
-		public uint GetUInt32Attribute(byte[] attr, int index) { /*@B 0x60025DC*/ throw null; }
-		public float GetFloatAttribute(byte[] attr, int index) { /*@B 0x60025DD*/ throw null; }
-		public double GetDoubleAttribute(byte[] attr, int index) { /*@B 0x60025DE*/ throw null; }
-		public string GetStringAttribute(byte[] attr, int index) { /*@B 0x60025DF*/ throw null; }
-		public int GetListAttribute(byte[] attr, int index) { /*@B 0x60025E0*/ throw null; }
-		public int GetIndexAttribute(int labelIndex, int attributeID) { /*@B 0x60025E1*/ throw null; }
-		public int GetIndexAttribute(byte[] attr, int index) { /*@B 0x60025E2*/ throw null; }
-		public int GetStyle(string label) { /*@B 0x60025E3*/ throw null; }
-		public int GetStyle(int index) { /*@B 0x60025E4*/ throw null; }
-		public string GetLabel(int index) { /*@B 0x60025E5*/ throw null; }
-		public int GetTextNum() { /*@B 0x60025E6*/ throw null; }
-		public int GetTextIndex(string label) { /*@B 0x60025E7*/ throw null; }
-		public int GetTextSize(int index) { /*@B 0x60025E8*/ throw null; }
-		public global::System.IntPtr GetText(string strLabel) { /*@B 0x60025E9*/ throw null; }
-		public global::System.IntPtr GetText(int index) { /*@B 0x60025EA*/ throw null; }
-		public BinMsgFile() { /*@B 0x60025EB*/ throw null; }
+		public void SetMSBTFileData(byte[] byteDataArray) {
+			global::System.IntPtr destination = global::System.Runtime.InteropServices.Marshal.AllocHGlobal(byteDataArray.Length);
+			global::System.Runtime.InteropServices.Marshal.Copy(byteDataArray, 0, destination, byteDataArray.Length);
+			ResetResourceFilePtr(destination);
+		}
+		protected override global::System.IntPtr InitObject(global::System.IntPtr resourcePtr) { return Libms.LMS_InitMessage(resourcePtr); }
+		protected override void CloseObject(global::System.IntPtr objectPtr) { Libms.LMS_CloseMessage(objectPtr); }
+		public int SearchMessageBlock(string block) { return Libms.LMS_SearchMessageBlockByName(FileObjectPtr, block); }
+		public global::Nintendo.MessageStudio.Lib.BlockInfo GetBlockInfo(string block) {
+			global::System.IntPtr ptr = Libms.LMS_GetMessageBlockInfoByName(FileObjectPtr, block);
+			return (BlockInfo)global::System.Runtime.InteropServices.Marshal.PtrToStructure(ptr, typeof(BlockInfo));
+		}
+		public byte[] GetAttributes(string label) {
+			int index = Libms.LMS_GetTextIndexByLabel(FileObjectPtr, label);
+			return GetAttributes(index);
+		}
+		public byte[] GetAttributes(int index) {
+			uint length = Libms.LMS_GetAttributeSize(FileObjectPtr);
+			if (length == 0)
+				return null;
+			global::System.IntPtr source = Libms.LMS_GetAttribute(FileObjectPtr, index);
+			byte[] destination = new byte[length];
+			global::System.Runtime.InteropServices.Marshal.Copy(source, destination, 0, (int)length);
+			return destination;
+		}
+		public sbyte GetInt8Attribute(byte[] attr, int index) {
+			int offset = Libms.LMS_GetAttrFilteredOffset(FileObjectPtr, index);
+			return (sbyte)attr[offset];
+		}
+		public byte GetUInt8Attribute(byte[] attr, int index) {
+			int offset = Libms.LMS_GetAttrFilteredOffset(FileObjectPtr, index);
+			return attr[offset];
+		}
+		public short GetInt16Attribute(byte[] attr, int index) {
+			int offset = Libms.LMS_GetAttrFilteredOffset(FileObjectPtr, index);
+			return global::System.BitConverter.ToInt16(attr, offset);
+		}
+		public ushort GetUInt16Attribute(byte[] attr, int index) {
+			int offset = Libms.LMS_GetAttrFilteredOffset(FileObjectPtr, index);
+			return global::System.BitConverter.ToUInt16(attr, offset);
+		}
+		public int GetInt32Attribute(byte[] attr, int index) {
+			int offset = Libms.LMS_GetAttrFilteredOffset(FileObjectPtr, index);
+			return global::System.BitConverter.ToInt32(attr, offset);
+		}
+		public uint GetUInt32Attribute(byte[] attr, int index) {
+			int offset = Libms.LMS_GetAttrFilteredOffset(FileObjectPtr, index);
+			return global::System.BitConverter.ToUInt32(attr, offset);
+		}
+		public float GetFloatAttribute(byte[] attr, int index) {
+			int offset = Libms.LMS_GetAttrFilteredOffset(FileObjectPtr, index);
+			return global::System.BitConverter.ToSingle(attr, offset);
+		}
+		public double GetDoubleAttribute(byte[] attr, int index) {
+			int offset = Libms.LMS_GetAttrFilteredOffset(FileObjectPtr, index);
+			return global::System.BitConverter.ToDouble(attr, offset);
+		}
+		public string GetStringAttribute(byte[] attr, int index) {
+			int offset = Libms.LMS_GetAttrFilteredOffset(FileObjectPtr, index);
+			uint textOffset = global::System.BitConverter.ToUInt32(attr, offset);
+			return global::System.Runtime.InteropServices.Marshal.PtrToStringUni(Libms.LMS_GetAttributeText(FileObjectPtr, textOffset));
+		}
+		public int GetListAttribute(byte[] attr, int index) {
+			int offset = Libms.LMS_GetAttrFilteredOffset(FileObjectPtr, index);
+			return attr[offset];
+		}
+		public int GetIndexAttribute(int labelIndex, int attributeID) {
+			byte[] attr = GetAttributes(labelIndex);
+			return GetIndexAttribute(attr, attributeID);
+		}
+		public int GetIndexAttribute(byte[] attr, int index) {
+			int offset = Libms.LMS_GetAttrFilteredOffset(FileObjectPtr, index);
+			return attr[offset] | (attr[offset + 1] << 8);
+		}
+		public int GetStyle(string label) { return Libms.LMS_GetTextStyleByLabel(FileObjectPtr, label); }
+		public int GetStyle(int index) { return Libms.LMS_GetTextStyle(FileObjectPtr, index); }
+		public string GetLabel(int index) {
+			global::System.Text.StringBuilder labelName = new global::System.Text.StringBuilder(256);
+			if (Libms.LMS_GetLabelByTextIndex(FileObjectPtr, index, labelName) > 0)
+				return labelName.ToString();
+			return null;
+		}
+		public int GetTextNum() { return Libms.LMS_GetTextNum(FileObjectPtr); }
+		public int GetTextIndex(string label) { return Libms.LMS_GetTextIndexByLabel(FileObjectPtr, label); }
+		public int GetTextSize(int index) { return Libms.LMS_GetTextSize(FileObjectPtr, index); }
+		public global::System.IntPtr GetText(string strLabel) {
+			if (FileObjectPtr == global::System.IntPtr.Zero)
+				return global::System.IntPtr.Zero;
+			return Libms.LMS_GetTextByLabel(FileObjectPtr, strLabel);
+		}
+		public global::System.IntPtr GetText(int index) {
+			if (FileObjectPtr == global::System.IntPtr.Zero)
+				return global::System.IntPtr.Zero;
+			return Libms.LMS_GetText(FileObjectPtr, index);
+		}
+		public BinMsgFile() { }
 	}
 }

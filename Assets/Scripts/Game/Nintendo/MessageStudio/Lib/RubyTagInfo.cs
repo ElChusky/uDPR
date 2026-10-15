@@ -7,6 +7,10 @@ namespace Nintendo.MessageStudio.Lib
 		public ushort TagGroup { get { return 0; } }
 		public ushort ParentLength { get; private set; }
 		public string Ruby { get; private set; }
-		public RubyTagInfo(byte[] param) { /*@B 0x600265C*/ throw null; }
+		public RubyTagInfo(byte[] param) {
+			ParentLength = global::System.BitConverter.ToUInt16(param, 0);
+			ushort length = global::System.BitConverter.ToUInt16(param, 2);
+			Ruby = global::System.BitConverter.ToString(param, 4, length);
+		}
 	}
 }

@@ -3,43 +3,51 @@ namespace Nintendo.MessageStudio.Lib
 {
 	public class BinPrjFile : global::Nintendo.MessageStudio.Lib.BinLibmsFileBase
 	{
-		protected override global::System.IntPtr InitObject(global::System.IntPtr resourcePtr) { /*@B 0x60025EC*/ throw null; }
-		protected override void CloseObject(global::System.IntPtr objectPtr) { /*@B 0x60025ED*/ throw null; }
-		public int SearchProjectBlock(string name) { /*@B 0x60025EE*/ throw null; }
-		public int GetColorIndex(string name) { /*@B 0x60025EF*/ throw null; }
-		public global::Nintendo.MessageStudio.Lib.LMSColor GetColor(int index) { /*@B 0x60025F0*/ throw null; }
-		public global::Nintendo.MessageStudio.Lib.LMSColor GetColor(string name) { /*@B 0x60025F1*/ throw null; }
-		public int GetColorNum() { /*@B 0x60025F2*/ throw null; }
-		public int GetContentsNum() { /*@B 0x60025F3*/ throw null; }
-		public string GetContentPath(int index) { /*@B 0x60025F4*/ throw null; }
-		public int GetAttrInfoIndex(string name) { /*@B 0x60025F5*/ throw null; }
-		public global::Nintendo.MessageStudio.Lib.LibmsType GetAttrType(int index) { /*@B 0x60025F6*/ throw null; }
-		public global::Nintendo.MessageStudio.Lib.LibmsType GetAttrType(string name) { /*@B 0x60025F7*/ throw null; }
-		public int GetAttrOffset(int index) { /*@B 0x60025F8*/ throw null; }
-		public int GetAttrOffset(string name) { /*@B 0x60025F9*/ throw null; }
-		public string GetAttrListItemName(int attrIndex, int itemIndex) { /*@B 0x60025FA*/ throw null; }
-		public string GetAttrListItemName(string attrName, int itemIndex) { /*@B 0x60025FB*/ throw null; }
-		public int GetAttrNum() { /*@B 0x60025FC*/ throw null; }
-		public int GetAttrListItemNum(int attrIndex) { /*@B 0x60025FD*/ throw null; }
-		public string GetTagGroupName(ushort groupId) { /*@B 0x60025FE*/ throw null; }
-		public string GetTagName(ushort groupId, ushort tagId) { /*@B 0x60025FF*/ throw null; }
-		public string GetTagParamName(ushort groupId, ushort tagId, ushort paramId) { /*@B 0x6002600*/ throw null; }
-		public global::Nintendo.MessageStudio.Lib.LibmsType GetTagParamType(ushort groupId, ushort tagId, ushort paramId) { /*@B 0x6002601*/ throw null; }
-		public string GetTagListItemName(ushort groupId, ushort tagId, ushort paramId, ushort itemIndex) { /*@B 0x6002602*/ throw null; }
-		public int GetTagGroupNum() { /*@B 0x6002603*/ throw null; }
-		public int GetTagNum(ushort groupId) { /*@B 0x6002604*/ throw null; }
-		public int GetTagParamNum(ushort groupId, ushort tagId) { /*@B 0x6002605*/ throw null; }
-		public int GetTagListItemNum(ushort groupId, ushort tagId, ushort paramId) { /*@B 0x6002606*/ throw null; }
-		public int GetStyleIndex(string name) { /*@B 0x6002607*/ throw null; }
-		public int GetRegionWidth(int index) { /*@B 0x6002608*/ throw null; }
-		public int GetRegionWidth(string name) { /*@B 0x6002609*/ throw null; }
-		public int GetLineNum(int index) { /*@B 0x600260A*/ throw null; }
-		public int GetLineNum(string name) { /*@B 0x600260B*/ throw null; }
-		public int GetFontIndex(int index) { /*@B 0x600260C*/ throw null; }
-		public int GetFontIndex(string name) { /*@B 0x600260D*/ throw null; }
-		public int GetBaseColorIndex(int index) { /*@B 0x600260E*/ throw null; }
-		public int GetBaseColorIndex(string name) { /*@B 0x600260F*/ throw null; }
-		public int GetStyleNum() { /*@B 0x6002610*/ throw null; }
-		public BinPrjFile() { /*@B 0x6002611*/ throw null; }
+		protected override global::System.IntPtr InitObject(global::System.IntPtr resourcePtr) { return Libms.LMS_InitProject(resourcePtr); }
+		protected override void CloseObject(global::System.IntPtr objectPtr) { Libms.LMS_CloseProject(objectPtr); }
+		public int SearchProjectBlock(string name) { return Libms.LMS_SearchProjectBlockByName(FileObjectPtr, name); }
+		public int GetColorIndex(string name) { return Libms.LMS_GetColorIndexByName(FileObjectPtr, name); }
+		public global::Nintendo.MessageStudio.Lib.LMSColor GetColor(int index) {
+			LMSColor color = default(LMSColor);
+			Libms.LMS_GetColor(FileObjectPtr, index, ref color);
+			return color;
+		}
+		public global::Nintendo.MessageStudio.Lib.LMSColor GetColor(string name) {
+			LMSColor color = default(LMSColor);
+			Libms.LMS_GetColorByName(FileObjectPtr, name, ref color);
+			return color;
+		}
+		public int GetColorNum() { return Libms.LMS_GetColorNum(FileObjectPtr); }
+		public int GetContentsNum() { return Libms.LMS_GetContentsNum(FileObjectPtr); }
+		public string GetContentPath(int index) { return global::System.Runtime.InteropServices.Marshal.PtrToStringAnsi(Libms.LMS_GetContentPath(FileObjectPtr, index)); }
+		public int GetAttrInfoIndex(string name) { return Libms.LMS_GetAttrInfoIndexByName(FileObjectPtr, name); }
+		public global::Nintendo.MessageStudio.Lib.LibmsType GetAttrType(int index) { return Libms.LMS_GetAttrType(FileObjectPtr, index); }
+		public global::Nintendo.MessageStudio.Lib.LibmsType GetAttrType(string name) { return Libms.LMS_GetAttrTypeByName(FileObjectPtr, name); }
+		public int GetAttrOffset(int index) { return Libms.LMS_GetAttrOffset(FileObjectPtr, index); }
+		public int GetAttrOffset(string name) { return Libms.LMS_GetAttrOffsetByName(FileObjectPtr, name); }
+		public string GetAttrListItemName(int attrIndex, int itemIndex) { return global::System.Runtime.InteropServices.Marshal.PtrToStringAnsi(Libms.LMS_GetAttrListItemName(FileObjectPtr, attrIndex, itemIndex)); }
+		public string GetAttrListItemName(string attrName, int itemIndex) { return global::System.Runtime.InteropServices.Marshal.PtrToStringAnsi(Libms.LMS_GetAttrListItemNameByName(FileObjectPtr, attrName, itemIndex)); }
+		public int GetAttrNum() { return Libms.LMS_GetAttrNum(FileObjectPtr); }
+		public int GetAttrListItemNum(int attrIndex) { return Libms.LMS_GetAttrListItemNum(FileObjectPtr, attrIndex); }
+		public string GetTagGroupName(ushort groupId) { return global::System.Runtime.InteropServices.Marshal.PtrToStringAnsi(Libms.LMS_GetTagGroupName(FileObjectPtr, groupId)); }
+		public string GetTagName(ushort groupId, ushort tagId) { return global::System.Runtime.InteropServices.Marshal.PtrToStringAnsi(Libms.LMS_GetTagName(FileObjectPtr, groupId, tagId)); }
+		public string GetTagParamName(ushort groupId, ushort tagId, ushort paramId) { return global::System.Runtime.InteropServices.Marshal.PtrToStringAnsi(Libms.LMS_GetTagParamName(FileObjectPtr, groupId, tagId, paramId)); }
+		public global::Nintendo.MessageStudio.Lib.LibmsType GetTagParamType(ushort groupId, ushort tagId, ushort paramId) { return Libms.LMS_GetTagParamType(FileObjectPtr, groupId, tagId, paramId); }
+		public string GetTagListItemName(ushort groupId, ushort tagId, ushort paramId, ushort itemIndex) { return global::System.Runtime.InteropServices.Marshal.PtrToStringAnsi(Libms.LMS_GetTagListItemName(FileObjectPtr, groupId, tagId, paramId, itemIndex)); }
+		public int GetTagGroupNum() { return Libms.LMS_GetTagGroupNum(FileObjectPtr); }
+		public int GetTagNum(ushort groupId) { return Libms.LMS_GetTagNum(FileObjectPtr, groupId); }
+		public int GetTagParamNum(ushort groupId, ushort tagId) { return Libms.LMS_GetTagParamNum(FileObjectPtr, groupId, tagId); }
+		public int GetTagListItemNum(ushort groupId, ushort tagId, ushort paramId) { return Libms.LMS_GetTagListItemNum(FileObjectPtr, groupId, tagId, paramId); }
+		public int GetStyleIndex(string name) { return Libms.LMS_GetStyleIndexByName(FileObjectPtr, name); }
+		public int GetRegionWidth(int index) { return Libms.LMS_GetRegionWidth(FileObjectPtr, index); }
+		public int GetRegionWidth(string name) { return Libms.LMS_GetRegionWidthByName(FileObjectPtr, name); }
+		public int GetLineNum(int index) { return Libms.LMS_GetLineNum(FileObjectPtr, index); }
+		public int GetLineNum(string name) { return Libms.LMS_GetLineNumByName(FileObjectPtr, name); }
+		public int GetFontIndex(int index) { return Libms.LMS_GetFontIndex(FileObjectPtr, index); }
+		public int GetFontIndex(string name) { return Libms.LMS_GetFontIndexByName(FileObjectPtr, name); }
+		public int GetBaseColorIndex(int index) { return Libms.LMS_GetBaseColorIndex(FileObjectPtr, index); }
+		public int GetBaseColorIndex(string name) { return Libms.LMS_GetBaseColorIndexByName(FileObjectPtr, name); }
+		public int GetStyleNum() { return Libms.LMS_GetStyleNum(FileObjectPtr); }
+		public BinPrjFile() { }
 	}
 }
