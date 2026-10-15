@@ -1,7 +1,6 @@
 # uDPR
 
-**Pokémon Brilliant Diamond as a native Windows game** - a Unity project that rebuilds the game (Nintendo Switch, v1.3.0) from
-**your own dump**, and builds a standalone game from it. The game logic runs as compiled C#, not under emulation.
+**Pokémon Brilliant Diamond as a Unity project** that rebuilds the game from **your own dump**, and builds a standalone game from it. The game logic runs as compiled C#, not under emulation.
 
 > **Made with AI.** This project was made almost entirely with AI - Claude (Anthropic), through Claude Code - directed, tested and
 > reviewed by a human.
