@@ -10,7 +10,15 @@ namespace NexPlugin
 		internal global::NexPlugin.Ranking.UpdateMode updateMode;
 		internal byte group0;
 		internal byte group1;
-		public RankingScoreData() { /*@B 0x6002C33*/ throw null; }
+		public RankingScoreData() {
+			this.param = 0;
+			this.category = 0;
+			this.score = 0;
+			this.orderBy = (global::NexPlugin.Ranking.OrderBy)1;
+			this.updateMode = 0;
+			this.group0 = 0;
+			this.group1 = 0;
+		}
 		public uint GetCategory() { return this.category; }
 		public void SetCategory(uint category_) { this.category = category_; }
 		public void SetScore(uint score_) { this.score = score_; }
@@ -26,6 +34,6 @@ namespace NexPlugin
 		public void SetParam(ulong param_) { this.param = param_; }
 		public ulong GetParam() { return this.param; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002C43*/ throw null; }
+		public override string ToString() { return string.Format("RankingScoreData: (category={0}, score={1}, param={2}, group0={3}, group1={4}, orderBy={5}, updateMode={6})", new object[] { this.category, this.score, this.param, this.group0, this.group1, this.orderBy, this.updateMode }); }
 	}
 }

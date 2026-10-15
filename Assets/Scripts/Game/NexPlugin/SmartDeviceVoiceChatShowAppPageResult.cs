@@ -4,11 +4,11 @@ namespace NexPlugin
 	public class SmartDeviceVoiceChatShowAppPageResult
 	{
 		internal global::NexPlugin.SmartDeviceVoiceChat.ShowAppResultStatus status;
-		public SmartDeviceVoiceChatShowAppPageResult() { /*@B 0x6002D03*/ throw null; }
+		public SmartDeviceVoiceChatShowAppPageResult() { this.status = global::NexPlugin.SmartDeviceVoiceChat.ShowAppResultStatus.SHOW_APP_RESULT_STATUS_ERROR; }
 		public void SetStatus(global::NexPlugin.SmartDeviceVoiceChat.ShowAppResultStatus status_) { this.status = status_; }
 		public global::NexPlugin.SmartDeviceVoiceChat.ShowAppResultStatus GetStatus() { return this.status; }
-		public void Reset() { /*@B 0x6002D06*/ throw null; }
+		public void Reset() { this.status = global::NexPlugin.SmartDeviceVoiceChat.ShowAppResultStatus.SHOW_APP_RESULT_STATUS_ERROR; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002D08*/ throw null; }
+		public override string ToString() { return string.Format("SmartDeviceVoiceChatShowAppPageResult: (roomId={0})", this.status.ToString()); }
 	}
 }

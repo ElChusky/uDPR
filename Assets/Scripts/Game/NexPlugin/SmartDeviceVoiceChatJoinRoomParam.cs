@@ -6,7 +6,11 @@ namespace NexPlugin
 		internal ulong sessionId;
 		internal uint gameMode;
 		internal uint channelId;
-		public SmartDeviceVoiceChatJoinRoomParam() { /*@B 0x6002CE0*/ throw null; }
+		public SmartDeviceVoiceChatJoinRoomParam() {
+			this.sessionId = 0;
+			this.gameMode = 0;
+			this.channelId = 0;
+		}
 		public void SetSessionId(ulong sessionId_) { this.sessionId = sessionId_; }
 		public ulong GetSessionId() { return this.sessionId; }
 		public void SetGameMode(uint gameMode_) { this.gameMode = gameMode_; }
@@ -14,6 +18,6 @@ namespace NexPlugin
 		public void SetChannelId(uint channelId_) { this.channelId = channelId_; }
 		public uint GetChannelId() { return this.channelId; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002CE8*/ throw null; }
+		public override string ToString() { return string.Format("SmartDeviceVoiceChatJoinRoomParam: (sessionId={0}, gameMode={1}, channelId={2})", this.sessionId, this.gameMode, this.channelId); }
 	}
 }

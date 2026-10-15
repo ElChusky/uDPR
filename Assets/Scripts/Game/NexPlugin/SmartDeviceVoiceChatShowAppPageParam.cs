@@ -4,11 +4,11 @@ namespace NexPlugin
 	public class SmartDeviceVoiceChatShowAppPageParam
 	{
 		internal global::nn.account.UserHandle userHandle;
-		public SmartDeviceVoiceChatShowAppPageParam() { /*@B 0x6002CFD*/ throw null; }
-		public void SetUserHandle(global::nn.account.UserHandle userHandle_) { /*@B 0x6002CFE*/ throw null; }
-		public global::nn.account.UserHandle GetUserHandle() { /*@B 0x6002CFF*/ throw null; }
-		public void Reset() { /*@B 0x6002D00*/ throw null; }
+		public SmartDeviceVoiceChatShowAppPageParam() { this.userHandle = default(global::nn.account.UserHandle); }
+		public void SetUserHandle(global::nn.account.UserHandle userHandle_) { this.userHandle = userHandle_; }
+		public global::nn.account.UserHandle GetUserHandle() { return this.userHandle; }
+		public void Reset() { this.userHandle = default(global::nn.account.UserHandle); }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002D02*/ throw null; }
+		public override string ToString() { return string.Format("SmartDeviceVoiceChatShowAppPageParam: (userHandle={0})", this.userHandle.ToString()); }
 	}
 }

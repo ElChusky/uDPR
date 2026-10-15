@@ -5,13 +5,16 @@ namespace NexPlugin
 	{
 		internal byte key;
 		internal global::System.Collections.Generic.List<byte> value;
-		public SubscriberUserStatusParam() { /*@B 0x6002D30*/ throw null; }
+		public SubscriberUserStatusParam() { this.Reset(); }
 		public void SetKey(byte key_) { this.key = key_; }
 		public byte GetKey() { return this.key; }
-		public void SetValue(global::System.Collections.Generic.List<byte> _value) { /*@B 0x6002D33*/ throw null; }
-		public global::System.Collections.Generic.List<byte> GetValue() { /*@B 0x6002D34*/ throw null; }
-		public void Reset() { /*@B 0x6002D35*/ throw null; }
+		public void SetValue(global::System.Collections.Generic.List<byte> _value) { this.value = new global::System.Collections.Generic.List<byte>(_value); }
+		public global::System.Collections.Generic.List<byte> GetValue() { return new global::System.Collections.Generic.List<byte>(this.value); }
+		public void Reset() {
+			this.key = 0;
+			this.SetValue(new global::System.Collections.Generic.List<byte>());
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002D37*/ throw null; }
+		public override string ToString() { return string.Format("SubscriberUserStatusParam: (key={0}, value=({1}))", this.key, this.value.JoinString()); }
 	}
 }

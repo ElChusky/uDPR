@@ -5,13 +5,19 @@ namespace NexPlugin
 	{
 		internal ulong roomId;
 		internal uint channelId;
-		public SmartDeviceVoiceChatChangeVoiceChatChannelParam() { /*@B 0x6002CF5*/ throw null; }
+		public SmartDeviceVoiceChatChangeVoiceChatChannelParam() {
+			this.channelId = 0;
+			this.roomId = 0;
+		}
 		public void SetChannelId(uint channelId_) { this.channelId = channelId_; }
 		public uint GetChannelId() { return this.channelId; }
 		public void SetRoomId(ulong roomId_) { this.roomId = roomId_; }
 		public ulong GetRoomId() { return this.roomId; }
-		public void Reset() { /*@B 0x6002CFA*/ throw null; }
+		public void Reset() {
+			this.channelId = 0;
+			this.roomId = 0;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002CFC*/ throw null; }
+		public override string ToString() { return string.Format("SmartDeviceVoiceChatChangeVoiceChatChannelParam: (channelId={0}, roomId={1})", this.channelId, this.roomId); }
 	}
 }

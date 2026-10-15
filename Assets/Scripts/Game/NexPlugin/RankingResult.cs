@@ -6,11 +6,24 @@ namespace NexPlugin
 		internal uint totalCount;
 		internal global::System.Collections.Generic.List<global::NexPlugin.RankingRankData> rankDataList;
 		internal global::NexPlugin.NpDateTime sinceTime;
-		public RankingResult() { /*@B 0x6002C23*/ throw null; }
+		public RankingResult() {
+			this.rankDataList = new global::System.Collections.Generic.List<global::NexPlugin.RankingRankData>();
+			this.totalCount = 0;
+			this.sinceTime = global::NexPlugin.NpDateTime.INVALID_DATE_TIME;
+		}
 		public uint GetTotalCount() { return this.totalCount; }
 		public global::System.Collections.Generic.List<global::NexPlugin.RankingRankData> GetRankDataList() { return this.rankDataList; }
-		public global::NexPlugin.NpDateTime GetSinceTime() { /*@B 0x6002C26*/ throw null; }
+		public global::NexPlugin.NpDateTime GetSinceTime() { return this.sinceTime; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002C28*/ throw null; }
+		public override string ToString() {
+			global::System.Text.StringBuilder sb = new global::System.Text.StringBuilder();
+			sb.AppendFormat("RankingResult: (totalCount={0}, sinceTime={1})", this.totalCount, this.sinceTime.ToString());
+			sb.AppendLine();
+			foreach (global::NexPlugin.RankingRankData data in this.rankDataList)
+			{
+				sb.AppendLine(data.ToString());
+			}
+			return sb.ToString();
+		}
 	}
 }

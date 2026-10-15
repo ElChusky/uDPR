@@ -3,15 +3,42 @@ namespace Nintendo.MessageStudio.Lib
 {
 	public class BinFlwFile : global::Nintendo.MessageStudio.Lib.BinLibmsFileBase
 	{
-		protected override global::System.IntPtr InitObject(global::System.IntPtr resourcePtr) { /*@B 0x60025B8*/ throw null; }
-		protected override void CloseObject(global::System.IntPtr objectPtr) { /*@B 0x60025B9*/ throw null; }
-		public int GetNodeNum() { /*@B 0x60025BA*/ throw null; }
-		public int GetEntryNodeIndex(string label) { /*@B 0x60025BB*/ throw null; }
-		public global::Nintendo.MessageStudio.Lib.LMSFlowNodeData GetNodeData(int index) { /*@B 0x60025BC*/ throw null; }
-		public ushort[] GetCaseIndexesFromBranchNode(int index) { /*@B 0x60025BD*/ throw null; }
-		public string GetFlowParamText(int offset) { /*@B 0x60025BE*/ throw null; }
+		protected override global::System.IntPtr InitObject(global::System.IntPtr resourcePtr) { return global::Nintendo.MessageStudio.Lib.Libms.LMS_InitFlowchart(resourcePtr); }
+		protected override void CloseObject(global::System.IntPtr objectPtr) { global::Nintendo.MessageStudio.Lib.Libms.LMS_CloseFlowchart(objectPtr); }
+		public int GetNodeNum() { return global::Nintendo.MessageStudio.Lib.Libms.LMS_GetNodeNum(this.FileObjectPtr); }
+		public int GetEntryNodeIndex(string label) { return global::Nintendo.MessageStudio.Lib.Libms.LMS_GetEntryNodeIndex(this.FileObjectPtr, label); }
+		public global::Nintendo.MessageStudio.Lib.LMSFlowNodeData GetNodeData(int index) {
+			global::System.IntPtr nodePtr = global::Nintendo.MessageStudio.Lib.Libms.LMS_GetNodeDataPtr(this.FileObjectPtr, index);
+			byte[] bytes = new byte[16];
+			global::System.Runtime.InteropServices.Marshal.Copy(nodePtr, bytes, 0, 16);
+			return new global::Nintendo.MessageStudio.Lib.LMSFlowNodeData
+			{
+				NodeType = (global::Nintendo.MessageStudio.Lib.LMSFlowNodeType)bytes[0],
+				ParamType = (global::Nintendo.MessageStudio.Lib.LMSFlowParamType)bytes[1],
+				Reserved = global::System.BitConverter.ToUInt16(bytes, 2),
+				ParamValue = global::System.BitConverter.ToUInt32(bytes, 4),
+				Rawdata0 = global::System.BitConverter.ToUInt16(bytes, 8),
+				Rawdata1 = global::System.BitConverter.ToUInt16(bytes, 10),
+				Rawdata2 = global::System.BitConverter.ToUInt16(bytes, 12),
+				Rawdata3 = global::System.BitConverter.ToUInt16(bytes, 14),
+			};
+		}
+		public ushort[] GetCaseIndexesFromBranchNode(int index) {
+			global::Nintendo.MessageStudio.Lib.LMSFlowNodeData nodeData = this.GetNodeData(index);
+			ushort caseNum = nodeData.Rawdata2;
+			byte[] bytes = new byte[caseNum * 2];
+			global::System.IntPtr casePtr = global::Nintendo.MessageStudio.Lib.Libms.LMS_GetCaseIndexesFromBranchNode(this.FileObjectPtr, index);
+			global::System.Runtime.InteropServices.Marshal.Copy(casePtr, bytes, 0, caseNum * 2);
+			ushort[] result = new ushort[caseNum];
+			for (int i = 0; i < caseNum; i++)
+			{
+				result[i] = global::System.BitConverter.ToUInt16(bytes, i * 2);
+			}
+			return result;
+		}
+		public string GetFlowParamText(int offset) { return global::System.Runtime.InteropServices.Marshal.PtrToStringAnsi(global::Nintendo.MessageStudio.Lib.Libms.LMS_GetFlowParamText(this.FileObjectPtr, offset)); }
 		[global::System.Diagnostics.ConditionalAttribute("DEBUG")]
-		public void GetIndexTest(int index) { /*@B 0x60025BF*/ throw null; }
-		public BinFlwFile() { /*@B 0x60025C0*/ throw null; }
+		public void GetIndexTest(int index) { global::Nintendo.MessageStudio.Lib.Libms.LMS_GetNodeDataPtr(this.FileObjectPtr, index); }
+		public BinFlwFile() { }
 	}
 }

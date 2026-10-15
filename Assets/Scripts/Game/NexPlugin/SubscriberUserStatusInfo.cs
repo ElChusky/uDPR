@@ -6,9 +6,26 @@ namespace NexPlugin
 		internal ulong pid;
 		internal global::System.Collections.Generic.Dictionary<byte, global::System.Collections.Generic.List<byte>> values;
 		public ulong GetPrincipalID() { return this.pid; }
-		public bool GetValue(byte key, global::System.Collections.Generic.List<byte> value) { /*@B 0x6002D2C*/ throw null; }
+		public bool GetValue(byte key, global::System.Collections.Generic.List<byte> value) {
+			value.Clear();
+			if (this.values.ContainsKey(key))
+			{
+				value = new global::System.Collections.Generic.List<byte>(this.values[key]);
+				return true;
+			}
+			return false;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002D2E*/ throw null; }
+		public override string ToString() {
+			global::System.Text.StringBuilder sb = new global::System.Text.StringBuilder();
+			sb.AppendFormat("SubscriberUserStatusInfo: (pid={0}, values=( ", this.pid);
+			foreach (global::System.Collections.Generic.KeyValuePair<byte, global::System.Collections.Generic.List<byte>> pair in this.values)
+			{
+				sb.AppendFormat("({0} : {1}) ", pair.Key, pair.Value.JoinString());
+			}
+			sb.AppendFormat(")");
+			return sb.ToString();
+		}
 		public SubscriberUserStatusInfo() { }
 	}
 }

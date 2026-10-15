@@ -9,15 +9,25 @@ namespace NexPlugin
 		internal global::System.Collections.Generic.List<uint> topics;
 		internal global::System.Collections.Generic.List<byte> binary;
 		internal string message;
-		public SubscriberContent() { /*@B 0x6002D09*/ throw null; }
+		public SubscriberContent() {
+			this.topics = new global::System.Collections.Generic.List<uint>();
+			this.binary = new global::System.Collections.Generic.List<byte>();
+			this.message = "";
+		}
 		public ulong GetContentId() { return this.contentId; }
 		public string GetMessage() { return this.message; }
 		public global::System.Collections.Generic.List<byte> GetBinary() { return this.binary; }
 		public ulong GetPosterPrincipalId() { return this.pid; }
 		public global::System.Collections.Generic.List<uint> GetTopic() { return this.topics; }
-		public uint GetTopicSingle() { /*@B 0x6002D0F*/ throw null; }
-		public global::NexPlugin.NpDateTime GetPostDateTime() { /*@B 0x6002D10*/ throw null; }
+		public uint GetTopicSingle() {
+			if (this.topics != null && this.topics.Count != 0)
+			{
+				return this.topics[0];
+			}
+			return 0;
+		}
+		public global::NexPlugin.NpDateTime GetPostDateTime() { return this.postTime; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002D12*/ throw null; }
+		public override string ToString() { return string.Format("SubscriberContent: (contentId={0}, message={1}, pid={2}, postTime={3}, binary={4}, topics={5})", new object[] { this.contentId, this.message, this.pid, this.postTime.ToString(), global::System.BitConverter.ToString(this.binary.ToArray()), this.topics.JoinString() }); }
 	}
 }
