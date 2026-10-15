@@ -18,7 +18,7 @@ namespace SmartPoint.AssetAssistant
 				if (lastScene.IsValid() && lastScene == global::UnityEngine.SceneManagement.SceneManager.GetActiveScene())
 					return null;
 				lastScene = global::UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-				// TO CHECK: RGCTX slot 4 is a zero-argument generic static returning T - FindObjectOfType<T>() by shape
+				// RGCTX slot 4 = UnityEngine.Object.FindObjectOfType<T> (il2cpp.h SingletonMonoBehaviour_T__RGCTXs)
 				_instance = FindObjectOfType<T>();
 				if (_instance != null)
 					_instance.Awake();
@@ -51,7 +51,7 @@ namespace SmartPoint.AssetAssistant
 			isQuit = true;
 		}
 		public static T Instantiate(string instanceName = null, global::UnityEngine.Transform parent = null) {
-			// TO CHECK: RGCTX slot 6 = Instance getter, slot 8 = GameObject.GetComponent<T>() (identified by shape)
+			// RGCTX slot 6 = get_Instance, slot 8 = GameObject.GetComponent<T> (il2cpp.h SingletonMonoBehaviour_T__RGCTXs)
 			if (Instance == null)
 				_instance = new global::UnityEngine.GameObject(typeof(T).ToString(), typeof(T)).GetComponent<T>();
 			if (_instance != null)

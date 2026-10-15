@@ -15,7 +15,7 @@ public class ObjectPool<TKey, TValue> where TValue : global::IObjectPoolInstance
 			value.SetGameObject(gameObject);
 			param._values.Add(value);
 		}
-		// TO CHECK: the final Dictionary call goes through an RGCTX slot - Add (not the indexer setter) by shape
+		// RGCTX slot 7 = Dictionary<TKey, ObjectPool.Param>.Add (il2cpp.h ObjectPool_TKey__TValue__RGCTXs; no set_Item slot)
 		_dict.Add(key, param);
 	}
 	public bool Destroies(TKey key) {
