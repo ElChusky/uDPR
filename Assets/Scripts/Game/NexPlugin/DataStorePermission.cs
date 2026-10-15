@@ -5,14 +5,14 @@ namespace NexPlugin
 	{
 		internal global::NexPlugin.DataStore.Permission permission;
 		internal global::System.Collections.Generic.List<ulong> recipientIds;
-		public DataStorePermission() { /*@B 0x6002A96*/ throw null; }
-		public DataStorePermission(global::NexPlugin.DataStore.Permission permission, global::System.Collections.Generic.List<ulong> recipientIds = null) { /*@B 0x6002A97*/ throw null; }
+		public DataStorePermission() { Reset(); }
+		public DataStorePermission(global::NexPlugin.DataStore.Permission permission, global::System.Collections.Generic.List<ulong> recipientIds = null) { this.permission = permission; if (recipientIds == null) { recipientIds = new global::System.Collections.Generic.List<ulong>(); } this.recipientIds = recipientIds; }
 		public void SetPermission(global::NexPlugin.DataStore.Permission permission_) { this.permission = permission_; }
 		public global::NexPlugin.DataStore.Permission GetPermission() { return this.permission; }
-		public void SetRecipientIds(global::System.Collections.Generic.List<ulong> recipientIds_) { /*@B 0x6002A9A*/ throw null; }
+		public void SetRecipientIds(global::System.Collections.Generic.List<ulong> recipientIds_) { if (recipientIds_ == null) { recipientIds_ = new global::System.Collections.Generic.List<ulong>(); } this.recipientIds = recipientIds_; }
 		public global::System.Collections.Generic.List<ulong> GetRecipientIds() { return this.recipientIds; }
-		private void Reset() { /*@B 0x6002A9C*/ throw null; }
+		private void Reset() { this.permission = global::NexPlugin.DataStore.Permission.PERMISSION_PRIVATE; SetRecipientIds(new global::System.Collections.Generic.List<ulong>()); }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002A9E*/ throw null; }
+		public override string ToString() { return string.Format("DataStorePermission: (permission={0}, targetIds=({1}))", this.permission, this.recipientIds.JoinString()); }
 	}
 }

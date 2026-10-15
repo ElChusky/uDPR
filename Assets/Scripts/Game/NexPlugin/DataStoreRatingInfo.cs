@@ -7,11 +7,11 @@ namespace NexPlugin
 		private long initialValue;
 		private uint count;
 		private sbyte slot;
-		public sbyte GetSlot() { /*@B 0x6002A82*/ throw null; }
+		public sbyte GetSlot() { return this.slot; }
 		public long GetTotalValue() { return this.totalValue; }
 		public uint GetCount() { return this.count; }
 		public long GetInitialValue() { return this.initialValue; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002A87*/ throw null; }
+		public override string ToString() { return string.Format("DataStoreRatingInfo: (totalValue={0}, count={1}, initialValue={2}, slot={3})", this.totalValue, this.count, this.initialValue, this.slot); }
 	}
 }

@@ -6,15 +6,15 @@ namespace NexPlugin
 		internal ulong dataId;
 		internal ulong updatePassword;
 		internal uint size;
-		public DataStorePrepareUpdateParam() { /*@B 0x6002B2E*/ throw null; }
+		public DataStorePrepareUpdateParam() { Reset(); }
 		public void SetDataId(ulong dataId_) { this.dataId = dataId_; }
 		public ulong GetDataId() { return this.dataId; }
 		public void SetSize(uint size_) { this.size = size_; }
 		public uint GetSize() { return this.size; }
 		public void SetUpdatePassword(ulong updatePassword_) { this.updatePassword = updatePassword_; }
 		public ulong GetUpdatePassword() { return this.updatePassword; }
-		public void Reset() { /*@B 0x6002B35*/ throw null; }
+		public void Reset() { this.size = 0; this.dataId = 0; this.updatePassword = 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002B37*/ throw null; }
+		public override string ToString() { return string.Format("DataStorePrepareUpdateParam: (dataId={0}, size={1}, updatePassword={2})", this.dataId, this.size, this.updatePassword); }
 	}
 }

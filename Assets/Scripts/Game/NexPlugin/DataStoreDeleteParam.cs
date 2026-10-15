@@ -5,13 +5,13 @@ namespace NexPlugin
 	{
 		internal ulong dataId;
 		internal ulong updatePassword;
-		public DataStoreDeleteParam() { /*@B 0x6002B26*/ throw null; }
+		public DataStoreDeleteParam() { Reset(); }
 		public void SetDataId(ulong dataId_) { this.dataId = dataId_; }
 		public ulong GetDataId() { return this.dataId; }
 		public void SetUpdatePassword(ulong updatePassword_) { this.updatePassword = updatePassword_; }
 		public ulong GetUpdatePassword() { return this.updatePassword; }
-		public void Reset() { /*@B 0x6002B2B*/ throw null; }
+		public void Reset() { this.dataId = 0; this.updatePassword = 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002B2D*/ throw null; }
+		public override string ToString() { return string.Format("DataStoreDeleteParam: (dataId={0}, updatePassword={1})", this.dataId, this.updatePassword); }
 	}
 }

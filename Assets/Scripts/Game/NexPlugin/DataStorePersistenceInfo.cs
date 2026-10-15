@@ -6,12 +6,12 @@ namespace NexPlugin
 		internal ulong dataId;
 		internal ulong principalId;
 		internal ushort persistenceSlotId;
-		public DataStorePersistenceInfo() { /*@B 0x6002A88*/ throw null; }
+		public DataStorePersistenceInfo() { this.dataId = 0; }
 		public ulong GetPrincipalId() { return this.principalId; }
 		public ushort GetPersistenceSlotId() { return this.persistenceSlotId; }
 		public ulong GetDataId() { return this.dataId; }
-		public bool IsValid() { /*@B 0x6002A8C*/ throw null; }
+		public bool IsValid() { return this.dataId != 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002A8E*/ throw null; }
+		public override string ToString() { if (this.dataId == 0) { return "DataStorePersistenceInfo: (data is invalid)"; } return string.Format("DataStorePersistenceInfo: (principalId={0}, persistenceSlotId={1}, dataId={2})", this.principalId, this.persistenceSlotId, this.dataId); }
 	}
 }

@@ -7,17 +7,17 @@ namespace NexPlugin
 		internal global::NexPlugin.DataStorePersistenceTarget persistenceTarget;
 		internal global::NexPlugin.DataStore.ResultFlag resultOption;
 		internal ulong accessPassword;
-		public DataStoreGetMetaParam() { /*@B 0x6002B54*/ throw null; }
-		public void SetDataId(ulong dataId_) { /*@B 0x6002B55*/ throw null; }
+		public DataStoreGetMetaParam() { Reset(); }
+		public void SetDataId(ulong dataId_) { if (this.persistenceTarget.Equals(new global::NexPlugin.DataStorePersistenceTarget())) { this.dataId = dataId_; } }
 		public ulong GetDataId() { return this.dataId; }
-		public void SetPersistenceTarget(global::NexPlugin.DataStorePersistenceTarget persistenceTarget_) { /*@B 0x6002B57*/ throw null; }
+		public void SetPersistenceTarget(global::NexPlugin.DataStorePersistenceTarget persistenceTarget_) { if (this.dataId != 0) { return; } if (persistenceTarget_ == null) { persistenceTarget_ = new global::NexPlugin.DataStorePersistenceTarget(); } this.persistenceTarget = persistenceTarget_; }
 		public global::NexPlugin.DataStorePersistenceTarget GetPersistenceTarget() { return this.persistenceTarget; }
 		public void SetResultOption(global::NexPlugin.DataStore.ResultFlag resultOption_) { this.resultOption = resultOption_; }
 		public global::NexPlugin.DataStore.ResultFlag GetResultOption() { return this.resultOption; }
 		public void SetAccessPassword(ulong accessPassword_) { this.accessPassword = accessPassword_; }
 		public ulong GetAccessPassword() { return this.accessPassword; }
-		public void Reset() { /*@B 0x6002B5D*/ throw null; }
+		public void Reset() { this.dataId = 0; this.persistenceTarget = new global::NexPlugin.DataStorePersistenceTarget(); this.resultOption = 0; this.accessPassword = 0; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002B5F*/ throw null; }
+		public override string ToString() { return string.Format("DataStoreGetMetaParam: (dataId={0}, resultOption={1}, persistenceTarget=({2}), accessPassword={3})", this.dataId, this.resultOption, this.persistenceTarget.ToString(), this.accessPassword); }
 	}
 }

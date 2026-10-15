@@ -5,15 +5,15 @@ namespace NexPlugin
 	{
 		internal ulong ownerId;
 		internal ushort persistenceSlotId;
-		public DataStorePersistenceTarget(ulong ownerId = 0UL, ushort persistenceSlotId = 65535) { /*@B 0x6002B38*/ throw null; }
+		public DataStorePersistenceTarget(ulong ownerId = 0UL, ushort persistenceSlotId = 65535) { this.ownerId = ownerId; this.persistenceSlotId = persistenceSlotId; }
 		public void SetOwnerId(ulong ownerId_) { this.ownerId = ownerId_; }
 		public ulong GetOwnerId() { return this.ownerId; }
 		public void SetPersistenceSlotId(ushort persistenceSlotId_) { this.persistenceSlotId = persistenceSlotId_; }
 		public ushort GetPersistenceSlotId() { return this.persistenceSlotId; }
-		public void Reset() { /*@B 0x6002B3D*/ throw null; }
-		public override bool Equals(object obj) { /*@B 0x6002B3E*/ throw null; }
-		public override int GetHashCode() { /*@B 0x6002B3F*/ throw null; }
+		public void Reset() { this.ownerId = 0; this.persistenceSlotId = 65535; }
+		public override bool Equals(object obj) { if (obj == null || GetType() != obj.GetType()) { return false; } var other = (global::NexPlugin.DataStorePersistenceTarget)obj; return this.ownerId == other.ownerId && this.persistenceSlotId == other.persistenceSlotId; }
+		public override int GetHashCode() { return this.ownerId.GetHashCode() ^ this.persistenceSlotId.GetHashCode(); }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002B41*/ throw null; }
+		public override string ToString() { return string.Format("DataStorePersistenceTarget: (ownerId={0}, persistenceSlotId={1})", this.ownerId, this.persistenceSlotId); }
 	}
 }
