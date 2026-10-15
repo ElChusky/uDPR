@@ -6,19 +6,19 @@ namespace Dpr.UI
 	public class ZukanMovingSoundWave : global::UnityEngine.MonoBehaviour
 	{
 		[global::UnityEngine.SerializeField]
-		private float _speed;
+		private float _speed = 5f;
 		[global::UnityEngine.SerializeField]
-		private float _lineWidth;
+		private float _lineWidth = 2f;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Material _material;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Color _color;
+		private global::UnityEngine.Color _color = Color.white;
 		private global::UnityEngine.Mesh _mesh;
 		private const float _minDecibel = -48f;
 		private const float _maxDecibel = 0f;
-		private global::System.Collections.Generic.Queue<global::Dpr.UI.ZukanMovingSoundWave.Point> _pointQueue;
+		private global::System.Collections.Generic.Queue<global::Dpr.UI.ZukanMovingSoundWave.Point> _pointQueue = new global::System.Collections.Generic.Queue<global::Dpr.UI.ZukanMovingSoundWave.Point>();
 		private const float _maxHeight = 100f;
-		private global::System.Collections.Generic.List<global::UnityEngine.Vector2> _points;
+		private global::System.Collections.Generic.List<global::UnityEngine.Vector2> _points = new global::System.Collections.Generic.List<global::UnityEngine.Vector2>();
 		private global::VoiceRTPC.VoiceRTPCDataList _voiceRtpcData;
 		private global::UnityEngine.CanvasRenderer _canvasRenderer;
 		private void Awake() {
@@ -172,7 +172,7 @@ namespace Dpr.UI
 			_canvasRenderer.SetMaterial(_material, 0);
 			_canvasRenderer.SetColor(_color);
 		}
-		public ZukanMovingSoundWave() { /*@B 0x6005E9A*/ throw null; }
+		public ZukanMovingSoundWave() { }
 		private class Point
 		{
 			public global::UnityEngine.Vector2 pos;

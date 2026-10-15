@@ -36,7 +36,26 @@ namespace Dpr.UI
 		public void UnSelect() {
 			image.sprite = unselectSprite;
 		}
-		public void SetLanguage(global::Dpr.Message.MessageEnumData.MsgLangId langId) { /*@B 0x6005E01*/ throw null; }
+		public void SetLanguage(global::Dpr.Message.MessageEnumData.MsgLangId langId) {
+			LangId = langId;
+			string code;
+			switch (langId)
+			{
+				case global::Dpr.Message.MessageEnumData.MsgLangId.JPN: code = "jpn"; break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.USA: code = "eng"; break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.FRA: code = "fra"; break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.ITA: code = "ita"; break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.DEU: code = "ger"; break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.ESP: code = "spa"; break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.KOR: code = "kor"; break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.SCH: code = "chs"; break;
+				case global::Dpr.Message.MessageEnumData.MsgLangId.TCH: code = "cht"; break;
+				default: return;
+			}
+			string name = string.Format(LanguageSpriteNameFormat, code);
+			unselectSprite = UIManager.Instance.GetAtlasSprite(SpriteAtlasID.COMMON_LANG, name + "00");
+			selectSprite = UIManager.Instance.GetAtlasSprite(SpriteAtlasID.COMMON_LANG, name + "01");
+		}
 		public ZukanLanguageButton() { }
 	}
 }

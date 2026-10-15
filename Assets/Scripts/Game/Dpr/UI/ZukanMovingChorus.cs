@@ -18,6 +18,6 @@ namespace Dpr.UI
 			// fcmp |v0|, |v1| ; b.le → v1 (@01bbab7c): an unordered compare keeps v0
 			return Mathf.Abs(_values[0]) <= Mathf.Abs(_values[1]) ? _values[1] : _values[0];
 		}
-		public ZukanMovingChorus() { /*@B 0x6005E79*/ throw null; }
+		public ZukanMovingChorus() { }
 	}
 }

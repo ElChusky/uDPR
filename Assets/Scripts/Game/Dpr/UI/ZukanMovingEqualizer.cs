@@ -9,13 +9,13 @@ namespace Dpr.UI
 		private global::UnityEngine.RectTransform _levelRoot;
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform _headRoot;
-		private global::System.Collections.Generic.List<global::UnityEngine.UI.Image[]> _levelGauges;
-		private global::System.Collections.Generic.List<global::Dpr.UI.ZukanMovingEqualizer.HeadParam> _headParams;
+		private global::System.Collections.Generic.List<global::UnityEngine.UI.Image[]> _levelGauges = new global::System.Collections.Generic.List<global::UnityEngine.UI.Image[]>();
+		private global::System.Collections.Generic.List<global::Dpr.UI.ZukanMovingEqualizer.HeadParam> _headParams = new global::System.Collections.Generic.List<global::Dpr.UI.ZukanMovingEqualizer.HeadParam>();
 		private float _headMinPosY;
 		private const float _minDecibel = -48f;
 		private const float _maxDecibel = 0f;
 		private global::VoiceRTPC.VoiceRTPCDataList _voiceRtpcData;
-		private uint[] _gameParamIds;
+		private uint[] _gameParamIds = new uint[] { 2050183431u, 2050183428u, 2050183429u, 2050183426u, 2050183427u, 2050183424u, 2050183425u, 2050183438u, 2050183439u };
 		private void Awake() { }
 		public void Setup(global::VoiceRTPC.VoiceRTPCDataList voiceRtpcData) {
 			_voiceRtpcData = voiceRtpcData;
@@ -98,7 +98,7 @@ namespace Dpr.UI
 					head.image.enabled = false;
 			}
 		}
-		public ZukanMovingEqualizer() { /*@B 0x6005E87*/ throw null; }
+		public ZukanMovingEqualizer() { }
 		private class HeadParam
 		{
 			public global::UnityEngine.UI.Image image;

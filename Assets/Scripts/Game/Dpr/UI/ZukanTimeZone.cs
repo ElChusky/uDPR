@@ -3,17 +3,41 @@ namespace Dpr.UI
 {
 	public class ZukanTimeZone : global::UnityEngine.MonoBehaviour
 	{
-		private readonly int _animParamStateId;
-		private readonly int _animParamConnectIdSrc;
-		private readonly int _animParamConnectIdDest;
+		private readonly int _animParamStateId = global::UnityEngine.Animator.StringToHash("stateId");
+		private readonly int _animParamConnectIdSrc = global::UnityEngine.Animator.StringToHash("connectId01");
+		private readonly int _animParamConnectIdDest = global::UnityEngine.Animator.StringToHash("connectId02");
 		private global::UnityEngine.Animator _animator;
-		private int _connectId;
-		public global::XLSXContent.SheetDistributionTable.TimeZoneType timeZone { get { /*@B 0x6005E6D*/ throw null; } }
-		private void Awake() { /*@B 0x6005E6E*/ throw null; }
-		public void Set(int connectId) { /*@B 0x6005E6F*/ throw null; }
-		public void Move(int move) { /*@B 0x6005E70*/ throw null; }
-		private void Change(int connectId, int stateId = 1) { /*@B 0x6005E71*/ throw null; }
-		public static int ToConnectId(global::PeriodOfDay periodOfDay) { /*@B 0x6005E72*/ throw null; }
-		public ZukanTimeZone() { /*@B 0x6005E73*/ throw null; }
+		private int _connectId = -1;
+		public global::XLSXContent.SheetDistributionTable.TimeZoneType timeZone { get { return (global::XLSXContent.SheetDistributionTable.TimeZoneType)(_connectId - 1); } }
+		private void Awake() {
+			_animator = GetComponent<global::UnityEngine.Animator>();
+		}
+		public void Set(int connectId) {
+			Change(connectId, 0);
+		}
+		public void Move(int move) {
+			if (_connectId == -1)
+				Change(1);
+			else
+				Change(UIManager.Repeat(_connectId + move, 1, 3));
+		}
+		private void Change(int connectId, int stateId = 1) {
+			_animator.SetInteger(_animParamConnectIdSrc, _connectId);
+			_animator.SetInteger(_animParamConnectIdDest, connectId);
+			_animator.SetInteger(_animParamStateId, stateId);
+			_connectId = connectId;
+		}
+		public static int ToConnectId(global::PeriodOfDay periodOfDay) {
+			switch (periodOfDay)
+			{
+				case global::PeriodOfDay.Morning: return 1;
+				case global::PeriodOfDay.Daytime: return 2;
+				case global::PeriodOfDay.Evening: return 2;
+				case global::PeriodOfDay.Night: return 3;
+				case global::PeriodOfDay.Midnight: return 3;
+				default: return -1;
+			}
+		}
+		public ZukanTimeZone() { }
 	}
 }

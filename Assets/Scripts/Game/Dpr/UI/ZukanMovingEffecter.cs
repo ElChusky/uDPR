@@ -10,7 +10,7 @@ namespace Dpr.UI
 		protected float _maxLength;
 		protected global::UnityEngine.Animator _animator;
 		protected const int _maxLevel = 5;
-		protected static readonly int animParamStateId;
+		protected static readonly int animParamStateId = Animator.StringToHash("stateId");
 		protected float[] _values = new float[2];
 		public void Awake() {
 			_animator = GetComponent<Animator>();
@@ -31,14 +31,14 @@ namespace Dpr.UI
 			}
 			_animator.SetInteger(animParamStateId, (int)(value * _maxLevel));
 		}
-		public ZukanMovingEffecter() { /*@B 0x6005E7D*/ throw null; }
-		static ZukanMovingEffecter() { /*@B 0x6005E7E*/ throw null; }
+		public ZukanMovingEffecter() { }
+		static ZukanMovingEffecter() { }
 		[global::System.Serializable]
 		protected class SensorParam
 		{
-			public float max;
+			public float max = 3f;
 			public float min;
-			public SensorParam() { /*@B 0x600B118*/ throw null; }
+			public SensorParam() { }
 		}
 	}
 }

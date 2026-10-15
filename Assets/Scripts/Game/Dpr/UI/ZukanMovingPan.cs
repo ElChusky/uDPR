@@ -7,7 +7,7 @@ namespace Dpr.UI
 	{
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.UI.Slider _slider;
-		private float[] _values;
+		private float[] _values = new float[] { 0.5f, 0.5f };
 		public void Setup() { }
 		public void OnUpdate(float deltaTime) {
 			float value = GetSensorValue();
@@ -31,6 +31,6 @@ namespace Dpr.UI
 
 			return Mathf.Abs(_values[0] - 0.5f) > Mathf.Abs(_values[1] - 0.5f) ? _values[0] : _values[1];
 		}
-		public ZukanMovingPan() { /*@B 0x6005E8E*/ throw null; }
+		public ZukanMovingPan() { }
 	}
 }

@@ -17,6 +17,6 @@ namespace Dpr.UI
 
 			return Mathf.Abs(_values[0]) > Mathf.Abs(_values[1]) ? _values[0] : _values[1];
 		}
-		public ZukanMovingFilter() { /*@B 0x6005E8A*/ throw null; }
+		public ZukanMovingFilter() { }
 	}
 }

@@ -34,10 +34,10 @@ namespace Dpr.UI
 		public global::Pml.PokeType Type1 { get; private set; }
 		public global::Pml.PokeType Type2 { get; private set; }
 		public global::DPData.GET_STATUS GetStatus { get; private set; }
-		public bool ExistForm { get { /*@B 0x6005DEA*/ throw null; } }
-		public bool CanChangeModel { get { /*@B 0x6005DEB*/ throw null; } }
-		public bool CanShowDescription { get { /*@B 0x6005DEC*/ throw null; } }
-		private string DescriptionMessageFileName { get { /*@B 0x6005DED*/ throw null; } }
+		public bool ExistForm { get { return formIndex > 0; } }
+		public bool CanChangeModel { get { return modelParams.Length > 1; } }
+		public bool CanShowDescription { get { return GetStatus == GET_STATUS.SEE || GetStatus == GET_STATUS.GET; } }
+		private string DescriptionMessageFileName { get { return PlayerWork.cassetVersion == CassetVersion.DPR_B ? "dp_pokedex_diamond" : "dp_pokedex_pearl"; } }
 		public ZukanInfo(global::Pml.MonsNo monsNo, bool isShinouZukan) {
 			// DisplayClass62_0 (modelParam, isOnlyOneForm, uniqueID) is allocated at method entry @01bb991c
 			ModelParam modelParam;
@@ -300,8 +300,15 @@ namespace Dpr.UI
 			public global::Dpr.UI.ZukanInfo.ModelSexType SexType;
 			public int FormNo;
 			public bool IsRare;
-			public ModelParam(global::XLSXContent.PokemonInfo.SheetCatalog catalog) { /*@B 0x600B0EE*/ throw null; }
-			public global::Pml.Sex GetSex() { /*@B 0x600B0EF*/ throw null; }
+			public ModelParam(global::XLSXContent.PokemonInfo.SheetCatalog catalog) {
+				UniqueID = catalog.UniqueID;
+				SexType = (ModelSexType)catalog.Sex;
+				FormNo = catalog.FormNo;
+				IsRare = catalog.Rare;
+			}
+			public global::Pml.Sex GetSex() {
+				return SexType == ModelSexType.Both ? Sex.MALE : (Sex)SexType;
+			}
 		}
 	}
 }

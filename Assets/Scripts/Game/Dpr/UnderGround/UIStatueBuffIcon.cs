@@ -5,7 +5,23 @@ namespace Dpr.UnderGround
 	{
 		public global::UnityEngine.UI.Image Icon;
 		public global::UnityEngine.UI.Image BuffArrow;
-		public void SetData(int pokeType, int value, global::UnityEngine.U2D.SpriteAtlas IconAtlas) { /*@B 0x6003144*/ throw null; }
+		public void SetData(int pokeType, int value, global::UnityEngine.U2D.SpriteAtlas IconAtlas) {
+			if (pokeType == 0 && value == 0)
+			{
+				Icon.color = global::UnityEngine.Color.clear;
+				BuffArrow.enabled = false;
+				return;
+			}
+			Icon.color = global::UnityEngine.Color.white;
+			BuffArrow.enabled = true;
+			Icon.sprite = IconAtlas.GetSprite("ugmap_eff_type_" + pokeType.ToString("00"));
+			int level = 1;
+			if (value > 300)
+				level = 2;
+			if (value > 700)
+				level = 3;
+			BuffArrow.sprite = IconAtlas.GetSprite("ugmap_arw_up_" + level.ToString("00"));
+		}
 		public UIStatueBuffIcon() { }
 	}
 }

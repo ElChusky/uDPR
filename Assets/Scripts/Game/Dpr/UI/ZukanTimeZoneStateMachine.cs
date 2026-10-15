@@ -3,15 +3,15 @@ namespace Dpr.UI
 {
 	public class ZukanTimeZoneStateMachine : global::UnityEngine.StateMachineBehaviour
 	{
-		public static readonly int animParamConnectIdSrc;
-		public static readonly int animParamConnectIdDest;
-		public static readonly int animParamStateId;
-		public static readonly int animStateMoveEnd;
+		public static readonly int animParamConnectIdSrc = global::UnityEngine.Animator.StringToHash("connectId01");
+		public static readonly int animParamConnectIdDest = global::UnityEngine.Animator.StringToHash("connectId02");
+		public static readonly int animParamStateId = global::UnityEngine.Animator.StringToHash("stateId");
+		public static readonly int animStateMoveEnd = global::UnityEngine.Animator.StringToHash("Move_End");
 		public override void OnStateEnter(global::UnityEngine.Animator animator, global::UnityEngine.AnimatorStateInfo stateInfo, int layerIndex) {
             if (stateInfo.shortNameHash == animStateMoveEnd)
                 animator.SetInteger(animParamStateId, -1);
         }
 		public ZukanTimeZoneStateMachine() { }
-		static ZukanTimeZoneStateMachine() { /*@B 0x6005E76*/ throw null; }
+		static ZukanTimeZoneStateMachine() { }
 	}
 }
