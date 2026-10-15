@@ -108,8 +108,8 @@ namespace NexAssets
 			// throwing FunctionInfos[type] lookup (@01f88828) and `mov w0, wzr` survive.
 			return ApiCallsFrequencyCheck(FunctionInfos[type], s_ApiCallsFrequencyList);
 		}
-		public DataStore_Core() { /*@B 0x6002DC1*/ throw null; }
-		static DataStore_Core() { /*@B 0x6002DC2*/ throw null; }
+		public DataStore_Core() { }
+		static DataStore_Core() { }
 		protected enum Functions
 		{
 			SearchObject = 0,

@@ -3,7 +3,10 @@ namespace INL1
 {
 	public class PacketWriterRe : global::INL1.PacketWriter
 	{
-		public PacketWriterRe() { /*@B 0x6002719*/ throw null; }
-		~PacketWriterRe() { /*@B 0x600271A*/ throw null; }
+		public PacketWriterRe() {
+			MyUserDataMax = 1024u;
+			Reset();
+		}
+		~PacketWriterRe() { }
 	}
 }

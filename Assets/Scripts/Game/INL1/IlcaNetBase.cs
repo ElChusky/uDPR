@@ -6,32 +6,32 @@ namespace INL1
 {
 	public class IlcaNetBase
 	{
-		protected static global::UnityEngine.MonoBehaviour inl_callobj;
-		protected static bool isPlatformLibraryInitialized;
-		protected static bool isPlatformLibraryFullInitialized;
-		protected static bool isNetSessionInitialized;
-		protected static bool isNetStationInitialized;
-		protected static bool isEmergencyFinalizeRequest;
-		protected static global::PiaPlugin.Result lastEmergencyResult;
-		protected static global::INL1.IlcaNetSessionSetting netSetting;
-		protected static global::INL1.IlcaNetSessionSetting netSettingBackup;
-		protected static uint nowStationNumber;
+		protected static global::UnityEngine.MonoBehaviour inl_callobj = null;
+		protected static bool isPlatformLibraryInitialized = false;
+		protected static bool isPlatformLibraryFullInitialized = false;
+		protected static bool isNetSessionInitialized = false;
+		protected static bool isNetStationInitialized = false;
+		protected static bool isEmergencyFinalizeRequest = false;
+		protected static global::PiaPlugin.Result lastEmergencyResult = new global::PiaPlugin.Result();
+		protected static global::INL1.IlcaNetSessionSetting netSetting = new global::INL1.IlcaNetSessionSetting();
+		protected static global::INL1.IlcaNetSessionSetting netSettingBackup = new global::INL1.IlcaNetSessionSetting();
+		protected static uint nowStationNumber = 0;
 		protected static global::nn.account.UserHandle netUserHandle;
-		protected static int LocalCommunicationVersionNumber;
-		protected static bool isErrorViewerAsync;
-		protected static bool isErrorViewerDispNow;
-		protected static bool isErrorViewerDispCancel;
-		protected static bool isNamerakaMode;
+		protected static int LocalCommunicationVersionNumber = 0;
+		protected static bool isErrorViewerAsync = true;
+		protected static bool isErrorViewerDispNow = false;
+		protected static bool isErrorViewerDispCancel = false;
+		protected static bool isNamerakaMode = true;
 		public const int MaxGamers = 16;
 		protected const int WorkerThreadSleepTime = 16;
-		protected static bool isMainThreadDispatchActive;
-		private static bool lastErrorViewerApplet;
-		protected static int debugNetworkBadEmulationLevel;
-		protected static byte debugNatTraversalFailureRatioForHost;
-		protected static byte debugNatTraversalFailureRatioForClient;
-		protected static bool debugIsNatTypeCheckFailure;
-		protected static bool debugIsDnsResolutionFailure;
-		protected static global::INL1.IlcaNetBase.IlcaNetUserRandomNumFunc userRandomNumLocalFunc;
+		protected static bool isMainThreadDispatchActive = true;
+		private static bool lastErrorViewerApplet = false;
+		protected static int debugNetworkBadEmulationLevel = 0;
+		protected static byte debugNatTraversalFailureRatioForHost = 0;
+		protected static byte debugNatTraversalFailureRatioForClient = 0;
+		protected static bool debugIsNatTypeCheckFailure = false;
+		protected static bool debugIsDnsResolutionFailure = false;
+		protected static global::INL1.IlcaNetBase.IlcaNetUserRandomNumFunc userRandomNumLocalFunc = null;
 		private const byte NexVersionMajor = 4;
 		private const byte NexVersionMinor = 6;
 		private const byte NexVersionMicro = 5;
@@ -42,10 +42,10 @@ namespace INL1
 		private static string svdialog;
 		private static string svscreen;
 		private static string svlang;
-		protected static global::NexPlugin.UniqueIdInfo netNexUIdInfo;
-		protected static ulong netNexUniqueId;
-		protected static ulong netNexUniqueIdPassword;
-		protected static string netNsaIDtoken;
+		protected static global::NexPlugin.UniqueIdInfo netNexUIdInfo = new global::NexPlugin.UniqueIdInfo();
+		protected static ulong netNexUniqueId = 0;
+		protected static ulong netNexUniqueIdPassword = 0;
+		protected static string netNsaIDtoken = null;
 		protected static global::nn.account.UserHandle netNsaIDtokenUserHandle;
 		private static global::NexPlugin.AsyncResultCB GeneralNexInitialize2Func;
 		public static void Init(int version) {
@@ -342,16 +342,24 @@ namespace INL1
 			IlcaNetNative.PrintLine(DateTime.Now.ToString("HH:mm:ss") + " " + msg);
 		}
 		public IlcaNetBase() { }
-		static IlcaNetBase() { /*@B 0x60026B3*/ throw null; }
+		static IlcaNetBase() { }
 		public delegate ushort IlcaNetUserRandomNumFunc();
 		public class PinnedKey
 		{
 			private global::System.Runtime.InteropServices.GCHandle m_Handle;
 			private uint m_KeyDataSize;
 			private byte[] m_KeyData;
-			public PinnedKey(byte[] keyData) { /*@B 0x60099EF*/ throw null; }
-			~PinnedKey() { /*@B 0x60099F0*/ throw null; }
-			public global::System.IntPtr GetKeyDataPtr() { /*@B 0x60099F1*/ throw null; }
+			public PinnedKey(byte[] keyData) {
+				m_KeyData = (byte[])keyData.Clone();
+				m_Handle = global::System.Runtime.InteropServices.GCHandle.Alloc(m_KeyData, global::System.Runtime.InteropServices.GCHandleType.Pinned);
+				m_KeyDataSize = (uint)keyData.Length;
+			}
+			~PinnedKey() {
+				m_Handle.Free();
+			}
+			public global::System.IntPtr GetKeyDataPtr() {
+				return m_Handle.AddrOfPinnedObject();
+			}
 			public uint GetKeyDataSize() { return this.m_KeyDataSize; }
 		}
 		private enum ErrorMode

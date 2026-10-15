@@ -7,8 +7,11 @@ namespace INL1
 	{
 		protected ulong recvByte;
 		protected int fromStationIndex;
-		public PacketReader() { /*@B 0x600271B*/ throw null; }
-		~PacketReader() { /*@B 0x600271C*/ throw null; }
+		public PacketReader() {
+			MyUserDataMax = 1024u;
+			Reset();
+		}
+		~PacketReader() { }
 		public virtual ulong RecvTotalBytes() {
 			return recvByte;
 		}

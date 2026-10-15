@@ -742,14 +742,14 @@ namespace NexAssets
 			}
 			return GetAsyncState(ret);
 		}
-		public DataStore_Upload() { /*@B 0x6002E39*/ throw null; }
+		public DataStore_Upload() { }
 		private class POSTDATA_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public global::NexPlugin.DataStorePreparePostParam param;
 			public byte[] dataArray;
 			public int timeOut;
 			public global::NexPlugin.DataStore.PostCB callback;
-			public POSTDATA_ARG() { /*@B 0x6009CD3*/ throw null; }
+			public POSTDATA_ARG() { }
 		}
 		private class POSTMETAID_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -757,7 +757,7 @@ namespace NexAssets
 			public ulong dataId;
 			public int timeOut;
 			public global::NexPlugin.AsyncResultCB callback;
-			public POSTMETAID_ARG() { /*@B 0x6009CD4*/ throw null; }
+			public POSTMETAID_ARG() { }
 		}
 		private class POSTMETA_BYLIST_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -766,14 +766,14 @@ namespace NexAssets
 			public bool transactional;
 			public int timeOut;
 			public global::NexPlugin.DataStore.ResultListCB callback;
-			public POSTMETA_BYLIST_ARG() { /*@B 0x6009CD5*/ throw null; }
+			public POSTMETA_BYLIST_ARG() { }
 		}
 		private class COMPDATA_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public global::System.Collections.Generic.List<ulong> dataIdList;
 			public int timeOut;
 			public global::NexPlugin.AsyncResultCB callback;
-			public COMPDATA_ARG() { /*@B 0x6009CD6*/ throw null; }
+			public COMPDATA_ARG() { }
 		}
 		private class UPDATEDATA_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -781,14 +781,14 @@ namespace NexAssets
 			public byte[] dataArray;
 			public int timeOut;
 			public global::NexPlugin.AsyncResultCB callback;
-			public UPDATEDATA_ARG() { /*@B 0x6009CD7*/ throw null; }
+			public UPDATEDATA_ARG() { }
 		}
 		private class CHANGEMETA_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public global::NexPlugin.DataStoreChangeMetaParam param;
 			public int timeOut;
 			public global::NexPlugin.AsyncResultCB callback;
-			public CHANGEMETA_ARG() { /*@B 0x6009CD8*/ throw null; }
+			public CHANGEMETA_ARG() { }
 		}
 		private class CHANGEMETA_BYLIST_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -797,7 +797,7 @@ namespace NexAssets
 			public bool transactional;
 			public int timeOut;
 			public global::NexPlugin.DataStore.ResultListCB callback;
-			public CHANGEMETA_BYLIST_ARG() { /*@B 0x6009CD9*/ throw null; }
+			public CHANGEMETA_BYLIST_ARG() { }
 		}
 		private class PERPETUATE_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -806,7 +806,7 @@ namespace NexAssets
 			public bool deleteFlag;
 			public int timeOut;
 			public global::NexPlugin.AsyncResultCB callback;
-			public PERPETUATE_ARG() { /*@B 0x6009CDA*/ throw null; }
+			public PERPETUATE_ARG() { }
 		}
 		private class UNPERPETUATE_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -814,7 +814,7 @@ namespace NexAssets
 			public bool deleteFlag;
 			public int timeOut;
 			public global::NexPlugin.AsyncResultCB callback;
-			public UNPERPETUATE_ARG() { /*@B 0x6009CDB*/ throw null; }
+			public UNPERPETUATE_ARG() { }
 		}
 		private class RATING_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -822,7 +822,7 @@ namespace NexAssets
 			public global::NexPlugin.DataStoreRateObjectParam param;
 			public int timeOut;
 			public global::NexPlugin.DataStore.RatingInfoCB callback;
-			public RATING_ARG() { /*@B 0x6009CDC*/ throw null; }
+			public RATING_ARG() { }
 		}
 		private class RATING_BYLIST_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -831,7 +831,7 @@ namespace NexAssets
 			public bool transactional;
 			public int timeOut;
 			public global::NexPlugin.DataStore.RatingInfoListCB callback;
-			public RATING_BYLIST_ARG() { /*@B 0x6009CDD*/ throw null; }
+			public RATING_BYLIST_ARG() { }
 		}
 		private class RESETRATING_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -839,14 +839,14 @@ namespace NexAssets
 			public ulong accessPassword;
 			public int timeOut;
 			public global::NexPlugin.AsyncResultCB callback;
-			public RESETRATING_ARG() { /*@B 0x6009CDE*/ throw null; }
+			public RESETRATING_ARG() { }
 		}
 		private class RESETRATINGALLSLOT_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public ulong dataId;
 			public int timeOut;
 			public global::NexPlugin.AsyncResultCB callback;
-			public RESETRATINGALLSLOT_ARG() { /*@B 0x6009CDF*/ throw null; }
+			public RESETRATINGALLSLOT_ARG() { }
 		}
 		private class RESETRATING_BYLIST_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -854,7 +854,7 @@ namespace NexAssets
 			public bool transactional;
 			public int timeOut;
 			public global::NexPlugin.DataStore.ResultListCB callback;
-			public RESETRATING_BYLIST_ARG() { /*@B 0x6009CE0*/ throw null; }
+			public RESETRATING_BYLIST_ARG() { }
 		}
 		private class RATEWITH_POST_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -863,7 +863,7 @@ namespace NexAssets
 			public global::NexPlugin.DataStorePreparePostParam postParam;
 			public int timeOut;
 			public global::NexPlugin.DataStore.RatingInfoCB callback;
-			public RATEWITH_POST_ARG() { /*@B 0x6009CE1*/ throw null; }
+			public RATEWITH_POST_ARG() { }
 		}
 		private class RATEWITH_POST_LIST_ARG : global::NexAssets.Common.CORE_ARG
 		{
@@ -873,14 +873,14 @@ namespace NexAssets
 			public bool transactional;
 			public int timeOut;
 			public global::NexPlugin.DataStore.RatingInfoListCB callback;
-			public RATEWITH_POST_LIST_ARG() { /*@B 0x6009CE2*/ throw null; }
+			public RATEWITH_POST_LIST_ARG() { }
 		}
 		private class TOUCH_OBJECT_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public global::NexPlugin.DataStoreTouchObjectParam param;
 			public int timeOut;
 			public global::NexPlugin.AsyncResultCB callback;
-			public TOUCH_OBJECT_ARG() { /*@B 0x6009CE3*/ throw null; }
+			public TOUCH_OBJECT_ARG() { }
 		}
 	}
 }

@@ -6,21 +6,21 @@ namespace NexAssets
 	public class DataStoreSearchParam
 	{
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.DataStore.SearchType searchTarget;
+		private global::NexPlugin.DataStore.SearchType searchTarget = global::NexPlugin.DataStore.SearchType.SEARCH_TYPE_PUBLIC;
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.DataStore.SearchTarget ownerType;
 		[global::UnityEngine.SerializeField]
-		private global::System.Collections.Generic.List<ushort> dataTypes;
+		private global::System.Collections.Generic.List<ushort> dataTypes = new global::System.Collections.Generic.List<ushort>();
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.DataStore.SearchSortColumn resultOrderColumn;
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.DataStore.SearchSortOrder resultOrder;
 		[global::UnityEngine.SerializeField]
-		private global::NexAssets.ResultRange resultRange;
+		private global::NexAssets.ResultRange resultRange = new global::NexAssets.ResultRange();
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.DataStore.ResultFlag resultOption;
 		[global::UnityEngine.SerializeField]
-		private global::System.Collections.Generic.List<string> tags;
+		private global::System.Collections.Generic.List<string> tags = new global::System.Collections.Generic.List<string>();
 		[global::UnityEngine.SerializeField]
 		private uint minimalRatingFrequency;
 		[global::UnityEngine.SerializeField]
@@ -52,6 +52,6 @@ namespace NexAssets
 			}
 			return param;
 		}
-		public DataStoreSearchParam() { /*@B 0x6002D97*/ throw null; }
+		public DataStoreSearchParam() { }
 	}
 }

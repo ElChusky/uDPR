@@ -11,7 +11,7 @@ namespace NexAssets
 		private bool deleteLastObject;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 15f)]
-		private ushort persistenceSlotId;
+		private ushort persistenceSlotId = 65535;
 		public void Validate() {
 			if (!isPersistence)
 				persistenceSlotId = DataStore.INVALID_PERSISTENCE_SLOT_ID;
@@ -27,6 +27,6 @@ namespace NexAssets
 			}
 			return param;
 		}
-		public DataStorePersistenceInitParam() { /*@B 0x6002DA0*/ throw null; }
+		public DataStorePersistenceInitParam() { }
 	}
 }

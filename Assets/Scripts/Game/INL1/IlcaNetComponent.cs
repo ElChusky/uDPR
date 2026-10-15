@@ -6,7 +6,9 @@ namespace INL1
 		private void OnDestroy() {
             IlcaNetBase.OnDestroy();
         }
-		private void Update() { /*@B 0x60026B5*/ throw null; }
-		public IlcaNetComponent() { /*@B 0x60026B6*/ throw null; }
+		private void Update() {
+			base.Update();
+		}
+		public IlcaNetComponent() { }
 	}
 }

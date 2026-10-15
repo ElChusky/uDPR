@@ -223,7 +223,7 @@ namespace INL1
 		private static void InternetBackCallback() {
 			s_backCallback(true);
 		}
-		public IlcaNetUtil() { /*@B 0x6002691*/ throw null; }
+		public IlcaNetUtil() { }
 		static IlcaNetUtil() { }
 		public delegate void IlcaNetUtilInternetGoCallBack(bool isSuccess, global::INL1.IlcaNetUtilInternetGoResult res, ulong nexUniqueId, ulong nexUniqueIdPassword);
 		public enum IlcaNetUtilConnectStatusEnum

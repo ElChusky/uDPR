@@ -6,8 +6,8 @@ namespace INL1
 	internal class IlcaNetSwkInlineService
 	{
 		private const int TextMaxLength = 500;
-		private static byte[] SoftwareKeyboardTextBuff;
-		public static string SoftwareKeyboardText;
+		private static byte[] SoftwareKeyboardTextBuff = new byte[2001];
+		public static string SoftwareKeyboardText = "";
 		public static void InitializeSoftwareKeyboardInlineCs(uint textMaxLength, int textMinLength, int HeapSize = 16777216, bool miniaturize = false, uint invalidButtonFlag = 0u, uint invalidCharFlag = 0u, bool isCancelButtonDisabled = false, bool isPredictionEnabled = false, bool isUseNewLine = false, uint keyboardMode = 0u, short leftOptionalSymbolKey = 0, short rightOptionalSymbolKey = 0) {
 			IlcaNetNative.InitializeSoftwareKeyboardInline(textMaxLength, textMinLength, HeapSize, miniaturize, invalidButtonFlag, invalidCharFlag, isCancelButtonDisabled, isPredictionEnabled, isUseNewLine, keyboardMode, leftOptionalSymbolKey, rightOptionalSymbolKey);
 		}
@@ -42,7 +42,7 @@ namespace INL1
 			return result;
 		}
 		public IlcaNetSwkInlineService() { }
-		static IlcaNetSwkInlineService() { /*@B 0x60028BF*/ throw null; }
+		static IlcaNetSwkInlineService() { }
 		public enum UpdateSKICs
 		{
 			RUNNING = 0,

@@ -10,27 +10,27 @@ namespace INL1
 		public const uint DEFAULT_MAGICNUMBER = 572662306u;
 		public const int DEFAULT_MYPORT = 7099;
 		public const int DEFAULT_SERVERPORT = 7100;
-		private static global::System.Net.Sockets.Socket ssoc;
+		private static global::System.Net.Sockets.Socket ssoc = null;
 		private static global::System.Net.IPEndPoint thisIP;
-		private static int myport;
-		private static int serverPort;
-		private static global::System.Diagnostics.Stopwatch sp;
-		private static global::System.Diagnostics.Stopwatch sp2;
-		private static global::System.Diagnostics.Stopwatch sp3;
-		private static bool InitializeNow;
-		private static uint magicNunber;
-		private static string Server;
-		private static bool Enable;
-		private static bool Suspend;
-		private static byte[] sendbuff;
-		private static byte[] recvbuff;
-		private static global::System.Net.EndPoint from;
-		private static global::System.Net.EndPoint serverIP;
-		private static int cnt0;
+		private static int myport = 7099;
+		private static int serverPort = 7100;
+		private static global::System.Diagnostics.Stopwatch sp = new global::System.Diagnostics.Stopwatch();
+		private static global::System.Diagnostics.Stopwatch sp2 = new global::System.Diagnostics.Stopwatch();
+		private static global::System.Diagnostics.Stopwatch sp3 = new global::System.Diagnostics.Stopwatch();
+		private static bool InitializeNow = false;
+		private static uint magicNunber = 572662306u;
+		private static string Server = null;
+		private static bool Enable = false;
+		private static bool Suspend = false;
+		private static byte[] sendbuff = new byte[2048];
+		private static byte[] recvbuff = new byte[2048];
+		private static global::System.Net.EndPoint from = new global::System.Net.IPEndPoint(global::System.Net.IPAddress.Any, 0);
+		private static global::System.Net.EndPoint serverIP = null;
+		private static int cnt0 = 0;
 		private const int retryFrameCounter = 600;
 		private const int MAX_CALLBACK_NUM = 255;
-		private static global::INL1.IlcaNetSidePort.IlcaNetSidePortServiceCallback[] inspsc;
-		static IlcaNetSidePort() { /*@B 0x6002861*/ throw null; }
+		private static global::INL1.IlcaNetSidePort.IlcaNetSidePortServiceCallback[] inspsc = new global::INL1.IlcaNetSidePort.IlcaNetSidePortServiceCallback[256];
+		static IlcaNetSidePort() { }
 		[global::System.Diagnostics.ConditionalAttribute("INL1_DEBUG")]
 		public static void Start() {
 			// The shipped body is a bare `ret` (@01adea60)
@@ -73,7 +73,16 @@ namespace INL1
 			return false;
 		}
 		[global::System.Diagnostics.ConditionalAttribute("INL1_DEBUG")]
-		private static void Init() { /*@B 0x600286B*/ throw null; }
+		private static void Init() {
+			if (InitializeNow)
+				return;
+			serverIP = null;
+			InitializeNow = true;
+			global::System.Threading.Thread thread = new global::System.Threading.Thread(new global::System.Threading.ThreadStart(SocketInitWorkerTh));
+			thread.IsBackground = true;
+			thread.Priority = global::System.Threading.ThreadPriority.Lowest;
+			thread.Start();
+		}
 		private static void SocketInitWorkerTh() {
 			// The shipped body is a bare `ret` (@01adee30)
 		}

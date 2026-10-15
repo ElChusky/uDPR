@@ -10,7 +10,7 @@ namespace NexAssets
 		[global::UnityEngine.RangeAttribute(0f, 32767f)]
 		private short periodDuration;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.DataStore.RatingLockPeriod periodDurationFlag;
+		private global::NexPlugin.DataStore.RatingLockPeriod periodDurationFlag = global::NexPlugin.DataStore.RatingLockPeriod.RATING_LOCK_PERIOD_DAY1;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(-23f, 23f)]
 		private sbyte periodHour;
@@ -38,6 +38,6 @@ namespace NexAssets
 			}
 			return param;
 		}
-		public DataStoreRatingLockInitParam() { /*@B 0x6002DA5*/ throw null; }
+		public DataStoreRatingLockInitParam() { }
 	}
 }

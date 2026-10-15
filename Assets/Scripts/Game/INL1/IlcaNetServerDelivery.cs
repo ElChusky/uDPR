@@ -4,13 +4,13 @@ namespace INL1
 {
 	public class IlcaNetServerDelivery : global::INL1.IlcaNetServer
 	{
-		private static global::System.Diagnostics.Stopwatch sp;
+		private static global::System.Diagnostics.Stopwatch sp = new global::System.Diagnostics.Stopwatch();
 		private static global::System.TimeSpan span;
-		private static bool isMount;
+		private static bool isMount = false;
 		public const int OkurimonoIdFlagArray256size = 256;
 		public const int FileFlagArraySize = 13;
 		public const int MaxFileNameArraySize = 100;
-		private static bool isReading;
+		private static bool isReading = false;
 		private static uint s_directoryNum;
 		private static uint s_fileNum;
 		private static byte[] s_data;
@@ -256,7 +256,7 @@ namespace INL1
 			s_ret = IlcaNetNative.BCATFileRead(s_directoryNum, s_fileNum, s_data, s_data.Length);
 			s_finish = true;
 		}
-		public IlcaNetServerDelivery() { /*@B 0x60027A9*/ throw null; }
-		static IlcaNetServerDelivery() { /*@B 0x60027AA*/ throw null; }
+		public IlcaNetServerDelivery() { }
+		static IlcaNetServerDelivery() { }
 	}
 }

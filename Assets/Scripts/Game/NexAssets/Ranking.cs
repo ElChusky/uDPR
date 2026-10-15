@@ -472,7 +472,7 @@ namespace NexAssets
 		private bool ApiCallsFrequencyCheck(int type) {
 			return ApiCallsFrequencyCheck(FunctionInfos[type], s_ApiCallsFrequencyList);
 		}
-		public Ranking() { /*@B 0x6002E68*/ throw null; }
+		public Ranking() { }
 		static Ranking() {
 			FunctionInfos = new Dictionary<int, FunctionInfo>
 			{

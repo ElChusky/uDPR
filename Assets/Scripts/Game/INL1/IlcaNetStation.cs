@@ -3,8 +3,8 @@ namespace INL1
 {
 	public class IlcaNetStation : global::INL1.IlcaNetTransport
 	{
-		public IlcaNetStation() { /*@B 0x6002899*/ throw null; }
-		~IlcaNetStation() { /*@B 0x600289A*/ throw null; }
+		public IlcaNetStation() { }
+		~IlcaNetStation() { }
 		[global::System.ComponentModel.BrowsableAttribute(false)]
 		[global::System.ComponentModel.EditorBrowsableAttribute((global::System.ComponentModel.EditorBrowsableState)(1))]
 		public void Init() {

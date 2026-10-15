@@ -2187,7 +2187,7 @@ namespace INL1
 			}
 			return state;
 		}
-		public IlcaNetSession() { /*@B 0x600285B*/ throw null; }
+		public IlcaNetSession() { }
 		private enum GameState
 		{
 			GS_None = 0,

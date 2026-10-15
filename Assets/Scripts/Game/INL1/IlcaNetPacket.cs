@@ -10,13 +10,16 @@ namespace INL1
 		public const uint UserDataMax = 1024u;
 		public const uint UserDataMaxUn = 340u;
 		private uint counte;
-		protected uint MyUserDataMax;
+		protected uint MyUserDataMax = 1024u;
 		private byte[] systemHeader;
 		private byte[] userData;
 		private byte[] payload;
 		private global::INL1.IlcaNetPacketType packetType;
-		public IlcaNetPacket() { /*@B 0x60026F4*/ throw null; }
-		~IlcaNetPacket() { /*@B 0x60026F5*/ throw null; }
+		public IlcaNetPacket() {
+			userData = new byte[1024];
+			Reset();
+		}
+		~IlcaNetPacket() { }
 		protected virtual void WriteBufferFast(byte a) {
 			userData[counte++] = a;
 		}
@@ -48,7 +51,7 @@ namespace INL1
 		}
 		[global::System.ComponentModel.BrowsableAttribute(false)]
 		[global::System.ComponentModel.EditorBrowsableAttribute((global::System.ComponentModel.EditorBrowsableState)(1))]
-		public virtual ref byte[] UserDataBuffRef() { /*@B 0x60026FF*/ throw null; }
+		public virtual ref byte[] UserDataBuffRef() { return ref userData; }
 		[global::System.ComponentModel.BrowsableAttribute(false)]
 		[global::System.ComponentModel.EditorBrowsableAttribute((global::System.ComponentModel.EditorBrowsableState)(1))]
 		public virtual ref byte[] PayloadBuffRef() { return ref payload; }

@@ -4,8 +4,10 @@ namespace NexAssets
 	public class NexInitializer : global::UnityEngine.MonoBehaviour
 	{
 		[global::UnityEngine.SerializeField]
-		private global::NexAssets.NexInitParam nexInitParam;
-		public global::NexAssets.Common.NEX_INIT_PARAM GetNexInitParam() { /*@B 0x6002DC9*/ throw null; }
-		public NexInitializer() { /*@B 0x6002DCA*/ throw null; }
+		private global::NexAssets.NexInitParam nexInitParam = new global::NexAssets.NexInitParam();
+		public global::NexAssets.Common.NEX_INIT_PARAM GetNexInitParam() {
+			return nexInitParam.GetNexInitParam();
+		}
+		public NexInitializer() { }
 	}
 }

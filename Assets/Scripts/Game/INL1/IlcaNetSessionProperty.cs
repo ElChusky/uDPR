@@ -8,9 +8,9 @@ namespace INL1
 		public bool isOpened;
 		public bool isRestrictedByUserPassword;
 		public const int IlcaNetApplicationDataSystemBufferSizeMax = 360;
-		public byte[] applicationData;
+		public byte[] applicationData = new byte[360];
 		public uint applicationDataSize;
 		public ulong targetPrincipalId;
-		public IlcaNetSessionProperty() { /*@B 0x6002860*/ throw null; }
+		public IlcaNetSessionProperty() { }
 	}
 }
