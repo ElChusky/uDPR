@@ -48,8 +48,19 @@ namespace BdspWinBuild
         static string Plan(bool subset) { return Path.Combine(Work, subset ? "bundle_plan_subset.tsv" : "bundle_plan.tsv"); }
         static string ShippedManifest { get { return Path.Combine(Root, "romfs", "Data", "StreamingAssets", "AssetAssistant", "Dpr.bin"); } }
         static string BuildRoot { get { return Path.Combine(Root, "build"); } }
-        static string BundleOut(bool subset) { return Path.Combine(BuildRoot, subset ? "bundles_win64_subset" : "bundles_win64"); }
-        static string ManifestOut(bool subset) { return Path.Combine(BuildRoot, subset ? "manifest_win64_subset" : "manifest_win64", "Dpr.bin"); }
+        // s46 C5: BDSP_BUILD_FLAVOUR=<name> builds into build/bundles_win64_<name>[_side], build/manifest_win64_<name> and
+        // build/win64_<name>_<stamp>, so a rebuild never rewrites the bundle files an existing player folder hard-links.
+        // Unset = the original folders.
+        static string Flavour
+        {
+            get
+            {
+                string f = Environment.GetEnvironmentVariable("BDSP_BUILD_FLAVOUR");
+                return string.IsNullOrEmpty(f) ? "" : "_" + f.Trim();
+            }
+        }
+        static string BundleOut(bool subset) { return Path.Combine(BuildRoot, subset ? "bundles_win64_subset" : "bundles_win64" + Flavour); }
+        static string ManifestOut(bool subset) { return Path.Combine(BuildRoot, subset ? "manifest_win64_subset" : "manifest_win64" + Flavour, "Dpr.bin"); }
         // s39: a bundle whose name is a FOLDER of another bundle's name ("masterdatas" (Dpr) vs "masterdatas/uimasterdatas" (UIs),
         // "masterdatas/effectdatabase" (Effects)) cannot share one output directory (measured: "Cannot create folder .../masterdatas").
         // Shipped, every sub-project had its own folder. Those bundles are built by a SECOND BuildAssetBundles call into
@@ -796,7 +807,7 @@ namespace BdspWinBuild
                 return false;
             }
             string stamp = DateTime.Now.ToString("yyyyMMdd_HHmmss", System.Globalization.CultureInfo.InvariantCulture);
-            string outDir = Path.Combine(BuildRoot, "win64_" + stamp + (subset ? "_subset" : ""));
+            string outDir = Path.Combine(BuildRoot, "win64" + Flavour + "_" + stamp + (subset ? "_subset" : ""));
             if (Directory.Exists(outDir))
             {
                 r.Error("output exists: " + outDir);
