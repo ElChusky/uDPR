@@ -50,16 +50,64 @@ namespace Pml.PokePara
 
             return (byte)result;
         }
-		public static ushort CalcMaxHp(global::Pml.MonsNo monsno, byte level, ushort basev, ushort rnd, ushort exp) { /*@B 0x60023AC*/ throw null; }
-		public static ushort CalcAtk(byte level, ushort basev, ushort rnd, ushort exp, global::Pml.PokePara.Seikaku seikaku) { /*@B 0x60023AD*/ throw null; }
-		public static ushort CalcDef(byte level, ushort basev, ushort rnd, ushort exp, global::Pml.PokePara.Seikaku seikaku) { /*@B 0x60023AE*/ throw null; }
-		public static ushort CalcSpAtk(byte level, ushort basev, ushort rnd, ushort exp, global::Pml.PokePara.Seikaku seikaku) { /*@B 0x60023AF*/ throw null; }
-		public static ushort CalcSpDef(byte level, ushort basev, ushort rnd, ushort exp, global::Pml.PokePara.Seikaku seikaku) { /*@B 0x60023B0*/ throw null; }
-		public static ushort CalcAgi(byte level, ushort basev, ushort rnd, ushort exp, global::Pml.PokePara.Seikaku seikaku) { /*@B 0x60023B1*/ throw null; }
-		public static sbyte GetPowerTransformBySeikaku(ushort seikaku, global::Pml.PokePara.PowerID powerId) { /*@B 0x60023B2*/ throw null; }
-		private static ushort CalcCorrectedPowerBySeikaku(ushort value, ushort seikaku, global::Pml.PokePara.PowerID powerId) { /*@B 0x60023B3*/ throw null; }
-		public static bool IsRareColor(uint id, uint rnd) { /*@B 0x60023B4*/ throw null; }
-		private static uint CalcRareCheckValue(uint id, uint rnd) { /*@B 0x60023B5*/ throw null; }
+		public static ushort CalcMaxHp(global::Pml.MonsNo monsno, byte level, ushort basev, ushort rnd, ushort exp) {
+            if (monsno == MonsNo.NUKENIN)
+                return NUKENIN_MAX_HP;
+
+            return (ushort)((basev * HP_BASE_COEFFICIENT + rnd + exp / HP_EXP_COEFFICIENT) * level / 100 + level + MIN_HP);
+        }
+		public static ushort CalcAtk(byte level, ushort basev, ushort rnd, ushort exp, global::Pml.PokePara.Seikaku seikaku) {
+            ushort value = (ushort)((basev * ATK_BASE_COEFFICIENT + rnd + exp / ATK_EXP_COEFFICIENT) * level / 100 + MIN_ATK);
+            return CalcCorrectedPowerBySeikaku(value, (ushort)seikaku, PowerID.ATK);
+        }
+		public static ushort CalcDef(byte level, ushort basev, ushort rnd, ushort exp, global::Pml.PokePara.Seikaku seikaku) {
+            ushort value = (ushort)((basev * DEF_BASE_COEFFICIENT + rnd + exp / DEF_EXP_COEFFICIENT) * level / 100 + MIN_DEF);
+            return CalcCorrectedPowerBySeikaku(value, (ushort)seikaku, PowerID.DEF);
+        }
+		public static ushort CalcSpAtk(byte level, ushort basev, ushort rnd, ushort exp, global::Pml.PokePara.Seikaku seikaku) {
+            ushort value = (ushort)((basev * SPATK_BASE_COEFFICIENT + rnd + exp / SPATK_EXP_COEFFICIENT) * level / 100 + MIN_SPATK);
+            return CalcCorrectedPowerBySeikaku(value, (ushort)seikaku, PowerID.SPATK);
+        }
+		public static ushort CalcSpDef(byte level, ushort basev, ushort rnd, ushort exp, global::Pml.PokePara.Seikaku seikaku) {
+            ushort value = (ushort)((basev * SPDEF_BASE_COEFFICIENT + rnd + exp / SPDEF_EXP_COEFFICIENT) * level / 100 + MIN_SPDEF);
+            return CalcCorrectedPowerBySeikaku(value, (ushort)seikaku, PowerID.SPDEF);
+        }
+		public static ushort CalcAgi(byte level, ushort basev, ushort rnd, ushort exp, global::Pml.PokePara.Seikaku seikaku) {
+            ushort value = (ushort)((basev * AGI_BASE_COEFFICIENT + rnd + exp / AGI_EXP_COEFFICIENT) * level / 100 + MIN_AGI);
+            return CalcCorrectedPowerBySeikaku(value, (ushort)seikaku, PowerID.AGI);
+        }
+		public static sbyte GetPowerTransformBySeikaku(ushort seikaku, global::Pml.PokePara.PowerID powerId) {
+            // @024ad6c0: unsigned (powerId - 1) > 4 test
+            if (powerId < PowerID.ATK || powerId > PowerID.AGI)
+                return 0;
+
+            return SEIKAKU_ABI_TBL[seikaku][(int)powerId - 1];
+        }
+		private static ushort CalcCorrectedPowerBySeikaku(ushort value, ushort seikaku, global::Pml.PokePara.PowerID powerId) {
+            // @024ad2c0: GetPowerTransformBySeikaku inlined; the product is truncated to ushort before / 100 (and #0xfffe)
+            if (powerId < PowerID.ATK || powerId > PowerID.AGI)
+                return value;
+
+            sbyte transform = SEIKAKU_ABI_TBL[seikaku][(int)powerId - 1];
+            if (transform == -1)
+            {
+                ushort corrected = (ushort)(value * 90);
+                return (ushort)(corrected / 100);
+            }
+            if (transform == 1)
+            {
+                ushort corrected = (ushort)(value * 110);
+                return (ushort)(corrected / 100);
+            }
+
+            return value;
+        }
+		public static bool IsRareColor(uint id, uint rnd) {
+            return ((id & 0xFFF0) ^ (id >> 16) ^ (rnd >> 16) ^ (rnd & 0xFFF0)) < 0x10;
+        }
+		private static uint CalcRareCheckValue(uint id, uint rnd) {
+            return (id & 0xFFFF) ^ (id >> 16) ^ (rnd >> 16) ^ (rnd & 0xFFFF);
+        }
 		public static uint CorrectColorRndForNormal(uint id, uint rnd) {
             // @024ad840: flip bit 28 of a rare colour rnd (IsRareColor inlined twice, flag 0x4cc258e)
             if (IsRareColor(id, rnd))
@@ -89,7 +137,13 @@ namespace Pml.PokePara
 
             return type;
         }
-		public static global::Pml.PokePara.RareType CalcRareColorTypeByID(uint id, uint rnd) { /*@B 0x60023B9*/ throw null; }
+		public static global::Pml.PokePara.RareType CalcRareColorTypeByID(uint id, uint rnd) {
+            // @024adbc0: IsRareColor (flag 0x4cc258e) and CalcRareCheckValue inlined
+            if (!IsRareColor(id, rnd))
+                return RareType.NOT_RARE;
+
+            return CalcRareCheckValue(id, rnd) == 0 ? RareType.DISTRIBUTED : RareType.CAPTURED;
+        }
 		public static uint CorrectColorRndForRareType(uint id, uint rnd, global::Pml.PokePara.RareType type) {
             // @024adce0: CAPTURED keeps the fold at 1 (rare, not equal), DISTRIBUTED makes it 0 (equal)
             if (type != RareType.NOT_RARE)
@@ -102,7 +156,21 @@ namespace Pml.PokePara
 
             return CorrectColorRndForNormal(id, rnd);
         }
-		public static global::Pml.Sex GetCorrectSexInPersonalData(global::Pml.MonsNo monsno, ushort formno, global::Pml.Sex bothCase) { /*@B 0x60023BB*/ throw null; }
+		public static global::Pml.Sex GetCorrectSexInPersonalData(global::Pml.MonsNo monsno, ushort formno, global::Pml.Sex bothCase) {
+            // @024addd0: GetPersonalData inlined (flag 0x4cc2578); sex 0 / 254 / 255 folded to the 0x201 >> ((sex + 2) * 8) table
+            byte sex = PersonalSystem.GetPersonalData(monsno, formno).sex;
+            switch (sex)
+            {
+                case 0:
+                    return Sex.MALE;
+                case 254:
+                    return Sex.FEMALE;
+                case 255:
+                    return Sex.UNKNOWN;
+            }
+
+            return bothCase == Sex.UNKNOWN ? Sex.MALE : bothCase;
+        }
 		public static bool IsSeikakuHigh(global::Pml.PokePara.Seikaku seikaku) {
             for (byte i = 0; i < HIGH_SEIKAKU.Length; i++)
             {
@@ -233,19 +301,165 @@ namespace Pml.PokePara
 
             return Cream2ViewID.STRAWBERRY;
         }
-		public static bool DecideFormNoFromHoldItem(global::Pml.MonsNo monsno, uint holdItemno, out ushort formno) { /*@B 0x60023CB*/ throw null; }
-		static CalcTool() { /*@B 0x60023CC*/ throw null; }
+		public static bool DecideFormNoFromHoldItem(global::Pml.MonsNo monsno, uint holdItemno, out ushort formno) {
+            formno = 0;
+            if (monsno == MonsNo.GIRATHINA)
+            {
+                formno = (ushort)(holdItemno == (uint)ItemNo.HAKKINDAMA ? 1 : 0);
+                return true;
+            }
+            if (monsno == MonsNo.ARUSEUSU)
+            {
+                formno = (ushort)GetAruseusuType(holdItemno);
+                return true;
+            }
+
+            return false;
+        }
+		static CalcTool() {
+            SEIKAKU_ABI_TBL = new sbyte[][]
+            {
+                new sbyte[] { 0, 0, 0, 0, 0 },
+                new sbyte[] { 1, -1, 0, 0, 0 },
+                new sbyte[] { 1, 0, 0, 0, -1 },
+                new sbyte[] { 1, 0, -1, 0, 0 },
+                new sbyte[] { 1, 0, 0, -1, 0 },
+                new sbyte[] { -1, 1, 0, 0, 0 },
+                new sbyte[] { 0, 0, 0, 0, 0 },
+                new sbyte[] { 0, 1, 0, 0, -1 },
+                new sbyte[] { 0, 1, -1, 0, 0 },
+                new sbyte[] { 0, 1, 0, -1, 0 },
+                new sbyte[] { -1, 0, 0, 0, 1 },
+                new sbyte[] { 0, -1, 0, 0, 1 },
+                new sbyte[] { 0, 0, 0, 0, 0 },
+                new sbyte[] { 0, 0, -1, 0, 1 },
+                new sbyte[] { 0, 0, 0, -1, 1 },
+                new sbyte[] { -1, 0, 1, 0, 0 },
+                new sbyte[] { 0, -1, 1, 0, 0 },
+                new sbyte[] { 0, 0, 1, 0, -1 },
+                new sbyte[] { 0, 0, 0, 0, 0 },
+                new sbyte[] { 0, 0, 1, -1, 0 },
+                new sbyte[] { -1, 0, 0, 1, 0 },
+                new sbyte[] { 0, -1, 0, 1, 0 },
+                new sbyte[] { 0, 0, 0, 1, -1 },
+                new sbyte[] { 0, 0, -1, 1, 0 },
+                new sbyte[] { 0, 0, 0, 0, 0 },
+            };
+            HIGH_SEIKAKU = new Seikaku[]
+            {
+                Seikaku.IJIPPARI, Seikaku.YANTYA, Seikaku.YUUKAN, Seikaku.WANPAKU, Seikaku.NOUTENKI, Seikaku.UKKARIYA, Seikaku.NAMAIKI,
+                Seikaku.SEKKATI, Seikaku.YOUKI, Seikaku.MUJYAKI, Seikaku.GANBARIYA, Seikaku.SUNAO, Seikaku.KIMAGURE,
+            };
+            LOW_SEIKAKU = new Seikaku[]
+            {
+                Seikaku.SAMISHIGARI, Seikaku.ZUBUTOI, Seikaku.NONKI, Seikaku.OKUBYOU, Seikaku.MAJIME, Seikaku.HIKAEME,
+                Seikaku.OTTORI, Seikaku.REISEI, Seikaku.TEREYA, Seikaku.ODAYAKA, Seikaku.OTONASHII, Seikaku.SINTYOU,
+            };
+            TYPE_TABLE = new PokeType[]
+            {
+                PokeType.KAKUTOU, PokeType.HIKOU, PokeType.DOKU, PokeType.JIMEN, PokeType.IWA, PokeType.MUSHI, PokeType.GHOST, PokeType.HAGANE,
+                PokeType.HONOO, PokeType.MIZU, PokeType.KUSA, PokeType.DENKI, PokeType.ESPER, PokeType.KOORI, PokeType.DRAGON, PokeType.AKU,
+            };
+            DESIRED_TASTE_TBL = new TasteJudge[,]
+            {
+                { TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL },
+                { TasteJudge.LIKE, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.DISLIKE },
+                { TasteJudge.LIKE, TasteJudge.NORMAL, TasteJudge.DISLIKE, TasteJudge.NORMAL, TasteJudge.NORMAL },
+                { TasteJudge.LIKE, TasteJudge.DISLIKE, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL },
+                { TasteJudge.LIKE, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.DISLIKE, TasteJudge.NORMAL },
+                { TasteJudge.DISLIKE, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.LIKE },
+                { TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL },
+                { TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.DISLIKE, TasteJudge.NORMAL, TasteJudge.LIKE },
+                { TasteJudge.NORMAL, TasteJudge.DISLIKE, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.LIKE },
+                { TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.DISLIKE, TasteJudge.LIKE },
+                { TasteJudge.DISLIKE, TasteJudge.NORMAL, TasteJudge.LIKE, TasteJudge.NORMAL, TasteJudge.NORMAL },
+                { TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.LIKE, TasteJudge.NORMAL, TasteJudge.DISLIKE },
+                { TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL },
+                { TasteJudge.NORMAL, TasteJudge.DISLIKE, TasteJudge.LIKE, TasteJudge.NORMAL, TasteJudge.NORMAL },
+                { TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.LIKE, TasteJudge.DISLIKE, TasteJudge.NORMAL },
+                { TasteJudge.DISLIKE, TasteJudge.LIKE, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL },
+                { TasteJudge.NORMAL, TasteJudge.LIKE, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.DISLIKE },
+                { TasteJudge.NORMAL, TasteJudge.LIKE, TasteJudge.DISLIKE, TasteJudge.NORMAL, TasteJudge.NORMAL },
+                { TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL },
+                { TasteJudge.NORMAL, TasteJudge.LIKE, TasteJudge.NORMAL, TasteJudge.DISLIKE, TasteJudge.NORMAL },
+                { TasteJudge.DISLIKE, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.LIKE, TasteJudge.NORMAL },
+                { TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.LIKE, TasteJudge.DISLIKE },
+                { TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.DISLIKE, TasteJudge.LIKE, TasteJudge.NORMAL },
+                { TasteJudge.NORMAL, TasteJudge.DISLIKE, TasteJudge.NORMAL, TasteJudge.LIKE, TasteJudge.NORMAL },
+                { TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL, TasteJudge.NORMAL },
+            };
+            ROTOM_WAZA_TBL = new WazaNo[]
+            {
+                WazaNo.NULL, WazaNo.OOBAAHIITO, WazaNo.HAIDOROPONPU, WazaNo.HUBUKI, WazaNo.EASURASSYU, WazaNo.RIIHUSUTOOMU,
+            };
+            ITEM_TYPE_ARUSEUSU = new ITEM_TYPE_PARAM[]
+            {
+                new ITEM_TYPE_PARAM(ItemNo.HINOTAMAPUREETO, PokeType.HONOO),
+                new ITEM_TYPE_PARAM(ItemNo.SIZUKUPUREETO, PokeType.MIZU),
+                new ITEM_TYPE_PARAM(ItemNo.IKAZUTIPUREETO, PokeType.DENKI),
+                new ITEM_TYPE_PARAM(ItemNo.MIDORINOPUREETO, PokeType.KUSA),
+                new ITEM_TYPE_PARAM(ItemNo.TURARANOPUREETO, PokeType.KOORI),
+                new ITEM_TYPE_PARAM(ItemNo.KOBUSINOPUREETO, PokeType.KAKUTOU),
+                new ITEM_TYPE_PARAM(ItemNo.MOUDOKUPUREETO, PokeType.DOKU),
+                new ITEM_TYPE_PARAM(ItemNo.DAITINOPUREETO, PokeType.JIMEN),
+                new ITEM_TYPE_PARAM(ItemNo.AOZORAPUREETO, PokeType.HIKOU),
+                new ITEM_TYPE_PARAM(ItemNo.HUSIGINOPUREETO, PokeType.ESPER),
+                new ITEM_TYPE_PARAM(ItemNo.TAMAMUSIPUREETO, PokeType.MUSHI),
+                new ITEM_TYPE_PARAM(ItemNo.GANSEKIPUREETO, PokeType.IWA),
+                new ITEM_TYPE_PARAM(ItemNo.MONONOKEPUREETO, PokeType.GHOST),
+                new ITEM_TYPE_PARAM(ItemNo.RYUUNOPUREETO, PokeType.DRAGON),
+                new ITEM_TYPE_PARAM(ItemNo.KOWAMOTEPUREETO, PokeType.AKU),
+                new ITEM_TYPE_PARAM(ItemNo.KOUTETUPUREETO, PokeType.HAGANE),
+                new ITEM_TYPE_PARAM(ItemNo.SEIREIPUREETO, PokeType.FAIRY),
+            };
+            ITEM_TYPE_Guripusu2 = new ITEM_TYPE_PARAM[]
+            {
+                new ITEM_TYPE_PARAM(ItemNo.FAIYAAMEMORI, PokeType.HONOO),
+                new ITEM_TYPE_PARAM(ItemNo.UOOTAAMEMORI, PokeType.MIZU),
+                new ITEM_TYPE_PARAM(ItemNo.EREKUTOROMEMORI, PokeType.DENKI),
+                new ITEM_TYPE_PARAM(ItemNo.GURASUMEMORI, PokeType.KUSA),
+                new ITEM_TYPE_PARAM(ItemNo.AISUMEMORI, PokeType.KOORI),
+                new ITEM_TYPE_PARAM(ItemNo.FAITOMEMORI, PokeType.KAKUTOU),
+                new ITEM_TYPE_PARAM(ItemNo.POIZUNMEMORI, PokeType.DOKU),
+                new ITEM_TYPE_PARAM(ItemNo.GURAUNDOMEMORI, PokeType.JIMEN),
+                new ITEM_TYPE_PARAM(ItemNo.HURAINGUMEMORI, PokeType.HIKOU),
+                new ITEM_TYPE_PARAM(ItemNo.SAIKIKKUMEMORI, PokeType.ESPER),
+                new ITEM_TYPE_PARAM(ItemNo.BAGUMEMORI, PokeType.MUSHI),
+                new ITEM_TYPE_PARAM(ItemNo.ROKKUMEMORI, PokeType.IWA),
+                new ITEM_TYPE_PARAM(ItemNo.GOOSUTOMEMORI, PokeType.GHOST),
+                new ITEM_TYPE_PARAM(ItemNo.DORAGONMEMORI, PokeType.DRAGON),
+                new ITEM_TYPE_PARAM(ItemNo.DAAKUMEMORI, PokeType.AKU),
+                new ITEM_TYPE_PARAM(ItemNo.SUTIIRUMEMORI, PokeType.HAGANE),
+                new ITEM_TYPE_PARAM(ItemNo.FEARIIMEMORI, PokeType.FAIRY),
+            };
+            CREAM2_ITEM_TABLE = new ITEM_VIEW_PARAM[]
+            {
+                new ITEM_VIEW_PARAM(ItemNo.ITIGONOAMEZAIKU, Cream2ViewID.STRAWBERRY),
+                new ITEM_VIEW_PARAM(ItemNo.HAATONOHAMEZAIKU, Cream2ViewID.HEART),
+                new ITEM_VIEW_PARAM(ItemNo.BERIIAMEZAIKU, Cream2ViewID.BERRY),
+                new ITEM_VIEW_PARAM(ItemNo.YOTUBAAMEZAIKU, Cream2ViewID.CLOVER),
+                new ITEM_VIEW_PARAM(ItemNo.OHANAAMEZAIKU, Cream2ViewID.FLOWER),
+                new ITEM_VIEW_PARAM(ItemNo.SUTAAAMEZAIKU, Cream2ViewID.STAR),
+                new ITEM_VIEW_PARAM(ItemNo.RIBONAMEZAIKU, Cream2ViewID.RIBBON),
+            };
+        }
 		private struct ITEM_TYPE_PARAM
 		{
 			public global::Pml.ItemNo item;
 			public global::Pml.PokeType type;
-			public ITEM_TYPE_PARAM(global::Pml.ItemNo _item, global::Pml.PokeType _type) { /*@B 0x60099BB*/ throw null; }
+			public ITEM_TYPE_PARAM(global::Pml.ItemNo _item, global::Pml.PokeType _type) {
+                item = _item;
+                type = _type;
+            }
 		}
 		private struct ITEM_VIEW_PARAM
 		{
 			public global::Pml.ItemNo item;
 			public global::Pml.PokePara.Cream2ViewID viewID;
-			public ITEM_VIEW_PARAM(global::Pml.ItemNo _item, global::Pml.PokePara.Cream2ViewID _view) { /*@B 0x60099BC*/ throw null; }
+			public ITEM_VIEW_PARAM(global::Pml.ItemNo _item, global::Pml.PokePara.Cream2ViewID _view) {
+                item = _item;
+                viewID = _view;
+            }
 		}
 	}
 }

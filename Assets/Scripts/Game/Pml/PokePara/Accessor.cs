@@ -184,10 +184,19 @@ namespace Pml.PokePara
                 }
             }
         }
-		public unsafe void Serialize_FullData(void* buffer) { /*@B 0x60022BE*/ throw null; }
-		public unsafe void Serialize_CoreData(void* buffer) { /*@B 0x60022BF*/ throw null; }
-		public unsafe void Deserialize_FullData(void* serializedData) { /*@B 0x60022C0*/ throw null; }
-		public unsafe void Deserialize_CoreData(void* serializedData) { /*@B 0x60022C1*/ throw null; }
+		public unsafe void Serialize_FullData(void* buffer) {
+            Serialize(buffer, (byte*)buffer + CORE_DATA_SIZE);
+        }
+		public unsafe void Serialize_CoreData(void* buffer) {
+            Serialize(buffer, null);
+        }
+		public unsafe void Deserialize_FullData(void* serializedData) {
+            Deserialize(serializedData, (byte*)serializedData + CORE_DATA_SIZE);
+        }
+		public unsafe void Deserialize_CoreData(void* serializedData) {
+            // @024a4600: Deserialize(serializedData, null) inlined
+            Deserialize(serializedData, null);
+        }
 		public uint GetPersonalRnd() {
             unsafe
             {
@@ -3005,7 +3014,9 @@ namespace Pml.PokePara
             arrayIndex = (byte)(jobIndex / 8);
             bitFlag = (byte)(1 << (jobIndex % 8));
         }
-		static Accessor() { /*@B 0x60023A8*/ throw null; }
+		static Accessor() {
+            // @024ac480: the four null pointers and BLOCK_POS_TABLE (32 x 4-byte blobs, all checked) are the field initialisers
+        }
 		private struct AccessState
 		{
 			public bool isEncoded;
