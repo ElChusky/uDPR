@@ -5,7 +5,7 @@ namespace nn.ec
 	{
 		public const int MaxStringLength = 16;
 		public string value;
-		public CourseId(string _value) { /*@B nn:0x6000314*/ throw null; }
+		public CourseId(string _value) { value = _value; }
 		// @027c9220
 		public override string ToString() { return value; }
 	}

@@ -19,7 +19,7 @@ namespace nn.ec
 		public bool Equals(global::nn.ec.NsUid other) { return value == other.value; }
 		// @027c9320: boxes this and calls ValueType.GetHashCode
 		public override int GetHashCode() { return base.GetHashCode(); }
-		public static bool operator ==(global::nn.ec.NsUid lhs, global::nn.ec.NsUid rhs) { /*@B nn:0x6000312*/ throw null; }
-		public static bool operator !=(global::nn.ec.NsUid lhs, global::nn.ec.NsUid rhs) { /*@B nn:0x6000313*/ throw null; }
+		public static bool operator ==(global::nn.ec.NsUid lhs, global::nn.ec.NsUid rhs) { return lhs.value == rhs.value; }
+		public static bool operator !=(global::nn.ec.NsUid lhs, global::nn.ec.NsUid rhs) { return lhs.value != rhs.value; }
 	}
 }

@@ -5,7 +5,7 @@ namespace nn.account
 	{
 		public ulong _data0;
 		public ulong _data1;
-		public static global::nn.account.Uid Invalid { get { /*@B nn:0x600035A*/ throw null; } }
+		public static global::nn.account.Uid Invalid { get { return default(Uid); } }
 		// @027c75c0
 		public bool IsValid() { return _data0 != 0 || _data1 != 0; }
 		// @027c75e0
@@ -21,7 +21,7 @@ namespace nn.account
 		public bool Equals(global::nn.account.Uid other) { return _data0 == other._data0 && _data1 == other._data1; }
 		// @027c7760: boxes this and calls ValueType.GetHashCode
 		public override int GetHashCode() { return base.GetHashCode(); }
-		public static bool operator ==(global::nn.account.Uid lhs, global::nn.account.Uid rhs) { /*@B nn:0x6000360*/ throw null; }
-		public static bool operator !=(global::nn.account.Uid lhs, global::nn.account.Uid rhs) { /*@B nn:0x6000361*/ throw null; }
+		public static bool operator ==(global::nn.account.Uid lhs, global::nn.account.Uid rhs) { return lhs._data0 == rhs._data0 && lhs._data1 == rhs._data1; }
+		public static bool operator !=(global::nn.account.Uid lhs, global::nn.account.Uid rhs) { return lhs._data0 != rhs._data0 || lhs._data1 != rhs._data1; }
 	}
 }

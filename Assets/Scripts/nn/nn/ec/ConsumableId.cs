@@ -5,7 +5,7 @@ namespace nn.ec
 	{
 		public const int MaxStringLength = 16;
 		public string value;
-		public ConsumableId(string _value) { /*@B nn:0x6000316*/ throw null; }
+		public ConsumableId(string _value) { value = _value; }
 		// @027c9200
 		public override string ToString() { return value; }
 	}
