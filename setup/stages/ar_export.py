@@ -190,6 +190,11 @@ def main():
         say("LoadFolder %s" % a.game)
         code, _ = http(a.port, "/LoadFolder", {"Path": a.game})
         say("LoadFolder http %s after %.0f s" % (code, time.time() - t0))
+        if code not in (200, 302):
+            oom = os.path.exists(log) and "OutOfMemoryException" in open(log, encoding="utf-8", errors="replace").read()
+            stop("loading the dump failed" + (" - AssetRipper ran out of memory" if oom else ""))
+            sys.exit("AssetRipper could not load the dump (http %s)%s - see %s" % (
+                code, "; it ran out of memory: close other programs and make sure Windows' page file can grow" if oom else "", log))
         os.makedirs(out, exist_ok=True)
         say("Export/UnityProject -> %s" % out)
         exp = subprocess.Popen([sys.executable, "-I", "-c",
@@ -199,12 +204,23 @@ def main():
                                 "except Exception as e: print(e)\n",
                                 "http://localhost:%d/Export/UnityProject" % a.port, out], stdin=subprocess.DEVNULL)
         last = 0
+        read_to = 0
         while True:
             time.sleep(20)
             disk = shutil.disk_usage(drive).free / 2 ** 30
             ram, commit = memory_gb()
             tail = ""
             if os.path.exists(log):
+                with open(log, "rb") as f:
+                    f.seek(read_to)
+                    new = f.read()
+                    read_to += len(new)
+                if b"OutOfMemoryException" in new:
+                    # AssetRipper carries on after it (e.g. "Unable to read MonoBehaviour Structure ... (OutOfMemoryException)")
+                    # and would write an incomplete export
+                    stop("AssetRipper ran out of memory")
+                    sys.exit("AssetRipper ran out of memory during the export - close other programs and make sure Windows' page "
+                             "file can grow (it is on the system drive), then run the setup again; log: %s" % log)
                 with open(log, "rb") as f:
                     f.seek(max(0, os.path.getsize(log) - 4096))
                     lines = f.read().decode("utf-8", "replace").strip().splitlines()

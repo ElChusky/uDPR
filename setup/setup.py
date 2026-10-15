@@ -40,6 +40,7 @@ def build_stages():
     return [
         ("check", "preflight: dump, Unity, Wwise, tools, disk, RAM", [stage_cmd("check.py")]),
         ("export", "AssetRipper exports the dump into <work>/export", [stage_cmd("ar_export.py")]),
+        ("fix_arrays", "repair the negative values the free AssetRipper export damages in hex arrays", [stage_cmd("fix_arrays.py")]),
         ("normalise", "the export's random asset GUIDs -> this project's GUIDs; package/Wwise/DOTween script references",
          [stage_cmd("normalise_guids.py")]),
         ("merge", "move the exported asset folders into Assets/ (sound banks Switch -> Windows)", [stage_cmd("merge.py")]),
@@ -81,7 +82,7 @@ def build_stages():
 OPTIONAL = {"build"}
 
 
-NAMES = ["check", "export", "normalise", "merge", "wwise", "startup", "shaders", "containers", "atlas_spec", "sprite_bake",
+NAMES = ["check", "export", "fix_arrays", "normalise", "merge", "wwise", "startup", "shaders", "containers", "atlas_spec", "sprite_bake",
          "atlases", "placeholders", "sprite_restore", "d7", "untag", "verify", "build"]
 
 
