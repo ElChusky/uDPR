@@ -6,18 +6,44 @@ namespace SmartPoint.Components
 		private global::SmartPoint.Components.AudioChannelType _type;
 		private global::UnityEngine.AudioSource _source;
 		private float _volume = 1.0f;
-		public global::UnityEngine.AudioClip clip { get { /*@B 0x6002F61*/ throw null; } set { /*@B 0x6002F62*/ throw null; } }
-		public float time { get { /*@B 0x6002F63*/ throw null; } set { /*@B 0x6002F64*/ throw null; } }
-		public float volume { get { return this._volume; } set { /*@B 0x6002F66*/ throw null; } }
-		public bool isPlaying { get { /*@B 0x6002F67*/ throw null; } }
+		public global::UnityEngine.AudioClip clip { get { return _source != null ? _source.clip : null; } set { _source.clip = value; } }
+		public float time { get { return _source != null ? _source.time : 0f; } set { _source.time = value; } }
+		public float volume { get { return this._volume; } set {
+				_volume = value;
+				ResetVolume();
+			} }
+		public bool isPlaying { get { return _source.isPlaying; } }
 		public global::UnityEngine.AudioSource source { get { return this._source; } }
 		public global::SmartPoint.Components.AudioChannelStatus status { get; set; }
 		public float duration { get; set; }
 		public float elapsedTime { get; set; }
-		public AudioChannel(global::SmartPoint.Components.AudioChannelType type, global::UnityEngine.AudioSource source) { /*@B 0x6002F60*/ throw null; }
-		public void Play() { /*@B 0x6002F68*/ throw null; }
-		public void Stop() { /*@B 0x6002F69*/ throw null; }
-		public void Pause() { /*@B 0x6002F6A*/ throw null; }
-		public void ResetVolume() { /*@B 0x6002F6B*/ throw null; }
+		public AudioChannel(global::SmartPoint.Components.AudioChannelType type, global::UnityEngine.AudioSource source) {
+			_type = type;
+			_source = source;
+			ResetVolume();
+		}
+		public void Play() { status = AudioChannelStatus.Start; }
+		public void Stop() { status = AudioChannelStatus.Stop; }
+		public void Pause() { status = AudioChannelStatus.Pause; }
+		public void ResetVolume() {
+			// AudioPlayer.global*Volume getters inlined (own init flags)
+			float globalVolume;
+			switch (_type)
+			{
+				case AudioChannelType.Voice:
+					globalVolume = AudioPlayer.globalVoiceVolume;
+					break;
+				case AudioChannelType.Effect:
+					globalVolume = AudioPlayer.globalEffectVolume;
+					break;
+				case AudioChannelType.Stream:
+					globalVolume = AudioPlayer.globalStreamVolume;
+					break;
+				default:
+					globalVolume = 0f;
+					break;
+			}
+			_source.volume = globalVolume * _volume;
+		}
 	}
 }

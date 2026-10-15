@@ -8,9 +8,15 @@ namespace Pml.WazaData
 		public const int HITRATIO_MUST = 101;
 		public const int CRITICAL_MUST = 6;
 		public static global::XLSXContent.WazaTable s_wazaTable;
-		public static void Initialize(global::XLSXContent.WazaTable wazaTable) { /*@B 0x60021C5*/ throw null; }
-		public static void Finalize_() { /*@B 0x60021C6*/ throw null; }
-		public static global::XLSXContent.WazaTable.SheetWaza Get(global::Pml.WazaNo id) { /*@B 0x60021C7*/ throw null; }
+		public static void Initialize(global::XLSXContent.WazaTable wazaTable) {
+            s_wazaTable = wazaTable;
+        }
+		public static void Finalize_() {
+            s_wazaTable = null;
+        }
+		public static global::XLSXContent.WazaTable.SheetWaza Get(global::Pml.WazaNo id) {
+            return s_wazaTable.Waza[(int)id];
+        }
 		public static bool IsValid(global::Pml.WazaNo id) {
             // @02059f40
             return Get(id).isValid;
@@ -25,7 +31,13 @@ namespace Pml.WazaData
             }
             return (waza.flags & (1 << (int)flag)) != 0;
         }
-		public static uint GetMaxPP(global::Pml.WazaNo id, uint maxupcnt) { /*@B 0x60021CA*/ throw null; }
+		public static uint GetMaxPP(global::Pml.WazaNo id, uint maxupcnt) {
+            // @020465d0: Get inlined; result truncated to a byte (and #0xff)
+            if (maxupcnt > 3)
+                maxupcnt = 3;
+            uint basePP = Get(id).basePP;
+            return (byte)(basePP + basePP * maxupcnt * 20 / 100);
+        }
 		public static uint GetPower(global::Pml.WazaNo id) {
             // @0205a090
             return Get(id).power;
@@ -55,8 +67,12 @@ namespace Pml.WazaData
             // @0205a320
             return Get(id).hitPer == HITRATIO_MUST;
         }
-		public static uint GetHitCountMax(global::Pml.WazaNo id) { /*@B 0x60021D2*/ throw null; }
-		public static uint GetHitCountMin(global::Pml.WazaNo id) { /*@B 0x60021D3*/ throw null; }
+		public static uint GetHitCountMax(global::Pml.WazaNo id) {
+            return Get(id).hitCountMax;
+        }
+		public static uint GetHitCountMin(global::Pml.WazaNo id) {
+            return Get(id).hitCountMin;
+        }
 		public static bool IsMustCritical(global::Pml.WazaNo id) {
             // @0205a4b0
             return Get(id).criticalRank == CRITICAL_MUST;
@@ -121,7 +137,38 @@ namespace Pml.WazaData
                 count++;
             return count;
         }
-		public static global::Pml.WazaData.WazaRankEffect GetRankEffect(global::Pml.WazaNo id, uint idx, out int volume) { /*@B 0x60021DD*/ throw null; }
+		public static global::Pml.WazaData.WazaRankEffect GetRankEffect(global::Pml.WazaNo id, uint idx, out int volume) {
+            // @0205a960
+            if (idx >= RANK_STORE_MAX)
+            {
+                GFL.ASSERT(false);
+                volume = 0;
+                return WazaRankEffect.NONE;
+            }
+
+            var waza = Get(id);
+            WazaRankEffect effect;
+            switch (idx)
+            {
+                case 0: effect = (WazaRankEffect)waza.rankEffType1; break;
+                case 1: effect = (WazaRankEffect)waza.rankEffType2; break;
+                case 2: effect = (WazaRankEffect)waza.rankEffType3; break;
+                default:
+                    volume = 0;
+                    return WazaRankEffect.NONE;
+            }
+            volume = 0;
+            if (effect != WazaRankEffect.NONE)
+            {
+                switch (idx)
+                {
+                    case 0: volume = waza.rankEffValue1; break;
+                    case 1: volume = waza.rankEffValue2; break;
+                    case 2: volume = waza.rankEffValue3; break;
+                }
+            }
+            return effect;
+        }
 		public static int GetRankEffectPer(global::Pml.WazaNo id, uint idx) {
             // @0205aaa0
             if (idx >= RANK_STORE_MAX)
