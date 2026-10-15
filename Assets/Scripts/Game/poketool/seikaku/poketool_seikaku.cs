@@ -56,7 +56,7 @@ namespace poketool.seikaku
             // Shipped divides by 6 (@02badf60 `umull 0xaaaaaaab ; lsr #34`), although GetSeikaku2nd packs priority * 5.
             return (PowerID)((uint)seikaku2nd / 6);
         }
-		static poketool_seikaku() { /*@B 0x6002168*/ throw null; }
+		static poketool_seikaku() { }
 		public enum Seikaku2nd
 		{
 			TABERU = 0,
