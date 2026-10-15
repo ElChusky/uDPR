@@ -7,14 +7,14 @@ namespace NexAssets
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.Ranking.OrderCalculation ordercalc;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.Ranking.FilterGroupIndex groupindex;
+		private global::NexPlugin.Ranking.FilterGroupIndex groupindex = global::NexPlugin.Ranking.FilterGroupIndex.FILTER_GROUP_INDEX_NONE;
 		[global::UnityEngine.SerializeField]
 		private byte groupnum;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.Ranking.TimeScope timescope;
+		private global::NexPlugin.Ranking.TimeScope timescope = global::NexPlugin.Ranking.TimeScope.TIME_SCOPE_ALL;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 255f)]
-		private byte length;
+		private byte length = 10;
 		public global::NexPlugin.RankingOrderParam GetRankingOrderParam() {
 			NexPlugin.RankingOrderParam param = new NexPlugin.RankingOrderParam();
 			param.orderCalculation = ordercalc;
@@ -24,6 +24,6 @@ namespace NexAssets
 			param.length = length;
 			return param;
 		}
-		public RankingOrderParam() { /*@B 0x6002E40*/ throw null; }
+		public RankingOrderParam() { }
 	}
 }

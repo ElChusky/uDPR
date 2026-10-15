@@ -5,16 +5,16 @@ namespace NexAssets
 	public class Ranking2Board : global::NexAssets.RankingBoardBase
 	{
 		public bool m_ParamFold;
-		private global::NexPlugin.Ranking2Info m_RankingInfo;
-		public global::NexAssets.Ranking2Board.GUIINDEX m_GuiIndex;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG rankArg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG pidArg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG uidArg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG scoreArg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG miscArg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG commonArg;
-		protected override string HeaderTextTag { get { /*@B 0x6002DCD*/ throw null; } }
-		protected override string ParamTextTag { get { /*@B 0x6002DCE*/ throw null; } }
+		private global::NexPlugin.Ranking2Info m_RankingInfo = new Ranking2Info();
+		public global::NexAssets.Ranking2Board.GUIINDEX m_GuiIndex = GUIINDEX.PID | GUIINDEX.RANK | GUIINDEX.SCORE;
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG rankArg = new COLUMN_ARG((int)GUIINDEX_NUM.RANK, "Rank");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG pidArg = new COLUMN_ARG((int)GUIINDEX_NUM.PID, "PID");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG uidArg = new COLUMN_ARG((int)GUIINDEX_NUM.UID, "UID");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG scoreArg = new COLUMN_ARG((int)GUIINDEX_NUM.SCORE, "Score");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG miscArg = new COLUMN_ARG((int)GUIINDEX_NUM.MISC, "Misc");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG commonArg = new COLUMN_ARG((int)GUIINDEX_NUM.COMMON, "Common");
+		protected override string HeaderTextTag { get { return "NexAssetsRanking2HeaderText"; } }
+		protected override string ParamTextTag { get { return "NexAssetsRanking2ParamText"; } }
 		public void ShowRankingBoard(global::NexPlugin.Ranking2Info rankingInfo, bool enable = true) {
 			if (rankingInfo == null)
 				rankingInfo = new Ranking2Info();
@@ -72,7 +72,7 @@ namespace NexAssets
 			}
 			return content;
 		}
-		public Ranking2Board() { /*@B 0x6002DD1*/ throw null; }
+		public Ranking2Board() { }
 		public enum GUIINDEX
 		{
 			PID = 1,

@@ -7,7 +7,7 @@ namespace NexAssets
 		[global::UnityEngine.SerializeField]
 		private uint category;
 		[global::UnityEngine.SerializeField]
-		private string misc;
+		private string misc = "0";
 		private ulong misc_;
 		public void Validate() {
 			misc_ = InspectorUtility.GetUlong(misc);
@@ -20,6 +20,6 @@ namespace NexAssets
 				misc = misc_,
 			};
 		}
-		public Ranking2ScoreData() { /*@B 0x6002E6E*/ throw null; }
+		public Ranking2ScoreData() { }
 	}
 }

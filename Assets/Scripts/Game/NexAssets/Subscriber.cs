@@ -18,7 +18,7 @@ namespace NexAssets
 			{ (int)Functions.GetFriendUserStatuses, new FunctionInfo() { type = (int)Functions.GetFriendUserStatuses, limit = 2, time = 60, name = "SubscriberClient::GetFriendUserStatuses" } },
 			{ (int)Functions.GetUserStatuses, new FunctionInfo() { type = (int)Functions.GetUserStatuses, limit = 15, time = 60, name = "SubscriberClient::GetUserStatuses" } },
 		};
-		private static global::System.Collections.Generic.List<global::NexAssets.Common.ApiCallsFrequency> s_ApiCallsFrequencyList;
+		private static global::System.Collections.Generic.List<global::NexAssets.Common.ApiCallsFrequency> s_ApiCallsFrequencyList = new global::System.Collections.Generic.List<global::NexAssets.Common.ApiCallsFrequency>();
 		public global::NexAssets.Common.ASYNCSTATE PostContentAsync(global::NexPlugin.SubscriberPostContentParam param, global::NexPlugin.Subscriber.PostContentCB callback = null, global::System.IntPtr pNgsFacade = default, int timeOut = 0) {
 			POSTCONTENT_ARG arg = new POSTCONTENT_ARG();
 			arg.param = param;
@@ -289,8 +289,8 @@ namespace NexAssets
 		private bool ApiCallsFrequencyCheck(int type) {
 			return false;
 		}
-		public Subscriber() { /*@B 0x6002EA7*/ throw null; }
-		static Subscriber() { /*@B 0x6002EA8*/ throw null; }
+		public Subscriber() { }
+		static Subscriber() { }
 		private class POSTCONTENT_ARG : global::NexAssets.Common.CORE_ARG
 		{
 			public global::NexPlugin.SubscriberPostContentParam param;

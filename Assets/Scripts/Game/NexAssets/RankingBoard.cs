@@ -5,19 +5,19 @@ namespace NexAssets
 	public class RankingBoard : global::NexAssets.RankingBoardBase
 	{
 		public bool m_ParamFold;
-		private global::NexPlugin.RankingResult m_RankingInfo;
-		public global::NexAssets.RankingBoard.GUIINDEX m_GuiIndex;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG orderArg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG pidArg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG uidArg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG categoryArg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG scoreArg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG group0Arg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG group1Arg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG paramArg;
-		public global::NexAssets.RankingBoardBase.COLUMN_ARG commonArg;
-		protected override string HeaderTextTag { get { /*@B 0x6002DD4*/ throw null; } }
-		protected override string ParamTextTag { get { /*@B 0x6002DD5*/ throw null; } }
+		private global::NexPlugin.RankingResult m_RankingInfo = new RankingResult();
+		public global::NexAssets.RankingBoard.GUIINDEX m_GuiIndex = GUIINDEX.PID | GUIINDEX.ORDER | GUIINDEX.SCORE;
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG orderArg = new COLUMN_ARG((int)GUIINDEX_NUM.ORDER, "Order");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG pidArg = new COLUMN_ARG((int)GUIINDEX_NUM.PID, "PID");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG uidArg = new COLUMN_ARG((int)GUIINDEX_NUM.UID, "UID");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG categoryArg = new COLUMN_ARG((int)GUIINDEX_NUM.CATEGORY, "Category");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG scoreArg = new COLUMN_ARG((int)GUIINDEX_NUM.SCORE, "Score");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG group0Arg = new COLUMN_ARG((int)GUIINDEX_NUM.GROUP0, "Group0");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG group1Arg = new COLUMN_ARG((int)GUIINDEX_NUM.GROUP1, "Group1");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG paramArg = new COLUMN_ARG((int)GUIINDEX_NUM.PARAM, "Param");
+		public global::NexAssets.RankingBoardBase.COLUMN_ARG commonArg = new COLUMN_ARG((int)GUIINDEX_NUM.COMMON, "Common");
+		protected override string HeaderTextTag { get { return "NexAssetsRankingHeaderText"; } }
+		protected override string ParamTextTag { get { return "NexAssetsRankingParamText"; } }
 		public void ShowRankingBoard(global::NexPlugin.RankingResult rankingInfo, bool enable = true) {
 			if (rankingInfo == null)
 				rankingInfo = new RankingResult();
@@ -92,7 +92,7 @@ namespace NexAssets
 			}
 			return content;
 		}
-		public RankingBoard() { /*@B 0x6002DD8*/ throw null; }
+		public RankingBoard() { }
 		public enum GUIINDEX
 		{
 			PID = 1,

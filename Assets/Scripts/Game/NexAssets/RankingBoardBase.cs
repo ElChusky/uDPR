@@ -20,8 +20,8 @@ namespace NexAssets
 		private global::UnityEngine.UI.Scrollbar m_HScrollbar;
 		private global::UnityEngine.GameObject[] m_HeaderObj;
 		private global::UnityEngine.GameObject[] m_CellObj;
-		protected global::System.Collections.Generic.List<global::NexAssets.RankingBoardBase.COLUMN_ARG> m_ColumnList;
-		public global::NexAssets.RankingBoardBase.RankingBoardParam m_RankingBoardParam;
+		protected global::System.Collections.Generic.List<global::NexAssets.RankingBoardBase.COLUMN_ARG> m_ColumnList = new global::System.Collections.Generic.List<global::NexAssets.RankingBoardBase.COLUMN_ARG>();
+		public global::NexAssets.RankingBoardBase.RankingBoardParam m_RankingBoardParam = new RankingBoardParam();
 		private global::UnityEngine.UI.Image RankingPanel { get {
 				if (m_RankingPanel == null)
 				{
@@ -262,7 +262,7 @@ namespace NexAssets
 			rectTransform.sizeDelta = new Vector2(Math.Max(width - VScrollbar.GetComponent<RectTransform>().sizeDelta.x, columnX), Math.Max(height - m_RankingBoardParam.TitleHeight - headerHeight - HScrollbar.GetComponent<RectTransform>().sizeDelta.y, cellHeight));
 			rectTransform.anchoredPosition = new Vector2(0.0f, 0.0f);
 		}
-		protected RankingBoardBase() { /*@B 0x6002DF0*/ throw null; }
+		protected RankingBoardBase() { }
 		public enum SIZE_TYPE
 		{
 			PIXEL = 0,
@@ -294,25 +294,32 @@ namespace NexAssets
 			public int size;
 			public string title;
 			public bool disp;
-			public COLUMN_ARG(int indexType_, string title_) { /*@B 0x6009CC2*/ throw null; }
+			public COLUMN_ARG(int indexType_, string title_) {
+				indexType = indexType_;
+				priority = 0;
+				param = 0;
+				size = 48;
+				title = title_;
+				disp = false;
+			}
 		}
 		[global::System.Serializable]
 		public class RankingBoardParam
 		{
 			public bool GuiFold;
 			public global::UnityEngine.GUISkin GuiSkin;
-			public string ScoreboardTitle;
-			public int TitleHeight;
+			public string ScoreboardTitle = "title";
+			public int TitleHeight = 24;
 			public global::NexAssets.RankingBoardBase.SIZE_TYPE GuiSizeType;
-			public global::NexAssets.RankingBoardBase.POSITION_TYPE GuiPosType;
-			public global::NexAssets.RankingBoardBase.POSITION_ALIGN_V GuiPosAlign_v;
-			public global::NexAssets.RankingBoardBase.POSITION_ALIGN_H GuiPosAlign_h;
+			public global::NexAssets.RankingBoardBase.POSITION_TYPE GuiPosType = POSITION_TYPE.INPUT;
+			public global::NexAssets.RankingBoardBase.POSITION_ALIGN_V GuiPosAlign_v = POSITION_ALIGN_V.CENTER;
+			public global::NexAssets.RankingBoardBase.POSITION_ALIGN_H GuiPosAlign_h = POSITION_ALIGN_H.CENTER;
 			public int GuiPosMargin_v;
 			public int GuiPosMargin_h;
-			public global::UnityEngine.Vector2 RankingBoardPosition;
-			public global::UnityEngine.Vector2 RankingBoardSize;
-			public global::UnityEngine.Vector2 RankingBoardPercentage;
-			public RankingBoardParam() { /*@B 0x6009CC3*/ throw null; }
+			public global::UnityEngine.Vector2 RankingBoardPosition = new global::UnityEngine.Vector2(0f, 0f);
+			public global::UnityEngine.Vector2 RankingBoardSize = new global::UnityEngine.Vector2(320f, 240f);
+			public global::UnityEngine.Vector2 RankingBoardPercentage = new global::UnityEngine.Vector2(100f, 100f);
+			public RankingBoardParam() { }
 		}
 	}
 }

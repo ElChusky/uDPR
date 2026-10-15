@@ -9,9 +9,9 @@ namespace NexAssets
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.Ranking.RankingMode mode;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.Ranking.StatsFlag statsflag;
+		private global::NexPlugin.Ranking.StatsFlag statsflag = global::NexPlugin.Ranking.StatsFlag.STATS_FLAG_TOTAL;
 		[global::UnityEngine.SerializeField]
-		private global::NexAssets.RankingOrderParam rankingOrderParam;
+		private global::NexAssets.RankingOrderParam rankingOrderParam = new RankingOrderParam();
 		public uint GetCategory() {
 			return category;
 		}
@@ -25,6 +25,6 @@ namespace NexAssets
 			// RankingOrderParam.GetRankingOrderParam inlined (its own flag 0x4cc04a2 tested @020e32c4)
 			return rankingOrderParam.GetRankingOrderParam();
 		}
-		public RankingGetRankingParam() { /*@B 0x6002E3E*/ throw null; }
+		public RankingGetRankingParam() { }
 	}
 }

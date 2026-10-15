@@ -8,13 +8,13 @@ namespace NexAssets
 		private uint category;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 100f)]
-		private uint length;
+		private uint length = 10;
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.Ranking2.Ranking2GetOptionFlags optionFlag;
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.Ranking2.Ranking2SortFlags sortFlag;
 		[global::UnityEngine.SerializeField]
-		private global::NexAssets.Ranking2Mode mode;
+		private global::NexAssets.Ranking2Mode mode = Ranking2Mode.RANGE_RANKING;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 255f)]
 		private byte period;
@@ -29,6 +29,6 @@ namespace NexAssets
 				numSeasonsToGoBack = period,
 			};
 		}
-		public Ranking2GetParam() { /*@B 0x6002E6B*/ throw null; }
+		public Ranking2GetParam() { }
 	}
 }

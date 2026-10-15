@@ -8,7 +8,7 @@ namespace NexAssets
 		[global::UnityEngine.SerializeField]
 		private uint offset;
 		[global::UnityEngine.SerializeField]
-		private uint size;
+		private uint size = 20;
 		[global::UnityEngine.SerializeField]
 		private bool useAnyOffset;
 		public void Validate() {
@@ -21,6 +21,6 @@ namespace NexAssets
 			}
 			return new NexPlugin.ResultRange(offset, size);
 		}
-		public ResultRange() { /*@B 0x6002D9A*/ throw null; }
+		public ResultRange() { }
 	}
 }

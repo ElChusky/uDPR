@@ -7,7 +7,7 @@ namespace NexAssets
 		[global::UnityEngine.SerializeField]
 		private uint category;
 		[global::UnityEngine.SerializeField]
-		private global::NexPlugin.Ranking.OrderBy orderby;
+		private global::NexPlugin.Ranking.OrderBy orderby = global::NexPlugin.Ranking.OrderBy.ORDER_BY_DESC;
 		[global::UnityEngine.SerializeField]
 		private global::NexPlugin.Ranking.UpdateMode mode;
 		[global::UnityEngine.SerializeField]
@@ -17,7 +17,7 @@ namespace NexAssets
 		[global::UnityEngine.RangeAttribute(0f, 255f)]
 		private byte group1;
 		[global::UnityEngine.SerializeField]
-		private string param;
+		private string param = "0";
 		private ulong param_;
 		public void Validate() {
 			param_ = InspectorUtility.GetUlong(param);
@@ -33,6 +33,6 @@ namespace NexAssets
 			data.param = param_;
 			return data;
 		}
-		public RankingScoreData() { /*@B 0x6002E43*/ throw null; }
+		public RankingScoreData() { }
 	}
 }
