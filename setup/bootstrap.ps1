@@ -53,7 +53,8 @@ if (-not $Unity) {
     $roots = @(Join-Path $env:ProgramFiles 'Unity\Hub\Editor')
     $secondary = Join-Path $env:APPDATA 'UnityHub\secondaryInstallPath.json'
     if (Test-Path $secondary) {
-        $p = (Get-Content $secondary -Raw).Trim().Trim('"')
+        $raw = Get-Content $secondary -Raw
+        try { $p = [string]($raw | ConvertFrom-Json) } catch { $p = $raw.Trim().Trim('"') }   # a JSON string: "E:\\Unity" -> E:\Unity
         if ($p) { $roots += $p }
     }
     foreach ($r in $roots) {
