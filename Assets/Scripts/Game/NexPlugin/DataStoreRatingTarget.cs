@@ -5,13 +5,21 @@ namespace NexPlugin
 	{
 		internal ulong dataId;
 		internal sbyte slot;
-		public DataStoreRatingTarget() { /*@B 0x6002B96*/ throw null; }
+		public DataStoreRatingTarget() {
+			this.dataId = 0;
+			this.slot = 0;
+		}
 		public void SetDataId(ulong dataId_) { this.dataId = dataId_; }
 		public ulong GetDataId() { return this.dataId; }
 		public void SetSlot(sbyte slot_) { this.slot = slot_; }
-		public sbyte GetSlot() { /*@B 0x6002B9A*/ throw null; }
-		public void Reset() { /*@B 0x6002B9B*/ throw null; }
+		public sbyte GetSlot() { return this.slot; }
+		public void Reset() {
+			this.dataId = 0;
+			this.slot = 0;
+		}
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002B9D*/ throw null; }
+		public override string ToString() {
+			return string.Format("DataStoreRatingTarget: (dataId={0}, slot={1})", this.dataId, this.slot);
+		}
 	}
 }

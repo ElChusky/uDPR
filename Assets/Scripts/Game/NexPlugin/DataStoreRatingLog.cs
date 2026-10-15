@@ -7,12 +7,20 @@ namespace NexPlugin
 		internal ulong pid;
 		internal int ratingValue;
 		internal bool isRated;
-		public DataStoreRatingLog() { /*@B 0x6002ABA*/ throw null; }
+		public DataStoreRatingLog() {
+			this.isRated = false;
+		}
 		public bool IsRated() { return this.isRated; }
 		public ulong GetPrincipalId() { return this.pid; }
 		public int GetRatingValue() { return this.ratingValue; }
-		public global::NexPlugin.NpDateTime GetLockExpirationTime() { /*@B 0x6002ABE*/ throw null; }
+		public global::NexPlugin.NpDateTime GetLockExpirationTime() { return this.lockExpirationTime; }
 		public void Trace() { }
-		public override string ToString() { /*@B 0x6002AC0*/ throw null; }
+		public override string ToString() {
+			if (!this.isRated)
+			{
+				return string.Format("DataStoreRatingLog: (isRated={0}, pid={1}, lockExpirationTime={2})", this.isRated, this.pid, this.lockExpirationTime.ToString());
+			}
+			return string.Format("DataStoreRatingLog: (isRated={0}, pid={1}, lockExpirationTime={2}, ratingValue={3})", this.isRated, this.pid, this.lockExpirationTime.ToString(), this.ratingValue);
+		}
 	}
 }
