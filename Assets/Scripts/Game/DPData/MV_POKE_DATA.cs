@@ -2,6 +2,7 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct MV_POKE_DATA
 	{
 		public int ZoneIDIndex;

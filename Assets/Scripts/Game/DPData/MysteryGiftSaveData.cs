@@ -3,6 +3,7 @@ using DPData.MysteryGift;
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct MysteryGiftSaveData
 	{
 		public const int RecvDataMax = 50;
@@ -10,13 +11,19 @@ namespace DPData
 		public const int SerialDataNoMax = 895;
 		public const int ReserveSize = 66;
 		public const int FlagSize = 256;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 50)]
 		public global::DPData.MysteryGift.RecvData[] recvDatas;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 256)]
 		public byte[] receiveFlag;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 10)]
 		public global::DPData.MysteryGift.OneDayData[] oneDayDatas;
 		public long serialLockTimestamp;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool ngFlag;
 		public byte ngCounter;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 895)]
 		public ushort[] reserved_ushorts;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 66)]
 		public uint[] reserve;
 		public void Clear() {
             recvDatas = new RecvData[RecvDataMax];

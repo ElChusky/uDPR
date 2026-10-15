@@ -3,9 +3,11 @@ using System;
 namespace Pml.PokePara
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct SerializedPokemonCore
 	{
 		[global::UnityEngine.SerializeField]
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 328)]
 		public byte[] buffer;
 		public void CopyFrom(in global::Pml.PokePara.SerializedPokemonCore src) {
 			// @020559c0: tail `b` System.Array.CopyTo

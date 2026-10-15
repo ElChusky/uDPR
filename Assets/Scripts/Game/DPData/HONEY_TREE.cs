@@ -2,10 +2,12 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct HONEY_TREE
 	{
 		public long LastUpdateMinutes;
 		public byte TreeNo;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 21)]
 		public global::DPData.HONEY_DATA[] HoneyData;
 	}
 }

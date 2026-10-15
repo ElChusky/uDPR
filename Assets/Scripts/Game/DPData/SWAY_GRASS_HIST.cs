@@ -2,8 +2,10 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct SWAY_GRASS_HIST
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 3)]
 		public global::DPData.SWAY_GRASS_REC[] SwayGrassRec;
 	}
 }

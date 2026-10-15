@@ -2,12 +2,15 @@
 namespace DPData.MysteryGift
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct MonsData
 	{
 		public ushort no;
 		public ushort form;
 		public ushort itemId;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 4)]
 		public ushort[] wazaNos;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 13)]
 		public string parentName;
 		public byte parentSex;
 		public byte isEgg;

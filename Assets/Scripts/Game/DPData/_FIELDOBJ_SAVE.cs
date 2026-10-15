@@ -2,9 +2,11 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct _FIELDOBJ_SAVE
 	{
 		public const int MAX = 1000;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 1000)]
 		public global::DPData.FIELD_OBJ_SAVE_DATA[] fldobj_sv;
 	}
 }

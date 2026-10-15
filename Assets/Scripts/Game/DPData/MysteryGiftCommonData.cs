@@ -2,6 +2,7 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct MysteryGiftCommonData
 	{
 		public long timestamp;
@@ -11,6 +12,7 @@ namespace DPData
 		public byte receiveFlag;
 		public byte dataType;
 		public byte cardMessageID;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 13)]
 		public byte[] padding;
 		public bool IsReceiveOnce { get { return (receiveFlag & 1) != 0; } }
 		public bool IsReceiveOneDay { get { return (receiveFlag & 4) != 0; } }

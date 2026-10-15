@@ -5,6 +5,7 @@ namespace Dpr.NetworkUtils
 	[global::System.Serializable]
 	public struct UgStationID_to_DigFossilIDList
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 8)]
 		public byte[] DigFossilIDs;
 		public void Init() {
 			DigFossilIDs = new byte[8];

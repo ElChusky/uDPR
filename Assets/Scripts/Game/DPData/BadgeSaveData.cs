@@ -2,9 +2,11 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct BadgeSaveData
 	{
 		public const byte DefaultCleanValue = 150;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 8)]
 		public byte[] CleanValues;
 		public void Clear() {
             CleanValues = new byte[8];

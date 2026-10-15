@@ -4,6 +4,7 @@ namespace DPData
 	internal struct _IMC_SAVEDATA
 	{
 		public global::DPData.IMC_TELEVISION_SAVEDATA[] imc_television_savedata;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 2)]
 		public global::DPData.IMC_CONTEST_SAVEDATA[] imc_contest_savedata;
 		public global::DPData.IMC_ITEM_SAVEDATA imc_item_savedata;
 	}

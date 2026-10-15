@@ -4,6 +4,7 @@ using UnityEngine;
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct UgSaveData
 	{
 		public int ReturnZoneID;
@@ -11,15 +12,21 @@ namespace DPData
 		public int ReturnPosY;
 		public int ReturnGridPosZ;
 		public global::DPData.LOCATION_WORK ReturnZenmetsu_Ground;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 10)]
 		public global::DPData.DigPos[] DigPoints;
 		[global::UnityEngine.SerializeField]
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 15)]
 		public global::Pml.PokePara.SerializedPokemonFull[] EncountPokes;
 		[global::UnityEngine.SerializeField]
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 15)]
 		public global::UnityEngine.Vector3[] EncountPokePositions;
 		public int ReturnUgZoneID;
 		public global::DPData.UGRecord ugRecord;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 50)]
 		public global::DPData.UgPlayerInfo[] FriendPlayerList;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 50)]
 		public global::DPData.UgPlayerInfo[] OtherPlayerList;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 100)]
 		public byte[] TalkedNPCsID;
 		public global::UnityEngine.Vector2Int ReturnLocator { get => new Vector2Int(ReturnGridPosX, ReturnGridPosZ); }
 		public float ReturnHeight { get => ReturnPosY; }

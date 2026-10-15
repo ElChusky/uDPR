@@ -2,6 +2,7 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct CON_PHOTO_FX_DATA
 	{
 		public int groupNo;

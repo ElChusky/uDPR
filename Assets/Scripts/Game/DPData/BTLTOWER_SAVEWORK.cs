@@ -2,6 +2,7 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct BTLTOWER_SAVEWORK
 	{
 		public uint max_master_rank;
@@ -9,6 +10,7 @@ namespace DPData
 		public int old_playmode;
 		public uint btl_point;
 		public uint day_challeng_cnt;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 4)]
 		public global::DPData.BTLTOWER_CLASSDATA[] class_data;
 		public uint challenge_cnt;
 	}

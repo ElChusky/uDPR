@@ -2,8 +2,10 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct POKETCH_POKETORE_COUNT_ARRAY
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 3)]
 		public global::DPData.POKETCH_POKETORE_COUNT[] data;
 		public static void CreatePoketoreData() {
             POKETCH_POKETORE_COUNT_ARRAY value = new POKETCH_POKETORE_COUNT_ARRAY();

@@ -2,6 +2,7 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct BTLTOWER_CLASSDATA
 	{
 		public byte clear_flag;
@@ -10,6 +11,7 @@ namespace DPData
 		public uint rank;
 		public uint rank_down_lose;
 		public int tower_round;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 7)]
 		public ulong[] trainer_random;
 		public uint total_wins;
 		public uint total_wins_loop;

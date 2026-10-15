@@ -2,6 +2,7 @@
 namespace DPData.MysteryGift
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct RecvData
 	{
 		public long timestamp;
@@ -11,7 +12,9 @@ namespace DPData.MysteryGift
 		public byte reserved_byte01;
 		public short reserved_short01;
 		public global::DPData.MysteryGift.MonsData monsData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 7)]
 		public global::DPData.MysteryGift.ItemInfo[] itemDatas;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 7)]
 		public uint[] dressIds;
 		public uint moneyData;
 		public int reserved_int01;

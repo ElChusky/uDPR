@@ -1018,6 +1018,7 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 		FAILED = 3,
 	}
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct SaveData
 	{
 		public const int CURRENT_VERSION_1C = 28;
@@ -1050,21 +1051,30 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 		public const int GMS_WORK_ADDR = 643132;
 		public const int GMS_WORK_SIZE = 201476;
 		public int version;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 500)]
 		public int[] intValues;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 4000, ArraySubType = global::System.Runtime.InteropServices.UnmanagedType.Bool)]
 		public bool[] boolValues;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 1000, ArraySubType = global::System.Runtime.InteropServices.UnmanagedType.Bool)]
 		public bool[] systemFlags;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 32)]
 		public string rivalName;
 		public global::ZoneID zoneID;
 		public float timeScale;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 3000)]
 		public global::Dpr.Item.SaveItem[] saveItem;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 999)]
 		public global::Dpr.Item.SaveUgItem[] saveUgItem;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 4)]
 		public ushort[] saveItemShortcut;
 		public global::Pml.PokePara.SavePokeParty playerParty;
 		public global::Dpr.Box.SaveBoxData boxData;
 		[global::UnityEngine.SerializeField]
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 40)]
 		public global::Dpr.Box.SaveBoxTrayData[] boxTray;
 		public global::DPData.PLAYER_DATA playerData;
 		public global::DPData.ZUKAN_WORK zukanData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 707)]
 		public global::DPData.TR_BATTLE_DATA[] tr_battleData;
 		public global::DPData.TOPMENU_WORK topMenuData;
 		public global::DPData._FIELDOBJ_SAVE fieldObj_Save;
@@ -1072,6 +1082,7 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 		public global::DPData.ENC_SV_DATA enc_sv_data;
 		public global::DPData.PLAYER_SAVE_DATA player_save_data;
 		public global::Dpr.BallDeco.SaveBallDecoData ballDecoData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 200)]
 		public global::Dpr.BallDeco.SaveSealData[] saveSeal;
 		public global::DPData._RANDOM_GROUP randomGroup;
 		public global::DPData.FieldGimmickSaveData fieldGimmickSaveData;
@@ -1084,6 +1095,7 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 		public global::DPData._DENDOU_SAVEDATA dendoudata;
 		public global::DPData.BadgeSaveData badgeSaveData;
 		public global::DPData.BoukenNote boukenNote;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 2956)]
 		public byte[] tvDataOld;
 		public global::DPData.UgSaveData ugSaveData;
 		public global::DPData.GMS_DATA gmsdata;
@@ -1091,10 +1103,13 @@ public class PlayerWork : global::SmartPoint.Components.PlayerPrefsProvider<glob
 		public global::DPData.UnionSaveData unionSaveData;
 		public global::DPData.CON_PHOTO_LANG_DATA contstPhotoLangData;
 		public global::DPData.ZUKAN_PERSONAL_RND_DATA zukanPersonalRndData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 5)]
 		public global::DPData.CON_PHOTO_EXT_DATA[] contestPhotoExtData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 3250)]
 		public global::DPData.GMS_POINT_HISTORY_EXT_DATA[] gmsPointExtData;
 		public global::DPData.UgCountRecord ugCountRecord;
 		public global::ReBuffnameData reBuffNameData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 16)]
 		public byte[] saveDataHash;
 		public global::DPData.RECORD_ADD_DATA recodeAddData;
 		public global::DPData.MysteryGiftSaveData mysteryGiftSaveData;

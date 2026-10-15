@@ -3,6 +3,7 @@ namespace Dpr.NetworkUtils
 {
 	public struct PosListData
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 12)]
 		public global::Dpr.NetworkUtils.PosData[] posDatasList;
 	}
 }

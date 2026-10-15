@@ -3,8 +3,10 @@ using Pml.PokePara;
 namespace Dpr.Box
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct SaveBoxTrayData
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 30)]
 		public global::Pml.PokePara.SerializedPokemonFull[] pokemonParam;
 		public static void Swap(ref global::Dpr.Box.SaveBoxTrayData lhs, ref global::Dpr.Box.SaveBoxTrayData rhs) {
             for (int i = 0; i < BoxWork.TRAY_POKE_MAX; i++)

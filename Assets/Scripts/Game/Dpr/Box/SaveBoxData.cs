@@ -2,15 +2,21 @@
 namespace Dpr.Box
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct SaveBoxData
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 40)]
 		public global::Dpr.Box.SaveBoxData._STR17[] trayName;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 6)]
 		public global::Dpr.Box.SaveBoxData._STR11[] teamName;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 36)]
 		public ushort[] teamPos;
 		public byte teamLock;
 		public byte trayMax;
 		public byte currentTray;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isOpened;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 40)]
 		public byte[] wallPaper;
 		public ushort statusPut;
 		public void Clear() {
@@ -37,13 +43,17 @@ namespace Dpr.Box
             statusPut = 0;
         }
 		[global::System.Serializable]
+		[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 		public struct _STR17
 		{
+			[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 17)]
 			public string str;
 		}
 		[global::System.Serializable]
+		[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 		public struct _STR11
 		{
+			[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 11)]
 			public string str;
 		}
 	}

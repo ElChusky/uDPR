@@ -2,9 +2,12 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct RECORD_ADD_DATA
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 12)]
 		public global::DPData.RECORD_HEAD[] head;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 12)]
 		public global::DPData.RECORD_RANKING[] rankingFlag;
 	}
 }

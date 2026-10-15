@@ -2,8 +2,10 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct DENDOU_SAVE_ADD
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 30)]
 		public global::DPData.DENDOU_SAVE_ADD_POKE_MEMBER[] data;
 		public DENDOU_SAVE_ADD(int langid) {
             data = new DENDOU_SAVE_ADD_POKE_MEMBER[30];

@@ -2,12 +2,14 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct PoffinData : global::System.IComparable<global::DPData.PoffinData>
 	{
 		public byte MstID;
 		public byte Level;
 		public byte Taste;
 		public bool IsNew;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 5)]
 		public byte[] Flavor;
 		public bool IsNull { get { return MstID == 0xFF || Flavor == null || Flavor.Length == 0; } }
 		public PoffinData(byte id, byte lv, byte taste, byte[] flavor) {

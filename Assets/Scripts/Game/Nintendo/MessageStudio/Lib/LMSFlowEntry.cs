@@ -4,6 +4,7 @@ namespace Nintendo.MessageStudio.Lib
 	public struct LMSFlowEntry
 	{
 		public ushort NextNodeIndex;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 3)]
 		public ushort[] Reserved;
 	}
 }

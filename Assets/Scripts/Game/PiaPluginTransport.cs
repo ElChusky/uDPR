@@ -65,10 +65,15 @@ public class PiaPluginTransport
 	}
 	public struct TransportAnalysisData
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 128)]
 		public global::PiaPluginTransport.PacketAnalysisData sendPacketAnalysisData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 128)]
 		public global::PiaPluginTransport.PacketAnalysisData sendUnicastPacketAnalysisData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 128)]
 		public global::PiaPluginTransport.PacketAnalysisData sendBroadcastPacketAnalysisData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 128)]
 		public global::PiaPluginTransport.PacketAnalysisData recvPacketAnalysisData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 32)]
 		public global::PiaPluginTransport.ConnectionAnalysisData connectionAnalysisData;
 		public uint dispatchCount;
 #if SWITCH
@@ -85,6 +90,7 @@ public class PiaPluginTransport
 	}
 	public struct ConnectionAnalysisData
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 32)]
 		public global::PiaPluginTransport.ConnectionAnalysisData.Entry[] entry;
 		public uint passedMilliSec;
 #if SWITCH
@@ -120,9 +126,11 @@ public class PiaPluginTransport
 	}
 	public struct PacketAnalysisData
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 128)]
 		public global::PiaPluginTransport.PacketAnalysisData.Entry[] entry;
 		public int nowEntryNum;
 		public int passedMilliSec;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 32)]
 		public string name;
 		public int totalPacketNum;
 		public int totalPacketSize;

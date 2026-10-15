@@ -9,6 +9,7 @@ namespace Dpr
 			DRAG_DOWN = 1,
 			NONE = 2,
 		}
+		[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 		public struct Data
 		{
 			public byte select_num_lo;

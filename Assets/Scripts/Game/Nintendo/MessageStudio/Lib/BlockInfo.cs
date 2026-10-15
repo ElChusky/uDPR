@@ -4,6 +4,7 @@ namespace Nintendo.MessageStudio.Lib
 	public struct BlockInfo
 	{
 		public global::System.IntPtr Data;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 4)]
 		public byte[] BlockName;
 		public uint DataSize;
 		public ushort Flags;

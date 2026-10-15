@@ -3,6 +3,7 @@ using UnityEngine;
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct POKETCH_DATA
 	{
 		public bool get_flag;
@@ -11,11 +12,16 @@ namespace DPData
 		public global::DPData.POKETCH_COLOR color_type;
 		public sbyte app_count;
 		public sbyte app_index;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 20, ArraySubType = global::System.Runtime.InteropServices.UnmanagedType.Bool)]
 		public bool[] app_flag;
 		public uint pedometer;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 192)]
 		public byte[] dotart_data;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 12)]
 		public uint[] calendar_markbit;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 6)]
 		public global::DPData.MARK_MAP_POS[] mark_map_pos;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 12)]
 		public global::DPData.POKETCH_POKE_HISTORY[] poke_history;
 		private static global::DPData.POKETCH_POKETORE_COUNT tempPoketore_count = default(global::DPData.POKETCH_POKETORE_COUNT);
 		private static int tempPoketoreSaveDataIndex = -1;

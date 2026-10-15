@@ -2,8 +2,10 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct _DENDOU_SAVEDATA
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 30)]
 		public global::DPData.DENDOU_RECORD[] record;
 		public uint savePoint;
 		public uint latestNumber;

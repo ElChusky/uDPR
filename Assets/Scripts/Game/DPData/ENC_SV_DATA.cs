@@ -2,6 +2,7 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct ENC_SV_DATA
 	{
 		public int encountWalkCount;
@@ -11,6 +12,7 @@ namespace DPData
 		public global::DPData.HONEY_TREE HoneyTree;
 		public global::DPData.SWAY_GRASS_HIST SwayGrassHist;
 		public global::DPData.PLAYER_ZONE_HIST PlayerZoneHist;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 2)]
 		public global::DPData.MV_POKE_DATA[] MovePokeData;
 		public bool GenerateValid;
 		public short SprayCount;

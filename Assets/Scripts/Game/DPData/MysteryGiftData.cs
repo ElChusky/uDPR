@@ -2,16 +2,20 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct MysteryGiftData
 	{
 		public const int DataSize = 732;
 		public const int CrcIndex = 720;
 		public global::DPData.MysteryGiftCommonData commonData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 688)]
 		public global::DPData.MysteryGiftBufferData bufferData;
 		public global::DPData.MysteryGiftPokemonData pokemonData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 7)]
 		public global::DPData.MysteryGiftItemData itemData;
 		public global::DPData.MysteryGiftDressUpData dressUpData;
 		public uint moneyData;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 7)]
 		public global::DPData.MysteryGiftUnderGroundItemData underGroundItemData;
 		public ushort crc;
 		public short reserved_short01;

@@ -3,8 +3,10 @@ using System;
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct PoffinSaveData
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 100)]
 		public global::DPData.PoffinData[] Poffins;
 		public int CookingCount;
 		public void Reset() {

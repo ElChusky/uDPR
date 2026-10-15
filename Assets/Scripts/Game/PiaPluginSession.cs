@@ -616,12 +616,14 @@ public class PiaPluginSession
 		public int attributeNum;
 		public global::System.IntPtr pApplicationData;
 		public int applicationDataSize;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isOpenSession;
 		public uint matchmakeSessionOption;
 		public global::System.IntPtr pCountryCode;
 		public uint ratingValue;
 		private uint disconnectionRate;
 		private uint violationRate;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isGeoIpUsed;
 		public global::System.IntPtr pWirelessCryptoKey;
 		private ulong localCommunicationId;
@@ -1451,6 +1453,7 @@ public class PiaPluginSession
 		public uint disconnectionRate;
 		public uint violationRate;
 		public global::System.IntPtr pCountryCode;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isUpdateGeoIp;
 		public global::System.IntPtr pSessionUserPassword;
 		private global::System.IntPtr pMmatchmakeKeyword;
@@ -1514,8 +1517,11 @@ public class PiaPluginSession
 		public ushort currentParticipantNum;
 		public ushort participantNumMin;
 		public ushort participantNumMax;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isOpened;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isRestrictedByUserPassword;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 512)]
 		public byte[] applicationData;
 		public uint applicationDataSize;
 		public ulong targetConstantId;
@@ -1554,8 +1560,11 @@ public class PiaPluginSession
 		public ushort currentParticipantNum;
 		public ushort participantNumMin;
 		public ushort participantNumMax;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isOpened;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isRestrictedByUserPassword;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 512)]
 		public byte[] applicationData;
 		public uint applicationDataSize;
 		public ulong targetConstantId;

@@ -2,9 +2,11 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct KinomiGrowSaveData
 	{
 		public const int KinomiGrowsCount = 128;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 128)]
 		public global::DPData.KinomiGrow[] kinomiGrows;
 		public long LastUpdateMinutes;
 	}

@@ -3,6 +3,7 @@ using UnityEngine;
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct UgSecretBase
 	{
 		public short zoneID;
@@ -11,6 +12,7 @@ namespace DPData
 		public byte direction;
 		public byte expansionStatus;
 		public int goodCount;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 30)]
 		public global::DPData.UgStoneStatue[] ugStoneStatue;
 		public bool isEnable;
 		public bool isNull { get { return zoneID == 0; } }

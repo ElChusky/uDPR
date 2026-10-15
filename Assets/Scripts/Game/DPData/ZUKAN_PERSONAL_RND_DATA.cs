@@ -2,12 +2,16 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct ZUKAN_PERSONAL_RND_DATA
 	{
 		private const int PattiiruPersonalRndSize = 4;
 		private const int ReservedSize = 17;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 4)]
 		public uint[] PattiiruSeePersonalRnds;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 4)]
 		public uint[] PattiiruGetPersonalRnds;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 17)]
 		public uint[] Reserved;
 		public void Clear() {
             PattiiruSeePersonalRnds = new uint[PattiiruPersonalRndSize];

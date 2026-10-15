@@ -2,9 +2,11 @@
 namespace Pml.PokePara
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct SerializedPokemonFull
 	{
 		[global::UnityEngine.SerializeField]
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 344)]
 		public byte[] buffer;
 		public void CopyFrom(in global::Pml.PokePara.SerializedPokemonFull src) {
             // @02055c50: tail `b` System.Array.CopyTo

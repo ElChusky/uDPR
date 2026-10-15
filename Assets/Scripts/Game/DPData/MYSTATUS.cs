@@ -2,10 +2,12 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct MYSTATUS
 	{
 		public const int BADGE_MAX = 8;
 		public const int TRAINER_RANK_MAX = 5;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 13)]
 		public string name;
 		public uint id;
 		public int gold;

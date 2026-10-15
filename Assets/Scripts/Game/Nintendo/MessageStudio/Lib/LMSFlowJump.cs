@@ -5,6 +5,7 @@ namespace Nintendo.MessageStudio.Lib
 	{
 		public ushort NextNodeIndex;
 		public ushort FileIndex;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 2)]
 		public ushort[] Reserved;
 	}
 }

@@ -926,6 +926,7 @@ public class PiaPlugin
 	public class TraceFlagSettingNative : global::System.IDisposable
 	{
 		private const uint ArraySize = 75u;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 75)]
 		private global::PiaPlugin.TraceFlag[] flags = new TraceFlag[ArraySize];
 		public uint count { get; private set; }
 		internal TraceFlagSettingNative(global::PiaPlugin.TraceFlagSetting setting) {
@@ -1044,6 +1045,7 @@ public class PiaPlugin
 		public ushort reliableProtocolNum;
 		public ushort broadcastReliableProtocolNum;
 		public ushort streamBroadcastReliableProtocolNum;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isAnalysisResultPrintEnabled;
 		public InitializeTransportSetting() { }
 	}
@@ -1051,6 +1053,7 @@ public class PiaPlugin
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
 	public class InitializeCloneSetting
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isEnable;
 		public ushort broadcastEventProtocolNum;
 		public ushort broadcastEventProtocolBufferNum;
@@ -1061,8 +1064,11 @@ public class PiaPlugin
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
 	public class InitializeSyncSetting
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isEnable;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isChangeDelayEnabled;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 16)]
 		public uint[] dataUnitSize = new uint[16];
 		public InitializeSyncSetting() { }
 	}
@@ -1070,6 +1076,7 @@ public class PiaPlugin
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
 	public class InitializeReckoningSetting
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isEnable;
 		public ushort reckoning1dProtocolNum;
 		public ushort reckoning3dProtocolNum;
@@ -1088,6 +1095,7 @@ public class PiaPlugin
 	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential)]
 	public class StartupNetworkSetting
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isAutoInitializeNetworkInterface;
 		public StartupNetworkSetting() { }
 	}
@@ -1113,15 +1121,18 @@ public class PiaPlugin
 	{
 		public ushort relayRouteNumMax;
 		public ushort relayRouteRttMax;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isAutoInitializeLdn;
 		public uint silenceTimeMax;
 		public uint keepAliveSendingInterval;
 		public int updateMeshSendingInterval;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isEachPlayerCountedAsParticipant;
 		public global::PiaPlugin.CryptoSetting cryptoSetting;
 		public global::System.IntPtr pLocalAddress;
 		public uint v4Subnetmask;
 		public int v6InterfaceIndex;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool useBroadcastOnSendingToAllStation;
 		internal StartupSessionSettingNative(global::PiaPlugin.StartupSessionSetting setting) {
             relayRouteNumMax = setting.relayRouteNumMax;
@@ -1148,8 +1159,11 @@ public class PiaPlugin
 	{
 		public global::PiaPluginSession.CreateSessionSetting createSessionSetting;
 		public global::PiaPluginSession.SessionSearchCriteria[] sessionSearchCriteriaList;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isMyBlockListUsed = true;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isOthersBlockListUsed = true;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isUniqueKeywordEnabled;
 		public JoinRandomSessionSetting() { }
 	}
@@ -1159,7 +1173,9 @@ public class PiaPlugin
 	{
 		public byte natTraversalFailureRatioForHost;
 		public byte natTraversalFailureRatioForClient;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isNatTypeCheckFailure;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool isDnsResolutionFailure;
 		public NatDebugSetting() { }
 	}

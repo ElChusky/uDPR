@@ -2,6 +2,7 @@
 namespace DPData.MysteryGift
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct ItemInfo
 	{
 		public ushort itemNo;

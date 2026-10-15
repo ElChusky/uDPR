@@ -2,9 +2,11 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct MysteryGiftUnderGroundItemData
 	{
 		public const int InfoSize = 7;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 7)]
 		public global::DPData.MysteryGift.ItemInfo[] itemInfos;
 	}
 }

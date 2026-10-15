@@ -2,12 +2,14 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct SYSTEMDATA
 	{
 		public global::DPData.GMTIME StartTime;
 		public global::DPData.GMTIME SaveTime;
 		public global::DPData.GMTIME PenaltyTime;
 		public global::DPData.GMTIME DailyEventLastTime;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 208)]
 		public byte[] nxSnapshot;
 		public uint fd_bgmEvnet;
 		public long reserved_long0;

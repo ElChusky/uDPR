@@ -2,9 +2,12 @@
 namespace Dpr.BallDeco
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct SaveBallDecoExtraData
 	{
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 99)]
 		public int[] AttachCapsuleTrays;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 99)]
 		public int[] AttachCapsulePositions;
 		public void Clear() {
             AttachCapsuleTrays = new int[99];

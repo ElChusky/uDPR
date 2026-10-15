@@ -2,13 +2,17 @@
 namespace Dpr.BallDeco
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct CapsuleData
 	{
 		public uint AttachPokemonId;
 		public uint AttachPersonalRnd;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool Is3DEditMode;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.U1)]
 		public bool IsAppliedTemplate;
 		public byte AffixSealCount;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 20)]
 		public global::Dpr.BallDeco.AffixSealData[] AffixSealDatas;
 		public void Clear() {
             AttachPokemonId = 0;

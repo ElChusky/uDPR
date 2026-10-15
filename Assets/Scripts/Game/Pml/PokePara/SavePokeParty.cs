@@ -2,9 +2,11 @@
 namespace Pml.PokePara
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
 	public struct SavePokeParty
 	{
 		[global::UnityEngine.SerializeField]
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 6)]
 		private global::Pml.PokePara.SerializedPokemonFull[] members;
 		[global::UnityEngine.SerializeField]
 		private byte memberCount;

@@ -2,6 +2,7 @@
 namespace DPData
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct MysteryGiftPokemonData
 	{
 		public const int NameInfoSize = 9;
@@ -10,13 +11,17 @@ namespace DPData
 		public uint romVersion;
 		public uint randomValue;
 		public uint colorRandomValue;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 9)]
 		public global::DPData.MysteryGift.NameInfo[] nickNames;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 9)]
 		public global::DPData.MysteryGift.NameInfo[] parentNames;
 		public ushort getArea;
 		public ushort captureArea;
 		public ushort captureBallId;
 		public ushort itemId;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 4)]
 		public ushort[] skillIDs;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 4)]
 		public ushort[] eggSkillIDs;
 		public ushort monsNo;
 		public byte formNo;
@@ -27,7 +32,9 @@ namespace DPData
 		public byte tokusei;
 		public byte isRare;
 		public byte captureLevel;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 16)]
 		public byte[] ribbonIds;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 16)]
 		public byte[] twoRibbonIds;
 		public byte hpRandom;
 		public byte attackRandom;

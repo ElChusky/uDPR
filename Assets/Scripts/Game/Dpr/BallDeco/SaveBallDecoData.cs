@@ -2,9 +2,11 @@
 namespace Dpr.BallDeco
 {
 	[global::System.Serializable]
+	[global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4, CharSet = global::System.Runtime.InteropServices.CharSet.Unicode)]
 	public struct SaveBallDecoData
 	{
 		public byte CapsuleCount;
+		[global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst = 99)]
 		public global::Dpr.BallDeco.CapsuleData[] CapsuleDatas;
 		public void Clear() {
             CapsuleCount = 12;
