@@ -7,7 +7,9 @@ namespace Dpr.Battle.View
 		public static void Del<T>(ref T p) {
             p = default;
         }
-		public static void Del<T>(T p) { /*@B 0x6005FAA*/ throw null; }
+		public static void Del<T>(T p) {
+            Del(ref p);
+        }
 		public static void DelAry<T>(ref T[] p) {
             if (p != null)
             {
@@ -71,7 +73,9 @@ namespace Dpr.Battle.View
 
             Del(ref p);
         }
-		public static void DelIDisposable<T>(T p) where T : global::System.IDisposable { /*@B 0x6005FB6*/ throw null; }
+		public static void DelIDisposable<T>(T p) where T : global::System.IDisposable {
+            DelIDisposable(ref p);
+        }
 		public static void ClearICollection<T>(ref global::System.Collections.Generic.List<T> p) {
             if (p != null)
                 p.Clear();

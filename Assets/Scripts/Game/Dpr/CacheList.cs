@@ -5,16 +5,52 @@ namespace Dpr
 	{
 		private global::System.Collections.Generic.List<T> _caches;
 		private int _num;
-		public global::System.Collections.Generic.List<T> caches { get { /*@B 0x600311C*/ throw null; } }
-		public int maxNum { get { /*@B 0x600311D*/ throw null; } }
-		public T this[int i] { get { /*@B 0x6003126*/ throw null; } }
-		public CacheList(int num) { /*@B 0x600311E*/ throw null; }
-		public void Add(T item) { /*@B 0x600311F*/ throw null; }
-		public void Remove(T item) { /*@B 0x6003120*/ throw null; }
-		public T Find(global::System.Func<T, bool> onCompare) { /*@B 0x6003121*/ throw null; }
-		public void MoveLast(T item, global::System.Func<T, bool> onRemove = null) { /*@B 0x6003122*/ throw null; }
-		public void Clear(global::System.Action<T> onRemove = null) { /*@B 0x6003123*/ throw null; }
-		public void Reset(int num = 0, global::System.Action<T> onRemove = null) { /*@B 0x6003124*/ throw null; }
-		public int Count() { /*@B 0x6003125*/ throw null; }
+		public global::System.Collections.Generic.List<T> caches { get { return _caches; } }
+		public int maxNum { get { return _num; } }
+		public T this[int i] { get { return _caches[i]; } }
+		public CacheList(int num) {
+			_num = num;
+			_caches = new global::System.Collections.Generic.List<T>();
+		}
+		public void Add(T item) {
+			int index = _caches.IndexOf(item);
+			if (index >= 0)
+				_caches.RemoveAt(index);
+			_caches.Add(item);
+		}
+		public void Remove(T item) {
+			_caches.Remove(item);
+		}
+		public T Find(global::System.Func<T, bool> onCompare) {
+			return _caches.Find(x => onCompare(x));
+		}
+		public void MoveLast(T item, global::System.Func<T, bool> onRemove = null) {
+			_caches.Remove(item);
+			_caches.Add(item);
+			if (_caches.Count > _num)
+			{
+				for (int i = _caches.Count - _num - 1; i >= 0; i--)
+				{
+					if (onRemove != null && onRemove(_caches[i]))
+						_caches.RemoveAt(i);
+				}
+			}
+		}
+		public void Clear(global::System.Action<T> onRemove = null) {
+			for (int i = _caches.Count - 1; i >= 0; i--)
+				onRemove?.Invoke(_caches[i]);
+			_caches.Clear();
+		}
+		public void Reset(int num = 0, global::System.Action<T> onRemove = null) {
+			_num = num;
+			for (int i = _caches.Count - 1; i >= num; i--)
+			{
+				onRemove?.Invoke(_caches[i]);
+				_caches.Remove(_caches[i]);
+			}
+		}
+		public int Count() {
+			return _caches.Count;
+		}
 	}
 }

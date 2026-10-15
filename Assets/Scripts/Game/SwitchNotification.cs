@@ -33,7 +33,39 @@ public class SwitchNotification
 	private static void SwitchInvokeNotificationNativeExample() { }
 #endif
 #if SWITCH
-	private static void NotificationMessageReceived(global::UnityEngine.Switch.Notification.Message message) { /*@B 0x6000438*/ throw null; }
+	private static void NotificationMessageReceived(global::UnityEngine.Switch.Notification.Message message) {
+		// @02caced0: the OnMessage_* / OnFocusState_* helpers are inlined into both switches.
+		switch (message)
+		{
+			case global::UnityEngine.Switch.Notification.Message.ExitRequest:
+				OnMessage_ExitRequest();
+				break;
+			case global::UnityEngine.Switch.Notification.Message.FocusStateChanged:
+				OnMessage_FocusStateChanged();
+				break;
+			case global::UnityEngine.Switch.Notification.Message.Resume:
+				OnMessage_Resume();
+				break;
+			case global::UnityEngine.Switch.Notification.Message.OperationModeChanged:
+				OnMessage_OperationModeChanged();
+				break;
+			case global::UnityEngine.Switch.Notification.Message.PerformanceModeChanged:
+				OnMessage_PerformanceModeChanged();
+				break;
+		}
+		switch (global::UnityEngine.Switch.Notification.GetCurrentFocusState())
+		{
+			case global::UnityEngine.Switch.Notification.FocusState.InFocus:
+				OnFocusState_InFocus();
+				break;
+			case global::UnityEngine.Switch.Notification.FocusState.OutOfFocus:
+				OnFocusState_OutOfFocus();
+				break;
+			case global::UnityEngine.Switch.Notification.FocusState.Background:
+				OnFocusState_Background();
+				break;
+		}
+	}
 #endif
 	// @02cad4d0: SetResumeNotificationEnabled(true); SetFocusHandlingModeSuspend() (inlined, its flag 0x4edbc0d tested @02cad514);
 	// notificationMessageReceived += NotificationMessageReceived; then the native example (tail `b 0x15d5f70` = the inlined pinvoke).

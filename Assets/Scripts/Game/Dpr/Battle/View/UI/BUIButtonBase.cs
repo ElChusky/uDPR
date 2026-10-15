@@ -22,8 +22,10 @@ namespace Dpr.Battle.View.UI
 		private global::UnityEngine.RectTransform _cachedRectTransform;
 		protected global::System.Action _onSelected;
 		protected global::System.Action _onSubmit;
-		public bool IsSelected { get { /*@B 0x600608B*/ throw null; } set { /*@B 0x600608C*/ throw null; } }
-		public global::UnityEngine.RectTransform rectTransform { get { /*@B 0x600608D*/ throw null; } }
+		public bool IsSelected { get { return _isSelected; } set {
+			OnChangeState(value ? global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType.Selected : global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType.None);
+		} }
+		public global::UnityEngine.RectTransform rectTransform { get { return this.GetComponentThis(ref _cachedRectTransform); } }
 		public global::Dpr.Battle.View.UI.BUIButtonBase<T>.StateType State { get { /*@B 0x600608E*/ throw null; } }
 		public int Index { get { /*@B 0x600608F*/ throw null; } protected set { /*@B 0x6006090*/ throw null; } }
 		public string Text { get { /*@B 0x6006091*/ throw null; } set { /*@B 0x6006092*/ throw null; } }

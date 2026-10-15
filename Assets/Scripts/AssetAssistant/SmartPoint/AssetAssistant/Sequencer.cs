@@ -286,7 +286,11 @@ namespace SmartPoint.AssetAssistant
 				return null;
 			return _instance.gameObject.AddComponent(componentType);
 		}
-		public static T AddComponent<T>() where T : global::UnityEngine.Component { /*@B AssetAssistant:0x60001A6*/ throw null; }
+		public static T AddComponent<T>() where T : global::UnityEngine.Component {
+			if (Instance == null)
+				return null;
+			return AddComponent(typeof(T)) as T;
+		}
 		public static void RemoveComponent(global::System.Type componentType) {
 			if (Instance == null)
 				return;
@@ -294,7 +298,11 @@ namespace SmartPoint.AssetAssistant
 			if (component != null)
 				UnityEngine.Object.DestroyImmediate(component);
 		}
-		public static void RemoveCompoent<T>() where T : global::UnityEngine.Component { /*@B AssetAssistant:0x60001A8*/ throw null; }
+		public static void RemoveCompoent<T>() where T : global::UnityEngine.Component {
+			if (Instance == null)
+				return;
+			RemoveComponent(typeof(T));
+		}
 		private static void LogReceiver(string condition, string stackTrace, global::UnityEngine.LogType type) {
 			_messageList[LogMessage.nextID].AdvanceAndSet(condition, stackTrace, type);
 			if (_messageQueue == null)

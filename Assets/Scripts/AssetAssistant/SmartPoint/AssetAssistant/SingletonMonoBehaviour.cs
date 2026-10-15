@@ -7,13 +7,63 @@ namespace SmartPoint.AssetAssistant
 		protected static T _instance;
 		private static global::UnityEngine.SceneManagement.Scene lastScene;
 		public static bool isQuit { get; private set; }
-		public static bool isInstantiated { get { /*@B AssetAssistant:0x60001B4*/ throw null; } }
-		public static T Instance { get { /*@B AssetAssistant:0x60001B6*/ throw null; } }
-		public static global::UnityEngine.GameObject GetGameObject() { /*@B AssetAssistant:0x60001B5*/ throw null; }
-		protected virtual bool Awake() { /*@B AssetAssistant:0x60001B7*/ throw null; }
-		protected virtual void OnApplicationQuit() { /*@B AssetAssistant:0x60001B8*/ throw null; }
-		public static T Instantiate(string instanceName = null, global::UnityEngine.Transform parent = null) { /*@B AssetAssistant:0x60001B9*/ throw null; }
-		protected SingletonMonoBehaviour() { /*@B AssetAssistant:0x60001BA*/ throw null; }
-		static SingletonMonoBehaviour() { /*@B AssetAssistant:0x60001BB*/ throw null; }
+		public static bool isInstantiated { get { return !(_instance == null); } }
+		public static T Instance { get {
+			if (_instance == null)
+			{
+				if (!global::UnityEngine.Application.isPlaying)
+					isQuit = false;
+				if (isQuit)
+					return null;
+				if (lastScene.IsValid() && lastScene == global::UnityEngine.SceneManagement.SceneManager.GetActiveScene())
+					return null;
+				lastScene = global::UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+				// RGCTX slot 4 = UnityEngine.Object.FindObjectOfType<T> (il2cpp.h SingletonMonoBehaviour_T__RGCTXs)
+				_instance = FindObjectOfType<T>();
+				if (_instance != null)
+					_instance.Awake();
+			}
+			else if (!_instance.enabled)
+			{
+				_instance.enabled = true;
+			}
+			return _instance;
+		} }
+		public static global::UnityEngine.GameObject GetGameObject() {
+			if (_instance == null)
+				return null;
+			return _instance.gameObject;
+		}
+		protected virtual bool Awake() {
+			if (_instance != null && _instance.enabled)
+			{
+				if (this != _instance)
+				{
+					enabled = false;
+					return false;
+				}
+				return true;
+			}
+			_instance = this as T;
+			return true;
+		}
+		protected virtual void OnApplicationQuit() {
+			isQuit = true;
+		}
+		public static T Instantiate(string instanceName = null, global::UnityEngine.Transform parent = null) {
+			// RGCTX slot 6 = get_Instance, slot 8 = GameObject.GetComponent<T> (il2cpp.h SingletonMonoBehaviour_T__RGCTXs)
+			if (Instance == null)
+				_instance = new global::UnityEngine.GameObject(typeof(T).ToString(), typeof(T)).GetComponent<T>();
+			if (_instance != null)
+			{
+				if (!string.IsNullOrEmpty(instanceName))
+					_instance.name = instanceName;
+				if (parent != null)
+					_instance.transform.SetParent(parent);
+			}
+			return _instance;
+		}
+		protected SingletonMonoBehaviour() { }
+		static SingletonMonoBehaviour() { }
 	}
 }

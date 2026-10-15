@@ -13,7 +13,12 @@ public static class ExtensionMethods
 		foreach (Transform child in self.transform)
 			child.gameObject.SetLayerRecursively(layer);
 	}
-	public static T AddComponentIfNecessary<T>(this global::UnityEngine.GameObject self) where T : global::UnityEngine.Component { /*@B 0x600041B*/ throw null; }
+	public static T AddComponentIfNecessary<T>(this global::UnityEngine.GameObject self) where T : global::UnityEngine.Component {
+		T component = self.GetComponent<T>();
+		if (component != null)
+			return component;
+		return self.AddComponent<T>();
+	}
 	public static void SetPosition(this global::UnityEngine.Transform self, global::UnityEngine.Vector3 value) { self.position = value; }
 	public static void SetPositionX(this global::UnityEngine.Transform self, float value) { var v = self.position; v.x = value; self.position = v; }
 	public static void SetPositionY(this global::UnityEngine.Transform self, float value) { var v = self.position; v.y = value; self.position = v; }
@@ -34,8 +39,14 @@ public static class ExtensionMethods
 	public static void SetLocalScaleX(this global::UnityEngine.Transform self, float value) { var v = self.localScale; v.x = value; self.localScale = v; }
 	public static void SetLocalScaleY(this global::UnityEngine.Transform self, float value) { var v = self.localScale; v.y = value; self.localScale = v; }
 	public static void SetLocalScaleZ(this global::UnityEngine.Transform self, float value) { var v = self.localScale; v.z = value; self.localScale = v; }
-	public static T GetComponentThis<T>(this global::UnityEngine.Component self, ref T value) where T : global::UnityEngine.Component { /*@B 0x6000430*/ throw null; }
-	public static T AddComponentIfNecessary<T>(this global::UnityEngine.Component self) where T : global::UnityEngine.Component { /*@B 0x6000431*/ throw null; }
+	public static T GetComponentThis<T>(this global::UnityEngine.Component self, ref T value) where T : global::UnityEngine.Component {
+		if (value == null)
+			value = self.GetComponent<T>();
+		return value;
+	}
+	public static T AddComponentIfNecessary<T>(this global::UnityEngine.Component self) where T : global::UnityEngine.Component {
+		return self.gameObject.AddComponentIfNecessary<T>();
+	}
 	public static void SetActive(this global::UnityEngine.Component self, bool value) { self.gameObject.SetActive(value); }
 	public static bool IsNullOrEmpty(this global::System.Collections.IList self) { return self == null || self.Count == 0; }
 	public static bool IsBounds(this global::System.Collections.IList self, int index) { return index >= 0 && index < self.Count; }

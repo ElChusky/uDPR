@@ -8,7 +8,7 @@ namespace Dpr.Battle.View
 		public virtual bool IsPlaying { get; }
 		public abstract void Play(global::System.Action onComplete = null);
 		public abstract void Stop();
-		protected BattleViewPlayable() { /*@B 0x6006079*/ throw null; }
+		protected BattleViewPlayable() { }
 		protected enum StateType
 		{
 			None = 0,

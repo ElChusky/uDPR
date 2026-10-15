@@ -5,6 +5,9 @@ namespace Dpr.Battle.View
 	{
 		public T from;
 		public T to;
-		public FromToPair(T from, T to) { /*@B 0x6005F83*/ throw null; }
+		public FromToPair(T from, T to) {
+			this.from = from;
+			this.to = to;
+		}
 	}
 }

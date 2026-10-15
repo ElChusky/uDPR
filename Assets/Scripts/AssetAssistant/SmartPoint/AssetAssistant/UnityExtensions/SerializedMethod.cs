@@ -58,6 +58,14 @@ namespace SmartPoint.AssetAssistant.UnityExtensions
                 return default;
             return methodInfo.MethodHandle;
         }
-		public T GetDelegate<T>() where T : class, global::System.ICloneable, global::System.Runtime.Serialization.ISerializable { /*@B AssetAssistant:0x600020C*/ throw null; }
+		public T GetDelegate<T>() where T : class, global::System.ICloneable, global::System.Runtime.Serialization.ISerializable {
+			global::System.Type type = typeof(T);
+			if (!type.IsSubclassOf(typeof(global::System.Delegate)) && !type.Equals(typeof(global::System.Delegate)))
+				return null;
+			MethodInfo methodInfo = GetMethodInfo();
+			if (methodInfo == null)
+				return null;
+			return global::System.Delegate.CreateDelegate(type, methodInfo) as T;
+		}
 	}
 }
