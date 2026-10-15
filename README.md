@@ -1,7 +1,7 @@
 # uDPR
 
 **Pokémon Brilliant Diamond as a native Windows game** - a Unity project that rebuilds the game (Nintendo Switch, v1.3.0) from
-**your own dump**, and builds a standalone Windows game from it. The game logic runs as compiled C#, not under emulation.
+**your own dump**, and builds a standalone game from it. The game logic runs as compiled C#, not under emulation.
 
 > **Made with AI.** This project was made almost entirely with AI - Claude (Anthropic), through Claude Code - directed, tested and
 > reviewed by a human.
@@ -18,11 +18,6 @@ dumped from your own Switch. How to dump it is not covered here.
 
 **Beta.** The game boots, plays and saves, both in the Unity editor and as a standalone Windows build. Large parts of the game have
 not been played through on PC yet, so expect bugs - please report them (see [Contributing](#contributing)).
-
-Known issues:
-
-- On some PCs the standalone game may stop after the Unity logo, with no CPU use. If that happens, open `Dpr_Data\boot.config`
-  next to `Dpr.exe` and set `gfx-enable-gfx-jobs=0` and `gfx-enable-native-gfx-jobs=0`.
 
 ## Features
 
