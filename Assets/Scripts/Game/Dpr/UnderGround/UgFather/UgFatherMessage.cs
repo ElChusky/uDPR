@@ -3,10 +3,27 @@ namespace Dpr.UnderGround.UgFather
 {
 	public static class UgFatherMessage
 	{
-		public static void ShowHealingChoices(global::System.Action onFinishedShowAllMessage, global::System.Action onFinishedCloseWindow) { /*@B 0x6003224*/ throw null; }
-		public static void ShowHealingBegin(global::System.Action onFinishedShowAllMessage, global::System.Action onFinishedCloseWindow) { /*@B 0x6003225*/ throw null; }
-		public static void ShowHealingEnd(global::System.Action onFinishedShowAllMessage, global::System.Action onFinishedCloseWindow) { /*@B 0x6003226*/ throw null; }
-		public static void Close() { /*@B 0x6003227*/ throw null; }
-		private static global::Dpr.MsgWindow.MsgWindowParam CreateParam(string labelName, global::System.Action onFinishedShowAllMessage, global::System.Action onFinishedCloseWindow) { /*@B 0x6003228*/ throw null; }
+		public static void ShowHealingChoices(global::System.Action onFinishedShowAllMessage, global::System.Action onFinishedCloseWindow) {
+			global::Dpr.MsgWindow.MsgWindowManager.OpenMsg(CreateParam("DLP_underground_533", onFinishedShowAllMessage, onFinishedCloseWindow));
+		}
+		public static void ShowHealingBegin(global::System.Action onFinishedShowAllMessage, global::System.Action onFinishedCloseWindow) {
+			global::Dpr.Message.MessageWordSetHelper.SetPlayerNickNameWord(0);
+			global::Dpr.MsgWindow.MsgWindowManager.OpenMsg(CreateParam("DLP_underground_535", onFinishedShowAllMessage, onFinishedCloseWindow));
+		}
+		public static void ShowHealingEnd(global::System.Action onFinishedShowAllMessage, global::System.Action onFinishedCloseWindow) {
+			global::Dpr.Message.MessageWordSetHelper.SetPlayerNickNameWord(0);
+			global::Dpr.MsgWindow.MsgWindowManager.OpenMsg(CreateParam("DLP_underground_536", onFinishedShowAllMessage, onFinishedCloseWindow));
+		}
+		public static void Close() {
+			global::Dpr.MsgWindow.MsgWindowManager.CloseMsg();
+		}
+		private static global::Dpr.MsgWindow.MsgWindowParam CreateParam(string labelName, global::System.Action onFinishedShowAllMessage, global::System.Action onFinishedCloseWindow) {
+			var param = new global::Dpr.MsgWindow.MsgWindowParam();
+			param.useMsgFile = global::Dpr.Message.MessageManager.Instance.GetMsgFile("dlp_underground");
+			param.labelName = labelName;
+			param.onFinishedShowAllMessage = onFinishedShowAllMessage;
+			param.onFinishedCloseWindow = onFinishedCloseWindow;
+			return param;
+		}
 	}
 }

@@ -7,13 +7,106 @@ namespace Dpr.UnderGround.UgFather
 		private const float HealingWaitTime = 1f;
 		private global::Dpr.UI.ContextMenuItem selectedItem;
 		private global::Dpr.UnderGround.UgFather.UgFatherHealing.State state;
-		private global::ContextMenuID[] contextMenuIds;
-		public override void OnTalkEvent() { /*@B 0x6003209*/ throw null; }
-		public override void OnUpdate(float deltaTime) { /*@B 0x600320A*/ throw null; }
-		private void ShowPcContextMenu() { /*@B 0x600320B*/ throw null; }
-		private void ChangeState(global::Dpr.UnderGround.UgFather.UgFatherHealing.State state) { /*@B 0x600320C*/ throw null; }
-		private void EventEnd() { /*@B 0x600320D*/ throw null; }
-		public UgFatherHealing() { /*@B 0x600320E*/ throw null; }
+		private global::ContextMenuID[] contextMenuIds = new global::ContextMenuID[] { global::ContextMenuID.UNDERGROUND_REST, global::ContextMenuID.UNDERGROUND_CANCEL };
+		public override void OnTalkEvent() {
+			// base.OnTalkEvent is a one-instruction tail jump to the private LookAtPlayer
+			base.OnTalkEvent();
+			ChangeState(State.ChoicesMessage);
+		}
+		public override void OnUpdate(float deltaTime) {
+			switch (state)
+			{
+				case State.BeginMessageWait:
+				case State.EndMessageWait:
+					if (global::Dpr.UnderGround.UgFather.UgFatherInput.Decide)
+						global::Dpr.UnderGround.UgFather.UgFatherMessage.Close();
+					break;
+				case State.HealingFadOut:
+					if (!global::SmartPoint.Components.Fader.isBusy)
+						ChangeState(State.HealingWait);
+					break;
+				case State.HealingWait:
+					waitTime += deltaTime;
+					if (waitTime >= HealingWaitTime)
+						ChangeState(State.HealingFadIn);
+					break;
+				case State.HealingFadIn:
+					if (!global::SmartPoint.Components.Fader.isBusy)
+						ChangeState(State.EndMessage);
+					break;
+			}
+		}
+		private void ShowPcContextMenu() {
+			var param = new global::Dpr.UI.ContextMenuWindow.Param();
+			param.itemParams = new global::Dpr.UI.ContextMenuItem.Param[contextMenuIds.Length];
+			for (int i = 0; i < contextMenuIds.Length; i++)
+			{
+				var itemParam = new global::Dpr.UI.ContextMenuItem.Param();
+				itemParam.menuId = contextMenuIds[i];
+				param.itemParams[i] = itemParam;
+			}
+			param.position = new global::UnityEngine.Vector2(1050f, 300f);
+			param.pivot = new global::UnityEngine.Vector2(1f, 1f);
+			param.useLoopAndRepeat = false;
+			var window = global::Dpr.UI.UIManager.Instance.CreateUIWindow<global::Dpr.UI.ContextMenuWindow>(global::UIWindowID.CONTEXTMENU);
+			selectedItem = null;
+			window.onClicked = item =>
+			{
+				selectedItem = item;
+				return true;
+			};
+			window.onClosed = __ =>
+			{
+				if (selectedItem != null && selectedItem.param.menuId != global::ContextMenuID.UNDERGROUND_CANCEL)
+				{
+					if (selectedItem.param.menuId == global::ContextMenuID.UNDERGROUND_REST)
+					{
+						global::PlayerWork.playerParty.RecoverAll();
+						global::Dpr.UnderGround.UgFather.UgFatherMessage.Close();
+					}
+				}
+				else
+				{
+					global::Dpr.UnderGround.UgFather.UgFatherMessage.Close();
+					EventEnd();
+				}
+				selectedItem = null;
+			};
+			window.Open(param);
+		}
+		private void ChangeState(global::Dpr.UnderGround.UgFather.UgFatherHealing.State state) {
+			this.state = state;
+			switch (state)
+			{
+				case State.ChoicesMessage:
+					global::Dpr.UnderGround.UgFather.UgFatherMessage.ShowHealingChoices(() => ShowPcContextMenu(), () =>
+					{
+						if (this.state == State.ChoicesMessage)
+							ChangeState(State.BeginMessage);
+					});
+					break;
+				case State.BeginMessage:
+					global::Dpr.UnderGround.UgFather.UgFatherMessage.ShowHealingBegin(() => ChangeState(State.BeginMessageWait), () => ChangeState(State.HealingFadOut));
+					break;
+				case State.HealingFadOut:
+					global::SmartPoint.Components.Fader.FadeOut();
+					break;
+				case State.HealingWait:
+					waitTime = 0f;
+					break;
+				case State.HealingFadIn:
+					global::SmartPoint.Components.Fader.FadeIn();
+					break;
+				case State.EndMessage:
+					global::Dpr.UnderGround.UgFather.UgFatherMessage.ShowHealingEnd(() => ChangeState(State.EndMessageWait), () => EventEnd());
+					break;
+			}
+		}
+		private void EventEnd() {
+			state = State.None;
+			onEventEndCallback?.Invoke();
+		}
+		public UgFatherHealing() { }
 		private enum State
 		{
 			None = 0,

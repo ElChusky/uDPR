@@ -3,19 +3,65 @@ namespace Dpr.UnderGround.UgFather
 {
 	public class UgFatherManager : global::SmartPoint.AssetAssistant.SingletonMonoBehaviour<global::Dpr.UnderGround.UgFather.UgFatherManager>
 	{
-		private global::System.Collections.Generic.List<string> TypeId;
+		private global::System.Collections.Generic.List<string> TypeId = new global::System.Collections.Generic.List<string> { "TREASURE", "HEALING", "GOODS_S", "GOODS_L" };
 		private const string UgFatherId = "FATHER";
-		private global::System.Collections.Generic.List<global::Dpr.UnderGround.UgFather.UgFatherBase> fathers;
+		private global::System.Collections.Generic.List<global::Dpr.UnderGround.UgFather.UgFatherBase> fathers = new global::System.Collections.Generic.List<global::Dpr.UnderGround.UgFather.UgFatherBase>();
 		private global::Dpr.UnderGround.UgFather.UgFatherBase currentFather;
-		private global::System.Collections.IEnumerator Start() { /*@B 0x600321B*/ throw null; }
-		private void OnDestroy() { /*@B 0x600321C*/ throw null; }
-		private void InputUpdate(float deltaTime) { /*@B 0x600321D*/ throw null; }
-		private global::Dpr.UnderGround.UgFather.UgFatherBase GetContactFather() { /*@B 0x600321E*/ throw null; }
-		private void Setup() { /*@B 0x600321F*/ throw null; }
-		private global::System.Collections.IEnumerator DelaySetup() { /*@B 0x6003220*/ throw null; }
-		private void OnEventEnd() { /*@B 0x6003221*/ throw null; }
-		public void Clear() { /*@B 0x6003222*/ throw null; }
-		public UgFatherManager() { /*@B 0x6003223*/ throw null; }
+		private global::System.Collections.IEnumerator Start() {
+			global::SmartPoint.AssetAssistant.Sequencer.update += InputUpdate;
+			global::FieldManager.Instance.OnZoneChangeEvent += Setup;
+			yield return null;
+		}
+		private void OnDestroy() {
+			global::SmartPoint.AssetAssistant.Sequencer.update -= InputUpdate;
+			global::FieldManager.Instance.OnZoneChangeEvent -= Setup;
+			fathers.Clear();
+		}
+		private void InputUpdate(float deltaTime) {
+			if (currentFather != null)
+			{
+				currentFather.OnUpdate(deltaTime);
+				return;
+			}
+			if (global::Dpr.UnderGround.UgFather.UgFatherInput.Talk)
+			{
+				currentFather = GetContactFather();
+				if (currentFather != null)
+				{
+					currentFather.OnTalkEvent();
+					global::EntityManager.activeFieldPlayer.PlayIdle();
+					global::PlayerWork.isPlayerInputActive = false;
+				}
+			}
+		}
+		private global::Dpr.UnderGround.UgFather.UgFatherBase GetContactFather() {
+			foreach (var father in fathers)
+			{
+				if (!father.gameObject.activeInHierarchy)
+					continue;
+				global::UnityEngine.Vector3 diff = global::EntityManager.activeFieldPlayer.worldPosition - father.FieldCharacterEntity.worldPosition;
+				if (diff.y < -1f || diff.y > 1f)
+					continue;
+				diff.y = 0f;
+				if (global::SmartPoint.Mathematics.Vector3Ext.FastNormalize(ref diff) < 1f)
+					return father;
+			}
+			return null;
+		}
+		private void Setup() {
+			StartCoroutine(DelaySetup());
+		}
+		private global::System.Collections.IEnumerator DelaySetup() {
+			yield return null;
+		}
+		private void OnEventEnd() {
+			global::PlayerWork.isPlayerInputActive = true;
+			currentFather = null;
+		}
+		public void Clear() {
+			fathers.Clear();
+		}
+		public UgFatherManager() { }
 		private enum Type
 		{
 			Treasure = 0,

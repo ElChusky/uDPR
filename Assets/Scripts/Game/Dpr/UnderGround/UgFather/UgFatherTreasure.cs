@@ -3,6 +3,6 @@ namespace Dpr.UnderGround.UgFather
 {
 	public class UgFatherTreasure : global::Dpr.UnderGround.UgFather.UgFatherBase
 	{
-		public UgFatherTreasure() { /*@B 0x6003217*/ throw null; }
+		public UgFatherTreasure() { }
 	}
 }

@@ -10,25 +10,78 @@ namespace Effect
 		private global::UnityEngine.Events.UnityAction<object> _onFinished;
 		private global::UnityEngine.Events.UnityAction<global::Effect.EffectInstance> _onPlayFinished;
 		private global::UnityEngine.Transform _attachedTransform;
-		private global::UnityEngine.Vector3 _localPosition;
-		private global::UnityEngine.Quaternion _localRotation;
-		private global::UnityEngine.Color _mulColor;
+		private global::UnityEngine.Vector3 _localPosition = global::UnityEngine.Vector3.zero;
+		private global::UnityEngine.Quaternion _localRotation = global::UnityEngine.Quaternion.identity;
+		private global::UnityEngine.Color _mulColor = global::UnityEngine.Color.white;
 		private float _stopFadeLifeTime;
 		private float _stopFadeTime;
 		public global::Effect.EffectData effectData { get { return this._effectData; } set { this._effectData = value; } }
 		public global::UnityEngine.ParticleSystem particleSystem { get { return this._particleSystem; } set { this._particleSystem = value; } }
-		public global::UnityEngine.GameObject gameObject { get { /*@B 0x60028EB*/ throw null; } }
-		public string name { get { /*@B 0x60028EC*/ throw null; } }
+		public global::UnityEngine.GameObject gameObject { get {
+			if (_particleSystem == null)
+				return null;
+			return _particleSystem.gameObject;
+		} }
+		public string name { get {
+			if (_particleSystem == null)
+				return null;
+			return _particleSystem.gameObject.name;
+		} }
 		public global::UnityEngine.Transform attachedTransform { get { return this._attachedTransform; } }
-		public global::UnityEngine.Vector3 localPosition { get { /*@B 0x60028EE*/ throw null; } }
-		public global::UnityEngine.Quaternion localRotation { get { /*@B 0x60028EF*/ throw null; } }
-		void global::IObjectPoolInstance.SetGameObject(global::UnityEngine.GameObject obj) { /*@B 0x60028F0*/ throw null; }
-		global::UnityEngine.GameObject global::IObjectPoolInstance.GetGameObject() { /*@B 0x60028F1*/ throw null; }
+		public global::UnityEngine.Vector3 localPosition { get { return _localPosition; } }
+		public global::UnityEngine.Quaternion localRotation { get { return _localRotation; } }
+		void global::IObjectPoolInstance.SetGameObject(global::UnityEngine.GameObject obj) {
+			_particleSystem = obj.GetComponent<global::UnityEngine.ParticleSystem>();
+		}
+		global::UnityEngine.GameObject global::IObjectPoolInstance.GetGameObject() {
+			if (_particleSystem != null)
+				return _particleSystem.gameObject;
+			return null;
+		}
 		void global::IObjectPoolInstance.OnCreate() { }
 		void global::IObjectPoolInstance.OnRelease() { }
-		internal void _Setup(global::Effect.EffectData effectData, global::UnityEngine.Vector3 position, global::UnityEngine.Quaternion rotation, global::UnityEngine.Transform attachedTransform, global::UnityEngine.Events.UnityAction<object> onFinished) { /*@B 0x60028F4*/ throw null; }
-		private void SetupParticleSystemController(global::UnityEngine.Events.UnityAction<object> onFinished) { /*@B 0x60028F5*/ throw null; }
-		private void OnFinished(object reference) { /*@B 0x60028F6*/ throw null; }
+		internal void _Setup(global::Effect.EffectData effectData, global::UnityEngine.Vector3 position, global::UnityEngine.Quaternion rotation, global::UnityEngine.Transform attachedTransform, global::UnityEngine.Events.UnityAction<object> onFinished) {
+			_effectData = effectData;
+			SetupParticleSystemController(onFinished);
+			if (attachedTransform != null)
+			{
+				_attachedTransform = attachedTransform;
+				_localPosition = position;
+				_localRotation = rotation;
+			}
+			else
+			{
+				_attachedTransform = null;
+				gameObject.transform.localRotation = rotation;
+				gameObject.transform.localPosition = position;
+			}
+			SetMultiplyColor(global::UnityEngine.Color.white);
+			_stopFadeLifeTime = 0f;
+			_stopFadeTime = 0f;
+			_UpdateTransform();
+			UpdateFader(0f);
+			_particleSystemController.OnUpdate(0f);
+		}
+		private void SetupParticleSystemController(global::UnityEngine.Events.UnityAction<object> onFinished) {
+			_onFinished = onFinished;
+			global::Effect.ParticleSystemController controller = _particleSystem.gameObject.GetComponent<global::Effect.ParticleSystemController>();
+			if (controller == null)
+				controller = _particleSystem.gameObject.AddComponent<global::Effect.ParticleSystemController>();
+			controller.Setup(_particleSystem, OnFinished, this);
+			var main = _particleSystem.main;
+			main.stopAction = global::UnityEngine.ParticleSystemStopAction.Callback;
+			_particleSystemController = controller;
+		}
+		private void OnFinished(object reference) {
+			global::UnityEngine.Events.UnityAction<object> onFinished = _onFinished;
+			global::UnityEngine.Events.UnityAction<global::Effect.EffectInstance> onPlayFinished = _onPlayFinished;
+			_onFinished = null;
+			_onPlayFinished = null;
+			_particleSystemController = null;
+			_attachedTransform = null;
+			onFinished?.Invoke(reference);
+			onPlayFinished?.Invoke(this);
+		}
 		public global::Effect.EffectInstance Play(global::UnityEngine.Events.UnityAction<global::Effect.EffectInstance> onFinished = null) {
             if (!_particleSystem.isPlaying)
             {
@@ -39,7 +92,18 @@ namespace Effect
 
             return this;
         }
-		public void Stop(float fadeTime = 0f, bool isForce = false) { /*@B 0x60028F8*/ throw null; }
+		public void Stop(float fadeTime = 0f, bool isForce = false) {
+			if (fadeTime == 0f)
+			{
+				StopInternal(isForce);
+				return;
+			}
+			if (_stopFadeLifeTime <= 0f)
+			{
+				_stopFadeLifeTime = fadeTime;
+				_stopFadeTime = 0f;
+			}
+		}
 		private void StopInternal(bool isForce) {
             if (_particleSystemController == null)
                 return;
@@ -52,7 +116,10 @@ namespace Effect
 
             _particleSystemController.Stop(isForce);
         }
-		internal bool _Update(float deltaTime) { /*@B 0x60028FA*/ throw null; }
+		internal bool _Update(float deltaTime) {
+			UpdateFader(deltaTime);
+			return _particleSystemController.OnUpdate(deltaTime);
+		}
 		private void UpdateFader(float deltaTime) {
             if (_stopFadeLifeTime > 0.0f)
             {
@@ -82,14 +149,40 @@ namespace Effect
                 transform.localPosition = position;
             }
         }
-		public static void MatrixMultiply4x3(out global::UnityEngine.Matrix4x4 mT, ref global::UnityEngine.Matrix4x4 lhs, ref global::UnityEngine.Matrix4x4 rhs) { /*@B 0x60028FD*/ throw null; }
-		public void SetMultiplyColor(global::UnityEngine.Color mulColor) { /*@B 0x60028FE*/ throw null; }
-		public global::UnityEngine.Color GetMulColor() { /*@B 0x60028FF*/ throw null; }
+		public static void MatrixMultiply4x3(out global::UnityEngine.Matrix4x4 mT, ref global::UnityEngine.Matrix4x4 lhs, ref global::UnityEngine.Matrix4x4 rhs) {
+			mT.m00 = lhs.m00 * rhs.m00 + lhs.m10 * rhs.m01 + lhs.m20 * rhs.m02;
+			mT.m10 = lhs.m00 * rhs.m10 + lhs.m10 * rhs.m11 + lhs.m20 * rhs.m12;
+			mT.m20 = lhs.m00 * rhs.m20 + lhs.m10 * rhs.m21 + lhs.m20 * rhs.m22;
+			mT.m30 = 0f;
+			mT.m01 = lhs.m01 * rhs.m00 + lhs.m11 * rhs.m01 + lhs.m21 * rhs.m02;
+			mT.m11 = lhs.m01 * rhs.m10 + lhs.m11 * rhs.m11 + lhs.m21 * rhs.m12;
+			mT.m21 = lhs.m01 * rhs.m20 + lhs.m11 * rhs.m21 + lhs.m21 * rhs.m22;
+			mT.m31 = 0f;
+			mT.m02 = lhs.m02 * rhs.m00 + lhs.m12 * rhs.m01 + lhs.m22 * rhs.m02;
+			mT.m12 = lhs.m02 * rhs.m10 + lhs.m12 * rhs.m11 + lhs.m22 * rhs.m12;
+			mT.m22 = lhs.m02 * rhs.m20 + lhs.m12 * rhs.m21 + lhs.m22 * rhs.m22;
+			mT.m32 = 0f;
+			mT.m03 = lhs.m03 * rhs.m00 + lhs.m13 * rhs.m01 + lhs.m23 * rhs.m02 + rhs.m03;
+			mT.m13 = lhs.m03 * rhs.m10 + lhs.m13 * rhs.m11 + lhs.m23 * rhs.m12 + rhs.m13;
+			mT.m23 = lhs.m03 * rhs.m20 + lhs.m13 * rhs.m21 + lhs.m23 * rhs.m22 + rhs.m23;
+			mT.m33 = 1f;
+		}
+		public void SetMultiplyColor(global::UnityEngine.Color mulColor) {
+			if (_particleSystemController == null)
+				return;
+			_mulColor = mulColor;
+			_particleSystemController.SetMultiplyColor(mulColor);
+		}
+		public global::UnityEngine.Color GetMulColor() {
+			return _mulColor;
+		}
 		public void SetTransformParent(global::UnityEngine.Transform parent, bool worldPositionStays) {
             if (gameObject != null)
                 gameObject.transform.SetParent(parent, worldPositionStays);
         }
-		public void RestoreTransformParent() { /*@B 0x6002901*/ throw null; }
-		public EffectInstance() { /*@B 0x6002902*/ throw null; }
+		public void RestoreTransformParent() {
+			SetTransformParent(global::Effect.EffectManager.Instance.transform, false);
+		}
+		public EffectInstance() { }
 	}
 }
