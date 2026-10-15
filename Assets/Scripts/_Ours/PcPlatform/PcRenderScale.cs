@@ -39,7 +39,7 @@ namespace PcPlatform
                 {
                     var v = PcSettingsIni.Get("ui_render");
                     mode = string.Equals(v, "shipped", StringComparison.OrdinalIgnoreCase) ? 0 : 1;
-                    Debug.Log("[PcPlatform] ui render: " + (mode == 1 ? "native (UI 3D views at screen pixel density)" : "shipped (1280x720 UI units)")
+                    UnityEngine.Debug.Log("[PcPlatform] ui render: " + (mode == 1 ? "native (UI 3D views at screen pixel density)" : "shipped (1280x720 UI units)")
                         + " (pc_settings.ini ui_render=native|shipped)");
                 }
                 return mode == 1;

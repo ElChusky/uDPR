@@ -133,7 +133,7 @@ namespace PcPlatform
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning("[PcPlatform] pc_settings.ini: " + e.Message);
+                UnityEngine.Debug.LogWarning("[PcPlatform] pc_settings.ini: " + e.Message);
             }
             return 0;
         }

@@ -47,7 +47,7 @@ namespace PcPlatform
 
         public static void Log(string message)
         {
-            Debug.Log("[PcPlatform] " + message);
+            UnityEngine.Debug.Log("[PcPlatform] " + message);
         }
     }
 

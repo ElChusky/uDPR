@@ -37,7 +37,7 @@ namespace PcPlatform
             if (pid != 0)
                 PcConfig.Log("RestartProgram requested - relaunched the player as process " + pid + ", quitting this one");
             else
-                Debug.LogWarning("[PcPlatform] RestartProgram: relaunch failed (Win32 error " + error + "), the player only quits");
+                UnityEngine.Debug.LogWarning("[PcPlatform] RestartProgram: relaunch failed (Win32 error " + error + "), the player only quits");
             Application.Quit();
 #else
             PcConfig.Log("RestartProgram requested - quitting (no relaunch on this platform)");

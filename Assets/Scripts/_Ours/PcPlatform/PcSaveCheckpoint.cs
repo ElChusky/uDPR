@@ -80,7 +80,7 @@ namespace PcPlatform
             }
             catch (Exception e)
             {
-                Debug.LogWarning("[PcPlatform] save checkpoints disabled: " + e.Message);
+                UnityEngine.Debug.LogWarning("[PcPlatform] save checkpoints disabled: " + e.Message);
                 Enabled = false;
             }
         }
@@ -128,7 +128,7 @@ namespace PcPlatform
             }
             catch (Exception e)
             {
-                Debug.LogWarning("[PcPlatform] save checkpoint failed: " + e);
+                UnityEngine.Debug.LogWarning("[PcPlatform] save checkpoint failed: " + e);
             }
         }
 

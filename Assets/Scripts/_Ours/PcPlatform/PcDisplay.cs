@@ -171,7 +171,7 @@ namespace PcPlatform
             }
             catch (Exception e)
             {
-                Debug.LogWarning("[PcPlatform] pc_settings.ini: " + e.Message);
+                UnityEngine.Debug.LogWarning("[PcPlatform] pc_settings.ini: " + e.Message);
             }
             return null;
         }
@@ -199,7 +199,7 @@ namespace PcPlatform
             }
             catch (Exception e)
             {
-                Debug.LogWarning("[PcPlatform] pc_settings.ini: " + e.Message);
+                UnityEngine.Debug.LogWarning("[PcPlatform] pc_settings.ini: " + e.Message);
             }
         }
     }
@@ -289,7 +289,7 @@ namespace PcPlatform
             vsyncItem = Row(content, RowNames[3], cursor);
             if (modeItem == null || sizeItem == null || rateItem == null || vsyncItem == null)
             {
-                Debug.LogWarning("[PcPlatform] display options: no '" + TemplateRow + "' row to clone");
+                UnityEngine.Debug.LogWarning("[PcPlatform] display options: no '" + TemplateRow + "' row to clone");
                 return;
             }
             var lang = Strings.Lang();

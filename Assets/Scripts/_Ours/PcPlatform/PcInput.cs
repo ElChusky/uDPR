@@ -96,7 +96,7 @@ namespace PcPlatform
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("[PcInput] script line " + (n + 1) + " '" + lines[n].Trim() + "': " + e.Message);
+                    UnityEngine.Debug.LogError("[PcInput] script line " + (n + 1) + " '" + lines[n].Trim() + "': " + e.Message);
                     continue;
                 }
                 steps.Add(s);
@@ -128,7 +128,7 @@ namespace PcPlatform
                 {
                     stepStart = now;
                     if (s.op == "log")
-                        Debug.Log("[PcInput] " + s.text);
+                        UnityEngine.Debug.Log("[PcInput] " + s.text);
                     else if (s.op == "shot")
                         ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(shotFolder, s.text + ".png"));
                     else if (s.op == "probe")
@@ -165,7 +165,7 @@ namespace PcPlatform
                         done = SceneLoaded(s.text);
                         if (!done && t >= s.seconds)
                         {
-                            Debug.LogWarning("[PcInput] waitscene '" + s.text + "' timed out after " + s.seconds + " s");
+                            UnityEngine.Debug.LogWarning("[PcInput] waitscene '" + s.text + "' timed out after " + s.seconds + " s");
                             done = true;
                         }
                         break;
@@ -190,7 +190,7 @@ namespace PcPlatform
                 index++;
                 stepStart = -1f;
                 if (index == steps.Count)
-                    Debug.Log("[PcInput] script finished");
+                    UnityEngine.Debug.Log("[PcInput] script finished");
             }
         }
 
@@ -205,7 +205,7 @@ namespace PcPlatform
                 t.GetMethod("Dump").Invoke(null, new object[] { name, shotFolder });
                 return;
             }
-            Debug.LogWarning("[PcInput] probe: BdspUiProbe not found");
+            UnityEngine.Debug.LogWarning("[PcInput] probe: BdspUiProbe not found");
         }
 
         static bool SceneLoaded(string text)
