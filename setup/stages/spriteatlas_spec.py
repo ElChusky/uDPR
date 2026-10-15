@@ -165,11 +165,14 @@ def main():
 
     scan = json.load(open(a.containers, encoding="utf-8"))
     bmap = json.load(open(a.map, encoding="utf-8"))["bundles"]
-    # setup (W2): project files the game loads BY CONTAINER PATH. A packed sprite with several project copies (AssetRipper exports
-    # atlas-packed sprites more than once; the free 1.3.14 export gives the copies the SAME render-data key) must resolve to the
-    # copy the game loads - the GMS graphic-text atlases otherwise packed the Assets/Sprite/<name>_N copy instead. The container maps
-    # to the texture (<dir>/<name>.png); its sprite is the .asset beside it, so copies are matched by folder + name, not extension.
-    container_stems = {os.path.splitext(disk)[0] for b in bmap.values() for _dev, disk in b.get("paths", []) if disk}
+    # setup (W2): a packed sprite with several project copies (AssetRipper exports a shipped sprite once per shipped OBJECT, and the
+    # free 1.3.14 export gives the copies the SAME render-data key) resolves BY OBJECT IDENTITY, never by name: when the sprite
+    # object the shipped atlas references is a CONTAINER object, the project copy is the file written for that container (the
+    # container maps to <dir>/<name>.png; its Sprite is the .asset beside it); otherwise one of the non-container copies.
+    pid_to_container = {pid: p.lower() for rec in scan.values() for p, cls, _fid, pid in (rec.get("container") or [])
+                        if cls == "Sprite"}
+    dev_to_disk = {dev.lower(): disk for b in bmap.values() for dev, disk in b.get("paths", []) if dev and disk}
+    container_stems = {os.path.splitext(disk)[0] for disk in dev_to_disk.values()}
     file_by_name = {b["file"]: n for n, b in bmap.items()}
     name_to_file = {n: b["file"] for n, b in bmap.items()}
 
@@ -304,8 +307,13 @@ def main():
                     dup_sprites.append((t["m_Name"], st["m_Name"], how, cands))
                 if how != "rdkey":
                     by_page[0] += 1
-                loaded = sorted(c for c in cands if os.path.splitext(c)[0] in container_stems)
-                packed.append(loaded[0] if loaded else sorted(cands)[0])
+                cpath = pid_to_container.get(so.path_id)
+                if cpath and cpath in dev_to_disk:
+                    stem = os.path.splitext(dev_to_disk[cpath])[0]
+                    pick = sorted(c for c in cands if os.path.splitext(c)[0] == stem)
+                else:
+                    pick = sorted(c for c in cands if os.path.splitext(c)[0] not in container_stems)
+                packed.append(pick[0] if pick else sorted(cands)[0])
             sig = hashlib.sha1(json.dumps([t["m_Name"], t["m_Tag"], t["m_IsVariant"], names, packed, rdmap], sort_keys=True).encode()).hexdigest()
             if sig in sig_to_idx:
                 idx = sig_to_idx[sig]
@@ -479,7 +487,7 @@ def main():
         r.write("\nunresolved packed sprites:\n")
         for u in unresolved_sprites:
             r.write(f"  {u}\n")
-        r.write("\nduplicate rdkeys (the container-loaded copy preferred, else first sorted):\n")
+        r.write("\nduplicate rdkeys (resolved by object identity: the container copy for a container object, else a non-container copy):\n")
         for d in dup_sprites:
             r.write(f"  {d}\n")
         r.write("\npage issues:\n")
