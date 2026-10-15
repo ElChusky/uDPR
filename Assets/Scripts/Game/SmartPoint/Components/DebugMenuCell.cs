@@ -277,7 +277,7 @@ namespace SmartPoint.Components
 		public override void OnClose() {
 			_contentText.text = string.Empty;
 		}
-		public DebugMenuCell() { /*@B 0x6002FB7*/ throw null; }
+		public DebugMenuCell() { }
 		static DebugMenuCell() { }
 		public enum Controller
 		{
@@ -318,11 +318,63 @@ namespace SmartPoint.Components
 			public object reference;
 			public global::SmartPoint.Components.DebugMenuCell.UpdateTextDelegate updateText;
 			public global::SmartPoint.Components.DebugMenuCell.UpdateInformationDelegate updateInformation;
-			public Item(string text, global::SmartPoint.Components.DebugMenuCell.Click onClick, object reference, global::SmartPoint.Components.DebugMenuCell.UpdateInformationDelegate updateInformation, bool isChild = false) { /*@B 0x6009E26*/ throw null; }
-			public Item(string text, global::SmartPoint.Components.DebugMenuCell.InputFloatDelegate input, global::SmartPoint.Components.DebugMenuCell.OutputFloatDelegate output, float minValue, float maxValue, int decimals) { /*@B 0x6009E27*/ throw null; }
-			public Item(string text, global::SmartPoint.Components.DebugMenuCell.SelectedIndexChanged onSelect, global::SmartPoint.Components.DebugMenuCell.InputIntegerDelegate selected, string[] values, global::SmartPoint.Components.DebugMenuCell.Click onClick, global::SmartPoint.Components.DebugMenuCell.UpdateInformationDelegate updateInformation) { /*@B 0x6009E28*/ throw null; }
-			public Item(string text, global::SmartPoint.Components.DebugMenuCell.SelectedIndexChanged onSelect, global::SmartPoint.Components.DebugMenuCell.InputIntegerDelegate selected, global::SmartPoint.Components.DebugMenuCell.InputStringArrayDelegate inputList, global::SmartPoint.Components.DebugMenuCell.Click onClick, global::SmartPoint.Components.DebugMenuCell.UpdateInformationDelegate updateInformation) { /*@B 0x6009E29*/ throw null; }
-			public Item(string text, global::SmartPoint.Components.DebugMenuCell.InputIntegerDelegate input, global::SmartPoint.Components.DebugMenuCell.OutputIntegerDelegate output, int low, int high, global::SmartPoint.Components.DebugMenuCell.Click onClick, global::SmartPoint.Components.DebugMenuCell.UpdateTextDelegate updateText, global::SmartPoint.Components.DebugMenuCell.UpdateInformationDelegate updateInformation) { /*@B 0x6009E2A*/ throw null; }
+			public Item(string text, global::SmartPoint.Components.DebugMenuCell.Click onClick, object reference, global::SmartPoint.Components.DebugMenuCell.UpdateInformationDelegate updateInformation, bool isChild = false) {
+				this.onClick = onClick;
+				this.reference = reference;
+				this.text = text;
+				if (isChild)
+				{
+					controllerType = global::SmartPoint.Components.DebugMenuCell.Controller.SubMenu;
+				}
+				this.updateInformation = updateInformation;
+			}
+			public Item(string text, global::SmartPoint.Components.DebugMenuCell.InputFloatDelegate input, global::SmartPoint.Components.DebugMenuCell.OutputFloatDelegate output, float minValue, float maxValue, int decimals) {
+				controllerType = global::SmartPoint.Components.DebugMenuCell.Controller.Slider;
+				inputFloatValue = input;
+				outputFloatValue = output;
+				this.minValue = minValue;
+				this.maxValue = maxValue;
+				this.decimals = decimals;
+				this.text = text;
+				updateText = null;
+				updateInformation = null;
+			}
+			public Item(string text, global::SmartPoint.Components.DebugMenuCell.SelectedIndexChanged onSelect, global::SmartPoint.Components.DebugMenuCell.InputIntegerDelegate selected, string[] values, global::SmartPoint.Components.DebugMenuCell.Click onClick, global::SmartPoint.Components.DebugMenuCell.UpdateInformationDelegate updateInformation) {
+				controllerType = global::SmartPoint.Components.DebugMenuCell.Controller.List;
+				onSelectedIndexChanged = onSelect;
+				this.onClick = onClick;
+				inputStringArrayValue = null;
+				this.values = values;
+				inputIntegerValue = selected;
+				this.selected = 0;
+				this.text = text;
+				updateText = null;
+				this.updateInformation = updateInformation;
+			}
+			public Item(string text, global::SmartPoint.Components.DebugMenuCell.SelectedIndexChanged onSelect, global::SmartPoint.Components.DebugMenuCell.InputIntegerDelegate selected, global::SmartPoint.Components.DebugMenuCell.InputStringArrayDelegate inputList, global::SmartPoint.Components.DebugMenuCell.Click onClick, global::SmartPoint.Components.DebugMenuCell.UpdateInformationDelegate updateInformation) {
+				controllerType = global::SmartPoint.Components.DebugMenuCell.Controller.List;
+				onSelectedIndexChanged = onSelect;
+				this.onClick = onClick;
+				inputStringArrayValue = inputList;
+				values = null;
+				inputIntegerValue = selected;
+				this.selected = 0;
+				this.text = text;
+				updateText = null;
+				this.updateInformation = updateInformation;
+			}
+			public Item(string text, global::SmartPoint.Components.DebugMenuCell.InputIntegerDelegate input, global::SmartPoint.Components.DebugMenuCell.OutputIntegerDelegate output, int low, int high, global::SmartPoint.Components.DebugMenuCell.Click onClick, global::SmartPoint.Components.DebugMenuCell.UpdateTextDelegate updateText, global::SmartPoint.Components.DebugMenuCell.UpdateInformationDelegate updateInformation) {
+				controllerType = global::SmartPoint.Components.DebugMenuCell.Controller.Selector;
+				this.onClick = onClick;
+				inputIntegerValue = input;
+				outputIntegerValue = output;
+				this.low = low;
+				this.high = high;
+				selected = 0;
+				this.text = text;
+				this.updateText = updateText;
+				this.updateInformation = updateInformation;
+			}
 			public bool SetListElements(string[] newValues) {
 				if (controllerType != Controller.List || newValues.Length == 0)
 					return false;

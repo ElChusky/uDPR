@@ -13,30 +13,38 @@ namespace SmartPoint.Components
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform _contentTemplate;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector2 _cellSpacing;
+		private global::UnityEngine.Vector2 _cellSpacing = new global::UnityEngine.Vector2(0f, 0f);
 		[global::UnityEngine.SerializeField]
 		private global::SmartPoint.Components.LayoutScrollView.StartAxis _startAxis;
 		[global::UnityEngine.SerializeField]
 		private global::SmartPoint.Components.LayoutScrollView.WrapType _wrapType;
 		[global::UnityEngine.SerializeField]
-		private int _maxColumnCount;
+		private int _maxColumnCount = 1;
 		[global::UnityEngine.SerializeField]
-		private global::UnityEngine.Vector2 _minCellSize;
+		private global::UnityEngine.Vector2 _minCellSize = new global::UnityEngine.Vector2(20f, 20f);
 		[global::UnityEngine.SerializeField]
 		private global::SmartPoint.Components.LayoutCellItem _presetDatas;
 		private global::UnityEngine.Canvas _canvas;
 		private global::UnityEngine.UI.ScrollRect _scrollRect;
 		private global::UnityEngine.RectTransform _viewRectTransform;
 		private global::UnityEngine.RectTransform _contentRectTransform;
-		private global::System.Collections.Generic.List<global::SmartPoint.Components.LayoutCellObserver> _cellVisibilityPool;
-		private global::System.Collections.Generic.List<global::SmartPoint.Components.LayoutScrollView.Cell> _cells;
+		private global::System.Collections.Generic.List<global::SmartPoint.Components.LayoutCellObserver> _cellVisibilityPool = new global::System.Collections.Generic.List<global::SmartPoint.Components.LayoutCellObserver>();
+		private global::System.Collections.Generic.List<global::SmartPoint.Components.LayoutScrollView.Cell> _cells = new global::System.Collections.Generic.List<global::SmartPoint.Components.LayoutScrollView.Cell>();
 		private bool skipFirstCall;
-		public global::SmartPoint.Components.LayoutScrollView.Margin margin { get { /*@B 0x6003006*/ throw null; } }
-		public global::UnityEngine.Rect clientRect { get { /*@B 0x6003007*/ throw null; } }
+		public global::SmartPoint.Components.LayoutScrollView.Margin margin { get { return _margin; } }
+		public global::UnityEngine.Rect clientRect { get { return _viewRectTransform.rect; } }
 		public global::SmartPoint.Components.LayoutScrollView.StartAxis startAxis { get { return this._startAxis; } }
 		public global::SmartPoint.Components.LayoutScrollView.WrapType wrapType { get { return this._wrapType; } }
-		public float wrapPoint { get { /*@B 0x600300A*/ throw null; } }
-		public int cellCount { get { /*@B 0x600300B*/ throw null; } }
+		public float wrapPoint { get {
+				global::SmartPoint.Components.LayoutScrollView.StartAxis axis = _startAxis;
+				global::UnityEngine.Vector2 size = _viewRectTransform.sizeDelta;
+				if (axis == global::SmartPoint.Components.LayoutScrollView.StartAxis.Horizontal)
+				{
+					return size.x - _margin.left - _margin.right;
+				}
+				return size.y - _margin.top - _margin.bottom;
+			} }
+		public int cellCount { get { return _cells.Count; } }
 		public global::System.Collections.Generic.List<global::SmartPoint.Components.LayoutScrollView.Cell> cells { get { return this._cells; } }
 		public global::UnityEngine.UI.ScrollRect scrollRect { get { return this._scrollRect; } }
 		public global::UnityEngine.RectTransform contentRectTransform { get { return this._contentRectTransform; } }
@@ -421,7 +429,7 @@ namespace SmartPoint.Components
 				_cells.RemoveAt(0);
 			}
 		}
-		public LayoutScrollView() { /*@B 0x6003022*/ throw null; }
+		public LayoutScrollView() { }
 		public enum StartCorner
 		{
 			UpperLeft = 0,

@@ -11,34 +11,221 @@ namespace SmartPoint.Components
 		private global::UnityEngine.Color _fillColor;
 		private float _speed;
 		private global::UnityEngine.Texture2D _renderTexture;
-		private bool _valid;
+		private bool _valid = true;
 		[global::UnityEngine.SerializeField]
 		[global::UnityEngine.RangeAttribute(0f, 2f)]
-		private float _duration;
+		private float _duration = 0.5f;
 		[global::UnityEngine.SerializeField]
 		private global::SmartPoint.Components.Fader.FadeMode _mode;
 		private global::UnityEngine.Material _defaultMaterial;
 		private global::UnityEngine.Material _cutoutMaterial;
-		public static bool valid { get { /*@B 0x6002FDA*/ throw null; } set { /*@B 0x6002FDB*/ throw null; } }
-		public static global::UnityEngine.Material material { get { /*@B 0x6002FDC*/ throw null; } set { /*@B 0x6002FDD*/ throw null; } }
-		public static global::SmartPoint.Components.Fader.FadeMode fadeMode { get { /*@B 0x6002FDE*/ throw null; } set { /*@B 0x6002FDF*/ throw null; } }
-		public static float duration { get { /*@B 0x6002FE0*/ throw null; } set { /*@B 0x6002FE1*/ throw null; } }
-		public static global::UnityEngine.Color fillColor { get { /*@B 0x6002FE2*/ throw null; } set { /*@B 0x6002FE3*/ throw null; } }
-		public static global::UnityEngine.Texture filterTexture { get { /*@B 0x6002FE4*/ throw null; } set { /*@B 0x6002FE5*/ throw null; } }
+		public static bool valid { get { return _instance._valid; } set { _instance._valid = value; } }
+		public static global::UnityEngine.Material material { get { return _instance._filterImage.material; } set {
+				if (value == null)
+				{
+					value = _instance._filterImage.defaultMaterial;
+				}
+				_instance._filterImage.material = value;
+			} }
+		public static global::SmartPoint.Components.Fader.FadeMode fadeMode { get { return _instance._mode; } set {
+				if (value == global::SmartPoint.Components.Fader.FadeMode.Cutout)
+				{
+					_instance._filterImage.material = _instance._cutoutMaterial;
+					_instance._cutoutMaterial.SetFloat("_Cutoff", -1f);
+				}
+				else
+				{
+					_instance._filterImage.material = _instance._defaultMaterial;
+				}
+				_instance._mode = value;
+			} }
+		public static float duration { get { return _instance._duration; } set { _instance._duration = value; } }
+		public static global::UnityEngine.Color fillColor { get {
+				if (Instance == null)
+				{
+					return default(global::UnityEngine.Color);
+				}
+				return Instance._fillColor;
+			} set {
+				if (Instance != null)
+				{
+					_instance._fillColor = value;
+				}
+			} }
+		public static global::UnityEngine.Texture filterTexture { get {
+				if (Instance == null)
+				{
+					return null;
+				}
+				return _instance._filterImage.texture;
+			} set {
+				if (Instance == null)
+				{
+					return;
+				}
+				_instance._filterImage.texture = value;
+			} }
 		public static bool isBusy { get => Instance == null ? true : _instance._speed != 0.0f; }
-		public static float fadeInProgress { get { /*@B 0x6002FE7*/ throw null; } }
-		public static float fadeOutProgress { get { /*@B 0x6002FE8*/ throw null; } }
-		public static float fillPower { get { /*@B 0x6002FE9*/ throw null; } }
-		protected override bool Awake() { /*@B 0x6002FD9*/ throw null; }
-		public void OnDisable() { /*@B 0x6002FEA*/ throw null; }
-		private void OnUpdate(float deltaTime) { /*@B 0x6002FEB*/ throw null; }
-		private void UpdateMaterial() { /*@B 0x6002FEC*/ throw null; }
-		public static void FadeIn() { /*@B 0x6002FED*/ throw null; }
-		public static void FadeIn(float duration) { /*@B 0x6002FEE*/ throw null; }
-		public static void FadeOut() { /*@B 0x6002FEF*/ throw null; }
-		public static void FadeOut(float duration) { /*@B 0x6002FF0*/ throw null; }
-		private global::System.Collections.IEnumerator CaptureScreen() { /*@B 0x6002FF1*/ throw null; }
-		public Fader() { /*@B 0x6002FF2*/ throw null; }
+		public static float fadeInProgress { get {
+				if (_instance._speed > 0f)
+				{
+					return 0f;
+				}
+				return 1f - _instance._fillPower;
+			} }
+		public static float fadeOutProgress { get {
+				if (_instance._speed < 0f)
+				{
+					return 0f;
+				}
+				return _instance._fillPower;
+			} }
+		public static float fillPower { get { return _instance._fillPower; } }
+		protected override bool Awake() {
+			if (!base.Awake())
+			{
+				return false;
+			}
+			_canvas = GetComponent<global::UnityEngine.Canvas>();
+			_filterImage = GetComponent<global::UnityEngine.UI.RawImage>();
+			_defaultMaterial = new global::UnityEngine.Material(_filterImage.material);
+			_cutoutMaterial = new global::UnityEngine.Material(global::UnityEngine.Shader.Find("Unlit/Transparent Cutout"));
+			if (_filterImage.material != _filterImage.defaultMaterial)
+			{
+				_filterImage.material = _defaultMaterial;
+			}
+			else if (_mode == global::SmartPoint.Components.Fader.FadeMode.Cutout)
+			{
+				_filterImage.material = _cutoutMaterial;
+			}
+			_canvas.renderMode = global::UnityEngine.RenderMode.ScreenSpaceOverlay;
+			_canvas.sortingOrder = SORTING_ORDER;
+			_canvas.enabled = true;
+			_fillColor = _filterImage.color;
+			_fillPower = 1f;
+			return true;
+		}
+		public void OnDisable() {
+			if (_instance != null)
+			{
+				global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+			}
+		}
+		private void OnUpdate(float deltaTime) {
+			_fillPower += _speed * 0.033333335f;
+			if (_speed < 0f)
+			{
+				if (!(_fillPower > 0f))
+				{
+					_fillPower = 0f;
+					_speed = 0f;
+				}
+			}
+			else if (_fillPower >= 1f)
+			{
+				_fillPower = 1f;
+				_speed = 0f;
+			}
+			if (_fillPower > 0f)
+			{
+				_canvas.enabled = true;
+			}
+			else
+			{
+				if (_renderTexture != null)
+				{
+					global::UnityEngine.Object.DestroyImmediate(_renderTexture);
+					_renderTexture = null;
+				}
+				_canvas.enabled = false;
+			}
+			if (_speed == 0f)
+			{
+				global::SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
+			}
+			UpdateMaterial();
+		}
+		private void UpdateMaterial() {
+			switch (_mode)
+			{
+				case global::SmartPoint.Components.Fader.FadeMode.Color:
+					_filterImage.color = new global::UnityEngine.Color(_fillColor.r, _fillColor.g, _fillColor.b, _fillColor.a * _fillPower);
+					break;
+				case global::SmartPoint.Components.Fader.FadeMode.Cutout:
+					_filterImage.color = fillColor;
+					_filterImage.material.SetFloat("_Cutoff", 1f - _fillPower);
+					break;
+				case global::SmartPoint.Components.Fader.FadeMode.Cross:
+					_filterImage.color = new global::UnityEngine.Color(1f, 1f, 1f, _fillPower);
+					break;
+			}
+		}
+		public static void FadeIn() {
+			if (Instance == null)
+			{
+				return;
+			}
+			FadeIn(_instance._duration);
+		}
+		public static void FadeIn(float duration) {
+			if (Instance == null || !_instance._valid)
+			{
+				return;
+			}
+			if (duration <= 0f || _instance._fillPower == 0f)
+			{
+				_instance._canvas.enabled = false;
+				_instance._speed = 0f;
+				_instance._fillPower = 0f;
+				_instance.UpdateMaterial();
+				return;
+			}
+			global::SmartPoint.AssetAssistant.Sequencer.update += _instance.OnUpdate;
+			_instance._speed = -1f / duration;
+		}
+		public static void FadeOut() {
+			if (Instance == null)
+			{
+				return;
+			}
+			FadeOut(_instance._duration);
+		}
+		public static void FadeOut(float duration) {
+			if (Instance == null || !_instance._valid)
+			{
+				return;
+			}
+			if (_instance._mode == global::SmartPoint.Components.Fader.FadeMode.Cross)
+			{
+				_instance._canvas.enabled = true;
+				_instance._fillPower = 0f;
+				global::SmartPoint.AssetAssistant.Sequencer.Start(_instance.CaptureScreen());
+				return;
+			}
+			if (duration <= 0f || _instance._fillPower == 1f)
+			{
+				_instance._canvas.enabled = true;
+				_instance._speed = 0f;
+				_instance._fillPower = 1f;
+				_instance.UpdateMaterial();
+				return;
+			}
+			global::SmartPoint.AssetAssistant.Sequencer.update += _instance.OnUpdate;
+			_instance._speed = 1f / duration;
+		}
+		private global::System.Collections.IEnumerator CaptureScreen() {
+			_renderTexture = new global::UnityEngine.Texture2D(global::UnityEngine.Screen.width, global::UnityEngine.Screen.height, global::UnityEngine.TextureFormat.ARGB32, false, true);
+			_speed = 1f;
+			yield return new global::UnityEngine.WaitForEndOfFrame();
+			_renderTexture.ReadPixels(new global::UnityEngine.Rect(0f, 0f, global::UnityEngine.Screen.width, global::UnityEngine.Screen.height), 0, 0);
+			_renderTexture.Apply();
+			_filterImage.texture = _renderTexture;
+			_speed = 0f;
+			_fillPower = 1f;
+			_canvas.enabled = true;
+			UpdateMaterial();
+		}
+		public Fader() { }
 		public enum FadeMode
 		{
 			Color = 0,
