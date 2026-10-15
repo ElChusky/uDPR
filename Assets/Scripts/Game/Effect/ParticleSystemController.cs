@@ -10,17 +10,72 @@ namespace Effect
 		private global::Effect.MaterialController[] _materialControllers;
 		private global::Effect.ParticleSystemController.StopStateBits _stopStateBits;
 		public global::Effect.ParticleSystemController.StopStateBits stopStateBits { get { return this._stopStateBits; } }
-		public void Setup(global::UnityEngine.ParticleSystem particleSystem, global::UnityEngine.Events.UnityAction<object> onFinished, object reference) { /*@B 0x60028CE*/ throw null; }
-		public void Stop(bool isForce) { /*@B 0x60028CF*/ throw null; }
+		public void Setup(global::UnityEngine.ParticleSystem particleSystem, global::UnityEngine.Events.UnityAction<object> onFinished, object reference) {
+			_materialControllers = particleSystem.transform.GetComponentsInChildren<global::Effect.MaterialController>(true);
+			_particleSystem = GetComponent<global::UnityEngine.ParticleSystem>();
+			_particleSystems = global::System.Linq.Enumerable.ToArray(global::System.Linq.Enumerable.Select(_materialControllers, x => x.GetParticleSystem()));
+			_onFinished = onFinished;
+			_reference = reference;
+			_stopStateBits = StopStateBits.None;
+		}
+		public void Stop(bool isForce) {
+			OnParticleSystemStopped();
+			_stopStateBits |= StopStateBits.Manual;
+			if (isForce)
+				Finish();
+		}
 		public void OnParticleSystemStopped() {
             // @01f037d0: ldr w8,[x0,#0x40] ; tbnz w8,#1 (Stopped) -> ret ; orr w8,w8,#1 (Stopping) ; str.
             // Marks the fade-out tail; OnUpdate finishes once the particles are dead (brief lesson 116).
             if ((_stopStateBits & StopStateBits.Stopped) == 0)
                 _stopStateBits |= StopStateBits.Stopping;
         }
-		public bool OnUpdate(float deltaTime) { /*@B 0x60028D1*/ throw null; }
-		private void Finish() { /*@B 0x60028D2*/ throw null; }
-		public void SetMultiplyColor(global::UnityEngine.Color color) { /*@B 0x60028D3*/ throw null; }
+		public bool OnUpdate(float deltaTime) {
+			if ((_stopStateBits & StopStateBits.Stopped) != 0)
+				return false;
+			if ((_stopStateBits & StopStateBits.Stopping) == 0)
+				return true;
+			if ((_stopStateBits & StopStateBits.Manual) == 0)
+			{
+				if (_particleSystem != null && _particleSystem.IsAlive(true))
+					return true;
+			}
+			else
+			{
+				for (int i = 0; i < _particleSystems.Length; i++)
+				{
+					var ps = _particleSystems[i];
+					if (ps == null)
+						break;
+					if (ps.main.startLifetime.mode == global::UnityEngine.ParticleSystemCurveMode.Constant && float.IsInfinity(ps.main.startLifetime.constant))
+						continue;
+					if (ps.IsAlive(false))
+						return true;
+				}
+			}
+			Finish();
+			return false;
+		}
+		private void Finish() {
+			_stopStateBits |= StopStateBits.Stopped;
+			if (_onFinished != null)
+				_onFinished.Invoke(_reference);
+			_onFinished = null;
+			_reference = null;
+			_particleSystem = null;
+			_particleSystems = null;
+			_materialControllers = null;
+		}
+		public void SetMultiplyColor(global::UnityEngine.Color color) {
+			if (_materialControllers.IsNullOrEmpty())
+				return;
+			for (int i = 0; i < _materialControllers.Length; i++)
+			{
+				if (_materialControllers[i] == null)
+					continue;
+				_materialControllers[i].SetMultiplyColor(color);
+			}
+		}
 		public ParticleSystemController() { }
 		public enum StopStateBits
 		{

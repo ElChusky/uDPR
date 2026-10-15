@@ -3,7 +3,9 @@ namespace Effect
 {
 	public class SimulationSpacePositionOnly : global::UnityEngine.MonoBehaviour
 	{
-		private void LateUpdate() { /*@B 0x60028DE*/ throw null; }
+		private void LateUpdate() {
+			transform.rotation = global::UnityEngine.Quaternion.identity;
+		}
 		public SimulationSpacePositionOnly() { }
 	}
 }

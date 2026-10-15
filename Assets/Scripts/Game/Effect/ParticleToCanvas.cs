@@ -4,7 +4,7 @@ namespace Effect
 	[global::UnityEngine.RequireComponent(typeof(global::UnityEngine.ParticleSystem))]
 	public class ParticleToCanvas : global::UnityEngine.UI.MaskableGraphic
 	{
-		private static readonly global::UnityEngine.Matrix4x4 s_scaleZ;
+		private static readonly global::UnityEngine.Matrix4x4 s_scaleZ = global::UnityEngine.Matrix4x4.Scale(new global::UnityEngine.Vector3(1f, 1f, 1e-05f));
 		[global::UnityEngine.HideInInspector]
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.Material _material;
@@ -18,14 +18,85 @@ namespace Effect
 		private global::Effect.MeshCombiner _meshCombiner;
 		private global::UnityEngine.Material[] _maskMaterials;
 		private global::UnityEngine.Canvas _parentCanvas;
-		protected override void Awake() { /*@B 0x60028D5*/ throw null; }
-		protected override void OnEnable() { /*@B 0x60028D6*/ throw null; }
-		protected override void OnDisable() { /*@B 0x60028D7*/ throw null; }
-		private void OnWillRenderCanvases() { /*@B 0x60028D8*/ throw null; }
-		private global::UnityEngine.Canvas GetParentCanvas() { /*@B 0x60028D9*/ throw null; }
-		protected override void UpdateMaterial() { /*@B 0x60028DA*/ throw null; }
-		private global::UnityEngine.Material GetModifiedMaterial(global::UnityEngine.Material baseMaterial, int index) { /*@B 0x60028DB*/ throw null; }
+		protected override void Awake() {
+			base.Awake();
+			_particleSystem = GetComponent<global::UnityEngine.ParticleSystem>();
+			_particleSystemRenderer = GetComponent<global::UnityEngine.ParticleSystemRenderer>();
+			_material = _particleSystemRenderer.sharedMaterial;
+			_trailMaterial = _particleSystemRenderer.trailMaterial;
+			_mainModule = _particleSystem.main;
+			_trailsModule = _particleSystem.trails;
+		}
+		protected override void OnEnable() {
+			base.OnEnable();
+			_meshCombiner = global::Effect.MeshCombiner.Create();
+			_maskMaterials = new global::UnityEngine.Material[2];
+			_parentCanvas = null;
+			global::UnityEngine.Canvas.willRenderCanvases += OnWillRenderCanvases;
+		}
+		protected override void OnDisable() {
+			base.OnDisable();
+			global::UnityEngine.Canvas.willRenderCanvases -= OnWillRenderCanvases;
+			_meshCombiner.Destroy();
+			_meshCombiner = null;
+			for (int i = 0; i < _maskMaterials.Length; i++)
+				global::UnityEngine.UI.StencilMaterial.Remove(_maskMaterials[i]);
+			_maskMaterials = null;
+		}
+		private void OnWillRenderCanvases() {
+			if (GetParentCanvas() == null)
+				return;
+			_meshCombiner.Clear();
+			if (_particleSystem.particleCount > 0)
+			{
+				_particleSystemRenderer.BakeMesh(_meshCombiner.FetchMesh(), false);
+				bool trails = _trailsModule.enabled;
+				if (trails)
+					_particleSystemRenderer.BakeTrailsMesh(_meshCombiner.FetchMesh(), false);
+				if (canvasRenderer.materialCount != (trails ? 2 : 1))
+					SetMaterialDirty();
+				global::UnityEngine.Matrix4x4 m = _mainModule.simulationSpace == global::UnityEngine.ParticleSystemSimulationSpace.World
+					? transform.worldToLocalMatrix
+					: global::UnityEngine.Matrix4x4.identity;
+				_meshCombiner.CombineMeshes(s_scaleZ * m);
+			}
+			canvasRenderer.SetMesh(_meshCombiner.mainMesh);
+		}
+		private global::UnityEngine.Canvas GetParentCanvas() {
+			if (_parentCanvas == null)
+				_parentCanvas = GetComponentInParent<global::UnityEngine.Canvas>();
+			return _parentCanvas;
+		}
+		protected override void UpdateMaterial() {
+			canvasRenderer.materialCount = _trailsModule.enabled ? 2 : 1;
+			canvasRenderer.SetMaterial(GetModifiedMaterial(_material, 0), 0);
+			if (_trailsModule.enabled)
+				canvasRenderer.SetMaterial(GetModifiedMaterial(_trailMaterial, 1), 1);
+		}
+		private global::UnityEngine.Material GetModifiedMaterial(global::UnityEngine.Material baseMaterial, int index) {
+			if (m_ShouldRecalculateStencil)
+			{
+				m_ShouldRecalculateStencil = false;
+				if (maskable)
+				{
+					var rootCanvas = global::UnityEngine.UI.MaskUtilities.FindRootSortOverrideCanvas(transform);
+					m_StencilValue = global::UnityEngine.UI.MaskUtilities.GetStencilDepth(transform, rootCanvas) + index;
+				}
+				else
+					m_StencilValue = 0;
+			}
+			var maskComponent = GetComponent<global::UnityEngine.UI.Mask>();
+			if (m_StencilValue > 0 && (maskComponent == null || !maskComponent.MaskEnabled()))
+			{
+				int stencilMask = ~(-1 << m_StencilValue);
+				var maskMat = global::UnityEngine.UI.StencilMaterial.Add(baseMaterial, stencilMask, global::UnityEngine.Rendering.StencilOp.Keep, global::UnityEngine.Rendering.CompareFunction.Equal, global::UnityEngine.Rendering.ColorWriteMask.All, stencilMask, 0);
+				global::UnityEngine.UI.StencilMaterial.Remove(_maskMaterials[index]);
+				_maskMaterials[index] = maskMat;
+				return _maskMaterials[index];
+			}
+			return baseMaterial;
+		}
 		public ParticleToCanvas() { }
-		static ParticleToCanvas() { /*@B 0x60028DD*/ throw null; }
+		static ParticleToCanvas() { }
 	}
 }
