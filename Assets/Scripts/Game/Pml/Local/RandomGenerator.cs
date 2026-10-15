@@ -5,11 +5,20 @@ namespace Pml.Local
 	{
 		private global::Xoroshiro128Plus.Xoroshiro128Plus m_rng;
 		private ulong m_seed;
-		public void Initialize() { /*@B 0x600220B*/ throw null; }
-		public void Initialize(ulong seed) { /*@B 0x600220C*/ throw null; }
+		public void Initialize() {
+            Initialize(GenerateSeed());
+        }
+		public void Initialize(ulong seed) {
+            m_seed = seed;
+            m_rng = new global::Xoroshiro128Plus.Xoroshiro128Plus(seed);
+        }
 		public ulong GetSeed() { return this.m_seed; }
-		public static ulong GenerateSeed() { /*@B 0x600220E*/ throw null; }
-		public uint GetRand() { /*@B 0x600220F*/ throw null; }
+		public static ulong GenerateSeed() {
+            return (ulong)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        }
+		public uint GetRand() {
+            return m_rng.NextUInt();
+        }
 		// @024a0430: NextUInt then bare `udiv` / `msub` @024a044c — no zero guard in the binary (the base code's `max == 0 ? val :` was a PC guard;
 		// AArch64 udiv by 0 yields 0 so the Switch returns the raw value — kept bare like PmlUse.LimitRandFunc, brief lesson 139 #7)
 		public uint GetRand(uint max) {

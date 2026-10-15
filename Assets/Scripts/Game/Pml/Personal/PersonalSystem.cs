@@ -11,55 +11,183 @@ namespace Pml.Personal
 		private static global::XLSXContent.GrowTable.SheetData s_GrowTable;
 		private static global::XLSXContent.EvolveTable.SheetEvolve s_EvolutionTable;
 		private static global::XLSXContent.WazaOboeTable.SheetWazaOboe s_WazaOboeData;
-		private static readonly global::Pml.WazaNo[] OSHIE_WAZA;
-		public static void Initialize(global::XLSXContent.PersonalTable personalTotal, global::XLSXContent.WazaOboeTable wazaoboeTotal, global::XLSXContent.GrowTable growTableTotal, global::XLSXContent.EvolveTable evolveTableTotal) { /*@B 0x600221E*/ throw null; }
-		public static int GetMonsLabel(global::Pml.MonsNo monsno) { /*@B 0x600221F*/ throw null; }
-		public static string GetMonsName(global::Pml.MonsNo monsNo) { /*@B 0x6002220*/ throw null; }
-		public static string GetMonsName(global::Pml.MonsNo monsNo, global::Dpr.Message.MessageEnumData.MsgLangId langId) { /*@B 0x6002221*/ throw null; }
-		public static bool CheckPokeExist(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x6002222*/ throw null; }
-		public static void LoadPersonalData(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x6002223*/ throw null; }
-		public static global::XLSXContent.PersonalTable.SheetPersonal GetPersonalData(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x6002224*/ throw null; }
-		private static uint GetDataID(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x6002225*/ throw null; }
-		public static uint GetPersonalParam(global::Pml.Personal.ParamID paramId) { /*@B 0x6002226*/ throw null; }
-		public static bool CheckPersonalWazaMachine(ushort machineNo) { /*@B 0x6002227*/ throw null; }
-		public static bool CheckPersonalWazaRecord(ushort recordNo) { /*@B 0x6002228*/ throw null; }
-		public static bool CheckPersonalWazaOshie(ushort oshieNo) { /*@B 0x6002229*/ throw null; }
-		public static global::Pml.Personal.SexType GetPersonalSexType() { /*@B 0x600222A*/ throw null; }
-		public static global::Pml.Personal.TokuseiPattern GetTokuseiPattern() { /*@B 0x600222B*/ throw null; }
-		public static void LoadGrowTable(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x600222C*/ throw null; }
-		public static void LoadGrowTable(uint grow_type) { /*@B 0x600222D*/ throw null; }
+		private static readonly global::Pml.WazaNo[] OSHIE_WAZA = new global::Pml.WazaNo[] { global::Pml.WazaNo.HAADOPURANTO, global::Pml.WazaNo.BURASUTOBAAN, global::Pml.WazaNo.HAIDOROKANON, global::Pml.WazaNo.RYUUSEIGUN };
+		public static void Initialize(global::XLSXContent.PersonalTable personalTotal, global::XLSXContent.WazaOboeTable wazaoboeTotal, global::XLSXContent.GrowTable growTableTotal, global::XLSXContent.EvolveTable evolveTableTotal) {
+            m_alldata = personalTotal;
+            m_allGrowData = growTableTotal;
+            m_allEvolveData = evolveTableTotal;
+            m_allWazaOboeData = wazaoboeTotal;
+        }
+		public static int GetMonsLabel(global::Pml.MonsNo monsno) {
+            if (monsno == MonsNo.TAMAGO || monsno == MonsNo.DAMETAMAGO)
+                return 0;
+            if (monsno > MonsNo.END)
+                return 0;
+            return (int)monsno;
+        }
+		// @024a09d0 (GetMonsLabel inlined)
+		public static string GetMonsName(global::Pml.MonsNo monsNo) {
+            return SmartPoint.AssetAssistant.SingletonMonoBehaviour<Dpr.Message.MessageManager>.Instance.GetNameMessage("ss_monsname", GetMonsLabel(monsNo));
+        }
+		// @024a0a90 (GetMonsLabel inlined)
+		public static string GetMonsName(global::Pml.MonsNo monsNo, global::Dpr.Message.MessageEnumData.MsgLangId langId) {
+            if (langId == 0)
+                langId = SmartPoint.AssetAssistant.SingletonMonoBehaviour<Dpr.Message.MessageManager>.Instance.UserLanguageID;
+            return SmartPoint.AssetAssistant.SingletonMonoBehaviour<Dpr.Message.MessageManager>.Instance.GetNameMessage("ss_monsname", GetMonsLabel(monsNo), langId);
+        }
+		// @024a0ba0 (GetPersonalData + IsValidData inlined)
+		public static bool CheckPokeExist(global::Pml.MonsNo monsno, ushort formno) {
+            return GetPersonalData(monsno, formno).IsValidData();
+        }
+		// @024a0d50 (GetPersonalData inlined)
+		public static void LoadPersonalData(global::Pml.MonsNo monsno, ushort formno) {
+            s_PersonalData = GetPersonalData(monsno, formno);
+        }
+		public static global::XLSXContent.PersonalTable.SheetPersonal GetPersonalData(global::Pml.MonsNo monsno, ushort formno) {
+            return m_alldata.Personal[GetDataID(monsno, formno)];
+        }
+		private static uint GetDataID(global::Pml.MonsNo monsno, ushort formno) {
+            if (monsno > MonsNo.END || monsno == MonsNo.NULL)
+                return 0;
+            if (formno == 0)
+                return (uint)monsno;
+            var data = m_alldata.Personal[(int)monsno];
+            if (!data.IsValidData() || data.form_index == 0)
+                return (uint)monsno;
+            if (formno >= data.form_max)
+                return (uint)monsno;
+            return (uint)(formno + data.form_index - 1);
+        }
+		public static uint GetPersonalParam(global::Pml.Personal.ParamID paramId) {
+            return s_PersonalData.GetParam(paramId);
+        }
+		// @024a1280 (CheckWazaMachine inlined)
+		public static bool CheckPersonalWazaMachine(ushort machineNo) {
+            if (machineNo == 0)
+                return false;
+            return s_PersonalData.CheckWazaMachine(machineNo);
+        }
+		// @024a1380 (CheckWazaRecord inlined)
+		public static bool CheckPersonalWazaRecord(ushort recordNo) {
+            return s_PersonalData.CheckWazaRecord(recordNo);
+        }
+		// @024a1460 (CheckWazaOshie inlined)
+		public static bool CheckPersonalWazaOshie(ushort oshieNo) {
+            return s_PersonalData.CheckWazaOshie(oshieNo);
+        }
+		// @024a1510 (GetSexType inlined)
+		public static global::Pml.Personal.SexType GetPersonalSexType() {
+            return s_PersonalData.GetSexType();
+        }
+		// @024a15d0 (GetTokuseiPattern inlined)
+		public static global::Pml.Personal.TokuseiPattern GetTokuseiPattern() {
+            return s_PersonalData.GetTokuseiPattern();
+        }
+		public static void LoadGrowTable(global::Pml.MonsNo monsno, ushort formno) {
+            s_GrowTable = GetGrowTable(monsno, formno);
+        }
+		// @024a18b0 (GetGrowTable(uint) inlined, its flag 0x4cc257b)
+		public static void LoadGrowTable(uint grow_type) {
+            s_GrowTable = GetGrowTable(grow_type);
+        }
 		// @024a1790: GetPersonalData inlined (its flag 0x4cc2578 tested @024a17ec), then the flagless GetParam(GROW) folded to `ldrb [+0x33]` @024a185c;
 		// GetGrowTable(uint)'s flag 0x4cc257b is not tested — the table is indexed here
 		public static global::XLSXContent.GrowTable.SheetData GetGrowTable(global::Pml.MonsNo monsno, ushort formno) {
             uint growType = GetPersonalData(monsno, formno).GetParam(ParamID.GROW);
             return m_allGrowData.Data[growType];
         }
-		public static global::XLSXContent.GrowTable.SheetData GetGrowTable(uint grow_type) { /*@B 0x600222F*/ throw null; }
-		public static uint GetMinExp(byte level) { /*@B 0x6002230*/ throw null; }
-		public static void LoadWazaOboeData(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x6002231*/ throw null; }
-		public static global::XLSXContent.WazaOboeTable.SheetWazaOboe GetWazaOboeData(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x6002232*/ throw null; }
-		public static byte GetWazaOboeNum() { /*@B 0x6002233*/ throw null; }
-		public static ushort GetWazaOboeLevel(ushort index) { /*@B 0x6002234*/ throw null; }
-		public static ushort GetWazaOboeWazaNo(ushort index) { /*@B 0x6002235*/ throw null; }
-		public static global::Pml.Personal.OboeWazaKind GetWazaOboeKind(ushort index) { /*@B 0x6002236*/ throw null; }
-		public static int GetOshieWazaNum() { /*@B 0x6002237*/ throw null; }
-		public static global::Pml.WazaNo GetOshieWazaNo(int idx) { /*@B 0x6002238*/ throw null; }
-		public static void LoadEvolutionTable(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x6002239*/ throw null; }
-		public static global::XLSXContent.EvolveTable.SheetEvolve GetEvolutionTable(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x600223A*/ throw null; }
-		public static byte GetEvolutionRouteNum() { /*@B 0x600223B*/ throw null; }
-		public static global::Pml.Personal.EvolveCond GetEvolutionCondition(byte route_index) { /*@B 0x600223C*/ throw null; }
-		public static global::Pml.Personal.EvolveCond GetEvolutionCondition(global::Pml.MonsNo next_monsno) { /*@B 0x600223D*/ throw null; }
-		public static ushort GetEvolutionParam(byte route_index) { /*@B 0x600223E*/ throw null; }
-		public static global::Pml.MonsNo GetEvolvedMonsNo(byte route_index) { /*@B 0x600223F*/ throw null; }
-		public static ushort GetEvolvedFormNo(byte route_index) { /*@B 0x6002240*/ throw null; }
-		public static bool IsEvolvedFormNoSpecified(byte route_index) { /*@B 0x6002241*/ throw null; }
-		public static byte GetEvolveEnableLevel(byte route_index) { /*@B 0x6002242*/ throw null; }
+		public static global::XLSXContent.GrowTable.SheetData GetGrowTable(uint grow_type) {
+            return m_allGrowData.Data[grow_type];
+        }
+		// @024a1a30 (GrowTableExtensions.GetMinExp inlined)
+		public static uint GetMinExp(byte level) {
+            return s_GrowTable.GetMinExp(level);
+        }
+		// @024a1ae0 (GetWazaOboeData inlined, its flag 0x4cc257d)
+		public static void LoadWazaOboeData(global::Pml.MonsNo monsno, ushort formno) {
+            s_WazaOboeData = GetWazaOboeData(monsno, formno);
+        }
+		public static global::XLSXContent.WazaOboeTable.SheetWazaOboe GetWazaOboeData(global::Pml.MonsNo monsno, ushort formno) {
+            return m_allWazaOboeData.WazaOboe[GetDataID(monsno, formno)];
+        }
+		// @024a1c90 (GetValidCodeNum inlined)
+		public static byte GetWazaOboeNum() {
+            return (byte)s_WazaOboeData.GetValidCodeNum();
+        }
+		// @024a1d60 (GetLevel inlined)
+		public static ushort GetWazaOboeLevel(ushort index) {
+            return s_WazaOboeData.GetLevel(index);
+        }
+		// @024a1e60 (GetWazaNo inlined)
+		public static ushort GetWazaOboeWazaNo(ushort index) {
+            return s_WazaOboeData.GetWazaNo(index);
+        }
+		// @024a1f60 (GetOboeWazaKind inlined)
+		public static global::Pml.Personal.OboeWazaKind GetWazaOboeKind(ushort index) {
+            return s_WazaOboeData.GetOboeWazaKind(index);
+        }
+		public static int GetOshieWazaNum() {
+            return OSHIE_WAZA.Length;
+        }
+		public static global::Pml.WazaNo GetOshieWazaNo(int idx) {
+            if (idx < OSHIE_WAZA.Length)
+                return OSHIE_WAZA[idx];
+            GFL.ASSERT(false);
+            return WazaNo.NULL;
+        }
+		// @024a2240 (GetEvolutionTable inlined, its flag 0x4cc257f)
+		public static void LoadEvolutionTable(global::Pml.MonsNo monsno, ushort formno) {
+            s_EvolutionTable = GetEvolutionTable(monsno, formno);
+        }
+		public static global::XLSXContent.EvolveTable.SheetEvolve GetEvolutionTable(global::Pml.MonsNo monsno, ushort formno) {
+            return m_allEvolveData.Evolve[GetDataID(monsno, formno)];
+        }
+		// @024a23f0 (EvolveTableExtensions.GetEvolutionRouteNum inlined)
+		public static byte GetEvolutionRouteNum() {
+            return s_EvolutionTable.GetEvolutionRouteNum();
+        }
+		public static global::Pml.Personal.EvolveCond GetEvolutionCondition(byte route_index) {
+            return s_EvolutionTable.GetEvolutionCondition(route_index);
+        }
+		public static global::Pml.Personal.EvolveCond GetEvolutionCondition(global::Pml.MonsNo next_monsno) {
+            return s_EvolutionTable.GetEvolutionCondition(next_monsno);
+        }
+		public static ushort GetEvolutionParam(byte route_index) {
+            return s_EvolutionTable.GetEvolutionParam(route_index);
+        }
+		public static global::Pml.MonsNo GetEvolvedMonsNo(byte route_index) {
+            return s_EvolutionTable.GetEvolvedMonsNo(route_index);
+        }
+		public static ushort GetEvolvedFormNo(byte route_index) {
+            return s_EvolutionTable.GetEvolvedFormNo(route_index);
+        }
+		public static bool IsEvolvedFormNoSpecified(byte route_index) {
+            return s_EvolutionTable.IsEvolvedFormNoSpecified(route_index);
+        }
+		public static byte GetEvolveEnableLevel(byte route_index) {
+            return s_EvolutionTable.GetEvolveEnableLevel(route_index);
+        }
 		// @024a29a0: GetDataID_AddPersonal is called (bl @024a2a04) BEFORE PmlUse.get_Instance (bl @024a2a2c)
 		public static global::XLSXContent.AddPersonalTable.SheetAddPersonal GetAddPersonalData(global::Pml.MonsNo monsno, ushort formno) {
             uint dataId = GetDataID_AddPersonal(monsno, formno);
             return PmlUse.Instance.AddPersonalTable.AddPersonal[dataId];
         }
-		private static uint GetDataID_AddPersonal(global::Pml.MonsNo monsno, ushort formno) { /*@B 0x6002244*/ throw null; }
-		static PersonalSystem() { /*@B 0x6002245*/ throw null; }
+		private static uint GetDataID_AddPersonal(global::Pml.MonsNo monsno, ushort formno) {
+            if (monsno > MonsNo.END || monsno == MonsNo.NULL)
+                return 0;
+            var table = PmlUse.Instance.AddPersonalTable.AddPersonal;
+            for (int i = 0; i < table.Length; i++)
+            {
+                if (table[i].monsno == (ushort)monsno && table[i].formno == formno)
+                    return (uint)i;
+            }
+            for (int i = 0; i < table.Length; i++)
+            {
+                if (table[i].monsno == (ushort)monsno && table[i].formno == 0)
+                    return (uint)i;
+            }
+            return 0;
+        }
+		static PersonalSystem() { }
 	}
 }

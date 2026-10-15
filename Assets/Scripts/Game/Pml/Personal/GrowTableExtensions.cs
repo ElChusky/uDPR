@@ -3,6 +3,13 @@ namespace Pml.Personal
 {
 	public static class GrowTableExtensions
 	{
-		public static uint GetMinExp(this global::XLSXContent.GrowTable.SheetData data, byte level) { /*@B 0x600221D*/ throw null; }
+		public static uint GetMinExp(this global::XLSXContent.GrowTable.SheetData data, byte level) {
+            if (level > 100)
+            {
+                GFL.ASSERT(false);
+                level = 100;
+            }
+            return data.exps[level];
+        }
 	}
 }

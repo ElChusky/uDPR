@@ -138,7 +138,7 @@ namespace Pml.Battle
             AffinityID aff = CalcAffinity(wazaType, pokeParam, isSakasaBattle);
             return ConvAboutAffinity(aff);
         }
-		static TypeAffinity() { /*@B 0x60025B7*/ throw null; }
+		static TypeAffinity() { }
 		public enum AffinityID
 		{
 			TYPEAFF_0 = 0,
