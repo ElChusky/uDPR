@@ -2924,31 +2924,75 @@ namespace NexPlugin
 #else
 			private static bool Subscriber_UpdateUserStatusAsync(uint asyncId, global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray param, int isNotify, int timeOut) { return PcPlatform.PcNex.ServiceCall("Subscriber_UpdateUserStatusAsync", pNgsFacade); }
 #endif
-			public static bool UpdateUserStatusAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<global::NexPlugin.SubscriberUserStatusParam> param, bool isNotify, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) { /*@B 0x6009BD3*/ throw null; }
+			public static bool UpdateUserStatusAsync(out uint asyncId, global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<global::NexPlugin.SubscriberUserStatusParam> param, bool isNotify, int timeOut = 0, global::NexPlugin.AsyncResultCB callback = null) {
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray paramArray = CppArray.ListToArray<SubscriberUserStatusParamInt, SubscriberUserStatusParam>(useptr, param);
+				asyncId = PublishAsyncId();
+				bool ret = Subscriber_UpdateUserStatusAsync(asyncId, pNgsFacade, ref paramArray, isNotify ? 1 : 0, timeOut);
+				if (callback != null && ret)
+					AddNexResultCallback(asyncId, callback);
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Subscriber_GetFriendUserStatusesCacheMode(global::System.IntPtr pNgsFacade, ref int result);
 #else
 			private static bool Subscriber_GetFriendUserStatusesCacheMode(global::System.IntPtr pNgsFacade, ref int result) { return PcPlatform.PcNex.ServiceCall("Subscriber_GetFriendUserStatusesCacheMode", pNgsFacade); }
 #endif
-			public static bool GetFriendUserStatusesCacheMode(global::System.IntPtr pNgsFacade, out bool result) { /*@B 0x6009BD5*/ throw null; }
+			public static bool GetFriendUserStatusesCacheMode(global::System.IntPtr pNgsFacade, out bool result) {
+				int mode = 0;
+				bool ret = Subscriber_GetFriendUserStatusesCacheMode(pNgsFacade, ref mode);
+				result = mode == 1;
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Subscriber_GetFriendUserStatusesCacheLastResult(global::System.IntPtr pNgsFacade, ref global::nn.Result result);
 #else
 			private static bool Subscriber_GetFriendUserStatusesCacheLastResult(global::System.IntPtr pNgsFacade, ref global::nn.Result result) { return PcPlatform.PcNex.ServiceCall("Subscriber_GetFriendUserStatusesCacheLastResult", pNgsFacade); }
 #endif
-			public static bool GetFriendUserStatusesCacheLastResult(global::System.IntPtr pNgsFacade, out global::nn.Result result) { /*@B 0x6009BD7*/ throw null; }
+			public static bool GetFriendUserStatusesCacheLastResult(global::System.IntPtr pNgsFacade, out global::nn.Result result) {
+				result = new global::nn.Result();
+				return Subscriber_GetFriendUserStatusesCacheLastResult(pNgsFacade, ref result);
+			}
 #if SWITCH
 			private static extern bool Subscriber_GetFriendUserStatuses(global::System.IntPtr pNgsFacade, ref global::System.IntPtr infos, ref global::nn.Result result);
 #else
 			private static bool Subscriber_GetFriendUserStatuses(global::System.IntPtr pNgsFacade, ref global::System.IntPtr infos, ref global::nn.Result result) { return PcPlatform.PcNex.ServiceCall("Subscriber_GetFriendUserStatuses", pNgsFacade); }
 #endif
-			public static bool GetFriendUserStatuses(global::System.IntPtr pNgsFacade, out global::System.Collections.Generic.List<global::NexPlugin.SubscriberUserStatusInfo> infos, out global::nn.Result result) { /*@B 0x6009BD9*/ throw null; }
+			public static bool GetFriendUserStatuses(global::System.IntPtr pNgsFacade, out global::System.Collections.Generic.List<global::NexPlugin.SubscriberUserStatusInfo> infos, out global::nn.Result result) {
+				result = new global::nn.Result();
+				infos = new List<SubscriberUserStatusInfo>();
+				IntPtr pInfos = IntPtr.Zero;
+				bool ret = Subscriber_GetFriendUserStatuses(pNgsFacade, ref pInfos, ref result);
+				if (result.IsSuccess() && pInfos != IntPtr.Zero)
+				{
+					infos = new CppArray(pInfos).ToList<SubscriberUserStatusInfo, SubscriberUserStatusInfoInt>();
+					Subscriber_DeleteSubscriberUserStatusInfo(pInfos);
+				}
+				return ret;
+			}
 #if SWITCH
 			private static extern bool Subscriber_GetFriendUserStatusesWithKey(global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray users, ref global::System.IntPtr infos, ref global::nn.Result result);
 #else
 			private static bool Subscriber_GetFriendUserStatusesWithKey(global::System.IntPtr pNgsFacade, ref global::NexPlugin.Detail.CppArray users, ref global::System.IntPtr infos, ref global::nn.Result result) { return PcPlatform.PcNex.ServiceCall("Subscriber_GetFriendUserStatusesWithKey", pNgsFacade); }
 #endif
-			public static bool GetFriendUserStatuses(global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> users, out global::System.Collections.Generic.List<global::NexPlugin.SubscriberUserStatusInfo> infos, out global::nn.Result result) { /*@B 0x6009BDB*/ throw null; }
+			public static bool GetFriendUserStatuses(global::System.IntPtr pNgsFacade, global::System.Collections.Generic.List<ulong> users, out global::System.Collections.Generic.List<global::NexPlugin.SubscriberUserStatusInfo> infos, out global::nn.Result result) {
+				result = new global::nn.Result();
+				infos = new List<SubscriberUserStatusInfo>();
+				List<IntPtr> useptr = new List<IntPtr>();
+				CppArray usersArray = CppArray.ListToArray(useptr, users);
+				IntPtr pInfos = IntPtr.Zero;
+				bool ret = Subscriber_GetFriendUserStatusesWithKey(pNgsFacade, ref usersArray, ref pInfos, ref result);
+				if (result.IsSuccess() && pInfos != IntPtr.Zero)
+				{
+					infos = new CppArray(pInfos).ToList<SubscriberUserStatusInfo, SubscriberUserStatusInfoInt>();
+					Subscriber_DeleteSubscriberUserStatusInfo(pInfos);
+				}
+				foreach (IntPtr p in useptr)
+					Util_UnmanagedManager.FreeHGlobal(p, false);
+				return ret;
+			}
 #if SWITCH
 			private static extern void Subscriber_DeleteSubscriberUserStatusInfo(global::System.IntPtr info);
 #else
@@ -2960,9 +3004,36 @@ namespace NexPlugin
 				if (cb != null)
 					cb(AsyncResultInt.GetAsyncResult(asyncResult), asyncResult.GetUlong(asyncResult.pParam1));
 			}
-			private static void Subscriber_GetContentResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BDE*/ throw null; }
-			private static void Subscriber_GetContentsResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BDF*/ throw null; }
-			private static void Subscriber_UserStatusInfoResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BE0*/ throw null; }
+			private static void Subscriber_GetContentResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Subscriber.GetContentCB cb = callback as NexPlugin.Subscriber.GetContentCB;
+				if (cb != null)
+				{
+					List<SubscriberContent> contents = new List<SubscriberContent>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						contents = new CppArray(asyncResult.pParam1).ToList<SubscriberContent, SubscriberContentInt>();
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), contents);
+				}
+			}
+			private static void Subscriber_GetContentsResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Subscriber.GetContentsCB cb = callback as NexPlugin.Subscriber.GetContentsCB;
+				if (cb != null)
+				{
+					List<List<SubscriberContent>> contents = new List<List<SubscriberContent>>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						contents = Exchange(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), contents);
+				}
+			}
+			private static void Subscriber_UserStatusInfoResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Subscriber.GetSubscriberUserStatusInfoCB cb = callback as NexPlugin.Subscriber.GetSubscriberUserStatusInfoCB;
+				if (cb != null)
+				{
+					List<SubscriberUserStatusInfo> infos = new List<SubscriberUserStatusInfo>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						infos = new CppArray(asyncResult.pParam1).ToList<SubscriberUserStatusInfo, SubscriberUserStatusInfoInt>();
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), infos);
+				}
+			}
 			// @024dc8c0
 			public static void Callback(global::NexPlugin.Detail.AsyncResultInt res, object callback) {
 				switch (res.asyncNum)
@@ -2995,14 +3066,31 @@ namespace NexPlugin
 				private global::NexPlugin.Detail.CppArray binary;
 				private global::NexPlugin.Detail.CppArray message;
 				private ulong pid;
-				public global::NexPlugin.SubscriberContent ExchangeStruct() { /*@B 0x600BB6B*/ throw null; }
+				public global::NexPlugin.SubscriberContent ExchangeStruct() {
+					SubscriberContent content = new SubscriberContent();
+					content.topics = new List<uint>();
+					content.binary = new List<byte>();
+					content.contentId = contentId;
+					content.pid = pid;
+					content.postTime = postTime;
+					topics.ToList(ref content.topics);
+					binary.ToList(ref content.binary);
+					content.message = message.ToStr();
+					return content;
+				}
 			}
 			private struct SubscriberPostContentParamInt
 			{
 				private global::NexPlugin.Detail.CppArray topics;
 				private global::NexPlugin.Detail.CppArray contentBinary;
 				private global::NexPlugin.Detail.CppArray contentMessage;
-				public SubscriberPostContentParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.SubscriberPostContentParam param) { /*@B 0x600BB6C*/ throw null; }
+				public SubscriberPostContentParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.SubscriberPostContentParam param) {
+					if (param == null)
+						param = new SubscriberPostContentParam();
+					topics = CppArray.ListToArray(useptr, param.topics);
+					contentBinary = CppArray.ListToArray(useptr, param.binary);
+					contentMessage = CppArray.StringToArray(useptr, param.message);
+				}
 			}
 			public struct SubscriberGetContentParamInt
 			{
@@ -3010,21 +3098,51 @@ namespace NexPlugin
 				private uint offset;
 				private ulong minimumContentId;
 				private uint topic;
-				public SubscriberGetContentParamInt(global::NexPlugin.SubscriberGetContentParam param) { /*@B 0x600BB6D*/ throw null; }
+				public SubscriberGetContentParamInt(global::NexPlugin.SubscriberGetContentParam param) {
+					if (param == null)
+						param = new SubscriberGetContentParam();
+					size = param.size;
+					offset = param.offset;
+					minimumContentId = param.minimumContentId;
+					topic = param.topic;
+				}
 			}
 			private struct SubscriberUserStatusInfoInt : global::NexPlugin.Detail.IExchangeList<global::NexPlugin.SubscriberUserStatusInfo>
 			{
 				private global::NexPlugin.Detail.CppArray keys;
 				private global::NexPlugin.Detail.CppArray values;
 				private ulong pid;
-				public static global::NexPlugin.SubscriberUserStatusInfo ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB6E*/ throw null; }
-				public global::NexPlugin.SubscriberUserStatusInfo ExchangeStruct() { /*@B 0x600BB6F*/ throw null; }
+				public static global::NexPlugin.SubscriberUserStatusInfo ExchangePtrToStruct(global::System.IntPtr src) {
+					SubscriberUserStatusInfoInt info = Detail.ExchangePtrToStruct<SubscriberUserStatusInfoInt>(src);
+					return info.ExchangeStruct();
+				}
+				public global::NexPlugin.SubscriberUserStatusInfo ExchangeStruct() {
+					SubscriberUserStatusInfo info = new SubscriberUserStatusInfo();
+					info.pid = pid;
+					info.values = new Dictionary<byte, List<byte>>();
+					List<byte> keyList = new List<byte>();
+					keys.ToList(ref keyList);
+					List<CppArray> valueList = new List<CppArray>();
+					values.ToList(ref valueList);
+					for (int i = 0; i < valueList.Count; i++)
+					{
+						List<byte> value = new List<byte>();
+						valueList[i].ToList(ref value);
+						info.values.Add(keyList[i], value);
+					}
+					return info;
+				}
 			}
 			private struct SubscriberUserStatusParamInt
 			{
 				private global::NexPlugin.Detail.CppArray value;
 				private byte key;
-				public SubscriberUserStatusParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.SubscriberUserStatusParam param) { /*@B 0x600BB70*/ throw null; }
+				public SubscriberUserStatusParamInt(global::System.Collections.Generic.List<global::System.IntPtr> useptr, global::NexPlugin.SubscriberUserStatusParam param) {
+					if (param == null)
+						param = new SubscriberUserStatusParam();
+					value = CppArray.ListToArray(useptr, param.value);
+					key = param.key;
+				}
 			}
 		}
 		public class Util_UnmanagedManager
@@ -3160,10 +3278,48 @@ namespace NexPlugin
                 if (cb != null)
                     cb(AsyncResultInt.GetAsyncResult(asyncResult), asyncResult.GetUlong(asyncResult.pParam1));
             }
-			private static void AcquireNexUniqueIdWithPasswordResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BF6*/ throw null; }
-			private static void GetAssociatedNexUniqueIdWithMyPrincipalIdResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BF7*/ throw null; }
-			private static void GetAssociatedNexUniqueIdWithMyPrincipalIdListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BF8*/ throw null; }
-			private static void GetIntegerSettingsResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) { /*@B 0x6009BF9*/ throw null; }
+			private static void AcquireNexUniqueIdWithPasswordResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Utility.AcquireNexUniqueIdWithPasswordCB cb = callback as NexPlugin.Utility.AcquireNexUniqueIdWithPasswordCB;
+				if (cb != null)
+				{
+					UniqueIdInfo info = new UniqueIdInfo();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = UniqueIdInfoInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
+			private static void GetAssociatedNexUniqueIdWithMyPrincipalIdResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Utility.GetAssociatedNexUniqueIdWithMyPrincipalIdCB cb = callback as NexPlugin.Utility.GetAssociatedNexUniqueIdWithMyPrincipalIdCB;
+				if (cb != null)
+				{
+					UniqueIdInfo info = new UniqueIdInfo();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						info = UniqueIdInfoInt.ExchangePtrToStruct(asyncResult.pParam1);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), info);
+				}
+			}
+			private static void GetAssociatedNexUniqueIdWithMyPrincipalIdListResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Utility.GetAssociatedNexUniqueIdWithMyPrincipalIdListCB cb = callback as NexPlugin.Utility.GetAssociatedNexUniqueIdWithMyPrincipalIdListCB;
+				if (cb != null)
+				{
+					List<UniqueIdInfo> infos = new List<UniqueIdInfo>();
+					if (asyncResult.pParam1 != IntPtr.Zero)
+						infos = new CppArray(asyncResult.pParam1).ToList<UniqueIdInfo, UniqueIdInfoInt>();
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), infos);
+				}
+			}
+			private static void GetIntegerSettingsResult(ref global::NexPlugin.Detail.AsyncResultInt asyncResult, object callback) {
+				NexPlugin.Utility.GetIntegerSettingsCB cb = callback as NexPlugin.Utility.GetIntegerSettingsCB;
+				if (cb != null)
+				{
+					List<IntegerSettings> list = new List<IntegerSettings>();
+					new CppArray(asyncResult.pParam1).ToList(ref list);
+					Dictionary<ushort, int> settings = new Dictionary<ushort, int>();
+					foreach (IntegerSettings s in list)
+						settings.Add(s.key, s.value);
+					cb(AsyncResultInt.GetAsyncResult(asyncResult), settings);
+				}
+			}
 			// @024ddfc0
 			public static void Callback(global::NexPlugin.Detail.AsyncResultInt res, object callback) {
 				switch (res.asyncNum)
@@ -3193,9 +3349,22 @@ namespace NexPlugin
 			{
 				private ulong nexUniqueId;
 				private ulong nexUniqueIdPassword;
-				public global::NexPlugin.UniqueIdInfo ExchangeStruct() { /*@B 0x600BB71*/ throw null; }
-				public static global::NexPlugin.UniqueIdInfo ExchangePtrToStruct(global::System.IntPtr src) { /*@B 0x600BB72*/ throw null; }
-				public UniqueIdInfoInt(global::NexPlugin.UniqueIdInfo param) { /*@B 0x600BB73*/ throw null; }
+				public global::NexPlugin.UniqueIdInfo ExchangeStruct() {
+					UniqueIdInfo info = new UniqueIdInfo();
+					info.nexUniqueId = nexUniqueId;
+					info.nexUniqueIdPassword = nexUniqueIdPassword;
+					return info;
+				}
+				public static global::NexPlugin.UniqueIdInfo ExchangePtrToStruct(global::System.IntPtr src) {
+					UniqueIdInfoInt info = Detail.ExchangePtrToStruct<UniqueIdInfoInt>(src);
+					return info.ExchangeStruct();
+				}
+				public UniqueIdInfoInt(global::NexPlugin.UniqueIdInfo param) {
+					if (param == null)
+						param = new UniqueIdInfo();
+					nexUniqueId = param.nexUniqueId;
+					nexUniqueIdPassword = param.nexUniqueIdPassword;
+				}
 			}
 			private struct IntegerSettings
 			{
