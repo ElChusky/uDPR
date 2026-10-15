@@ -67,7 +67,7 @@ def shipped_rgba(d, tmp):
         open(rin, "wb").write(raw)
         jf = os.path.join(tmp, "j.jsonl")
         open(jf, "w").write(json.dumps({"in": rin, "out": rout, "w": w, "h": h, "mips": 1, "format": fmt, "gobs": 0}) + "\n")
-        subprocess.run([CONV, jf], capture_output=True, text=True)
+        subprocess.run(CONV + [jf], capture_output=True, text=True)
         return np.frombuffer(open(rout, "rb").read()[:w * h * 4], np.uint8).reshape(h, w, 4), "exact"
     bw, bh = (w + 3) // 4, (h + 3) // 4
     if fmt == 10:

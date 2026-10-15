@@ -34,7 +34,7 @@ MAP = paths.work("d7", "d7_map.json")
 ASIDE = paths.work("d7", "d7_png_aside")
 MANIFEST = paths.work("d7", "d7_manifest.jsonl")
 TEMPLATE = os.path.join(ASSETS, "_d7_template", "d7_template_bin.asset")  # BINARY (Unity-written, Mixed mode; see BdspD7)
-CONV = os.path.join(paths.BIN, "d7_texconv", "d7_texconv.exe")
+CONV = [sys.executable, "-I", os.path.join(paths.SETUP, "lib", "texconv.py")]   # pure-Python d7_texconv (W3)
 ASTC = set(range(48, 60))
 
 META = """fileFormatVersion: 2
@@ -50,7 +50,7 @@ NativeFormatImporter:
 
 SUPPORTED = {1, 3, 4, 5, 10, 12, 13, 25, 26, 27, 63, 28, 29, 74} | ASTC
 CRUNCH = {28: 10, 29: 12}   # DXT1Crunched -> DXT1, DXT5Crunched -> DXT5 (all levels via Unity's crunch, tools/crunch_unity)
-CRN = os.path.join(paths.BIN, "crn_levels.exe")
+CRN = os.path.join(paths.SETUP, "bin", "crn_levels.exe")
 
 
 def load_template():
@@ -219,7 +219,7 @@ def main():
                                     "format": int(d.m_TextureFormat), "gobs": gobs}))
         jf = os.path.join(tmp, "jobs.jsonl")
         open(jf, "w", encoding="utf-8").write("\n".join(jobs) + "\n")
-        res = subprocess.run([CONV, jf], capture_output=True, text=True)
+        res = subprocess.run(CONV + [jf], capture_output=True, text=True)
         status = dict(crunch_status)
         for line in res.stdout.splitlines():
             parts = line.split(" ", 2)

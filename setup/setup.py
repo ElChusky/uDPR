@@ -70,10 +70,10 @@ def build_stages():
         ("sprite_restore", "restore the shipped sprite geometry", [
             stage_cmd("sprite_shipped_index.py"),
             stage_cmd("sprite_restore_shipped.py", "--apply")]),
-        ("d7", "every texture holds the shipped texels (incl. the editor template + verify steps)", None),
+        ("d7", "every texture holds the shipped texels (incl. the editor template + verify steps)", [stage_cmd("d7.py")]),
         ("untag", "empty the runtime atlas tags of packed sprites (needed for Windows bundles)", [
             stage_cmd("sprite_untag.py", "--apply", "--project", P, "--backup", W("build", "sprite_untag_backup"))]),
-        ("verify", "reimport, audits, play smoke (Unity editor)", None),
+        ("verify", "reimport, audits, play smoke (Unity editor)", [stage_cmd("verify.py")]),
     ]
 
 

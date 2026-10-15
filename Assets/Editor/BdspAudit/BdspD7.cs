@@ -43,6 +43,40 @@ public static class BdspD7
         EditorApplication.Exit(0);
     }
 
+    // The automated setup (setup/stages/d7.py): every template in ONE editor session - the four WriteTemplate writes plus the cubemap
+    // template - then quits. Switches EditorSettings to Mixed like WriteTemplate; the setup restores ProjectSettings/EditorSettings.asset
+    // byte for byte afterwards.
+    public static void WriteAllTemplates()
+    {
+        try
+        {
+            Directory.CreateDirectory("Assets/_d7_template");
+            var t = new Texture2D(8, 8, TextureFormat.DXT1, true);
+            t.name = "d7_template";
+            t.filterMode = FilterMode.Bilinear;
+            t.wrapMode = TextureWrapMode.Clamp;
+            t.anisoLevel = 1;
+            AssetDatabase.CreateAsset(t, "Assets/_d7_template/d7_template.asset");
+            var u = new Texture2D(4, 4, TextureFormat.RGBA32, false);
+            u.name = "d7_template_rgba";
+            AssetDatabase.CreateAsset(u, "Assets/_d7_template/d7_template_rgba.asset");
+            EditorSettings.serializationMode = SerializationMode.Mixed;
+            var b = new Texture2D(8, 8, TextureFormat.DXT1, true);
+            b.name = "d7_template_bin";
+            AssetDatabase.CreateAsset(b, "Assets/_d7_template/d7_template_bin.asset");
+            var c = new Cubemap(8, TextureFormat.BC6H, true);
+            c.name = "d7_template_cube";
+            AssetDatabase.CreateAsset(c, "Assets/_d7_template/d7_template_cube.asset");
+            AssetDatabase.SaveAssets();
+            Debug.Log("BDSP_D7_TEMPLATES_DONE");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("[BdspD7] templates: " + e);
+        }
+        EditorApplication.Exit(0);
+    }
+
     // Binary Cubemap template (8x8 BC6H, mips) for tools/d7_cubemaps.py - same Mixed-mode trick as WriteTemplate (the file is restored
     // to ForceText afterwards from work/s34/projectsettings_backup/EditorSettings.asset). Then the same Verify pass, then quits.
     public static void WriteCubemapTemplateAndVerify()

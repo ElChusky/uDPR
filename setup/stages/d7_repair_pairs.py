@@ -46,7 +46,7 @@ def main():
                                             "format": int(d.m_TextureFormat), "gobs": 0}) + "\n")
             if os.path.exists(rout):
                 os.remove(rout)
-            subprocess.run([CONV, jf], capture_output=True, text=True)
+            subprocess.run(CONV + [jf], capture_output=True, text=True)
             if not os.path.exists(rout):
                 continue
             why = verify_mip0(open(rout, "rb").read(), int(d.m_TextureFormat), d.m_Width, d.m_Height, os.path.join(ASSETS, png),
