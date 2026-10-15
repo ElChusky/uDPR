@@ -9,7 +9,11 @@ namespace nn
 		public int Module { get { return this._module; } }
 		public int DescriptionBegin { get { return this._descriptionBegin; } }
 		public int DescriptionEnd { get { return this._descriptionEnd; } }
-		internal ErrorRange(int Module, int DescriptionBegin, int DescriptionEnd) { /*@B nn:0x6000010*/ throw null; }
+		internal ErrorRange(int Module, int DescriptionBegin, int DescriptionEnd) {
+			_module = Module;
+			_descriptionBegin = DescriptionBegin;
+			_descriptionEnd = DescriptionEnd;
+		}
 		// @027c6340: module match, then DescriptionBegin <= description < DescriptionEnd (GetModule / GetDescription inlined)
 		public bool Includes(global::nn.Result result) {
 			if (result.GetModule() != _module)

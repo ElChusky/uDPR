@@ -6,43 +6,146 @@ namespace Xoroshiro128Plus
 		private const int a = 24;
 		private const int b = 16;
 		private const int c = 37;
-		private readonly ulong[] JUMP;
-		private readonly ulong[] LONG_JUMP;
+		private readonly ulong[] JUMP = new ulong[] { 0xDF900294D8F554A5UL, 0x170865DF4B3201FCUL };
+		private readonly ulong[] LONG_JUMP = new ulong[] { 0xD2A98B26625EEE7BUL, 0xDDDF9B1090AA7AC1UL };
 		private ulong state0;
 		private ulong state1;
-		public ulong[] State { get { /*@B 0x6002A1C*/ throw null; } set { /*@B 0x6002A1D*/ throw null; } }
-		public global::Xoroshiro128Plus.Xoroshiro128Plus Clone() { /*@B 0x6002A1E*/ throw null; }
-		public Xoroshiro128Plus(ulong seed) { /*@B 0x6002A1F*/ throw null; }
-		public global::Xoroshiro128Plus.Xoroshiro128Plus Seed() { /*@B 0x6002A20*/ throw null; }
-		public Xoroshiro128Plus(global::Xoroshiro128Plus.Xoroshiro128Plus other) { /*@B 0x6002A21*/ throw null; }
-		public Xoroshiro128Plus(ulong state0, ulong state1) { /*@B 0x6002A22*/ throw null; }
-		public Xoroshiro128Plus() { /*@B 0x6002A23*/ throw null; }
-		public Xoroshiro128Plus(global::System.Random r) { /*@B 0x6002A24*/ throw null; }
-		public Xoroshiro128Plus(decimal seed) { /*@B 0x6002A25*/ throw null; }
-		public global::Xoroshiro128Plus.Xoroshiro128Plus Seed(ulong seed) { /*@B 0x6002A26*/ throw null; }
-		public global::Xoroshiro128Plus.Xoroshiro128Plus Seed(ulong state0, ulong state1) { /*@B 0x6002A27*/ throw null; }
-		private ulong rotate(ulong x, int k) { /*@B 0x6002A28*/ throw null; }
-		private static ulong splitmix64(ref ulong x) { /*@B 0x6002A29*/ throw null; }
-		public static ulong Splitmix64(ref ulong x) { /*@B 0x6002A2A*/ throw null; }
-		public static ulong Splitmix64(ulong x) { /*@B 0x6002A2B*/ throw null; }
-		public long NextLong() { /*@B 0x6002A2C*/ throw null; }
-		public ulong NextULong() { /*@B 0x6002A2D*/ throw null; }
-		public uint NextUInt() { /*@B 0x6002A2E*/ throw null; }
-		public int NextInt() { /*@B 0x6002A2F*/ throw null; }
-		public short NextShort() { /*@B 0x6002A30*/ throw null; }
-		public ushort NextUShort() { /*@B 0x6002A31*/ throw null; }
-		public byte NextByte() { /*@B 0x6002A32*/ throw null; }
-		public sbyte NextSByte() { /*@B 0x6002A33*/ throw null; }
-		public void NextBytes(byte[] bytes) { /*@B 0x6002A34*/ throw null; }
-		public bool NextBool() { /*@B 0x6002A35*/ throw null; }
-		public double NextDouble() { /*@B 0x6002A36*/ throw null; }
-		public float NextFloat() { /*@B 0x6002A37*/ throw null; }
-		private ulong next() { /*@B 0x6002A38*/ throw null; }
-		public void Jump(int n) { /*@B 0x6002A39*/ throw null; }
-		public void LongJump(int n) { /*@B 0x6002A3A*/ throw null; }
-		public void Jump() { /*@B 0x6002A3B*/ throw null; }
-		public global::Xoroshiro128Plus.Xoroshiro128Plus JumpInto() { /*@B 0x6002A3C*/ throw null; }
-		public void LongJump() { /*@B 0x6002A3D*/ throw null; }
-		public global::Xoroshiro128Plus.Xoroshiro128Plus LongJumpInto() { /*@B 0x6002A3E*/ throw null; }
+		public ulong[] State { get { return new ulong[] { state0, state1 }; } set { state0 = value[0];
+			state1 = value[1]; } }
+		public global::Xoroshiro128Plus.Xoroshiro128Plus Clone() {
+			global::Xoroshiro128Plus.Xoroshiro128Plus x = new global::Xoroshiro128Plus.Xoroshiro128Plus();
+			x.state0 = state0;
+			x.state1 = state1;
+			return x;
+		}
+		public Xoroshiro128Plus(ulong seed) { Seed(seed); }
+		public global::Xoroshiro128Plus.Xoroshiro128Plus Seed() { return Seed((ulong)global::System.DateTime.Now.ToBinary()); }
+		public Xoroshiro128Plus(global::Xoroshiro128Plus.Xoroshiro128Plus other) { Seed(other.state0, other.state1); }
+		public Xoroshiro128Plus(ulong state0, ulong state1) { Seed(state0, state1); }
+		public Xoroshiro128Plus() { Seed(); }
+		public Xoroshiro128Plus(global::System.Random r) {
+			byte[] bytes = new byte[16];
+			r.NextBytes(bytes);
+			Seed(global::System.BitConverter.ToUInt64(bytes, 0), global::System.BitConverter.ToUInt64(bytes, 8));
+		}
+		public Xoroshiro128Plus(decimal seed) {
+			byte[] bytes = new byte[global::System.Runtime.InteropServices.Marshal.SizeOf(typeof(decimal))];
+			global::System.Runtime.InteropServices.GCHandle handle = global::System.Runtime.InteropServices.GCHandle.Alloc(bytes, global::System.Runtime.InteropServices.GCHandleType.Pinned);
+			global::System.Runtime.InteropServices.Marshal.StructureToPtr(seed, handle.AddrOfPinnedObject(), true);
+			handle.Free();
+			Seed(global::System.BitConverter.ToUInt64(bytes, 0), global::System.BitConverter.ToUInt64(bytes, 8));
+		}
+		public global::Xoroshiro128Plus.Xoroshiro128Plus Seed(ulong seed) { return Seed(splitmix64(ref seed), splitmix64(ref seed)); }
+		public global::Xoroshiro128Plus.Xoroshiro128Plus Seed(ulong state0, ulong state1) {
+			if ((state0 | state1) == 0)
+			{
+				state0 = 1;
+			}
+			this.state0 = state0;
+			this.state1 = state1;
+			return this;
+		}
+		private ulong rotate(ulong x, int k) { return (x << k) | (x >> (64 - k)); }
+		private static ulong splitmix64(ref ulong x) {
+			ulong z = (x += 0x9E3779B97F4A7C15UL);
+			z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9UL;
+			z = (z ^ (z >> 27)) * 0x94D049BB133111EBUL;
+			return z ^ (z >> 31);
+		}
+		public static ulong Splitmix64(ref ulong x) {
+			ulong z = (x += 0x9E3779B97F4A7C15UL);
+			z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9UL;
+			z = (z ^ (z >> 27)) * 0x94D049BB133111EBUL;
+			return z ^ (z >> 31);
+		}
+		public static ulong Splitmix64(ulong x) { return splitmix64(ref x); }
+		public long NextLong() { return (long)next(); }
+		public ulong NextULong() { return next(); }
+		public uint NextUInt() { return (uint)(next() >> 32); }
+		public int NextInt() { return (int)(next() >> 32); }
+		public short NextShort() { return (short)(next() >> 48); }
+		public ushort NextUShort() { return (ushort)(next() >> 48); }
+		public byte NextByte() { return (byte)(next() >> 56); }
+		public sbyte NextSByte() { return (sbyte)(next() >> 56); }
+		public void NextBytes(byte[] bytes) {
+			for (int i = 0; i < bytes.Length; i += 8)
+			{
+				global::System.Array.Copy(global::System.BitConverter.GetBytes(next()), 0, bytes, i, global::System.Math.Min(8, bytes.Length - i));
+			}
+		}
+		public bool NextBool() { return (next() >> 63) == 1; }
+		public double NextDouble() { return (long)(next() & 0x1FFFFFFFFFFFFFUL) * (1.0 / (1L << 53)); }
+		public float NextFloat() { return (long)(next() & 0xFFFFFFUL) * (1f / (1 << 24)); }
+		private ulong next() {
+			ulong s0 = state0;
+			ulong s1 = state1;
+			ulong result = s0 + s1;
+			s1 ^= s0;
+			state0 = rotate(s0, a) ^ s1 ^ (s1 << b);
+			state1 = rotate(s1, c);
+			return result;
+		}
+		public void Jump(int n) {
+			for (int i = 0; i < n; i++)
+			{
+				Jump();
+			}
+		}
+		public void LongJump(int n) {
+			for (int i = 0; i < n; i++)
+			{
+				LongJump();
+			}
+		}
+		public void Jump() {
+			ulong s0 = 0;
+			ulong s1 = 0;
+			for (int i = 0; i < 2; i++)
+			{
+				for (int bit = 0; bit < 64; bit++)
+				{
+					if ((JUMP[i] & (1UL << bit)) != 0)
+					{
+						s0 ^= state0;
+						s1 ^= state1;
+					}
+					next();
+				}
+			}
+			state0 = s0;
+			state1 = s1;
+		}
+		public global::Xoroshiro128Plus.Xoroshiro128Plus JumpInto() {
+			Jump();
+			global::Xoroshiro128Plus.Xoroshiro128Plus x = new global::Xoroshiro128Plus.Xoroshiro128Plus();
+			x.state0 = state0;
+			x.state1 = state1;
+			return x;
+		}
+		public void LongJump() {
+			ulong s0 = 0;
+			ulong s1 = 0;
+			for (int i = 0; i < 2; i++)
+			{
+				for (int bit = 0; bit < 64; bit++)
+				{
+					if ((LONG_JUMP[i] & (1UL << bit)) != 0)
+					{
+						s0 ^= state0;
+						s1 ^= state1;
+					}
+					next();
+				}
+			}
+			state0 = s0;
+			state1 = s1;
+		}
+		public global::Xoroshiro128Plus.Xoroshiro128Plus LongJumpInto() {
+			LongJump();
+			global::Xoroshiro128Plus.Xoroshiro128Plus x = new global::Xoroshiro128Plus.Xoroshiro128Plus();
+			x.state0 = state0;
+			x.state1 = state1;
+			return x;
+		}
 	}
 }
