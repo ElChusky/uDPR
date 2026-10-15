@@ -15,8 +15,8 @@ namespace Dpr.UI
 		private bool isContestPanel;
 		private global::Pml.WazaNo[] detailWazaNos;
 		private int selectIndex;
-		private int newWazaIndex;
-		private global::Dpr.UI.UIInputController inputController;
+		private int newWazaIndex = -1;
+		private global::Dpr.UI.UIInputController inputController = new global::Dpr.UI.UIInputController();
 		public void Initialize() {
 			wazaScrollView.Initialize(OnRequiredItemData, OnSelectItemScrollViewItem, OnUnSelectItemScrollViewItem);
 		}
@@ -152,7 +152,7 @@ namespace Dpr.UI
 				detail.description.SetupMessage(null, (int)wazaNo);
 			}
 		}
-		public WazaManageWazaStatusPanel() { /*@B 0x6005D61*/ throw null; }
+		public WazaManageWazaStatusPanel() { }
 		[global::System.Serializable]
 		private class DetailParam
 		{

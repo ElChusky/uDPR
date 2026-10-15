@@ -8,7 +8,7 @@ namespace Dpr.UI
 		private global::System.Action<int> onDecideSelectAmountCallback;
 		private global::System.Action onCancelSelectAmountCallback;
 		private global::System.Action<int> onSelectAmountValueChangedCallback;
-		private global::Dpr.UI.UIInputController _input;
+		private global::Dpr.UI.UIInputController _input = new global::Dpr.UI.UIInputController();
 		public void OnUpdate() {
 			var input = _input;
 			if (input.IsRepeatButton(UIManager.StickLLeft, false))
@@ -65,6 +65,6 @@ namespace Dpr.UI
 		public void SetSelectAmountDescriptionText(string text) {
 			SetDescriptionText(text);
 		}
-		public UgItemSelectAmount() { /*@B 0x6005D32*/ throw null; }
+		public UgItemSelectAmount() { }
 	}
 }

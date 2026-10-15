@@ -36,8 +36,8 @@ namespace Dpr.UI
 		private const int StopLoadModelCount = -1;
 		private const int StartLoadModelCount = 3;
 		private const int SwitchZukanButton = 192;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private readonly int _animStateIn = global::UnityEngine.Animator.StringToHash("in");
+		private readonly int _animStateOut = global::UnityEngine.Animator.StringToHash("out");
 		[global::UnityEngine.SerializeField]
 		private global::UnityEngine.RectTransform header;
 		[global::UnityEngine.SerializeField]
@@ -854,7 +854,7 @@ namespace Dpr.UI
 			descriptionPanel.HideDescription(false, true, true, () => UpdateKeyGuide());
 			ZukanWork.IsShowDescription = false;
 		}
-		public UIZukan() { /*@B 0x6005DA1*/ throw null; }
+		public UIZukan() { }
 		public enum ShowZukanType
 		{
 			None = 0,

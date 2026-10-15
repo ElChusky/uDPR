@@ -12,49 +12,179 @@ namespace Dpr.UI
 		public const int MoveDownButton = 557056;
 		public const float TransitionFadeDuration = 0.1f;
 		public static readonly global::UnityEngine.Color TransitionFadeFillColor = new Color(0.54509807f, 0.7607843f, 0.9490196f);
-		protected global::Dpr.UI.UIInputController _input;
+		protected global::Dpr.UI.UIInputController _input = new global::Dpr.UI.UIInputController();
 		protected global::UnityEngine.Canvas _canvas;
 		protected global::UnityEngine.Animator _animator;
 		protected global::Dpr.UI.UIAnimationEvent _animEvent;
-		protected global::Dpr.UI.UITransition.FadeType _transitionFadeType;
-		protected global::UIWindowID _prevWindowId;
+		protected global::Dpr.UI.UITransition.FadeType _transitionFadeType = global::Dpr.UI.UITransition.FadeType.None;
+		protected global::UIWindowID _prevWindowId = (global::UIWindowID)(-1);
 		protected global::Dpr.MsgWindow.MsgWindow _messageWindow;
 		public global::Dpr.UI.UIManager.UIInstance instance;
 		public global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosed;
 		public global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onPreClose;
-		private readonly int _animStateIn;
-		private readonly int _animStateOut;
+		private readonly int _animStateIn = Animator.StringToHash("in");
+		private readonly int _animStateOut = Animator.StringToHash("out");
 		public global::UIWindowID prevWindowId { get { return this._prevWindowId; } }
-		protected bool isCompleteTransition { get { /*@B 0x6005C87*/ throw null; } }
+		protected bool isCompleteTransition { get { return _transitionFadeType == global::Dpr.UI.UITransition.FadeType.None; } }
 		public global::UnityEngine.Canvas canvas { get { return this._canvas; } }
 		public global::Dpr.UI.UIInputController InputController { get { return this._input; } }
 		public bool IsClosing { get; private set; }
-		public virtual void OnCreate() { /*@B 0x6005C8C*/ throw null; }
+		public virtual void OnCreate() {
+			_canvas = GetComponentInChildren<Canvas>(true);
+			_animator = GetComponentInChildren<Animator>(true);
+			_animEvent = GetComponentInChildren<global::Dpr.UI.UIAnimationEvent>(true);
+			if (_animator != null && _animEvent == null)
+				_animEvent = _animator.gameObject.AddComponent<global::Dpr.UI.UIAnimationEvent>();
+			if (_animEvent != null)
+				_animEvent.onTransition = OnTransition;
+		}
 		public void RegisterCloseOnOpenWindow<T>(global::UnityEngine.Color color, float duration, global::UnityEngine.Events.UnityAction<global::Dpr.UI.UIWindow> onClosedAction) where T : global::Dpr.UI.UIWindow { /*@B 0x6005C8D*/ throw null; }
 		protected virtual void OnDestroy() { }
-		protected virtual void OnTransition(global::TransitionID transitionId, global::Dpr.UI.UITransition.FadeType fadeType) { /*@B 0x6005C8F*/ throw null; }
-		protected virtual void OnTransitionComplete(global::Dpr.UI.UITransition.FadeType fadeType) { /*@B 0x6005C90*/ throw null; }
-		protected virtual void OnOpen(global::UIWindowID prevWindowId) { /*@B 0x6005C91*/ throw null; }
-		protected bool IsPushButton(int button, bool isForce = false) { /*@B 0x6005C92*/ throw null; }
-		protected bool IsReleaseButton(int button, bool isForce = false) { /*@B 0x6005C93*/ throw null; }
-		protected bool IsRepeatButton(int button, bool isForce = false) { /*@B 0x6005C94*/ throw null; }
-		protected bool IsOnButton(int button, bool isForce = false) { /*@B 0x6005C95*/ throw null; }
-		protected bool IsAccelButton(int button, bool isForce = false) { /*@B 0x6005C96*/ throw null; }
-		protected virtual void PlayOpenWindowAnimation(global::UIWindowID prevWindowId, global::UnityEngine.Events.UnityAction onOpend = null) { /*@B 0x6005C97*/ throw null; }
-		protected virtual global::System.Collections.IEnumerator OpPlayOpenWindowAnimation(global::UIWindowID prevWindowId, global::UnityEngine.Events.UnityAction onOpend = null) { /*@B 0x6005C98*/ throw null; }
-		protected virtual int GetWindowAnimationConnectId(bool isOpen, global::UIWindowID windowId) { /*@B 0x6005C99*/ throw null; }
-		protected virtual global::System.Collections.IEnumerator OpPlayCloseWindowAnimationAndWaiting(global::UIWindowID nextWindowId) { /*@B 0x6005C9A*/ throw null; }
-		protected virtual bool EnableMainCameraByUiMode(bool enabled) { /*@B 0x6005C9B*/ throw null; }
-		protected virtual void OnCloseKeyguide() { /*@B 0x6005C9C*/ throw null; }
-		protected virtual void OpenMessageWindow(global::Dpr.MsgWindow.MsgWindowParam messageParam) { /*@B 0x6005C9D*/ throw null; }
-		protected virtual void CloseMessageWindow() { /*@B 0x6005C9E*/ throw null; }
-		protected virtual bool IsActiveMessageWindow() { /*@B 0x6005C9F*/ throw null; }
-		protected global::Dpr.UI.ContextMenuWindow.Param CreateContextMenuYesNoParam() { /*@B 0x6005CA0*/ throw null; }
-		protected virtual global::Dpr.UI.ContextMenuWindow CreateContextMenuYesNo(global::System.Func<global::Dpr.UI.ContextMenuItem, bool> onClicked, uint SeDecide) { /*@B 0x6005CA1*/ throw null; }
-		protected virtual global::Dpr.UI.ContextMenuWindow CreateContextMenuYesNo(global::System.Func<global::Dpr.UI.ContextMenuItem, bool> onClicked, global::Dpr.UI.ContextMenuWindow.Param contextMenuParam = null) { /*@B 0x6005CA2*/ throw null; }
+		protected virtual void OnTransition(global::TransitionID transitionId, global::Dpr.UI.UITransition.FadeType fadeType) {
+			_transitionFadeType = fadeType;
+			if (instance.windowId == global::UIWindowID.CONTEXTMENU)
+				return;
+			UIManager.Instance.PlayTransition(transitionId, _transitionFadeType, OnTransitionComplete);
+		}
+		protected virtual void OnTransitionComplete(global::Dpr.UI.UITransition.FadeType fadeType) {
+			_transitionFadeType = global::Dpr.UI.UITransition.FadeType.None;
+			int stateId = _animator.GetInteger(UIWindowStateMachine.animParamStateId);
+			if (fadeType == global::Dpr.UI.UITransition.FadeType.Out && stateId == 1)
+				EnableMainCameraByUiMode(true);
+		}
+		protected virtual void OnOpen(global::UIWindowID prevWindowId) {
+			_input.inputEnabled = false;
+			_transitionFadeType = global::Dpr.UI.UITransition.FadeType.None;
+			_prevWindowId = prevWindowId;
+			UIManager.Instance.SetTransitionWindowIds(prevWindowId, instance.windowId, true);
+			UIManager.Instance.SetupSortOrder(this);
+			IsClosing = false;
+		}
+		protected bool IsPushButton(int button, bool isForce = false) {
+			return _input.IsPushButton(button, isForce);
+		}
+		protected bool IsReleaseButton(int button, bool isForce = false) {
+			return _input.IsReleaseButton(button, isForce);
+		}
+		protected bool IsRepeatButton(int button, bool isForce = false) {
+			return _input.IsRepeatButton(button, isForce);
+		}
+		protected bool IsOnButton(int button, bool isForce = false) {
+			return _input.IsOnButton(button, isForce);
+		}
+		protected bool IsAccelButton(int button, bool isForce = false) {
+			return _input.IsAccelButton(button, isForce);
+		}
+		protected virtual void PlayOpenWindowAnimation(global::UIWindowID prevWindowId, global::UnityEngine.Events.UnityAction onOpend = null) {
+			global::SmartPoint.AssetAssistant.Sequencer.Start(OpPlayOpenWindowAnimation(prevWindowId, onOpend));
+		}
+		protected virtual global::System.Collections.IEnumerator OpPlayOpenWindowAnimation(global::UIWindowID prevWindowId, global::UnityEngine.Events.UnityAction onOpend = null) {
+			while (!_animator.isActiveAndEnabled)
+				yield return null;
+
+			_animator.SetInteger(UIWindowStateMachine.animParamConnectId, GetWindowAnimationConnectId(true, prevWindowId));
+			_animator.SetInteger(UIWindowStateMachine.animParamStateId, 1);
+
+			while (_animator != null && _animator.GetInteger(UIWindowStateMachine.animParamConnectId) != -1)
+				yield return null;
+
+			if (onOpend != null)
+				onOpend.Invoke();
+		}
+		protected virtual int GetWindowAnimationConnectId(bool isOpen, global::UIWindowID windowId) {
+			if (windowId == WINDOWID_FIELD)
+				return 10;
+			if (windowId == WINDOWID_PARENT)
+				return 0;
+			return UIManager.Instance.database.UIWindow[(int)windowId].WindowAnimId;
+		}
+		protected virtual global::System.Collections.IEnumerator OpPlayCloseWindowAnimationAndWaiting(global::UIWindowID nextWindowId) {
+			_input.inputEnabled = false;
+			IsClosing = true;
+			UIManager.Instance.SetTransitionWindowIds(instance.windowId, nextWindowId, false);
+			if (nextWindowId >= (global::UIWindowID)0)
+			{
+				int curMode = UIManager.Instance.database.UIWindow[(int)instance.windowId].UiCameraMode;
+				var nextData = UIManager.Instance.database.UIWindow[(int)nextWindowId];
+				UIManager.Instance._CaptureBlueImage(curMode == 1 && nextData.UiCameraMode == 1);
+			}
+			EnableMainCameraByUiMode(false);
+			OnCloseKeyguide();
+			_animator.SetInteger(UIWindowStateMachine.animParamConnectId, GetWindowAnimationConnectId(false, nextWindowId));
+			_animator.SetInteger(UIWindowStateMachine.animParamStateId, 2);
+
+			while (_animator != null && _animator.GetInteger(UIWindowStateMachine.animParamConnectId) != -1)
+				yield return null;
+
+			IsClosing = false;
+		}
+		protected virtual bool EnableMainCameraByUiMode(bool enabled) {
+			if (UIManager.Instance.database.UIWindow[(int)instance.windowId].UiCameraMode == -1)
+				return false;
+			int uiCameraMode = UIManager.Instance.database.UIWindow[(int)instance.windowId].UiCameraMode;
+			UIManager.Instance.modelView.EnableMainCameraByUiMode(uiCameraMode != 0 & enabled);
+			return true;
+		}
+		protected virtual void OnCloseKeyguide() {
+			var keyguide = UIManager.Instance.GetKeyguide(null, false);
+			if (keyguide != null && keyguide.transform.parent == transform)
+			{
+				keyguide.Close(null);
+				return;
+			}
+			// the binary evaluates this test and discards it (@01a358a0, tail call of op_Equality)
+			bool isNull = keyguide == null;
+		}
+		protected virtual void OpenMessageWindow(global::Dpr.MsgWindow.MsgWindowParam messageParam) {
+			if (!messageParam.inputEnabled)
+				messageParam.inputEnabled = true;
+
+			if (_messageWindow != null && _messageWindow.IsOpen && _messageWindow.IsEnabledCloseSelf == messageParam.inputCloseEnabled)
+			{
+				_messageWindow.ReplaceMessage(messageParam);
+				return;
+			}
+
+			CloseMessageWindow();
+			_messageWindow = global::Dpr.MsgWindow.MsgWindowManager.OpenMsg(messageParam);
+		}
+		protected virtual void CloseMessageWindow() {
+			if (_messageWindow != null)
+			{
+				_messageWindow.CloseWindow();
+				_messageWindow = null;
+			}
+		}
+		protected virtual bool IsActiveMessageWindow() {
+			return _messageWindow != null && _messageWindow.MsgState != 0 && _messageWindow.IsEnabledCloseSelf;
+		}
+		protected global::Dpr.UI.ContextMenuWindow.Param CreateContextMenuYesNoParam() {
+			var itemParams = new global::System.Collections.Generic.List<global::Dpr.UI.ContextMenuItem.Param>();
+			OnAddContextMenuYesNoItemParams(itemParams);
+			var param = new global::Dpr.UI.ContextMenuWindow.Param();
+			param.itemParams = itemParams.ToArray();
+			param.pivot = new Vector2(1f, 0f);
+			param.position = _messageWindow.CalcContextMenuPos();
+			param.useLoopAndRepeat = false;
+			return param;
+		}
+		protected virtual global::Dpr.UI.ContextMenuWindow CreateContextMenuYesNo(global::System.Func<global::Dpr.UI.ContextMenuItem, bool> onClicked, uint SeDecide) {
+			var param = CreateContextMenuYesNoParam();
+			param.seDecide = SeDecide;
+			return CreateContextMenuYesNo(onClicked, param);
+		}
+		protected virtual global::Dpr.UI.ContextMenuWindow CreateContextMenuYesNo(global::System.Func<global::Dpr.UI.ContextMenuItem, bool> onClicked, global::Dpr.UI.ContextMenuWindow.Param contextMenuParam = null) {
+			if (contextMenuParam == null)
+				contextMenuParam = CreateContextMenuYesNoParam();
+			var contextMenu = UIManager.Instance.CreateUIWindow<global::Dpr.UI.ContextMenuWindow>(global::UIWindowID.CONTEXTMENU);
+			contextMenu.onClosed = _ => { };
+			contextMenu.onClicked = onClicked;
+			contextMenu.Open(contextMenuParam);
+			return contextMenu;
+		}
 		protected virtual void OnAddContextMenuYesNoItemParams(global::System.Collections.Generic.List<global::Dpr.UI.ContextMenuItem.Param> contextMenuItemParams) { }
 		protected global::System.Collections.IEnumerator FadeTransition<T>(global::UnityEngine.Color color, float duration, global::System.Action action) where T : global::Dpr.UI.UIWindow { /*@B 0x6005CA4*/ throw null; }
-		public UIWindow() { /*@B 0x6005CA5*/ throw null; }
-		static UIWindow() { /*@B 0x6005CA6*/ throw null; }
+		public UIWindow() { }
+		static UIWindow() { }
 	}
 }

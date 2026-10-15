@@ -3,15 +3,15 @@ namespace Dpr.UI
 {
 	public class WindowItemSelector : global::Dpr.UI.AWindowItem
 	{
-		private global::Dpr.UI.UIInputController inputController;
+		private global::Dpr.UI.UIInputController inputController = new global::Dpr.UI.UIInputController();
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIText titleText;
 		[global::UnityEngine.SerializeField]
 		private global::Dpr.UI.UIText nameText;
 		[global::UnityEngine.SerializeField]
-		private bool isLoop;
+		private bool isLoop = true;
 		private string[] textArray;
-		public override bool IsShowArrowIcon { get { /*@B 0x600534A*/ throw null; } }
+		public override bool IsShowArrowIcon { get { return textArray.Length > 1; } }
 		public override global::Dpr.UI.ItemType ItemType { get { return (global::Dpr.UI.ItemType)(0); } }
 		public void SetNameArray(string[] strArray) {
 			textArray = strArray;
@@ -87,6 +87,6 @@ namespace Dpr.UI
 
 			nameText.text = textArray[selectIndex];
 		}
-		public WindowItemSelector() { /*@B 0x6005354*/ throw null; }
+		public WindowItemSelector() { }
 	}
 }

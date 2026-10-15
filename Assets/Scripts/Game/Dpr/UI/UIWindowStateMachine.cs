@@ -3,12 +3,18 @@ namespace Dpr.UI
 {
 	public class UIWindowStateMachine : global::UnityEngine.StateMachineBehaviour
 	{
-		public static readonly int animParamConnectId;
-		public static readonly int animParamStateId;
-		public static readonly int animStateVoid;
-		public static readonly int animStateOpened;
-		public override void OnStateEnter(global::UnityEngine.Animator animator, global::UnityEngine.AnimatorStateInfo stateInfo, int layerIndex) { /*@B 0x6005CA7*/ throw null; }
+		public static readonly int animParamConnectId = global::UnityEngine.Animator.StringToHash("connectId");
+		public static readonly int animParamStateId = global::UnityEngine.Animator.StringToHash("stateId");
+		public static readonly int animStateVoid = global::UnityEngine.Animator.StringToHash("void");
+		public static readonly int animStateOpened = global::UnityEngine.Animator.StringToHash("opened");
+		public override void OnStateEnter(global::UnityEngine.Animator animator, global::UnityEngine.AnimatorStateInfo stateInfo, int layerIndex) {
+			if (stateInfo.shortNameHash == animStateVoid || stateInfo.shortNameHash == animStateOpened)
+			{
+				animator.SetInteger(animParamConnectId, -1);
+				animator.SetInteger(animParamStateId, -1);
+			}
+		}
 		public UIWindowStateMachine() { }
-		static UIWindowStateMachine() { /*@B 0x6005CA9*/ throw null; }
+		static UIWindowStateMachine() { }
 	}
 }
