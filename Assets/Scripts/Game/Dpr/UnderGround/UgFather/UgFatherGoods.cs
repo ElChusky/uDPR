@@ -3,6 +3,6 @@ namespace Dpr.UnderGround.UgFather
 {
 	public class UgFatherGoods : global::Dpr.UnderGround.UgFather.UgFatherBase
 	{
-		public UgFatherGoods() { /*@B 0x6003208*/ throw null; }
+		public UgFatherGoods() { }
 	}
 }
