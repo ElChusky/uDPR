@@ -90,9 +90,12 @@ public class FieldEventTrainEntity : global::FieldEventEntity
 					Play(AnimationIndex.Move_High);
 					float distance = global::UnityEngine.Mathf.Abs(targetZ - position.z);
 #if PC_UNLOCKED_FPS
-					// PC (s37): the 1/30 step follows the frame clock (as ported from the s37 sweep - see HANDOFF s46 C3c note on this factor)
+					// PC: the shipped 1/30 is one Update's step - the deceleration below integrates speed * deltaTime once per rendered frame,
+					// so the matching step is this frame's (1/30 per 30 Hz frame x FramesOf(deltaTime) of them; exactly 1/30 at 30 fps).
+					// s37 had (1/30) / FramesOf, a step that GREW with the frame rate (1/15 s at 60 fps, ~1/3 s at 300 fps): the train
+					// cruised too long and reached the platform at speed (s46 C5 audit, author 2026-10-15: "Fix training rate").
 					float pcFrames = PcPlatform.PcFrameClock.FramesOf(deltaTime);
-					float pcStep = pcFrames > 0f ? (1f / 30f) / pcFrames : 1f / 30f;
+					float pcStep = pcFrames > 0f ? (1f / 30f) * pcFrames : 1f / 30f;
 					float moveTime = (distance - CalcAccDist(decTime, maxSpeed, pcStep)) / maxSpeed + pcStep;
 #else
 					float moveTime = (distance - CalcAccDist(decTime, maxSpeed)) / maxSpeed + 1f / 30f;
