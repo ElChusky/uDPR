@@ -7,6 +7,11 @@ namespace Nintendo.MessageStudio.Lib
 		public byte G;
 		public byte B;
 		public byte A;
-		public LMSColor(byte r, byte g, byte b, byte a) { /*@B 0x6002612*/ throw null; }
+		public LMSColor(byte r, byte g, byte b, byte a) {
+			R = r;
+			G = g;
+			B = b;
+			A = a;
+		}
 	}
 }

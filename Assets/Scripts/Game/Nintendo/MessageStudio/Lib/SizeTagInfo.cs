@@ -6,6 +6,6 @@ namespace Nintendo.MessageStudio.Lib
 		public ushort Tag { get { return 2; } }
 		public ushort TagGroup { get { return 0; } }
 		public ushort Size { get; private set; }
-		public SizeTagInfo(byte[] param) { /*@B 0x6002666*/ throw null; }
+		public SizeTagInfo(byte[] param) { Size = global::System.BitConverter.ToUInt16(param, 0); }
 	}
 }

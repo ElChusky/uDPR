@@ -7,10 +7,15 @@ namespace Pml
 	{
 		public const int MAX_MEMBERS = 6;
 		public const int MEMBER_INDEX_ERROR = 6;
-		private global::Pml.PokePara.PokemonParam[] m_member;
+		private global::Pml.PokePara.PokemonParam[] m_member = new global::Pml.PokePara.PokemonParam[MAX_MEMBERS];
 		private uint m_memberCount;
 		private byte markingIndex;
-		public PokeParty() { /*@B 0x60021A0*/ throw null; }
+		public PokeParty() {
+			for (int i = 0; i < MAX_MEMBERS; i++)
+			{
+				m_member[i] = new global::Pml.PokePara.PokemonParam(global::Pml.MonsNo.NULL, 1, 0);
+			}
+		}
 		public bool AddMember(global::Pml.PokePara.PokemonParam pp) {
             // @02055fa0: PokemonParam.CopyFrom(PokemonParam) inlined (flag 0x4cc00f5, sParamSerializeBuffer)
             if (pp.IsNull())

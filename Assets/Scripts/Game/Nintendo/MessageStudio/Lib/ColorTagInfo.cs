@@ -7,6 +7,15 @@ namespace Nintendo.MessageStudio.Lib
 		public ushort TagGroup { get { return 0; } }
 		public global::Nintendo.MessageStudio.Lib.LMSColor Color { get; private set; }
 		public ushort Index { get; private set; }
-		public ColorTagInfo(byte[] param) { /*@B 0x600266D*/ throw null; }
+		public ColorTagInfo(byte[] param) {
+			if (param.Length == 2)
+			{
+				Index = global::System.BitConverter.ToUInt16(param, 0);
+			}
+			else if (param.Length == 4)
+			{
+				Color = new LMSColor(param[0], param[1], param[2], param[3]);
+			}
+		}
 	}
 }

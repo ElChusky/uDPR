@@ -6,6 +6,6 @@ namespace Nintendo.MessageStudio.Lib
 		public ushort Tag { get { return 1; } }
 		public ushort TagGroup { get { return 0; } }
 		public ushort Index { get; private set; }
-		public FontTagInfo(byte[] param) { /*@B 0x6002661*/ throw null; }
+		public FontTagInfo(byte[] param) { Index = global::System.BitConverter.ToUInt16(param, 0); }
 	}
 }

@@ -9,9 +9,9 @@ namespace Nintendo.MessageStudio.Lib
             LMS_SetMemFuncs(new LMSMallocPtr(Alloc), new LMSFreePtr(Free));
         }
 		[global::AOT.MonoPInvokeCallbackAttribute(typeof(global::Nintendo.MessageStudio.Lib.Libms.LMSMallocPtr))]
-		private static global::System.IntPtr Alloc(int size) { /*@B 0x6002614*/ throw null; }
+		private static global::System.IntPtr Alloc(int size) { return global::System.Runtime.InteropServices.Marshal.AllocHGlobal(size); }
 		[global::AOT.MonoPInvokeCallbackAttribute(typeof(global::Nintendo.MessageStudio.Lib.Libms.LMSFreePtr))]
-		private static void Free(global::System.IntPtr ptr) { /*@B 0x6002615*/ throw null; }
+		private static void Free(global::System.IntPtr ptr) { global::System.Runtime.InteropServices.Marshal.FreeHGlobal(ptr); }
 #if SWITCH
 		public static extern void LMS_SetMemFuncs(global::Nintendo.MessageStudio.Lib.Libms.LMSMallocPtr pMalloc, global::Nintendo.MessageStudio.Lib.Libms.LMSFreePtr pFree);
 #else
