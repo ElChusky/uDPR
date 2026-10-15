@@ -23,7 +23,37 @@ namespace nn.hid
 			private global::nn.hid.TouchState _value6;
 			private global::nn.hid.TouchState _value7;
 			public int Length { get { return 8; } }
-			public global::nn.hid.TouchState this[int index] { get { /*@B nn:0x600046B*/ throw null; } set { /*@B nn:0x600046C*/ throw null; } }
+			public global::nn.hid.TouchState this[int index]
+			{
+				get {
+					switch (index)
+					{
+						case 0: return _value0;
+						case 1: return _value1;
+						case 2: return _value2;
+						case 3: return _value3;
+						case 4: return _value4;
+						case 5: return _value5;
+						case 6: return _value6;
+						case 7: return _value7;
+						default: throw new IndexOutOfRangeException();
+					}
+				}
+				set {
+					switch (index)
+					{
+						case 0: _value0 = value; break;
+						case 1: _value1 = value; break;
+						case 2: _value2 = value; break;
+						case 3: _value3 = value; break;
+						case 4: _value4 = value; break;
+						case 5: _value5 = value; break;
+						case 6: _value6 = value; break;
+						case 7: _value7 = value; break;
+						default: throw new IndexOutOfRangeException();
+					}
+				}
+			}
 			public int Count { get { return 8; } }
 			public bool IsReadOnly { get { return true; } }
 			// @028090f0: the indexer and TouchState == inlined
@@ -59,8 +89,17 @@ namespace nn.hid
 			public override string ToString() {
 				return string.Format("{{{0},{1},{2},{3},{4},{5},{6},{7}}}", new object[] { _value0, _value1, _value2, _value3, _value4, _value5, _value6, _value7 });
 			}
-			public global::System.Collections.Generic.IEnumerator<global::nn.hid.TouchState> GetEnumerator() { /*@B nn:0x6000473*/ throw null; }
-			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { /*@B nn:0x6000474*/ throw null; }
+			public global::System.Collections.Generic.IEnumerator<global::nn.hid.TouchState> GetEnumerator() {
+				yield return _value0;
+				yield return _value1;
+				yield return _value2;
+				yield return _value3;
+				yield return _value4;
+				yield return _value5;
+				yield return _value6;
+				yield return _value7;
+			}
+			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 			// @0280a120 / @0280a180 / @0280a1e0 / @0280a240 / @0280a2a0: the array is fixed-size
 			public void Add(global::nn.hid.TouchState item) { throw new NotSupportedException(); }
 			public void Clear() { throw new NotSupportedException(); }

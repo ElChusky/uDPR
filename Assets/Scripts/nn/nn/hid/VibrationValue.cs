@@ -15,8 +15,18 @@ namespace nn.hid
 		public static global::nn.hid.VibrationValue Make(float amplitudeLow, float frequencyLow, float amplitudeHigh, float frequencyHigh) {
 			return new VibrationValue(amplitudeLow, frequencyLow, amplitudeHigh, frequencyHigh);
 		}
-		public VibrationValue(float amplitudeLow, float frequencyLow, float amplitudeHigh, float frequencyHigh) { /*@B nn:0x60001CD*/ throw null; }
-		public void Set(float amplitudeLow, float frequencyLow, float amplitudeHigh, float frequencyHigh) { /*@B nn:0x60001CE*/ throw null; }
+		public VibrationValue(float amplitudeLow, float frequencyLow, float amplitudeHigh, float frequencyHigh) {
+			this.amplitudeLow = amplitudeLow;
+			this.frequencyLow = frequencyLow;
+			this.amplitudeHigh = amplitudeHigh;
+			this.frequencyHigh = frequencyHigh;
+		}
+		public void Set(float amplitudeLow, float frequencyLow, float amplitudeHigh, float frequencyHigh) {
+			this.amplitudeLow = amplitudeLow;
+			this.frequencyLow = frequencyLow;
+			this.amplitudeHigh = amplitudeHigh;
+			this.frequencyHigh = frequencyHigh;
+		}
 		// @0280d9f0: two 64-bit stores (0, 160f) / (0, 320f)
 		public void Clear() {
 			amplitudeLow = 0f;

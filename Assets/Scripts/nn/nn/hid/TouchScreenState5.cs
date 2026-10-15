@@ -20,7 +20,31 @@ namespace nn.hid
 			private global::nn.hid.TouchState _value3;
 			private global::nn.hid.TouchState _value4;
 			public int Length { get { return 5; } }
-			public global::nn.hid.TouchState this[int index] { get { /*@B nn:0x600043B*/ throw null; } set { /*@B nn:0x600043C*/ throw null; } }
+			public global::nn.hid.TouchState this[int index]
+			{
+				get {
+					switch (index)
+					{
+						case 0: return _value0;
+						case 1: return _value1;
+						case 2: return _value2;
+						case 3: return _value3;
+						case 4: return _value4;
+						default: throw new IndexOutOfRangeException();
+					}
+				}
+				set {
+					switch (index)
+					{
+						case 0: _value0 = value; break;
+						case 1: _value1 = value; break;
+						case 2: _value2 = value; break;
+						case 3: _value3 = value; break;
+						case 4: _value4 = value; break;
+						default: throw new IndexOutOfRangeException();
+					}
+				}
+			}
 			public int Count { get { return 5; } }
 			public bool IsReadOnly { get { return true; } }
 			// @02805860: the indexer and TouchState == inlined
@@ -56,8 +80,14 @@ namespace nn.hid
 			public override string ToString() {
 				return string.Format("{{{0},{1},{2},{3},{4}}}", new object[] { _value0, _value1, _value2, _value3, _value4 });
 			}
-			public global::System.Collections.Generic.IEnumerator<global::nn.hid.TouchState> GetEnumerator() { /*@B nn:0x6000443*/ throw null; }
-			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { /*@B nn:0x6000444*/ throw null; }
+			public global::System.Collections.Generic.IEnumerator<global::nn.hid.TouchState> GetEnumerator() {
+				yield return _value0;
+				yield return _value1;
+				yield return _value2;
+				yield return _value3;
+				yield return _value4;
+			}
+			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 			// @028063a0 / @02806400 / @02806460 / @028064c0 / @02806520: the array is fixed-size
 			public void Add(global::nn.hid.TouchState item) { throw new NotSupportedException(); }
 			public void Clear() { throw new NotSupportedException(); }

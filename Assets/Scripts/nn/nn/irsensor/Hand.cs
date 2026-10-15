@@ -56,7 +56,37 @@ namespace nn.irsensor
 			private global::nn.irsensor.Protrusion _value6;
 			private global::nn.irsensor.Protrusion _value7;
 			public int Length { get { return 8; } }
-			public global::nn.irsensor.Protrusion this[int index] { get { /*@B nn:0x600038B*/ throw null; } set { /*@B nn:0x600038C*/ throw null; } }
+			public global::nn.irsensor.Protrusion this[int index]
+			{
+				get {
+					switch (index)
+					{
+						case 0: return _value0;
+						case 1: return _value1;
+						case 2: return _value2;
+						case 3: return _value3;
+						case 4: return _value4;
+						case 5: return _value5;
+						case 6: return _value6;
+						case 7: return _value7;
+						default: throw new IndexOutOfRangeException();
+					}
+				}
+				set {
+					switch (index)
+					{
+						case 0: _value0 = value; break;
+						case 1: _value1 = value; break;
+						case 2: _value2 = value; break;
+						case 3: _value3 = value; break;
+						case 4: _value4 = value; break;
+						case 5: _value5 = value; break;
+						case 6: _value6 = value; break;
+						case 7: _value7 = value; break;
+						default: throw new IndexOutOfRangeException();
+					}
+				}
+			}
 			public int Count { get { return 8; } }
 			public bool IsReadOnly { get { return true; } }
 			// @028128b0
@@ -90,8 +120,17 @@ namespace nn.irsensor
 			}
 			// @02812ea0
 			public override string ToString() { return string.Format("{{{0},{1},{2},{3},{4},{5},{6},{7}}}", new object[] { this[0], this[1], this[2], this[3], this[4], this[5], this[6], this[7] }); }
-			public global::System.Collections.Generic.IEnumerator<global::nn.irsensor.Protrusion> GetEnumerator() { /*@B nn:0x6000393*/ throw null; }
-			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { /*@B nn:0x6000394*/ throw null; }
+			public global::System.Collections.Generic.IEnumerator<global::nn.irsensor.Protrusion> GetEnumerator() {
+				yield return _value0;
+				yield return _value1;
+				yield return _value2;
+				yield return _value3;
+				yield return _value4;
+				yield return _value5;
+				yield return _value6;
+				yield return _value7;
+			}
+			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 			// @028132d0 / @02813330 / @02813390 / @028133f0 / @02813450: the array is fixed-size
 			public void Add(global::nn.irsensor.Protrusion item) { throw new NotSupportedException(); }
 			public void Clear() { throw new NotSupportedException(); }
@@ -108,7 +147,31 @@ namespace nn.irsensor
 			public global::nn.irsensor.Finger ring;
 			public global::nn.irsensor.Finger little;
 			public int Length { get { return 5; } }
-			public global::nn.irsensor.Finger this[int index] { get { /*@B nn:0x600039B*/ throw null; } set { /*@B nn:0x600039C*/ throw null; } }
+			public global::nn.irsensor.Finger this[int index]
+			{
+				get {
+					switch (index)
+					{
+						case 0: return thumb;
+						case 1: return this.index;
+						case 2: return middle;
+						case 3: return ring;
+						case 4: return little;
+						default: throw new IndexOutOfRangeException();
+					}
+				}
+				set {
+					switch (index)
+					{
+						case 0: thumb = value; break;
+						case 1: this.index = value; break;
+						case 2: middle = value; break;
+						case 3: ring = value; break;
+						case 4: little = value; break;
+						default: throw new IndexOutOfRangeException();
+					}
+				}
+			}
 			public int Count { get { return 5; } }
 			public bool IsReadOnly { get { return true; } }
 			// @02811720
@@ -142,8 +205,14 @@ namespace nn.irsensor
 			}
 			// @02812090
 			public override string ToString() { return string.Format("{{{0},{1},{2},{3},{4}}}", new object[] { this[0], this[1], this[2], this[3], this[4] }); }
-			public global::System.Collections.Generic.IEnumerator<global::nn.irsensor.Finger> GetEnumerator() { /*@B nn:0x60003A3*/ throw null; }
-			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { /*@B nn:0x60003A4*/ throw null; }
+			public global::System.Collections.Generic.IEnumerator<global::nn.irsensor.Finger> GetEnumerator() {
+				yield return thumb;
+				yield return this.index;
+				yield return middle;
+				yield return ring;
+				yield return little;
+			}
+			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 			// @02812430 / @02812490 / @028124f0 / @02812550 / @028125b0: the array is fixed-size
 			public void Add(global::nn.irsensor.Finger item) { throw new NotSupportedException(); }
 			public void Clear() { throw new NotSupportedException(); }
