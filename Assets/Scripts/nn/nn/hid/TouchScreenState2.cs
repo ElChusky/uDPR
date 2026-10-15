@@ -17,7 +17,35 @@ namespace nn.hid
 			private global::nn.hid.TouchState _value0;
 			private global::nn.hid.TouchState _value1;
 			public int Length { get { return 2; } }
-			public global::nn.hid.TouchState this[int index] { get { /*@B nn:0x600040B*/ throw null; } set { /*@B nn:0x600040C*/ throw null; } }
+			public global::nn.hid.TouchState this[int index]
+			{
+				get
+				{
+					switch (index)
+					{
+						case 0:
+							return _value0;
+						case 1:
+							return _value1;
+						default:
+							throw new IndexOutOfRangeException();
+					}
+				}
+				set
+				{
+					switch (index)
+					{
+						case 0:
+							_value0 = value;
+							break;
+						case 1:
+							_value1 = value;
+							break;
+						default:
+							throw new IndexOutOfRangeException();
+					}
+				}
+			}
 			public int Count { get { return 2; } }
 			public bool IsReadOnly { get { return true; } }
 			// @02803050: the indexer and TouchState == inlined
@@ -53,8 +81,15 @@ namespace nn.hid
 			public override string ToString() {
 				return string.Format("{{{0},{1}}}", _value0, _value1);
 			}
-			public global::System.Collections.Generic.IEnumerator<global::nn.hid.TouchState> GetEnumerator() { /*@B nn:0x6000413*/ throw null; }
-			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { /*@B nn:0x6000414*/ throw null; }
+			public global::System.Collections.Generic.IEnumerator<global::nn.hid.TouchState> GetEnumerator()
+			{
+				yield return _value0;
+				yield return _value1;
+			}
+			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
 			// @02803660 / @028036c0 / @02803720 / @02803780 / @028037e0: the array is fixed-size
 			public void Add(global::nn.hid.TouchState item) { throw new NotSupportedException(); }
 			public void Clear() { throw new NotSupportedException(); }
