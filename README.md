@@ -133,7 +133,7 @@ anyone. What a port needs today:
 - the Wwise integration must include the target platform;
 - the recovered shaders have only been tested with Direct3D 11.
 
-Pull requests for other platforms are welcome.
+Step by step for macOS: [docs/PORTING_MACOS.md](docs/PORTING_MACOS.md). Pull requests for other platforms are welcome.
 
 **Can I share my build?** No. It contains the game's assets.
 
