@@ -21,7 +21,33 @@ namespace nn.hid
 			private global::nn.hid.TouchState _value4;
 			private global::nn.hid.TouchState _value5;
 			public int Length { get { return 6; } }
-			public global::nn.hid.TouchState this[int index] { get { /*@B nn:0x600044B*/ throw null; } set { /*@B nn:0x600044C*/ throw null; } }
+			public global::nn.hid.TouchState this[int index]
+			{
+				get {
+					switch (index)
+					{
+						case 0: return _value0;
+						case 1: return _value1;
+						case 2: return _value2;
+						case 3: return _value3;
+						case 4: return _value4;
+						case 5: return _value5;
+						default: throw new IndexOutOfRangeException();
+					}
+				}
+				set {
+					switch (index)
+					{
+						case 0: _value0 = value; break;
+						case 1: _value1 = value; break;
+						case 2: _value2 = value; break;
+						case 3: _value3 = value; break;
+						case 4: _value4 = value; break;
+						case 5: _value5 = value; break;
+						default: throw new IndexOutOfRangeException();
+					}
+				}
+			}
 			public int Count { get { return 6; } }
 			public bool IsReadOnly { get { return true; } }
 			// @02806990: the indexer and TouchState == inlined
@@ -57,8 +83,15 @@ namespace nn.hid
 			public override string ToString() {
 				return string.Format("{{{0},{1},{2},{3},{4},{5}}}", new object[] { _value0, _value1, _value2, _value3, _value4, _value5 });
 			}
-			public global::System.Collections.Generic.IEnumerator<global::nn.hid.TouchState> GetEnumerator() { /*@B nn:0x6000453*/ throw null; }
-			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { /*@B nn:0x6000454*/ throw null; }
+			public global::System.Collections.Generic.IEnumerator<global::nn.hid.TouchState> GetEnumerator() {
+				yield return _value0;
+				yield return _value1;
+				yield return _value2;
+				yield return _value3;
+				yield return _value4;
+				yield return _value5;
+			}
+			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 			// @028075d0 / @02807630 / @02807690 / @028076f0 / @02807750: the array is fixed-size
 			public void Add(global::nn.hid.TouchState item) { throw new NotSupportedException(); }
 			public void Clear() { throw new NotSupportedException(); }
