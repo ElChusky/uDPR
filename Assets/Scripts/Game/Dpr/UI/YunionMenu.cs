@@ -37,7 +37,38 @@ namespace Dpr.UI
 			// OpOpen's iterator construction is inlined here (its flag 0x4cbcc4b @01a486ac)
 			SmartPoint.AssetAssistant.Sequencer.Start(OpOpen(prevWindowId));
 		}
-		public global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) { /*@B 0x60051BF*/ throw null; }
+		public global::System.Collections.IEnumerator OpOpen(global::UIWindowID prevWindowId) {
+			Color color = SmartPoint.Components.Fader.fillColor;
+			SmartPoint.Components.Fader.fillColor = Color.black;
+			SmartPoint.Components.Fader.FadeOut(0.1f);
+			SmartPoint.Components.Fader.fillColor = color;
+			while (SmartPoint.Components.Fader.isBusy)
+				yield return null;
+
+			this.SetActive(true);
+			base.OnOpen(prevWindowId);
+			SetTitle();
+			_cursorNetMode.SetActive(true);
+			SetCursor();
+			if (!_modelView.bIsInitialize)
+				yield return null;
+
+			LoadModel();
+			while (_loadingModel)
+				yield return null;
+
+			UIManager.Instance.modelView.SetActive(true);
+			UIManager.Instance.modelView.EnableModelLight(true, UIModelViewController.ModelViewType.Character);
+			SmartPoint.Components.Fader.fillColor = Color.black;
+			SmartPoint.Components.Fader.FadeIn(0.1f);
+			SmartPoint.Components.Fader.fillColor = color;
+			while (SmartPoint.Components.Fader.isBusy)
+				yield return null;
+
+			OpenKeyguide();
+			SmartPoint.AssetAssistant.Sequencer.update += OnUpdate;
+			_input.inputEnabled = true;
+		}
 		public void Close(bool cancel) {
 			SmartPoint.AssetAssistant.Sequencer.update -= OnUpdate;
 			_input.inputEnabled = false;
@@ -55,7 +86,32 @@ namespace Dpr.UI
 				SmartPoint.AssetAssistant.Sequencer.Start(OpClose());
 			}
 		}
-		public global::System.Collections.IEnumerator OpCloseCancel() { /*@B 0x60051C1*/ throw null; }
+		public global::System.Collections.IEnumerator OpCloseCancel() {
+			bool completeKeyGuide = false;
+			CloseKeyGuide(() => completeKeyGuide = true);
+			while (!completeKeyGuide)
+				yield return null;
+
+			Color color = SmartPoint.Components.Fader.fillColor;
+			SmartPoint.Components.Fader.fillColor = Color.black;
+			SmartPoint.Components.Fader.FadeOut(0.1f);
+			SmartPoint.Components.Fader.fillColor = color;
+			while (SmartPoint.Components.Fader.isBusy)
+				yield return null;
+
+			UnloadModel();
+			UIManager.Instance.modelView.EnableModelLight(false, UIModelViewController.ModelViewType.Character);
+			UIManager.Instance.modelView.SetActive(false);
+			this.SetActive(false);
+			SmartPoint.Components.Fader.fillColor = Color.black;
+			SmartPoint.Components.Fader.FadeIn(0.1f);
+			SmartPoint.Components.Fader.fillColor = color;
+			while (SmartPoint.Components.Fader.isBusy)
+				yield return null;
+
+			UIManager.Instance._ReleaseUIWindow(this);
+			onClosed?.Invoke(this);
+		}
 		public global::System.Collections.IEnumerator OpClose() {
 			FieldPlayerEntity player = EntityManager.activeFieldPlayer;
 			UnionWork.ymenuReturnZoneID = PlayerWork.zoneID;
@@ -111,7 +167,14 @@ namespace Dpr.UI
 			else
 				ChangeMenu(OpenMenuType.SelectRoom);
 		}
-		public void OpenKeyguide() { /*@B 0x60051C6*/ throw null; }
+		public void OpenKeyguide() {
+			Keyguide.Param param = new Keyguide.Param();
+			param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.XMENU_DECIDE });
+			param.itemParams.Add(new KeyguideItem.Param() { keyguideId = KeyguideID.XMENU_BACK });
+			Keyguide keyguide = UIManager.Instance.GetKeyguide(null, true);
+			keyguide.transform.SetParent(transform, false);
+			keyguide.Open(param);
+		}
 		public void CloseKeyGuide(global::System.Action onComplete = null) {
 			UIManager.Instance.GetKeyguide(null, true).Close(window =>
 			{
@@ -157,7 +220,7 @@ namespace Dpr.UI
 		private void UnloadModel() {
 			_modelView.DestroyModel(0);
 		}
-		public YunionMenu() { /*@B 0x60051CD*/ throw null; }
+		public YunionMenu() { }
 		private enum OpenMenuType
 		{
 			SelectRoom = 0,

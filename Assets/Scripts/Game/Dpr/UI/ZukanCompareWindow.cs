@@ -8,9 +8,9 @@ namespace Dpr.UI
 	{
 		private const int StopLoadModelCount = -1;
 		private const int StartLoadModelCount = 3;
-		private static readonly int TransAnimatorStateInitialize;
-		private static readonly int TransAnimatorStateWait;
-		private static readonly int TransAnimatorParamTransId;
+		private static readonly int TransAnimatorStateInitialize = global::UnityEngine.Animator.StringToHash("Ini");
+		private static readonly int TransAnimatorStateWait = global::UnityEngine.Animator.StringToHash("Wait");
+		private static readonly int TransAnimatorParamTransId = global::UnityEngine.Animator.StringToHash("transId");
 		private const string TransAnimatorLayerName = "Trans";
 		private const int TransIdIn = 1;
 		private const int TransIdOut = 2;
@@ -276,8 +276,8 @@ namespace Dpr.UI
 			else
 				zukanCompareWeightController.RequestLoadModel();
 		}
-		public ZukanCompareWindow() { /*@B 0x6005E4F*/ throw null; }
-		static ZukanCompareWindow() { /*@B 0x6005E50*/ throw null; }
+		public ZukanCompareWindow() { }
+		static ZukanCompareWindow() { }
 		public class Param
 		{
 			public global::Dpr.UI.ZukanInfo CurrentZukanInfo;

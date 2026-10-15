@@ -9,9 +9,9 @@ namespace Dpr.UI
 {
 	public class ZukanCompareHeightController : global::UnityEngine.MonoBehaviour
 	{
-		private static readonly int AnimatorStateInitialize;
-		private static readonly int AnimatorStateWait;
-		private static readonly int AnimatorParamTransId;
+		private static readonly int AnimatorStateInitialize = global::UnityEngine.Animator.StringToHash("Ini");
+		private static readonly int AnimatorStateWait = global::UnityEngine.Animator.StringToHash("Wait");
+		private static readonly int AnimatorParamTransId = global::UnityEngine.Animator.StringToHash("transId");
 		private const string AnimatorTransLayerName = "Trans";
 		private const int TransIdIn = 1;
 		private const int TransIdOut = 2;
@@ -22,9 +22,9 @@ namespace Dpr.UI
 		private global::Dpr.UI.ZukanCompareHeightController.State currentState;
 		private global::Dpr.UI.UIModelViewController.ModelParam playerModelParam;
 		private global::Dpr.Playables.AnimationLayer playerModelAnimationLayer;
-		private int playerModelWaitAnimationIndex;
+		private int playerModelWaitAnimationIndex = -1;
 		private bool isDisposed;
-		public bool IsLoadEnd { get { /*@B 0x6005E1D*/ throw null; } }
+		public bool IsLoadEnd { get { return currentState == State.None; } }
 		public void Initialize(ushort playerHeight) {
 			this.playerHeight = playerHeight;
 			UIManager.Instance.modelView.ClearModelView(true);
@@ -154,8 +154,8 @@ namespace Dpr.UI
 			}
 			return index;
 		}
-		public ZukanCompareHeightController() { /*@B 0x6005E2B*/ throw null; }
-		static ZukanCompareHeightController() { /*@B 0x6005E2C*/ throw null; }
+		public ZukanCompareHeightController() { }
+		static ZukanCompareHeightController() { }
 		private enum State
 		{
 			None = 0,
