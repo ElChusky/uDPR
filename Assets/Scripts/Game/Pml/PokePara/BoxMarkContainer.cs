@@ -3,7 +3,7 @@ namespace Pml.PokePara
 {
 	public class BoxMarkContainer
 	{
-		public global::Pml.PokePara.BoxMarkColor[] markColor;
-		public BoxMarkContainer() { /*@B 0x60025A8*/ throw null; }
+		public global::Pml.PokePara.BoxMarkColor[] markColor = new global::Pml.PokePara.BoxMarkColor[6];
+		public BoxMarkContainer() { }
 	}
 }

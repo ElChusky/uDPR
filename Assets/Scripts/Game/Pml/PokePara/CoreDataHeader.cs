@@ -16,8 +16,14 @@ namespace Pml.PokePara
 		private const int bitsA0_mask = 1;
 		private const int bitsA1_mask = 2;
 		private const int bitsA2_mask = 4;
-		public bool ppFastMode { get { /*@B 0x600256B*/ throw null; } set { /*@B 0x600256C*/ throw null; } }
-		public bool pppFastMode { get { /*@B 0x600256D*/ throw null; } set { /*@B 0x600256E*/ throw null; } }
-		public bool fuseiTamagoFlag { get { /*@B 0x600256F*/ throw null; } set { /*@B 0x6002570*/ throw null; } }
+		public bool ppFastMode { get { return (_bitsA & bitsA0_mask) != 0; } set {
+                _bitsA = (ushort)((_bitsA & ~bitsA0_mask) | ((value ? 1 : 0) << bitsA0_loc));
+            } }
+		public bool pppFastMode { get { return ((_bitsA >> bitsA1_loc) & 1) != 0; } set {
+                _bitsA = (ushort)((_bitsA & ~bitsA1_mask) | (value ? bitsA1_mask : 0));
+            } }
+		public bool fuseiTamagoFlag { get { return ((_bitsA >> bitsA2_loc) & 1) != 0; } set {
+                _bitsA = (ushort)((_bitsA & ~bitsA2_mask) | (value ? bitsA2_mask : 0));
+            } }
 	}
 }
