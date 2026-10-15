@@ -20,6 +20,14 @@
 | What | Licence |
 |---|---|
 | Unity 2019.4.27f1 | Unity's terms |
-| Audiokinetic Wwise 2019.2.5 + its Unity Integration (not included here; the setup copies it from your own Launcher install) | Audiokinetic's end-user licence |
+| Audiokinetic Wwise 2019.2.5 + its Unity Integration (not included here; the setup copies it from your own Launcher install - the repository keeps only the integration's `.meta` files, i.e. the Unity GUIDs the game's assets reference, and this project's Wwise settings) | Audiokinetic's end-user licence |
 
-The game's own assets are never in this repository: the setup exports them from your dump.
+## Used while making this project (not included)
+
+| What | Licence |
+|---|---|
+| Il2CppDumper | MIT |
+| Ghidra | Apache-2.0 |
+
+The game's own assets are never in this repository: the setup exports them from your dump. This project's own work is under the
+MIT License (`LICENSE`).

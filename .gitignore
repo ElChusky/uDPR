@@ -1,4 +1,4 @@
-# CustomBDSP clean project
+# uDPR
 # Unity-generated
 /Library/
 /Temp/
@@ -26,7 +26,7 @@
 sysinfo.txt
 crashlytics-build.properties
 
-# The game's assets are exported from the user's own dump (tools/assetripper_export.sh) and never committed.
+# The game's assets are exported from the user's own dump (setup.cmd) and never committed.
 # Committed under Assets/: Scripts, Editor, Plugins (DOTween vendor), the Wwise .meta files + Wwise settings assets (see
 # below), link.xml, StreamingAssets/AK (Wwise marker) and the folder metas of these.
 /Assets/*
