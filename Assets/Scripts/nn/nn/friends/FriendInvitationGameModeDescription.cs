@@ -7,23 +7,27 @@ namespace nn.friends
 	{
 		public const int TextSize = 192;
 		private byte[] data;
-		public string enUs { get { /*@B nn:0x60002C5*/ throw null; } set { /*@B nn:0x60002C6*/ throw null; } }
-		public string enGb { get { /*@B nn:0x60002C7*/ throw null; } set { /*@B nn:0x60002C8*/ throw null; } }
-		public string ja { get { /*@B nn:0x60002C9*/ throw null; } set { /*@B nn:0x60002CA*/ throw null; } }
-		public string fr { get { /*@B nn:0x60002CB*/ throw null; } set { /*@B nn:0x60002CC*/ throw null; } }
-		public string de { get { /*@B nn:0x60002CD*/ throw null; } set { /*@B nn:0x60002CE*/ throw null; } }
-		public string es419 { get { /*@B nn:0x60002CF*/ throw null; } set { /*@B nn:0x60002D0*/ throw null; } }
-		public string es { get { /*@B nn:0x60002D1*/ throw null; } set { /*@B nn:0x60002D2*/ throw null; } }
-		public string it { get { /*@B nn:0x60002D3*/ throw null; } set { /*@B nn:0x60002D4*/ throw null; } }
-		public string nl { get { /*@B nn:0x60002D5*/ throw null; } set { /*@B nn:0x60002D6*/ throw null; } }
-		public string frCa { get { /*@B nn:0x60002D7*/ throw null; } set { /*@B nn:0x60002D8*/ throw null; } }
-		public string pt { get { /*@B nn:0x60002D9*/ throw null; } set { /*@B nn:0x60002DA*/ throw null; } }
-		public string ru { get { /*@B nn:0x60002DB*/ throw null; } set { /*@B nn:0x60002DC*/ throw null; } }
-		public string zhHans { get { /*@B nn:0x60002DD*/ throw null; } set { /*@B nn:0x60002DE*/ throw null; } }
-		public string zhHant { get { /*@B nn:0x60002DF*/ throw null; } set { /*@B nn:0x60002E0*/ throw null; } }
-		public string ko { get { /*@B nn:0x60002E1*/ throw null; } set { /*@B nn:0x60002E2*/ throw null; } }
-		public string ptBr { get { /*@B nn:0x60002E3*/ throw null; } set { /*@B nn:0x60002E4*/ throw null; } }
-		private string Get(global::nn.friends.FriendInvitationGameModeDescription.Language language) { /*@B nn:0x60002E5*/ throw null; }
+		public string enUs { get { return Get(Language.EnUs); } set { Set(value, Language.EnUs); } }
+		public string enGb { get { return Get(Language.EnGb); } set { Set(value, Language.EnGb); } }
+		public string ja { get { return Get(Language.Ja); } set { Set(value, Language.Ja); } }
+		public string fr { get { return Get(Language.Fr); } set { Set(value, Language.Fr); } }
+		public string de { get { return Get(Language.De); } set { Set(value, Language.De); } }
+		public string es419 { get { return Get(Language.Es419); } set { Set(value, Language.Es419); } }
+		public string es { get { return Get(Language.Es); } set { Set(value, Language.Es); } }
+		public string it { get { return Get(Language.It); } set { Set(value, Language.It); } }
+		public string nl { get { return Get(Language.Nl); } set { Set(value, Language.Nl); } }
+		public string frCa { get { return Get(Language.FrCa); } set { Set(value, Language.FrCa); } }
+		public string pt { get { return Get(Language.Pt); } set { Set(value, Language.Pt); } }
+		public string ru { get { return Get(Language.Ru); } set { Set(value, Language.Ru); } }
+		public string zhHans { get { return Get(Language.ZhHans); } set { Set(value, Language.ZhHans); } }
+		public string zhHant { get { return Get(Language.ZhHant); } set { Set(value, Language.ZhHant); } }
+		public string ko { get { return Get(Language.Ko); } set { Set(value, Language.Ko); } }
+		public string ptBr { get { return Get(Language.ptBr); } set { Set(value, Language.ptBr); } }
+		private string Get(global::nn.friends.FriendInvitationGameModeDescription.Language language) {
+			if (data == null)
+				return string.Empty;
+			return Encoding.UTF8.GetString(data, (int)language * TextSize, TextSize);
+		}
 		// @027ca930: at most TextSize - 1 bytes copied; the NUL is written at offset + the full encoded length, as shipped
 		private void Set(string value, global::nn.friends.FriendInvitationGameModeDescription.Language language) {
 			if (data == null)

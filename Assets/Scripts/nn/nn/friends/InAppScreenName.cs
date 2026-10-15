@@ -32,7 +32,12 @@ namespace nn.friends
 				value.CopyTo(0, language, 0, length);
 				language[length] = '\0';
 			} }
-		public InAppScreenName(string name, string language = "") { /*@B nn:0x60002BB*/ throw null; }
+		public InAppScreenName(string name, string language = "") {
+			this.name = new byte[64];
+			this.language = new char[8];
+			Name = name;
+			Language = language;
+		}
 		// @027ccc40: Name and Language inlined
 		public override string ToString() { return string.Format("name:{0} language:{1}", Name, Language); }
 	}

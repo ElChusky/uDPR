@@ -50,7 +50,33 @@ namespace nn.hid
 			private global::nn.util.Color4u8 _value6;
 			private global::nn.util.Color4u8 _value7;
 			public int Length { get { return 8; } }
-			public global::nn.util.Color4u8 this[int index] { get { /*@B nn:0x60003DB*/ throw null; } set { /*@B nn:0x60003DC*/ throw null; } }
+			public global::nn.util.Color4u8 this[int index] { get {
+					switch (index)
+					{
+						case 0: return _value0;
+						case 1: return _value1;
+						case 2: return _value2;
+						case 3: return _value3;
+						case 4: return _value4;
+						case 5: return _value5;
+						case 6: return _value6;
+						case 7: return _value7;
+						default: throw new IndexOutOfRangeException();
+					}
+				} set {
+					switch (index)
+					{
+						case 0: _value0 = value; break;
+						case 1: _value1 = value; break;
+						case 2: _value2 = value; break;
+						case 3: _value3 = value; break;
+						case 4: _value4 = value; break;
+						case 5: _value5 = value; break;
+						case 6: _value6 = value; break;
+						case 7: _value7 = value; break;
+						default: throw new IndexOutOfRangeException();
+					}
+				} }
 			public int Count { get { return 8; } }
 			public bool IsReadOnly { get { return true; } }
 			// @027cf970: the indexer and Color4u8 == inlined
@@ -86,8 +112,18 @@ namespace nn.hid
 			public override string ToString() {
 				return string.Format("{{{0},{1},{2},{3},{4},{5},{6},{7}}}", new object[] { _value0, _value1, _value2, _value3, _value4, _value5, _value6, _value7 });
 			}
-			public global::System.Collections.Generic.IEnumerator<global::nn.util.Color4u8> GetEnumerator() { /*@B nn:0x60003E3*/ throw null; }
-			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { /*@B nn:0x60003E4*/ throw null; }
+			public global::System.Collections.Generic.IEnumerator<global::nn.util.Color4u8> GetEnumerator() {
+				yield return _value0;
+				yield return _value1;
+				yield return _value2;
+				yield return _value3;
+				yield return _value4;
+				yield return _value5;
+				yield return _value6;
+				yield return _value7;
+			}
+			// @027d0310: GetEnumerator() inlined (creates the same d__22)
+			global::System.Collections.IEnumerator global::System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 			// @027d0390 / @027d03f0 / @027d0450 / @027d04b0 / @027d0510: the array is fixed-size
 			public void Add(global::nn.util.Color4u8 item) { throw new NotSupportedException(); }
 			public void Clear() { throw new NotSupportedException(); }
