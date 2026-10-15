@@ -140,6 +140,10 @@ public static class BdspD7
         }
         sb.AppendLine("BDSP_D7_VERIFY_DONE");
         File.WriteAllText(Path.Combine(work, "d7_verify_result.txt"), sb.ToString());
+        // the editor re-saves the converted cubemap faces as text (same bytes as the reference project); doing it here instead of
+        // inside Exit's shutdown save avoids the editor crashing on the progress-bar repaint of that late re-import
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         Debug.Log("BDSP_D7_VERIFY_DONE");
         EditorApplication.Exit(0);
     }
