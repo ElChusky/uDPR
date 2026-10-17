@@ -410,56 +410,63 @@ public class GameManager : global::SmartPoint.AssetAssistant.SingletonMonoBehavi
                         _targetSceneID = global::SceneID.GMS;
                         return;
                     }
-                    if (!global::PlayerWork.isBattling && global::EntityManager.activeFieldPlayer != null)
+                    if (!global::PlayerWork.isBattling)
                     {
-                        global::XLSXContent.MapInfo.SheetZoneData zoneData = mapInfo[(int)global::PlayerWork.zoneID];
-                        global::UnityEngine.Vector2Int grid = global::EntityManager.activeFieldPlayer.gridPositionDirect;
-                        if (!global::PlayerWork.GetBool(global::Dpr.EvScript.EvWork.FLAG_INDEX.FLAG_STOP_ZONE_PROGRAM) && zoneData.ZoneGrid != null)
+                        if (global::EntityManager.activeFieldPlayer != null)
                         {
-                            uint index = (uint)(grid.y / 32 * zoneData.ZoneGrid.Width + grid.x / 32);
-                            if (index < zoneData.ZoneGrid.Length)
+                            global::XLSXContent.MapInfo.SheetZoneData zoneData = mapInfo[(int)global::PlayerWork.zoneID];
+                            global::UnityEngine.Vector2Int grid = global::EntityManager.activeFieldPlayer.gridPositionDirect;
+                            if (!global::PlayerWork.GetBool(global::Dpr.EvScript.EvWork.FLAG_INDEX.FLAG_STOP_ZONE_PROGRAM) && zoneData.ZoneGrid != null)
                             {
-                                global::ZoneID zoneID = zoneData.ZoneGrid[(int)index];
-                                if (zoneID != global::ZoneID.UNKNOWN && global::PlayerWork.zoneID != zoneID)
+                                uint index = (uint)(grid.y / 32 * zoneData.ZoneGrid.Width + grid.x / 32);
+                                if (index < zoneData.ZoneGrid.Length)
                                 {
-                                    global::PlayerWork.zoneID = zoneID;
-                                    global::FieldManager.Instance.OnZoneChange(true);
-                                }
-                            }
-                        }
-                        _targetSceneID = global::SceneID.Field;
-                        if (global::PlayerWork.evolveRequets.Count > 0)
-                        {
-                            global::PlayerWork.isPlayerInputActive = false;
-                            for (int i = 0; i < global::PlayerWork.evolveRequets.Count; i++)
-                            {
-                                global::System.Action onEndDemo = null;
-                                bool isUseEndExitFade = true;
-                                if (i == global::PlayerWork.evolveRequets.Count - 1)
-                                {
-                                    onEndDemo = () =>
+                                    global::ZoneID zoneID = zoneData.ZoneGrid[(int)index];
+                                    if (zoneID != global::ZoneID.UNKNOWN && global::PlayerWork.zoneID != zoneID)
                                     {
-                                        if (global::PlayerWork.capturedPokemon == null)
-                                        {
-                                            global::PlayerWork.isPlayerInputActive = true;
-                                            global::SmartPoint.Components.Fader.FadeIn();
-                                            return;
-                                        }
-                                        global::poketool.poke_memo.poketool_poke_memo.SetFromCapture(global::PlayerWork.capturedPokemon, global::PlayerWork.playerStatus, global::PlayerWork.zoneID);
-                                        global::SmartPoint.AssetAssistant.Sequencer.Start(global::EvolveDemoTools.RegisterZukanCoroutine(global::PlayerWork.capturedPokemon, () =>
-                                        {
-                                            global::PlayerWork.isPlayerInputActive = true;
-                                            global::Dpr.EncountTools.OnPostRegisterZukan(global::PlayerWork.capturedPokemon, global::PlayerWork.capturedBallCountTvTopic);
-                                            global::PlayerWork.capturedPokemon = null;
-                                            global::PlayerWork.capturedBallCountTvTopic = 0;
-                                        }));
-                                    };
-                                    isUseEndExitFade = false;
+                                        global::PlayerWork.zoneID = zoneID;
+                                        global::FieldManager.Instance.OnZoneChange(true);
+                                    }
                                 }
-                                global::EvolveDemoTools.DoEvolve(global::PlayerWork.evolveRequets[i], null, null, (global::Pml.ItemNo)0, onEndDemo, isUseEndExitFade);
                             }
-                            global::PlayerWork.evolveRequets.Clear();
+                            _targetSceneID = global::SceneID.Field;
+                            if (global::PlayerWork.evolveRequets.Count > 0)
+                            {
+                                global::PlayerWork.isPlayerInputActive = false;
+                                for (int i = 0; i < global::PlayerWork.evolveRequets.Count; i++)
+                                {
+                                    global::System.Action onEndDemo = null;
+                                    bool isUseEndExitFade = true;
+                                    if (i == global::PlayerWork.evolveRequets.Count - 1)
+                                    {
+                                        onEndDemo = () =>
+                                        {
+                                            if (global::PlayerWork.capturedPokemon == null)
+                                            {
+                                                global::PlayerWork.isPlayerInputActive = true;
+                                                global::SmartPoint.Components.Fader.FadeIn();
+                                                return;
+                                            }
+                                            global::poketool.poke_memo.poketool_poke_memo.SetFromCapture(global::PlayerWork.capturedPokemon, global::PlayerWork.playerStatus, global::PlayerWork.zoneID);
+                                            global::SmartPoint.AssetAssistant.Sequencer.Start(global::EvolveDemoTools.RegisterZukanCoroutine(global::PlayerWork.capturedPokemon, () =>
+                                            {
+                                                global::PlayerWork.isPlayerInputActive = true;
+                                                global::Dpr.EncountTools.OnPostRegisterZukan(global::PlayerWork.capturedPokemon, global::PlayerWork.capturedBallCountTvTopic);
+                                                global::PlayerWork.capturedPokemon = null;
+                                                global::PlayerWork.capturedBallCountTvTopic = 0;
+                                            }));
+                                        };
+                                        isUseEndExitFade = false;
+                                    }
+                                    global::EvolveDemoTools.DoEvolve(global::PlayerWork.evolveRequets[i], null, null, (global::Pml.ItemNo)0, onEndDemo, isUseEndExitFade);
+                                }
+                                global::PlayerWork.evolveRequets.Clear();
+                            }
+                            return;
                         }
+                        // No field player yet (the opening, before the first field load): Field, as shipped (@02cd2a50). The switcher
+                        // holds a Field target while transitionZoneID is UNKNOWN, so the current scene stays.
+                        _targetSceneID = global::SceneID.Field;
                         return;
                     }
                     _targetSceneID = global::SceneID.Battle;
