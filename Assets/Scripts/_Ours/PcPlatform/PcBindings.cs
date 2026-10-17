@@ -11,7 +11,7 @@
 // the right-stick press stays (Poketch next app, Underground big map, Amity Square camera reset).
 // pc_settings.ini: `key.<action>=<KeyCode>[,<KeyCode>]` (Unity KeyCode names, empty = no key) and `pad.<action>=<control>`; a missing
 // or unreadable line keeps that action's default, so an ini written before s47 plays exactly as before.
-// Options > Keyboard Controls / Controller Controls (PcControlsOptions) edit a pending copy, made live by the shipped "save these
+// Options > Keyboard Keys / Controller Buttons (PcControlsOptions) edit a pending copy, made live by the shipped "save these
 // settings?" yes. Lock-out rules: the menu actions (A, B, X, Y, +, d-pad) always keep a key and a pad control, and a key / control
 // taken from another action swaps with the edited one.
 using System;
@@ -162,7 +162,7 @@ namespace PcPlatform
         static void Install()
         {
             PcConfig.Log("bindings: keyboard " + (Live.SameKeys(Defaults()) ? "default" : "custom") + ", pad " + DescribePad(Live)
-                + " (pc_settings.ini key.* / pad.*; Options > Keyboard Controls / Controller Controls)");
+                + " (pc_settings.ini key.* / pad.*; Options > Keyboard Keys / Controller Buttons)");
         }
 
         public static PcBindingTable Defaults()
@@ -439,7 +439,7 @@ namespace PcPlatform
             for (int a = 0; a < PcBindingTable.Actions; a++)
                 if (OnPad((PcAction)a))
                     lines.Add("pad." + ((PcAction)a) + "=" + t.pad[a]);
-            PcSettingsIni.Set("# controls (Options > Keyboard Controls / Controller Controls): key.<action>=<Unity KeyCode>[,<KeyCode>] (empty = none),"
+            PcSettingsIni.Set("# controls (Options > Keyboard Keys / Controller Buttons): key.<action>=<Unity KeyCode>[,<KeyCode>] (empty = none),"
                 + " pad.<action>=A|B|X|Y|LB|RB|LT|RT|Back|Start|LS|RS|DpadUp|DpadDown|DpadLeft|DpadRight|None; a missing line = the default",
                 lines.ToArray());
             PcConfig.Log("bindings saved to pc_settings.ini: keyboard " + (t.SameKeys(Defaults()) ? "default" : "custom") + ", pad " + DescribePad(t));

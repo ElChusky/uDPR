@@ -42,7 +42,6 @@ namespace PcPlatform
         static bool lastHeld;
         static float avgDt;
         static float written = 1f;
-        static PcGameSpeedBadge badge;
 #if !PC_UNLOCKED_FPS
         static bool lockstep;
         static int savedTarget, savedVSync;
@@ -58,8 +57,6 @@ namespace PcPlatform
             go.hideFlags = HideFlags.HideInHierarchy;
             DontDestroyOnLoad(go);
             go.AddComponent<PcGameSpeed>();
-            badge = go.AddComponent<PcGameSpeedBadge>();
-            badge.enabled = false;
             PcConfig.Log("fast-forward: " + Speed + "x, key " + (ToggleMode ? "toggles" : "held")
                 + " (pc_settings.ini ff_speed / ff_key; Options > Fast-Forward Speed / Key)");
         }
@@ -167,36 +164,66 @@ namespace PcPlatform
                 written = scale;
             }
             Scale = scale;
-            badge.enabled = On && !driver;
+            PcGameSpeedBadge.Show(On && !driver, Active ? scale : 1f);
         }
     }
 
     // The corner badge while fast-forward is on: ">> 4x", the speed in effect when the PC holds it lower, ">> 1x" while held at 1x.
-    public class PcGameSpeedBadge : MonoBehaviour
+    // A uGUI overlay canvas, NOT OnGUI: with an OnGUI live, IMGUI takes the Tab key for its keyboard focus and Input.GetKey(Tab) - the
+    // default Fast-Forward key - stopped seeing it (s47 run r1: the first Tab turned fast-forward on, the second never turned it off).
+    public static class PcGameSpeedBadge
     {
-        GUIStyle style, shadow;
-        int styleSize;
+        static GameObject root;
+        static UnityEngine.UI.Text label;
+        static int shownTenths = -1;
 
-        void OnGUI()
+        public static void Show(bool on, float scale)
         {
-            if (Event.current.type != EventType.Repaint)
-                return;
-            int size = Mathf.Max(14, Screen.height / 30);
-            if (style == null || styleSize != size)
+            if (root == null)
             {
-                styleSize = size;
-                style = new GUIStyle(GUI.skin.label) { fontSize = size, fontStyle = FontStyle.Bold, alignment = TextAnchor.UpperRight, wordWrap = false };
-                style.normal.textColor = new Color(1f, 1f, 1f, 0.92f);
-                shadow = new GUIStyle(style);
-                shadow.normal.textColor = new Color(0f, 0f, 0f, 0.7f);
+                if (!on)
+                    return;
+                Build();
             }
-            float s = PcGameSpeed.Active ? PcGameSpeed.Scale : 1f;
-            string text = ">> " + (Mathf.Abs(s - Mathf.Round(s)) < 0.05f ? Mathf.Round(s).ToString(CultureInfo.InvariantCulture)
-                : s.ToString("0.0", CultureInfo.InvariantCulture)) + "x";
-            var r = new Rect(0f, size * 0.5f, Screen.width - size * 0.7f, size * 1.6f);
-            float d = Mathf.Max(1f, size / 18f);
-            GUI.Label(new Rect(r.x + d, r.y + d, r.width, r.height), text, shadow);
-            GUI.Label(r, text, style);
+            if (root.activeSelf != on)
+                root.SetActive(on);
+            int tenths = Mathf.RoundToInt(scale * 10f);
+            if (!on || tenths == shownTenths)
+                return;
+            shownTenths = tenths;
+            label.text = ">> " + (tenths % 10 == 0 ? (tenths / 10).ToString(CultureInfo.InvariantCulture)
+                : (tenths / 10f).ToString("0.0", CultureInfo.InvariantCulture)) + "x";
+        }
+
+        static void Build()
+        {
+            root = new GameObject("PcGameSpeedBadge");
+            root.hideFlags = HideFlags.HideInHierarchy;
+            Object.DontDestroyOnLoad(root);
+            var canvas = root.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 32767;   // above every game canvas
+            var scaler = root.AddComponent<UnityEngine.UI.CanvasScaler>();
+            scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.matchWidthOrHeight = 1f;
+            var go = new GameObject("Text");
+            go.transform.SetParent(root.transform, false);
+            label = go.AddComponent<UnityEngine.UI.Text>();
+            label.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            label.fontSize = 40;
+            label.fontStyle = FontStyle.Bold;
+            label.alignment = TextAnchor.UpperRight;
+            label.horizontalOverflow = HorizontalWrapMode.Overflow;
+            label.color = new Color(1f, 1f, 1f, 0.92f);
+            label.raycastTarget = false;
+            var shadow = go.AddComponent<UnityEngine.UI.Shadow>();
+            shadow.effectColor = new Color(0f, 0f, 0f, 0.7f);
+            shadow.effectDistance = new Vector2(2f, -2f);
+            var rt = label.rectTransform;
+            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(1f, 1f);
+            rt.anchoredPosition = new Vector2(-28f, -20f);
+            rt.sizeDelta = new Vector2(400f, 60f);
         }
     }
 }
