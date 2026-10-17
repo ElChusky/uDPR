@@ -8,9 +8,10 @@
 // units, OK and Cancel. The game's text-check confirm dialog is the same dialog without the edit line (OK / Back).
 // s43 (player report: "When nicknaming Pokemon window pops up can't exit the window if you're using a controller. Must use mouse."):
 // the dialog's own message loop runs instead of the game's frame, so nothing read the pad. A 30 ms timer now polls the XInput pads
-// (PcXInput.ReadRawButtons) with the game's positional mapping: Switch A (pad B, the game's confirm) or + (Start) = OK, Switch B
-// (pad A) = Cancel / Back. A button acts on RELEASE, after the dialog first saw every pad button up - the press that opened the
-// dialog does not close it, and the closing press is not held into the game's next frame.
+// (PcXInput.ReadRawControls) through the player's pad bindings (PcBindings, s47): Switch A (default pad B, the game's confirm) or +
+// (default Start) = OK, Switch B (default pad A) = Cancel / Back; the hint line names the bound pad buttons. A button acts on
+// RELEASE, after the dialog first saw every pad control up - the press that opened the dialog does not close it, and the closing
+// press is not held into the game's next frame.
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -24,9 +25,19 @@ namespace PcPlatform
         const int IdInfo = 100, IdEdit = 101, IDOK = 1, IDCANCEL = 2;
         const uint WM_INITDIALOG = 0x0110, WM_COMMAND = 0x0111, WM_TIMER = 0x0113, EM_SETSEL = 0x00B1, EM_LIMITTEXT = 0x00C5;
         const int PadTimer = 1, PadPollMs = 30;
-        // XInput button bits (positional mapping, PcXInput): Start = Plus, pad B (right) = Switch A, pad A (bottom) = Switch B
-        const int XStart = 0x0010, XPadA = 0x1000, XPadB = 0x2000;
-        const string PadHint = "Controller: A or + = OK, B = ";
+        // the Switch buttons the dialog answers to (bits of padDown)
+        const int SwA = 1, SwB = 2, SwPlus = 4;
+
+        // "Controller: B or Start = OK, A = " with the default bindings (the dialog text is English, as its OK / Cancel buttons)
+        static string PadHint
+        {
+            get
+            {
+                var pad = PcBindings.Live.pad;
+                return "Controller: " + PcBindings.PadName(pad[(int)PcAction.A]) + " or " + PcBindings.PadName(pad[(int)PcAction.Plus])
+                    + " = OK, " + PcBindings.PadName(pad[(int)PcAction.B]) + " = ";
+            }
+        }
 
         delegate IntPtr DialogProc(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam);
 
@@ -124,15 +135,18 @@ namespace PcPlatform
         // WM_TIMER: OK / Cancel from the pad, on release (see the header).
         static void PollPad(IntPtr hwnd)
         {
-            int k = PcXInput.ReadRawButtons();
+            int k = PcXInput.ReadRawControls();
             if (!padArmed)
             {
                 padArmed = k == 0;
                 return;
             }
-            int released = padDown & ~k;
-            padDown = k & (XStart | XPadA | XPadB);
-            int id = (released & XPadA) != 0 ? IDCANCEL : (released & (XPadB | XStart)) != 0 ? IDOK : 0;
+            nn.hid.NpadButton b = PcBindings.PadButtons(k);
+            int now = ((b & nn.hid.NpadButton.A) != 0 ? SwA : 0) | ((b & nn.hid.NpadButton.B) != 0 ? SwB : 0)
+                | ((b & nn.hid.NpadButton.Plus) != 0 ? SwPlus : 0);
+            int released = padDown & ~now;
+            padDown = now;
+            int id = (released & SwB) != 0 ? IDCANCEL : (released & (SwA | SwPlus)) != 0 ? IDOK : 0;
             if (id == 0)
                 return;
             KillTimer(hwnd, (UIntPtr)PadTimer);

@@ -59,8 +59,14 @@ namespace Dpr.DigFossil
 				return Vector2.zero;
 			} }
 		public static bool ToggleCameraShake { get {
+#if SWITCH
 				return (GameController.push & GameController.ButtonMask.Y) != 0
 					|| Input.GetKeyDown(KeyCode.R);
+#else
+				// s47: the shipped keyboard R (inert on the console) stays Switch-only, as MsgWindowInput's L (s46): on PC the keys are
+				// the player's bindings (PcBindings), and R could be bound to anything
+				return (GameController.push & GameController.ButtonMask.Y) != 0;
+#endif
 			} }
 		private static bool IsEasyInput() { return PlayerWork.config.input_mode != global::DPData.INPUTMODE.INPUTMODE_NORMAL; }
 	}

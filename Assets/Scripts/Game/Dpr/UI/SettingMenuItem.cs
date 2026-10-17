@@ -199,6 +199,12 @@ namespace Dpr.UI
 			Setup(pseudoId, Mathf.Clamp(selectIndex, 0, values.Length - 1), null, onValueChanged);
 		}
 		public bool isPcRow { get => _pcValues != null; }
+		// PC layer (s47, PcPlatform.PcControlsOptions): new value texts for a PC row (a binding changed), its highlight kept
+		public void SetPcValues(string[] values, int selectIndex)
+		{
+			_pcValues = values;
+			SetSelectIndex(Mathf.Clamp(selectIndex, 0, values.Length - 1), false, false);
+		}
 		// PC layer (s39, PcPlatform.PcDisplayOptions): a WindowSelector row whose values are plain strings (display mode / resolution)
 		// under a pseudo ConfigID that never reaches CONFIG; the title is plain text too (the shipped label is switched off)
 		private string[] _pcValues;

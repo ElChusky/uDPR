@@ -571,6 +571,10 @@ namespace Dpr.Contest
 			ChangeSectionOpening();
 		}
 		private void OnUpdate(float deltaTime) {
+#if !SWITCH
+			// PC layer (s47): the contest runs on the BGM's play position (UpdateSection below) - fast-forward holds at 1x
+			PcPlatform.PcGameSpeed.RequireNormalSpeed();
+#endif
 			contestViewSystem.OnUpdate(deltaTime);
 			wazaViewSystem.OnUpdate(deltaTime);
 			if (IsCompleteSection)

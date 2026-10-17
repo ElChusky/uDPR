@@ -176,6 +176,32 @@ namespace PcPlatform
             return null;
         }
 
+        // every key=value line (keys case-insensitive; a repeated key: the first line wins, as Get)
+        public static Dictionary<string, string> ReadAll()
+        {
+            var all = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            try
+            {
+                if (!File.Exists(PcFrameRate.SettingsPath))
+                    return all;
+                foreach (var raw in File.ReadAllLines(PcFrameRate.SettingsPath))
+                {
+                    var line = raw.Trim();
+                    int eq = line.IndexOf('=');
+                    if (line.StartsWith("#") || eq <= 0)
+                        continue;
+                    string key = line.Substring(0, eq).Trim();
+                    if (!all.ContainsKey(key))
+                        all[key] = line.Substring(eq + 1).Trim();
+                }
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogWarning("[PcPlatform] pc_settings.ini: " + e.Message);
+            }
+            return all;
+        }
+
         // each entry "key=value" replaces that key's line or is appended (after `comment`, when one is given and something is appended)
         public static void Set(string comment, params string[] entries)
         {
@@ -204,7 +230,8 @@ namespace PcPlatform
         }
     }
 
-    // The three Options rows (called by Dpr.UI.SettingWindow under #if !SWITCH).
+    // The display Options rows (called by Dpr.UI.SettingWindow under #if !SWITCH); since s47 also the entry point of the controls /
+    // fast-forward rows and pages (PcControlsOptions), which follow the display rows.
     public static class PcDisplayOptions
     {
         public const ConfigID ModeRow = (ConfigID)100;
@@ -221,7 +248,8 @@ namespace PcPlatform
 
         public static bool IsPcRow(SettingMenuItem item)
         {
-            return item != null && (item.configId == ModeRow || item.configId == SizeRow || item.configId == FpsRow || item.configId == VSyncRow);
+            return item != null && (item.configId == ModeRow || item.configId == SizeRow || item.configId == FpsRow || item.configId == VSyncRow
+                || PcControlsOptions.Owns(item));
         }
 
         static int CurrentCap
@@ -253,6 +281,8 @@ namespace PcPlatform
         {
             get
             {
+                if (PcControlsOptions.Pending)
+                    return true;
                 if (sizes.Count == 0 || rates.Count == 0)
                     return false;
                 return (PcDisplay.Mode)modeIndex != PcDisplay.Current || sizes[sizeIndex] != PcDisplay.CurrentSize || rates[rateIndex] != CurrentCap
@@ -269,6 +299,7 @@ namespace PcPlatform
                 if (t != null)
                     t.SetAsLastSibling();
             }
+            PcControlsOptions.MoveRowsToEnd(content);
         }
 
         // After the shipped loop: creates (once per window instance) and sets up the four rows, puts them at the top of the list and
@@ -307,6 +338,9 @@ namespace PcPlatform
             rateItem.transform.SetSiblingIndex(2);
             vsyncItem.transform.SetSiblingIndex(3);
             activeItems.InsertRange(0, new[] { modeItem, sizeItem, rateItem, vsyncItem });
+
+            // s47: Fast-Forward Speed / Key, Button Layout, Keyboard Keys, Controller Buttons follow
+            PcControlsOptions.Open(content, activeItems, onValueChanged, cursor, 4);
         }
 
         // 30 (the shipped pace), the common display rates, the monitor's own rate, the current cap, then Unlimited
@@ -327,7 +361,8 @@ namespace PcPlatform
 #endif
         }
 
-        static SettingMenuItem Row(Transform content, string name, Transform cursor)
+        // the row `name` under `content`: found, or cloned from the shipped WindowChange row (PcControlsOptions makes its rows here too)
+        internal static SettingMenuItem Row(Transform content, string name, Transform cursor)
         {
             var existing = content.Find(name);
             if (existing != null)
@@ -354,6 +389,8 @@ namespace PcPlatform
         // SettingWindow.OnMenuItemValueChaged: true = a PC row (CONFIG untouched)
         public static bool OnValueChanged(SettingMenuItem item)
         {
+            if (PcControlsOptions.OnValueChanged(item))
+                return true;
             if (item.configId == ModeRow)
                 modeIndex = item.selectIndex;
             else if (item.configId == SizeRow)
@@ -370,6 +407,12 @@ namespace PcPlatform
         // the shipped "save these settings?" yes
         public static void Accept()
         {
+            PcControlsOptions.Accept();
+            AcceptDisplay();
+        }
+
+        static void AcceptDisplay()
+        {
             if (sizes.Count == 0 || rates.Count == 0)
                 return;
             if ((PcDisplay.Mode)modeIndex != PcDisplay.Current || sizes[sizeIndex] != PcDisplay.CurrentSize)
@@ -382,9 +425,11 @@ namespace PcPlatform
 #endif
         }
 
-        // the shipped Y reset: Borderless, the desktop resolution, Unlimited, V-Sync on - applied at once
+        // the shipped Y reset: Borderless, the desktop resolution, Unlimited, V-Sync on - applied at once (s47: + the fast-forward rows;
+        // the key / button bindings stay - their pages have their own reset)
         public static void ResetToDefault()
         {
+            PcControlsOptions.ResetToDefault();
             if (modeItem == null || sizeItem == null || rateItem == null || vsyncItem == null || sizes.Count == 0 || rates.Count == 0)
                 return;
             modeIndex = (int)PcDisplay.DefaultMode;
@@ -396,7 +441,7 @@ namespace PcPlatform
             rateItem.SetSelectIndex(rateIndex, true, false);
             vsyncIndex = 0;
             vsyncItem.SetSelectIndex(vsyncIndex, true, false);
-            Accept();
+            AcceptDisplay();
         }
 
         // the description under the list for a PC row (null = a shipped row): a text model built like a shipped two-line option
@@ -405,12 +450,20 @@ namespace PcPlatform
         {
             if (!IsPcRow(item) || optionFile == null)
                 return null;
+            if (PcControlsOptions.Owns(item))
+                return PcControlsOptions.Description(item, optionFile);
             var lang = Strings.Lang();
             Strings.Key k1, k2;
             if (item.configId == ModeRow) { k1 = Strings.Key.DescMode1; k2 = Strings.Key.DescMode2; }
             else if (item.configId == SizeRow) { k1 = Strings.Key.DescRes1; k2 = Strings.Key.DescRes2; }
             else if (item.configId == FpsRow) { k1 = Strings.Key.DescFps1; k2 = Strings.Key.DescFps2; }
             else { k1 = Strings.Key.DescVSync1; k2 = Strings.Key.DescVSync2; }
+            return TextModel(item, optionFile, Strings.Get(lang, k1), Strings.Get(lang, k2));
+        }
+
+        // a two-line description text model for a PC row
+        internal static MessageTextParseDataModel TextModel(SettingMenuItem item, MessageMsgFile optionFile, string line1, string line2)
+        {
             var src = optionFile.GetAllLabelDataArray().FirstOrDefault(x => x != null && x.labelName == "SS_option_005");
             var label = new LabelData
             {
@@ -422,13 +475,25 @@ namespace PcPlatform
                 tagDataArray = new TagData[0],
                 wordDataArray = new[]
                 {
-                    new WordData { patternID = MessageEnumData.WordDataPatternID.Event, eventID = MessageEnumData.MsgEventID.NewLine, str = Strings.Get(lang, k1), strWidth = -1f },
-                    new WordData { patternID = MessageEnumData.WordDataPatternID.Str, eventID = MessageEnumData.MsgEventID.End, str = Strings.Get(lang, k2), strWidth = -1f },
+                    new WordData { patternID = MessageEnumData.WordDataPatternID.Event, eventID = MessageEnumData.MsgEventID.NewLine, str = line1, strWidth = -1f },
+                    new WordData { patternID = MessageEnumData.WordDataPatternID.Str, eventID = MessageEnumData.MsgEventID.End, str = line2, strWidth = -1f },
                 },
             };
             var model = new MessageTextParseDataModel();
             model.SetLabelData(label, optionFile.LanguageID);
             return model;
+        }
+
+        // the table column of the current language: en, jp_kanji, jp_kana, fr, it, de, es, ko, sch, tch (PcControlsOptions too)
+        internal static string LangCode()
+        {
+            return Strings.Code(Strings.Lang());
+        }
+
+        // `s` when the current font draws it, else `english`
+        internal static string Drawable(string s, string english)
+        {
+            return Strings.Drawable(Strings.Lang(), s) ? s : english;
         }
 
         // The row texts in the game's nine languages (+ Japanese kana mode). A string the current font cannot draw falls back to English.
@@ -520,36 +585,41 @@ namespace PcPlatform
                 return UIManager.GetCurrentLangId();
             }
 
-            public static string Get(MessageEnumData.MsgLangId lang, Key key)
+            public static string Code(MessageEnumData.MsgLangId lang)
             {
-                string code;
                 switch (lang)
                 {
                     case MessageEnumData.MsgLangId.JPN:
-                        code = MessageManager.Instance != null && !MessageManager.Instance.IsKanji ? "jp_kana" : "jp_kanji";
-                        break;
-                    case MessageEnumData.MsgLangId.FRA: code = "fr"; break;
-                    case MessageEnumData.MsgLangId.ITA: code = "it"; break;
-                    case MessageEnumData.MsgLangId.DEU: code = "de"; break;
-                    case MessageEnumData.MsgLangId.ESP: code = "es"; break;
-                    case MessageEnumData.MsgLangId.KOR: code = "ko"; break;
-                    case MessageEnumData.MsgLangId.SCH: code = "sch"; break;
-                    case MessageEnumData.MsgLangId.TCH: code = "tch"; break;
-                    default: code = "en"; break;
+                        return MessageManager.Instance != null && !MessageManager.Instance.IsKanji ? "jp_kana" : "jp_kanji";
+                    case MessageEnumData.MsgLangId.FRA: return "fr";
+                    case MessageEnumData.MsgLangId.ITA: return "it";
+                    case MessageEnumData.MsgLangId.DEU: return "de";
+                    case MessageEnumData.MsgLangId.ESP: return "es";
+                    case MessageEnumData.MsgLangId.KOR: return "ko";
+                    case MessageEnumData.MsgLangId.SCH: return "sch";
+                    case MessageEnumData.MsgLangId.TCH: return "tch";
+                    default: return "en";
                 }
-                string s = table[code][(int)key];
-                if (code != "en")
+            }
+
+            public static bool Drawable(MessageEnumData.MsgLangId lang, string s)
+            {
+                try
                 {
-                    try
-                    {
-                        if (FontManager.Instance != null && MessageHelper.ExistMissingChara(lang, s))
-                            s = table["en"][(int)key];
-                    }
-                    catch (Exception)
-                    {
-                        s = table["en"][(int)key];
-                    }
+                    return FontManager.Instance == null || !MessageHelper.ExistMissingChara(lang, s);
                 }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+
+            public static string Get(MessageEnumData.MsgLangId lang, Key key)
+            {
+                string code = Code(lang);
+                string s = table[code][(int)key];
+                if (code != "en" && !Drawable(lang, s))
+                    s = table["en"][(int)key];
                 return s;
             }
         }

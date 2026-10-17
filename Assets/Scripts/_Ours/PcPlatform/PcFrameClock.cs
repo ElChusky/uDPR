@@ -187,21 +187,33 @@ namespace PcPlatform
 
         void Update()
         {
+            // s47: fast-forward needs speed x 30 rendered frames (PcGameSpeed's one-tick-per-frame law): a lower cap rises to it, and
+            // V-Sync lets go while the monitor's refresh is below it
+            int cap = Cap;
+            bool vsyncOn = VSync;
+            if (PcGameSpeed.Active)
+            {
+                int need = PcGameSpeed.Speed * PcFrameClock.LogicRate;
+                if (cap > 0 && cap < need)
+                    cap = need;
+                if (vsyncOn && Refresh() < need)
+                    vsyncOn = false;
+            }
             if (Time.captureFramerate > 0)
             {
                 target = PcFrameClock.LogicRate;   // play-driver runs: the exact shipped pace, as s37
                 vsync = 0;
                 limit = 0;
             }
-            else if (VSync)
+            else if (vsyncOn)
             {
                 target = -1;
-                vsync = SyncInterval(Cap, Refresh());
-                limit = Cap;
+                vsync = SyncInterval(cap, Refresh());
+                limit = cap;
             }
             else
             {
-                target = Cap > 0 ? Cap : -1;   // no V-Sync: Unity's own targetFrameRate limiter
+                target = cap > 0 ? cap : -1;   // no V-Sync: Unity's own targetFrameRate limiter
                 vsync = 0;
                 limit = 0;
             }
@@ -215,9 +227,10 @@ namespace PcPlatform
                 loggedTarget = target;
                 loggedVSync = vsync;
                 loggedLimit = limit;
-                PcConfig.Log(string.Format("frame pacing: vSyncCount {0}, targetFrameRate {1}, limiter {2} (monitor {3} Hz, cap {4}, V-Sync {5})",
+                PcConfig.Log(string.Format("frame pacing: vSyncCount {0}, targetFrameRate {1}, limiter {2} (monitor {3} Hz, cap {4}, V-Sync {5}{6})",
                     vsync, target, limit > 0 ? limit.ToString() : "off", Screen.currentResolution.refreshRate,
-                    Cap > 0 ? Cap.ToString() : "unlimited", VSync ? "on" : "off"));
+                    Cap > 0 ? Cap.ToString() : "unlimited", VSync ? "on" : "off",
+                    PcGameSpeed.Active ? ", fast-forward " + PcGameSpeed.Speed + "x" : ""));
                 measureFrom = Now + 1.0;   // let the change settle, then measure
                 measureFrames = 0;
             }

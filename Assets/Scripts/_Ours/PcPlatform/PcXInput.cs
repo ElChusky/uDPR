@@ -6,11 +6,11 @@
 // L2 trigger rests at -1 on the axis read as right stick X, so every menu that takes the right stick scrolled left forever (player
 // report, s41). XInputGetState sees XInput pads only (Xbox pads and most PC pads; a DS4 / DualSense through Steam Input or DS4Windows)
 // with one fixed layout, so no other device can inject input.
-// Every connected pad (user index 0..3) is OR-ed into the one emulated Pro Controller, mapped by POSITION as Ryujinx does:
-// Switch A = pad B, B = A, X = Y, Y = X, L/R = LB/RB, ZL/ZR = LT/RT, Minus = Back, Plus = Start, stick clicks = LS/RS.
+// Every connected pad (user index 0..3) is OR-ed into one set of pad controls (PadControl bits) + the two sticks; PcBindings maps
+// the controls to the emulated Pro Controller's buttons (s47; default by POSITION as Ryujinx does: Switch A = pad B, B = A, X = Y,
+// Y = X, L/R = LB/RB, ZL/ZR = LT/RT, Minus = Back, Plus = Start, R-stick press = RS, LS = Fast-Forward).
 using System;
 using System.Runtime.InteropServices;
-using nn.hid;
 using UnityEngine;
 
 namespace PcPlatform
@@ -47,7 +47,7 @@ namespace PcPlatform
         static readonly bool[] connected = new bool[Users];
         static float nextScan;          // empty slots are polled once a second: XInputGetState on an empty slot is slow
 
-        public static void Read(ref NpadButton b, ref int lx, ref int ly, ref int rx, ref int ry)
+        public static void Read(ref int controls, ref int lx, ref int ly, ref int rx, ref int ry)
         {
             bool scan = Time.unscaledTime >= nextScan;
             if (scan)
@@ -67,23 +67,7 @@ namespace PcPlatform
                     continue;
 
                 var g = s.pad;
-                int k = g.buttons;
-                if ((k & 0x0001) != 0) b |= NpadButton.Up;
-                if ((k & 0x0002) != 0) b |= NpadButton.Down;
-                if ((k & 0x0004) != 0) b |= NpadButton.Left;
-                if ((k & 0x0008) != 0) b |= NpadButton.Right;
-                if ((k & 0x0010) != 0) b |= NpadButton.Plus;     // Start
-                if ((k & 0x0020) != 0) b |= NpadButton.Minus;    // Back
-                if ((k & 0x0040) != 0) b |= NpadButton.StickL;
-                if ((k & 0x0080) != 0) b |= NpadButton.StickR;
-                if ((k & 0x0100) != 0) b |= NpadButton.L;        // LB
-                if ((k & 0x0200) != 0) b |= NpadButton.R;        // RB
-                if ((k & 0x1000) != 0) b |= NpadButton.B;        // pad A (bottom)
-                if ((k & 0x2000) != 0) b |= NpadButton.A;        // pad B (right)
-                if ((k & 0x4000) != 0) b |= NpadButton.Y;        // pad X (left)
-                if ((k & 0x8000) != 0) b |= NpadButton.X;        // pad Y (top)
-                if (g.leftTrigger >= TriggerOn) b |= NpadButton.ZL;
-                if (g.rightTrigger >= TriggerOn) b |= NpadButton.ZR;
+                controls |= Controls(g);
                 // XInput thumb Y is up-positive, as nn::hid's
                 lx += Axis(g.thumbLX);
                 ly += Axis(g.thumbLY);
@@ -92,19 +76,42 @@ namespace PcPlatform
             }
         }
 
-        // s43: the raw XInput button bits of every pad seen connected, OR-ed - for a modal Win32 dialog (PcSwkbdNative) that runs
-        // while the game's frame is suspended. Only slots the game already found are read (an empty slot's XInputGetState is slow, and
-        // Time does not advance inside the dialog, so Read's once-a-second scan would never come).
-        public static int ReadRawButtons()
+        // XInput button bits + triggers -> PadControl bits (PcBindings.Bit)
+        static int Controls(Gamepad g)
         {
-            int k = 0;
+            int k = g.buttons, c = 0;
+            if ((k & 0x0001) != 0) c |= PcBindings.Bit(PadControl.DpadUp);
+            if ((k & 0x0002) != 0) c |= PcBindings.Bit(PadControl.DpadDown);
+            if ((k & 0x0004) != 0) c |= PcBindings.Bit(PadControl.DpadLeft);
+            if ((k & 0x0008) != 0) c |= PcBindings.Bit(PadControl.DpadRight);
+            if ((k & 0x0010) != 0) c |= PcBindings.Bit(PadControl.Start);
+            if ((k & 0x0020) != 0) c |= PcBindings.Bit(PadControl.Back);
+            if ((k & 0x0040) != 0) c |= PcBindings.Bit(PadControl.LS);
+            if ((k & 0x0080) != 0) c |= PcBindings.Bit(PadControl.RS);
+            if ((k & 0x0100) != 0) c |= PcBindings.Bit(PadControl.LB);
+            if ((k & 0x0200) != 0) c |= PcBindings.Bit(PadControl.RB);
+            if ((k & 0x1000) != 0) c |= PcBindings.Bit(PadControl.A);   // bottom
+            if ((k & 0x2000) != 0) c |= PcBindings.Bit(PadControl.B);   // right
+            if ((k & 0x4000) != 0) c |= PcBindings.Bit(PadControl.X);   // left
+            if ((k & 0x8000) != 0) c |= PcBindings.Bit(PadControl.Y);   // top
+            if (g.leftTrigger >= TriggerOn) c |= PcBindings.Bit(PadControl.LT);
+            if (g.rightTrigger >= TriggerOn) c |= PcBindings.Bit(PadControl.RT);
+            return c;
+        }
+
+        // s43: the controls of every pad seen connected, OR-ed (PadControl bits since s47) - for a modal Win32 dialog (PcSwkbdNative)
+        // that runs while the game's frame is suspended. Only slots the game already found are read (an empty slot's XInputGetState is
+        // slow, and Time does not advance inside the dialog, so Read's once-a-second scan would never come).
+        public static int ReadRawControls()
+        {
+            int c = 0;
             for (int user = 0; user < Users; user++)
             {
                 State s;
                 if (connected[user] && Get(user, out s))
-                    k |= s.pad.buttons;
+                    c |= Controls(s.pad);
             }
-            return k;
+            return c;
         }
 
         static int Axis(short raw)

@@ -3,13 +3,16 @@
 //
 // The emulated console has ONE controller: NpadId.No1 with style FullKey (a Pro Controller, Ryujinx's default player 1), always
 // connected; Handheld and the other ids report style None. Its state is built every Unity frame from three sources, OR-ed:
-//   1. the keyboard, with Ryujinx's default key bindings (so the editor plays like the reference emulator):
-//        left stick W/A/S/D (click F), d-pad arrow keys, Minus = '-', L = E, ZL = Q,
-//        right stick I/J/K/L (click H), A = Z, B = X, X = C, Y = V, Plus = '=' / keypad '+', R = U, ZR = O;
-//   2. XInput pads (PcXInput, s41), mapped by POSITION as Ryujinx does: Switch A = pad B, B = A, X = Y, Y = X, L/R = LB/RB,
-//      ZL/ZR = LT/RT, Minus = Back, Plus = Start, stick clicks = LS/RS. Off Windows: Unity's legacy Input joystick 1 with the
-//      "PcPad.*" axes of ProjectSettings/InputManager.asset (the s34-s40 path);
+//   1. the keyboard through the player's bindings (PcBindings, s47; default = Ryujinx's keys, so the editor plays like the
+//      reference emulator: left stick W/A/S/D (click F), d-pad arrow keys, Minus = '-', L = E, ZL = Q, right stick I/J/K/L
+//      (click H), A = Z, B = X, X = C, Y = V, Plus = '=' / keypad '+', R = U, ZR = O);
+//   2. XInput pads (PcXInput, s41) through the bindings too (default by POSITION as Ryujinx maps them: Switch A = pad B, B = A,
+//      X = Y, Y = X, L/R = LB/RB, ZL/ZR = LT/RT, Minus = Back, Plus = Start, R-stick press = RS; LS = Fast-Forward since s47).
+//      Off Windows: Unity's legacy Input joystick 1 with the "PcPad.*" axes of ProjectSettings/InputManager.asset (the s34-s40
+//      path), read into the same pad controls;
 //   3. a scripted input queue (PcInput) that the editor play driver loads for automated runs.
+// The bindings' Fast-Forward action is no Npad button: FastForwardHeld hands it to PcGameSpeed. While an Options controls page waits
+// for a key / button (PcBindings capture), the physical keyboard and pads reach that page only.
 // Stick values are -32767..32767 (nn::hid AnalogStickMax); the stick-direction buttons (StickLLeft ...) are set past half
 // deflection, as Ryujinx's NpadDevices does (StickButtonThreshold = short.MaxValue / 2).
 using System;
@@ -29,6 +32,17 @@ namespace PcPlatform
         static NpadButton buttons;
         static AnalogStickState stickL, stickR;
         static bool axesChecked, axesPresent;
+        static bool fastForward;
+
+        // s47: the bindings' Fast-Forward action this frame (PcGameSpeed)
+        public static bool FastForwardHeld
+        {
+            get
+            {
+                Sample();
+                return fastForward;
+            }
+        }
 
         // nn::hid keeps the last 16 samples per pad (NpadStateCountMax); GetStates returns them newest first.
         const int HistoryMax = 16;
@@ -40,7 +54,7 @@ namespace PcPlatform
 
         public static void Initialize()
         {
-            PcConfig.Log("hid: one Pro Controller (Npad No1, FullKey): keyboard (Ryujinx default bindings) + XInput pad + scripted input");
+            PcConfig.Log("hid: one Pro Controller (Npad No1, FullKey): keyboard + XInput pad (PcBindings) + scripted input");
         }
 
         public static void SetSupportedStyleSet(NpadStyle styles) { supportedStyles = styles; }
@@ -105,68 +119,38 @@ namespace PcPlatform
 
             NpadButton b = NpadButton.None;
             int lx = 0, ly = 0, rx = 0, ry = 0;
+            int controls = 0, plx = 0, ply = 0, prx = 0, pry = 0;
+            bool ff = false;
 
             // s34: a scripted run ignores the physical keyboard / pad for the whole session - the editor window takes focus when the
             // play driver starts it, and keys typed anywhere on the machine then drove the game (C = X opened the menu, Z = A, X = B).
             if (PcInput.Scripted)
                 goto script;
 
-            // 1. keyboard
-            if (Input.GetKey(KeyCode.Z)) b |= NpadButton.A;
-            if (Input.GetKey(KeyCode.X)) b |= NpadButton.B;
-            if (Input.GetKey(KeyCode.C)) b |= NpadButton.X;
-            if (Input.GetKey(KeyCode.V)) b |= NpadButton.Y;
-            if (Input.GetKey(KeyCode.F)) b |= NpadButton.StickL;
-            if (Input.GetKey(KeyCode.H)) b |= NpadButton.StickR;
-            if (Input.GetKey(KeyCode.E)) b |= NpadButton.L;
-            if (Input.GetKey(KeyCode.U)) b |= NpadButton.R;
-            if (Input.GetKey(KeyCode.Q)) b |= NpadButton.ZL;
-            if (Input.GetKey(KeyCode.O)) b |= NpadButton.ZR;
-            if (Input.GetKey(KeyCode.Equals) || Input.GetKey(KeyCode.KeypadPlus)) b |= NpadButton.Plus;
-            if (Input.GetKey(KeyCode.Minus) || Input.GetKey(KeyCode.KeypadMinus)) b |= NpadButton.Minus;
-            if (Input.GetKey(KeyCode.LeftArrow)) b |= NpadButton.Left;
-            if (Input.GetKey(KeyCode.UpArrow)) b |= NpadButton.Up;
-            if (Input.GetKey(KeyCode.RightArrow)) b |= NpadButton.Right;
-            if (Input.GetKey(KeyCode.DownArrow)) b |= NpadButton.Down;
-            lx += (Input.GetKey(KeyCode.D) ? StickMax : 0) - (Input.GetKey(KeyCode.A) ? StickMax : 0);
-            ly += (Input.GetKey(KeyCode.W) ? StickMax : 0) - (Input.GetKey(KeyCode.S) ? StickMax : 0);
-            rx += (Input.GetKey(KeyCode.L) ? StickMax : 0) - (Input.GetKey(KeyCode.J) ? StickMax : 0);
-            ry += (Input.GetKey(KeyCode.I) ? StickMax : 0) - (Input.GetKey(KeyCode.K) ? StickMax : 0);
-
-            // 2. XInput pads, positional mapping (s41: XInputGetState in PcXInput; s34-s40 read Unity's "Joystick 1", which is any
-            //    HID joystick with its own axis numbers - a DualShock 4 held "right stick left" through its resting L2 trigger)
+            // the pads' controls + sticks (s41: XInputGetState in PcXInput; s34-s40 read Unity's "Joystick 1", which is any HID
+            // joystick with its own axis numbers - a DualShock 4 held "right stick left" through its resting L2 trigger)
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-            PcXInput.Read(ref b, ref lx, ref ly, ref rx, ref ry);
+            PcXInput.Read(ref controls, ref plx, ref ply, ref prx, ref pry);
 #else
-            if (Input.GetKey(KeyCode.Joystick1Button1)) b |= NpadButton.A;
-            if (Input.GetKey(KeyCode.Joystick1Button0)) b |= NpadButton.B;
-            if (Input.GetKey(KeyCode.Joystick1Button3)) b |= NpadButton.X;
-            if (Input.GetKey(KeyCode.Joystick1Button2)) b |= NpadButton.Y;
-            if (Input.GetKey(KeyCode.Joystick1Button4)) b |= NpadButton.L;
-            if (Input.GetKey(KeyCode.Joystick1Button5)) b |= NpadButton.R;
-            if (Input.GetKey(KeyCode.Joystick1Button6)) b |= NpadButton.Minus;
-            if (Input.GetKey(KeyCode.Joystick1Button7)) b |= NpadButton.Plus;
-            if (Input.GetKey(KeyCode.Joystick1Button8)) b |= NpadButton.StickL;
-            if (Input.GetKey(KeyCode.Joystick1Button9)) b |= NpadButton.StickR;
-            if (AxesPresent())
-            {
-                if (Input.GetAxisRaw("PcPad.LT") > 0.5f) b |= NpadButton.ZL;
-                if (Input.GetAxisRaw("PcPad.RT") > 0.5f) b |= NpadButton.ZR;
-                float dx = Input.GetAxisRaw("PcPad.DX"), dy = Input.GetAxisRaw("PcPad.DY");
-                if (dx < -0.5f) b |= NpadButton.Left;
-                if (dx > 0.5f) b |= NpadButton.Right;
-                if (dy > 0.5f) b |= NpadButton.Up;
-                if (dy < -0.5f) b |= NpadButton.Down;
-                lx += (int)(Mathf.Clamp(Input.GetAxisRaw("PcPad.LX"), -1f, 1f) * StickMax);
-                ly += (int)(Mathf.Clamp(Input.GetAxisRaw("PcPad.LY"), -1f, 1f) * StickMax);
-                rx += (int)(Mathf.Clamp(Input.GetAxisRaw("PcPad.RX"), -1f, 1f) * StickMax);
-                ry += (int)(Mathf.Clamp(Input.GetAxisRaw("PcPad.RY"), -1f, 1f) * StickMax);
-            }
+            ReadLegacyPad(ref controls, ref plx, ref ply, ref prx, ref pry);
 #endif
+
+            // s47: an Options controls page is waiting for a key / button - it gets the physical input, the game gets none
+            if (PcBindings.CaptureFrame(controls))
+                goto script;
+
+            // 1. keyboard, 2. pads - through the bindings
+            PcBindings.ReadKeyboard(ref b, ref lx, ref ly, ref rx, ref ry, ref ff);
+            PcBindings.ApplyPad(controls, ref b, ref ff);
+            lx += plx;
+            ly += ply;
+            rx += prx;
+            ry += pry;
 
             // 3. scripted input
             script:
             PcInput.Apply(ref b, ref lx, ref ly, ref rx, ref ry);
+            fastForward = ff;
 
             stickL = new AnalogStickState { x = Clamp(lx), y = Clamp(ly) };
             stickR = new AnalogStickState { x = Clamp(rx), y = Clamp(ry) };
@@ -193,6 +177,36 @@ namespace PcPlatform
         {
             return v < -StickMax ? -StickMax : (v > StickMax ? StickMax : v);
         }
+
+#if !(UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN)
+        // Off Windows: legacy joystick 1 in the Xbox layout (buttons 0-9 = A B X Y LB RB Back Start LS RS) -> pad controls
+        static void ReadLegacyPad(ref int controls, ref int lx, ref int ly, ref int rx, ref int ry)
+        {
+            if (Input.GetKey(KeyCode.Joystick1Button0)) controls |= PcBindings.Bit(PadControl.A);
+            if (Input.GetKey(KeyCode.Joystick1Button1)) controls |= PcBindings.Bit(PadControl.B);
+            if (Input.GetKey(KeyCode.Joystick1Button2)) controls |= PcBindings.Bit(PadControl.X);
+            if (Input.GetKey(KeyCode.Joystick1Button3)) controls |= PcBindings.Bit(PadControl.Y);
+            if (Input.GetKey(KeyCode.Joystick1Button4)) controls |= PcBindings.Bit(PadControl.LB);
+            if (Input.GetKey(KeyCode.Joystick1Button5)) controls |= PcBindings.Bit(PadControl.RB);
+            if (Input.GetKey(KeyCode.Joystick1Button6)) controls |= PcBindings.Bit(PadControl.Back);
+            if (Input.GetKey(KeyCode.Joystick1Button7)) controls |= PcBindings.Bit(PadControl.Start);
+            if (Input.GetKey(KeyCode.Joystick1Button8)) controls |= PcBindings.Bit(PadControl.LS);
+            if (Input.GetKey(KeyCode.Joystick1Button9)) controls |= PcBindings.Bit(PadControl.RS);
+            if (!AxesPresent())
+                return;
+            if (Input.GetAxisRaw("PcPad.LT") > 0.5f) controls |= PcBindings.Bit(PadControl.LT);
+            if (Input.GetAxisRaw("PcPad.RT") > 0.5f) controls |= PcBindings.Bit(PadControl.RT);
+            float dx = Input.GetAxisRaw("PcPad.DX"), dy = Input.GetAxisRaw("PcPad.DY");
+            if (dx < -0.5f) controls |= PcBindings.Bit(PadControl.DpadLeft);
+            if (dx > 0.5f) controls |= PcBindings.Bit(PadControl.DpadRight);
+            if (dy > 0.5f) controls |= PcBindings.Bit(PadControl.DpadUp);
+            if (dy < -0.5f) controls |= PcBindings.Bit(PadControl.DpadDown);
+            lx += (int)(Mathf.Clamp(Input.GetAxisRaw("PcPad.LX"), -1f, 1f) * StickMax);
+            ly += (int)(Mathf.Clamp(Input.GetAxisRaw("PcPad.LY"), -1f, 1f) * StickMax);
+            rx += (int)(Mathf.Clamp(Input.GetAxisRaw("PcPad.RX"), -1f, 1f) * StickMax);
+            ry += (int)(Mathf.Clamp(Input.GetAxisRaw("PcPad.RY"), -1f, 1f) * StickMax);
+        }
+#endif
 
         static bool AxesPresent()
         {

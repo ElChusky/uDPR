@@ -64,6 +64,11 @@ namespace Dpr.Movie
         }
 		private void Update() {
             isUpdateVideoOnThisFrame = false;
+#if !SWITCH
+            // PC layer (s47): the video runs on real time - fast-forward holds at 1x while it plays
+            if (_isPlaying)
+                PcPlatform.PcGameSpeed.RequireNormalSpeed();
+#endif
         }
 		private void OnRenderObject() {
             // GetLength / GetTime / IsLoop / UpdateSwitch inlined (@01fa7ce0); `fadd len, -0.1f ; fcmp time ; b.lt skip`.

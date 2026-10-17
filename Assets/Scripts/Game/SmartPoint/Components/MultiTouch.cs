@@ -19,12 +19,16 @@ namespace SmartPoint.Components
             }
             else if (type == LogicalTapType.Z)
             {
+#if SWITCH
+                // s47: the shipped keyboard Z (inert on the console) stays Switch-only, as MsgWindowInput's L (s46): on PC the keys
+                // are the player's bindings (PcBindings; Z = A by default)
                 if (Input.GetKeyDown(KeyCode.Z))
                     return Phase.Began;
                 if (Input.GetKey(KeyCode.Z))
                     return Phase.Moved;
                 if (Input.GetKeyUp(KeyCode.Z))
                     return Phase.Ended;
+#endif
             }
             else
             {

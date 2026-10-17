@@ -16,9 +16,12 @@ not been played through on PC yet, so expect bugs - please report them (see [Con
 ## Features
 
 - **Native Windows game** - the game's C# compiled by Unity (IL2CPP), with the shipped asset bundles rebuilt for Windows.
-- **PC options** - the in-game Options menu starts with four PC rows: **Display Mode** (Windowed / Borderless Window / Full
-  Screen), **Resolution**, **Frame Rate** (30 FPS = the original pace, up to Unlimited) and **V-Sync**.
-- **Keyboard and gamepad** - full keyboard controls, and any XInput gamepad.
+- **PC options** - the in-game Options menu starts with nine PC rows: **Display Mode** (Windowed / Borderless Window / Full
+  Screen), **Resolution**, **Frame Rate** (30 FPS = the original pace, up to Unlimited), **V-Sync**, **Fast-Forward Speed**
+  (2x-8x), **Fast-Forward Key** (Hold / Toggle), **Button Layout** (Switch positions / Xbox labels), **Keyboard Keys** and
+  **Controller Buttons**.
+- **Keyboard and gamepad** - full keyboard controls and any XInput gamepad, both rebindable in the Options.
+- **Fast-forward** - hold or toggle a key to run the game 2x-8x faster; contests, Poffin cooking and movies stay at normal speed.
 - **Shipped save format** - saves are written in the game's own format.
 - **A real Unity project** - open it in the Unity editor and press Play; every scene, prefab and script is there to study, mod, or
   port to other platforms Unity supports.
@@ -95,23 +98,29 @@ the menu **BDSP > Windows Build**.
 
 ## Controls
 
-| Switch | Keyboard |
-|---|---|
-| A / B / X / Y | Z / X / C / V |
-| L / R | E / U |
-| ZL / ZR | Q / O |
-| + / − | `=` / `-` |
-| D-pad | arrow keys |
-| Left stick / right stick | WASD / IJKL |
+| Switch | Keyboard | XInput gamepad |
+|---|---|---|
+| A / B / X / Y | Z / X / C / V | B / A / Y / X (by position, as on a Switch) |
+| L / R | E / U | LB / RB |
+| ZL / ZR | Q / O | LT / RT |
+| + / − | `=` / `-` | Start / Back |
+| D-pad | arrow keys | D-pad |
+| Left stick / right stick | WASD / IJKL | left stick / right stick |
+| Right stick press | H | RS |
+| Fast-forward (PC) | Tab | LS (left stick press - the game never uses it) |
 
-An XInput gamepad works too. The key map is in `Assets/Scripts/_Ours/PcPlatform/PcHid.cs`.
+These are the defaults. Change them in **Options > Keyboard Keys / Controller Buttons**: pick an action, press A, then press the
+new key or button (Esc or 5 seconds cancels). A key that already belongs to another action swaps with it, and the menu buttons
+(A, B, X, Y, +, D-pad) always keep a key, so you cannot lock yourself out. **Options > Button Layout > Xbox Labels** puts the
+gamepad's A / B / X / Y on the Switch buttons with the same letter. The bindings are saved in `pc_settings.ini` (`key.*` /
+`pad.*` lines; delete them to get the defaults back).
 
 ## Where files live
 
 `%USERPROFILE%\AppData\LocalLow\DefaultCompany\Dpr\`
 
 - `nn\save\...\SaveData.bin` / `Backup.bin` - your save, in the shipped format
-- `pc_settings.ini` - the PC options
+- `pc_settings.ini` - the PC options (display, frame rate, fast-forward, key / button bindings)
 - `Player.log` - the game's log (attach it to bug reports)
 
 ## FAQ

@@ -143,6 +143,10 @@ namespace Dpr.FureaiHiroba
 				return;
 			if (!isEnableUpdate)
 				return;
+#if !SWITCH
+			// PC layer (s47): the stirring speed is measured per deltaTime from the player's real stick motion - fast-forward holds at 1x
+			PcPlatform.PcGameSpeed.RequireNormalSpeed();
+#endif
 
 			BatterUpdate(deltaTime);
 			LED_Update(deltaTime);

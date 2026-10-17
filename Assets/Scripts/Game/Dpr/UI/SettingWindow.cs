@@ -114,6 +114,13 @@ namespace Dpr.UI
 		private void OnUpdate(float deltaTime) {
 			if (UIManager.Instance.GetCurrentUIWindow<UIWindow>() != this || IsActiveMessageWindow())
 				return;
+#if !SWITCH
+			// PC layer (s47): the Keyboard Keys / Controller Buttons pages and their key capture take A / B / X / Y first
+			if (PcPlatform.PcControlsOptions.Update(this, _activeItems.Count > 0 ? _activeItems[_selectIndex] : null,
+					IsPushButton(UIManager.ButtonA, false), IsPushButton(UIManager.ButtonB, false),
+					IsPushButton(UIManager.ButtonX, false), IsPushButton(UIManager.ButtonY, false)))
+				return;
+#endif
 
 			if (IsPushButton(UIManager.ButtonB, false))
 			{
@@ -515,6 +522,31 @@ namespace Dpr.UI
 
 			_scrollRect.verticalNormalizedPosition = 1f - (float)_scrollIndex / (_activeItems.Count - _viewMenuItemNum);
 		}
+#if !SWITCH
+		// PC layer (s47, PcPlatform.PcControlsOptions): `rows` become the list - a controls page, or the main list again - with
+		// `selectIndex` selected and `scrollIndex` the top row shown; the rows shown before are hidden
+		internal void PcShowRows(global::System.Collections.Generic.List<global::Dpr.UI.SettingMenuItem> rows, int selectIndex, int scrollIndex) {
+			foreach (var item in _activeItems)
+			{
+				item.Select(false);
+				item.gameObject.SetActive(false);
+			}
+			_activeItems.Clear();
+			_activeItems.AddRange(rows);
+			foreach (var item in _activeItems)
+				item.gameObject.SetActive(true);
+			global::UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(_scrollRect.content);
+			_scrollIndex = Mathf.Clamp(scrollIndex, 0, Mathf.Max(0, _activeItems.Count - _viewMenuItemNum));
+			SetSelectIndex(Mathf.Clamp(selectIndex, 0, _activeItems.Count - 1), true);
+			OpenDescriptionMessageWindow();
+		}
+		internal global::System.Collections.Generic.List<global::Dpr.UI.SettingMenuItem> PcActiveItems { get { return new global::System.Collections.Generic.List<global::Dpr.UI.SettingMenuItem>(_activeItems); } }
+		internal int PcSelectIndex { get { return _selectIndex; } }
+		internal int PcScrollIndex { get { return _scrollIndex; } }
+		internal void PcRefreshDescription() {
+			OpenDescriptionMessageWindow();
+		}
+#endif
 		public SettingWindow() { }
 	}
 }
