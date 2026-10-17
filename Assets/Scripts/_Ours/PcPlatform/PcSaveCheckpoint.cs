@@ -8,6 +8,9 @@
 // kind = "auto" while PlayerWork's autosave coroutine runs, else "save"; "-scripted" when the play driver loaded an input script.
 // While Play mode runs, <checkpoints>/.playing exists (removed when Play mode ends), so tools/save_checkpoints.py refuses to swap
 // the save files under a running game. tools/save_checkpoints.py lists, names and loads the checkpoints.
+// OPT-IN (2026-10-17): only a work/saves folder holding the file `.checkpoints` turns checkpoints on, and nothing creates that
+// folder. Before, the editor created <project>/../work/saves on every Play (the public setup's verify step plays), and a player
+// built up to four folders below it then copied every save there (issue #1's second log: C:\Users\<user>\work\saves).
 using System;
 using System.IO;
 using System.Text;
@@ -24,11 +27,12 @@ namespace PcPlatform
         static readonly System.Globalization.CultureInfo Inv = System.Globalization.CultureInfo.InvariantCulture;
         static readonly object gate = new object();
         static readonly Regex numbered = new Regex(@"^(\d{5})_");
+        const string OptInFile = ".checkpoints";
         static string _dir;
 
         // <project>/../work/saves - the editor's working directory is the project folder. A player build has no project folder: the
-        // first work/saves found walking up from the folder that holds the executable (<workspace>/build/<name>/Dpr.exe, s38), or
-        // null = checkpoints off.
+        // first opted-in work/saves found walking up from the folder that holds the executable (<workspace>/build/<name>/Dpr.exe,
+        // s38). null = checkpoints off.
         public static string Dir
         {
             get
@@ -36,7 +40,8 @@ namespace PcPlatform
                 if (_dir == null)
                 {
 #if UNITY_EDITOR
-                    _dir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "work", "saves"));
+                    string c = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "work", "saves"));
+                    _dir = OptedIn(c) ? c : null;
 #else
                     _dir = FindWorkspaceSaves();
 #endif
@@ -45,6 +50,8 @@ namespace PcPlatform
             }
         }
 
+        static bool OptedIn(string saves) { return File.Exists(Path.Combine(saves, OptInFile)); }
+
 #if !UNITY_EDITOR
         static string FindWorkspaceSaves()
         {
@@ -52,7 +59,7 @@ namespace PcPlatform
             for (int i = 0; d != null && i < 4; i++, d = d.Parent)
             {
                 string c = Path.Combine(d.FullName, "work", "saves");
-                if (Directory.Exists(c))
+                if (OptedIn(c))
                     return c;
             }
             return null;
@@ -67,7 +74,7 @@ namespace PcPlatform
             if (Dir == null)
             {
                 Enabled = false;
-                PcConfig.Log("save checkpoints: off (no work/saves folder above the player)");
+                PcConfig.Log("save checkpoints: off (a development tool: a work/saves folder holding a " + OptInFile + " file turns it on)");
                 return;
             }
             try
