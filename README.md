@@ -20,8 +20,10 @@ not been played through on PC yet, so expect bugs - please report them (see [Con
   Screen), **Resolution**, **Frame Rate** (30 FPS = the original pace, up to Unlimited), **V-Sync**, **Fast-Forward Speed**
   (2x-8x), **Fast-Forward Key** (Hold / Toggle), **Button Layout** (Switch positions / Xbox labels), **Keyboard Keys** and
   **Controller Buttons**.
-- **Keyboard and gamepad** - full keyboard controls and any XInput gamepad, both rebindable in the Options.
-- **Fast-forward** - hold or toggle a key to run the game 2x-8x faster; contests, Poffin cooking and movies stay at normal speed.
+- **Keyboard and gamepad** - full keyboard controls and any XInput gamepad, both rebindable in the Options, plus an Xbox-letter
+  button layout.
+- **Fast-forward** - press Tab (or the gamepad's left stick) to run the game 2x-8x faster; contests, Poffin cooking and movies stay
+  at normal speed. See [Fast-forward](#fast-forward).
 - **Shipped save format** - saves are written in the game's own format.
 - **A real Unity project** - open it in the Unity editor and press Play; every scene, prefab and script is there to study, mod, or
   port to other platforms Unity supports.
@@ -115,6 +117,38 @@ new key or button (Esc or 5 seconds cancels). A key that already belongs to anot
 gamepad's A / B / X / Y on the Switch buttons with the same letter. The bindings are saved in `pc_settings.ini` (`key.*` /
 `pad.*` lines; delete them to get the defaults back).
 
+### Fast-forward
+
+- Press **Tab** (keyboard) or the **left stick** (gamepad) to start fast-forward, and again to stop. With **Options >
+  Fast-Forward Key > Hold** it runs only while the key is held. **Options > Fast-Forward Speed** picks 2x, 3x, 4x, 6x or 8x.
+- `>> 4x` shows in the top-right corner while it runs.
+- Fast-forward needs about 30 FPS per 1x: 4x needs 120 FPS, 8x needs 240. A PC that can't draw that many frames gets less, and the
+  corner shows the speed it reaches (for example `>> 3.2x`).
+- With V-Sync on, V-Sync is switched off while fast-forwarding when the monitor is too slow for the speed (a 60 Hz monitor above
+  2x), so you may see tearing only while it runs.
+- Contests, Poffin cooking and movies always run at normal speed (they follow the music, your stick speed, or the video). Music
+  and sound effects keep their normal speed too.
+
+## PC options
+
+The in-game **Options** menu starts with nine rows the Switch game doesn't have. They are saved in `pc_settings.ini`, not in
+your save file.
+
+| Row | Choices | Default |
+|---|---|---|
+| Display Mode | Windowed / Borderless Window / Full Screen | Borderless Window |
+| Resolution | your monitor's sizes from 1280 x 720 up | your desktop size |
+| Frame Rate | 30 FPS (the original pace), 60 ... 240, your monitor's rate, Unlimited | Unlimited |
+| V-Sync | On / Off | On |
+| Fast-Forward Speed | 2x / 3x / 4x / 6x / 8x | 4x |
+| Fast-Forward Key | Hold / Toggle | Toggle |
+| Button Layout | Switch Positions / Xbox Labels | Switch Positions |
+| Keyboard Keys | press A to change the keyboard keys | Default |
+| Controller Buttons | press A to change the gamepad buttons | Default |
+
+Changes take effect when you answer **Yes** to "save these settings?"; **No** discards them. **Y** (reset) also puts the display
+and fast-forward rows back to their defaults; your key and button bindings stay - each bindings page has its own reset (Y).
+
 ## Where files live
 
 `%USERPROFILE%\AppData\LocalLow\DefaultCompany\Dpr\`
@@ -138,6 +172,9 @@ to download with an Audiokinetic account; the setup copies it in from your own i
 
 **Shining Pearl? Other versions?** Only Brilliant Diamond v1.3.0 is supported for now.
 
+**PlayStation, Switch Pro or other controllers?** The game reads XInput (Xbox-type) gamepads directly. A DualShock 4, DualSense or
+Switch Pro Controller works through Steam Input or DS4Windows, which present it as an Xbox pad.
+
 **Other platforms (macOS, Linux, ...)?** The setup (`setup.cmd`) runs on Windows, and Windows is the platform we build and test. But
 what the setup produces is an ordinary Unity 2019.4 project, and Unity can build it for any platform it supports - a port is open to
 anyone. What a port needs today:
@@ -157,7 +194,7 @@ Step by step for macOS: [docs/PORTING_MACOS.md](docs/PORTING_MACOS.md). Pull req
 | Path | What |
 |---|---|
 | `Assets/Scripts/{Game,AssetAssistant,DebugLog,nn,DOTweenPro}` | the game's C#, one file per type (`<Assembly>/<namespace>/<Type>.cs`) |
-| `Assets/Scripts/_Ours/PcPlatform` | this project's PC layer: input, display, saves, keyboard, frame clock |
+| `Assets/Scripts/_Ours/PcPlatform` | this project's PC layer: input and key bindings, display, fast-forward, saves, keyboard, frame clock |
 | `Assets/_Ours` | this project's own assets (the one tracked asset folder - see its README) |
 | `Assets/Editor` | editor tooling: the Windows build, audits, probes, the editor asset loader |
 | `setup/` | the automated setup (`setup.py` and its stages); `setup/data` holds the shader source recovered from the game's compiled shaders and the tables that make every setup produce the same project |
